@@ -11,7 +11,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.PathQueryExpression;
 import org.hkijena.jipipe.extensions.expressions.variables.PathFilterExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
@@ -42,7 +42,7 @@ public class ModifyPath extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         PathData input = iterationStep.getInputData(getFirstInputSlot(), PathData.class, progressInfo);
-        ExpressionVariables variables = new ExpressionVariables();
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         if (accessAnnotations) {
             for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
                 variables.set(annotation.getName(), annotation.getValue());

@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerRange;
@@ -59,7 +59,7 @@ public class RemoveLUTAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus image = data.getImage();
         Set<Integer> channels = new HashSet<>();
         if (restrictToChannels.isEnabled()) {
-            ExpressionVariables variables = new ExpressionVariables();
+            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
             variables.putAnnotations(iterationStep.getMergedTextAnnotations());
             channels.addAll(restrictToChannels.getContent().getIntegers(0, data.getNChannels() - 1, variables));
         }

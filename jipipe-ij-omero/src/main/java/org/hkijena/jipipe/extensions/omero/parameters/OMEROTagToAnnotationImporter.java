@@ -9,7 +9,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
@@ -57,7 +57,7 @@ public class OMEROTagToAnnotationImporter extends AbstractJIPipeParameterCollect
     public void createAnnotations(List<JIPipeTextAnnotation> target, MetadataFacility metadata, SecurityContext context, DataObject dataObject) throws DSOutOfServiceException, DSAccessException {
         if(tagsToListAnnotation.isEnabled()) {
             Set<String> tags = OMEROUtils.getTags(metadata, context, dataObject);
-            List<String> filteredTags = tagsToListFilter.queryAll(tags, new ExpressionVariables());
+            List<String> filteredTags = tagsToListFilter.queryAll(tags, new JIPipeExpressionVariablesMap());
             target.add(tagsToListAnnotation.createAnnotation(JsonUtils.toJsonString(filteredTags)));
         }
     }

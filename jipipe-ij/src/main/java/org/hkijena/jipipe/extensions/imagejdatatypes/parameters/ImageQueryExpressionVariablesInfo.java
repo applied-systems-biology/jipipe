@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -43,7 +43,7 @@ public class ImageQueryExpressionVariablesInfo implements ExpressionParameterVar
      * @param imagePlus   the image
      * @param variableSet the target
      */
-    public static void buildVariablesSet(ImagePlus imagePlus, ExpressionVariables variableSet) {
+    public static void buildVariablesSet(ImagePlus imagePlus, JIPipeExpressionVariablesMap variableSet) {
         variableSet.set("width", imagePlus.getWidth());
         variableSet.set("height", imagePlus.getHeight());
         switch (imagePlus.getType()) {

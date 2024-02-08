@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterSettings;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.OptionalJIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.InterpolationMethod;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -91,7 +91,7 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         int sx = img.getWidth();
         int sy = img.getHeight();
 
-        ExpressionVariables variables = new ExpressionVariables();
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         ImagePlusPropertiesExpressionParameterVariablesInfo.extractValues(variables, img, iterationStep.getMergedTextAnnotations().values());
 
         if (xAxis.isEnabled() && yAxis.isEnabled()) {

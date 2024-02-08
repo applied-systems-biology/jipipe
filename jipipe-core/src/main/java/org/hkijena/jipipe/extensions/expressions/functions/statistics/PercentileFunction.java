@@ -4,7 +4,7 @@ import com.google.common.primitives.Doubles;
 import org.apache.commons.math3.stat.descriptive.rank.Percentile;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.Collection;
@@ -26,7 +26,7 @@ public class PercentileFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
+    public Object evaluate(List<Object> parameters, JIPipeExpressionVariablesMap variables) {
         Collection<Number> collection = (Collection<Number>) parameters.get(0);
         double N = ((Number) parameters.get(1)).doubleValue();
 

@@ -238,7 +238,7 @@ public class JIPipeExpressionEvaluator extends ExpressionEvaluator {
         if (!escapedString.startsWith("\"")) {
             escapedString = "\"" + escapedString + "\"";
         }
-        return org.hkijena.jipipe.utils.StringUtils.nullToEmpty(JIPipeExpressionParameter.getEvaluatorInstance().evaluate(escapedString, new ExpressionVariables()));
+        return org.hkijena.jipipe.utils.StringUtils.nullToEmpty(JIPipeExpressionParameter.getEvaluatorInstance().evaluate(escapedString, new JIPipeExpressionVariablesMap()));
     }
 
     public List<String> tokenize(String expression, boolean includeQuotesAsToken, boolean includeQuotesIntoToken) {
@@ -382,7 +382,7 @@ public class JIPipeExpressionEvaluator extends ExpressionEvaluator {
 
     @Override
     public Object evaluate(String expression, Object evaluationContext) {
-        ExpressionVariables expressionVariables = (ExpressionVariables) evaluationContext;
+        JIPipeExpressionVariablesMap expressionVariables = (JIPipeExpressionVariablesMap) evaluationContext;
         try {
             expression = StringUtils.stripEnd(expression.trim(), ";");
             if (expression.isEmpty())
@@ -400,7 +400,7 @@ public class JIPipeExpressionEvaluator extends ExpressionEvaluator {
     @Override
     protected Object evaluate(Function function, Iterator<Object> arguments, Object evaluationContext) {
         if (function instanceof ExpressionFunction) {
-            return ((ExpressionFunction) function).evaluate(ImmutableList.copyOf(arguments), (ExpressionVariables) evaluationContext);
+            return ((ExpressionFunction) function).evaluate(ImmutableList.copyOf(arguments), (JIPipeExpressionVariablesMap) evaluationContext);
         } else {
             throw new UnsupportedOperationException();
         }
@@ -418,7 +418,7 @@ public class JIPipeExpressionEvaluator extends ExpressionEvaluator {
     @Override
     protected Object evaluate(Operator operator, Iterator<Object> operands, Object evaluationContext) {
         if (operator instanceof ExpressionOperator) {
-            return ((ExpressionOperator) operator).evaluate(operands, (ExpressionVariables) evaluationContext);
+            return ((ExpressionOperator) operator).evaluate(operands, (JIPipeExpressionVariablesMap) evaluationContext);
         } else if (operator == OPERATOR_NUMERIC_NEGATE || operator == OPERATOR_NUMERIC_NEGATE_HIGH) {
             return -(double) operands.next();
         }
@@ -490,7 +490,7 @@ public class JIPipeExpressionEvaluator extends ExpressionEvaluator {
 
     @Override
     protected Object toValue(String literal, Object evaluationContext) {
-        ExpressionVariables variableSet = (ExpressionVariables) evaluationContext;
+        JIPipeExpressionVariablesMap variableSet = (JIPipeExpressionVariablesMap) evaluationContext;
         if (NumberUtils.isCreatable(literal))
             return NumberUtils.createDouble(literal);
         else if (literal.length() >= 2 && literal.startsWith("\"") && literal.endsWith("\""))

@@ -4,7 +4,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 
 import java.util.HashSet;
@@ -30,7 +30,7 @@ public class FilamentVertexVariablesInfo implements ExpressionParameterVariables
         VARIABLES.add(new ExpressionParameterVariable("Physical voxel size (Z)", "Size of a voxel (Z)", "vsz"));
     }
 
-    public static void writeToVariables(Filaments3DData graph, FilamentVertex vertex, ExpressionVariables variables, String prefix) {
+    public static void writeToVariables(Filaments3DData graph, FilamentVertex vertex, JIPipeExpressionVariablesMap variables, String prefix) {
         graph.measureVertex(vertex, variables, prefix);
     }
 

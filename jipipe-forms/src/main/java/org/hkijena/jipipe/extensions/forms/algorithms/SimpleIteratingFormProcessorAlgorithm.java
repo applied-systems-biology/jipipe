@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.forms.ui.FormsDialog;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
@@ -83,7 +83,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
             List<JIPipeMultiIterationStep> iterationStepList = new ArrayList<>();
             boolean withLimit = iterationStepGenerationSettings.getLimit().isEnabled();
             IntegerRange limit = iterationStepGenerationSettings.getLimit().getContent();
-            TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataSlot.getRowCount(), new ExpressionVariables())) : null;
+            TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataSlot.getRowCount(), new JIPipeExpressionVariablesMap())) : null;
             for (int row = 0; row < dataSlot.getRowCount(); row++) {
                 if (withLimit && !allowedIndices.contains(row))
                     continue;
@@ -245,7 +245,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
         JIPipeDataSlot slot = slots.stream().filter(s -> "Data".equals(s.getName())).findFirst().get();
         boolean withLimit = iterationStepGenerationSettings.getLimit().isEnabled();
         IntegerRange limit = iterationStepGenerationSettings.getLimit().getContent();
-        TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, slot.getRowCount(), new ExpressionVariables())) : null;
+        TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, slot.getRowCount(), new JIPipeExpressionVariablesMap())) : null;
         for (int i = 0; i < slot.getRowCount(); i++) {
             if (withLimit && !allowedIndices.contains(i))
                 continue;

@@ -7,7 +7,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.Collection;
@@ -23,8 +23,8 @@ public class LastIndexOfFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
-        ExpressionVariables localVariables = new ExpressionVariables();
+    public Object evaluate(List<Object> parameters, JIPipeExpressionVariablesMap variables) {
+        JIPipeExpressionVariablesMap localVariables = new JIPipeExpressionVariablesMap();
         for (Map.Entry<String, Object> entry : variables.entrySet()) {
             localVariables.put(entry.getKey(), entry.getValue());
         }

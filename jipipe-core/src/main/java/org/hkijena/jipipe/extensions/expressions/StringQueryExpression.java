@@ -48,7 +48,7 @@ public class StringQueryExpression extends JIPipeExpressionParameter implements 
      * @param expressionVariables expression parameters
      * @return expression result or the expression itself
      */
-    public String generate(ExpressionVariables expressionVariables) {
+    public String generate(JIPipeExpressionVariablesMap expressionVariables) {
         if (StringUtils.isNullOrEmpty(getExpression()))
             return "";
         try {
@@ -66,7 +66,7 @@ public class StringQueryExpression extends JIPipeExpressionParameter implements 
      * @param expressionVariables expression parameters
      * @return the annotation that matches the query or null if none matches
      */
-    public String queryFirst(Collection<String> strings, ExpressionVariables expressionVariables) {
+    public String queryFirst(Collection<String> strings, JIPipeExpressionVariablesMap expressionVariables) {
         try {
             Object evaluationResult = evaluate(expressionVariables);
             if (evaluationResult instanceof String) {
@@ -97,7 +97,7 @@ public class StringQueryExpression extends JIPipeExpressionParameter implements 
      * @param expressionVariables expression parameters
      * @return the annotation that matches the query or null if none matches
      */
-    public java.util.List<String> queryAll(Collection<String> strings, ExpressionVariables expressionVariables) {
+    public java.util.List<String> queryAll(Collection<String> strings, JIPipeExpressionVariablesMap expressionVariables) {
         java.util.List<String> result = new ArrayList<>();
         try {
             Object evaluationResult = evaluate(expressionVariables);
@@ -132,7 +132,7 @@ public class StringQueryExpression extends JIPipeExpressionParameter implements 
      */
     @Override
     public boolean test(String string) {
-        return test(string, new ExpressionVariables());
+        return test(string, new JIPipeExpressionVariablesMap());
     }
 
     /**
@@ -141,7 +141,7 @@ public class StringQueryExpression extends JIPipeExpressionParameter implements 
      * @param string the string
      * @return if the query matches
      */
-    public boolean test(String string, ExpressionVariables expressionVariables) {
+    public boolean test(String string, JIPipeExpressionVariablesMap expressionVariables) {
         if ("true".equals(getExpression()) || getExpression().trim().isEmpty())
             return true;
         expressionVariables.set("value", string);
@@ -168,7 +168,7 @@ public class StringQueryExpression extends JIPipeExpressionParameter implements 
     public boolean testAnyOf(Collection<String> strings) {
         if ("true".equals(getExpression()) || getExpression().trim().isEmpty())
             return true;
-        ExpressionVariables variableSet = new ExpressionVariables();
+        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
         for (String string : strings) {
             try {
                 variableSet.set("value", string);

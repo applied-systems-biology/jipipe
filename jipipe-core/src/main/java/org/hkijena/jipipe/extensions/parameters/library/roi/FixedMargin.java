@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.NumericFunctionExpression;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 
@@ -171,7 +171,7 @@ public class FixedMargin extends AbstractJIPipeParameterCollection {
      * @param parameters    additional expression variables
      * @return Rectangle within the area
      */
-    public Rectangle place(Rectangle object, Rectangle availableArea, ExpressionVariables parameters) {
+    public Rectangle place(Rectangle object, Rectangle availableArea, JIPipeExpressionVariablesMap parameters) {
         final int left_ = (int) left.apply(availableArea.width, parameters);
         final int top_ = (int) top.apply(availableArea.height, parameters);
         final int right_ = (int) right.apply(availableArea.width, parameters);

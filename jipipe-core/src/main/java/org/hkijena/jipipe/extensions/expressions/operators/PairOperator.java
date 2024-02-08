@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.expressions.operators;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionOperator;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -18,7 +18,7 @@ public class PairOperator extends ExpressionOperator {
     }
 
     @Override
-    public Object evaluate(Iterator<Object> operands, ExpressionVariables variables) {
+    public Object evaluate(Iterator<Object> operands, JIPipeExpressionVariablesMap variables) {
         Object o1 = operands.next();
         Object o2 = operands.next();
         return Arrays.asList(o1, o2);

@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.expressions.functions.util;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,7 +14,7 @@ public class PrintFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
+    public Object evaluate(List<Object> parameters, JIPipeExpressionVariablesMap variables) {
         String message = parameters.stream().map(s -> "" + s).collect(Collectors.joining());
         System.out.println(message);
         return message;

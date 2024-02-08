@@ -5,7 +5,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 
 import java.util.HashSet;
@@ -27,7 +27,7 @@ public class Image5DSliceIndexExpressionParameterVariablesInfo implements Expres
         return result;
     }
 
-    public static void apply(ExpressionVariables target, ImagePlus img, ImageSliceIndex index) {
+    public static void apply(JIPipeExpressionVariablesMap target, ImagePlus img, ImageSliceIndex index) {
         target.set("width", img.getWidth());
         target.set("height", img.getHeight());
         target.set("size_d", img.getNDimensions());

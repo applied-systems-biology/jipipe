@@ -14,7 +14,9 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameter;
+import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
+import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.Image5DExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -33,7 +35,7 @@ import java.util.Map;
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 public class ReorderHyperstackSlicesExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private final CustomExpressionVariablesParameter customVariables;
+    private final JIPipeCustomExpressionVariablesParameter customVariables;
 
     private JIPipeExpressionParameter newLocationExpression = new JIPipeExpressionParameter("ARRAY(c, z, t)");
 
@@ -42,12 +44,12 @@ public class ReorderHyperstackSlicesExpressionAlgorithm extends JIPipeSimpleIter
 
     public ReorderHyperstackSlicesExpressionAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.customVariables = new CustomExpressionVariablesParameter(this);
+        this.customVariables = new JIPipeCustomExpressionVariablesParameter(this);
     }
 
     public ReorderHyperstackSlicesExpressionAlgorithm(ReorderHyperstackSlicesExpressionAlgorithm other) {
         super(other);
-        this.customVariables = new CustomExpressionVariablesParameter(other.customVariables, this);
+        this.customVariables = new JIPipeCustomExpressionVariablesParameter(other.customVariables, this);
         this.newLocationExpression = new JIPipeExpressionParameter(other.newLocationExpression);
         this.silentlyOverride = other.silentlyOverride;
     }
@@ -58,9 +60,9 @@ public class ReorderHyperstackSlicesExpressionAlgorithm extends JIPipeSimpleIter
         Map<ImageSliceIndex, ImageProcessor> slices = ImageJUtils.splitIntoSlices(inputImage);
         Map<ImageProcessor, ImageSliceIndex> newSliceIndices = new IdentityHashMap<>();
 
-        ExpressionVariables variables = new ExpressionVariables();
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-        customVariables.writeToVariables(variables, true, "custom.", true, "custom");
+        customVariables.writeToVariables(variables);
         variables.set("width", inputImage.getWidth());
         variables.set("height", inputImage.getHeight());
         variables.set("num_c", inputImage.getNChannels());
@@ -110,9 +112,8 @@ public class ReorderHyperstackSlicesExpressionAlgorithm extends JIPipeSimpleIter
             "affected images.")
     @JIPipeParameter(value = "new-location-expression", important = true)
     @JIPipeExpressionParameterSettings(hint = "per slice ARRAY(c, z, t)")
-    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-    @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(key = "c", name = "Current channel location", description = "Current channel location of the slice (zero-based)")
     @JIPipeExpressionParameterVariable(key = "z", name = "Current Z location", description = "Current Z location of the slice (zero-based)")
@@ -129,7 +130,7 @@ public class ReorderHyperstackSlicesExpressionAlgorithm extends JIPipeSimpleIter
     @JIPipeDocumentation(name = "Custom variables", description = "Here you can add parameters that will be included into the expressions as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(custom, \"[key]\")</code>.")
     @JIPipeParameter(value = "custom-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
-    public CustomExpressionVariablesParameter getCustomVariables() {
+    public JIPipeCustomExpressionVariablesParameter getCustomVariables() {
         return customVariables;
     }
 

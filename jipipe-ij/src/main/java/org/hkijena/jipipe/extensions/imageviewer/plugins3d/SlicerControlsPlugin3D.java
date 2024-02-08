@@ -9,7 +9,7 @@ import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPlugin3D;
@@ -77,9 +77,9 @@ public class SlicerControlsPlugin3D extends JIPipeImageViewerPlugin3D implements
     private void updateMultiOrthoSlice() {
         ImagePlusData image = getCurrentImage();
         if (image != null && getViewerPanel3D().getUniverse() != null && getViewerPanel3D().getCurrentImageContents() != null && getViewerPanel3D().getImage3DRendererSettings().getRenderType() == Image3DRenderType.MultiOrthoSlices) {
-            List<Integer> xSlices = multiOrthoSlicerSettings.x.tryGetIntegers(1, image.getWidth(), new ExpressionVariables());
-            List<Integer> ySlices = multiOrthoSlicerSettings.y.tryGetIntegers(1, image.getHeight(), new ExpressionVariables());
-            List<Integer> zSlices = multiOrthoSlicerSettings.z.tryGetIntegers(1, image.getNSlices(), new ExpressionVariables());
+            List<Integer> xSlices = multiOrthoSlicerSettings.x.tryGetIntegers(1, image.getWidth(), new JIPipeExpressionVariablesMap());
+            List<Integer> ySlices = multiOrthoSlicerSettings.y.tryGetIntegers(1, image.getHeight(), new JIPipeExpressionVariablesMap());
+            List<Integer> zSlices = multiOrthoSlicerSettings.z.tryGetIntegers(1, image.getNSlices(), new JIPipeExpressionVariablesMap());
             if (xSlices != null) {
                 xSlices.removeIf(value -> value < 1 || value > image.getWidth());
             } else {

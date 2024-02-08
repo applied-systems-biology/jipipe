@@ -46,7 +46,7 @@ public class TableCellValueQueryExpression extends JIPipeExpressionParameter {
     public boolean test(ResultsTableData tableData, int row, int col) {
         if ("true".equals(getExpression()) || getExpression().trim().isEmpty())
             return true;
-        ExpressionVariables variableSet = new ExpressionVariables();
+        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
         variableSet.set("row", row);
         variableSet.set("column", col);
         variableSet.set("column_name", tableData.getColumnName(col));

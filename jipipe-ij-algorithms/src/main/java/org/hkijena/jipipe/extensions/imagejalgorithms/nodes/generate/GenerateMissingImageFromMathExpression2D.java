@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMissingDataGeneratorAlgorith
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterSettings;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.OptionalBitDepth;
@@ -114,7 +114,7 @@ public class GenerateMissingImageFromMathExpression2D extends JIPipeMissingDataG
                 bitDepth = overwriteOutputBitDepth.getBitDepth();
 
             ImagePlus img = IJ.createHyperStack("Generated", width, height, sizeC, sizeZ, sizeT, bitDepth);
-            ExpressionVariables variableSet = new ExpressionVariables();
+            JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
             variableSet.set("width", overwriteWidth);
             variableSet.set("height", overwriteHeight);
             variableSet.set("num_z", overwriteSizeZ);

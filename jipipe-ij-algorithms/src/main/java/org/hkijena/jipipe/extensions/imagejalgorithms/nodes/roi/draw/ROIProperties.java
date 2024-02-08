@@ -20,8 +20,8 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
+import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIEditor;
 import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
 
@@ -126,7 +126,7 @@ public class ROIProperties extends AbstractJIPipeParameterCollection {
 
     @JIPipeDocumentation(name = "ROI name", description = "Allows to change the ROI name")
     @JIPipeParameter("roi-name")
-    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getRoiName() {
         return roiName;
     }
@@ -141,7 +141,7 @@ public class ROIProperties extends AbstractJIPipeParameterCollection {
      *
      * @param target target
      */
-    public void applyToRoiReference(Roi target, ExpressionVariables variables) {
+    public void applyToRoiReference(Roi target, JIPipeExpressionVariablesMap variables) {
         target.setPosition(positionC, positionZ, positionT);
         if (fillColor.isEnabled())
             target.setFillColor(fillColor.getContent());
@@ -151,7 +151,7 @@ public class ROIProperties extends AbstractJIPipeParameterCollection {
         target.setName(roiName.evaluateToString(variables));
     }
 
-    public void applyTo(Roi roi, ExpressionVariables variables) {
+    public void applyTo(Roi roi, JIPipeExpressionVariablesMap variables) {
         roi.setName(getRoiName().evaluateToString(variables));
         roi.setStrokeWidth(getLineWidth());
         roi.setPosition(getPositionC(), getPositionZ(), getPositionT());

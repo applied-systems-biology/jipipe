@@ -40,7 +40,7 @@ public class StringMapQueryExpression extends JIPipeExpressionParameter {
      * @return if matches
      */
     public boolean test(Map<String, String> map) {
-        ExpressionVariables variableSet = new ExpressionVariables();
+        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
         for (Map.Entry<String, String> entry : map.entrySet()) {
             variableSet.set(entry.getKey(), entry.getValue());
         }
@@ -54,7 +54,7 @@ public class StringMapQueryExpression extends JIPipeExpressionParameter {
      * @return if matches
      */
     public boolean test(Collection<String> values) {
-        ExpressionVariables variableSet = new ExpressionVariables();
+        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
         for (String value : values) {
             variableSet.set(value, value);
         }

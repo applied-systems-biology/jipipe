@@ -34,7 +34,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.ImageROITargetArea;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -107,7 +107,7 @@ public class CustomAutoThreshold2D8UAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus img = inputData.getDuplicateImage();
         ROIListData roiInput = null;
         ImagePlus maskInput = null;
-        ExpressionVariables parameters = new ExpressionVariables();
+        JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap();
 
         for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
             parameters.set(annotation.getName(), annotation.getValue());
@@ -155,7 +155,7 @@ public class CustomAutoThreshold2D8UAlgorithm extends JIPipeIteratingAlgorithm {
             }, progressInfo);
             List<JIPipeTextAnnotation> annotations = new ArrayList<>();
             if (thresholdAnnotation.isEnabled()) {
-                ExpressionVariables variableSet = new ExpressionVariables();
+                JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
                 variableSet.set("thresholds", thresholds);
                 String result = thresholdCombinationExpression.evaluate(variableSet) + "";
                 annotations.add(thresholdAnnotation.createAnnotation(result));
@@ -211,7 +211,7 @@ public class CustomAutoThreshold2D8UAlgorithm extends JIPipeIteratingAlgorithm {
             }, progressInfo.resolve("Finding thresholds"));
 
             // Combine thresholds
-            ExpressionVariables variableSet = new ExpressionVariables();
+            JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
             variableSet.set("thresholds", thresholds);
             Number combined = (Number) thresholdCombinationExpression.evaluate(variableSet);
             int threshold = combined.intValue();
@@ -230,7 +230,7 @@ public class CustomAutoThreshold2D8UAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private int getThreshold(ExpressionVariables parameters, ImageStatistics statistics, TByteArrayList pixels) {
+    private int getThreshold(JIPipeExpressionVariablesMap parameters, ImageStatistics statistics, TByteArrayList pixels) {
         parameters.set("stat_histogram", Longs.asList(statistics.getHistogram()));
         parameters.set("stat_area", statistics.area);
         parameters.set("stat_stdev", statistics.stdDev);
@@ -260,7 +260,7 @@ public class CustomAutoThreshold2D8UAlgorithm extends JIPipeIteratingAlgorithm {
             "this threshold.")
     @JIPipeParameter(value = "thresholding-function", important = true)
     @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class)
-    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getThresholdCalculationExpression() {
         return thresholdCalculationExpression;
     }

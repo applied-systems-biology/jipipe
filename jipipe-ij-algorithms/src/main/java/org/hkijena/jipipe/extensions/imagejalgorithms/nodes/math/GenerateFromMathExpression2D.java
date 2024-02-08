@@ -27,7 +27,9 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameter;
+import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
+import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.PixelCoordinate5DExpressionParameterVariablesInfo;
@@ -44,7 +46,7 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter function = new JIPipeExpressionParameter("x + y");
-    private final CustomExpressionVariablesParameter customExpressionVariables;
+    private final JIPipeCustomExpressionVariablesParameter customExpressionVariables;
     private int width = 256;
     private int height = 256;
     private int sizeZ = 1;
@@ -58,7 +60,7 @@ public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm
      */
     public GenerateFromMathExpression2D(JIPipeNodeInfo info) {
         super(info);
-        this.customExpressionVariables = new CustomExpressionVariablesParameter();
+        this.customExpressionVariables = new JIPipeCustomExpressionVariablesParameter();
     }
 
     /**
@@ -68,7 +70,7 @@ public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm
      */
     public GenerateFromMathExpression2D(GenerateFromMathExpression2D other) {
         super(other);
-        this.customExpressionVariables = new CustomExpressionVariablesParameter(this);
+        this.customExpressionVariables = new JIPipeCustomExpressionVariablesParameter(this);
         this.function = new JIPipeExpressionParameter(other.function);
         this.width = other.width;
         this.height = other.height;
@@ -85,7 +87,7 @@ public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         ImagePlus img = IJ.createHyperStack("Generated", width, height, sizeC, sizeZ, sizeT, 32);
-        ExpressionVariables variableSet = new ExpressionVariables();
+        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
         variableSet.putAnnotations(iterationStep.getMergedTextAnnotations());
         variableSet.set("width", width);
         variableSet.set("height", height);
@@ -117,9 +119,8 @@ public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm
     @JIPipeParameter("function")
     @JIPipeExpressionParameterSettings(hint = "per pixel")
     @JIPipeExpressionParameterVariable(fromClass = PixelCoordinate5DExpressionParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-    @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     public JIPipeExpressionParameter getFunction() {
         return function;
     }
@@ -187,7 +188,7 @@ public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm
     @JIPipeDocumentation(name = "Custom expression variables", description = "Here you can add parameters that will be included into the expression as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(custom, \"[key]\")</code>.")
     @JIPipeParameter(value = "custom-filter-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
-    public CustomExpressionVariablesParameter getCustomExpressionVariables() {
+    public JIPipeCustomExpressionVariablesParameter getCustomExpressionVariables() {
         return customExpressionVariables;
     }
 }

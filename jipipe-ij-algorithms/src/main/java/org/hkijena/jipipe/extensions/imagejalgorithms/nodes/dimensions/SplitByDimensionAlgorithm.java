@@ -16,7 +16,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -85,7 +85,7 @@ public class SplitByDimensionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 for (JIPipeOutputDataSlot outputSlot : getOutputSlots()) {
                     OptionalIntegerRange range = outputIndices.get(outputSlot.getName()).get(OptionalIntegerRange.class);
                     if (range.isEnabled()) {
-                        if (!range.getContent().getIntegers(0, img.getNChannels(), new ExpressionVariables()).contains(c)) {
+                        if (!range.getContent().getIntegers(0, img.getNChannels(), new JIPipeExpressionVariablesMap()).contains(c)) {
                             continue;
                         }
                     }
@@ -113,7 +113,7 @@ public class SplitByDimensionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 for (JIPipeOutputDataSlot outputSlot : getOutputSlots()) {
                     OptionalIntegerRange range = outputIndices.get(outputSlot.getName()).get(OptionalIntegerRange.class);
                     if (range.isEnabled()) {
-                        if (!range.getContent().getIntegers(0, img.getNSlices(), new ExpressionVariables()).contains(z)) {
+                        if (!range.getContent().getIntegers(0, img.getNSlices(), new JIPipeExpressionVariablesMap()).contains(z)) {
                             continue;
                         }
                     }
@@ -141,7 +141,7 @@ public class SplitByDimensionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 for (JIPipeOutputDataSlot outputSlot : getOutputSlots()) {
                     OptionalIntegerRange range = outputIndices.get(outputSlot.getName()).get(OptionalIntegerRange.class);
                     if (range.isEnabled()) {
-                        if (!range.getContent().getIntegers(0, img.getNFrames(), new ExpressionVariables()).contains(t)) {
+                        if (!range.getContent().getIntegers(0, img.getNFrames(), new JIPipeExpressionVariablesMap()).contains(t)) {
                             continue;
                         }
                     }

@@ -2,13 +2,10 @@ package org.hkijena.jipipe.extensions.ilastik;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.processes.ProcessEnvironment;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.ui.notifications.GenericNotificationInboxUI;
-import org.hkijena.jipipe.utils.ProcessUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

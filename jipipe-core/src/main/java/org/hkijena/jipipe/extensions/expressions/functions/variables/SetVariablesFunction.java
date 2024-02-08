@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.expressions.functions.variables;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.List;
@@ -33,7 +33,7 @@ public class SetVariablesFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
+    public Object evaluate(List<Object> parameters, JIPipeExpressionVariablesMap variables) {
         for (Object parameter : parameters) {
             List<?> items = (List<?>) parameter;
             variables.set("" + items.get(0), items.get(1));

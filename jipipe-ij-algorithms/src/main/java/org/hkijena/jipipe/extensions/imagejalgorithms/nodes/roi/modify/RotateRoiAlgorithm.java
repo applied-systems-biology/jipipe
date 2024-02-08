@@ -24,8 +24,8 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
+import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.Image5DExpressionParameterVariablesInfo;
@@ -64,7 +64,7 @@ public class RotateRoiAlgorithm extends JIPipeIteratingAlgorithm {
         ROIListData rois = iterationStep.getInputData("Input", ROIListData.class, progressInfo);
         ImagePlusData imagePlusData = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
-        ExpressionVariables variables = new ExpressionVariables();
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         if (imagePlusData != null) {
             variables.set("width", imagePlusData.getImage().getWidth());
@@ -86,7 +86,7 @@ public class RotateRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Angle (in °)", description = "The angle of the rotation in degrees")
     @JIPipeParameter("angle")
-    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getAngle() {
         return angle;
@@ -99,7 +99,7 @@ public class RotateRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Center (X)", description = "The rotation center in X coordinates")
     @JIPipeParameter("center-x")
-    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getCenterX() {
         return centerX;
@@ -112,7 +112,7 @@ public class RotateRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Center (Y)", description = "The rotation center in Y coordinates")
     @JIPipeParameter("center-y")
-    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getCenterY() {
         return centerY;

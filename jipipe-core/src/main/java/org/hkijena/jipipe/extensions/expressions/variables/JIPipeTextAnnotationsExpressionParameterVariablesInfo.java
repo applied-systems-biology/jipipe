@@ -24,7 +24,7 @@ import java.util.*;
 /**
  * Adds the indication that annotations are available
  */
-public class TextAnnotationsExpressionParameterVariablesInfo implements ExpressionParameterVariablesInfo {
+public class JIPipeTextAnnotationsExpressionParameterVariablesInfo implements ExpressionParameterVariablesInfo {
     @Override
     public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         Map<UUID, Map<String, JIPipeDataTable>> predecessorNodeCache = ExpressionParameterVariablesInfo.findPredecessorNodeCache(parameterTree, parameterAccess);

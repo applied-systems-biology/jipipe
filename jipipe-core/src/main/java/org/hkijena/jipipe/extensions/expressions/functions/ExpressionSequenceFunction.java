@@ -24,7 +24,7 @@ public class ExpressionSequenceFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
+    public Object evaluate(List<Object> parameters, JIPipeExpressionVariablesMap variables) {
         String expression = JIPipeExpressionEvaluator.unescapeString(StringUtils.nullToEmpty(parameters.get(0)));
         Collection<?> indices;
         if (parameters.get(1) instanceof Collection) {
@@ -37,7 +37,7 @@ public class ExpressionSequenceFunction extends ExpressionFunction {
             itemVariable = StringUtils.nullToEmpty(parameters.get(2));
         }
 
-        ExpressionVariables localVariables = new ExpressionVariables();
+        JIPipeExpressionVariablesMap localVariables = new JIPipeExpressionVariablesMap();
         for (Map.Entry<String, Object> entry : variables.entrySet()) {
             localVariables.put(entry.getKey(), entry.getValue());
         }

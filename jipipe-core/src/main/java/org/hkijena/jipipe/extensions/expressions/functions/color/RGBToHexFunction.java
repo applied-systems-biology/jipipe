@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.expressions.functions.color;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 import org.hkijena.jipipe.utils.ColorUtils;
 
@@ -23,7 +23,7 @@ public class RGBToHexFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
+    public Object evaluate(List<Object> parameters, JIPipeExpressionVariablesMap variables) {
         List<?> collection = ImmutableList.copyOf((Collection<?>) parameters.get(0));
         int r = ((Number) collection.get(0)).intValue();
         int g = ((Number) collection.get(1)).intValue();

@@ -18,7 +18,9 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameter;
+import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
+import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
@@ -39,14 +41,14 @@ import org.hkijena.jipipe.utils.StringUtils;
 @JIPipeOutputSlot(value = ROI3DListData.class, slotName = "ROI 2", autoCreate = true)
 public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private final CustomExpressionVariablesParameter customVariables;
+    private final JIPipeCustomExpressionVariablesParameter customVariables;
     private ROI3DRelationMeasurementSetParameter overlapFilterMeasurements = new ROI3DRelationMeasurementSetParameter();
     private ROIFilterSettings roi1Settings = new ROIFilterSettings();
     private ROIFilterSettings roi2Settings = new ROIFilterSettings();
 
     public FilterRoi3DByOverlapAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.customVariables = new CustomExpressionVariablesParameter(this);
+        this.customVariables = new JIPipeCustomExpressionVariablesParameter(this);
         registerSubParameter(roi1Settings);
         registerSubParameter(roi2Settings);
         updateSlots();
@@ -54,7 +56,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
     public FilterRoi3DByOverlapAlgorithm(FilterRoi3DByOverlapAlgorithm other) {
         super(other);
-        this.customVariables = new CustomExpressionVariablesParameter(other.customVariables, this);
+        this.customVariables = new JIPipeCustomExpressionVariablesParameter(other.customVariables, this);
         this.roi1Settings = new ROIFilterSettings(other.roi1Settings);
         this.roi2Settings = new ROIFilterSettings(other.roi2Settings);
         this.overlapFilterMeasurements = new ROI3DRelationMeasurementSetParameter(other.overlapFilterMeasurements);
@@ -107,9 +109,9 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
         if (roi1Settings.isEnabled()) {
 
-            ExpressionVariables variables = new ExpressionVariables();
+            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
             variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-            customVariables.writeToVariables(variables, true, "custom.", true, "custom");
+            customVariables.writeToVariables(variables);
 
             ROI3DListData copy1 = new ROI3DListData();
             ROI3DListData copy2 = new ROI3DListData();
@@ -120,9 +122,9 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         }
         if (roi2Settings.isEnabled()) {
 
-            ExpressionVariables variables = new ExpressionVariables();
+            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
             variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-            customVariables.writeToVariables(variables, true, "custom.", true, "custom");
+            customVariables.writeToVariables(variables);
 
             ROI3DListData copy1 = new ROI3DListData();
             ROI3DListData copy2 = new ROI3DListData();
@@ -133,7 +135,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private ROI3DListData applyFilter(ROI3DListData roi1List, ROI3DListData roi2List, ROIFilterSettings settings, ImageHandler imageHandler, ExpressionVariables variables, JIPipeProgressInfo progressInfo) {
+    private ROI3DListData applyFilter(ROI3DListData roi1List, ROI3DListData roi2List, ROIFilterSettings settings, ImageHandler imageHandler, JIPipeExpressionVariablesMap variables, JIPipeProgressInfo progressInfo) {
         ROI3DListData output = new ROI3DListData();
         ResultsTableData measurements = new ResultsTableData();
         IJ3DUtils.measureRoi3dRelation(imageHandler,
@@ -207,7 +209,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeDocumentation(name = "Custom variables", description = "Here you can add parameters that will be included into the expressions as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(custom, \"[key]\")</code>.")
     @JIPipeParameter(value = "custom-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
-    public CustomExpressionVariablesParameter getCustomVariables() {
+    public JIPipeCustomExpressionVariablesParameter getCustomVariables() {
         return customVariables;
     }
 
@@ -335,10 +337,9 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                 "no filtering is applied.")
         @JIPipeParameter("overlap-filter")
         @JIPipeExpressionParameterSettings(hint = "per overlapping ROI")
-        @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+        @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
         @JIPipeExpressionParameterVariable(fromClass = ROI3DRelationMeasurementExpressionParameterVariablesInfo.class)
-        @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-        @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+        @JIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
         public JIPipeExpressionParameter getOverlapFilter() {
             return overlapFilter;
         }

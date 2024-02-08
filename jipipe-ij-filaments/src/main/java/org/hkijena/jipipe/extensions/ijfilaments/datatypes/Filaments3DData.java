@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeImageThumbnailData;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.extensions.ij3d.utils.ExtendedObjectCreator3D;
@@ -86,7 +86,7 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         return graph;
     }
 
-    private static void calculateNewVertexLocation(double factorX, double factorY, double factorZ, JIPipeExpressionParameter locationMergingFunction, Map<FilamentVertex, Point3d> locationMap, ExpressionVariables variables, FilamentVertex vertex, Collection<FilamentVertex> group) {
+    private static void calculateNewVertexLocation(double factorX, double factorY, double factorZ, JIPipeExpressionParameter locationMergingFunction, Map<FilamentVertex, Point3d> locationMap, JIPipeExpressionVariablesMap variables, FilamentVertex vertex, Collection<FilamentVertex> group) {
         // Apply average where applicable
         if (factorX > 0) {
             variables.set("values", group.stream().map(v -> locationMap.get(v).getX()).collect(Collectors.toList()));
@@ -537,7 +537,7 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
 
         // Group vertices by location and calculate a new centroid
         Multimap<Point3d, FilamentVertex> multimap = groupVerticesByLocation();
-        ExpressionVariables variables = new ExpressionVariables();
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         for (FilamentVertex vertex : vertexSet()) {
             // Restore original
             vertex.setSpatialLocation(locationMap.get(vertex));

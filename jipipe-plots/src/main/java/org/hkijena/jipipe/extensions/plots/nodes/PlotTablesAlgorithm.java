@@ -109,7 +109,7 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
             ResultsTableData seriesTable = new ResultsTableData();
             seriesTable.addRows(inputData.getRowCount());
 
-            ExpressionVariables variables = new ExpressionVariables();
+            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
             List<JIPipeTextAnnotation> originalAnnotations = getFirstInputSlot().getTextAnnotations(row);
             for (JIPipeTextAnnotation annotation : originalAnnotations) {
                 variables.set(annotation.getName(), annotation.getValue());

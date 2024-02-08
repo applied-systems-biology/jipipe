@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterSettings;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.ImageROITargetArea;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -137,7 +137,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
                 }, progressInfo);
                 List<JIPipeTextAnnotation> annotations = new ArrayList<>();
                 if (thresholdAnnotation.isEnabled()) {
-                    ExpressionVariables variableSet = new ExpressionVariables();
+                    JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
                     variableSet.set("thresholds", thresholds);
                     String result = thresholdCombinationExpression.evaluate(variableSet) + "";
                     annotations.add(thresholdAnnotation.createAnnotation(result));
@@ -193,7 +193,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
                 }, progressInfo.resolve("Finding thresholds"));
 
                 // Combine thresholds
-                ExpressionVariables variableSet = new ExpressionVariables();
+                JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
                 variableSet.set("thresholds", thresholds);
                 Number combined = (Number) thresholdCombinationExpression.evaluate(variableSet);
                 int threshold = Math.min(255, Math.max(0, combined.intValue()));

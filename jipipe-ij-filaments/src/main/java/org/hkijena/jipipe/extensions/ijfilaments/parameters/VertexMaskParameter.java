@@ -4,7 +4,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
+import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertexVariablesInfo;
@@ -27,9 +28,8 @@ public class VertexMaskParameter extends AbstractJIPipeParameterCollection {
     @JIPipeDocumentation(name = "Vertex mask", description = "Apply the operation to a specific set of vertices")
     @JIPipeParameter("mask")
     @JIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-    @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     @JIPipeExpressionParameterSettings(hint = "per vertex")
     public JIPipeExpressionParameter getFilter() {
         return filter;
@@ -40,7 +40,7 @@ public class VertexMaskParameter extends AbstractJIPipeParameterCollection {
         this.filter = filter;
     }
 
-    public Set<FilamentVertex> filter(Filaments3DData graph, Set<FilamentVertex> vertexSet, ExpressionVariables variables) {
+    public Set<FilamentVertex> filter(Filaments3DData graph, Set<FilamentVertex> vertexSet, JIPipeExpressionVariablesMap variables) {
         Set<FilamentVertex> matched = new HashSet<>();
         for (FilamentVertex vertex : vertexSet) {
             // Write variables

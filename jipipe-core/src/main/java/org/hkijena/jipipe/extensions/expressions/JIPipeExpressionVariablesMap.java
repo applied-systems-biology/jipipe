@@ -12,11 +12,11 @@ import java.util.Map;
 /**
  * Object that carries variables for expressions
  */
-public class ExpressionVariables extends HashMap<String, Object> {
-    public ExpressionVariables() {
+public class JIPipeExpressionVariablesMap extends HashMap<String, Object> {
+    public JIPipeExpressionVariablesMap() {
     }
 
-    public ExpressionVariables(ExpressionVariables other) {
+    public JIPipeExpressionVariablesMap(JIPipeExpressionVariablesMap other) {
         putAll(other);
     }
 
@@ -27,7 +27,7 @@ public class ExpressionVariables extends HashMap<String, Object> {
      * @param value        The variable value (null to remove a variable from the set).
      * @return this
      */
-    public ExpressionVariables set(String variableName, Object value) {
+    public JIPipeExpressionVariablesMap set(String variableName, Object value) {
         this.put(variableName, value);
         return this;
     }
@@ -37,7 +37,7 @@ public class ExpressionVariables extends HashMap<String, Object> {
      *
      * @param mergedTextAnnotations the annotations
      */
-    public ExpressionVariables putAnnotations(Map<String, JIPipeTextAnnotation> mergedTextAnnotations) {
+    public JIPipeExpressionVariablesMap putAnnotations(Map<String, JIPipeTextAnnotation> mergedTextAnnotations) {
         for (Entry<String, JIPipeTextAnnotation> entry : mergedTextAnnotations.entrySet()) {
             put(entry.getKey(), entry.getValue().getValue());
         }
@@ -50,7 +50,7 @@ public class ExpressionVariables extends HashMap<String, Object> {
      * @param textAnnotations the annotations
      * @return this
      */
-    public ExpressionVariables putAnnotations(List<JIPipeTextAnnotation> textAnnotations) {
+    public JIPipeExpressionVariablesMap putAnnotations(List<JIPipeTextAnnotation> textAnnotations) {
         for (JIPipeTextAnnotation textAnnotation : textAnnotations) {
             put(textAnnotation.getName(), textAnnotation.getValue());
         }
@@ -64,7 +64,7 @@ public class ExpressionVariables extends HashMap<String, Object> {
      * @param projectDataDirs project data dirs
      * @return this
      */
-    public ExpressionVariables putProjectDirectories(Path projectDir, Map<String, Path> projectDataDirs) {
+    public JIPipeExpressionVariablesMap putProjectDirectories(Path projectDir, Map<String, Path> projectDataDirs) {
         if (StringUtils.isNullOrEmpty(projectDir)) {
             projectDir = Paths.get("");
         }

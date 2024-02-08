@@ -44,7 +44,7 @@ public class PathQueryExpression extends JIPipeExpressionParameter implements Pr
      * @param expressionVariables expression parameters
      * @return the annotation that matches the query or null if none matches
      */
-    public Path queryFirst(Collection<Path> strings, ExpressionVariables expressionVariables) {
+    public Path queryFirst(Collection<Path> strings, JIPipeExpressionVariablesMap expressionVariables) {
         for (Path string : strings) {
             PathFilterExpressionParameterVariablesInfo.buildFor(string, expressionVariables);
             if (test(expressionVariables))
@@ -60,7 +60,7 @@ public class PathQueryExpression extends JIPipeExpressionParameter implements Pr
      * @param expressionVariables expression parameters
      * @return the annotation that matches the query or null if none matches
      */
-    public java.util.List<Path> queryAll(Collection<Path> strings, ExpressionVariables expressionVariables) {
+    public java.util.List<Path> queryAll(Collection<Path> strings, JIPipeExpressionVariablesMap expressionVariables) {
         java.util.List<Path> result = new ArrayList<>();
         for (Path string : strings) {
             PathFilterExpressionParameterVariablesInfo.buildFor(string, expressionVariables);
@@ -78,7 +78,7 @@ public class PathQueryExpression extends JIPipeExpressionParameter implements Pr
      */
     @Override
     public boolean test(Path string) {
-        return test(string, new ExpressionVariables());
+        return test(string, new JIPipeExpressionVariablesMap());
     }
 
     /**
@@ -87,7 +87,7 @@ public class PathQueryExpression extends JIPipeExpressionParameter implements Pr
      * @param string the string
      * @return if the query matches
      */
-    public boolean test(Path string, ExpressionVariables expressionVariables) {
+    public boolean test(Path string, JIPipeExpressionVariablesMap expressionVariables) {
         if ("true".equals(getExpression()) || getExpression().trim().isEmpty())
             return true;
         PathFilterExpressionParameterVariablesInfo.buildFor(string, expressionVariables);
@@ -101,7 +101,7 @@ public class PathQueryExpression extends JIPipeExpressionParameter implements Pr
      * @param expressionVariables expression variables
      * @return if one string matches
      */
-    public boolean testAnyOf(Collection<Path> strings, ExpressionVariables expressionVariables) {
+    public boolean testAnyOf(Collection<Path> strings, JIPipeExpressionVariablesMap expressionVariables) {
         if ("true".equals(getExpression()) || getExpression().trim().isEmpty())
             return true;
         for (Path string : strings) {

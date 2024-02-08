@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 
 import java.nio.file.Path;
 import java.util.Set;
@@ -37,7 +37,7 @@ public class PathFilterExpressionParameterVariablesInfo implements ExpressionPar
         VARIABLES = ImmutableSet.of(VARIABLE_NAME, VARIABLE_ABSPATH, VARIABLE_PARENT, VARIABLE_PATH);
     }
 
-    public static void buildFor(Path path, ExpressionVariables result) {
+    public static void buildFor(Path path, JIPipeExpressionVariablesMap result) {
         result.set("path", path.toString());
         result.set("absolute_path", path.toAbsolutePath().toString());
         result.set("name", path.getFileName().toString());

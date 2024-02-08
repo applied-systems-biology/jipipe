@@ -11,7 +11,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.transform.ScaleMode;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.transform.TransformScale2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.InterpolationMethod;
@@ -70,11 +70,11 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
         registerSubParameters(canvasParameters, labelParameters, imageParameters);
     }
 
-    public ImagePlus createMontage(List<InputEntry> inputEntries, List<JIPipeTextAnnotation> annotations, ExpressionVariables additionalVariables, JIPipeProgressInfo progressInfo) {
+    public ImagePlus createMontage(List<InputEntry> inputEntries, List<JIPipeTextAnnotation> annotations, JIPipeExpressionVariablesMap additionalVariables, JIPipeProgressInfo progressInfo) {
         List<LabelledImage> labelledImages = new ArrayList<>();
 
         for (InputEntry inputEntry : inputEntries) {
-            ExpressionVariables variables = new ExpressionVariables();
+            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
             variables.putAll(additionalVariables);
             variables.putAnnotations(inputEntry.annotationList);
             variables.putAll(inputEntry.additionalVariables);
@@ -183,7 +183,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
                     }
                 }
             }
-            ExpressionVariables variables = new ExpressionVariables();
+            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
             variables.putAnnotations(annotations);
             variables.put("max_image_width", maxImageWidth);
             variables.put("max_image_height", maxImageHeight);
@@ -384,7 +384,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
     @JIPipeDocumentation(name = "Label", description = "Expression that generates the labels. Applied per image.")
     @JIPipeParameter(value = "label-expression", important = true, uiOrder = -100)
     @JIPipeExpressionParameterSettings(hint = "per image slice")
-    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(key = "default_label", name = "Default label", description = "Default label that summarizes the annotations")
     @JIPipeExpressionParameterVariable(fromClass = Image5DSliceIndexExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getLabelExpression() {
@@ -398,7 +398,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
 
     @JIPipeDocumentation(name = "Custom sorting label", description = "Optional expression that generates dedicated labels that are only used for sorting. Applied per image.")
     @JIPipeParameter("sorting-label-expression")
-    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(key = "default_label", name = "Default label", description = "Default label that summarizes the annotations")
     @JIPipeExpressionParameterSettings(hint = "per image")
     @JIPipeExpressionParameterVariable(fromClass = Image5DSliceIndexExpressionParameterVariablesInfo.class)
@@ -447,7 +447,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
 
     @JIPipeDocumentation(name = "Tile width", description = "Expression that determines the width of the tiles")
     @JIPipeParameter("tile-width")
-    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(key = "max_image_width", name = "Maximum image width", description = "The maximum width of the input images")
     @JIPipeExpressionParameterVariable(key = "max_image_height", name = "Maximum image height", description = "The maximum height of the input images")
     @JIPipeExpressionParameterVariable(key = "max_label_width", name = "Maximum label width", description = "The maximum width of all labels. Zero if no labels are drawn.")
@@ -707,9 +707,9 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
     public static class InputEntry {
         private final ImagePlus imagePlus;
         private final List<JIPipeTextAnnotation> annotationList;
-        private final ExpressionVariables additionalVariables;
+        private final JIPipeExpressionVariablesMap additionalVariables;
 
-        public InputEntry(ImagePlus imagePlus, List<JIPipeTextAnnotation> annotationList, ExpressionVariables additionalVariables) {
+        public InputEntry(ImagePlus imagePlus, List<JIPipeTextAnnotation> annotationList, JIPipeExpressionVariablesMap additionalVariables) {
             this.imagePlus = imagePlus;
             this.annotationList = annotationList;
             this.additionalVariables = additionalVariables;
@@ -723,7 +723,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
             return annotationList;
         }
 
-        public ExpressionVariables getAdditionalVariables() {
+        public JIPipeExpressionVariablesMap getAdditionalVariables() {
             return additionalVariables;
         }
     }

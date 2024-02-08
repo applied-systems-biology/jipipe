@@ -45,7 +45,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedROIListDataViewerWindow;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
@@ -782,7 +782,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
      */
     public ImagePlus toMask(Margin imageArea, boolean drawOutline, boolean drawFilledOutline, int lineThickness) {
         // Find the bounds and future stack position
-        Rectangle bounds = imageArea.getInsideArea(this.getBounds(), new ExpressionVariables());
+        Rectangle bounds = imageArea.getInsideArea(this.getBounds(), new JIPipeExpressionVariablesMap());
         if (bounds == null) {
             throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     new UnspecifiedValidationReportContext(),
@@ -823,7 +823,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
      */
     public ImagePlus toRGBImage(Margin imageArea, ROIElementDrawingMode drawOutline, ROIElementDrawingMode drawFilledOutline, int defaultLineThickness, Color defaultFillColor, Color defaultLineColor) {
         // Find the bounds and future stack position
-        Rectangle bounds = imageArea.getInsideArea(this.getBounds(), new ExpressionVariables());
+        Rectangle bounds = imageArea.getInsideArea(this.getBounds(), new JIPipeExpressionVariablesMap());
         if (bounds == null) {
             throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     new UnspecifiedValidationReportContext(),

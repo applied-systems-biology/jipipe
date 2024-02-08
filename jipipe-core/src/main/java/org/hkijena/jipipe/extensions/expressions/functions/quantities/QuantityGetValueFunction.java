@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.expressions.functions.quantities;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
 
@@ -37,7 +37,7 @@ public class QuantityGetValueFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
+    public Object evaluate(List<Object> parameters, JIPipeExpressionVariablesMap variables) {
         Object value = parameters.get(0);
         Quantity quantity = Quantity.parse(value.toString());
         return quantity.getValue();

@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.PathQueryExpression;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.datasources.ImagePlusFromFile;
@@ -129,7 +129,7 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
             // Slicing
             if (!StringUtils.isNullOrEmpty(slicesToImport.getValue())) {
                 List<Path> inputFilesSliced = new ArrayList<>();
-                for (Integer index : slicesToImport.getIntegers(0, inputFiles.size(), new ExpressionVariables())) {
+                for (Integer index : slicesToImport.getIntegers(0, inputFiles.size(), new JIPipeExpressionVariablesMap())) {
                     if (ignoreInvalidSlices && index < 0 || index >= inputFiles.size()) {
                         continue;
                     }

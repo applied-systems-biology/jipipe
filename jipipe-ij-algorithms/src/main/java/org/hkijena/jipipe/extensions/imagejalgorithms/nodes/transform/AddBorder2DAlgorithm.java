@@ -18,8 +18,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
+import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.ImageQueryExpressionVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -150,7 +150,7 @@ public class AddBorder2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         ImagePlus img = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
-        ExpressionVariables variables = new ExpressionVariables();
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         ImageQueryExpressionVariablesInfo.buildVariablesSet(img, variables);
 
@@ -195,7 +195,7 @@ public class AddBorder2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Border color", description = "Only applicable if the mode is 'Constant'. The value of the border. Return a number to return a greyscale value. " +
             "Return an array to set the border to an RGB color.")
     @JIPipeParameter("border-color")
-    @JIPipeExpressionParameterSettings(variableSource = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterSettings(variableSource = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getBorderColor() {
         return borderColor;
     }
@@ -207,7 +207,7 @@ public class AddBorder2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Margin left", description = "Pixels to add to the left of the image")
     @JIPipeParameter("margin-left")
-    @JIPipeExpressionParameterSettings(variableSource = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterSettings(variableSource = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = ImageQueryExpressionVariablesInfo.class)
     public JIPipeExpressionParameter getMarginLeft() {
         return marginLeft;
@@ -220,7 +220,7 @@ public class AddBorder2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Margin top", description = "Pixels to add to the top of the image")
     @JIPipeParameter("margin-top")
-    @JIPipeExpressionParameterSettings(variableSource = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterSettings(variableSource = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = ImageQueryExpressionVariablesInfo.class)
     public JIPipeExpressionParameter getMarginTop() {
         return marginTop;
@@ -233,7 +233,7 @@ public class AddBorder2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Margin right", description = "Pixels to add to the right of the image")
     @JIPipeParameter("margin-right")
-    @JIPipeExpressionParameterSettings(variableSource = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterSettings(variableSource = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = ImageQueryExpressionVariablesInfo.class)
     public JIPipeExpressionParameter getMarginRight() {
         return marginRight;
@@ -246,7 +246,7 @@ public class AddBorder2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Margin bottom", description = "Pixels to add to the bottom of the image")
     @JIPipeParameter("margin-bottom")
-    @JIPipeExpressionParameterSettings(variableSource = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterSettings(variableSource = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = ImageQueryExpressionVariablesInfo.class)
     public JIPipeExpressionParameter getMarginBottom() {
         return marginBottom;

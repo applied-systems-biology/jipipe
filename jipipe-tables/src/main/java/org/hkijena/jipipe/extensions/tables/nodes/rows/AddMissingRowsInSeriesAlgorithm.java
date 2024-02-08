@@ -76,7 +76,7 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
         ResultsTableData inputTable = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         ResultsTableData outputTable;
         if (!ignoreEmptyTables || inputTable.getRowCount() > 0) {
-            ExpressionVariables variables = new ExpressionVariables();
+            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
             variables.putAnnotations(iterationStep.getMergedTextAnnotations());
             variables.set("num_rows", inputTable.getRowCount());
             variables.set("num_cols", inputTable.getColumnCount());
@@ -164,7 +164,7 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
         iterationStep.addOutputData(getFirstOutputSlot(), outputTable, progressInfo);
     }
 
-    private void addNewRowForCounter(double newCounter, int counterColumn, ExpressionVariables variables, ResultsTableData outputTable) {
+    private void addNewRowForCounter(double newCounter, int counterColumn, JIPipeExpressionVariablesMap variables, ResultsTableData outputTable) {
         int row = outputTable.addRow();
         outputTable.setValueAt(newCounter, row, counterColumn);
         variables.set("counter", newCounter);

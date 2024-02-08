@@ -12,7 +12,9 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameter;
+import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
+import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentEdge;
@@ -39,7 +41,7 @@ import java.util.stream.Collectors;
 @JIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", autoCreate = true)
 public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private final CustomExpressionVariablesParameter customExpressionVariables;
+    private final JIPipeCustomExpressionVariablesParameter customExpressionVariables;
     private boolean enforceSameComponent = true;
     private boolean ensureNoPathExists = true;
     private boolean connectAcrossC = false;
@@ -54,12 +56,12 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
 
     public FixOverlapsNonBranchingAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.customExpressionVariables = new CustomExpressionVariablesParameter(this);
+        this.customExpressionVariables = new JIPipeCustomExpressionVariablesParameter(this);
     }
 
     public FixOverlapsNonBranchingAlgorithm(FixOverlapsNonBranchingAlgorithm other) {
         super(other);
-        this.customExpressionVariables = new CustomExpressionVariablesParameter(other.customExpressionVariables, this);
+        this.customExpressionVariables = new JIPipeCustomExpressionVariablesParameter(other.customExpressionVariables, this);
         this.enforceSameComponent = other.enforceSameComponent;
         this.ensureNoPathExists = other.ensureNoPathExists;
         this.connectAcrossC = other.connectAcrossC;
@@ -97,20 +99,19 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeDocumentation(name = "Custom expression variables", description = "Here you can add parameters that will be included into the expression as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(custom, \"[key]\")</code>.")
     @JIPipeParameter(value = "custom-filter-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
-    public CustomExpressionVariablesParameter getCustomExpressionVariables() {
+    public JIPipeCustomExpressionVariablesParameter getCustomExpressionVariables() {
         return customExpressionVariables;
     }
 
     @JIPipeDocumentation(name = "Candidate edge filter", description = "Filter expression that determines if an edge is considered as candidate")
     @JIPipeParameter("filter-function")
     @JIPipeExpressionParameterSettings(hint = "per candidate edge")
-    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = FilamentUnconnectedEdgeVariablesInfo.class)
     @JIPipeExpressionParameterVariable(key = "source.direction", name = "Source direction", description = "Vector that contains the direction of the source vertex")
     @JIPipeExpressionParameterVariable(key = "target.direction", name = "Target direction", description = "Vector that contains the direction of the target vertex")
     @JIPipeExpressionParameterVariable(key = "angle", name = "Angle", description = "The angle between the source and target directions")
-    @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-    @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
     @JIPipeExpressionParameterVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
     public JIPipeExpressionParameter getFilterFunction() {
@@ -126,13 +127,12 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
             "dot product of the two normalized directions.")
     @JIPipeParameter("scoring-function")
     @JIPipeExpressionParameterSettings(hint = "per candidate edge")
-    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = FilamentUnconnectedEdgeVariablesInfo.class)
     @JIPipeExpressionParameterVariable(key = "source.direction", name = "Source direction", description = "Vector that contains the direction of the source vertex")
     @JIPipeExpressionParameterVariable(key = "target.direction", name = "Target direction", description = "Vector that contains the direction of the target vertex")
     @JIPipeExpressionParameterVariable(key = "angle", name = "Angle", description = "The angle between the source and target directions")
-    @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-    @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
     @JIPipeExpressionParameterVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
     public JIPipeExpressionParameter getScoringFunction() {
@@ -228,7 +228,7 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         Map<FilamentVertex, Integer> components = outputData.findComponentIds();
-        ExpressionVariables variables = new ExpressionVariables();
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         customExpressionVariables.writeToVariables(variables, true, "custom", true, "custom");
 

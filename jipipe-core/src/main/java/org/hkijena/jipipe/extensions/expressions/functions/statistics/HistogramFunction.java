@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.expressions.functions.statistics;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ public class HistogramFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
+    public Object evaluate(List<Object> parameters, JIPipeExpressionVariablesMap variables) {
         Collection<Number> collection = (Collection<Number>) parameters.get(0);
         int max = 0;
         for (Number number : collection) {

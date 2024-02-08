@@ -36,7 +36,7 @@ public class NumericFunctionExpression extends JIPipeExpressionParameter {
         super(other.getExpression());
     }
 
-    public double apply(double defaultValue, ExpressionVariables parameters) {
+    public double apply(double defaultValue, JIPipeExpressionVariablesMap parameters) {
         parameters.set("x", defaultValue);
         parameters.set("default", defaultValue);
         return evaluateToDouble(parameters);

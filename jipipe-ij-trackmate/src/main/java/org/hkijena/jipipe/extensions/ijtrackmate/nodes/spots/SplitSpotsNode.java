@@ -28,11 +28,12 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
-import org.hkijena.jipipe.extensions.expressions.CustomExpressionVariablesParameter;
+import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.NamedTextAnnotationGeneratorExpression;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
+import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.SpotFeatureVariablesInfo;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -48,17 +49,17 @@ import java.util.Map;
 @JIPipeOutputSlot(value = SpotsCollectionData.class, slotName = "Output", autoCreate = true)
 public class SplitSpotsNode extends JIPipeSimpleIteratingAlgorithm {
 
-    private final CustomExpressionVariablesParameter customVariables;
+    private final JIPipeCustomExpressionVariablesParameter customVariables;
     private NamedTextAnnotationGeneratorExpression.List annotationGenerator = new NamedTextAnnotationGeneratorExpression.List();
 
     public SplitSpotsNode(JIPipeNodeInfo info) {
         super(info);
-        this.customVariables = new CustomExpressionVariablesParameter(this);
+        this.customVariables = new JIPipeCustomExpressionVariablesParameter(this);
     }
 
     public SplitSpotsNode(SplitSpotsNode other) {
         super(other);
-        this.customVariables = new CustomExpressionVariablesParameter(other.customVariables, this);
+        this.customVariables = new JIPipeCustomExpressionVariablesParameter(other.customVariables, this);
         this.annotationGenerator = new NamedTextAnnotationGeneratorExpression.List(other.annotationGenerator);
     }
 
@@ -66,9 +67,9 @@ public class SplitSpotsNode extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         SpotsCollectionData spotsCollectionData = iterationStep.getInputData(getFirstInputSlot(), SpotsCollectionData.class, progressInfo);
         SpotCollection oldCollection = spotsCollectionData.getSpots();
-        ExpressionVariables variables = new ExpressionVariables();
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-        customVariables.writeToVariables(variables, true, "custom.", true, "custom");
+        customVariables.writeToVariables(variables);
         variables.set("n_spots", oldCollection.getNSpots(true));
         int index = 0;
 
@@ -115,12 +116,11 @@ public class SplitSpotsNode extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Generated annotations", description = "This list contains expressions to generate annotations for each spot")
     @JIPipeParameter("generated-annotations")
     @JIPipeExpressionParameterVariable(fromClass = SpotFeatureVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(name = "Spot ID", key = "id", description = "Numeric spot ID. Please note that the ID is not necessarily consecutive.")
     @JIPipeExpressionParameterVariable(name = "Spot index", key = "index", description = "Numeric index.")
     @JIPipeExpressionParameterVariable(name = "Number of spots", key = "n_spots", description = "The total number of spots")
-    @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-    @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     public NamedTextAnnotationGeneratorExpression.List getAnnotationGenerator() {
         return annotationGenerator;
     }
@@ -133,7 +133,7 @@ public class SplitSpotsNode extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Custom variables", description = "Here you can add parameters that will be included into the expressions as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(custom, \"[key]\")</code>.")
     @JIPipeParameter(value = "custom-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
-    public CustomExpressionVariablesParameter getCustomVariables() {
+    public JIPipeCustomExpressionVariablesParameter getCustomVariables() {
         return customVariables;
     }
 }

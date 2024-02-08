@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.expressions;
 import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.nio.file.Path;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  * An expression parameter designed for data export
  */
 @JIPipeExpressionParameterSettings(hint = "per data item")
-@JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+@JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
 @JIPipeExpressionParameterVariable(name = "Annotations", description = "Map of annotations", key = "annotations")
 @JIPipeExpressionParameterVariable(name = "Data string", description = "String representation of the data (if available)", key = "data_string")
 @JIPipeExpressionParameterVariable(name = "Data row", description = "Source row of the data (if available, otherwise -1)", key = "data_row")
@@ -52,7 +52,7 @@ public class DataExportExpressionParameter extends JIPipeExpressionParameter {
         if (StringUtils.isNullOrEmpty(projectDir)) {
             projectDir = dataDir;
         }
-        ExpressionVariables variables = new ExpressionVariables();
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         for (JIPipeTextAnnotation annotation : annotationList) {
             variables.set(annotation.getName(), annotation.getValue());
         }

@@ -59,7 +59,7 @@ public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus labelsImage = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
         ROIListData rois = new ROIListData();
 
-        ExpressionVariables variables = new ExpressionVariables();
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
 
         ImageJUtils.forEachIndexedZCTSlice(labelsImage, (ip, index) -> {
@@ -71,7 +71,7 @@ public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), rois, progressInfo);
     }
 
-    private void executeProtectedFloodfill(ROIListData outputList, ExpressionVariables variables, ImageProcessor ip, ImageSliceIndex index, JIPipeProgressInfo progressInfo) {
+    private void executeProtectedFloodfill(ROIListData outputList, JIPipeExpressionVariablesMap variables, ImageProcessor ip, ImageSliceIndex index, JIPipeProgressInfo progressInfo) {
         for (int targetLabel : LabelImages.findAllLabels(ip)) {
             if (progressInfo.isCancelled())
                 return;
@@ -110,7 +110,7 @@ public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    private void executeFloodfill(ROIListData outputList, ExpressionVariables variables, ImageProcessor ip, ImageSliceIndex index) {
+    private void executeFloodfill(ROIListData outputList, JIPipeExpressionVariablesMap variables, ImageProcessor ip, ImageSliceIndex index) {
         ImageProcessor copy = (ImageProcessor) ip.clone();
         ImagePlus wrapper = new ImagePlus("slice", copy);
         for (int y = 0; y < copy.getHeight(); y++) {

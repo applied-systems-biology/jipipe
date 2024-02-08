@@ -14,7 +14,9 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameter;
+import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
+import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.ArrayList;
@@ -28,19 +30,19 @@ import java.util.Map;
 @JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class)
 public class OverwriteAnnotations extends JIPipeIteratingAlgorithm {
 
-    private final CustomExpressionVariablesParameter customVariables;
+    private final JIPipeCustomExpressionVariablesParameter customVariables;
     private JIPipeExpressionParameter removeExistingAnnotationsFilter = new AnnotationQueryExpression("false");
     private JIPipeExpressionParameter sourceAnnotationFilter = new AnnotationQueryExpression("true");
     private JIPipeTextAnnotationMergeMode mergeMode = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
     public OverwriteAnnotations(JIPipeNodeInfo info) {
         super(info);
-        this.customVariables = new CustomExpressionVariablesParameter(this);
+        this.customVariables = new JIPipeCustomExpressionVariablesParameter(this);
     }
 
     public OverwriteAnnotations(OverwriteAnnotations other) {
         super(other);
-        this.customVariables = new CustomExpressionVariablesParameter(other.customVariables, this);
+        this.customVariables = new JIPipeCustomExpressionVariablesParameter(other.customVariables, this);
         this.removeExistingAnnotationsFilter = new AnnotationQueryExpression(other.removeExistingAnnotationsFilter);
         this.sourceAnnotationFilter = new AnnotationQueryExpression(other.sourceAnnotationFilter);
         this.mergeMode = other.mergeMode;
@@ -50,8 +52,8 @@ public class OverwriteAnnotations extends JIPipeIteratingAlgorithm {
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         JIPipeData target = iterationStep.getInputData("Target", JIPipeData.class, progressInfo);
 
-        ExpressionVariables variables = new ExpressionVariables();
-        customVariables.writeToVariables(variables, true, "custom.", true, "custom");
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
+        customVariables.writeToVariables(variables);
 
         // Remove annotations from target (via original annotations)
         Map<String, String> targetAnnotationMap = JIPipeTextAnnotation.annotationListToMap(iterationStep.getOriginalTextAnnotations("Target"), JIPipeTextAnnotationMergeMode.OverwriteExisting);
@@ -81,13 +83,12 @@ public class OverwriteAnnotations extends JIPipeIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Remove existing annotations", description = "Expression that determines whether an existing annotation is removed. Set to <code>false</code> to not remove existing annotations.")
     @JIPipeParameter("remove-existing-annotations-filter")
-    @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-    @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(name = "Source annotations map", description = "Map of all source annotations (key to value)", key = "source.annotations")
     @JIPipeExpressionParameterVariable(name = "Target annotations map", description = "Map of all target annotations (key to value)", key = "target.annotations")
     @JIPipeExpressionParameterVariable(name = "Annotation name", key = "name", description = "The name of the currently processed annotation")
     @JIPipeExpressionParameterVariable(name = "Annotation value", key = "value", description = "The value of the currently processed annotation")
-    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getRemoveExistingAnnotationsFilter() {
         return removeExistingAnnotationsFilter;
     }
@@ -98,14 +99,13 @@ public class OverwriteAnnotations extends JIPipeIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Selected source annotations", description = "Expression that determines whether a source annotation is copied into the target. Set to <code>true</code> to copy all annotations.")
-    @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-    @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(name = "Source annotations map", description = "Map of all source annotations (key to value)", key = "source.annotations")
     @JIPipeExpressionParameterVariable(name = "Target annotations map", description = "Map of all target annotations (key to value)", key = "target.annotations")
     @JIPipeExpressionParameterVariable(name = "Annotation name", key = "name", description = "The name of the currently processed annotation")
     @JIPipeExpressionParameterVariable(name = "Source annotation value", key = "source.value", description = "The value of the currently processed source annotation")
     @JIPipeExpressionParameterVariable(name = "Target annotation value", key = "target.value", description = "The value of the target annotation. NULL if it is not set.")
-    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeParameter("source-annotation-filter")
     public JIPipeExpressionParameter getSourceAnnotationFilter() {
         return sourceAnnotationFilter;
@@ -119,7 +119,7 @@ public class OverwriteAnnotations extends JIPipeIteratingAlgorithm {
     @JIPipeDocumentation(name = "Custom variables", description = "Here you can add parameters that will be included into the expressions as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(custom, \"[key]\")</code>.")
     @JIPipeParameter(value = "custom-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
-    public CustomExpressionVariablesParameter getCustomVariables() {
+    public JIPipeCustomExpressionVariablesParameter getCustomVariables() {
         return customVariables;
     }
 

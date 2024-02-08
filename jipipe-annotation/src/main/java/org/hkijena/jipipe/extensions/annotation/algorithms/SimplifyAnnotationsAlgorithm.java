@@ -16,7 +16,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.AnnotationQueryExpression;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -57,7 +57,7 @@ public class SimplifyAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm
 
         String combinedValue;
         {
-            ExpressionVariables variables = new ExpressionVariables();
+            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
             for (JIPipeTextAnnotation annotation : combinedAnnotations) {
                 variables.set(annotation.getName(), annotation.getValue());
             }
@@ -74,7 +74,7 @@ public class SimplifyAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm
             for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
                 existing.add(annotation.getName());
             }
-            ExpressionVariables variables = new ExpressionVariables();
+            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
             for (JIPipeTextAnnotation annotation : combinedAnnotations) {
                 variables.set("value", annotation.getName());
                 String newName = StringUtils.makeUniqueString(renameFunction.generate(variables), " ", existing);

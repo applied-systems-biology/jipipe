@@ -27,7 +27,9 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameter;
+import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
+import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.modify.ChangeRoiPropertiesFromExpressionsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -50,7 +52,7 @@ import java.util.Map;
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
 public class ExplodeRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private final CustomExpressionVariablesParameter customExpressionVariables;
+    private final JIPipeCustomExpressionVariablesParameter customExpressionVariables;
     private OptionalStringParameter generatedAnnotation = new OptionalStringParameter();
     private JIPipeExpressionParameter annotationValue = new JIPipeExpressionParameter("\"index=\" + index + \";name=\" + name");
 
@@ -61,7 +63,7 @@ public class ExplodeRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      */
     public ExplodeRoiAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.customExpressionVariables = new CustomExpressionVariablesParameter(this);
+        this.customExpressionVariables = new JIPipeCustomExpressionVariablesParameter(this);
         generatedAnnotation.setContent("ROI index");
     }
 
@@ -72,7 +74,7 @@ public class ExplodeRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      */
     public ExplodeRoiAlgorithm(ExplodeRoiAlgorithm other) {
         super(other);
-        this.customExpressionVariables = new CustomExpressionVariablesParameter(other.customExpressionVariables, this);
+        this.customExpressionVariables = new JIPipeCustomExpressionVariablesParameter(other.customExpressionVariables, this);
         this.generatedAnnotation = other.generatedAnnotation;
         this.annotationValue = new JIPipeExpressionParameter(other.annotationValue);
     }
@@ -81,9 +83,9 @@ public class ExplodeRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         ROIListData data = iterationStep.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo);
 
-        ExpressionVariables variables = new ExpressionVariables();
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-        customExpressionVariables.writeToVariables(variables, true, "custom.", true, "custom");
+        customExpressionVariables.writeToVariables(variables);
 
         for (int i = 0; i < data.size(); i++) {
             Roi roi = data.get(i);
@@ -132,9 +134,8 @@ public class ExplodeRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Annotation value", description = "If an annotation is generated, sets the value")
     @JIPipeParameter("roi-name")
     @JIPipeExpressionParameterSettings(variableSource = ChangeRoiPropertiesFromExpressionsAlgorithm.VariablesInfo.class, hint = "per ROI")
-    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-    @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(key = "metadata", name = "ROI metadata", description = "A map containing the ROI metadata/properties (string keys, string values)")
     @JIPipeExpressionParameterVariable(name = "metadata.<Metadata key>", description = "ROI metadata/properties accessible via their string keys")
     public JIPipeExpressionParameter getAnnotationValue() {
@@ -149,7 +150,7 @@ public class ExplodeRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Custom expression variables", description = "Here you can add parameters that will be included into the expression as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(custom, \"[key]\")</code>.")
     @JIPipeParameter(value = "custom-filter-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
-    public CustomExpressionVariablesParameter getCustomExpressionVariables() {
+    public JIPipeCustomExpressionVariablesParameter getCustomExpressionVariables() {
         return customExpressionVariables;
     }
 }

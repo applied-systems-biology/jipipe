@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.expressions.functions.math;
 import org.apache.commons.math3.util.Precision;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.List;
@@ -15,7 +15,7 @@ public class RoundToDecimalsFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
+    public Object evaluate(List<Object> parameters, JIPipeExpressionVariablesMap variables) {
         double value = ((Number) parameters.get(0)).doubleValue();
         int decimals = ((Number) parameters.get(1)).intValue();
         return Precision.round(value, decimals);

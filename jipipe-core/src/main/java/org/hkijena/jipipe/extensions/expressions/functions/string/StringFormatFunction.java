@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.expressions.functions.string;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -25,7 +25,7 @@ public class StringFormatFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
+    public Object evaluate(List<Object> parameters, JIPipeExpressionVariablesMap variables) {
         String formatString = StringUtils.nullToEmpty(parameters.get(0));
         Object[] args = new Object[parameters.size() - 1];
         for (int i = 1; i < parameters.size(); i++) {

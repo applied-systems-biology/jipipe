@@ -7,7 +7,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 
 import java.util.Collection;
 import java.util.Map;
@@ -84,7 +84,7 @@ public class AnnotationsToOMEROKeyValuePairExporter extends AbstractJIPipeParame
 
     public void createKeyValuePairs(Map<String, String> target, Collection<JIPipeTextAnnotation> annotations) {
         if(enabled) {
-            ExpressionVariables variables = new ExpressionVariables();
+            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
             for (JIPipeTextAnnotation annotation : annotations) {
                variables.set("key", annotation.getName());
                variables.set("value", annotation.getValue());

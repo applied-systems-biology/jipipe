@@ -24,8 +24,8 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
-import org.hkijena.jipipe.extensions.expressions.CustomExpressionVariablesParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 /**
@@ -40,7 +40,7 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Unmatched", autoCreate = true, description = "Data that does not match the filter")
 public class FilterByAnnotationIfElse extends JIPipeSimpleIteratingAlgorithm {
 
-    private final CustomExpressionVariablesParameter customVariables;
+    private final JIPipeCustomExpressionVariablesParameter customVariables;
 
     private AnnotationFilterExpression filter = new AnnotationFilterExpression();
 
@@ -49,7 +49,7 @@ public class FilterByAnnotationIfElse extends JIPipeSimpleIteratingAlgorithm {
      */
     public FilterByAnnotationIfElse(JIPipeNodeInfo info) {
         super(info);
-        this.customVariables = new CustomExpressionVariablesParameter(this);
+        this.customVariables = new JIPipeCustomExpressionVariablesParameter(this);
     }
 
     /**
@@ -59,14 +59,14 @@ public class FilterByAnnotationIfElse extends JIPipeSimpleIteratingAlgorithm {
      */
     public FilterByAnnotationIfElse(FilterByAnnotationIfElse other) {
         super(other);
-        this.customVariables = new CustomExpressionVariablesParameter(other.customVariables, this);
+        this.customVariables = new JIPipeCustomExpressionVariablesParameter(other.customVariables, this);
         this.filter = new AnnotationFilterExpression(other.filter);
     }
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
-        ExpressionVariables variables = new ExpressionVariables();
-        customVariables.writeToVariables(variables, true, "custom.", true, "custom");
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
+        customVariables.writeToVariables(variables);
         JIPipeData data = iterationStep.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo);
         if (filter.test(iterationStep.getMergedTextAnnotations().values(), data.toString(), variables)) {
             iterationStep.addOutputData("Matched", data, progressInfo);
@@ -93,7 +93,7 @@ public class FilterByAnnotationIfElse extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Custom variables", description = "Here you can add parameters that will be included into the expressions as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(custom, \"[key]\")</code>.")
     @JIPipeParameter(value = "custom-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
-    public CustomExpressionVariablesParameter getCustomVariables() {
+    public JIPipeCustomExpressionVariablesParameter getCustomVariables() {
         return customVariables;
     }
 }

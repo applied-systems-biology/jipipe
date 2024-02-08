@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.MontageCreator;
 
@@ -63,11 +63,11 @@ public class InputImagesToMontage2 extends JIPipeMergingAlgorithm {
         for (Integer row : iterationStep.getInputRows(getFirstInputSlot())) {
             ImagePlus img = getFirstInputSlot().getData(row, ImagePlusData.class, progressInfo).getImage();
             List<JIPipeTextAnnotation> textAnnotations = getFirstInputSlot().getTextAnnotations(row);
-            inputEntries.add(new MontageCreator.InputEntry(img, textAnnotations, new ExpressionVariables()));
+            inputEntries.add(new MontageCreator.InputEntry(img, textAnnotations, new JIPipeExpressionVariablesMap()));
         }
         ImagePlus montage = montageCreator.createMontage(inputEntries,
                 new ArrayList<>(iterationStep.getMergedTextAnnotations().values()),
-                new ExpressionVariables(),
+                new JIPipeExpressionVariablesMap(),
                 progressInfo);
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(montage), progressInfo);
     }

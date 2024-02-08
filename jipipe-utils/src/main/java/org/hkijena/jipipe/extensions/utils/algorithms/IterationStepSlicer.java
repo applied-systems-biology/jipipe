@@ -12,7 +12,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
 
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class IterationStepSlicer extends JIPipeMergingAlgorithm {
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         ArrayList<Integer> rows = new ArrayList<>(iterationStep.getInputRows(getFirstInputSlot()));
-        HashSet<Integer> indices = new HashSet<>(sliceRange.getIntegers(0, rows.size(), new ExpressionVariables()));
+        HashSet<Integer> indices = new HashSet<>(sliceRange.getIntegers(0, rows.size(), new JIPipeExpressionVariablesMap()));
         for (int i = 0; i < rows.size(); i++) {
             if (indices.contains(i)) {
                 int row = rows.get(i);

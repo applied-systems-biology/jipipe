@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.expressions.functions.statistics;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -18,8 +18,8 @@ public class AccumulateFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
-        ExpressionVariables localVariables = new ExpressionVariables();
+    public Object evaluate(List<Object> parameters, JIPipeExpressionVariablesMap variables) {
+        JIPipeExpressionVariablesMap localVariables = new JIPipeExpressionVariablesMap();
         Collection<?> items = (Collection<?>) parameters.get(0);
         List<String> variableNames = new ArrayList<>();
         for (Object item : items) {

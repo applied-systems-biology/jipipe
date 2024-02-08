@@ -1,10 +1,9 @@
-package org.hkijena.jipipe.extensions.expressions;
+package org.hkijena.jipipe.extensions.expressions.custom;
 
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,22 +12,22 @@ import java.util.Map;
  * A parameter collection that allows the creation of custom expression variables
  * Please note that the {@link org.hkijena.jipipe.api.parameters.JIPipeParameter} annotation should have {@link org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence} set to 'NestedCollection'. Otherwise, user-defined parameters will not be saved!
  */
-public class CustomExpressionVariablesParameter extends JIPipeDynamicParameterCollection {
+public class JIPipeCustomExpressionVariablesParameter extends JIPipeDynamicParameterCollection {
 
-    public CustomExpressionVariablesParameter() {
+    public JIPipeCustomExpressionVariablesParameter() {
         super(true);
     }
 
-    public CustomExpressionVariablesParameter(AbstractJIPipeParameterCollection target) {
+    public JIPipeCustomExpressionVariablesParameter(AbstractJIPipeParameterCollection target) {
         super(true);
         target.registerSubParameter(this);
     }
 
-    public CustomExpressionVariablesParameter(CustomExpressionVariablesParameter other) {
+    public JIPipeCustomExpressionVariablesParameter(JIPipeCustomExpressionVariablesParameter other) {
         super(other);
     }
 
-    public CustomExpressionVariablesParameter(CustomExpressionVariablesParameter other, AbstractJIPipeParameterCollection target) {
+    public JIPipeCustomExpressionVariablesParameter(JIPipeCustomExpressionVariablesParameter other, AbstractJIPipeParameterCollection target) {
         super(other);
         target.registerSubParameter(this);
     }
@@ -42,7 +41,7 @@ public class CustomExpressionVariablesParameter extends JIPipeDynamicParameterCo
      * @param toMap           if a map should be created (accessible via the key)
      * @param mapName         the name of the map
      */
-    public void writeToVariables(ExpressionVariables variables, boolean asVariables, String variablesPrefix, boolean toMap, String mapName) {
+    public void writeToVariables(JIPipeExpressionVariablesMap variables, boolean asVariables, String variablesPrefix, boolean toMap, String mapName) {
         if (asVariables) {
             for (Map.Entry<String, JIPipeParameterAccess> entry : getParameters().entrySet()) {
                 variables.set(variablesPrefix + entry.getKey(), entry.getValue().get(Object.class));
@@ -55,5 +54,13 @@ public class CustomExpressionVariablesParameter extends JIPipeDynamicParameterCo
             }
             variables.set(mapName, map);
         }
+    }
+
+    /**
+     * Writes the parameter values to variables with default configuration
+     * @param variables the target
+     */
+    public void writeToVariables(JIPipeExpressionVariablesMap variables) {
+        writeToVariables(variables, true, "custom.", true, "custom");
     }
 }

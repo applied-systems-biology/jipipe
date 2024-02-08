@@ -15,7 +15,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndices;
@@ -108,15 +108,15 @@ public class HyperstackSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     private void extractZ(ImageSliceIndices indices, int maxZ) {
-        indices.getZ().addAll(indicesZ.getIntegers(0, maxZ, new ExpressionVariables()));
+        indices.getZ().addAll(indicesZ.getIntegers(0, maxZ, new JIPipeExpressionVariablesMap()));
     }
 
     private void extractC(ImageSliceIndices indices, int maxC) {
-        indices.getC().addAll(indicesC.getIntegers(0, maxC, new ExpressionVariables()));
+        indices.getC().addAll(indicesC.getIntegers(0, maxC, new JIPipeExpressionVariablesMap()));
     }
 
     private void extractT(ImageSliceIndices indices, int maxT) {
-        indices.getT().addAll(indicesT.getIntegers(0, maxT, new ExpressionVariables()));
+        indices.getT().addAll(indicesT.getIntegers(0, maxT, new JIPipeExpressionVariablesMap()));
     }
 
     @JIPipeDocumentation(name = "Indices (Z)", description = "Array of Z indices to be included in the final image. All indices begin with zero. Indices outside the available range are automatically wrapped. Return an empty array to skip a slice.")

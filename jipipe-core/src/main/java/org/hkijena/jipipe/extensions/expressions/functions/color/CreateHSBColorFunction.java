@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.expressions.functions.color;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.Arrays;
@@ -28,7 +28,7 @@ public class CreateHSBColorFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
+    public Object evaluate(List<Object> parameters, JIPipeExpressionVariablesMap variables) {
         int h = ((Number) parameters.get(0)).intValue();
         int s = ((Number) parameters.get(1)).intValue();
         int b = ((Number) parameters.get(2)).intValue();

@@ -68,7 +68,7 @@ public class FilterLabelsByExpression2DAlgorithm extends JIPipeSimpleIteratingAl
             int[] allLabels = LabelImages.findAllLabels(ip);
             int[] numPixels = LabelImages.pixelCount(ip, allLabels);
             TIntArrayList keptLabels = new TIntArrayList();
-            ExpressionVariables parameters = new ExpressionVariables();
+            JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap();
             for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
                 parameters.set(annotation.getName(), annotation.getValue());
             }

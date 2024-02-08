@@ -7,7 +7,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -33,7 +33,7 @@ public class ImagePlusPropertiesExpressionParameterVariablesInfo implements Expr
         VARIABLES.add(new ExpressionParameterVariable("Physical dimension (Z)", "Physical dimension in format '[value] [unit]'", "physical_dimension_z"));
     }
 
-    public static void extractValues(ExpressionVariables variables, ImagePlus imagePlus, Collection<JIPipeTextAnnotation> annotations) {
+    public static void extractValues(JIPipeExpressionVariablesMap variables, ImagePlus imagePlus, Collection<JIPipeTextAnnotation> annotations) {
         for (JIPipeTextAnnotation annotation : annotations) {
             variables.set(annotation.getName(), annotation.getValue());
         }

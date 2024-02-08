@@ -32,6 +32,8 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.*;
+import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameter;
+import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -58,7 +60,7 @@ import java.util.Arrays;
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nLabel Images")
 public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private final CustomExpressionVariablesParameter customFilterVariables;
+    private final JIPipeCustomExpressionVariablesParameter customFilterVariables;
     private JIPipeExpressionParameter filters = new JIPipeExpressionParameter();
     private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
     private boolean measureInPhysicalUnits = true;
@@ -70,7 +72,7 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
      */
     public FilterLabelsByStatisticsAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.customFilterVariables = new CustomExpressionVariablesParameter(this);
+        this.customFilterVariables = new JIPipeCustomExpressionVariablesParameter(this);
     }
 
     /**
@@ -83,7 +85,7 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
         this.filters = new JIPipeExpressionParameter(other.filters);
         this.measurements = new ImageStatisticsSetParameter(other.measurements);
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
-        this.customFilterVariables = new CustomExpressionVariablesParameter(other.customFilterVariables, this);
+        this.customFilterVariables = new JIPipeCustomExpressionVariablesParameter(other.customFilterVariables, this);
     }
 
     @Override
@@ -98,7 +100,7 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
 
         Calibration calibration = measureInPhysicalUnits ? labels.getCalibration() : null;
 
-        ExpressionVariables variables = new ExpressionVariables();
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         TIntSet labelsToKeep = new TIntHashSet();
         ImageJUtils.forEachIndexedZCTSlice(labels, (labelProcessor, index) -> {
 
@@ -115,7 +117,7 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
             for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
                 variables.set(annotation.getName(), annotation.getValue());
             }
-            customFilterVariables.writeToVariables(variables, true, "custom.", true, "custom");
+            customFilterVariables.writeToVariables(variables);
 
             // Write statistics into variables
             for (int col = 0; col < statistics.getColumnCount(); col++) {
@@ -146,7 +148,7 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
     @JIPipeDocumentation(name = "Custom expression variables", description = "Here you can add parameters that will be included into the expression as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(custom, \"[key]\")</code>.")
     @JIPipeParameter(value = "custom-filter-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
-    public CustomExpressionVariablesParameter getCustomFilterVariables() {
+    public JIPipeCustomExpressionVariablesParameter getCustomFilterVariables() {
         return customFilterVariables;
     }
 
@@ -157,8 +159,7 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
             "Annotations are available as variables.")
     @JIPipeExpressionParameterSettings(variableSource = MeasurementExpressionParameterVariablesInfo.class, hint = "per label")
     @JIPipeExpressionParameterVariable(fromClass = AllMeasurementExpressionParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-    @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     public JIPipeExpressionParameter getFilters() {
         return filters;
     }

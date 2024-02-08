@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.expressions.operators;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionOperator;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.Iterator;
@@ -28,7 +28,7 @@ public class LogicalXOrOperator extends ExpressionOperator {
     }
 
     @Override
-    public Object evaluate(Iterator<Object> operands, ExpressionVariables variables) {
+    public Object evaluate(Iterator<Object> operands, JIPipeExpressionVariablesMap variables) {
         return (boolean) operands.next() ^ (boolean) operands.next();
     }
 

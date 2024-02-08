@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.expressions.functions.control;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.List;
@@ -30,9 +30,9 @@ public class IfElseExprFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
+    public Object evaluate(List<Object> parameters, JIPipeExpressionVariablesMap variables) {
         boolean condition = (boolean) parameters.get(0);
-        ExpressionVariables copy = new ExpressionVariables(variables);
+        JIPipeExpressionVariablesMap copy = new JIPipeExpressionVariablesMap(variables);
         if (condition)
             return JIPipeExpressionParameter.getEvaluatorInstance().evaluate(parameters.get(1) + "", copy);
         else

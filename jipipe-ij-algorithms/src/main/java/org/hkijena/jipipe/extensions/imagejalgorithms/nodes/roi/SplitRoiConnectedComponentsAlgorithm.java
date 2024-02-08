@@ -99,7 +99,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
 
         boolean withFiltering = !StringUtils.isNullOrEmpty(overlapFilter.getExpression());
         ROIListData temp = new ROIListData();
-        ExpressionVariables variableSet = new ExpressionVariables();
+        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
 
         // Write annotations map
         Map<String, String> annotations = new HashMap<>();
@@ -203,7 +203,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
         }
 
         if (!StringUtils.isNullOrEmpty(graphPostprocessing.getExpression())) {
-            ExpressionVariables postprocessingVariableSet = new ExpressionVariables();
+            JIPipeExpressionVariablesMap postprocessingVariableSet = new JIPipeExpressionVariablesMap();
             postprocessingVariableSet.set("KEEP", "KEEP");
             postprocessingVariableSet.set("ISOLATE", "ISOLATE");
             postprocessingVariableSet.set("REMOVE", "REMOVE");
@@ -331,7 +331,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
         return false;
     }
 
-    private void putMeasurementsIntoVariable(ResultsTableData inputMeasurements, int first, int second, ImagePlus referenceImage, ExpressionVariables variableSet, Roi overlap, ROIListData temp, Roi roi1, Roi roi2) {
+    private void putMeasurementsIntoVariable(ResultsTableData inputMeasurements, int first, int second, ImagePlus referenceImage, JIPipeExpressionVariablesMap variableSet, Roi overlap, ROIListData temp, Roi roi1, Roi roi2) {
 
         variableSet.set("ROI1.z", roi1.getZPosition());
         variableSet.set("ROI1.c", roi1.getCPosition());

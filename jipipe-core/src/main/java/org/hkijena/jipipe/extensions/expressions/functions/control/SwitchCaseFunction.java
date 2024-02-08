@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.expressions.functions.control;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ public class SwitchCaseFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
+    public Object evaluate(List<Object> parameters, JIPipeExpressionVariablesMap variables) {
         Object result = null;
         boolean found = false;
         for (int i = 0; i < (parameters.size() / 2); i++) {

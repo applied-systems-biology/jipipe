@@ -35,7 +35,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.ImageROITargetArea;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -127,7 +127,7 @@ public class CustomAutoThreshold2D8Uv2Algorithm extends JIPipeIteratingAlgorithm
         ImagePlus img = inputData.getDuplicateImage();
         ROIListData roiInput = null;
         ImagePlus maskInput = null;
-        ExpressionVariables parameters = new ExpressionVariables();
+        JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap();
 
         for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
             parameters.set(annotation.getName(), annotation.getValue());
@@ -191,13 +191,13 @@ public class CustomAutoThreshold2D8Uv2Algorithm extends JIPipeIteratingAlgorithm
             }, progressInfo);
             List<JIPipeTextAnnotation> annotations = new ArrayList<>();
             if (minThresholdParameters.thresholdAnnotation.isEnabled()) {
-                ExpressionVariables variableSet = new ExpressionVariables();
+                JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
                 variableSet.set("thresholds", minThresholds);
                 String result = minThresholdParameters.thresholdCombinationExpression.evaluate(variableSet) + "";
                 annotations.add(minThresholdParameters.thresholdAnnotation.createAnnotation(result));
             }
             if (maxThresholdParameters.thresholdAnnotation.isEnabled()) {
-                ExpressionVariables variableSet = new ExpressionVariables();
+                JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
                 variableSet.set("thresholds", minThresholds);
                 String result = maxThresholdParameters.thresholdCombinationExpression.evaluate(variableSet) + "";
                 annotations.add(maxThresholdParameters.thresholdAnnotation.createAnnotation(result));
@@ -273,7 +273,7 @@ public class CustomAutoThreshold2D8Uv2Algorithm extends JIPipeIteratingAlgorithm
             List<JIPipeTextAnnotation> annotations = new ArrayList<>();
 
             {
-                ExpressionVariables variableSet = new ExpressionVariables();
+                JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
                 variableSet.set("thresholds", minThresholds);
                 Number combined = (Number) minThresholdParameters.thresholdCombinationExpression.evaluate(variableSet);
                 minThreshold = combined.intValue();
@@ -282,7 +282,7 @@ public class CustomAutoThreshold2D8Uv2Algorithm extends JIPipeIteratingAlgorithm
                 }
             }
             {
-                ExpressionVariables variableSet = new ExpressionVariables();
+                JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
                 variableSet.set("thresholds", maxThresholds);
                 Number combined = (Number) maxThresholdParameters.thresholdCombinationExpression.evaluate(variableSet);
                 maxThreshold = combined.intValue();
@@ -424,7 +424,7 @@ public class CustomAutoThreshold2D8Uv2Algorithm extends JIPipeIteratingAlgorithm
                 "this threshold.")
         @JIPipeParameter(value = "thresholding-function", important = true)
         @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class)
-        @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+        @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
         public JIPipeExpressionParameter getThresholdCalculationExpression() {
             return thresholdCalculationExpression;
         }
@@ -445,7 +445,7 @@ public class CustomAutoThreshold2D8Uv2Algorithm extends JIPipeIteratingAlgorithm
             this.thresholdAnnotation = thresholdAnnotation;
         }
 
-        public int getThreshold(ExpressionVariables parameters, ImageStatistics statistics, boolean accessPixels, TByteArrayList pixels) {
+        public int getThreshold(JIPipeExpressionVariablesMap parameters, ImageStatistics statistics, boolean accessPixels, TByteArrayList pixels) {
             parameters.set("stat_histogram", Longs.asList(statistics.getHistogram()));
             parameters.set("stat_area", statistics.area);
             parameters.set("stat_stdev", statistics.stdDev);

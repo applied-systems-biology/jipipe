@@ -96,7 +96,7 @@ public class DataRowQueryExpression extends JIPipeExpressionParameter {
      * @return if the expression matches
      */
     private boolean test(JIPipeDataItemStore data, java.util.List<JIPipeTextAnnotation> annotations) {
-        ExpressionVariables variables = new ExpressionVariables();
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         for (JIPipeTextAnnotation annotation : annotations) {
             variables.set(annotation.getName(), annotation.getValue());
         }
@@ -113,7 +113,7 @@ public class DataRowQueryExpression extends JIPipeExpressionParameter {
      * @return if the expression matches
      */
     private boolean test(JIPipeData data, java.util.List<JIPipeTextAnnotation> annotations) {
-        ExpressionVariables variables = new ExpressionVariables();
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         for (JIPipeTextAnnotation annotation : annotations) {
             variables.set(annotation.getName(), annotation.getValue());
         }

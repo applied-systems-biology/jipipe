@@ -14,7 +14,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeTextAnnotationMatchingMethod;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
@@ -141,7 +141,7 @@ public class JIPipeMultiIterationStepGenerator {
         for (JIPipeDataSlot slot : slots.values()) {
             result.addAll(slot.getTextAnnotationColumnNames());
         }
-        return new HashSet<>(expression.queryAll(result, new ExpressionVariables()));
+        return new HashSet<>(expression.queryAll(result, new JIPipeExpressionVariablesMap()));
     }
 
     public Set<String> getInputAnnotationColumnIntersection(String prefix) {
@@ -636,7 +636,7 @@ public class JIPipeMultiIterationStepGenerator {
             if (annotationMatchingMethod == JIPipeTextAnnotationMatchingMethod.ExactMatch) {
                 return exactMatchResults;
             } else {
-                ExpressionVariables expressionVariables = new ExpressionVariables();
+                JIPipeExpressionVariablesMap expressionVariables = new JIPipeExpressionVariablesMap();
                 expressionVariables.put("annotations", annotations);
                 expressionVariables.put("other_annotations", otherNode.annotations);
                 expressionVariables.put("exact_match_results", exactMatchResults);

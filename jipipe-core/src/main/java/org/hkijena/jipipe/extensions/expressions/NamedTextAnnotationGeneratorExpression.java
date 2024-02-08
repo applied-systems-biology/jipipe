@@ -43,7 +43,7 @@ public class NamedTextAnnotationGeneratorExpression extends PairParameter<Annota
      * @param variableSet existing variables
      * @return the annotation
      */
-    public JIPipeTextAnnotation generateTextAnnotation(Collection<JIPipeTextAnnotation> annotations, ExpressionVariables variableSet) {
+    public JIPipeTextAnnotation generateTextAnnotation(Collection<JIPipeTextAnnotation> annotations, JIPipeExpressionVariablesMap variableSet) {
         return new JIPipeTextAnnotation(getValue(), getKey().generateAnnotationValue(annotations, variableSet));
     }
 

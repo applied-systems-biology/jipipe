@@ -116,7 +116,7 @@ public class ExpressionTesterUI extends JIPipeWorkbenchPanel {
         resultOutput.append("<td><pre>").append(HtmlEscapers.htmlEscaper().escape(expressionToEvaluate)).append("</pre></td></tr>");
         Object result;
         try {
-            result = evaluator.evaluate(expressionToEvaluate, new ExpressionVariables());
+            result = evaluator.evaluate(expressionToEvaluate, new JIPipeExpressionVariablesMap());
             if (result instanceof Collection) {
                 List<Object> values = new ArrayList<>();
                 for (Object item : (Collection<?>) result) {

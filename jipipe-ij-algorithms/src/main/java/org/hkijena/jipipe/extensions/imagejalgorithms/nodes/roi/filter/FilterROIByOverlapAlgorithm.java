@@ -16,10 +16,10 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
-import org.hkijena.jipipe.extensions.expressions.CustomExpressionVariablesParameter;
+import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterSettings;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.RoiOverlapStatisticsVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -42,14 +42,14 @@ import java.util.*;
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI 2", autoCreate = true)
 public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private final CustomExpressionVariablesParameter customVariables;
+    private final JIPipeCustomExpressionVariablesParameter customVariables;
     private ImageStatisticsSetParameter overlapFilterMeasurements = new ImageStatisticsSetParameter();
     private ROIFilterSettings roi1Settings = new ROIFilterSettings();
     private ROIFilterSettings roi2Settings = new ROIFilterSettings();
 
     public FilterROIByOverlapAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.customVariables = new CustomExpressionVariablesParameter(this);
+        this.customVariables = new JIPipeCustomExpressionVariablesParameter(this);
         registerSubParameter(roi1Settings);
         registerSubParameter(roi2Settings);
         updateSlots();
@@ -57,7 +57,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
     public FilterROIByOverlapAlgorithm(FilterROIByOverlapAlgorithm other) {
         super(other);
-        this.customVariables = new CustomExpressionVariablesParameter(other.customVariables, this);
+        this.customVariables = new JIPipeCustomExpressionVariablesParameter(other.customVariables, this);
         this.roi1Settings = new ROIFilterSettings(other.roi1Settings);
         this.roi2Settings = new ROIFilterSettings(other.roi2Settings);
         this.overlapFilterMeasurements = new ImageStatisticsSetParameter(other.overlapFilterMeasurements);
@@ -147,7 +147,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
     private void applyFiltering(ROIListData first, ROIListData second, String firstPrefix, String secondPrefix, JIPipeOutputDataSlot outputSlot, ImagePlus referenceImage, ROIFilterSettings settings, JIPipeSingleIterationStep iterationStep, JIPipeProgressInfo progressInfo) {
         boolean withFiltering = !StringUtils.isNullOrEmpty(settings.getOverlapFilter().getExpression());
-        ExpressionVariables variableSet = new ExpressionVariables();
+        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
         ROIListData temp = new ROIListData();
         ROIListData result = new ROIListData();
 
@@ -157,7 +157,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             annotations.put(entry.getKey(), entry.getValue().getValue());
         }
         variableSet.set("annotations", annotations);
-        customVariables.writeToVariables(variableSet, true, "custom.", true, "custom");
+        customVariables.writeToVariables(variableSet);
 
         // Apply comparison
         for (int i = 0; i < first.size(); i++) {
@@ -220,7 +220,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(outputSlot, result, progressInfo);
     }
 
-    private void putMeasurementsIntoVariable(Roi first, String firstPrefix, Roi second, String secondPrefix, ExpressionVariables variableSet, Roi overlap, ImagePlus referenceImage, ROIListData temp, boolean measureInPhysicalUnits) {
+    private void putMeasurementsIntoVariable(Roi first, String firstPrefix, Roi second, String secondPrefix, JIPipeExpressionVariablesMap variableSet, Roi overlap, ImagePlus referenceImage, ROIListData temp, boolean measureInPhysicalUnits) {
 
         variableSet.set(firstPrefix + ".z", first.getZPosition());
         variableSet.set(firstPrefix + ".c", first.getCPosition());
@@ -298,7 +298,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeDocumentation(name = "Custom variables", description = "Here you can add parameters that will be included into the expressions as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(custom, \"[key]\")</code>.")
     @JIPipeParameter(value = "custom-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
-    public CustomExpressionVariablesParameter getCustomVariables() {
+    public JIPipeCustomExpressionVariablesParameter getCustomVariables() {
         return customVariables;
     }
 

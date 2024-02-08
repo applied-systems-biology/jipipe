@@ -30,7 +30,7 @@ public abstract class ExpressionOperator extends Operator {
      * @param variables the evaluation context
      * @return the result (should be a boolean)
      */
-    public abstract Object evaluate(Iterator<Object> operands, ExpressionVariables variables);
+    public abstract Object evaluate(Iterator<Object> operands, JIPipeExpressionVariablesMap variables);
 
     /**
      * Returns info about the parameter at index (left to right)

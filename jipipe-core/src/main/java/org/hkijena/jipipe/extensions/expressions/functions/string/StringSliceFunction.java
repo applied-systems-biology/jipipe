@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.expressions.functions.string;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.List;
@@ -36,7 +36,7 @@ public class StringSliceFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
+    public Object evaluate(List<Object> parameters, JIPipeExpressionVariablesMap variables) {
         String text = "" + parameters.get(0);
         int start = ((Number) parameters.get(1)).intValue();
         int end = parameters.size() >= 3 ? ((Number) parameters.get(2)).intValue() : text.length();

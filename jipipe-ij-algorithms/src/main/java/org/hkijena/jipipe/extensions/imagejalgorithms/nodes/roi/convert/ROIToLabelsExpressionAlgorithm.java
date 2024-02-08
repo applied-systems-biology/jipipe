@@ -51,7 +51,7 @@ public class ROIToLabelsExpressionAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
-        ExpressionVariables parameters = new ExpressionVariables();
+        JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap();
         parameters.putAnnotations(iterationStep.getMergedTextAnnotations());
 
         ROIListData rois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);

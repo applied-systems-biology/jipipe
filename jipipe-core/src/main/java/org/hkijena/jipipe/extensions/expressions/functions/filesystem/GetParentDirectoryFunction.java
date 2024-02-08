@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.expressions.functions.filesystem;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -17,7 +17,7 @@ public class GetParentDirectoryFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
+    public Object evaluate(List<Object> parameters, JIPipeExpressionVariablesMap variables) {
         String pathString = StringUtils.nullToEmpty(parameters.get(0));
         int N = parameters.size() > 1 ? (int)StringUtils.parseDouble(StringUtils.orElse(parameters.get(1), "1")) : 1;
         Path path = Paths.get(pathString);

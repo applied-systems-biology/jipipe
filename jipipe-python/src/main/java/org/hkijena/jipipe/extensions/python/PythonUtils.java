@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.DoubleList;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.IntegerList;
@@ -123,7 +123,7 @@ public class PythonUtils {
             } else if (o instanceof DoubleList) {
                 value = "[" + ((DoubleList) o).stream().map(i -> i + "").collect(Collectors.joining(", ")) + "]";
             } else if (o instanceof IntegerRange) {
-                value = "[" + ((IntegerRange) o).getIntegers(0, 0, new ExpressionVariables()).stream().map(i -> i + "").collect(Collectors.joining(", ")) + "]";
+                value = "[" + ((IntegerRange) o).getIntegers(0, 0, new JIPipeExpressionVariablesMap()).stream().map(i -> i + "").collect(Collectors.joining(", ")) + "]";
             } else if (o instanceof StringList) {
                 value = "[" + ((StringList) o).stream().map(s -> "\"" + MacroUtils.escapeString(s) + "\"").collect(Collectors.joining(", ")) + "]";
             }
@@ -309,7 +309,7 @@ public class PythonUtils {
         CommandLine commandLine = new CommandLine(pythonExecutable.toFile());
 
         Map<String, String> environmentVariables = new HashMap<>();
-        ExpressionVariables existingEnvironmentVariables = new ExpressionVariables();
+        JIPipeExpressionVariablesMap existingEnvironmentVariables = new JIPipeExpressionVariablesMap();
         for (Map.Entry<String, String> entry : System.getenv().entrySet()) {
             existingEnvironmentVariables.put(entry.getKey(), entry.getValue());
             environmentVariables.put(entry.getKey(), entry.getValue());
@@ -323,7 +323,7 @@ public class PythonUtils {
             progressInfo.log("Setting environment variable " + entry.getKey() + "=" + entry.getValue());
         }
 
-        ExpressionVariables parameters = new ExpressionVariables();
+        JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap();
         parameters.set("script_file", scriptFile.toString());
         parameters.set("python_executable", environment.getExecutablePath().toString());
         Object evaluationResult = environment.getArguments().evaluate(parameters);
@@ -374,7 +374,7 @@ public class PythonUtils {
         CommandLine commandLine = new CommandLine(pythonExecutable.toFile());
 
         Map<String, String> environmentVariables = new HashMap<>();
-        ExpressionVariables existingEnvironmentVariables = new ExpressionVariables();
+        JIPipeExpressionVariablesMap existingEnvironmentVariables = new JIPipeExpressionVariablesMap();
         for (Map.Entry<String, String> entry : System.getenv().entrySet()) {
             existingEnvironmentVariables.put(entry.getKey(), entry.getValue());
             environmentVariables.put(entry.getKey(), entry.getValue());
@@ -388,7 +388,7 @@ public class PythonUtils {
             progressInfo.log("Setting environment variable " + entry.getKey() + "=" + entry.getValue());
         }
 
-        ExpressionVariables parameters = new ExpressionVariables();
+        JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap();
         parameters.set("script_file", "");
         parameters.set("python_executable", environment.getExecutablePath().toString());
         Object evaluationResult = environment.getArguments().evaluate(parameters);

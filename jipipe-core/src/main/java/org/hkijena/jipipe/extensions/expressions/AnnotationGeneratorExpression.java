@@ -44,7 +44,7 @@ public class AnnotationGeneratorExpression extends JIPipeExpressionParameter {
      * @param variableSet existing variables
      * @return the annotation value
      */
-    public String generateAnnotationValue(Collection<JIPipeTextAnnotation> annotations, ExpressionVariables variableSet) {
+    public String generateAnnotationValue(Collection<JIPipeTextAnnotation> annotations, JIPipeExpressionVariablesMap variableSet) {
         for (JIPipeTextAnnotation annotation : annotations) {
             if (!variableSet.containsKey(annotation.getName()))
                 variableSet.set(annotation.getName(), annotation.getValue());
@@ -60,7 +60,7 @@ public class AnnotationGeneratorExpression extends JIPipeExpressionParameter {
      * @param variables   existing variables
      * @return the test results.
      */
-    public boolean test(Collection<JIPipeTextAnnotation> annotations, String dataString, ExpressionVariables variables) {
+    public boolean test(Collection<JIPipeTextAnnotation> annotations, String dataString, JIPipeExpressionVariablesMap variables) {
         for (JIPipeTextAnnotation annotation : annotations) {
             variables.set(annotation.getName(), annotation.getValue());
         }

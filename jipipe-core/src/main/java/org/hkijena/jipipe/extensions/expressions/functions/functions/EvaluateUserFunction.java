@@ -27,11 +27,11 @@ public class EvaluateUserFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
-        ExpressionVariables localVariables;
+    public Object evaluate(List<Object> parameters, JIPipeExpressionVariablesMap variables) {
+        JIPipeExpressionVariablesMap localVariables;
 
         if (parameters.size() > 1) {
-            localVariables = new ExpressionVariables();
+            localVariables = new JIPipeExpressionVariablesMap();
             for (Map.Entry<String, Object> entry : variables.entrySet()) {
                 localVariables.put(entry.getKey(), entry.getValue());
             }

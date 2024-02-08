@@ -4,7 +4,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 
 import java.util.HashSet;
@@ -46,7 +46,7 @@ public class FilamentEdgeVariablesInfo implements ExpressionParameterVariablesIn
         VARIABLES.add(new ExpressionParameterVariable("Target physical voxel size Z", "The size of 1 voxel (Z)", "target.vsz"));
     }
 
-    public static void writeToVariables(Filaments3DData graph, FilamentEdge edge, ExpressionVariables variables, String prefix) {
+    public static void writeToVariables(Filaments3DData graph, FilamentEdge edge, JIPipeExpressionVariablesMap variables, String prefix) {
         graph.measureEdge(edge, variables, prefix, graph.getConsensusPhysicalSizeUnit());
     }
 

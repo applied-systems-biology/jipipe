@@ -13,7 +13,7 @@ import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.DoubleList;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.IntegerList;
@@ -113,7 +113,7 @@ public class RUtils {
             } else if (o instanceof DoubleList) {
                 value = "c(" + ((DoubleList) o).stream().map(i -> i + "").collect(Collectors.joining(", ")) + ")";
             } else if (o instanceof IntegerRange) {
-                value = "c(" + ((IntegerRange) o).getIntegers(0, 0, new ExpressionVariables()).stream().map(i -> i + "").collect(Collectors.joining(", ")) + ")";
+                value = "c(" + ((IntegerRange) o).getIntegers(0, 0, new JIPipeExpressionVariablesMap()).stream().map(i -> i + "").collect(Collectors.joining(", ")) + ")";
             } else if (o instanceof StringList) {
                 value = "c(" + ((StringList) o).stream().map(s -> "\"" + MacroUtils.escapeString(s) + "\"").collect(Collectors.joining(", ")) + ")";
             }
@@ -249,7 +249,7 @@ public class RUtils {
         CommandLine commandLine = new CommandLine(rExecutable.toFile());
 
         Map<String, String> environmentVariables = new HashMap<>();
-        ExpressionVariables existingEnvironmentVariables = new ExpressionVariables();
+        JIPipeExpressionVariablesMap existingEnvironmentVariables = new JIPipeExpressionVariablesMap();
         for (Map.Entry<String, String> entry : System.getenv().entrySet()) {
             existingEnvironmentVariables.put(entry.getKey(), entry.getValue());
             environmentVariables.put(entry.getKey(), entry.getValue());
@@ -262,7 +262,7 @@ public class RUtils {
             progressInfo.log("Setting environment variable " + entry.getKey() + "=" + entry.getValue());
         }
 
-        ExpressionVariables parameters = new ExpressionVariables();
+        JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap();
         parameters.set("script_file", scriptFile.toString());
         parameters.set("r_executable", rExecutable.toString());
         Object evaluationResult = environment.getArguments().evaluate(parameters);

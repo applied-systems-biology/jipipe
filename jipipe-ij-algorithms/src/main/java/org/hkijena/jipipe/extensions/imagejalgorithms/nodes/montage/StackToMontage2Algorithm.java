@@ -29,8 +29,8 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
+import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.Image5DSliceIndexExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
@@ -75,7 +75,7 @@ public class StackToMontage2Algorithm extends JIPipeIteratingAlgorithm {
         List<MontageCreator.InputEntry> inputEntries = new ArrayList<>();
         ImagePlus stack = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         ImageJUtils.forEachIndexedZCTSlice(stack, (ip, index) -> {
-            ExpressionVariables variables = new ExpressionVariables();
+            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
             variables.putAnnotations(iterationStep.getMergedTextAnnotations());
             Image5DSliceIndexExpressionParameterVariablesInfo.apply(variables, stack, index);
 
@@ -90,7 +90,7 @@ public class StackToMontage2Algorithm extends JIPipeIteratingAlgorithm {
 
         ImagePlus montage = montageCreator.createMontage(inputEntries,
                 new ArrayList<>(iterationStep.getMergedTextAnnotations().values()),
-                new ExpressionVariables(),
+                new JIPipeExpressionVariablesMap(),
                 progressInfo);
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(montage), progressInfo);
     }
@@ -103,7 +103,7 @@ public class StackToMontage2Algorithm extends JIPipeIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Limit to slices", description = "Allows to limit the montage to specific slices")
     @JIPipeParameter("slice-filter")
-    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = Image5DSliceIndexExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getSliceFilter() {
         return sliceFilter;

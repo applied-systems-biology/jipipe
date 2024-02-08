@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.*;
@@ -185,7 +185,7 @@ public class IntegerRange implements JIPipeCustomTextDescriptionParameter {
      * @param variables the variables for the expression-based variant
      * @return null if the format is wrong
      */
-    public List<Integer> tryGetIntegers(int min, int max, ExpressionVariables variables) {
+    public List<Integer> tryGetIntegers(int min, int max, JIPipeExpressionVariablesMap variables) {
         try {
             return getIntegers(min, max, variables);
         } catch (Exception e) {
@@ -202,7 +202,7 @@ public class IntegerRange implements JIPipeCustomTextDescriptionParameter {
      * @return the generated integers
      * @throws NumberFormatException if the format is wrong
      */
-    public List<Integer> getIntegers(int min, int max, ExpressionVariables variables) throws NumberFormatException {
+    public List<Integer> getIntegers(int min, int max, JIPipeExpressionVariablesMap variables) throws NumberFormatException {
         if (isUseExpression()) {
             variables.set("min", min);
             variables.set("max", max);

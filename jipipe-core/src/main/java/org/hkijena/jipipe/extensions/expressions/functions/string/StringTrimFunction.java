@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.expressions.functions.string;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.List;
@@ -15,7 +15,7 @@ public class StringTrimFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
+    public Object evaluate(List<Object> parameters, JIPipeExpressionVariablesMap variables) {
         String fileName = StringUtils.nullToEmpty(parameters.get(0));
         return fileName.trim();
     }

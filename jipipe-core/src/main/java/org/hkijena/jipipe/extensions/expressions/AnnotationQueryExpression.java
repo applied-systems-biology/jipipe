@@ -48,7 +48,7 @@ public class AnnotationQueryExpression extends JIPipeExpressionParameter {
      * @return the annotation that matches the query or null if none matches
      */
     public JIPipeTextAnnotation queryFirst(Collection<JIPipeTextAnnotation> annotations) {
-        ExpressionVariables variableSet = new ExpressionVariables();
+        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
         try {
             Object evaluationResult = evaluate(variableSet);
             if (evaluationResult instanceof String) {
@@ -85,7 +85,7 @@ public class AnnotationQueryExpression extends JIPipeExpressionParameter {
      */
     public java.util.List<JIPipeTextAnnotation> queryAll(Collection<JIPipeTextAnnotation> annotations) {
         java.util.List<JIPipeTextAnnotation> result = new ArrayList<>();
-        ExpressionVariables variableSet = new ExpressionVariables();
+        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
         try {
             Object evaluationResult = evaluate(variableSet);
             if (evaluationResult instanceof String) {

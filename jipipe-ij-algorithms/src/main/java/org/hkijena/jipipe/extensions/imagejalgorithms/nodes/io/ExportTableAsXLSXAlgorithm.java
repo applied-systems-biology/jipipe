@@ -19,8 +19,8 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
+import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.extensions.settings.DataExporterSettings;
@@ -103,7 +103,7 @@ public class ExportTableAsXLSXAlgorithm extends JIPipeMergingAlgorithm {
             for (int row : iterationStep.getInputRows(getFirstInputSlot())) {
                 ResultsTableData tableData = getFirstInputSlot().getData(row, ResultsTableData.class, progressInfo);
 
-                ExpressionVariables variables = new ExpressionVariables();
+                JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
                 variables.putAnnotations(getFirstInputSlot().getTextAnnotationMap(row));
                 variables.set("annotations", JIPipeTextAnnotation.annotationListToMap(getFirstInputSlot().getTextAnnotations(row), JIPipeTextAnnotationMergeMode.OverwriteExisting));
 
@@ -115,7 +115,7 @@ public class ExportTableAsXLSXAlgorithm extends JIPipeMergingAlgorithm {
 
             List<String> sortedSheets = new ArrayList<>();
             {
-                ExpressionVariables variables = new ExpressionVariables();
+                JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
                 variables.putAnnotations(iterationStep.getMergedTextAnnotations());
                 variables.set("annotations", JIPipeTextAnnotation.annotationListToMap(iterationStep.getMergedTextAnnotations().values(), JIPipeTextAnnotationMergeMode.OverwriteExisting));
                 variables.set("sheet_names", new ArrayList<>(sheets.keySet()));
@@ -190,7 +190,7 @@ public class ExportTableAsXLSXAlgorithm extends JIPipeMergingAlgorithm {
     @JIPipeDocumentation(name = "Order function", description = "Expression that should return an ordered list of workbook sheets as array of strings. " +
             "If a name is missing, the sheet is placed at the end of the list. If a string is returned, the sheet with the name is set as the first sheet.")
     @JIPipeParameter("order-expression")
-    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(name = "Sheet names", description = "Array if sheet names", key = "sheet_names")
     @JIPipeExpressionParameterVariable(name = "Annotations", description = "Map of annotation names to values", key = "annotations")
     public JIPipeExpressionParameter getOrderExpression() {
@@ -204,7 +204,7 @@ public class ExportTableAsXLSXAlgorithm extends JIPipeMergingAlgorithm {
 
     @JIPipeDocumentation(name = "Sheet name function", description = "Expression that determines the name of the sheet. Please note that there are certain restrictions on the naming of sheets that are automatically enforced by JIPipe (see https://poi.apache.org/apidocs/dev/org/apache/poi/ss/usermodel/Workbook.html#createSheet--).")
     @JIPipeParameter("sheet-name-expression")
-    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(name = "Annotations", description = "Map of annotation names to values", key = "annotations")
     public JIPipeExpressionParameter getSheetNameExpression() {
         return sheetNameExpression;

@@ -75,7 +75,7 @@ public class TableColumnSourceExpressionParameter extends PairParameter<TableCol
      * @return the column
      */
     public TableColumn pickOrGenerateColumn(ResultsTableData table) {
-        ExpressionVariables variables = new ExpressionVariables();
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.set("num_rows", table.getRowCount());
         variables.set("num_cols", table.getColumnCount());
 

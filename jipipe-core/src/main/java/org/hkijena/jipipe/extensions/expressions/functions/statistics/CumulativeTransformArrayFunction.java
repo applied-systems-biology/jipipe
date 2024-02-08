@@ -16,8 +16,8 @@ public class CumulativeTransformArrayFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
-        ExpressionVariables localVariables = new ExpressionVariables(variables);
+    public Object evaluate(List<Object> parameters, JIPipeExpressionVariablesMap variables) {
+        JIPipeExpressionVariablesMap localVariables = new JIPipeExpressionVariablesMap(variables);
         List<?> items = ImmutableList.copyOf((Collection<?>) parameters.get(0));
         String accumulator = "SUM(values)";
         if (parameters.size() > 1) {

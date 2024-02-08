@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.expressions.functions.statistics;
 
 import ij.process.AutoThresholder;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.Collection;
@@ -17,7 +17,7 @@ public abstract class HistogramThresholdFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
+    public Object evaluate(List<Object> parameters, JIPipeExpressionVariablesMap variables) {
         Collection<Number> numbers = (Collection<Number>) parameters.get(0);
         int[] histogram = new int[256];
         int i = 0;

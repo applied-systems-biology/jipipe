@@ -21,7 +21,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.extensions.processes.ProcessEnvironment;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;
@@ -89,11 +89,11 @@ public class ProcessUtils {
      * @param handleQuoting                if argument quoting is handled by commons exec (can be buggy)
      * @param progressInfo                 the progress info
      */
-    public static void runProcess(ProcessEnvironment environment, ExpressionVariables variables, Map<String, String> overrideEnvironmentVariables, boolean handleQuoting, JIPipeProgressInfo progressInfo) {
+    public static void runProcess(ProcessEnvironment environment, JIPipeExpressionVariablesMap variables, Map<String, String> overrideEnvironmentVariables, boolean handleQuoting, JIPipeProgressInfo progressInfo) {
         CommandLine commandLine = new CommandLine(environment.getAbsoluteExecutablePath().toFile());
 
         Map<String, String> environmentVariables = new HashMap<>();
-        ExpressionVariables existingEnvironmentVariables = new ExpressionVariables();
+        JIPipeExpressionVariablesMap existingEnvironmentVariables = new JIPipeExpressionVariablesMap();
         for (Map.Entry<String, String> entry : System.getenv().entrySet()) {
             existingEnvironmentVariables.put(entry.getKey(), entry.getValue());
             environmentVariables.put(entry.getKey(), entry.getValue());
@@ -108,7 +108,7 @@ public class ProcessUtils {
         }
 
         if (variables == null) {
-            variables = new ExpressionVariables();
+            variables = new JIPipeExpressionVariablesMap();
         }
         variables.set("executable", environment.getAbsoluteExecutablePath().toString());
         variables.set("executable_dir", environment.getAbsoluteExecutablePath().getParent().toString());
@@ -138,11 +138,11 @@ public class ProcessUtils {
      * @param handleQuoting                if argument quoting is handled by commons exec (can be buggy)
      * @param progressInfo                 the progress info
      */
-    public static void launchProcess(ProcessEnvironment environment, ExpressionVariables variables, Map<String, String> overrideEnvironmentVariables, boolean handleQuoting, JIPipeProgressInfo progressInfo) {
+    public static void launchProcess(ProcessEnvironment environment, JIPipeExpressionVariablesMap variables, Map<String, String> overrideEnvironmentVariables, boolean handleQuoting, JIPipeProgressInfo progressInfo) {
         CommandLine commandLine = new CommandLine(environment.getAbsoluteExecutablePath().toFile());
 
         Map<String, String> environmentVariables = new HashMap<>();
-        ExpressionVariables existingEnvironmentVariables = new ExpressionVariables();
+        JIPipeExpressionVariablesMap existingEnvironmentVariables = new JIPipeExpressionVariablesMap();
         for (Map.Entry<String, String> entry : System.getenv().entrySet()) {
             existingEnvironmentVariables.put(entry.getKey(), entry.getValue());
             environmentVariables.put(entry.getKey(), entry.getValue());
@@ -157,7 +157,7 @@ public class ProcessUtils {
         }
 
         if (variables == null) {
-            variables = new ExpressionVariables();
+            variables = new JIPipeExpressionVariablesMap();
         }
         variables.set("executable", environment.getAbsoluteExecutablePath().toString());
         variables.set("executable_dir", environment.getAbsoluteExecutablePath().getParent().toString());

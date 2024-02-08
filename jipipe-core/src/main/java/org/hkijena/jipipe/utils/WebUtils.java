@@ -17,7 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.processes.ProcessEnvironment;
 import org.hkijena.jipipe.extensions.settings.DownloadSettings;
 
@@ -62,7 +62,7 @@ public class WebUtils {
                         downloadNative(url, outputFile, label, progressInfo);
                     } else {
                         ProcessEnvironment process = settings.getExternalDownloaderProcess();
-                        ExpressionVariables variables = new ExpressionVariables();
+                        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
                         variables.set("output_file", outputFile.toAbsolutePath().toString());
                         variables.set("url", url.toString());
                         ProcessUtils.runProcess(process, variables, Collections.emptyMap(), true, progressInfo);

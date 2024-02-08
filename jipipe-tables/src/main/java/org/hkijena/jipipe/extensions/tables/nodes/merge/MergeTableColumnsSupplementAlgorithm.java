@@ -25,9 +25,9 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumnNormalization;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -80,7 +80,7 @@ public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorit
         ResultsTableData inputTarget = new ResultsTableData(iterationStep.getInputData("Target", ResultsTableData.class, progressInfo));
         ResultsTableData inputSource = new ResultsTableData(iterationStep.getInputData("Source", ResultsTableData.class, progressInfo));
 
-        ExpressionVariables variables = new ExpressionVariables();
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
 
         // Choose the reference columns
@@ -189,7 +189,7 @@ public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorit
 
     @JIPipeDocumentation(name = "Column filter", description = "Determines which columns are copied from source to target.")
     @JIPipeParameter("column-filter")
-    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public StringQueryExpression getColumnFilter() {
         return columnFilter;
     }
@@ -201,7 +201,7 @@ public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorit
 
     @JIPipeDocumentation(name = "Reference columns", description = "Columns that should act as reference points for the merging of the rows from different tables.")
     @JIPipeParameter(value = "reference-columns", important = true)
-    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public StringQueryExpression getReferenceColumns() {
         return referenceColumns;
     }

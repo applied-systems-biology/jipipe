@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.expressions.functions.color;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMap;
 
@@ -32,7 +32,7 @@ public class FalseColorsFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
+    public Object evaluate(List<Object> parameters, JIPipeExpressionVariablesMap variables) {
         double value = ((Number) parameters.get(0)).doubleValue();
         value = Math.max(0, Math.min(1, value));
         ColorMap map = ColorMap.valueOf(parameters.get(1) + "");

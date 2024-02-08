@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterSettings;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.ImageQueryExpressionVariablesInfo;
 import org.hkijena.jipipe.extensions.parameters.library.util.LogicalOperation;
@@ -76,7 +76,7 @@ public class ImagePlusFromGUI extends JIPipeSimpleIteratingAlgorithm {
                 }
             }
         }
-        ExpressionVariables variableSet = new ExpressionVariables();
+        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
         for (ImagePlus rawImage : rawImages) {
             ImageQueryExpressionVariablesInfo.buildVariablesSet(rawImage, variableSet);
             if (imageFilters.test(variableSet)) {

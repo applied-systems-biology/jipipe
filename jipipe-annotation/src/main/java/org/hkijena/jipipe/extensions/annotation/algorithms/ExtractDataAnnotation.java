@@ -16,7 +16,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalStringParameter;
 
@@ -47,7 +47,7 @@ public class ExtractDataAnnotation extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
-        String targetedAnnotationName = annotationNameQuery.queryFirst(iterationStep.getMergedDataAnnotations().keySet(), new ExpressionVariables());
+        String targetedAnnotationName = annotationNameQuery.queryFirst(iterationStep.getMergedDataAnnotations().keySet(), new JIPipeExpressionVariablesMap());
         if (targetedAnnotationName == null) {
             if (ignoreMissingAnnotations)
                 return;

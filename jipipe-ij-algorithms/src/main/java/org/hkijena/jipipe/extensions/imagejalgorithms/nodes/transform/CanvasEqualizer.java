@@ -21,8 +21,8 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
+import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
 
 import java.awt.*;
@@ -45,9 +45,9 @@ public class CanvasEqualizer extends AbstractJIPipeParameterCollection {
         this.anchor = other.anchor;
     }
 
-    public List<ImagePlus> equalize(List<ImagePlus> input, ExpressionVariables variables) {
+    public List<ImagePlus> equalize(List<ImagePlus> input, JIPipeExpressionVariablesMap variables) {
 
-        variables = new ExpressionVariables(variables);
+        variables = new JIPipeExpressionVariablesMap(variables);
 
         int wNew = 0;
         int hNew = 0;
@@ -161,7 +161,7 @@ public class CanvasEqualizer extends AbstractJIPipeParameterCollection {
     @JIPipeParameter("x-axis-expression")
     @JIPipeExpressionParameterVariable(key = "width", name = "Width", description = "Calculated width of the output image")
     @JIPipeExpressionParameterVariable(key = "height", name = "Height", description = "Calculated height of the output image")
-    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getxAxis() {
         return xAxis;
     }
@@ -175,7 +175,7 @@ public class CanvasEqualizer extends AbstractJIPipeParameterCollection {
     @JIPipeParameter("y-axis-expression")
     @JIPipeExpressionParameterVariable(key = "width", name = "Width", description = "Calculated width of the output image")
     @JIPipeExpressionParameterVariable(key = "height", name = "Height", description = "Calculated height of the output image")
-    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getyAxis() {
         return yAxis;
     }

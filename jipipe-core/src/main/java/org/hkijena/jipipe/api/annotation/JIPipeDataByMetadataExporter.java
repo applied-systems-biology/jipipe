@@ -178,7 +178,7 @@ public class JIPipeDataByMetadataExporter extends AbstractJIPipeParameterCollect
      * @return the string
      */
     public String generateName(JIPipeDataTable dataTable, int row, Set<String> existingMetadata) {
-        ExpressionVariables parameters = new ExpressionVariables();
+        JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap();
         for (int col = 0; col < dataTable.getTextAnnotationColumnNames().size(); col++) {
             String metadataKey = dataTable.getTextAnnotationColumnNames().get(col);
             JIPipeTextAnnotation metadataValue = dataTable.getTextAnnotationOr(row, metadataKey, null);
@@ -207,7 +207,7 @@ public class JIPipeDataByMetadataExporter extends AbstractJIPipeParameterCollect
 
     public String generateName(JIPipeDataTableMetadata exportedDataTable, int row, Set<String> existingMetadata) {
         JIPipeDataTableMetadataRow dataRow = exportedDataTable.getRowList().get(row);
-        ExpressionVariables parameters = new ExpressionVariables();
+        JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap();
         for (JIPipeTextAnnotation annotation : dataRow.getTextAnnotations()) {
             parameters.put(annotation.getName(), annotation.getValue());
         }
@@ -233,7 +233,7 @@ public class JIPipeDataByMetadataExporter extends AbstractJIPipeParameterCollect
      * @return the string
      */
     public Path generatePath(JIPipeDataTable dataTable, int row, Set<String> existingMetadata) {
-        ExpressionVariables parameters = new ExpressionVariables();
+        JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap();
         for (int col = 0; col < dataTable.getTextAnnotationColumnNames().size(); col++) {
             String metadataKey = dataTable.getTextAnnotationColumnNames().get(col);
             JIPipeTextAnnotation metadataValue = dataTable.getTextAnnotationOr(row, metadataKey, null);
@@ -269,7 +269,7 @@ public class JIPipeDataByMetadataExporter extends AbstractJIPipeParameterCollect
 
     public Path generatePath(JIPipeDataTableMetadata exportedDataTable, int row, Set<String> existingMetadata) {
         JIPipeDataTableMetadataRow dataRow = exportedDataTable.getRowList().get(row);
-        ExpressionVariables parameters = new ExpressionVariables();
+        JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap();
         for (JIPipeTextAnnotation annotation : dataRow.getTextAnnotations()) {
             parameters.put(annotation.getName(), annotation.getValue());
         }

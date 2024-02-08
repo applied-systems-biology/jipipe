@@ -2,16 +2,11 @@ package org.hkijena.jipipe.extensions.expressions.functions.scripts;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
-import org.hkijena.jipipe.extensions.parameters.library.scripts.PythonScript;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.python.util.PythonInterpreter;
 
-import javax.script.Bindings;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +23,7 @@ public class JythonScriptFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
+    public Object evaluate(List<Object> parameters, JIPipeExpressionVariablesMap variables) {
         String script = StringUtils.nullToEmpty(parameters.get(0));
         PythonInterpreter pythonInterpreter = new PythonInterpreter();
         for (Map.Entry<String, Object> entry : variables.entrySet()) {

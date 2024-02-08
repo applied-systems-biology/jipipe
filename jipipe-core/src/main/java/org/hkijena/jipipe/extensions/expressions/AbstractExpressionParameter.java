@@ -65,7 +65,7 @@ public abstract class AbstractExpressionParameter implements JIPipeCustomTextDes
      * @param variables the variables
      * @return the result
      */
-    public boolean test(ExpressionVariables variables) {
+    public boolean test(JIPipeExpressionVariablesMap variables) {
         return getEvaluator().test(expression, variables);
     }
 
@@ -84,7 +84,7 @@ public abstract class AbstractExpressionParameter implements JIPipeCustomTextDes
      * @param variables the variables
      * @return the result
      */
-    public double evaluateToNumber(ExpressionVariables variables) {
+    public double evaluateToNumber(JIPipeExpressionVariablesMap variables) {
         return evaluateToDouble(variables);
     }
 
@@ -94,7 +94,7 @@ public abstract class AbstractExpressionParameter implements JIPipeCustomTextDes
      * @param variables the variables
      * @return the result
      */
-    public int evaluateToInteger(ExpressionVariables variables) {
+    public int evaluateToInteger(JIPipeExpressionVariablesMap variables) {
         return (int) evaluateToDouble(variables);
     }
 
@@ -105,7 +105,7 @@ public abstract class AbstractExpressionParameter implements JIPipeCustomTextDes
      * @param defaultValue the default value
      * @return the result
      */
-    public int evaluateToIntegerSafe(ExpressionVariables variables, int defaultValue) {
+    public int evaluateToIntegerSafe(JIPipeExpressionVariablesMap variables, int defaultValue) {
         try {
             return evaluateToInteger(variables);
         } catch (Throwable e) {
@@ -119,7 +119,7 @@ public abstract class AbstractExpressionParameter implements JIPipeCustomTextDes
      * @param variables the variables
      * @return the result
      */
-    public double evaluateToDouble(ExpressionVariables variables) {
+    public double evaluateToDouble(JIPipeExpressionVariablesMap variables) {
         Object result = evaluate(variables);
         if (result instanceof Number) {
             return ((Number) result).doubleValue();
@@ -134,7 +134,7 @@ public abstract class AbstractExpressionParameter implements JIPipeCustomTextDes
      * @param variables the variables
      * @return the result
      */
-    public List<Double> evaluateToDoubleList(ExpressionVariables variables) {
+    public List<Double> evaluateToDoubleList(JIPipeExpressionVariablesMap variables) {
         Object result = evaluate(variables);
         if (result instanceof Number) {
             return Collections.singletonList(((Number) result).doubleValue());
@@ -159,7 +159,7 @@ public abstract class AbstractExpressionParameter implements JIPipeCustomTextDes
      * @param variables the variables
      * @return the result
      */
-    public float evaluateToFloat(ExpressionVariables variables) {
+    public float evaluateToFloat(JIPipeExpressionVariablesMap variables) {
         Object result = evaluate(variables);
         if (result instanceof Number) {
             return ((Number) result).floatValue();
@@ -174,7 +174,7 @@ public abstract class AbstractExpressionParameter implements JIPipeCustomTextDes
      * @param variables the variables
      * @return the result
      */
-    public String evaluateToString(ExpressionVariables variables) {
+    public String evaluateToString(JIPipeExpressionVariablesMap variables) {
         Object result = evaluate(variables);
         return StringUtils.nullToEmpty(result);
     }
@@ -185,7 +185,7 @@ public abstract class AbstractExpressionParameter implements JIPipeCustomTextDes
      * @param variables the variables
      * @return the result
      */
-    public boolean evaluateToBoolean(ExpressionVariables variables) {
+    public boolean evaluateToBoolean(JIPipeExpressionVariablesMap variables) {
         Object result = evaluate(variables);
         return (boolean) result;
     }
@@ -198,7 +198,7 @@ public abstract class AbstractExpressionParameter implements JIPipeCustomTextDes
      * @param variables the variables
      * @return the result
      */
-    public Color evaluateToColor(ExpressionVariables variables) {
+    public Color evaluateToColor(JIPipeExpressionVariablesMap variables) {
         Object o = evaluate(variables);
         if (o instanceof Number) {
             int rgb = ((Number) o).intValue();
@@ -242,7 +242,7 @@ public abstract class AbstractExpressionParameter implements JIPipeCustomTextDes
      * @param variables the variables
      * @return the result
      */
-    public Object evaluate(ExpressionVariables variables) {
+    public Object evaluate(JIPipeExpressionVariablesMap variables) {
         return getEvaluator().evaluate(expression, variables);
     }
 
