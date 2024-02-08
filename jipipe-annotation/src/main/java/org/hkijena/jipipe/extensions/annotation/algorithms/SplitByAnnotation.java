@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
 import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.parameters.library.graph.OutputSlotMapParameterCollection;
@@ -47,8 +47,6 @@ public class SplitByAnnotation extends JIPipeAlgorithm {
 
     private final OutputSlotMapParameterCollection targetSlots;
 
-    private final JIPipeCustomExpressionVariablesParameter customVariables;
-
     /**
      * @param info algorithm info
      */
@@ -58,7 +56,6 @@ public class SplitByAnnotation extends JIPipeAlgorithm {
                 .sealInput()
                 .addOutputSlot("Output", "", JIPipeData.class)
                 .build());
-        this.customVariables = new JIPipeCustomExpressionVariablesParameter(this);
         this.targetSlots = new OutputSlotMapParameterCollection(AnnotationFilterExpression.class, this, null, true);
         registerSubParameter(targetSlots);
     }
@@ -70,7 +67,6 @@ public class SplitByAnnotation extends JIPipeAlgorithm {
      */
     public SplitByAnnotation(SplitByAnnotation other) {
         super(other);
-        this.customVariables = new JIPipeCustomExpressionVariablesParameter(other.customVariables, this);
         this.targetSlots = new OutputSlotMapParameterCollection(AnnotationFilterExpression.class, this, null, true);
         other.targetSlots.copyTo(this.targetSlots);
         registerSubParameter(targetSlots);
@@ -92,7 +88,7 @@ public class SplitByAnnotation extends JIPipeAlgorithm {
             for (String outputSlotKey : outputSlotKeys) {
                 AnnotationFilterExpression expression = targetSlots.get(outputSlotKey).get(AnnotationFilterExpression.class);
                 JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-                customVariables.writeToVariables(variables);
+                getDefaultCustomExpressionVariables().writeToVariables(variables);
                 if (expression.test(annotations, dataString, variables)) {
                     getOutputSlot(outputSlotKey).addData(inputSlot.getData(row, JIPipeData.class, progressInfo),
                             annotations,
@@ -116,11 +112,9 @@ public class SplitByAnnotation extends JIPipeAlgorithm {
         return targetSlots;
     }
 
-    @JIPipeDocumentation(name = "Custom variables", description = "Here you can add parameters that will be included into the expressions as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(custom, \"[key]\")</code>.")
-    @JIPipeParameter(value = "custom-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
-            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
-    public JIPipeCustomExpressionVariablesParameter getCustomVariables() {
-        return customVariables;
+    @Override
+    public boolean isEnableDefaultCustomExpressionVariables() {
+        return true;
     }
 
 }

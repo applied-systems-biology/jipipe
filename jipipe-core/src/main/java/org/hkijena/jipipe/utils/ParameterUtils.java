@@ -17,7 +17,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -75,11 +75,11 @@ public class ParameterUtils {
             while (!stack.isEmpty()) {
                 JIPipeParameterTree.Node top = stack.pop();
 
-                if (top.getPersistence() == JIPipeParameterPersistence.Collection) {
+                if (top.getPersistence() == JIPipeParameterSerializationMode.Default) {
                     for (Map.Entry<String, JIPipeParameterAccess> entry : top.getParameters().entrySet().stream()
                             .sorted(Comparator.comparing(kv -> -kv.getValue().getPriority())).collect(Collectors.toList())) {
                         JIPipeParameterAccess parameterAccess = entry.getValue();
-                        if (parameterAccess.getPersistence() != JIPipeParameterPersistence.None) {
+                        if (parameterAccess.getPersistence() != JIPipeParameterSerializationMode.None) {
                             String key = parameterCollection.getUniqueKey(parameterAccess);
                             if (loadedParameters.contains(key))
                                 continue;
@@ -121,7 +121,7 @@ public class ParameterUtils {
         while (!stack.isEmpty()) {
             JIPipeParameterTree.Node top = stack.pop();
 
-            if (top.getPersistence() == JIPipeParameterPersistence.NestedCollection) {
+            if (top.getPersistence() == JIPipeParameterSerializationMode.Object) {
                 JsonNode objectNode = node.path(String.join("/", top.getPath()));
                 if (!objectNode.isMissingNode()) {
                     JIPipeParameterCollection collection = top.getCollection();
@@ -131,7 +131,7 @@ public class ParameterUtils {
                         throw new RuntimeException("Cannot deserialize object-like persistence into non-Json-deserializable target!");
                     }
                 }
-            } else if (top.getPersistence() == JIPipeParameterPersistence.Collection) {
+            } else if (top.getPersistence() == JIPipeParameterSerializationMode.Default) {
                 for (JIPipeParameterTree.Node child : top.getChildren().values()) {
                     stack.push(child);
                 }
@@ -166,14 +166,14 @@ public class ParameterUtils {
         while (!stack.isEmpty()) {
             JIPipeParameterTree.Node top = stack.pop();
 
-            if (top.getPersistence() == JIPipeParameterPersistence.NestedCollection) {
+            if (top.getPersistence() == JIPipeParameterSerializationMode.Object) {
                 jsonGenerator.writeObjectField(String.join("/", top.getPath()), top.getCollection());
-            } else if (top.getPersistence() == JIPipeParameterPersistence.Collection) {
+            } else if (top.getPersistence() == JIPipeParameterSerializationMode.Default) {
                 for (Map.Entry<String, JIPipeParameterAccess> entry : top.getParameters().entrySet()) {
                     if (filter != null && !filter.test(entry))
                         continue;
                     JIPipeParameterAccess parameterAccess = entry.getValue();
-                    if (parameterAccess.getPersistence() != JIPipeParameterPersistence.None)
+                    if (parameterAccess.getPersistence() != JIPipeParameterSerializationMode.None)
                         jsonGenerator.writeObjectField(parameterCollection.getUniqueKey(parameterAccess), parameterAccess.get(Object.class));
                 }
                 for (JIPipeParameterTree.Node node : top.getChildren().values()) {

@@ -44,7 +44,6 @@ import java.util.Map;
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 public class ChangeImageMetadataFromExpressionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
-    private final JIPipeCustomExpressionVariablesParameter customFilterVariables;
     private OptionalJIPipeExpressionParameter imageTitle = new OptionalJIPipeExpressionParameter(false, "title");
 
     /**
@@ -54,7 +53,6 @@ public class ChangeImageMetadataFromExpressionsAlgorithm extends JIPipeSimpleIte
      */
     public ChangeImageMetadataFromExpressionsAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.customFilterVariables = new JIPipeCustomExpressionVariablesParameter(this);
     }
 
     /**
@@ -65,7 +63,6 @@ public class ChangeImageMetadataFromExpressionsAlgorithm extends JIPipeSimpleIte
     public ChangeImageMetadataFromExpressionsAlgorithm(ChangeImageMetadataFromExpressionsAlgorithm other) {
         super(other);
         this.imageTitle = new OptionalJIPipeExpressionParameter(other.imageTitle);
-        this.customFilterVariables = new JIPipeCustomExpressionVariablesParameter(other.customFilterVariables, this);
     }
 
     @Override
@@ -74,7 +71,7 @@ public class ChangeImageMetadataFromExpressionsAlgorithm extends JIPipeSimpleIte
 
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-        customFilterVariables.writeToVariables(variables);
+        getDefaultCustomExpressionVariables().writeToVariables(variables);
         variables.set("title", StringUtils.nullToEmpty(imagePlus.getTitle()));
         variables.set("width", imagePlus.getWidth());
         variables.set("height", imagePlus.getHeight());
@@ -95,6 +92,11 @@ public class ChangeImageMetadataFromExpressionsAlgorithm extends JIPipeSimpleIte
         }
 
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(imagePlus), progressInfo);
+    }
+
+    @Override
+    public boolean isEnableDefaultCustomExpressionVariables() {
+        return true;
     }
 
     @JIPipeDocumentation(name = "Image title", description = "Allows to change the image title")

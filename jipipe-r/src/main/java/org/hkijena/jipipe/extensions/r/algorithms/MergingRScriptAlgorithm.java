@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
@@ -267,7 +267,7 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
 
-    @JIPipeParameter(value = "variables", persistence = JIPipeParameterPersistence.NestedCollection)
+    @JIPipeParameter(value = "variables", persistence = JIPipeParameterSerializationMode.Object)
     @JIPipeDocumentation(name = "Script variables", description = "The parameters are passed as variables to the R script. The variables are named according to the " +
             "unique name (if valid variable names) and are also stored in a list 'JIPipe.Variables'.")
     public JIPipeDynamicParameterCollection getVariables() {

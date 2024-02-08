@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameter;
 import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
@@ -59,7 +59,6 @@ public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorith
 
     private final RoiStatisticsAlgorithm roiStatisticsAlgorithm =
             JIPipe.createNode(RoiStatisticsAlgorithm.class);
-    private final JIPipeCustomExpressionVariablesParameter customVariables;
     private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
     private ParameterCollectionList metadataGenerators = ParameterCollectionList.containingCollection(MetadataProperty.class);
     private boolean measureInPhysicalUnits = true;
@@ -72,7 +71,6 @@ public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorith
      */
     public SetRoiMetadataByStatisticsAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.customVariables = new JIPipeCustomExpressionVariablesParameter(this);
     }
 
     /**
@@ -84,7 +82,6 @@ public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorith
         super(other);
         this.metadataGenerators = new ParameterCollectionList(other.metadataGenerators);
         this.measurements = new ImageStatisticsSetParameter(other.measurements);
-        this.customVariables = new JIPipeCustomExpressionVariablesParameter(other.customVariables, this);
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
         this.clearBeforeWrite = other.clearBeforeWrite;
     }
@@ -107,7 +104,7 @@ public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorith
         // Create variables
         JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
         variableSet.putAnnotations(iterationStep.getMergedTextAnnotations());
-        customVariables.writeToVariables(variableSet);
+        getDefaultCustomExpressionVariables().writeToVariables(variableSet);
 
         // Obtain statistics
         roiStatisticsAlgorithm.clearSlotData();
@@ -187,11 +184,9 @@ public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorith
         this.measurements = measurements;
     }
 
-    @JIPipeDocumentation(name = "Custom variables", description = "Here you can add parameters that will be included into the expressions as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(custom, \"[key]\")</code>.")
-    @JIPipeParameter(value = "custom-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
-            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
-    public JIPipeCustomExpressionVariablesParameter getCustomVariables() {
-        return customVariables;
+    @Override
+    public boolean isEnableDefaultCustomExpressionVariables() {
+        return true;
     }
 
     @JIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")

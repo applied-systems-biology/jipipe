@@ -21,7 +21,6 @@ import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.jetbrains.annotations.NotNull;
 import org.scijava.Priority;
 
 import java.lang.reflect.InvocationTargetException;
@@ -614,12 +613,12 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
             return getterAnnotation.hidden() || setterAnnotation.hidden();
         }
 
-        public JIPipeParameterPersistence getPersistence() {
+        public JIPipeParameterSerializationMode getPersistence() {
             JIPipeParameter getterAnnotation = getter.getAnnotation(JIPipeParameter.class);
             if (setter == null)
                 return getterAnnotation.persistence();
             JIPipeParameter setterAnnotation = setter.getAnnotation(JIPipeParameter.class);
-            if (getterAnnotation.persistence() != JIPipeParameterPersistence.Collection)
+            if (getterAnnotation.persistence() != JIPipeParameterSerializationMode.Default)
                 return setterAnnotation.persistence();
             else
                 return getterAnnotation.persistence();
@@ -705,7 +704,7 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
         private BiMap<String, JIPipeParameterAccess> parameters = HashBiMap.create();
         private BiMap<String, Node> children = HashBiMap.create();
         private List<JIPipeParameterCollectionContextAction> actions = new ArrayList<>();
-        private JIPipeParameterPersistence persistence = JIPipeParameterPersistence.Collection;
+        private JIPipeParameterSerializationMode persistence = JIPipeParameterSerializationMode.Default;
         private boolean collapsed;
         private String iconURL;
         private String darkIconURL;
@@ -861,11 +860,11 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
             this.actions = actions;
         }
 
-        public JIPipeParameterPersistence getPersistence() {
+        public JIPipeParameterSerializationMode getPersistence() {
             return persistence;
         }
 
-        public void setPersistence(JIPipeParameterPersistence persistence) {
+        public void setPersistence(JIPipeParameterSerializationMode persistence) {
             this.persistence = persistence;
         }
 

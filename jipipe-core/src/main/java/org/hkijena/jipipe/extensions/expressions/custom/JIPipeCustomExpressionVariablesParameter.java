@@ -3,6 +3,7 @@ package org.hkijena.jipipe.extensions.expressions.custom;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 
 import java.util.HashMap;
@@ -10,7 +11,7 @@ import java.util.Map;
 
 /**
  * A parameter collection that allows the creation of custom expression variables
- * Please note that the {@link org.hkijena.jipipe.api.parameters.JIPipeParameter} annotation should have {@link org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence} set to 'NestedCollection'. Otherwise, user-defined parameters will not be saved!
+ * Please note that the {@link org.hkijena.jipipe.api.parameters.JIPipeParameter} annotation should have {@link JIPipeParameterSerializationMode} set to 'NestedCollection'. Otherwise, user-defined parameters will not be saved!
  */
 public class JIPipeCustomExpressionVariablesParameter extends JIPipeDynamicParameterCollection {
 

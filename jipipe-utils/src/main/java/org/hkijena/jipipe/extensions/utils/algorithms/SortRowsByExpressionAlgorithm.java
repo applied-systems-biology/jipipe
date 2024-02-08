@@ -14,7 +14,7 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
 import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
@@ -36,18 +36,15 @@ import java.util.List;
 @JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Sort")
 public class SortRowsByExpressionAlgorithm extends JIPipeParameterSlotAlgorithm {
 
-    private final JIPipeCustomExpressionVariablesParameter customExpressionVariables;
     private ParameterCollectionList entries = ParameterCollectionList.containingCollection(SortEntry.class);
 
     public SortRowsByExpressionAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        customExpressionVariables = new JIPipeCustomExpressionVariablesParameter(this);
         entries.addNewInstance();
     }
 
     public SortRowsByExpressionAlgorithm(SortRowsByExpressionAlgorithm other) {
         super(other);
-        this.customExpressionVariables = new JIPipeCustomExpressionVariablesParameter(other.customExpressionVariables, this);
         this.entries = new ParameterCollectionList(other.entries);
     }
 
@@ -62,7 +59,7 @@ public class SortRowsByExpressionAlgorithm extends JIPipeParameterSlotAlgorithm 
         List<List<String>> generatedValues = new ArrayList<>();
         for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
             variables.putAnnotations(getFirstInputSlot().getTextAnnotations(row));
-            customExpressionVariables.writeToVariables(variables);
+            getDefaultCustomExpressionVariables().writeToVariables(variables);
 
             List<String> values = new ArrayList<>();
             for (SortEntry entry : sortEntries) {
@@ -126,11 +123,9 @@ public class SortRowsByExpressionAlgorithm extends JIPipeParameterSlotAlgorithm 
         this.entries = entries;
     }
 
-    @JIPipeDocumentation(name = "Custom expression variables", description = "Here you can add parameters that will be included into the expression as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(custom, \"[key]\")</code>.")
-    @JIPipeParameter(value = "custom-expression-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
-            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
-    public JIPipeCustomExpressionVariablesParameter getCustomExpressionVariables() {
-        return customExpressionVariables;
+    @Override
+    public boolean isEnableDefaultCustomExpressionVariables() {
+        return true;
     }
 
     public static class SortEntry extends AbstractJIPipeParameterCollection {

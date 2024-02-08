@@ -16,7 +16,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameter;
 import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
@@ -41,14 +41,12 @@ import org.hkijena.jipipe.utils.StringUtils;
 @JIPipeOutputSlot(value = ROI3DListData.class, slotName = "ROI 2", autoCreate = true)
 public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private final JIPipeCustomExpressionVariablesParameter customVariables;
     private ROI3DRelationMeasurementSetParameter overlapFilterMeasurements = new ROI3DRelationMeasurementSetParameter();
     private ROIFilterSettings roi1Settings = new ROIFilterSettings();
     private ROIFilterSettings roi2Settings = new ROIFilterSettings();
 
     public FilterRoi3DByOverlapAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.customVariables = new JIPipeCustomExpressionVariablesParameter(this);
         registerSubParameter(roi1Settings);
         registerSubParameter(roi2Settings);
         updateSlots();
@@ -56,7 +54,6 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
     public FilterRoi3DByOverlapAlgorithm(FilterRoi3DByOverlapAlgorithm other) {
         super(other);
-        this.customVariables = new JIPipeCustomExpressionVariablesParameter(other.customVariables, this);
         this.roi1Settings = new ROIFilterSettings(other.roi1Settings);
         this.roi2Settings = new ROIFilterSettings(other.roi2Settings);
         this.overlapFilterMeasurements = new ROI3DRelationMeasurementSetParameter(other.overlapFilterMeasurements);
@@ -111,7 +108,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
             JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
             variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-            customVariables.writeToVariables(variables);
+            getDefaultCustomExpressionVariables().writeToVariables(variables);
 
             ROI3DListData copy1 = new ROI3DListData();
             ROI3DListData copy2 = new ROI3DListData();
@@ -124,7 +121,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
             JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
             variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-            customVariables.writeToVariables(variables);
+            getDefaultCustomExpressionVariables().writeToVariables(variables);
 
             ROI3DListData copy1 = new ROI3DListData();
             ROI3DListData copy2 = new ROI3DListData();
@@ -206,11 +203,9 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         return output;
     }
 
-    @JIPipeDocumentation(name = "Custom variables", description = "Here you can add parameters that will be included into the expressions as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(custom, \"[key]\")</code>.")
-    @JIPipeParameter(value = "custom-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
-            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
-    public JIPipeCustomExpressionVariablesParameter getCustomVariables() {
-        return customVariables;
+    @Override
+    public boolean isEnableDefaultCustomExpressionVariables() {
+        return true;
     }
 
     @JIPipeDocumentation(name = "ROI 1 filter", description = "Use following settings to determine how inputs into <b>ROI 1</b> are filtered " +

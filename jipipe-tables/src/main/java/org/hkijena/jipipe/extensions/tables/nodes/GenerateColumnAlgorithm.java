@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
@@ -48,7 +48,6 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private final JIPipeCustomExpressionVariablesParameter customFilterVariables;
     private ExpressionTableColumnGeneratorProcessorParameterList columns = new ExpressionTableColumnGeneratorProcessorParameterList();
     private boolean replaceIfExists = false;
     private OptionalIntegerParameter ensureMinNumberOfRows = new OptionalIntegerParameter(false, 1);
@@ -60,7 +59,6 @@ public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      */
     public GenerateColumnAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.customFilterVariables = new JIPipeCustomExpressionVariablesParameter(this);
         columns.addNewInstance();
     }
 
@@ -74,7 +72,6 @@ public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.replaceIfExists = other.replaceIfExists;
         this.columns = new ExpressionTableColumnGeneratorProcessorParameterList(other.columns);
         this.ensureMinNumberOfRows = new OptionalIntegerParameter(other.ensureMinNumberOfRows);
-        this.customFilterVariables = new JIPipeCustomExpressionVariablesParameter(other.customFilterVariables, this);
     }
 
     @Override
@@ -85,7 +82,7 @@ public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
         JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
         variableSet.putAnnotations(iterationStep.getMergedTextAnnotations());
-        customFilterVariables.writeToVariables(variableSet);
+        getDefaultCustomExpressionVariables().writeToVariables(variableSet);
 
         variableSet.set("num_rows", table.getRowCount());
         for (ExpressionTableColumnGeneratorProcessor entry : columns) {
@@ -120,11 +117,9 @@ public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         report.report(new ParameterValidationReportContext(context, this, "Columns", "columns"), columns);
     }
 
-    @JIPipeDocumentation(name = "Custom expression variables", description = "Here you can add parameters that will be included into the expression as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(custom, \"[key]\")</code>.")
-    @JIPipeParameter(value = "custom-filter-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
-            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
-    public JIPipeCustomExpressionVariablesParameter getCustomFilterVariables() {
-        return customFilterVariables;
+    @Override
+    public boolean isEnableDefaultCustomExpressionVariables() {
+        return true;
     }
 
     @JIPipeDocumentation(name = "Replace existing data", description = "If the target column exists, replace its content")

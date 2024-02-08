@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
 import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
@@ -48,18 +48,14 @@ import java.util.Map;
 @JIPipeInputSlot(value = SpotsCollectionData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = SpotsCollectionData.class, slotName = "Output", autoCreate = true)
 public class SplitSpotsNode extends JIPipeSimpleIteratingAlgorithm {
-
-    private final JIPipeCustomExpressionVariablesParameter customVariables;
     private NamedTextAnnotationGeneratorExpression.List annotationGenerator = new NamedTextAnnotationGeneratorExpression.List();
 
     public SplitSpotsNode(JIPipeNodeInfo info) {
         super(info);
-        this.customVariables = new JIPipeCustomExpressionVariablesParameter(this);
     }
 
     public SplitSpotsNode(SplitSpotsNode other) {
         super(other);
-        this.customVariables = new JIPipeCustomExpressionVariablesParameter(other.customVariables, this);
         this.annotationGenerator = new NamedTextAnnotationGeneratorExpression.List(other.annotationGenerator);
     }
 
@@ -69,7 +65,7 @@ public class SplitSpotsNode extends JIPipeSimpleIteratingAlgorithm {
         SpotCollection oldCollection = spotsCollectionData.getSpots();
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-        customVariables.writeToVariables(variables);
+        getDefaultCustomExpressionVariables().writeToVariables(variables);
         variables.set("n_spots", oldCollection.getNSpots(true));
         int index = 0;
 
@@ -130,10 +126,8 @@ public class SplitSpotsNode extends JIPipeSimpleIteratingAlgorithm {
         this.annotationGenerator = annotationGenerator;
     }
 
-    @JIPipeDocumentation(name = "Custom variables", description = "Here you can add parameters that will be included into the expressions as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(custom, \"[key]\")</code>.")
-    @JIPipeParameter(value = "custom-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
-            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
-    public JIPipeCustomExpressionVariablesParameter getCustomVariables() {
-        return customVariables;
+    @Override
+    public boolean isEnableDefaultCustomExpressionVariables() {
+        return true;
     }
 }

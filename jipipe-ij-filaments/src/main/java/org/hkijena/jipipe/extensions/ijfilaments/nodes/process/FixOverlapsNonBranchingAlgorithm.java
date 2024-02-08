@@ -10,7 +10,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameter;
 import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
@@ -41,7 +41,6 @@ import java.util.stream.Collectors;
 @JIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", autoCreate = true)
 public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private final JIPipeCustomExpressionVariablesParameter customExpressionVariables;
     private boolean enforceSameComponent = true;
     private boolean ensureNoPathExists = true;
     private boolean connectAcrossC = false;
@@ -56,12 +55,10 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
 
     public FixOverlapsNonBranchingAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.customExpressionVariables = new JIPipeCustomExpressionVariablesParameter(this);
     }
 
     public FixOverlapsNonBranchingAlgorithm(FixOverlapsNonBranchingAlgorithm other) {
         super(other);
-        this.customExpressionVariables = new JIPipeCustomExpressionVariablesParameter(other.customExpressionVariables, this);
         this.enforceSameComponent = other.enforceSameComponent;
         this.ensureNoPathExists = other.ensureNoPathExists;
         this.connectAcrossC = other.connectAcrossC;
@@ -96,11 +93,9 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
         this.newEdgeColor = newEdgeColor;
     }
 
-    @JIPipeDocumentation(name = "Custom expression variables", description = "Here you can add parameters that will be included into the expression as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(custom, \"[key]\")</code>.")
-    @JIPipeParameter(value = "custom-filter-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
-            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
-    public JIPipeCustomExpressionVariablesParameter getCustomExpressionVariables() {
-        return customExpressionVariables;
+    @Override
+    public boolean isEnableDefaultCustomExpressionVariables() {
+        return true;
     }
 
     @JIPipeDocumentation(name = "Candidate edge filter", description = "Filter expression that determines if an edge is considered as candidate")
@@ -230,7 +225,7 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
         Map<FilamentVertex, Integer> components = outputData.findComponentIds();
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-        customExpressionVariables.writeToVariables(variables, true, "custom", true, "custom");
+        getDefaultCustomExpressionVariables().writeToVariables(variables);
 
         // Find the existing endpoints
         Set<FilamentVertex> existingEndpoints = outputData.vertexSet().stream().filter(vertex -> outputData.degreeOf(vertex) == 1).collect(Collectors.toSet());

@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.extensions.expressions;
 
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameter;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.nio.file.Path;
@@ -80,6 +81,16 @@ public class JIPipeExpressionVariablesMap extends HashMap<String, Object> {
             }
         }
         set("project_data_dirs", projectDataDirs_);
+        return this;
+    }
+
+    /**
+     * Puts custom expression parameters (with default settings)
+     * @param customExpressionVariablesParameter the parameter
+     * @return this
+     */
+    public JIPipeExpressionVariablesMap putCustomVariables(JIPipeCustomExpressionVariablesParameter customExpressionVariablesParameter) {
+        customExpressionVariablesParameter.writeToVariables(this);
         return this;
     }
 }

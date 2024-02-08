@@ -173,7 +173,7 @@ public interface JIPipeParameterAccess {
      *
      * @return the persistence
      */
-    default JIPipeParameterPersistence getPersistence() {
-        return JIPipeParameterPersistence.Collection;
+    default JIPipeParameterSerializationMode getPersistence() {
+        return JIPipeParameterSerializationMode.Default;
     }
 }

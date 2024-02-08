@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
 import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
@@ -51,7 +51,6 @@ import java.util.List;
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 public class TileImage2Dv2Algorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private final JIPipeCustomExpressionVariablesParameter customVariables;
     private JIPipeExpressionParameter tileSizeX = new JIPipeExpressionParameter("512");
     private JIPipeExpressionParameter tileSizeY = new JIPipeExpressionParameter("512");
     private JIPipeExpressionParameter overlapX = new JIPipeExpressionParameter("0");
@@ -71,12 +70,10 @@ public class TileImage2Dv2Algorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public TileImage2Dv2Algorithm(JIPipeNodeInfo info) {
         super(info);
-        this.customVariables = new JIPipeCustomExpressionVariablesParameter(this);
     }
 
     public TileImage2Dv2Algorithm(TileImage2Dv2Algorithm other) {
         super(other);
-        this.customVariables = new JIPipeCustomExpressionVariablesParameter(other.customVariables, this);
         this.tileSizeX = other.tileSizeX;
         this.tileSizeY = other.tileSizeY;
         this.tileXAnnotation = new OptionalAnnotationNameParameter(other.tileXAnnotation);
@@ -102,7 +99,7 @@ public class TileImage2Dv2Algorithm extends JIPipeSimpleIteratingAlgorithm {
 
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-        customVariables.writeToVariables(variables);
+        getDefaultCustomExpressionVariables().writeToVariables(variables);
         variables.set("width", img.getWidth());
         variables.set("height", img.getHeight());
         variables.set("num_c", img.getNChannels());
@@ -176,11 +173,9 @@ public class TileImage2Dv2Algorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Custom variables", description = "Here you can add parameters that will be included into the expressions as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(custom, \"[key]\")</code>.")
-    @JIPipeParameter(value = "custom-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
-            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
-    public JIPipeCustomExpressionVariablesParameter getCustomVariables() {
-        return customVariables;
+    @Override
+    public boolean isEnableDefaultCustomExpressionVariables() {
+        return true;
     }
 
     @JIPipeDocumentation(name = "Merge existing annotations", description = "Determines how existing annotations are merged")

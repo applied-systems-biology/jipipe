@@ -12,7 +12,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
@@ -39,20 +39,17 @@ import java.util.*;
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private final JIPipeCustomExpressionVariablesParameter customVariables;
     private ParameterCollectionList columns;
 
     public GenerateParametersFromExpressionAlgorithm(JIPipeNodeInfo info) {
         super(info);
         columns = ParameterCollectionList.containingCollection(Column.class);
         columns.addNewInstance();
-        customVariables = new JIPipeCustomExpressionVariablesParameter(this);
     }
 
     public GenerateParametersFromExpressionAlgorithm(GenerateParametersFromExpressionAlgorithm other) {
         super(other);
         columns = new ParameterCollectionList(other.columns);
-        customVariables = new JIPipeCustomExpressionVariablesParameter(other.customVariables, this);
     }
 
     @Override
@@ -82,7 +79,7 @@ public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleItera
         // Generate variables
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-        customVariables.writeToVariables(variables);
+        getDefaultCustomExpressionVariables().writeToVariables(variables);
 
         // Generate columns
         Map<String, List<Object>> valueMap = new HashMap<>();
@@ -152,11 +149,9 @@ public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleItera
         }
     }
 
-    @JIPipeDocumentation(name = "Custom variables", description = "Here you can add parameters that will be included into the expressions as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(custom, \"[key]\")</code>.")
-    @JIPipeParameter(value = "custom-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
-            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
-    public JIPipeCustomExpressionVariablesParameter getCustomVariables() {
-        return customVariables;
+    @Override
+    public boolean isEnableDefaultCustomExpressionVariables() {
+        return true;
     }
 
     @JIPipeDocumentation(name = "Generated parameter columns", description = "Each item within this list defines a column in the generated parameter table. You must set the following properties: " +

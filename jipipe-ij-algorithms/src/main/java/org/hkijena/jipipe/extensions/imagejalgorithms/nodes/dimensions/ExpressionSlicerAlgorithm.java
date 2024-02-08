@@ -15,9 +15,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameter;
 import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.Image5DSliceIndexExpressionParameterVariablesInfo;
@@ -25,7 +23,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndices;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
-import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -38,8 +35,6 @@ import java.util.stream.Collectors;
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks")
 public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
-
-    private final JIPipeCustomExpressionVariablesParameter customFilterVariables;
     private JIPipeExpressionParameter expressionZ = new JIPipeExpressionParameter("z");
     private JIPipeExpressionParameter expressionC = new JIPipeExpressionParameter("c");
     private JIPipeExpressionParameter expressionT = new JIPipeExpressionParameter("t");
@@ -53,12 +48,10 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public ExpressionSlicerAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.customFilterVariables = new JIPipeCustomExpressionVariablesParameter(this);
     }
 
     public ExpressionSlicerAlgorithm(ExpressionSlicerAlgorithm other) {
         super(other);
-        this.customFilterVariables = new JIPipeCustomExpressionVariablesParameter(other.customFilterVariables, this);
         this.expressionC = new JIPipeExpressionParameter(other.expressionC);
         this.expressionZ = new JIPipeExpressionParameter(other.expressionZ);
         this.expressionT = new JIPipeExpressionParameter(other.expressionT);
@@ -77,14 +70,14 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         // Collect indices
         List<ImageSliceIndices> imageSliceIndicesList = new ArrayList<>();
-        JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap();
-        parameters.putAnnotations(iterationStep.getMergedTextAnnotations());
-        customFilterVariables.writeToVariables(parameters, true, "custom.", true, "custom");
-        parameters.set("width", img.getWidth());
-        parameters.set("height", img.getHeight());
-        parameters.set("size_z", img.getNSlices());
-        parameters.set("size_c", img.getNChannels());
-        parameters.set("size_t", img.getNFrames());
+        JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap()
+                .putAnnotations(iterationStep.getMergedTextAnnotations())
+                .putCustomVariables(getDefaultCustomExpressionVariables());
+        variablesMap.set("width", img.getWidth());
+        variablesMap.set("height", img.getHeight());
+        variablesMap.set("size_z", img.getNSlices());
+        variablesMap.set("size_c", img.getNChannels());
+        variablesMap.set("size_t", img.getNFrames());
         for (int z = 0; z < img.getNSlices(); z++) {
             if (!iteratePerZ && z != 0)
                 continue;
@@ -94,14 +87,14 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 for (int t = 0; t < img.getNFrames(); t++) {
                     if (!iteratePerT && t != 0)
                         continue;
-                    parameters.set("z", z);
-                    parameters.set("c", c);
-                    parameters.set("t", t);
+                    variablesMap.set("z", z);
+                    variablesMap.set("c", c);
+                    variablesMap.set("t", t);
 
                     ImageSliceIndices indices = new ImageSliceIndices();
-                    extractZ(parameters, indices);
-                    extractC(parameters, indices);
-                    extractT(parameters, indices);
+                    extractZ(variablesMap, indices);
+                    extractC(variablesMap, indices);
+                    extractT(variablesMap, indices);
                     imageSliceIndicesList.add(indices);
                 }
             }
@@ -196,11 +189,9 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Custom expression variables", description = "Here you can add parameters that will be included into the expression as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(custom, \"[key]\")</code>.")
-    @JIPipeParameter(value = "custom-filter-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
-            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
-    public JIPipeCustomExpressionVariablesParameter getCustomFilterVariables() {
-        return customFilterVariables;
+    @Override
+    public boolean isEnableDefaultCustomExpressionVariables() {
+        return true;
     }
 
     @JIPipeDocumentation(name = "Generate Z slices", description = "Expression that is executed for each Z/C/T slice and generates an array of slice indices (or a single slice index) that " +

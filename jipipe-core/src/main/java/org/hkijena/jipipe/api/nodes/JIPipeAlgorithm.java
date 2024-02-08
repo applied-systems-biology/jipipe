@@ -24,9 +24,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.runtimepartitioning.RuntimePartitionReferenceParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -34,11 +33,14 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameter;
 import org.hkijena.jipipe.utils.ParameterUtils;
+import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -51,6 +53,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
     private boolean passThrough = false;
     private RuntimePartitionReferenceParameter runtimePartition = new RuntimePartitionReferenceParameter();
     private JIPipeFixedThreadPool threadPool;
+    private final JIPipeCustomExpressionVariablesParameter customExpressionVariables;
 
     /**
      * Initializes a new node type instance and sets a custom slot configuration
@@ -60,6 +63,8 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
      */
     public JIPipeAlgorithm(JIPipeNodeInfo info, JIPipeSlotConfiguration slotConfiguration) {
         super(info, slotConfiguration);
+        this.customExpressionVariables = new JIPipeCustomExpressionVariablesParameter();
+        registerSubParameter(customExpressionVariables);
     }
 
     /**
@@ -69,6 +74,8 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
      */
     public JIPipeAlgorithm(JIPipeNodeInfo info) {
         super(info);
+        this.customExpressionVariables = new JIPipeCustomExpressionVariablesParameter();
+        registerSubParameter(customExpressionVariables);
     }
 
     /**
@@ -81,6 +88,8 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
         this.enabled = other.enabled;
         this.passThrough = other.passThrough;
         this.runtimePartition = new RuntimePartitionReferenceParameter(other.runtimePartition);
+        this.customExpressionVariables = new JIPipeCustomExpressionVariablesParameter(other.customExpressionVariables);
+        registerSubParameter(customExpressionVariables);
     }
 
     @Override
@@ -178,12 +187,60 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
         this.passThrough = passThrough;
     }
 
+    @JIPipeDocumentation(name = "Custom variables", description = "Here you can add parameters that will be included into the expressions as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(custom, \"[key]\")</code>.")
+    @JIPipeParameter(value = "jipipe:custom-expression-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
+            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterSerializationMode.Object)
+    public JIPipeCustomExpressionVariablesParameter getDefaultCustomExpressionVariables() {
+        return customExpressionVariables;
+    }
+
+    @Override
+    protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
+        super.onDeserialized(node, issues, notifications);
+
+        if(isEnableDefaultCustomExpressionVariables() && customExpressionVariables.getParameters().isEmpty()) {
+            // Transfer parameters "custom-expression-variables" and "custom-filter-variables" into the standard expression storage if they are found
+            try {
+                deserializeLegacyCustomExpressionVariables(node, "custom-expression-variables");
+                deserializeLegacyCustomExpressionVariables(node, "custom-filter-variables");
+                deserializeLegacyCustomExpressionVariables(node, "custom-variables");
+            } catch (Throwable e) {
+            }
+        }
+    }
+
+    private void deserializeLegacyCustomExpressionVariables(JsonNode node, String jsonPropertyKey) throws IOException {
+        if(node.has(jsonPropertyKey)) {
+            JIPipeCustomExpressionVariablesParameter value = JsonUtils.getObjectMapper().readerFor(JIPipeCustomExpressionVariablesParameter.class).readValue(node.get(jsonPropertyKey));
+            for (Map.Entry<String, JIPipeParameterAccess> entry : value.getParameters().entrySet()) {
+                customExpressionVariables.addParameter((JIPipeMutableParameterAccess) entry.getValue());
+            }
+            JIPipe.getInstance().getLogService().info(getInfo().getId() + ": Transferred '" + jsonPropertyKey + "' into 'jipipe:custom-expression-variables'");
+        }
+    }
+
+    /**
+     * Returns true if the default custom expression variables are shown in the UI
+     * @return if the custom expression variables are shown in the UI
+     */
+    public boolean isEnableDefaultCustomExpressionVariables() {
+        return false;
+    }
+
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
         if (ParameterUtils.isHiddenLocalParameter(tree, access, "jipipe:algorithm:enabled", "jipipe:algorithm:pass-through")) {
             return false;
         }
         return super.isParameterUIVisible(tree, access);
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
+        if(subParameter == customExpressionVariables) {
+            return isEnableDefaultCustomExpressionVariables();
+        }
+        return super.isParameterUIVisible(tree, subParameter);
     }
 
     @Override

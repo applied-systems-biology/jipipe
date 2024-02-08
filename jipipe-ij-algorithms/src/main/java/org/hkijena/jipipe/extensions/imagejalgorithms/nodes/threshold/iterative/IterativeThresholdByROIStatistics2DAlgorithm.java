@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameter;
 import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
@@ -51,7 +51,6 @@ import java.util.List;
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", description = "Pre-filtered ROI (according to the criteria)", autoCreate = true)
 public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private final JIPipeCustomExpressionVariablesParameter customFilterVariables;
     private final RoiStatisticsAlgorithm roiStatisticsAlgorithm =
             JIPipe.createNode(RoiStatisticsAlgorithm.class);
     private final FindParticles2D findParticles2DAlgorithm = JIPipe.createNode(FindParticles2D.class);
@@ -67,7 +66,6 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
 
     public IterativeThresholdByROIStatistics2DAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.customFilterVariables = new JIPipeCustomExpressionVariablesParameter(this);
         this.filteringParameters = new FilteringParameters();
         this.scoreParameters = new ScoreParameters();
         registerSubParameter(filteringParameters);
@@ -77,7 +75,6 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
     public IterativeThresholdByROIStatistics2DAlgorithm(IterativeThresholdByROIStatistics2DAlgorithm other) {
         super(other);
         this.measurements = other.measurements;
-        this.customFilterVariables = new JIPipeCustomExpressionVariablesParameter(other.customFilterVariables, this);
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
         this.thresholdAnnotation = new OptionalAnnotationNameParameter(other.thresholdAnnotation);
         this.thresholdCombinationExpression = new JIPipeExpressionParameter(other.thresholdCombinationExpression);
@@ -122,7 +119,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         {
             JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
             variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-            customFilterVariables.writeToVariables(variables);
+            getDefaultCustomExpressionVariables().writeToVariables(variables);
             thresholds = this.thresholds.getIntegers(0, 255, variables);
         }
 
@@ -132,13 +129,13 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         JIPipeExpressionVariablesMap accumulationVariables = new JIPipeExpressionVariablesMap();
 
         roiFilterVariables.putAnnotations(iterationStep.getMergedTextAnnotations());
-        customFilterVariables.writeToVariables(roiFilterVariables);
+        getDefaultCustomExpressionVariables().writeToVariables(roiFilterVariables);
 
         thresholdCriteriaVariables.putAnnotations(iterationStep.getMergedTextAnnotations());
-        customFilterVariables.writeToVariables(thresholdCriteriaVariables);
+        getDefaultCustomExpressionVariables().writeToVariables(thresholdCriteriaVariables);
 
         accumulationVariables.putAnnotations(iterationStep.getMergedTextAnnotations());
-        customFilterVariables.writeToVariables(accumulationVariables);
+        getDefaultCustomExpressionVariables().writeToVariables(accumulationVariables);
 
         // Do we optimize?
         boolean optimize = scoreParameters.scoreExpression.isEnabled();
@@ -184,7 +181,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         if (!detectedThresholds.isEmpty()) {
             JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
             variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-            customFilterVariables.writeToVariables(variables);
+            getDefaultCustomExpressionVariables().writeToVariables(variables);
             variables.set("thresholds", detectedThresholds);
             Number combined = (Number) thresholdCombinationExpression.evaluate(variables);
             int threshold = Math.min(255, Math.max(0, combined.intValue()));
@@ -271,11 +268,9 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         return new ThresholdingResult(maskIp, filteredRois, threshold, score);
     }
 
-    @JIPipeDocumentation(name = "Custom expression variables", description = "Here you can add parameters that will be included into the expression as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(custom, \"[key]\")</code>.")
-    @JIPipeParameter(value = "custom-filter-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
-            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
-    public JIPipeCustomExpressionVariablesParameter getCustomFilterVariables() {
-        return customFilterVariables;
+    @Override
+    public boolean isEnableDefaultCustomExpressionVariables() {
+        return true;
     }
 
     @JIPipeDocumentation(name = "Measurements", description = "The measurements to calculate.")

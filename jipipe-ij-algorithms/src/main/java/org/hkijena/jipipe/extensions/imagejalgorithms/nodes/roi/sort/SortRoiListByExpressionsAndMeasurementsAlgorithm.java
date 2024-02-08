@@ -12,7 +12,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameter;
@@ -35,7 +35,6 @@ import java.util.*;
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
 public class SortRoiListByExpressionsAndMeasurementsAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private final JIPipeCustomExpressionVariablesParameter customFilterVariables;
     private StringQueryExpression expression = new StringQueryExpression();
     private boolean includeAnnotations = true;
     private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
@@ -44,7 +43,6 @@ public class SortRoiListByExpressionsAndMeasurementsAlgorithm extends JIPipeIter
 
     public SortRoiListByExpressionsAndMeasurementsAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.customFilterVariables = new JIPipeCustomExpressionVariablesParameter(this);
     }
 
     public SortRoiListByExpressionsAndMeasurementsAlgorithm(SortRoiListByExpressionsAndMeasurementsAlgorithm other) {
@@ -54,7 +52,6 @@ public class SortRoiListByExpressionsAndMeasurementsAlgorithm extends JIPipeIter
         this.measurements = new ImageStatisticsSetParameter(other.measurements);
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
         this.reverseSortOrder = other.reverseSortOrder;
-        this.customFilterVariables = new JIPipeCustomExpressionVariablesParameter(other.customFilterVariables, this);
     }
 
     @Override
@@ -63,13 +60,13 @@ public class SortRoiListByExpressionsAndMeasurementsAlgorithm extends JIPipeIter
         ROIListData inputRois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
         ImagePlusData inputReference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
-        JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap();
+        JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap();
         ROIListData tmp = new ROIListData();
 
         if (includeAnnotations) {
-            parameters.putAnnotations(iterationStep.getMergedTextAnnotations());
+            variablesMap.putAnnotations(iterationStep.getMergedTextAnnotations());
         }
-        customFilterVariables.writeToVariables(parameters, true, "custom.", true, "custom");
+        variablesMap.putCustomVariables(getDefaultCustomExpressionVariables());
 
         ImagePlus referenceImage = null;
         if (inputReference != null) {
@@ -82,8 +79,8 @@ public class SortRoiListByExpressionsAndMeasurementsAlgorithm extends JIPipeIter
         Map<Roi, Object> sortKeys = new IdentityHashMap<>();
         for (int i = 0; i < inputRois.size(); i++) {
 
-            parameters.set("index", i);
-            parameters.set("num_roi", inputRois.size());
+            variablesMap.set("index", i);
+            variablesMap.set("num_roi", inputRois.size());
 
             Roi roi = inputRois.get(i);
             tmp.clear();
@@ -91,9 +88,9 @@ public class SortRoiListByExpressionsAndMeasurementsAlgorithm extends JIPipeIter
 
             ResultsTableData measured = tmp.measure(referenceImage, measurements, true, measureInPhysicalUnits);
             for (int col = 0; col < measured.getColumnCount(); col++) {
-                parameters.set(measured.getColumnName(col), measured.getValueAt(0, col));
+                variablesMap.set(measured.getColumnName(col), measured.getValueAt(0, col));
             }
-            sortKeys.put(roi, expression.evaluate(parameters));
+            sortKeys.put(roi, expression.evaluate(variablesMap));
         }
 
         ROIListData outputRois = inputRois.shallowClone();
@@ -162,11 +159,9 @@ public class SortRoiListByExpressionsAndMeasurementsAlgorithm extends JIPipeIter
         this.reverseSortOrder = reverseSortOrder;
     }
 
-    @JIPipeDocumentation(name = "Custom variables", description = "Here you can add parameters that will be included into the expression as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(custom, \"[key]\")</code>.")
-    @JIPipeParameter(value = "custom-filter-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
-            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
-    public JIPipeCustomExpressionVariablesParameter getCustomFilterVariables() {
-        return customFilterVariables;
+    @Override
+    public boolean isEnableDefaultCustomExpressionVariables() {
+        return true;
     }
 
     public static class VariablesInfo implements ExpressionParameterVariablesInfo {

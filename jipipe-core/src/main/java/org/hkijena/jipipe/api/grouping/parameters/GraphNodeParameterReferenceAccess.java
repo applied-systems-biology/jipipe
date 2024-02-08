@@ -15,7 +15,7 @@ package org.hkijena.jipipe.api.grouping.parameters;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 
 import java.lang.annotation.Annotation;
@@ -32,7 +32,7 @@ public class GraphNodeParameterReferenceAccess implements JIPipeParameterAccess,
     private final JIPipeParameterTree tree;
     private final JIPipeParameterCollection alternativeSource;
     private final JIPipeParameterAccess target;
-    private final JIPipeParameterPersistence persistence;
+    private final JIPipeParameterSerializationMode persistence;
 
 
     /**
@@ -46,7 +46,7 @@ public class GraphNodeParameterReferenceAccess implements JIPipeParameterAccess,
     public GraphNodeParameterReferenceAccess(GraphNodeParameterReference reference, JIPipeParameterTree tree, JIPipeParameterCollection alternativeSource, boolean persistent) {
         this.reference = reference;
         this.tree = tree;
-        this.persistence = persistent ? JIPipeParameterPersistence.Collection : JIPipeParameterPersistence.None;
+        this.persistence = persistent ? JIPipeParameterSerializationMode.Default : JIPipeParameterSerializationMode.None;
         this.target = reference.resolve(tree);
         this.alternativeSource = alternativeSource;
         this.target.getSource().getParameterChangedEventEmitter().subscribeWeak(this);
@@ -128,7 +128,7 @@ public class GraphNodeParameterReferenceAccess implements JIPipeParameterAccess,
     }
 
     @Override
-    public JIPipeParameterPersistence getPersistence() {
+    public JIPipeParameterSerializationMode getPersistence() {
         return persistence;
     }
 

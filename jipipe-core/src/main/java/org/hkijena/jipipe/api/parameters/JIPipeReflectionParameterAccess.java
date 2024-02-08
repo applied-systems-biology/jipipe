@@ -38,7 +38,7 @@ public class JIPipeReflectionParameterAccess implements JIPipeParameterAccess {
     private String shortKey;
     private int uiOrder;
     private boolean important;
-    private JIPipeParameterPersistence persistence;
+    private JIPipeParameterSerializationMode persistence;
 
     private boolean pinned;
 
@@ -218,11 +218,11 @@ public class JIPipeReflectionParameterAccess implements JIPipeParameterAccess {
     }
 
     @Override
-    public JIPipeParameterPersistence getPersistence() {
+    public JIPipeParameterSerializationMode getPersistence() {
         return persistence;
     }
 
-    public void setPersistence(JIPipeParameterPersistence persistence) {
+    public void setPersistence(JIPipeParameterSerializationMode persistence) {
         this.persistence = persistence;
     }
 

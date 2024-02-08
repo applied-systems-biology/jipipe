@@ -55,7 +55,7 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
     private Multimap<Class<? extends Annotation>, Annotation> annotationMap = HashMultimap.create();
     private String shortKey;
     private int uiOrder;
-    private JIPipeParameterPersistence persistence = JIPipeParameterPersistence.Collection;
+    private JIPipeParameterSerializationMode persistence = JIPipeParameterSerializationMode.Default;
 
     private boolean pinned;
 
@@ -330,11 +330,11 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
     }
 
     @Override
-    public JIPipeParameterPersistence getPersistence() {
+    public JIPipeParameterSerializationMode getPersistence() {
         return persistence;
     }
 
-    public void setPersistence(JIPipeParameterPersistence persistence) {
+    public void setPersistence(JIPipeParameterSerializationMode persistence) {
         this.persistence = persistence;
     }
 

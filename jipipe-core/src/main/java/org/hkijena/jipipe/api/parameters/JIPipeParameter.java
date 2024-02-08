@@ -63,7 +63,7 @@ public @interface JIPipeParameter {
      *
      * @return the serialization behavior
      */
-    JIPipeParameterPersistence persistence() default JIPipeParameterPersistence.Collection;
+    JIPipeParameterSerializationMode persistence() default JIPipeParameterSerializationMode.Default;
 
     /**
      * Determines if a sub-parameter is collapsed.

@@ -15,19 +15,16 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameter;
 import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.PixelCoordinate5DExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
-import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,7 +37,6 @@ import java.util.Map;
 public class ImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
 
     private JIPipeExpressionParameter expression = new JIPipeExpressionParameter("(I1 + I2) / 2");
-    private final JIPipeCustomExpressionVariablesParameter customExpressionVariables;
 
     public ImageCalculator2DExpression(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
@@ -49,13 +45,11 @@ public class ImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
                 .addOutputSlot("Output", "The output image", ImagePlusGreyscale32FData.class, null)
                 .sealOutput()
                 .build());
-        this.customExpressionVariables = new JIPipeCustomExpressionVariablesParameter();
     }
 
     public ImageCalculator2DExpression(ImageCalculator2DExpression other) {
         super(other);
         this.expression = new JIPipeExpressionParameter(other.expression);
-        this.customExpressionVariables = new JIPipeCustomExpressionVariablesParameter(this);
     }
 
     @Override
@@ -91,7 +85,7 @@ public class ImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
         variables.set("num_z", nZ);
         variables.set("num_c", nC);
         variables.set("num_t", nT);
-        customExpressionVariables.writeToVariables(variables, true, "custom", true, "custom");
+        variables.putCustomVariables(getDefaultCustomExpressionVariables());
 
         Map<String, ImageProcessor> processorMap = new HashMap<>();
 
@@ -140,10 +134,8 @@ public class ImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
     public void setExpression(JIPipeExpressionParameter expression) {
         this.expression = expression;
     }
-    @JIPipeDocumentation(name = "Custom expression variables", description = "Here you can add parameters that will be included into the expression as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(custom, \"[key]\")</code>.")
-    @JIPipeParameter(value = "custom-filter-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
-            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
-    public JIPipeCustomExpressionVariablesParameter getCustomExpressionVariables() {
-        return customExpressionVariables;
+    @Override
+    public boolean isEnableDefaultCustomExpressionVariables() {
+        return true;
     }
 }
