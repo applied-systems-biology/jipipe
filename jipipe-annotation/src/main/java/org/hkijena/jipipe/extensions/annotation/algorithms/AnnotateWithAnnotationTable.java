@@ -184,7 +184,7 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
     }
 
     @Override
-    protected boolean canPassThrough() {
+    public boolean canPassThrough() {
         return true;
     }
 

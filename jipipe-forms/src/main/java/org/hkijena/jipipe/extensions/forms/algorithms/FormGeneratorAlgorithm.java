@@ -43,7 +43,7 @@ public abstract class FormGeneratorAlgorithm extends JIPipeAlgorithm {
     public abstract void run(JIPipeDataSlot combined, JIPipeProgressInfo progressInfo);
 
     @Override
-    protected boolean canPassThrough() {
+    public boolean canPassThrough() {
         return true;
     }
 }

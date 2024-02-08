@@ -262,7 +262,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
     }
 
     @Override
-    protected boolean canPassThrough() {
+    public boolean canPassThrough() {
         return true;
     }
 

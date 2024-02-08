@@ -95,7 +95,7 @@ public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgori
     }
 
     @Override
-    protected boolean canPassThrough() {
+    public boolean canPassThrough() {
         return true;
     }
 

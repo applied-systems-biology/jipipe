@@ -39,7 +39,7 @@ public class ExtractTableAlgorithm extends JIPipeParameterSlotAlgorithm {
     }
 
     @Override
-    protected boolean canPassThrough() {
+    public boolean canPassThrough() {
         return false;
     }
 

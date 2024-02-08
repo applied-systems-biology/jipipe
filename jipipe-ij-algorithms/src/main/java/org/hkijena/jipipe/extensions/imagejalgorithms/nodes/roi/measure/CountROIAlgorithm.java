@@ -47,7 +47,7 @@ public class CountROIAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected boolean canPassThrough() {
+    public boolean canPassThrough() {
         return true;
     }
 

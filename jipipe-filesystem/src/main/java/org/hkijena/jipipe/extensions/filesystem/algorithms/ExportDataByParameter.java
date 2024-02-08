@@ -86,7 +86,7 @@ public class ExportDataByParameter extends JIPipeAlgorithm {
     }
 
     @Override
-    protected boolean canPassThrough() {
+    public boolean canPassThrough() {
         return true;
     }
 

@@ -29,7 +29,7 @@ public class EnablePassThroughNodeUIContextAction implements NodeUIContextAction
         for (JIPipeGraphNodeUI ui : selection) {
             if (ui.getNode() instanceof JIPipeAlgorithm) {
                 JIPipeAlgorithm algorithm = (JIPipeAlgorithm) ui.getNode();
-                if (!algorithm.isPassThrough())
+                if (!algorithm.isPassThrough() && algorithm.canPassThrough())
                     return true;
             }
         }
@@ -41,8 +41,10 @@ public class EnablePassThroughNodeUIContextAction implements NodeUIContextAction
         for (JIPipeGraphNodeUI ui : selection) {
             if (ui.getNode() instanceof JIPipeAlgorithm) {
                 JIPipeAlgorithm algorithm = (JIPipeAlgorithm) ui.getNode();
-                algorithm.setPassThrough(true);
-                algorithm.emitParameterChangedEvent("jipipe:algorithm:pass-through");
+                if(algorithm.canPassThrough()) {
+                    algorithm.setPassThrough(true);
+                    algorithm.emitParameterChangedEvent("jipipe:algorithm:pass-through");
+                }
             }
         }
     }

@@ -114,7 +114,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected boolean canPassThrough() {
+    public boolean canPassThrough() {
         return true;
     }
 

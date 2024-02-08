@@ -294,7 +294,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
 
     @JIPipeDocumentation(name = "Lock location/size", description = "If enabled, lock the location and size of this node. Does not affect automated alignment operations. " +
             "Will lock the size if the node supports a resize handle. Will prevent deletion of the node by the user. Slots can still be edited/connected and parameters can still be changed.")
-    @JIPipeParameter(value = "jipipe:node:ui-locked", pinned = true, functional = false)
+    @JIPipeParameter(value = "jipipe:node:ui-locked", pinned = true, functional = false, hidden = true)
     public boolean isUiLocked() {
         return uiLocked;
     }
@@ -332,7 +332,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
     }
 
     @JIPipeDocumentation(name = "Bookmark this node", description = "If enabled, the node is highlighted in the graph editor UI and added into the bookmark list.")
-    @JIPipeParameter(value = "jipipe:node:bookmarked", pinned = true, functional = false)
+    @JIPipeParameter(value = "jipipe:node:bookmarked", pinned = true, functional = false, hidden = true)
     public boolean isBookmarked() {
         return bookmarked;
     }

@@ -95,7 +95,7 @@ public class DrawROIAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgorit
     }
 
     @Override
-    protected boolean canPassThrough() {
+    public boolean canPassThrough() {
         return true;
     }
 
