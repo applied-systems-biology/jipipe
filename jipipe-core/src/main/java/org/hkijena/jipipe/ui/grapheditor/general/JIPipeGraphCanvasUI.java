@@ -2595,6 +2595,10 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             List<DisplayedSlotEdge> connectedSlots = labelledEdges.get(slot).stream().sorted(Comparator.comparing(DisplayedSlotEdge::getUIManhattanDistance)).collect(Collectors.toList());
             JIPipeGraphNodeUI nodeUI = nodeUIs.get(slot.getNode());
 
+            /*
+
+            TODO: Organize first all inputs and outputs where labels are shown
+             */
             if(slot.isInput()) {
                 JIPipeNodeUISlotActiveArea slotActiveArea = nodeUI.getSlotActiveArea(slot);
                 if (slotActiveArea != null && slotActiveArea.getZoomedHitArea() != null) {
