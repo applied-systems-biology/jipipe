@@ -240,15 +240,15 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
 
     public static class VariablesInfo implements ExpressionParameterVariablesInfo {
 
-        public static final Set<ExpressionParameterVariable> VARIABLES;
+        public static final Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
         static {
             VARIABLES = new HashSet<>();
-            VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
+            VARIABLES.add(JIPipeExpressionParameterVariableInfo.ANNOTATIONS_VARIABLE);
         }
 
         @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             return VARIABLES;
         }
     }

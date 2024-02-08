@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeCustomTextDescriptionParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -251,10 +251,10 @@ public class IntegerRange implements JIPipeCustomTextDescriptionParameter {
 
     public static class VariablesInfo implements ExpressionParameterVariablesInfo {
         @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-            Set<ExpressionParameterVariable> variables = new HashSet<>();
-            variables.add(new ExpressionParameterVariable("Minimum value", "The minimum value the range of the range. Can be any value if not suitable for the parameter.", "min"));
-            variables.add(new ExpressionParameterVariable("Maximum value", "The minimum value the range of the range. Can be any value if not suitable for the parameter.", "max"));
+        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+            Set<JIPipeExpressionParameterVariableInfo> variables = new HashSet<>();
+            variables.add(new JIPipeExpressionParameterVariableInfo("min", "Minimum value", "The minimum value the range of the range. Can be any value if not suitable for the parameter."));
+            variables.add(new JIPipeExpressionParameterVariableInfo("max", "Maximum value", "The minimum value the range of the range. Can be any value if not suitable for the parameter."));
             return variables;
         }
     }

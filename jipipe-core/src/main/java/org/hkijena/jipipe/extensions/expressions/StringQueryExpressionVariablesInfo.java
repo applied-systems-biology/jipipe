@@ -23,15 +23,15 @@ import java.util.Set;
  * Variables for querying strings
  */
 public class StringQueryExpressionVariablesInfo implements ExpressionParameterVariablesInfo {
-    private final static Set<ExpressionParameterVariable> VARIABLES;
+    private final static Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
     static {
         VARIABLES = new HashSet<>();
-        VARIABLES.add(new ExpressionParameterVariable("String value", "The string value", "value"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("value", "String value", "The string value"));
     }
 
     @Override
-    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         return VARIABLES;
     }
 }

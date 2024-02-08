@@ -27,11 +27,11 @@ import java.util.stream.Collectors;
 /**
  * Panel that allows the user to select an {@link ExpressionFunction}
  */
-public class VariableSelectorList extends JList<ExpressionParameterVariable> {
+public class VariableSelectorList extends JList<JIPipeExpressionParameterVariableInfo> {
 
-    public VariableSelectorList(Set<ExpressionParameterVariable> variables) {
-        DefaultListModel<ExpressionParameterVariable> model = new DefaultListModel<>();
-        for (ExpressionParameterVariable variable : variables.stream().sorted(Comparator.comparing(ExpressionParameterVariable::getName)).collect(Collectors.toList())) {
+    public VariableSelectorList(Set<JIPipeExpressionParameterVariableInfo> variables) {
+        DefaultListModel<JIPipeExpressionParameterVariableInfo> model = new DefaultListModel<>();
+        for (JIPipeExpressionParameterVariableInfo variable : variables.stream().sorted(Comparator.comparing(JIPipeExpressionParameterVariableInfo::getName)).collect(Collectors.toList())) {
             model.addElement(variable);
         }
         setCellRenderer(new ExpressionVariableRenderer());
@@ -40,7 +40,7 @@ public class VariableSelectorList extends JList<ExpressionParameterVariable> {
     }
 
 
-    public static ExpressionParameterVariable showDialog(Component parent, Set<ExpressionParameterVariable> variables) {
+    public static JIPipeExpressionParameterVariableInfo showDialog(Component parent, Set<JIPipeExpressionParameterVariableInfo> variables) {
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
 
         VariableSelectorList functionSelectorList = new VariableSelectorList(variables);
@@ -85,7 +85,7 @@ public class VariableSelectorList extends JList<ExpressionParameterVariable> {
         return confirmed.get() ? functionSelectorList.getSelectedValue() : null;
     }
 
-    public static class ExpressionVariableRenderer extends JPanel implements ListCellRenderer<ExpressionParameterVariable> {
+    public static class ExpressionVariableRenderer extends JPanel implements ListCellRenderer<JIPipeExpressionParameterVariableInfo> {
 
         private JLabel idLabel;
         private JLabel nameLabel;
@@ -155,7 +155,7 @@ public class VariableSelectorList extends JList<ExpressionParameterVariable> {
         }
 
         @Override
-        public Component getListCellRendererComponent(JList<? extends ExpressionParameterVariable> list, ExpressionParameterVariable value, int index, boolean isSelected, boolean cellHasFocus) {
+        public Component getListCellRendererComponent(JList<? extends JIPipeExpressionParameterVariableInfo> list, JIPipeExpressionParameterVariableInfo value, int index, boolean isSelected, boolean cellHasFocus) {
             idLabel.setText(value.getKey());
             nameLabel.setText(value.getName());
             descriptionLabel.setText(value.getDescription());

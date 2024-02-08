@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.ijfilaments.util;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariablesInfo;
 
 import java.util.HashSet;
@@ -10,70 +10,70 @@ import java.util.Set;
 
 public class FilamentComponentVariablesInfo implements ExpressionParameterVariablesInfo {
 
-    private static final Set<ExpressionParameterVariable> VARIABLES;
+    private static final Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
     static {
         VARIABLES = new HashSet<>();
-        VARIABLES.add(new ExpressionParameterVariable("Component", "The component ID of the filament", "Component"));
-        VARIABLES.add(new ExpressionParameterVariable("Number of vertices", "The number of vertices", "numVertices"));
-        VARIABLES.add(new ExpressionParameterVariable("Number of edges", "The number of edges", "numEdges"));
-        VARIABLES.add(new ExpressionParameterVariable("Length (pixels)", "The length (in pixels)", "lengthPixels"));
-        VARIABLES.add(new ExpressionParameterVariable("Length (unit)", "The length (in physical units)", "lengthUnit"));
-        VARIABLES.add(new ExpressionParameterVariable("Length (pixels, radius-corrected)", "The length (in pixels). Radius is added at the end points.",
-                "lengthPixelsRadiusCorrected"));
-        VARIABLES.add(new ExpressionParameterVariable("Length (unit, radius-corrected)", "The length (in physical units). Radius is added at the end points.",
-                "lengthUnitRadiusCorrected"));
-        VARIABLES.add(new ExpressionParameterVariable("Length (simplified graph, pixels)", "The length (in pixels) of a simplified filament that only contains the end points.",
-                "simplifiedLengthPixels"));
-        VARIABLES.add(new ExpressionParameterVariable("Length (simplified graph, unit)", "The length (in physical units) of a simplified filament that only contains the end points.",
-                "simplifiedLengthUnit"));
-        VARIABLES.add(new ExpressionParameterVariable("Length (simplified graph, pixels, radius-corrected)", "The length (in pixels) of a simplified filament that only contains the end points. Radius is added at the end points.",
-                "simplifiedLengthPixelsRadiusCorrected"));
-        VARIABLES.add(new ExpressionParameterVariable("Length (simplified graph, unit, radius-corrected)", "The length (in physical units) of a simplified filament that only contains the end points. Radius is added at the end points.",
-                "simplifiedLengthUnitRadiusCorrected"));
-        VARIABLES.add(new ExpressionParameterVariable("Confinement ratio", "The confinement ratio", "confinementRatio"));
-        VARIABLES.add(new ExpressionParameterVariable("Confinement ratio (radius-corrected)", "The confinement ratio. Radius is added at the end points during the calculation.", "confinementRatioRadiusCorrected"));
-        VARIABLES.add(new ExpressionParameterVariable("Number of vertices with degree 0", "The number of vertices with degree (number of edges) zero.", "numVerticesWithDegree0"));
-        VARIABLES.add(new ExpressionParameterVariable("Number of vertices with degree 1", "The number of vertices with degree (number of edges) one.", "numVerticesWithDegree1"));
-        VARIABLES.add(new ExpressionParameterVariable("Number of vertices with degree 2", "The number of vertices with degree (number of edges) two.", "numVerticesWithDegree2"));
-        VARIABLES.add(new ExpressionParameterVariable("Number of vertices with degree 3", "The number of vertices with degree (number of edges) three.", "numVerticesWithDegree3"));
-        VARIABLES.add(new ExpressionParameterVariable("Number of vertices with degree 4", "The number of vertices with degree (number of edges) four.", "numVerticesWithDegree4"));
-        VARIABLES.add(new ExpressionParameterVariable("Number of vertices with degree 5", "The number of vertices with degree (number of edges) five.", "numVerticesWithDegree5"));
-        VARIABLES.add(new ExpressionParameterVariable("Number of vertices with degree > 5", "The number of vertices with degree (number of edges) more than five.", "numVerticesWithDegreeMoreThan5"));
-        VARIABLES.add(new ExpressionParameterVariable("Max degree", "The maximum degree.", "maxDegree"));
-        VARIABLES.add(new ExpressionParameterVariable("Min degree", "The minimum degree.", "minDegree"));
-        VARIABLES.add(new ExpressionParameterVariable("Min X (center, pixels)", "Minimum center X (in pixels).", "centerMinX"));
-        VARIABLES.add(new ExpressionParameterVariable("Min Y (center, pixels)", "Minimum center Y (in pixels).", "centerMinY"));
-        VARIABLES.add(new ExpressionParameterVariable("Min Z (center, pixels)", "Minimum center Z (in pixels).", "centerMinZ"));
-        VARIABLES.add(new ExpressionParameterVariable("Max X (center, pixels)", "Maximum center X (in pixels).", "centerMaxX"));
-        VARIABLES.add(new ExpressionParameterVariable("Max Y (center, pixels)", "Maximum center Y (in pixels).", "centerMaxY"));
-        VARIABLES.add(new ExpressionParameterVariable("Max Z (center, pixels)", "Maximum center Z (in pixels).", "centerMaxZ"));
-        VARIABLES.add(new ExpressionParameterVariable("Min X (sphere, pixels)", "Minimum X (sphere around the center, in pixels).", "sphereMinX"));
-        VARIABLES.add(new ExpressionParameterVariable("Min Y (sphere, pixels)", "Minimum Y (sphere around the center, in pixels).", "sphereMinY"));
-        VARIABLES.add(new ExpressionParameterVariable("Min Z (sphere, pixels)", "Minimum Z (sphere around the center, in pixels).", "sphereMinZ"));
-        VARIABLES.add(new ExpressionParameterVariable("Max X (sphere, pixels)", "Maximum X (sphere around the center, in pixels).", "sphereMaxX"));
-        VARIABLES.add(new ExpressionParameterVariable("Max Y (sphere, pixels)", "Maximum Y (sphere around the center, in pixels).", "sphereMaxY"));
-        VARIABLES.add(new ExpressionParameterVariable("Max Z (sphere, pixels)", "Maximum Z (sphere around the center, in pixels).", "sphereMaxZ"));
-        VARIABLES.add(new ExpressionParameterVariable("Min edge length (pixels)", "Minimum length of an edge (in pixels).", "minEdgeLengthPixels"));
-        VARIABLES.add(new ExpressionParameterVariable("Min edge length (unit)", "Minimum length of an edge (in physical units).", "minEdgeLengthUnit"));
-        VARIABLES.add(new ExpressionParameterVariable("Max edge length (pixels)", "Maximum length of an edge (in pixels).", "maxEdgeLengthPixels"));
-        VARIABLES.add(new ExpressionParameterVariable("Max edge length (unit)", "Maximum length of an edge (in physical units).", "maxEdgeLengthUnit"));
-        VARIABLES.add(new ExpressionParameterVariable("Average edge length (pixels)", "Average length of an edge (in pixels).", "avgEdgeLengthPixels"));
-        VARIABLES.add(new ExpressionParameterVariable("Average edge length (unit)", "Average length of an edge (in physical units).", "avgEdgeLengthUnit"));
-        VARIABLES.add(new ExpressionParameterVariable("Min vertex radius (pixels)", "Minimum vertex radius (in pixels).", "minVertexRadiusPixels"));
-        VARIABLES.add(new ExpressionParameterVariable("Max vertex radius (pixels)", "Maximum vertex radius (in pixels).", "maxVertexRadiusPixels"));
-        VARIABLES.add(new ExpressionParameterVariable("Average vertex radius (pixels)", "Maximum vertex radius (in pixels).", "avgVertexRadiusPixels"));
-        VARIABLES.add(new ExpressionParameterVariable("Min vertex radius (unit)", "Minimum vertex radius (in physical units).", "minVertexRadiusUnit"));
-        VARIABLES.add(new ExpressionParameterVariable("Max vertex radius (unit)", "Maximum vertex radius (in physical units).", "maxVertexRadiusUnit"));
-        VARIABLES.add(new ExpressionParameterVariable("Average vertex radius (unit)", "Average vertex radius (in physical units).", "avgVertexRadiusUnit"));
-        VARIABLES.add(new ExpressionParameterVariable("Min vertex value", "Minimum vertex value.", "minVertexValue"));
-        VARIABLES.add(new ExpressionParameterVariable("Max vertex value", "Maximum vertex value.", "maxVertexValue"));
-        VARIABLES.add(new ExpressionParameterVariable("Average vertex value", "Average vertex value.", "avgVertexValue"));
-        VARIABLES.add(new ExpressionParameterVariable("Physical size unit", "Unit used in the values that have a physical size", "physicalSizeUnit"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("Component", "Component", "The component ID of the filament"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("numVertices", "Number of vertices", "The number of vertices"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("numEdges", "Number of edges", "The number of edges"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("lengthPixels", "Length (pixels)", "The length (in pixels)"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("lengthUnit", "Length (unit)", "The length (in physical units)"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("lengthPixelsRadiusCorrected", "Length (pixels, radius-corrected)", "The length (in pixels). Radius is added at the end points."
+        ));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("lengthUnitRadiusCorrected", "Length (unit, radius-corrected)", "The length (in physical units). Radius is added at the end points."
+        ));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("simplifiedLengthPixels", "Length (simplified graph, pixels)", "The length (in pixels) of a simplified filament that only contains the end points."
+        ));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("simplifiedLengthUnit", "Length (simplified graph, unit)", "The length (in physical units) of a simplified filament that only contains the end points."
+        ));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("simplifiedLengthPixelsRadiusCorrected", "Length (simplified graph, pixels, radius-corrected)", "The length (in pixels) of a simplified filament that only contains the end points. Radius is added at the end points."
+        ));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("simplifiedLengthUnitRadiusCorrected", "Length (simplified graph, unit, radius-corrected)", "The length (in physical units) of a simplified filament that only contains the end points. Radius is added at the end points."
+        ));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("confinementRatio", "Confinement ratio", "The confinement ratio"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("confinementRatioRadiusCorrected", "Confinement ratio (radius-corrected)", "The confinement ratio. Radius is added at the end points during the calculation."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("numVerticesWithDegree0", "Number of vertices with degree 0", "The number of vertices with degree (number of edges) zero."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("numVerticesWithDegree1", "Number of vertices with degree 1", "The number of vertices with degree (number of edges) one."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("numVerticesWithDegree2", "Number of vertices with degree 2", "The number of vertices with degree (number of edges) two."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("numVerticesWithDegree3", "Number of vertices with degree 3", "The number of vertices with degree (number of edges) three."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("numVerticesWithDegree4", "Number of vertices with degree 4", "The number of vertices with degree (number of edges) four."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("numVerticesWithDegree5", "Number of vertices with degree 5", "The number of vertices with degree (number of edges) five."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("numVerticesWithDegreeMoreThan5", "Number of vertices with degree > 5", "The number of vertices with degree (number of edges) more than five."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("maxDegree", "Max degree", "The maximum degree."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("minDegree", "Min degree", "The minimum degree."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("centerMinX", "Min X (center, pixels)", "Minimum center X (in pixels)."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("centerMinY", "Min Y (center, pixels)", "Minimum center Y (in pixels)."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("centerMinZ", "Min Z (center, pixels)", "Minimum center Z (in pixels)."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("centerMaxX", "Max X (center, pixels)", "Maximum center X (in pixels)."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("centerMaxY", "Max Y (center, pixels)", "Maximum center Y (in pixels)."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("centerMaxZ", "Max Z (center, pixels)", "Maximum center Z (in pixels)."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("sphereMinX", "Min X (sphere, pixels)", "Minimum X (sphere around the center, in pixels)."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("sphereMinY", "Min Y (sphere, pixels)", "Minimum Y (sphere around the center, in pixels)."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("sphereMinZ", "Min Z (sphere, pixels)", "Minimum Z (sphere around the center, in pixels)."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("sphereMaxX", "Max X (sphere, pixels)", "Maximum X (sphere around the center, in pixels)."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("sphereMaxY", "Max Y (sphere, pixels)", "Maximum Y (sphere around the center, in pixels)."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("sphereMaxZ", "Max Z (sphere, pixels)", "Maximum Z (sphere around the center, in pixels)."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("minEdgeLengthPixels", "Min edge length (pixels)", "Minimum length of an edge (in pixels)."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("minEdgeLengthUnit", "Min edge length (unit)", "Minimum length of an edge (in physical units)."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("maxEdgeLengthPixels", "Max edge length (pixels)", "Maximum length of an edge (in pixels)."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("maxEdgeLengthUnit", "Max edge length (unit)", "Maximum length of an edge (in physical units)."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("avgEdgeLengthPixels", "Average edge length (pixels)", "Average length of an edge (in pixels)."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("avgEdgeLengthUnit", "Average edge length (unit)", "Average length of an edge (in physical units)."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("minVertexRadiusPixels", "Min vertex radius (pixels)", "Minimum vertex radius (in pixels)."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("maxVertexRadiusPixels", "Max vertex radius (pixels)", "Maximum vertex radius (in pixels)."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("avgVertexRadiusPixels", "Average vertex radius (pixels)", "Maximum vertex radius (in pixels)."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("minVertexRadiusUnit", "Min vertex radius (unit)", "Minimum vertex radius (in physical units)."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("maxVertexRadiusUnit", "Max vertex radius (unit)", "Maximum vertex radius (in physical units)."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("avgVertexRadiusUnit", "Average vertex radius (unit)", "Average vertex radius (in physical units)."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("minVertexValue", "Min vertex value", "Minimum vertex value."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("maxVertexValue", "Max vertex value", "Maximum vertex value."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("avgVertexValue", "Average vertex value", "Average vertex value."));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("physicalSizeUnit", "Physical size unit", "Unit used in the values that have a physical size"));
     }
 
     @Override
-    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         return VARIABLES;
     }
 }

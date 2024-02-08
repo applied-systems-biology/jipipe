@@ -171,21 +171,21 @@ public class SortRoiListByExpressionsAndMeasurementsAlgorithm extends JIPipeIter
 
     public static class VariablesInfo implements ExpressionParameterVariablesInfo {
 
-        public static final Set<ExpressionParameterVariable> VARIABLES;
+        public static final Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
         static {
             VARIABLES = new HashSet<>();
-            VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
-            VARIABLES.add(new ExpressionParameterVariable("Name", "Current name of the ROI", "Name"));
-            VARIABLES.add(new ExpressionParameterVariable("Index", "Index of the ROI", "index"));
-            VARIABLES.add(new ExpressionParameterVariable("Number of ROI", "Number of total ROI in the list", "num_roi"));
+            VARIABLES.add(JIPipeExpressionParameterVariableInfo.ANNOTATIONS_VARIABLE);
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("Name", "Name", "Current name of the ROI"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("index", "Index", "Index of the ROI"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("num_roi", "Number of ROI", "Number of total ROI in the list"));
             for (MeasurementColumn column : MeasurementColumn.values()) {
-                VARIABLES.add(new ExpressionParameterVariable(column.getName(), column.getDescription(), column.getColumnName()));
+                VARIABLES.add(new JIPipeExpressionParameterVariableInfo(column.getColumnName(), column.getName(), column.getDescription()));
             }
         }
 
         @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             return VARIABLES;
         }
     }

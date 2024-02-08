@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementExpressionParameterVariablesInfo;
 
@@ -24,28 +24,28 @@ import java.util.Set;
 
 public class RoiOverlapStatisticsVariablesInfo implements ExpressionParameterVariablesInfo {
 
-    public static final Set<ExpressionParameterVariable> VARIABLES;
+    public static final Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
     static {
         VARIABLES = new HashSet<>();
-        VARIABLES.add(new ExpressionParameterVariable("Annotations map", "A map of annotations that are attached to the data batch", "annotations"));
-        VARIABLES.add(new ExpressionParameterVariable("ROI 1 Z", "The Z location of the first ROI (first index is 1, zero indicates no Z constraint)", "ROI1.z"));
-        VARIABLES.add(new ExpressionParameterVariable("ROI 1 C", "The channel (C) location of the first ROI (first index is 1, zero indicates no C constraint)", "ROI1.c"));
-        VARIABLES.add(new ExpressionParameterVariable("ROI 1 T", "The frame (T) location of the first ROI (first index is 1, zero indicates no T constraint)", "ROI1.t"));
-        VARIABLES.add(new ExpressionParameterVariable("ROI 1 Name", "The name of the first ROI (empty string if not set)", "ROI1.name"));
-        VARIABLES.add(new ExpressionParameterVariable("ROI 2 Z", "The Z location of the second ROI (first index is 1, zero indicates no Z constraint)", "ROI2.z"));
-        VARIABLES.add(new ExpressionParameterVariable("ROI 2 C", "The channel (C) location of the second ROI (first index is 1, zero indicates no C constraint)", "ROI2.c"));
-        VARIABLES.add(new ExpressionParameterVariable("ROI 2 T", "The frame (T) location of the second ROI (first index is 1, zero indicates no T constraint)", "ROI2.t"));
-        VARIABLES.add(new ExpressionParameterVariable("ROI 2 Name", "The name of the second ROI (empty string if not set)", "ROI2.name"));
-        for (ExpressionParameterVariable variable : MeasurementExpressionParameterVariablesInfo.VARIABLES) {
-            VARIABLES.add(new ExpressionParameterVariable("ROI 1 " + variable.getName(), "ROI1. " + variable.getDescription(), "ROI1." + variable.getKey()));
-            VARIABLES.add(new ExpressionParameterVariable("ROI 2 " + variable.getName(), "ROI2. " + variable.getDescription(), "ROI2." + variable.getKey()));
-            VARIABLES.add(new ExpressionParameterVariable("ROI Overlap " + variable.getName(), "Overlap of first and second ROI. " + variable.getDescription(), "Overlap." + variable.getKey()));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("annotations", "Annotations map", "A map of annotations that are attached to the data batch"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("ROI1.z", "ROI 1 Z", "The Z location of the first ROI (first index is 1, zero indicates no Z constraint)"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("ROI1.c", "ROI 1 C", "The channel (C) location of the first ROI (first index is 1, zero indicates no C constraint)"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("ROI1.t", "ROI 1 T", "The frame (T) location of the first ROI (first index is 1, zero indicates no T constraint)"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("ROI1.name", "ROI 1 Name", "The name of the first ROI (empty string if not set)"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("ROI2.z", "ROI 2 Z", "The Z location of the second ROI (first index is 1, zero indicates no Z constraint)"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("ROI2.c", "ROI 2 C", "The channel (C) location of the second ROI (first index is 1, zero indicates no C constraint)"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("ROI2.t", "ROI 2 T", "The frame (T) location of the second ROI (first index is 1, zero indicates no T constraint)"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("ROI2.name", "ROI 2 Name", "The name of the second ROI (empty string if not set)"));
+        for (JIPipeExpressionParameterVariableInfo variable : MeasurementExpressionParameterVariablesInfo.VARIABLES) {
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("ROI1." + variable.getKey(), "ROI 1 " + variable.getName(), "ROI1. " + variable.getDescription()));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("ROI2." + variable.getKey(), "ROI 2 " + variable.getName(), "ROI2. " + variable.getDescription()));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("Overlap." + variable.getKey(), "ROI Overlap " + variable.getName(), "Overlap of first and second ROI. " + variable.getDescription()));
         }
     }
 
     @Override
-    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         return VARIABLES;
     }
 }

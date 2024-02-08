@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.util;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariablesInfo;
 
 import java.util.HashSet;
@@ -13,20 +13,20 @@ import java.util.Set;
  */
 public class Image5DExpressionParameterVariablesInfo implements ExpressionParameterVariablesInfo {
 
-    private final static Set<ExpressionParameterVariable> VARIABLES;
+    private final static Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
     static {
         VARIABLES = new HashSet<>();
-        VARIABLES.add(new ExpressionParameterVariable("Image width", "The width of the image", "width"));
-        VARIABLES.add(new ExpressionParameterVariable("Image height", "The height of the image", "height"));
-        VARIABLES.add(new ExpressionParameterVariable("Number of channels", "Number of channel planes", "num_c"));
-        VARIABLES.add(new ExpressionParameterVariable("Number of Z slices", "Number of Z planes", "num_z"));
-        VARIABLES.add(new ExpressionParameterVariable("Number of frames", "Number of T planes", "num_t"));
-        VARIABLES.add(new ExpressionParameterVariable("Number of dimensions", "Number of dimensions", "num_d"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("width", "Image width", "The width of the image"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("height", "Image height", "The height of the image"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("num_c", "Number of channels", "Number of channel planes"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("num_z", "Number of Z slices", "Number of Z planes"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("num_t", "Number of frames", "Number of T planes"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("num_d", "Number of dimensions", "Number of dimensions"));
     }
 
     @Override
-    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         return VARIABLES;
     }
 }

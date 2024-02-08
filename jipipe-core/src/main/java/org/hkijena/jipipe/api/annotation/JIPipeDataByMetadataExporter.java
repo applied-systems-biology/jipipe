@@ -295,27 +295,27 @@ public class JIPipeDataByMetadataExporter extends AbstractJIPipeParameterCollect
 
     public static class VariablesInfo implements ExpressionParameterVariablesInfo {
 
-        public static final Set<ExpressionParameterVariable> VARIABLES;
+        public static final Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
         static {
             VARIABLES = new HashSet<>();
-            VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
-            VARIABLES.add(new ExpressionParameterVariable("Annotations",
-                    "Map of annotation names and values",
-                    "annotations"));
-            VARIABLES.add(new ExpressionParameterVariable("Data string",
-                    "The data stored as string",
-                    "data_string"));
-            VARIABLES.add(new ExpressionParameterVariable("Data type ID",
-                    "The data type ID",
-                    "data_type"));
-            VARIABLES.add(new ExpressionParameterVariable("Row",
-                    "The row inside the data table",
-                    "row"));
+            VARIABLES.add(JIPipeExpressionParameterVariableInfo.ANNOTATIONS_VARIABLE);
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("annotations", "Annotations",
+                    "Map of annotation names and values"
+            ));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("data_string", "Data string",
+                    "The data stored as string"
+            ));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("data_type", "Data type ID",
+                    "The data type ID"
+            ));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("row", "Row",
+                    "The row inside the data table"
+            ));
         }
 
         @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             return VARIABLES;
         }
     }

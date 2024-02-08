@@ -249,38 +249,38 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
     }
 
     public static class CounterVariablesInfo implements ExpressionParameterVariablesInfo {
-        private final static Set<ExpressionParameterVariable> VARIABLES;
+        private final static Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
         static {
             VARIABLES = new HashSet<>();
-            VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
-            VARIABLES.add(new ExpressionParameterVariable("Number of rows", "The number of rows within the table", "num_rows"));
-            VARIABLES.add(new ExpressionParameterVariable("Number of columns", "The number of columns within the table", "num_cols"));
-            VARIABLES.add(new ExpressionParameterVariable("List of column names", "An array of the column names", "column_names"));
-            VARIABLES.add(new ExpressionParameterVariable("Annotations", "Map of annotations of the current data batch", "annotations"));
+            VARIABLES.add(JIPipeExpressionParameterVariableInfo.ANNOTATIONS_VARIABLE);
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("num_rows", "Number of rows", "The number of rows within the table"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("num_cols", "Number of columns", "The number of columns within the table"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("column_names", "List of column names", "An array of the column names"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("annotations", "Annotations", "Map of annotations of the current data batch"));
         }
 
         @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             return VARIABLES;
         }
     }
 
     public static class DefaultValuesVariablesInfo implements ExpressionParameterVariablesInfo {
-        private final static Set<ExpressionParameterVariable> VARIABLES;
+        private final static Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
         static {
             VARIABLES = new HashSet<>();
-            VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
-            VARIABLES.add(new ExpressionParameterVariable("Counter", "The step counter that will be assigned to the new row", "counter"));
-            VARIABLES.add(new ExpressionParameterVariable("List of column names", "An array of the column names", "column_names"));
-            VARIABLES.add(new ExpressionParameterVariable("Number of rows", "The number of rows within the table", "num_rows"));
-            VARIABLES.add(new ExpressionParameterVariable("Number of columns", "The number of columns within the table", "num_cols"));
-            VARIABLES.add(new ExpressionParameterVariable("Annotations", "Map of annotations of the current data batch", "annotations"));
+            VARIABLES.add(JIPipeExpressionParameterVariableInfo.ANNOTATIONS_VARIABLE);
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("counter", "Counter", "The step counter that will be assigned to the new row"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("column_names", "List of column names", "An array of the column names"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("num_rows", "Number of rows", "The number of rows within the table"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("num_cols", "Number of columns", "The number of columns within the table"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("annotations", "Annotations", "Map of annotations of the current data batch"));
         }
 
         @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             return VARIABLES;
         }
     }

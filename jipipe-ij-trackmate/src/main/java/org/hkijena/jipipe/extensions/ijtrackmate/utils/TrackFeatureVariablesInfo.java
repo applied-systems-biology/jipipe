@@ -4,7 +4,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.TrackFeature;
 
@@ -14,7 +14,7 @@ import java.util.Set;
 
 public class TrackFeatureVariablesInfo implements ExpressionParameterVariablesInfo {
 
-    private static Set<ExpressionParameterVariable> VARIABLES;
+    private static Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
     private static BiMap<String, String> KEY_TO_VARIABLE_MAP = HashBiMap.create();
 
     public static void initializeVariablesIfNeeded() {
@@ -24,8 +24,8 @@ public class TrackFeatureVariablesInfo implements ExpressionParameterVariablesIn
                 String key = entry.getKey();
                 String name = entry.getValue();
                 String variableName = key.toLowerCase();
-                VARIABLES.add(new ExpressionParameterVariable(name, "The TrackMate " + key + " track feature", variableName));
-                VARIABLES.add(new ExpressionParameterVariable("All " + name, "All values of TrackMate " + key + " track feature", "all." + variableName));
+                VARIABLES.add(new JIPipeExpressionParameterVariableInfo(variableName, name, "The TrackMate " + key + " track feature"));
+                VARIABLES.add(new JIPipeExpressionParameterVariableInfo("all." + variableName, "All " + name, "All values of TrackMate " + key + " track feature"));
                 KEY_TO_VARIABLE_MAP.put(key, variableName);
             }
         }
@@ -42,7 +42,7 @@ public class TrackFeatureVariablesInfo implements ExpressionParameterVariablesIn
     }
 
     @Override
-    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         initializeVariablesIfNeeded();
         return VARIABLES;
     }

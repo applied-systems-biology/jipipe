@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.expressions.variables;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariablesInfo;
 
 import java.util.Collections;
@@ -26,7 +26,7 @@ import java.util.Set;
  */
 public class UndefinedExpressionParameterVariablesInfo implements ExpressionParameterVariablesInfo {
     @Override
-    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         return Collections.emptySet();
     }
 }

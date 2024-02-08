@@ -194,9 +194,9 @@ public class ProcessEnvironment extends JIPipeEnvironment {
 
     public static class VariablesInfo implements ExpressionParameterVariablesInfo {
         @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-            Set<ExpressionParameterVariable> result = new HashSet<>();
-            result.add(new ExpressionParameterVariable("Executable", "The executable", "executable"));
+        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+            Set<JIPipeExpressionParameterVariableInfo> result = new HashSet<>();
+            result.add(new JIPipeExpressionParameterVariableInfo("executable", "Executable", "The executable"));
             return result;
         }
     }

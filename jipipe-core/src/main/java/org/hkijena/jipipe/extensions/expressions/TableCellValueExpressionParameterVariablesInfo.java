@@ -20,20 +20,20 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class TableCellValueExpressionParameterVariablesInfo implements ExpressionParameterVariablesInfo {
-    private final static Set<ExpressionParameterVariable> VARIABLES;
+    private final static Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
     static {
         VARIABLES = new HashSet<>();
-        VARIABLES.add(new ExpressionParameterVariable("Table row index", "The row index", "row"));
-        VARIABLES.add(new ExpressionParameterVariable("Table column index", "The column index", "column"));
-        VARIABLES.add(new ExpressionParameterVariable("Table column name", "The column name", "column_name"));
-        VARIABLES.add(new ExpressionParameterVariable("Cell value", "The value of the cell at row, column", "value"));
-        VARIABLES.add(new ExpressionParameterVariable("Number of rows", "The number of rows within the table", "num_rows"));
-        VARIABLES.add(new ExpressionParameterVariable("Number of columns", "The number of columns within the table", "num_cols"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("row", "Table row index", "The row index"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("column", "Table column index", "The column index"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("column_name", "Table column name", "The column name"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("value", "Cell value", "The value of the cell at row, column"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("num_rows", "Number of rows", "The number of rows within the table"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("num_cols", "Number of columns", "The number of columns within the table"));
     }
 
     @Override
-    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         return VARIABLES;
     }
 }

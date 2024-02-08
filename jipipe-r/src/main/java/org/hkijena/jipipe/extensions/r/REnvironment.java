@@ -15,7 +15,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterSettings;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
@@ -140,10 +140,10 @@ public class REnvironment extends JIPipeEnvironment {
 
     public static class RArgumentsVariablesInfo implements ExpressionParameterVariablesInfo {
         @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-            Set<ExpressionParameterVariable> result = new HashSet<>();
-            result.add(new ExpressionParameterVariable("R executable", "The R executable", "r_executable"));
-            result.add(new ExpressionParameterVariable("Script file", "The R script file to be executed", "script_file"));
+        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+            Set<JIPipeExpressionParameterVariableInfo> result = new HashSet<>();
+            result.add(new JIPipeExpressionParameterVariableInfo("r_executable", "R executable", "The R executable"));
+            result.add(new JIPipeExpressionParameterVariableInfo("script_file", "Script file", "The R script file to be executed"));
             return result;
         }
     }

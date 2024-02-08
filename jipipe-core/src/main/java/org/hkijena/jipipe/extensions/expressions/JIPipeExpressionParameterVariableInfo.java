@@ -15,16 +15,16 @@ package org.hkijena.jipipe.extensions.expressions;
 
 import java.util.Objects;
 
-public class ExpressionParameterVariable {
+public class JIPipeExpressionParameterVariableInfo {
 
-    public static final ExpressionParameterVariable ANNOTATIONS_VARIABLE = new ExpressionParameterVariable("<Annotations>",
-            "Text annotations are available as variables named after their column names (use Update Cache to find the list of annotations)",
-            "");
+    public static final JIPipeExpressionParameterVariableInfo ANNOTATIONS_VARIABLE = new JIPipeExpressionParameterVariableInfo("", "<Annotations>",
+            "Text annotations are available as variables named after their column names (use Update Cache to find the list of annotations)"
+    );
     private final String name;
     private final String description;
     private final String key;
 
-    public ExpressionParameterVariable(String name, String description, String key) {
+    public JIPipeExpressionParameterVariableInfo(String key, String name, String description) {
         this.name = name;
         this.description = description;
         this.key = key;
@@ -46,7 +46,7 @@ public class ExpressionParameterVariable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ExpressionParameterVariable that = (ExpressionParameterVariable) o;
+        JIPipeExpressionParameterVariableInfo that = (JIPipeExpressionParameterVariableInfo) o;
         return Objects.equals(name, that.name) &&
                 Objects.equals(description, that.description) &&
                 Objects.equals(key, that.key);

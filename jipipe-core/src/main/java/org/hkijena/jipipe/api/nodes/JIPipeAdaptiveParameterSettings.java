@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterSettings;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
@@ -161,18 +161,18 @@ public class JIPipeAdaptiveParameterSettings extends AbstractJIPipeParameterColl
 
     public static class VariablesInfo implements ExpressionParameterVariablesInfo {
 
-        public static final Set<ExpressionParameterVariable> VARIABLES;
+        public static final Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
         static {
             VARIABLES = new HashSet<>();
-            VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
-            VARIABLES.add(new ExpressionParameterVariable("Default value",
-                    "The default value of this parameter",
-                    "default"));
+            VARIABLES.add(JIPipeExpressionParameterVariableInfo.ANNOTATIONS_VARIABLE);
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("default", "Default value",
+                    "The default value of this parameter"
+            ));
         }
 
         @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             return VARIABLES;
         }
     }

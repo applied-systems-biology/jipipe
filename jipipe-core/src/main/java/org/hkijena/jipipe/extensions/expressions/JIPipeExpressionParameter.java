@@ -25,7 +25,7 @@ import java.util.HashSet;
 public class JIPipeExpressionParameter extends AbstractExpressionParameter {
     private static JIPipeExpressionEvaluator EVALUATOR;
 
-    private java.util.Set<ExpressionParameterVariable> additionalUIVariables = new HashSet<>();
+    private java.util.Set<JIPipeExpressionParameterVariableInfo> additionalUIVariables = new HashSet<>();
 
     public JIPipeExpressionParameter() {
     }
@@ -56,11 +56,11 @@ public class JIPipeExpressionParameter extends AbstractExpressionParameter {
         return getEvaluatorInstance();
     }
 
-    public java.util.Set<ExpressionParameterVariable> getAdditionalUIVariables() {
+    public java.util.Set<JIPipeExpressionParameterVariableInfo> getAdditionalUIVariables() {
         return additionalUIVariables;
     }
 
-    public void setAdditionalUIVariables(java.util.Set<ExpressionParameterVariable> additionalUIVariables) {
+    public void setAdditionalUIVariables(java.util.Set<JIPipeExpressionParameterVariableInfo> additionalUIVariables) {
         this.additionalUIVariables = additionalUIVariables;
     }
 

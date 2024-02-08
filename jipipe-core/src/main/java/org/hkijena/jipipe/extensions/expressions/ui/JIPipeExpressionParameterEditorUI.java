@@ -40,7 +40,7 @@ public class JIPipeExpressionParameterEditorUI extends JIPipeParameterEditorUI {
     private final JPanel expressionEditorPanel = new JPanel(new BorderLayout());
 
     private final JIPipeExpressionEvaluatorSyntaxTokenMaker tokenMaker = new JIPipeExpressionEvaluatorSyntaxTokenMaker();
-    private final Set<ExpressionParameterVariable> variables = new HashSet<>();
+    private final Set<JIPipeExpressionParameterVariableInfo> variables = new HashSet<>();
     private RSyntaxTextArea expressionEditor;
 
     /**
@@ -173,7 +173,7 @@ public class JIPipeExpressionParameterEditorUI extends JIPipeParameterEditorUI {
             }
             for (JIPipeExpressionParameterVariable variable : variableAnnotations) {
                 if (!StringUtils.isNullOrEmpty(variable.name()) || !StringUtils.isNullOrEmpty(variable.description()) || !StringUtils.isNullOrEmpty(variable.key())) {
-                    variables.add(new ExpressionParameterVariable(variable.name(), variable.description(), variable.key()));
+                    variables.add(new JIPipeExpressionParameterVariableInfo(variable.key(), variable.name(), variable.description()));
                 }
                 if (variable.fromClass() != UndefinedExpressionParameterVariablesInfo.class) {
                     ExpressionParameterVariablesInfo variableSource = (ExpressionParameterVariablesInfo) ReflectionUtils.newInstance(variable.fromClass());
@@ -185,7 +185,7 @@ public class JIPipeExpressionParameterEditorUI extends JIPipeParameterEditorUI {
         {
             for (JIPipeExpressionParameterVariable variable : fieldClass.getAnnotationsByType(JIPipeExpressionParameterVariable.class)) {
                 if (!StringUtils.isNullOrEmpty(variable.name()) || !StringUtils.isNullOrEmpty(variable.description()) || !StringUtils.isNullOrEmpty(variable.key())) {
-                    variables.add(new ExpressionParameterVariable(variable.name(), variable.description(), variable.key()));
+                    variables.add(new JIPipeExpressionParameterVariableInfo(variable.key(), variable.name(), variable.description()));
                 }
                 if (variable.fromClass() != UndefinedExpressionParameterVariablesInfo.class) {
                     ExpressionParameterVariablesInfo variableSource = (ExpressionParameterVariablesInfo) ReflectionUtils.newInstance(variable.fromClass());

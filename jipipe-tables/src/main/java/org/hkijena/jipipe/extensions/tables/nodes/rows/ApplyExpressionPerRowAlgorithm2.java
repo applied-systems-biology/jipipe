@@ -120,21 +120,21 @@ public class ApplyExpressionPerRowAlgorithm2 extends JIPipeSimpleIteratingAlgori
     }
 
     public static class VariablesInfo implements ExpressionParameterVariablesInfo {
-        private final static Set<ExpressionParameterVariable> VARIABLES;
+        private final static Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
         static {
             VARIABLES = new HashSet<>();
-            VARIABLES.add(new ExpressionParameterVariable("<Column>", "Value of the column in the current row", ""));
-            VARIABLES.add(new ExpressionParameterVariable("all.<Column>", "Values of all columns", ""));
-            VARIABLES.add(new ExpressionParameterVariable("Table column index", "The column index", "column"));
-            VARIABLES.add(new ExpressionParameterVariable("Table column name", "The column name", "column_name"));
-            VARIABLES.add(new ExpressionParameterVariable("Number of rows", "The number of rows within the table", "num_rows"));
-            VARIABLES.add(new ExpressionParameterVariable("Number of columns", "The number of columns within the table", "num_cols"));
-            VARIABLES.add(new ExpressionParameterVariable("Annotations", "Map of annotations of the current data batch", "annotations"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("", "<Column>", "Value of the column in the current row"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("", "all.<Column>", "Values of all columns"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("column", "Table column index", "The column index"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("column_name", "Table column name", "The column name"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("num_rows", "Number of rows", "The number of rows within the table"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("num_cols", "Number of columns", "The number of columns within the table"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("annotations", "Annotations", "Map of annotations of the current data batch"));
         }
 
         @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             return VARIABLES;
         }
     }

@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.utils;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
@@ -13,17 +13,17 @@ import java.util.Set;
 
 public class Image5DSliceIndexExpressionParameterVariablesInfo implements ExpressionParameterVariablesInfo {
     @Override
-    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        Set<ExpressionParameterVariable> result = new HashSet<>();
-        result.add(new ExpressionParameterVariable("Image width", "The width of the image", "width"));
-        result.add(new ExpressionParameterVariable("Image height", "The height of the image", "height"));
-        result.add(new ExpressionParameterVariable("Image Z slices", "The number of Z slices in the image", "size_z"));
-        result.add(new ExpressionParameterVariable("Image channels", "The number of channel (C) slices in the image", "size_c"));
-        result.add(new ExpressionParameterVariable("Image frames", "The number of frames (T) in the image", "size_t"));
-        result.add(new ExpressionParameterVariable("Image number of dimensions", "The number dimensions of the image", "size_d"));
-        result.add(new ExpressionParameterVariable("Z coordinate", "The Z coordinate within the image (first index is zero)", "z"));
-        result.add(new ExpressionParameterVariable("Channel coordinate", "The channel (C) coordinate within the image (first index is zero)", "c"));
-        result.add(new ExpressionParameterVariable("Frame coordinate", "The frame (T) coordinate within the image (first index is zero)", "t"));
+    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        Set<JIPipeExpressionParameterVariableInfo> result = new HashSet<>();
+        result.add(new JIPipeExpressionParameterVariableInfo("width", "Image width", "The width of the image"));
+        result.add(new JIPipeExpressionParameterVariableInfo("height", "Image height", "The height of the image"));
+        result.add(new JIPipeExpressionParameterVariableInfo("size_z", "Image Z slices", "The number of Z slices in the image"));
+        result.add(new JIPipeExpressionParameterVariableInfo("size_c", "Image channels", "The number of channel (C) slices in the image"));
+        result.add(new JIPipeExpressionParameterVariableInfo("size_t", "Image frames", "The number of frames (T) in the image"));
+        result.add(new JIPipeExpressionParameterVariableInfo("size_d", "Image number of dimensions", "The number dimensions of the image"));
+        result.add(new JIPipeExpressionParameterVariableInfo("z", "Z coordinate", "The Z coordinate within the image (first index is zero)"));
+        result.add(new JIPipeExpressionParameterVariableInfo("c", "Channel coordinate", "The channel (C) coordinate within the image (first index is zero)"));
+        result.add(new JIPipeExpressionParameterVariableInfo("t", "Frame coordinate", "The frame (T) coordinate within the image (first index is zero)"));
         return result;
     }
 

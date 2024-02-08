@@ -4,7 +4,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeature;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.TrackFeature;
@@ -15,7 +15,7 @@ import java.util.Set;
 
 public class TrackSpotFeatureVariablesInfo implements ExpressionParameterVariablesInfo {
 
-    private static Set<ExpressionParameterVariable> VARIABLES;
+    private static Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
     private static BiMap<String, String> SPOT_KEY_TO_VARIABLE_MAP = HashBiMap.create();
     private static BiMap<String, String> TRACK_KEY_TO_VARIABLE_MAP = HashBiMap.create();
 
@@ -26,14 +26,14 @@ public class TrackSpotFeatureVariablesInfo implements ExpressionParameterVariabl
                 String key = entry.getKey();
                 String name = entry.getValue();
                 String variableName = "track." + key.toLowerCase();
-                VARIABLES.add(new ExpressionParameterVariable(name, "The TrackMate " + key + " track feature", variableName));
+                VARIABLES.add(new JIPipeExpressionParameterVariableInfo(variableName, name, "The TrackMate " + key + " track feature"));
                 TRACK_KEY_TO_VARIABLE_MAP.put(key, variableName);
             }
             for (Map.Entry<String, String> entry : SpotFeature.VALUE_LABELS.entrySet()) {
                 String key = entry.getKey();
                 String name = entry.getValue();
                 String variableName = "spot." + key.toLowerCase();
-                VARIABLES.add(new ExpressionParameterVariable(name, "The TrackMate " + key + " spot feature", variableName));
+                VARIABLES.add(new JIPipeExpressionParameterVariableInfo(variableName, name, "The TrackMate " + key + " spot feature"));
                 SPOT_KEY_TO_VARIABLE_MAP.put(key, variableName);
             }
         }
@@ -60,7 +60,7 @@ public class TrackSpotFeatureVariablesInfo implements ExpressionParameterVariabl
     }
 
     @Override
-    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         initializeVariablesIfNeeded();
         return VARIABLES;
     }

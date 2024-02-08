@@ -12,6 +12,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
+import org.hkijena.jipipe.extensions.expressions.JIPipeProjectDirectoriesVariablesInfo;
 import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -56,8 +57,7 @@ public class ModifyPathWithExpression extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("expression")
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(name = "Input path", key = "path", description = "The input path")
-    @JIPipeExpressionParameterVariable(name = "Project directory", description = "The project directory (if available; will be the same as the data directory otherwise)", key = "project_dir")
-    @JIPipeExpressionParameterVariable(name = "Project data directories", description = "The user-configured project data directories as map. Access entries by the key.", key = "project_data_dirs")
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeProjectDirectoriesVariablesInfo.class)
     public JIPipeExpressionParameter getExpression() {
         return expression;
     }

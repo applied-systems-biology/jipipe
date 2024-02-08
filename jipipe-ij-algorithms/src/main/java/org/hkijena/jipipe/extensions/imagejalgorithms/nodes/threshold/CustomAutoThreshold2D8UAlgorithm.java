@@ -347,30 +347,30 @@ public class CustomAutoThreshold2D8UAlgorithm extends JIPipeIteratingAlgorithm {
 
     public static class VariablesInfo implements ExpressionParameterVariablesInfo {
         @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-            Set<ExpressionParameterVariable> result = new HashSet<>();
-            result.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
-            result.add(new ExpressionParameterVariable("Image width", "The width of the image", "width"));
-            result.add(new ExpressionParameterVariable("Image height", "The height of the image", "height"));
-            result.add(new ExpressionParameterVariable("Image Z slices", "The number of Z slices in the image", "size_z"));
-            result.add(new ExpressionParameterVariable("Image channels", "The number of channel (C) slices in the image", "size_c"));
-            result.add(new ExpressionParameterVariable("Image frames", "The number of frames (T) in the image", "size_t"));
-            result.add(new ExpressionParameterVariable("Pixels", "Array of numbers that contain the pixel values", "pixels"));
-            result.add(new ExpressionParameterVariable("Histogram",
-                    "An array the represents the histogram (index is the pixel value, value is the number of pixels with this value) of the currently analyzed area",
-                    "stat_histogram"));
-            result.add(new ExpressionParameterVariable("Area", "Area of selection in square pixels.", "stat_area"));
-            result.add(new ExpressionParameterVariable("Pixel value standard deviation", "Measures the standard deviation of greyscale pixel values", "stat_stdev"));
-            result.add(new ExpressionParameterVariable("Pixel value min", "Measures the minimum of greyscale pixel values", "stat_min"));
-            result.add(new ExpressionParameterVariable("Pixel value max", "Measures the maximum of greyscale pixel values", "stat_max"));
-            result.add(new ExpressionParameterVariable("Pixel value mean", "Measures the mean of greyscale pixel values", "stat_mean"));
-            result.add(new ExpressionParameterVariable("Pixel value mode", "Most frequently occurring gray value within the selection", "stat_mode"));
-            result.add(new ExpressionParameterVariable("Pixel value median", "The median value of the pixels in the image or selection", "stat_median"));
-            result.add(new ExpressionParameterVariable("Pixel value kurtosis", "The fourth order moment about the greyscale pixel value mean", "stat_kurtosis"));
-            result.add(new ExpressionParameterVariable("Pixel value integrated density", "The product of Area and Mean Gray Value", "stat_int_den"));
-            result.add(new ExpressionParameterVariable("Pixel value raw integrated density", "The sum of the values of the pixels in the image or selection", "stat_raw_int_den"));
-            result.add(new ExpressionParameterVariable("Pixel value skewness", "The sum of the values of the pixels in the image or selection", "stat_skewness"));
-            result.add(new ExpressionParameterVariable("Area fraction", "The percentage of non-zero pixels", "stat_area_fraction"));
+        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+            Set<JIPipeExpressionParameterVariableInfo> result = new HashSet<>();
+            result.add(JIPipeExpressionParameterVariableInfo.ANNOTATIONS_VARIABLE);
+            result.add(new JIPipeExpressionParameterVariableInfo("width", "Image width", "The width of the image"));
+            result.add(new JIPipeExpressionParameterVariableInfo("height", "Image height", "The height of the image"));
+            result.add(new JIPipeExpressionParameterVariableInfo("size_z", "Image Z slices", "The number of Z slices in the image"));
+            result.add(new JIPipeExpressionParameterVariableInfo("size_c", "Image channels", "The number of channel (C) slices in the image"));
+            result.add(new JIPipeExpressionParameterVariableInfo("size_t", "Image frames", "The number of frames (T) in the image"));
+            result.add(new JIPipeExpressionParameterVariableInfo("pixels", "Pixels", "Array of numbers that contain the pixel values"));
+            result.add(new JIPipeExpressionParameterVariableInfo("stat_histogram", "Histogram",
+                    "An array the represents the histogram (index is the pixel value, value is the number of pixels with this value) of the currently analyzed area"
+            ));
+            result.add(new JIPipeExpressionParameterVariableInfo("stat_area", "Area", "Area of selection in square pixels."));
+            result.add(new JIPipeExpressionParameterVariableInfo("stat_stdev", "Pixel value standard deviation", "Measures the standard deviation of greyscale pixel values"));
+            result.add(new JIPipeExpressionParameterVariableInfo("stat_min", "Pixel value min", "Measures the minimum of greyscale pixel values"));
+            result.add(new JIPipeExpressionParameterVariableInfo("stat_max", "Pixel value max", "Measures the maximum of greyscale pixel values"));
+            result.add(new JIPipeExpressionParameterVariableInfo("stat_mean", "Pixel value mean", "Measures the mean of greyscale pixel values"));
+            result.add(new JIPipeExpressionParameterVariableInfo("stat_mode", "Pixel value mode", "Most frequently occurring gray value within the selection"));
+            result.add(new JIPipeExpressionParameterVariableInfo("stat_median", "Pixel value median", "The median value of the pixels in the image or selection"));
+            result.add(new JIPipeExpressionParameterVariableInfo("stat_kurtosis", "Pixel value kurtosis", "The fourth order moment about the greyscale pixel value mean"));
+            result.add(new JIPipeExpressionParameterVariableInfo("stat_int_den", "Pixel value integrated density", "The product of Area and Mean Gray Value"));
+            result.add(new JIPipeExpressionParameterVariableInfo("stat_raw_int_den", "Pixel value raw integrated density", "The sum of the values of the pixels in the image or selection"));
+            result.add(new JIPipeExpressionParameterVariableInfo("stat_skewness", "Pixel value skewness", "The sum of the values of the pixels in the image or selection"));
+            result.add(new JIPipeExpressionParameterVariableInfo("stat_area_fraction", "Area fraction", "The percentage of non-zero pixels"));
             return result;
         }
     }

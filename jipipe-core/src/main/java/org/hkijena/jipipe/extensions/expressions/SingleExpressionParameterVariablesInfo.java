@@ -24,18 +24,18 @@ import java.util.Set;
  * Please note that this class cannot be used directly within {@link JIPipeExpressionParameterSettings}, as there is not default constructor available.
  */
 public class SingleExpressionParameterVariablesInfo implements ExpressionParameterVariablesInfo {
-    private final ExpressionParameterVariable variable;
+    private final JIPipeExpressionParameterVariableInfo variable;
 
     public SingleExpressionParameterVariablesInfo(String name, String description, String key) {
-        this.variable = new ExpressionParameterVariable(name, description, key);
+        this.variable = new JIPipeExpressionParameterVariableInfo(key, name, description);
     }
 
-    public SingleExpressionParameterVariablesInfo(ExpressionParameterVariable variable) {
+    public SingleExpressionParameterVariablesInfo(JIPipeExpressionParameterVariableInfo variable) {
         this.variable = variable;
     }
 
     @Override
-    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         return Collections.singleton(variable);
     }
 }

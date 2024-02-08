@@ -20,15 +20,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class AnnotationGeneratorExpressionVariablesInfo implements ExpressionParameterVariablesInfo {
-    private final static Set<ExpressionParameterVariable> VARIABLES;
+    private final static Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
     static {
         VARIABLES = new HashSet<>();
-        VARIABLES.add(new ExpressionParameterVariable("Data string", "The data instance represented as string", "data_string"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("data_string", "Data string", "The data instance represented as string"));
     }
 
     @Override
-    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         return VARIABLES;
     }
 }

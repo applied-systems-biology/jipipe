@@ -65,16 +65,16 @@ public class NumericFunctionExpression extends JIPipeExpressionParameter {
 
     public static class VariablesInfo implements ExpressionParameterVariablesInfo {
 
-        private static final Set<ExpressionParameterVariable> VARIABLES = new HashSet<>();
+        private static final Set<JIPipeExpressionParameterVariableInfo> VARIABLES = new HashSet<>();
 
         static {
-            VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
-            VARIABLES.add(new ExpressionParameterVariable("x", "The current input value [DEPRECATED]", "x"));
-            VARIABLES.add(new ExpressionParameterVariable("default", "The current input value", "default"));
+            VARIABLES.add(JIPipeExpressionParameterVariableInfo.ANNOTATIONS_VARIABLE);
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("x", "x", "The current input value [DEPRECATED]"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("default", "default", "The current input value"));
         }
 
         @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             return VARIABLES;
         }
     }

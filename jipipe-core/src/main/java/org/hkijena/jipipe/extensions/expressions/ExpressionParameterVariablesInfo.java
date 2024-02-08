@@ -37,7 +37,7 @@ public interface ExpressionParameterVariablesInfo {
      * @param parameterAccess the parameter access that holds the {@link AbstractExpressionParameter} instance. can be null.
      * @return the set of variables
      */
-    Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess);
+    Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess);
 
     /**
      * Helper method that attempts to find the underlying graph node of a parameter access and returns its cache if available

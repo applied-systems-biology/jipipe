@@ -5,7 +5,7 @@ import ij.measure.Calibration;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 
@@ -18,19 +18,19 @@ import java.util.Set;
  */
 public class ImagePlusPropertiesExpressionParameterVariablesInfo implements ExpressionParameterVariablesInfo {
 
-    private final static Set<ExpressionParameterVariable> VARIABLES;
+    private final static Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
     static {
         VARIABLES = new HashSet<>();
-        VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
-        VARIABLES.add(new ExpressionParameterVariable("Image width", "The width of the image", "width"));
-        VARIABLES.add(new ExpressionParameterVariable("Image height", "The height of the image", "height"));
-        VARIABLES.add(new ExpressionParameterVariable("Number of channels", "Number of channel planes", "num_c"));
-        VARIABLES.add(new ExpressionParameterVariable("Number of Z slices", "Number of Z planes", "num_z"));
-        VARIABLES.add(new ExpressionParameterVariable("Number of frames", "Number of T planes", "num_t"));
-        VARIABLES.add(new ExpressionParameterVariable("Physical dimension (X)", "Physical dimension in format '[value] [unit]'", "physical_dimension_x"));
-        VARIABLES.add(new ExpressionParameterVariable("Physical dimension (Y)", "Physical dimension in format '[value] [unit]'", "physical_dimension_y"));
-        VARIABLES.add(new ExpressionParameterVariable("Physical dimension (Z)", "Physical dimension in format '[value] [unit]'", "physical_dimension_z"));
+        VARIABLES.add(JIPipeExpressionParameterVariableInfo.ANNOTATIONS_VARIABLE);
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("width", "Image width", "The width of the image"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("height", "Image height", "The height of the image"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("num_c", "Number of channels", "Number of channel planes"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("num_z", "Number of Z slices", "Number of Z planes"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("num_t", "Number of frames", "Number of T planes"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("physical_dimension_x", "Physical dimension (X)", "Physical dimension in format '[value] [unit]'"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("physical_dimension_y", "Physical dimension (Y)", "Physical dimension in format '[value] [unit]'"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("physical_dimension_z", "Physical dimension (Z)", "Physical dimension in format '[value] [unit]'"));
     }
 
     public static void extractValues(JIPipeExpressionVariablesMap variables, ImagePlus imagePlus, Collection<JIPipeTextAnnotation> annotations) {
@@ -50,7 +50,7 @@ public class ImagePlusPropertiesExpressionParameterVariablesInfo implements Expr
     }
 
     @Override
-    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         return VARIABLES;
     }
 }

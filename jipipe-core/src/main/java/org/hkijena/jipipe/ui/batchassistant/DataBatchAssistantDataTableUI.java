@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.batchassistant.DataBatchStatusData;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.extensions.expressions.ui.ExpressionBuilderUI;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
@@ -371,9 +371,9 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel implemen
     }
 
     private void openSearchExpressionEditor(SearchTextField searchTextField) {
-        Set<ExpressionParameterVariable> variables = new HashSet<>();
+        Set<JIPipeExpressionParameterVariableInfo> variables = new HashSet<>();
         for (int i = 0; i < table.getModel().getColumnCount(); i++) {
-            variables.add(new ExpressionParameterVariable(table.getModel().getColumnName(i), "", table.getModel().getColumnName(i)));
+            variables.add(new JIPipeExpressionParameterVariableInfo(table.getModel().getColumnName(i), table.getModel().getColumnName(i), ""));
         }
         String result = ExpressionBuilderUI.showDialog(getWorkbench().getWindow(), searchTextField.getText(), variables);
         if (result != null) {

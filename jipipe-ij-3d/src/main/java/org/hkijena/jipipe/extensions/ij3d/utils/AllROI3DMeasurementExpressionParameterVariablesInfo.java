@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.ij3d.utils;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariablesInfo;
 
 import java.util.HashSet;
@@ -14,17 +14,17 @@ import java.util.Set;
 public class AllROI3DMeasurementExpressionParameterVariablesInfo implements ExpressionParameterVariablesInfo {
 
 
-    public static final Set<ExpressionParameterVariable> VARIABLES;
+    public static final Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
     static {
         VARIABLES = new HashSet<>();
         for (ROI3DMeasurementColumn column : ROI3DMeasurementColumn.values()) {
-            VARIABLES.add(new ExpressionParameterVariable(column.getName() + " (All values)", column.getDescription() + ". This variable contains an array of all measurements.", "all." + column.getColumnName()));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("all." + column.getColumnName(), column.getName() + " (All values)", column.getDescription() + ". This variable contains an array of all measurements."));
         }
     }
 
     @Override
-    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         return VARIABLES;
     }
 }

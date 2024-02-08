@@ -54,7 +54,7 @@ public class ExpressionBuilderUI extends JPanel {
     private static final Function<Object, String> ENTRY_TO_STRING_FUNCTION = new EntryToStringFunction();
     private final SearchTextField searchField = new SearchTextField();
     private final JIPipeExpressionEvaluatorSyntaxTokenMaker tokenMaker = new JIPipeExpressionEvaluatorSyntaxTokenMaker();
-    private final Set<ExpressionParameterVariable> variables;
+    private final Set<JIPipeExpressionParameterVariableInfo> variables;
     private final JList<Object> commandPaletteList = new JList<>();
     private final List<ExpressionOperatorEntry> operatorEntryList;
     private final List<ExpressionConstantEntry> constantEntryList;
@@ -62,7 +62,7 @@ public class ExpressionBuilderUI extends JPanel {
     private final DocumentTabPane tabPane = new DocumentTabPane(true);
     private ExpressionBuilderInserterUI lastVariableInserter;
 
-    public ExpressionBuilderUI(String expression, Set<ExpressionParameterVariable> variables) {
+    public ExpressionBuilderUI(String expression, Set<JIPipeExpressionParameterVariableInfo> variables) {
         this.variables = variables;
         this.operatorEntryList = ExpressionOperatorEntry.fromEvaluator(JIPipeExpressionParameter.getEvaluatorInstance(), true);
         this.operatorEntryList.sort(Comparator.comparing(ExpressionOperatorEntry::getName));
@@ -73,7 +73,7 @@ public class ExpressionBuilderUI extends JPanel {
         rebuildPalette();
     }
 
-    public static String showDialog(Component parent, String expression, Set<ExpressionParameterVariable> variables) {
+    public static String showDialog(Component parent, String expression, Set<JIPipeExpressionParameterVariableInfo> variables) {
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
         dialog.setIconImage(UIUtils.getJIPipeIcon128());
 
@@ -117,7 +117,7 @@ public class ExpressionBuilderUI extends JPanel {
     private void rebuildPalette() {
         List<Object> dataItems = new ArrayList<>();
         if (!variables.isEmpty()) {
-            dataItems.addAll(variables.stream().sorted(Comparator.comparing(ExpressionParameterVariable::getName)).collect(Collectors.toList()));
+            dataItems.addAll(variables.stream().sorted(Comparator.comparing(JIPipeExpressionParameterVariableInfo::getName)).collect(Collectors.toList()));
         }
         dataItems.addAll(constantEntryList);
         dataItems.addAll(operatorEntryList);
@@ -243,7 +243,7 @@ public class ExpressionBuilderUI extends JPanel {
             Object value = commandPaletteList.getSelectedValue();
 
             // Variables and constants will share one tab -> Will re-open
-            if (value instanceof ExpressionParameterVariable || value instanceof ExpressionConstantEntry) {
+            if (value instanceof JIPipeExpressionParameterVariableInfo || value instanceof ExpressionConstantEntry) {
                 if (lastVariableInserter != null) {
                     DocumentTabPane.DocumentTab tab = tabPane.getTabContainingContent(lastVariableInserter);
                     tabPane.forceCloseTab(tab);
@@ -268,8 +268,8 @@ public class ExpressionBuilderUI extends JPanel {
             String title;
             Icon icon;
             ExpressionBuilderInserterUI inserterUI = new ExpressionBuilderInserterUI(this, value);
-            if (value instanceof ExpressionParameterVariable) {
-                title = "Variable " + ((ExpressionParameterVariable) value).getName();
+            if (value instanceof JIPipeExpressionParameterVariableInfo) {
+                title = "Variable " + ((JIPipeExpressionParameterVariableInfo) value).getName();
                 icon = UIUtils.getIconFromResources("actions/variable.png");
                 lastVariableInserter = inserterUI;
             } else if (value instanceof ExpressionConstantEntry) {
@@ -393,8 +393,8 @@ public class ExpressionBuilderUI extends JPanel {
             ExpressionBuilderInserterUI inserterUI = (ExpressionBuilderInserterUI) tabPane.getCurrentContent();
             if (!inserterUI.isInserterCommitted()) {
                 Object currentlyInsertedObject = inserterUI.getInsertedObject();
-                if (currentlyInsertedObject instanceof ExpressionParameterVariable) {
-                    ExpressionParameterVariable variable = (ExpressionParameterVariable) currentlyInsertedObject;
+                if (currentlyInsertedObject instanceof JIPipeExpressionParameterVariableInfo) {
+                    JIPipeExpressionParameterVariableInfo variable = (JIPipeExpressionParameterVariableInfo) currentlyInsertedObject;
                     if (!StringUtils.isNullOrEmpty(variable.getKey())) {
                         insertAtCaret(variable.getKey(), true);
                     }
@@ -446,8 +446,8 @@ public class ExpressionBuilderUI extends JPanel {
 
         @Override
         public String apply(Object value) {
-            if (value instanceof ExpressionParameterVariable) {
-                ExpressionParameterVariable variable = (ExpressionParameterVariable) value;
+            if (value instanceof JIPipeExpressionParameterVariableInfo) {
+                JIPipeExpressionParameterVariableInfo variable = (JIPipeExpressionParameterVariableInfo) value;
                 return variable.getKey() + " " + variable.getName();
             } else if (value instanceof ExpressionConstantEntry) {
                 ExpressionConstantEntry constantEntry = (ExpressionConstantEntry) value;
@@ -472,8 +472,8 @@ public class ExpressionBuilderUI extends JPanel {
             int[] result = new int[3];
             if (filterStrings.length == 0)
                 return result;
-            if (value instanceof ExpressionParameterVariable) {
-                ExpressionParameterVariable variable = (ExpressionParameterVariable) value;
+            if (value instanceof JIPipeExpressionParameterVariableInfo) {
+                JIPipeExpressionParameterVariableInfo variable = (JIPipeExpressionParameterVariableInfo) value;
                 for (String string : filterStrings) {
                     if (variable.getKey().toLowerCase().contains(string.toLowerCase()))
                         --result[0];
@@ -598,10 +598,10 @@ public class ExpressionBuilderUI extends JPanel {
 
         @Override
         public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            if (value instanceof ExpressionParameterVariable) {
+            if (value instanceof JIPipeExpressionParameterVariableInfo) {
                 typeLabel.setText("Variable");
                 typeLabel.setForeground(COLOR_VARIABLE);
-                ExpressionParameterVariable variable = (ExpressionParameterVariable) value;
+                JIPipeExpressionParameterVariableInfo variable = (JIPipeExpressionParameterVariableInfo) value;
                 idLabel.setText(variable.getKey());
                 nameLabel.setText(variable.getName());
             } else if (value instanceof ExpressionConstantEntry) {

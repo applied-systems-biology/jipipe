@@ -38,14 +38,14 @@ public class ExpressionBuilderInserterUI extends JPanel {
         inserterButtonPanel.setLayout(new BoxLayout(inserterButtonPanel, BoxLayout.X_AXIS));
         add(inserterButtonPanel, BorderLayout.SOUTH);
 
-        if (insertedObject instanceof ExpressionParameterVariable) {
-            ExpressionParameterVariable variable = (ExpressionParameterVariable) insertedObject;
+        if (insertedObject instanceof JIPipeExpressionParameterVariableInfo) {
+            JIPipeExpressionParameterVariableInfo variable = (JIPipeExpressionParameterVariableInfo) insertedObject;
             FormPanel.GroupHeaderPanel groupHeader = inserterForm.addGroupHeader(String.format("<html><i style=\"color: #ffaf0a; \">Variable</i> %s (<code><strong>%s</strong></code>)</html>",
                     HtmlEscapers.htmlEscaper().escape(variable.getName()),
                     HtmlEscapers.htmlEscaper().escape(variable.getKey())), UIUtils.getIconFromResources("actions/insert-function.png"));
             groupHeader.setDescription(variable.getDescription());
 
-            if (!StringUtils.isNullOrEmpty(((ExpressionParameterVariable) insertedObject).getKey())) {
+            if (!StringUtils.isNullOrEmpty(((JIPipeExpressionParameterVariableInfo) insertedObject).getKey())) {
                 JButton insertButton = new JButton("Insert", UIUtils.getIconFromResources("actions/insert-object.png"));
                 insertButton.addActionListener(e -> {
                     inserterCommitted = true;

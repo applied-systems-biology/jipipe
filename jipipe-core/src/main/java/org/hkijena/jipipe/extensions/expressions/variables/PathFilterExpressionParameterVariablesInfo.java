@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.expressions.variables;
 import com.google.common.collect.ImmutableSet;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 
@@ -27,11 +27,11 @@ import java.util.Set;
  * {@link ExpressionParameterVariablesInfo} that defines one variable 'x' that references a filesystem path or file name.
  */
 public class PathFilterExpressionParameterVariablesInfo implements ExpressionParameterVariablesInfo {
-    public static final ExpressionParameterVariable VARIABLE_PATH = new ExpressionParameterVariable("Path", "The full path. Can be relative or absolute.", "path");
-    public static final ExpressionParameterVariable VARIABLE_ABSPATH = new ExpressionParameterVariable("Absolute path", "The full absolute path.", "absolute_path");
-    public static final ExpressionParameterVariable VARIABLE_NAME = new ExpressionParameterVariable("Name", "The file or directory name", "name");
-    public static final ExpressionParameterVariable VARIABLE_PARENT = new ExpressionParameterVariable("Parent", "The parent directory", "parent");
-    private static final Set<ExpressionParameterVariable> VARIABLES;
+    public static final JIPipeExpressionParameterVariableInfo VARIABLE_PATH = new JIPipeExpressionParameterVariableInfo("path", "Path", "The full path. Can be relative or absolute.");
+    public static final JIPipeExpressionParameterVariableInfo VARIABLE_ABSPATH = new JIPipeExpressionParameterVariableInfo("absolute_path", "Absolute path", "The full absolute path.");
+    public static final JIPipeExpressionParameterVariableInfo VARIABLE_NAME = new JIPipeExpressionParameterVariableInfo("name", "Name", "The file or directory name");
+    public static final JIPipeExpressionParameterVariableInfo VARIABLE_PARENT = new JIPipeExpressionParameterVariableInfo("parent", "Parent", "The parent directory");
+    private static final Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
     static {
         VARIABLES = ImmutableSet.of(VARIABLE_NAME, VARIABLE_ABSPATH, VARIABLE_PARENT, VARIABLE_PATH);
@@ -45,7 +45,7 @@ public class PathFilterExpressionParameterVariablesInfo implements ExpressionPar
     }
 
     @Override
-    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         return VARIABLES;
     }
 }

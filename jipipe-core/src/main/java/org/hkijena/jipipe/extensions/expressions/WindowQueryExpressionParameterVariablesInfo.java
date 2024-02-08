@@ -20,15 +20,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class WindowQueryExpressionParameterVariablesInfo implements ExpressionParameterVariablesInfo {
-    private final static Set<ExpressionParameterVariable> VARIABLES;
+    private final static Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
     static {
         VARIABLES = new HashSet<>();
-        VARIABLES.add(new ExpressionParameterVariable("Window title", "The title of the window", "window"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("window", "Window title", "The title of the window"));
     }
 
     @Override
-    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         return VARIABLES;
     }
 }

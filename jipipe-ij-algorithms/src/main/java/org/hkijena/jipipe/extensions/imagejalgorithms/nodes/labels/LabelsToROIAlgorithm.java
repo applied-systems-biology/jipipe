@@ -202,14 +202,14 @@ public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public static class VariablesInfo implements ExpressionParameterVariablesInfo {
 
         @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-            Set<ExpressionParameterVariable> variables = new HashSet<>();
-            variables.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
-            variables.add(new ExpressionParameterVariable("Label index", "The index of the label (value > 0)", "index"));
-            variables.add(new ExpressionParameterVariable("Bounding box X", "Top-left X coordinate of the bounding box around the ROI", "x"));
-            variables.add(new ExpressionParameterVariable("Bounding box Y", "Top-left Y coordinate of the bounding box around around the ROI", "y"));
-            variables.add(new ExpressionParameterVariable("Bounding box width", "Width of the bounding box around around the ROI", "width"));
-            variables.add(new ExpressionParameterVariable("Bounding box height", "Height of the bounding box around around the ROI", "height"));
+        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+            Set<JIPipeExpressionParameterVariableInfo> variables = new HashSet<>();
+            variables.add(JIPipeExpressionParameterVariableInfo.ANNOTATIONS_VARIABLE);
+            variables.add(new JIPipeExpressionParameterVariableInfo("index", "Label index", "The index of the label (value > 0)"));
+            variables.add(new JIPipeExpressionParameterVariableInfo("x", "Bounding box X", "Top-left X coordinate of the bounding box around the ROI"));
+            variables.add(new JIPipeExpressionParameterVariableInfo("y", "Bounding box Y", "Top-left Y coordinate of the bounding box around around the ROI"));
+            variables.add(new JIPipeExpressionParameterVariableInfo("width", "Bounding box width", "Width of the bounding box around around the ROI"));
+            variables.add(new JIPipeExpressionParameterVariableInfo("height", "Bounding box height", "Height of the bounding box around around the ROI"));
             return variables;
         }
     }

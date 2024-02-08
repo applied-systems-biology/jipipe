@@ -632,13 +632,12 @@ public class JIPipe extends AbstractService implements JIPipeService {
             try {
                 progressInfo.log("Creating instance of " + info + " ...");
                 JIPipeJavaExtension extension = info.createInstance();
-                allJavaExtensionInstances.add(extension);
-                allJavaExtensionPluginInfos.add(info);
 
                 // Validate ID
                 if (!isValidExtensionId(extension.getDependencyId())) {
-                    System.err.println("Invalid extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension " + extension);
-                    progressInfo.log("Invalid extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension " + extension);
+                    System.err.println("Invalid extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension " + extension + ". REFUSING TO REGISTER AS OF JIPIPE VERSION 3!");
+                    progressInfo.log("Invalid extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension " + extension + ". REFUSING TO REGISTER AS OF JIPIPE VERSION 3!");
+                    continue;
                 } else {
                     if (!allJavaExtensionsByID.containsKey(extension.getDependencyId())) {
                         allJavaExtensionsByID.put(extension.getDependencyId(), extension);
@@ -647,6 +646,10 @@ public class JIPipe extends AbstractService implements JIPipeService {
                         progressInfo.log("Duplicate extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension " + extension + " or check your ImageJ folder");
                     }
                 }
+
+                // Register
+                allJavaExtensionInstances.add(extension);
+                allJavaExtensionPluginInfos.add(info);
 
             } catch (Throwable e) {
                 e.printStackTrace();

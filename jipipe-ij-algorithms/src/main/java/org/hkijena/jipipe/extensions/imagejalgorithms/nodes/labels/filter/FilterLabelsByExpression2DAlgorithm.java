@@ -101,12 +101,12 @@ public class FilterLabelsByExpression2DAlgorithm extends JIPipeSimpleIteratingAl
 
     public static class VariablesInfo implements ExpressionParameterVariablesInfo {
         @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-            Set<ExpressionParameterVariable> result = new HashSet<>();
-            result.add(new ExpressionParameterVariable("Label ID", "The ID of the label (number larger than zero)", "id"));
-            result.add(new ExpressionParameterVariable("All Label IDs", "All label IDs as list", "all.id"));
-            result.add(new ExpressionParameterVariable("Label size", "The number of pixels associated to this label", "num_pixels"));
-            result.add(new ExpressionParameterVariable("All label sizes", "All number of pixels as list", "all.num_pixels"));
+        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+            Set<JIPipeExpressionParameterVariableInfo> result = new HashSet<>();
+            result.add(new JIPipeExpressionParameterVariableInfo("id", "Label ID", "The ID of the label (number larger than zero)"));
+            result.add(new JIPipeExpressionParameterVariableInfo("all.id", "All Label IDs", "All label IDs as list"));
+            result.add(new JIPipeExpressionParameterVariableInfo("num_pixels", "Label size", "The number of pixels associated to this label"));
+            result.add(new JIPipeExpressionParameterVariableInfo("all.num_pixels", "All label sizes", "All number of pixels as list"));
             return result;
         }
     }

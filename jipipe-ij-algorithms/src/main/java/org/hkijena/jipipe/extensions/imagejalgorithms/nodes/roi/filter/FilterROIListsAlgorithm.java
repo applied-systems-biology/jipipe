@@ -102,20 +102,20 @@ public class FilterROIListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public static class VariablesInfo implements ExpressionParameterVariablesInfo {
 
-        public static final Set<ExpressionParameterVariable> VARIABLES;
+        public static final Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
         static {
             VARIABLES = new HashSet<>();
-            VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
-            VARIABLES.add(new ExpressionParameterVariable("Number of items", "Number of items in the list", "count"));
-            VARIABLES.add(new ExpressionParameterVariable("Bounding box X", "Top-left X coordinate of the bounding box around all ROIs (zero if empty list)", "x"));
-            VARIABLES.add(new ExpressionParameterVariable("Bounding box Y", "Top-left Y coordinate of the bounding box around all ROIs (zero if empty list)", "y"));
-            VARIABLES.add(new ExpressionParameterVariable("Bounding box width", "Width of the bounding box around all ROIs (zero if empty list)", "width"));
-            VARIABLES.add(new ExpressionParameterVariable("Bounding box height", "Height of the bounding box around all ROIs (zero if empty list)", "height"));
+            VARIABLES.add(JIPipeExpressionParameterVariableInfo.ANNOTATIONS_VARIABLE);
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("count", "Number of items", "Number of items in the list"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("x", "Bounding box X", "Top-left X coordinate of the bounding box around all ROIs (zero if empty list)"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("y", "Bounding box Y", "Top-left Y coordinate of the bounding box around all ROIs (zero if empty list)"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("width", "Bounding box width", "Width of the bounding box around all ROIs (zero if empty list)"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("height", "Bounding box height", "Height of the bounding box around all ROIs (zero if empty list)"));
         }
 
         @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             return VARIABLES;
         }
     }

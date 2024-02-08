@@ -109,18 +109,18 @@ public class FilterTablesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public static class VariablesInfo implements ExpressionParameterVariablesInfo {
 
-        public static final Set<ExpressionParameterVariable> VARIABLES;
+        public static final Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
         static {
             VARIABLES = new HashSet<>();
-            VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
-            VARIABLES.add(new ExpressionParameterVariable("Number of rows", "The number of rows in the table", "num_rows"));
-            VARIABLES.add(new ExpressionParameterVariable("Number of columns", "The number of columns in the table", "num_cols"));
-            VARIABLES.add(new ExpressionParameterVariable("Column names", "Names of the table columns", "column_names"));
+            VARIABLES.add(JIPipeExpressionParameterVariableInfo.ANNOTATIONS_VARIABLE);
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("num_rows", "Number of rows", "The number of rows in the table"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("num_cols", "Number of columns", "The number of columns in the table"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("column_names", "Column names", "Names of the table columns"));
         }
 
         @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             return VARIABLES;
         }
     }

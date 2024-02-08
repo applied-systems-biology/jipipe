@@ -101,11 +101,11 @@ public class RunExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public static class VariablesInfo implements ExpressionParameterVariablesInfo {
         @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-            Set<ExpressionParameterVariable> result = new HashSet<>();
-            result.add(new ExpressionParameterVariable("Data as string", "The data value, represented as string", "data_string"));
-            result.add(new ExpressionParameterVariable("Data type id", "The ID of the data type", "data_type"));
-            result.add(new ExpressionParameterVariable("Row", "The row inside the data type", "row"));
+        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+            Set<JIPipeExpressionParameterVariableInfo> result = new HashSet<>();
+            result.add(new JIPipeExpressionParameterVariableInfo("data_string", "Data as string", "The data value, represented as string"));
+            result.add(new JIPipeExpressionParameterVariableInfo("data_type", "Data type id", "The ID of the data type"));
+            result.add(new JIPipeExpressionParameterVariableInfo("row", "Row", "The row inside the data type"));
             return result;
         }
     }

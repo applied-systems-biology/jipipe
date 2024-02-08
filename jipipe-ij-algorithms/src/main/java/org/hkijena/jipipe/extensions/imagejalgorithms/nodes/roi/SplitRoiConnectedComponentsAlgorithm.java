@@ -503,22 +503,22 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
 
     public static class GraphPostprocessingVariables implements ExpressionParameterVariablesInfo {
 
-        public static final Set<ExpressionParameterVariable> VARIABLES;
+        public static final Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
         static {
             VARIABLES = new HashSet<>();
-            VARIABLES.add(new ExpressionParameterVariable("Degree", "Degree of the node", "degree"));
-            VARIABLES.add(new ExpressionParameterVariable("Z", "The Z location of the ROI (first index is 1, zero indicates no Z constraint)", "z"));
-            VARIABLES.add(new ExpressionParameterVariable("C", "The channel (C) location of the ROI (first index is 1, zero indicates no C constraint)", "c"));
-            VARIABLES.add(new ExpressionParameterVariable("T", "The frame (T) location of the ROI (first index is 1, zero indicates no T constraint)", "t"));
-            VARIABLES.add(new ExpressionParameterVariable("Name", "The name of the ROI (empty string if not set)", "name"));
-            VARIABLES.add(new ExpressionParameterVariable("Return: Keep node", "Return value that indicates that the node should be kept.", "KEEP"));
-            VARIABLES.add(new ExpressionParameterVariable("Return: Isolate node", "Return value that indicates that the node's edges should be removed.", "ISOLATE"));
-            VARIABLES.add(new ExpressionParameterVariable("Return: Remove node", "Return value that indicates that the node should be removed.", "REMOVE"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("degree", "Degree", "Degree of the node"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("z", "Z", "The Z location of the ROI (first index is 1, zero indicates no Z constraint)"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("c", "C", "The channel (C) location of the ROI (first index is 1, zero indicates no C constraint)"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("t", "T", "The frame (T) location of the ROI (first index is 1, zero indicates no T constraint)"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("name", "Name", "The name of the ROI (empty string if not set)"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("KEEP", "Return: Keep node", "Return value that indicates that the node should be kept."));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("ISOLATE", "Return: Isolate node", "Return value that indicates that the node's edges should be removed."));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("REMOVE", "Return: Remove node", "Return value that indicates that the node should be removed."));
         }
 
         @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             return VARIABLES;
         }
     }

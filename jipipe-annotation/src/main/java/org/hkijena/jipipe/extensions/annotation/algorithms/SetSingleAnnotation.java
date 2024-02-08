@@ -86,8 +86,7 @@ public class SetSingleAnnotation extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Annotation value", description = "The value of the generated annotation. ")
     @JIPipeParameter("annotation-value")
     @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class)
-    @JIPipeExpressionParameterVariable(name = "Project directory", description = "The project directory (if available; will be the same as the data directory otherwise)", key = "project_dir")
-    @JIPipeExpressionParameterVariable(name = "Project data directories", description = "The user-configured project data directories as map. Access entries by the key.", key = "project_data_dirs")
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeProjectDirectoriesVariablesInfo.class)
     public StringQueryExpression getAnnotationValue() {
         return annotationValue;
     }
@@ -111,27 +110,27 @@ public class SetSingleAnnotation extends JIPipeSimpleIteratingAlgorithm {
 
     public static class VariablesInfo implements ExpressionParameterVariablesInfo {
 
-        public static final Set<ExpressionParameterVariable> VARIABLES;
+        public static final Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
         static {
             VARIABLES = new HashSet<>();
-            VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
-            VARIABLES.add(new ExpressionParameterVariable("Data string",
-                    "The data stored as string",
-                    "data_string"));
-            VARIABLES.add(new ExpressionParameterVariable("Data type ID",
-                    "The data type ID",
-                    "data_type"));
-            VARIABLES.add(new ExpressionParameterVariable("Row",
-                    "The row inside the data table",
-                    "row"));
-            VARIABLES.add(new ExpressionParameterVariable("Number of rows",
-                    "The number of rows in the data table",
-                    "num_rows"));
+            VARIABLES.add(JIPipeExpressionParameterVariableInfo.ANNOTATIONS_VARIABLE);
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("data_string", "Data string",
+                    "The data stored as string"
+            ));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("data_type", "Data type ID",
+                    "The data type ID"
+            ));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("row", "Row",
+                    "The row inside the data table"
+            ));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("num_rows", "Number of rows",
+                    "The number of rows in the data table"
+            ));
         }
 
         @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             return VARIABLES;
         }
     }

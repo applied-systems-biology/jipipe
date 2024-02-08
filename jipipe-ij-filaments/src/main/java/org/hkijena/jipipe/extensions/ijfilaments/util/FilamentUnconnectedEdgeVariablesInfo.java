@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.ijfilaments.util;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
@@ -12,16 +12,16 @@ import java.util.Set;
 
 public class FilamentUnconnectedEdgeVariablesInfo implements ExpressionParameterVariablesInfo {
 
-    private static final Set<ExpressionParameterVariable> VARIABLES;
+    private static final Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
     static {
         VARIABLES = new HashSet<>();
-        VARIABLES.add(new ExpressionParameterVariable("Length", "The length of the edge", "length"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("length", "Length", "The length of the edge"));
 
         FilamentVertexVariablesInfo source = new FilamentVertexVariablesInfo();
-        for (ExpressionParameterVariable variable : source.getVariables(null, null)) {
-            VARIABLES.add(new ExpressionParameterVariable("Source " + variable.getName(), variable.getDescription(), "source." + variable.getKey()));
-            VARIABLES.add(new ExpressionParameterVariable("Target " + variable.getName(), variable.getDescription(), "target." + variable.getKey()));
+        for (JIPipeExpressionParameterVariableInfo variable : source.getVariables(null, null)) {
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("source." + variable.getKey(), "Source " + variable.getName(), variable.getDescription()));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("target." + variable.getKey(), "Target " + variable.getName(), variable.getDescription()));
         }
     }
 
@@ -32,7 +32,7 @@ public class FilamentUnconnectedEdgeVariablesInfo implements ExpressionParameter
     }
 
     @Override
-    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         return VARIABLES;
     }
 }

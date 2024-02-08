@@ -125,26 +125,26 @@ public class ConditionalInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm
 
     public static class VariablesInfo implements ExpressionParameterVariablesInfo {
 
-        private final static Set<ExpressionParameterVariable> VARIABLES;
+        private final static Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
         static {
             VARIABLES = new HashSet<>();
-            VARIABLES.add(new ExpressionParameterVariable("Image width", "The width of the image", "width"));
-            VARIABLES.add(new ExpressionParameterVariable("Image height", "The height of the image", "height"));
-            VARIABLES.add(new ExpressionParameterVariable("Image depth", "The depth (number of slices) of the image", "depth"));
-            VARIABLES.add(new ExpressionParameterVariable("Image channels", "The channels (number of channel slices) of the image", "num_channels"));
-            VARIABLES.add(new ExpressionParameterVariable("Image frames", "The frames of the image", "num_frames"));
-            VARIABLES.add(new ExpressionParameterVariable("Slice Z", "The Z index of the current slice (-1 if whole image)", "z"));
-            VARIABLES.add(new ExpressionParameterVariable("Slice C", "The C index of the current slice (-1 if whole image)", "c"));
-            VARIABLES.add(new ExpressionParameterVariable("Slice T", "The T index of the current slice (-1 if whole image)", "t"));
-            VARIABLES.add(new ExpressionParameterVariable("Image title", "The title of the image", "title"));
-            VARIABLES.add(new ExpressionParameterVariable("Number of white pixels", "Pixels with a value > 0", "num_white"));
-            VARIABLES.add(new ExpressionParameterVariable("Number of black pixels", "Pixels with a value = 0", "num_black"));
-            VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("width", "Image width", "The width of the image"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("height", "Image height", "The height of the image"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("depth", "Image depth", "The depth (number of slices) of the image"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("num_channels", "Image channels", "The channels (number of channel slices) of the image"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("num_frames", "Image frames", "The frames of the image"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("z", "Slice Z", "The Z index of the current slice (-1 if whole image)"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("c", "Slice C", "The C index of the current slice (-1 if whole image)"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("t", "Slice T", "The T index of the current slice (-1 if whole image)"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("title", "Image title", "The title of the image"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("num_white", "Number of white pixels", "Pixels with a value > 0"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("num_black", "Number of black pixels", "Pixels with a value = 0"));
+            VARIABLES.add(JIPipeExpressionParameterVariableInfo.ANNOTATIONS_VARIABLE);
         }
 
         @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             return VARIABLES;
         }
     }

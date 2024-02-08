@@ -20,17 +20,17 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class DataAnnotationQueryExpressionVariablesInfo implements ExpressionParameterVariablesInfo {
-    private final static Set<ExpressionParameterVariable> VARIABLES;
+    private final static Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
     static {
         VARIABLES = new HashSet<>();
-        VARIABLES.add(new ExpressionParameterVariable("Annotation key", "The annotation key", "key"));
-        VARIABLES.add(new ExpressionParameterVariable("Annotation string representation", "The string representation of the data annotation", "data_string"));
-        VARIABLES.add(new ExpressionParameterVariable("Annotation data type ID", "The data type ID of the data annotation", "data_type_id"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("key", "Annotation key", "The annotation key"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("data_string", "Annotation string representation", "The string representation of the data annotation"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("data_type_id", "Annotation data type ID", "The data type ID of the data annotation"));
     }
 
     @Override
-    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         return VARIABLES;
     }
 }

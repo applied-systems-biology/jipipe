@@ -456,24 +456,24 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
 
     public static class VariablesInfo implements ExpressionParameterVariablesInfo {
 
-        private static final Set<ExpressionParameterVariable> VARIABLES = new HashSet<>();
+        private static final Set<JIPipeExpressionParameterVariableInfo> VARIABLES = new HashSet<>();
 
         static {
-            VARIABLES.add(new ExpressionParameterVariable("Fill color", "The fill color of the ROI", "fill_color"));
-            VARIABLES.add(new ExpressionParameterVariable("Line color", "The line color of the ROI", "line_color"));
-            VARIABLES.add(new ExpressionParameterVariable("Line width", "The line width", "line_width"));
-            VARIABLES.add(new ExpressionParameterVariable("Channel location", "The channel (C) location. The first index is 1. Zero indicates that that ROI applies to all locations.", "c"));
-            VARIABLES.add(new ExpressionParameterVariable("Slice location", "The slice (Z) location. The first index is 1. Zero indicates that that ROI applies to all locations.", "z"));
-            VARIABLES.add(new ExpressionParameterVariable("Frame location", "The frame (T) location. The first index is 1. Zero indicates that that ROI applies to all locations.", "t"));
-            VARIABLES.add(new ExpressionParameterVariable("X Location", "The X location of the ROI", "x"));
-            VARIABLES.add(new ExpressionParameterVariable("Y Location", "The Y location of the ROI", "y"));
-            VARIABLES.add(new ExpressionParameterVariable("Name", "The ROI name", "name"));
-            VARIABLES.add(new ExpressionParameterVariable("Index", "The index of the ROI", "index"));
-            VARIABLES.add(new ExpressionParameterVariable("Number of ROI", "The number of ROI in the list", "num_roi"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("fill_color", "Fill color", "The fill color of the ROI"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("line_color", "Line color", "The line color of the ROI"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("line_width", "Line width", "The line width"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("c", "Channel location", "The channel (C) location. The first index is 1. Zero indicates that that ROI applies to all locations."));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("z", "Slice location", "The slice (Z) location. The first index is 1. Zero indicates that that ROI applies to all locations."));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("t", "Frame location", "The frame (T) location. The first index is 1. Zero indicates that that ROI applies to all locations."));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("x", "X Location", "The X location of the ROI"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("y", "Y Location", "The Y location of the ROI"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("name", "Name", "The ROI name"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("index", "Index", "The index of the ROI"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("num_roi", "Number of ROI", "The number of ROI in the list"));
         }
 
         @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             return VARIABLES;
         }
     }
