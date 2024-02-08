@@ -28,10 +28,10 @@ import org.hkijena.jipipe.api.grapheditortool.JIPipeDefaultGraphEditorTool;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorTool;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
-import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
@@ -153,14 +153,14 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
      */
     private Dimension minDimensions = null;
     private JIPipeGraphNodeUI currentlyMouseEnteredNode;
+    private JIPipeNodeUIActiveArea currentlyMouseEnteredNodeActiveArea;
     private DisconnectHighlight disconnectHighlight;
     private ConnectHighlight connectHighlight;
     private Font smartEdgeTooltipSlotFont;
     private Font smartEdgeTooltipNodeFont;
     private List<DisplayedSlotEdge> lastDisplayedMainEdges;
     private JIPipeToggleableGraphEditorTool currentTool;
-    private boolean autoHideEdges;
-    private boolean autoHideDrawLabels;
+    private boolean autoMuteEdges;
     private Point lastMousePosition;
     private JIPipeAnnotationGraphNodeUI currentResizeTarget;
     private Rectangle currentResizeOperationStartProperties;
@@ -188,9 +188,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         this.compartment = compartment;
         this.settings = GraphEditorUISettings.getInstance();
 
-        this.autoHideEdges = settings.isAutoHideEdgeEnabled();
-        this.autoHideDrawLabels = settings.isAutoHideDrawLabels();
-
+        this.autoMuteEdges = settings.isAutoMuteEdgesEnabled();
 
         graph.attachAdditionalMetadata("jipipe:graph:view-mode", JIPipeGraphViewMode.VerticalCompact);
         initialize();
@@ -210,7 +208,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     public Stroke getStrokeDefault() {
         int width = (int) Math.max(1, zoom * 4);
-        return  new BasicStroke(width);
+        return new BasicStroke(width);
     }
 
     public Stroke getStrokeDefaultBorder() {
@@ -273,24 +271,13 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         return zoomChangedEventEmitter;
     }
 
-    public boolean isAutoHideEdges() {
-        return autoHideEdges;
+    public boolean isAutoMuteEdges() {
+        return autoMuteEdges;
     }
 
-    public void setAutoHideEdges(boolean autoHideEdges) {
-        this.autoHideEdges = autoHideEdges;
-        settings.setAutoHideEdgeEnabled(autoHideEdges);
-        JIPipe.getSettings().save();
-        repaint(50);
-    }
-
-    public boolean isAutoHideDrawLabels() {
-        return autoHideDrawLabels;
-    }
-
-    public void setAutoHideDrawLabels(boolean autoHideDrawLabels) {
-        this.autoHideDrawLabels = autoHideDrawLabels;
-        settings.setAutoHideDrawLabels(autoHideDrawLabels);
+    public void setAutoMuteEdges(boolean autoMuteEdges) {
+        this.autoMuteEdges = autoMuteEdges;
+        settings.setAutoMuteEdgesEnabled(autoMuteEdges);
         JIPipe.getSettings().save();
         repaint(50);
     }
@@ -1336,15 +1323,22 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 }
                 currentlyMouseEnteredNode = nodeUI;
                 currentlyMouseEnteredNode.mouseEntered(mouseEvent);
+                currentlyMouseEnteredNodeActiveArea = nodeUI.getCurrentActiveArea();
                 changed = true;
             }
         } else if (currentlyMouseEnteredNode != null) {
             currentlyMouseEnteredNode.mouseExited(mouseEvent);
             currentlyMouseEnteredNode = null;
+            currentlyMouseEnteredNodeActiveArea = null;
             changed = true;
         }
         if (currentlyMouseEnteredNode != null) {
             currentlyMouseEnteredNode.mouseMoved(mouseEvent);
+            JIPipeNodeUIActiveArea currentActiveArea = currentlyMouseEnteredNode.getCurrentActiveArea();
+            if(currentActiveArea != currentlyMouseEnteredNodeActiveArea) {
+                currentlyMouseEnteredNodeActiveArea = currentActiveArea;
+                changed = true;
+            }
         }
         if (currentTool != null && settings.isShowToolInfo() && !(currentTool instanceof JIPipeDefaultGraphEditorTool)) {
             changed = true;
@@ -1436,7 +1430,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         }
 
         // Node partitioning menus
-        if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+        if (getWorkbench() instanceof JIPipeProjectWorkbench) {
             JIPipeRuntimePartitionConfiguration runtimePartitions = ((JIPipeProjectWorkbench) getWorkbench()).getProject().getRuntimePartitions();
 
             // Algorithms
@@ -1470,10 +1464,10 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     }
 
     private void partitionSelectedAlgorithms(JIPipeRuntimePartition runtimePartition) {
-        if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+        if (getWorkbench() instanceof JIPipeProjectWorkbench) {
             JIPipeRuntimePartitionConfiguration runtimePartitions = ((JIPipeProjectWorkbench) getWorkbench()).getProject().getRuntimePartitions();
             int newIndex = runtimePartitions.indexOf(runtimePartition);
-            if(newIndex == -1) {
+            if (newIndex == -1) {
                 JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "Unable to find selected partition!", "Partition nodes", JOptionPane.ERROR_MESSAGE);
                 return;
             }
@@ -1484,7 +1478,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 } else if (nodeUI.getNode() instanceof JIPipeProjectCompartment) {
                     UUID uuid = ((JIPipeProjectCompartment) nodeUI.getNode()).getProjectCompartmentUUID();
                     for (JIPipeGraphNode graphNode : ((JIPipeProjectWorkbench) getWorkbench()).getProject().getGraph().getGraphNodes()) {
-                        if(graphNode instanceof JIPipeAlgorithm && Objects.equals(uuid, graphNode.getCompartmentUUIDInParentGraph())) {
+                        if (graphNode instanceof JIPipeAlgorithm && Objects.equals(uuid, graphNode.getCompartmentUUIDInParentGraph())) {
                             ((JIPipeAlgorithm) graphNode).getRuntimePartition().setIndex(newIndex);
                             graphNode.getParameterChangedEventEmitter().emit(new JIPipeParameterCollection.ParameterChangedEvent(graphNode, "jipipe:algorithm:runtime-partition"));
                         }
@@ -1553,13 +1547,13 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                         if (slotState != null) {
                             startDragSlot(slotState);
                         } else {
-                            if(!startDragCurrentNodeSelection(mouseEvent)) {
+                            if (!startDragCurrentNodeSelection(mouseEvent)) {
                                 selectionFirst = mouseEvent.getPoint();
                             }
                         }
                     } else {
                         // Dragging slots disabled by tools
-                        if(!startDragCurrentNodeSelection(mouseEvent)) {
+                        if (!startDragCurrentNodeSelection(mouseEvent)) {
                             selectionFirst = mouseEvent.getPoint();
                         }
                     }
@@ -2019,7 +2013,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 0,
                 0,
                 true,
-                isAutoHideEdges(), false);
+                isAutoMuteEdges(), false);
 
         // Outside edges drawing
         if (renderOutsideEdges && getCompartment() != null && settings.isDrawOutsideEdges()) {
@@ -2234,7 +2228,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     public void paint(Graphics g) {
         super.paint(g);
 
-        if(disposed) {
+        if (disposed) {
             return;
         }
 
@@ -2300,7 +2294,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
         // Smart edges drawing
         if (lastDisplayedMainEdges != null) {
-            paintNodeInputLabels(graphics2D, lastDisplayedMainEdges);
+            paintNodeIOLabels(graphics2D, lastDisplayedMainEdges);
         }
 
         // Draw cursor over the components
@@ -2553,27 +2547,54 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         return currentTool == null || currentTool.allowsDragConnections();
     }
 
-    private void paintNodeInputLabels(Graphics2D g, List<DisplayedSlotEdge> displayedMainEdges) {
+    private void paintNodeIOLabels(Graphics2D g, List<DisplayedSlotEdge> displayedMainEdges) {
 
-        if (!settings.isDrawLabelsOnHover() && !isAutoHideDrawLabels())
+        // Modified to only show on hover, as input labels are not very helpful in complex graphs
+
+        if (!settings.isDrawLabelsOnHover())
             return;
 
         FontMetrics slotFontMetrics = g.getFontMetrics(smartEdgeTooltipSlotFont);
-        FontMetrics nodeFontMetrics = g.getFontMetrics(smartEdgeTooltipNodeFont);
+//        FontMetrics nodeFontMetrics = g.getFontMetrics(smartEdgeTooltipNodeFont);
 
         // Collect labelled inputs based on pre-calculated
         // Target to sources
         Multimap<JIPipeDataSlot, DisplayedSlotEdge> labelledEdges = HashMultimap.create();
+        Map<DisplayedSlotEdge, Integer> labelledEdgeIds = new IdentityHashMap<>();
+        Map<DisplayedSlotEdge, Integer> labelledEdgeColors = new IdentityHashMap<>();
 
-        for (DisplayedSlotEdge displayedSlotEdge : displayedMainEdges) {
-            JIPipeGraphEdge.Visibility uiVisibility = displayedSlotEdge.edge.getUiVisibility();
-            if (displayedSlotEdge.isHidden() && (uiVisibility == JIPipeGraphEdge.Visibility.Smart || uiVisibility == JIPipeGraphEdge.Visibility.AlwaysHiddenWithLabel) && isAutoHideDrawLabels()) {
-                labelledEdges.put(displayedSlotEdge.target, displayedSlotEdge);
-            } else if (settings.isDrawLabelsOnHover() && displayedSlotEdge.getTargetUI() == currentlyMouseEnteredNode && !isCurrentlyDraggingNode() && !isCurrentlyDraggingConnection()) {
-                labelledEdges.put(displayedSlotEdge.target, displayedSlotEdge);
+        // Find edges of interest
+        if (settings.isDrawLabelsOnHover() && !isCurrentlyDraggingNode() && !isCurrentlyDraggingConnection() && lastMousePosition != null) {
+            if(currentlyMouseEnteredNode != null && currentlyMouseEnteredNodeActiveArea instanceof JIPipeNodeUISlotActiveArea) {
+                JIPipeNodeUISlotActiveArea slot = (JIPipeNodeUISlotActiveArea) currentlyMouseEnteredNodeActiveArea;
+                if (slot.isInput()) {
+                    for (DisplayedSlotEdge displayedSlotEdge : displayedMainEdges) {
+                        if (slot.getSlot() == displayedSlotEdge.getTarget()) {
+                            labelledEdges.put(displayedSlotEdge.target, displayedSlotEdge);
+                            labelledEdgeIds.put(displayedSlotEdge, labelledEdgeIds.size() + 1);
+                        }
+                    }
+                } else {
+                    for (DisplayedSlotEdge displayedSlotEdge : displayedMainEdges) {
+                        if (slot.getSlot() == displayedSlotEdge.getTarget()) {
+                            labelledEdges.put(displayedSlotEdge.target, displayedSlotEdge);
+                            labelledEdgeIds.put(displayedSlotEdge, labelledEdgeIds.size() + 1);
+                        }
+                    }
+                }
             }
         }
 
+        if (labelledEdges.isEmpty()) {
+            return;
+        }
+
+        // Color edges
+        for (Map.Entry<DisplayedSlotEdge, Integer> entry : labelledEdgeIds.entrySet()) {
+            labelledEdgeColors.put(entry.getKey(), Color.HSBtoRGB(1.0f * entry.getValue() / (labelledEdgeIds.size()), 0.8f, 0.8f));
+        }
+
+        // Labels for inputs
         for (JIPipeGraphNodeUI nodeUI : nodeUIs.values()) {
             for (JIPipeDataSlot inputSlot : nodeUI.getNode().getInputSlots()) {
                 List<DisplayedSlotEdge> inputIncomingSourceSlots = labelledEdges.get(inputSlot).stream().sorted(Comparator.comparing(DisplayedSlotEdge::getUIManhattanDistance)).collect(Collectors.toList());
@@ -2583,19 +2604,19 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                     JIPipeNodeUISlotActiveArea slotActiveArea = nodeUI.getSlotActiveArea(inputSlot);
                     if (slotActiveArea != null && slotActiveArea.getZoomedHitArea() != null) {
 
-                        final int baseHeight = 28;
+                        final int baseHeight = 22;
                         int tooltipHeight = (int) Math.round(zoom * inputIncomingSourceSlots.size() * baseHeight);
                         int maxAvailableWidth = slotActiveArea.getZoomedHitArea().width;
                         int tooltipWidth = 0;
                         for (DisplayedSlotEdge slotEdge : inputIncomingSourceSlots) {
-                            JIPipeDataSlot sourceSlot = slotEdge.source;
-                            tooltipWidth = Math.max(tooltipWidth, Math.max(slotFontMetrics.stringWidth(sourceSlot.getName()),
-                                    nodeFontMetrics.stringWidth(sourceSlot.getNode().getName())) + (int) Math.round(zoom * 16 + zoom * 8));
+                            // JIPipeDataSlot sourceSlot = slotEdge.source;
+                            int id = labelledEdgeIds.get(slotEdge);
+                            tooltipWidth = Math.max(tooltipWidth, slotFontMetrics.stringWidth(String.valueOf(id)) + (int) Math.round(zoom * 16 + zoom * 8));
                         }
                         tooltipWidth = Math.min(maxAvailableWidth, tooltipWidth);
 
                         // Generate tooltip
-                        int spacing = (int) Math.round(zoom * viewMode.getGridHeight() / 3.0);
+                        int spacing = (int) Math.round(zoom * viewMode.getGridHeight() / 4.0);
                         int tooltipX = nodeUI.getX() + slotActiveArea.getZoomedHitArea().x;
                         int tooltipY = nodeUI.getY() - tooltipHeight - spacing - (int) Math.round(zoom * 4);
 
@@ -2616,6 +2637,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                         for (DisplayedSlotEdge slotEdge : inputIncomingSourceSlots) {
 
                             JIPipeDataSlot sourceSlot = slotEdge.source;
+                            int id = labelledEdgeIds.get(slotEdge);
 
                             // Draw icon
                             Image icon = JIPipe.getNodes().getIconFor(sourceSlot.getNode().getInfo()).getImage();
@@ -2624,17 +2646,17 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                             g.drawImage(icon, iconX, startY + slotInfoHeight / 2 - iconSize / 2, iconSize, iconSize, null);
 
                             // Draw text
-                            double centerY = startY + slotInfoHeight / 2.0;
+                            double centerY = startY + slotInfoHeight / 2.0 + (slotFontMetrics.getAscent() - slotFontMetrics.getDescent()) / 2.0;
                             int textX = tooltipX + (int) Math.round(zoom * 2) + (int) Math.round(zoom * 16);
                             int slotTextY = (int) Math.round(centerY);
-                            int nodeTextY = (int) Math.round(centerY + (slotFontMetrics.getAscent() - slotFontMetrics.getLeading()));
-                            int availableTextWidth = tooltipWidth - (textX - tooltipX) - (int) Math.round(zoom * 4);
+//                            int nodeTextY = (int) Math.round(centerY + (slotFontMetrics.getAscent() - slotFontMetrics.getLeading()));
+//                            int availableTextWidth = tooltipWidth - (textX - tooltipX) - (int) Math.round(zoom * 4);
 
                             g.setFont(smartEdgeTooltipSlotFont);
-                            g.drawString(StringUtils.limitWithEllipsis(sourceSlot.getName(), availableTextWidth, slotFontMetrics), textX, slotTextY);
+                            g.drawString(String.valueOf(id), textX, slotTextY);
 
-                            g.setFont(smartEdgeTooltipNodeFont);
-                            g.drawString(StringUtils.limitWithEllipsis(sourceSlot.getNode().getName(), availableTextWidth, nodeFontMetrics), textX, nodeTextY);
+//                            g.setFont(smartEdgeTooltipNodeFont);
+//                            g.drawString(StringUtils.limitWithEllipsis(sourceSlot.getNode().getName(), availableTextWidth, nodeFontMetrics), textX, nodeTextY);
 
                             startY += slotInfoHeight;
                         }
@@ -3099,8 +3121,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             if (graphEditCursor == null)
                 return new Point(0, 0);
             return new Point(graphEditCursor.x, graphEditCursor.y);
-        }
-        finally {
+        } finally {
             stampedLock.unlock(stamp);
         }
     }
@@ -3170,8 +3191,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         long stamp = stampedLock.writeLock();
         try {
             this.graphEditCursor = graphEditCursor != null ? new Point(graphEditCursor.x, graphEditCursor.y) : new Point();
-        }
-        finally {
+        } finally {
             stampedLock.unlock(stamp);
         }
     }
@@ -3224,7 +3244,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     }
 
     private void updateAssets() {
-        smartEdgeTooltipSlotFont = new Font(Font.DIALOG, Font.PLAIN, Math.max(1, (int) Math.round(10 * zoom)));
+        smartEdgeTooltipSlotFont = new Font(Font.DIALOG, Font.PLAIN, Math.max(1, (int) Math.round(12 * zoom)));
         smartEdgeTooltipNodeFont = new Font(Font.DIALOG, Font.PLAIN, Math.max(1, (int) Math.round(9 * zoom)));
     }
 
@@ -3296,7 +3316,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     @Override
     public void onGraphChanged(JIPipeGraph.GraphChangedEvent event) {
 
-        if(disposed) {
+        if (disposed) {
             return;
         }
 
@@ -3312,7 +3332,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     @Override
     public void onNodeConnected(JIPipeGraph.NodeConnectedEvent event) {
 
-        if(disposed) {
+        if (disposed) {
             return;
         }
 
@@ -3349,7 +3369,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     @Override
     public void onNodeUIActionRequested(JIPipeGraphNodeUI.NodeUIActionRequestedEvent event) {
 
-        if(disposed) {
+        if (disposed) {
             return;
         }
 

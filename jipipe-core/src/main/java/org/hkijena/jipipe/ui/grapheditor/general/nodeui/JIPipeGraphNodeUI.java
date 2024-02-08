@@ -46,6 +46,7 @@ import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.*;
 import org.hkijena.jipipe.ui.grapheditor.nodefinder.JIPipeNodeFinderDialogUI;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
@@ -1059,6 +1060,10 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
     public JIPipeNodeUISlotActiveArea pickSlotAtMousePosition(MouseEvent event) {
         MouseEvent converted = SwingUtilities.convertMouseEvent(getGraphCanvasUI(), event, this);
         Point mousePosition = converted.getPoint();
+        return pickSlotAtMousePosition(mousePosition);
+    }
+
+    public JIPipeNodeUISlotActiveArea pickSlotAtMousePosition(Point mousePosition) {
         for (JIPipeNodeUIActiveArea activeArea : activeAreas) {
             if (activeArea instanceof JIPipeNodeUISlotActiveArea) {
                 if (activeArea.getZoomedHitArea().contains(mousePosition)) {
@@ -1383,22 +1388,22 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
                     "All output edges are shown regardless of their length",
                     UIUtils.getIconFromResources("actions/eye.png"),
                     () -> setOutputEdgesVisibility(JIPipeGraphEdge.Visibility.AlwaysVisible)));
-            edgeMenu.add(UIUtils.createMenuItem("Always hide all outputs (with label)",
-                    "All output edges are hidden (displayed as dashed line) regardless of their length. A label is displayed at the targets that contains information about the source.",
-                    UIUtils.getIconFromResources("actions/eye-slash.png"),
-                    () -> setOutputEdgesVisibility(JIPipeGraphEdge.Visibility.AlwaysHiddenWithLabel)));
-            edgeMenu.add(UIUtils.createMenuItem("Always hide all outputs (without label)",
+//            edgeMenu.add(UIUtils.createMenuItem("Always hide all outputs (with label)",
+//                    "All output edges are hidden (displayed as dashed line) regardless of their length. A label is displayed at the targets that contains information about the source.",
+//                    UIUtils.getIconFromResources("actions/eye-slash.png"),
+//                    () -> setOutputEdgesVisibility(JIPipeGraphEdge.Visibility.AlwaysHiddenWithLabel)));
+            edgeMenu.add(UIUtils.createMenuItem("Always hide all outputs ",
                     "All output edges are hidden (displayed as dashed line) regardless of their length",
                     UIUtils.getIconFromResources("actions/eye-slash.png"),
                     () -> setOutputEdgesVisibility(JIPipeGraphEdge.Visibility.AlwaysHidden)));
-            edgeMenu.add(UIUtils.createMenuItem("Auto-hide long output edges (with label)",
-                    "Long edges are automatically hidden (displayed as dashed line). A label is displayed at the targets that contains information about the source.",
-                    UIUtils.getIconFromResources("actions/fcitx-remind-active.png"),
-                    () -> setOutputEdgesVisibility(JIPipeGraphEdge.Visibility.Smart)));
-            edgeMenu.add(UIUtils.createMenuItem("Auto-hide long output edges (without label)",
+            edgeMenu.add(UIUtils.createMenuItem("Auto-hide long output edges",
                     "Long edges are automatically hidden (displayed as dashed line).",
                     UIUtils.getIconFromResources("actions/fcitx-remind-active.png"),
-                    () -> setOutputEdgesVisibility(JIPipeGraphEdge.Visibility.SmartSilent)));
+                    () -> setOutputEdgesVisibility(JIPipeGraphEdge.Visibility.Smart)));
+//            edgeMenu.add(UIUtils.createMenuItem("Auto-hide long output edges (without label)",
+//                    "Long edges are automatically hidden (displayed as dashed line).",
+//                    UIUtils.getIconFromResources("actions/fcitx-remind-active.png"),
+//                    () -> setOutputEdgesVisibility(JIPipeGraphEdge.Visibility.SmartSilent)));
             menu.add(edgeMenu);
         }
 
@@ -1537,29 +1542,29 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
                     () -> setEdgeVisibility(slot, edge, JIPipeGraphEdge.Visibility.AlwaysVisible)));
         }
         if (edge.getUiVisibility() != JIPipeGraphEdge.Visibility.AlwaysHidden) {
-            menu.add(UIUtils.createMenuItem("Always hide all outputs (without label)",
+            menu.add(UIUtils.createMenuItem("Always hide all outputs",
                     "All output edges are hidden (displayed as dashed line) regardless of their length",
                     UIUtils.getIconFromResources("actions/eye-slash.png"),
                     () -> setEdgeVisibility(slot, edge, JIPipeGraphEdge.Visibility.AlwaysHidden)));
         }
-        if (edge.getUiVisibility() != JIPipeGraphEdge.Visibility.AlwaysHiddenWithLabel) {
-            menu.add(UIUtils.createMenuItem("Always hide all outputs (with label)",
-                    "All output edges are hidden (displayed as dashed line) regardless of their length. A label is displayed at the targets that contains information about the source.",
-                    UIUtils.getIconFromResources("actions/eye-slash.png"),
-                    () -> setEdgeVisibility(slot, edge, JIPipeGraphEdge.Visibility.AlwaysHiddenWithLabel)));
-        }
+//        if (edge.getUiVisibility() != JIPipeGraphEdge.Visibility.AlwaysHiddenWithLabel) {
+//            menu.add(UIUtils.createMenuItem("Always hide all outputs (with label)",
+//                    "All output edges are hidden (displayed as dashed line) regardless of their length. A label is displayed at the targets that contains information about the source.",
+//                    UIUtils.getIconFromResources("actions/eye-slash.png"),
+//                    () -> setEdgeVisibility(slot, edge, JIPipeGraphEdge.Visibility.AlwaysHiddenWithLabel)));
+//        }
         if (edge.getUiVisibility() != JIPipeGraphEdge.Visibility.Smart) {
-            menu.add(UIUtils.createMenuItem("Auto-hide long output edges (with label)",
-                    "Long edges are automatically hidden (displayed as dashed line). A label is displayed at the targets that contains information about the source.",
+            menu.add(UIUtils.createMenuItem("Auto-hide long output edges",
+                    "Long edges are automatically hidden (displayed as dashed line).",
                     UIUtils.getIconFromResources("actions/fcitx-remind-active.png"),
                     () -> setEdgeVisibility(slot, edge, JIPipeGraphEdge.Visibility.Smart)));
         }
-        if (edge.getUiVisibility() != JIPipeGraphEdge.Visibility.SmartSilent) {
-            menu.add(UIUtils.createMenuItem("Auto-hide long output edges (without label)",
-                    "Long edges are automatically hidden (displayed as dashed line).",
-                    UIUtils.getIconFromResources("actions/fcitx-remind-active.png"),
-                    () -> setEdgeVisibility(slot, edge, JIPipeGraphEdge.Visibility.SmartSilent)));
-        }
+//        if (edge.getUiVisibility() != JIPipeGraphEdge.Visibility.SmartSilent) {
+//            menu.add(UIUtils.createMenuItem("Auto-hide long output edges (without label)",
+//                    "Long edges are automatically hidden (displayed as dashed line).",
+//                    UIUtils.getIconFromResources("actions/fcitx-remind-active.png"),
+//                    () -> setEdgeVisibility(slot, edge, JIPipeGraphEdge.Visibility.SmartSilent)));
+//        }
     }
 
     private void openSlotMenuAddInputSlotMenuItems(JIPipeDataSlot slot, JPopupMenu menu) {
@@ -1614,22 +1619,22 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
                     "All output edges are shown regardless of their length",
                     UIUtils.getIconFromResources("actions/eye.png"),
                     () -> setInputEdgesVisibility(JIPipeGraphEdge.Visibility.AlwaysVisible)));
-            edgeMenu.add(UIUtils.createMenuItem("Always hide all inputs (with label)",
-                    "All output edges are hidden (displayed as dashed line) regardless of their length. A label is displayed at the targets that contains information about the source.",
-                    UIUtils.getIconFromResources("actions/eye-slash.png"),
-                    () -> setInputEdgesVisibility(JIPipeGraphEdge.Visibility.AlwaysHiddenWithLabel)));
-            edgeMenu.add(UIUtils.createMenuItem("Always hide all inputs (without label)",
+//            edgeMenu.add(UIUtils.createMenuItem("Always hide all inputs (with label)",
+//                    "All output edges are hidden (displayed as dashed line) regardless of their length. A label is displayed at the targets that contains information about the source.",
+//                    UIUtils.getIconFromResources("actions/eye-slash.png"),
+//                    () -> setInputEdgesVisibility(JIPipeGraphEdge.Visibility.AlwaysHiddenWithLabel)));
+            edgeMenu.add(UIUtils.createMenuItem("Always hide all inputs",
                     "All output edges are hidden (displayed as dashed line) regardless of their length",
                     UIUtils.getIconFromResources("actions/eye-slash.png"),
                     () -> setInputEdgesVisibility(JIPipeGraphEdge.Visibility.AlwaysHidden)));
-            edgeMenu.add(UIUtils.createMenuItem("Auto-hide long input edges (with label)",
-                    "Long edges are automatically hidden (displayed as dashed line). A label is displayed at the targets that contains information about the source.",
-                    UIUtils.getIconFromResources("actions/fcitx-remind-active.png"),
-                    () -> setInputEdgesVisibility(JIPipeGraphEdge.Visibility.Smart)));
-            edgeMenu.add(UIUtils.createMenuItem("Auto-hide long input edges (without label)",
+            edgeMenu.add(UIUtils.createMenuItem("Auto-hide long input edges",
                     "Long edges are automatically hidden (displayed as dashed line).",
                     UIUtils.getIconFromResources("actions/fcitx-remind-active.png"),
-                    () -> setInputEdgesVisibility(JIPipeGraphEdge.Visibility.SmartSilent)));
+                    () -> setInputEdgesVisibility(JIPipeGraphEdge.Visibility.Smart)));
+//            edgeMenu.add(UIUtils.createMenuItem("Auto-hide long input edges (without label)",
+//                    "Long edges are automatically hidden (displayed as dashed line).",
+//                    UIUtils.getIconFromResources("actions/fcitx-remind-active.png"),
+//                    () -> setInputEdgesVisibility(JIPipeGraphEdge.Visibility.SmartSilent)));
             menu.add(edgeMenu);
         }
 
@@ -2158,6 +2163,10 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
                     iconSize,
                     null);
         }
+    }
+
+    public JIPipeNodeUIActiveArea getCurrentActiveArea() {
+        return currentActiveArea;
     }
 
     public enum SlotStatus {

@@ -44,10 +44,7 @@ public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
     private boolean layoutAfterAlgorithmFinder = true;
     private boolean layoutAfterConnect = false;
     private int autoHideEdgeDistanceThreshold = 512;
-    private boolean autoHideEdgeEnabled = true;
-
-    private boolean autoHideDrawLabels = true;
-
+    private boolean autoMuteEdgesEnabled = true;
     private boolean drawLabelsOnHover = true;
     private double autoHideEdgeOverlapThreshold = 0.5;
 
@@ -94,26 +91,15 @@ public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
         this.drawLabelsOnHover = drawLabelsOnHover;
     }
 
-    @JIPipeDocumentation(name = "Draw input labels for hidden edges", description = "If enabled, hidden edges will draw labels (unless the labels are disabled on a slot level)")
-    @JIPipeParameter("auto-hide-draw-labels")
-    public boolean isAutoHideDrawLabels() {
-        return autoHideDrawLabels;
-    }
-
-    @JIPipeParameter("auto-hide-draw-labels")
-    public void setAutoHideDrawLabels(boolean autoHideDrawLabels) {
-        this.autoHideDrawLabels = autoHideDrawLabels;
-    }
-
-    @JIPipeDocumentation(name = "Auto-hide edges", description = "Enabled/disables the automated hiding of edges")
+    @JIPipeDocumentation(name = "Auto-mute edges", description = "Enabled/disables the automated muting of edges (drawing them as dashed lines)")
     @JIPipeParameter("auto-hide-edges-enabled")
-    public boolean isAutoHideEdgeEnabled() {
-        return autoHideEdgeEnabled;
+    public boolean isAutoMuteEdgesEnabled() {
+        return autoMuteEdgesEnabled;
     }
 
     @JIPipeParameter("auto-hide-edges-enabled")
-    public void setAutoHideEdgeEnabled(boolean autoHideEdgeEnabled) {
-        this.autoHideEdgeEnabled = autoHideEdgeEnabled;
+    public void setAutoMuteEdgesEnabled(boolean autoMuteEdgesEnabled) {
+        this.autoMuteEdgesEnabled = autoMuteEdgesEnabled;
     }
 
     @JIPipeDocumentation(name = "Auto-hide edges overlap threshold", description = "Determines how much overlap with an existing edge is considered as condition for hiding the longer connection")

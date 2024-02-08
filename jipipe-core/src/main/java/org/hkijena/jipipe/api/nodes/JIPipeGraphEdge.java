@@ -97,13 +97,15 @@ public class JIPipeGraphEdge extends DefaultEdge {
         AlwaysVisible,
         /**
          * The edge will auto-hide if it is too far away
-         * A label is always displayed next to input
+         * No label is always displayed next to input
          */
         Smart,
         /**
          * The edge will auto-hide if it is too far away
          * No label is shown
+         * @deprecated  not supported and will behave the same as Smart (no label shown)
          */
+        @Deprecated
         SmartSilent,
         /**
          * The edge is always hidden.
@@ -113,7 +115,10 @@ public class JIPipeGraphEdge extends DefaultEdge {
         /**
          * The edge is always hidden
          * A label is shown
+         * (currently does the same as "AlwaysHidden")
+         * @deprecated not supported and will behave as AlwaysHidden
          */
+        @Deprecated
         AlwaysHiddenWithLabel
     }
 }

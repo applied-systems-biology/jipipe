@@ -411,7 +411,6 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
         initializeCenterViewCommand(graphMenu);
         initializeToggleHideEdgesCommand(graphMenu);
-        initializeToggleShowLabelsCommand(graphMenu);
         initializeExportMenu(graphMenu);
         initializeLayoutMenu(graphMenu);
         initializeSearchMenu(graphMenu);
@@ -421,19 +420,10 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         initializeZoomMenu();
     }
 
-    private void initializeToggleShowLabelsCommand(JMenu graphMenu) {
-        JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Show input labels", canvasUI.isAutoHideDrawLabels());
-        toggle.addActionListener(e -> {
-            canvasUI.setAutoHideDrawLabels(toggle.getState());
-            canvasUI.repaint(50);
-        });
-        graphMenu.add(toggle);
-    }
-
     private void initializeToggleHideEdgesCommand(JMenu graphMenu) {
-        JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Auto-hide edges", canvasUI.isAutoHideEdges());
+        JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Auto-mute edges", canvasUI.isAutoMuteEdges());
         toggle.addActionListener(e -> {
-            canvasUI.setAutoHideEdges(toggle.getState());
+            canvasUI.setAutoMuteEdges(toggle.getState());
             canvasUI.repaint(50);
         });
         graphMenu.add(toggle);
