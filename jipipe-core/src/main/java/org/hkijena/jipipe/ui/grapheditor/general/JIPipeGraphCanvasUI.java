@@ -27,10 +27,7 @@ import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeDefaultGraphEditorTool;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorTool;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
@@ -2563,9 +2560,11 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         Multimap<JIPipeDataSlot, DisplayedSlotEdge> highlightedEdges = HashMultimap.create();
 
         // Find edges of interest
+        JIPipeDataSlot targetSlot = null;
         if (settings.isDrawLabelsOnHover() && !isCurrentlyDraggingNode() && !isCurrentlyDraggingConnection() && lastMousePosition != null) {
             if (currentlyMouseEnteredNode != null && currentlyMouseEnteredNodeActiveArea instanceof JIPipeNodeUISlotActiveArea) {
                 JIPipeNodeUISlotActiveArea slot = (JIPipeNodeUISlotActiveArea) currentlyMouseEnteredNodeActiveArea;
+                targetSlot = slot.getSlot();
                 for (DisplayedSlotEdge displayedSlotEdge : displayedMainEdges) {
                     if (slot.getSlot() == displayedSlotEdge.getTarget() || slot.getSlot() == displayedSlotEdge.getSource()) {
 
@@ -2589,13 +2588,12 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         if(edgeIds.isEmpty()) {
             return;
         }
-//        if(edgeIds.size() == 1) {
-//            DisplayedSlotEdge edge = edgeIds.keySet().iterator().next();
-//            if(edge.getUIManhattanDistance() <= 2 * zoom * getViewMode().getGridHeight()) {
-//                return;
-//            }
-//        }
-
+        if(edgeIds.size() == 1) {
+            DisplayedSlotEdge edge = edgeIds.keySet().iterator().next();
+            if(edge.getUIManhattanDistance() <= 2 * zoom * getViewMode().getGridHeight()) {
+                return;
+            }
+        }
 
 
         // Draw edges
@@ -2642,8 +2640,15 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 }
 
 
-                g.setStroke(STROKE_UNIT);
-                g.setPaint(smartEdgeSlotBackground);
+                if(targetSlot != null) {
+                    JIPipeNodeInfo info = targetSlot.getNode().getInfo();
+                    g.setPaint(UIUtils.DARK_THEME ? info.getCategory().getDarkFillColor() : info.getCategory().getFillColor());
+                }
+                else {
+                    g.setPaint(smartEdgeSlotBackground);
+                }
+
+                g.setStroke(new BasicStroke(2));
                 g.fill(tooltipPolygon);
                 g.setPaint(nodeUI.getBorderColor());
                 g.draw(tooltipPolygon);
