@@ -85,9 +85,9 @@ public class JIPipeRuntimePartitionListCellRenderer extends JPanel implements Li
             if(idx == 0) {
                 indicatorPanel.add(new JLabel(UIUtils.getIconFromResources("actions/lock.png")));
             }
-            if(value.getOutputSettings().isExportHeavyData() || value.getOutputSettings().isExportLightweightData()) {
-                indicatorPanel.add(new JLabel(UIUtils.getIconFromResources("actions/document-export.png")));
-            }
+//            if(value.getOutputSettings().isExportHeavyData() || value.getOutputSettings().isExportLightweightData()) {
+//                indicatorPanel.add(new JLabel(UIUtils.getIconFromResources("actions/document-export.png")));
+//            }
         }
 
         if (isSelected) {

@@ -35,6 +35,7 @@ import org.hkijena.jipipe.ui.components.MessagePanel;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
+import org.hkijena.jipipe.ui.components.ribbon.Ribbon;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.documentation.JIPipeAlgorithmCompendiumUI;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
@@ -340,7 +341,9 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
         }
 
         add(toolBar, BorderLayout.NORTH);
+
     }
+
 
     private void loadExample() {
         JIPipeNodeExamplePickerDialog pickerDialog = new JIPipeNodeExamplePickerDialog(getWorkbench().getWindow());

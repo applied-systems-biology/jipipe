@@ -178,6 +178,7 @@ public class FilamentsExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         registerNodeType("filaments-erode-end-vertices", ErodeEndVerticesAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));
         registerNodeType("filaments-grow-end-vertices", GrowEndVerticesAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-arrow.png"));
+        registerNodeType("filaments-connect-vertices", ConnectVerticesAlgorithm.class, UIUtils.getIconURLFromResources("actions/lines-connector.png"));
     }
 
 
