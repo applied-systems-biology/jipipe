@@ -36,10 +36,8 @@ import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.scijava.vecmath.Vector3d;
 
 import java.awt.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "Connect filament vertices", description = "Connect existing vertices based on customizable criteria.")
 @JIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
@@ -89,7 +87,7 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeExpressionParameterVariable(key = "path_length", name = "Path length", description = "Existing path length in number of edges between the vertices (NaN if there is no path)")
     @JIPipeExpressionParameterVariable(key = "dot_product", name = "Vertices direction dot product", description = "The dot product of source and target directions. " +
             "-1 if the directions are opposite and 1 if they point at the same direction (NaN if not available)")
-    @JIPipeExpressionParameterVariable(key = "angle", name = "Angle", description = "The angle between the source and target directions (NaN if not available).")
+    @JIPipeExpressionParameterVariable(key = "angle", name = "Angle (degrees)", description = "The angle between the source and target directions (NaN if not available).")
     public JIPipeExpressionParameter getScoringFunction() {
         return scoringFunction;
     }
@@ -236,7 +234,7 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
         getDefaultCustomExpressionVariables().writeToVariables(variables);
 
 
-        Set<EdgeCandidate> candidates = new TreeSet<>();
+        HashSet<EdgeCandidate> candidates = new HashSet<>();
         DijkstraShortestPath<FilamentVertex, FilamentEdge> outputDataInspector = new DijkstraShortestPath<>(outputData);
         for (FilamentVertex current : outputData.vertexSet()) {
 
@@ -363,6 +361,7 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
                         variables.set("path_length", Double.NaN);
                     }
 
+
                     // Check via filter
                     if (!filterFunction.test(variables)) {
                         continue;
@@ -386,7 +385,7 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
         // Apply connect
         int successes = 0;
         Map<FilamentVertex, Integer> connectionCount = new HashMap<>();
-        for (EdgeCandidate candidate : candidates) {
+        for (EdgeCandidate candidate : candidates.stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList())) {
             if (limitConnections.isEnabled()) {
                 int c1 = connectionCount.getOrDefault(candidate.source, 0);
                 int c2 = connectionCount.getOrDefault(candidate.target, 0);
@@ -400,8 +399,10 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
 
             // Connect
             FilamentEdge edge = outputData.addEdge(candidate.source, candidate.target);
-            if (newEdgeColor.isEnabled())
-                edge.setColor(newEdgeColor.getContent());
+            if(edge != null) {
+                if (newEdgeColor.isEnabled())
+                    edge.setColor(newEdgeColor.getContent());
+            }
             ++successes;
         }
 
@@ -431,6 +432,19 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
 
         public double getScore() {
             return score;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            EdgeCandidate that = (EdgeCandidate) o;
+            return Double.compare(score, that.score) == 0 && Objects.equals(source, that.source) && Objects.equals(target, that.target);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(source, target, score);
         }
 
         @Override

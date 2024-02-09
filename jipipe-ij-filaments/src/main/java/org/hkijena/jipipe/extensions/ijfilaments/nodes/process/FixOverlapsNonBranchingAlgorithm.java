@@ -105,7 +105,7 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeExpressionParameterVariable(fromClass = FilamentUnconnectedEdgeVariablesInfo.class)
     @JIPipeExpressionParameterVariable(key = "source.direction", name = "Source direction", description = "Vector that contains the direction of the source vertex")
     @JIPipeExpressionParameterVariable(key = "target.direction", name = "Target direction", description = "Vector that contains the direction of the target vertex")
-    @JIPipeExpressionParameterVariable(key = "angle", name = "Angle", description = "The angle between the source and target directions")
+    @JIPipeExpressionParameterVariable(key = "angle", name = "Angle (degrees)", description = "The angle between the source and target directions")
     @JIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
     @JIPipeExpressionParameterVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
@@ -126,7 +126,7 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeExpressionParameterVariable(fromClass = FilamentUnconnectedEdgeVariablesInfo.class)
     @JIPipeExpressionParameterVariable(key = "source.direction", name = "Source direction", description = "Vector that contains the direction of the source vertex")
     @JIPipeExpressionParameterVariable(key = "target.direction", name = "Target direction", description = "Vector that contains the direction of the target vertex")
-    @JIPipeExpressionParameterVariable(key = "angle", name = "Angle", description = "The angle between the source and target directions")
+    @JIPipeExpressionParameterVariable(key = "angle", name = "Angle (degrees)", description = "The angle between the source and target directions")
     @JIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
     @JIPipeExpressionParameterVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
@@ -242,7 +242,7 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
         // For each candidate: search for best matching vertex within radius that is within the same original component
         // The other candidate should also not be connected to the current candidate
         // Score: abs(scalar product of normalized vectors)
-        Set<EdgeCandidate> candidates = new TreeSet<>();
+        Set<EdgeCandidate> candidates = new HashSet<>();
         ConnectivityInspector<FilamentVertex, FilamentEdge> outputDataInspector = new ConnectivityInspector<>(outputData);
         for (FilamentVertex current : candidateEndpoints) {
 
@@ -330,12 +330,14 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
         // Apply connect
         int successes = 0;
         Set<FilamentVertex> processedCandidateVertices = new HashSet<>();
-        for (EdgeCandidate candidate : candidates) {
+        for (EdgeCandidate candidate : candidates.stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList())) {
             if (!processedCandidateVertices.contains(candidate.source) && !processedCandidateVertices.contains(candidate.target)) {
                 // Connect
                 FilamentEdge edge = outputData.addEdge(candidate.source, candidate.target);
-                if (newEdgeColor.isEnabled())
-                    edge.setColor(newEdgeColor.getContent());
+                if(edge != null) {
+                    if (newEdgeColor.isEnabled())
+                        edge.setColor(newEdgeColor.getContent());
+                }
 
                 // Mark as used
                 processedCandidateVertices.add(candidate.source);
@@ -370,6 +372,19 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
 
         public double getScore() {
             return score;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            EdgeCandidate that = (EdgeCandidate) o;
+            return Double.compare(score, that.score) == 0 && Objects.equals(source, that.source) && Objects.equals(target, that.target);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(source, target, score);
         }
 
         @Override
