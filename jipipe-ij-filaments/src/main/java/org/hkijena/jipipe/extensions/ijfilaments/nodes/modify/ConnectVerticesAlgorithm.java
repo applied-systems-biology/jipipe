@@ -51,7 +51,7 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
     private boolean connectAcrossT = false;
     private boolean requireDirection = false;
     private boolean enable3D = true;
-    private JIPipeExpressionParameter filterFunction = new JIPipeExpressionParameter("length < 50");
+    private JIPipeExpressionParameter filterFunction = new JIPipeExpressionParameter("length < 100 AND source.degree == 1 AND target.degree == 1");
     private OptionalColorParameter newEdgeColor = new OptionalColorParameter(Color.GREEN, true);
     private JIPipeExpressionParameter scoringFunction = new JIPipeExpressionParameter("0");
     private OptionalIntegerParameter limitConnections = new OptionalIntegerParameter(false, 1);
