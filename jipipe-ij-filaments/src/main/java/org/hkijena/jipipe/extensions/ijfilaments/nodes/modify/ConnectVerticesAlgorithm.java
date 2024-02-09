@@ -74,7 +74,8 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
         this.limitConnections = new OptionalIntegerParameter(other.limitConnections);
     }
 
-    @JIPipeDocumentation(name = "Scoring function", description = "Expression executed per edge candidate to generate a score for limited connections.")
+    @JIPipeDocumentation(name = "Scoring function", description = "Expression executed per edge candidate to generate a score for limited connections. " +
+            "Higher scores are selected first.")
     @JIPipeParameter("scoring-function")
     @JIPipeExpressionParameterSettings(hint = "per candidate edge")
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
