@@ -140,7 +140,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
         for (JIPipeGraphNode node : run.getGraph().getGraphNodes()) {
             if (!predecessorAlgorithms.contains(node)) {
                 if (node instanceof JIPipeAlgorithm) {
-                    ((JIPipeAlgorithm) node).setEnabled(false);
+                    ((JIPipeAlgorithm) node).setSkipped(true);
                 }
             }
         }
@@ -149,7 +149,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
                 for (JIPipeDataSlot sourceSlot : getRun().getGraph().getInputIncomingSourceSlots(inputSlot)) {
                     JIPipeGraphNode node = sourceSlot.getNode();
                     if (node instanceof JIPipeAlgorithm) {
-                        ((JIPipeAlgorithm) node).setEnabled(true);
+                        ((JIPipeAlgorithm) node).setSkipped(false);
                     }
                 }
             }

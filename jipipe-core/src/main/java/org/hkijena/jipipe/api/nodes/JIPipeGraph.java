@@ -1282,7 +1282,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 if (!algorithm.getInfo().isRunnable())
                     continue;
                 if (algorithm instanceof JIPipeAlgorithm) {
-                    if (!((JIPipeAlgorithm) algorithm).isEnabled()) {
+                    if (!((JIPipeAlgorithm) algorithm).isEnabled() || ((JIPipeAlgorithm) algorithm).isSkipped()) {
                         missing.add(algorithm);
                         continue;
                     }
@@ -1306,7 +1306,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
         } else {
             for (JIPipeGraphNode node : getGraphNodes()) {
                 if (node instanceof JIPipeAlgorithm) {
-                    if (!((JIPipeAlgorithm) node).isEnabled()) {
+                    if (!((JIPipeAlgorithm) node).isEnabled() || ((JIPipeAlgorithm) node).isSkipped()) {
                         missing.add(node);
                     }
                 }
@@ -1439,7 +1439,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
             JIPipeGraphNode node = entry.getValue();
             if (node instanceof JIPipeAlgorithm) {
                 JIPipeAlgorithm algorithm = (JIPipeAlgorithm) node;
-                if (!algorithm.isEnabled() || (algorithm.canPassThrough() && algorithm.isPassThrough()))
+                if (!algorithm.isEnabled() || (algorithm.canPassThrough() && algorithm.isPassThrough()) || algorithm.isSkipped())
                     continue;
             }
             report.report(new GraphNodeValidationReportContext(context, node), node);

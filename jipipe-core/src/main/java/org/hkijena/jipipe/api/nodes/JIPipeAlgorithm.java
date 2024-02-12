@@ -32,7 +32,6 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameter;
 import org.hkijena.jipipe.utils.ParameterUtils;
@@ -51,6 +50,7 @@ import java.util.Objects;
  */
 public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
     private boolean enabled = true;
+    private boolean skipped = false;
     private boolean passThrough = false;
     private RuntimePartitionReferenceParameter runtimePartition = new RuntimePartitionReferenceParameter();
     private JIPipeFixedThreadPool threadPool;
@@ -86,6 +86,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
      */
     public JIPipeAlgorithm(JIPipeAlgorithm other) {
         super(other);
+        this.skipped = other.skipped;
         this.enabled = other.enabled;
         this.passThrough = other.passThrough;
         this.runtimePartition = new RuntimePartitionReferenceParameter(other.runtimePartition);
@@ -143,6 +144,26 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
      */
     public boolean canPassThrough() {
         return canAutoPassThrough();
+    }
+
+    /**
+     * Used internally to mark an algorithm as (not) executed without triggering isFunctionallyEquals()
+     * Affects {@link JIPipeGraph}'s getDeactivatedNodes
+     * This is not serialized, but copied
+     * @return if the node should be skipped in the next runs
+     */
+    public boolean isSkipped() {
+        return skipped;
+    }
+
+    /**
+     * Used internally to mark an algorithm as (not) executed without triggering isFunctionallyEquals()
+     * Affects {@link JIPipeGraph}'s getDeactivatedNodes
+     * This is not serialized, but copied
+     * @param skipped if the node should be skipped in the next runs
+     */
+    public void setSkipped(boolean skipped) {
+        this.skipped = skipped;
     }
 
     @JIPipeDocumentation(name = "Enabled", description = "If disabled, this algorithm will be skipped in a run. " +
