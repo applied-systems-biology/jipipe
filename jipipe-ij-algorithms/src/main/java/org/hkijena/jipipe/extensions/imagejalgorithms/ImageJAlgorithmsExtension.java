@@ -686,6 +686,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
 
         registerNodeType("ij1-labels-to-rgb", LabelsToRGBAlgorithm.class, UIUtils.getIconURLFromResources("actions/colormanagement.png"));
         registerNodeType("ij1-labels-to-roi", LabelsToROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
+        registerNodeType("ij1-labels-to-mask", LabelsToMaskAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-2d-greyscale-mask.png"));
         registerNodeType("ij1-labels-get-label-boundaries", GetLabelBoundariesAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-stroke.png"));
         registerNodeType("ij1-labels-remove-border-labels", RemoveBorderLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("ij1-labels-replace-labels", ReplaceLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit.png"));

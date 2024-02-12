@@ -37,7 +37,7 @@ import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterSettings;
 import java.awt.*;
 
 @JIPipeDocumentation(name = "Convert labels to RGB", description = "Visualizes a labels image by assigning a color to each label component")
-@JIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@JIPipeNode(menuPath = "Labels\nConvert", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output", autoCreate = true)
 @JIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +

@@ -236,7 +236,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if (ParameterUtils.isHiddenLocalParameter(tree, access, "jipipe:algorithm:enabled", "jipipe:algorithm:pass-through")) {
+        if (ParameterUtils.isHiddenLocalParameter(tree, access, "jipipe:algorithm:enabled", "jipipe:algorithm:pass-through", "jipipe:algorithm:runtime-partition")) {
             return false;
         }
         if(access.getSource() == this && "jipipe:algorithm:pass-through".equals(access.getKey()) && !canPassThrough()) {
