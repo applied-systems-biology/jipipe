@@ -234,6 +234,7 @@ public class ImageViewer2DDisplayRangeControl extends JPanel implements ThumbLis
     @Override
     public void thumbMoved(int thumb, float pos) {
         applyCustomCalibration();
+        getCalibrationPlugin().uploadSliceToCanvas();
     }
 
     public void applyCustomCalibration() {
@@ -250,6 +251,7 @@ public class ImageViewer2DDisplayRangeControl extends JPanel implements ThumbLis
             }
             customMin = min + diff * posMin;
             customMax = min + diff * posMax;
+            mode = ImageJCalibrationMode.Custom;
 //            calibrationPlugin.disableAutoCalibration();
 //            calibrationPlugin.setSelectedCalibration(ImageJCalibrationMode.Custom);
         }

@@ -535,6 +535,9 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
         if (!(slot.getNode() instanceof JIPipeAlgorithm)) {
             return;
         }
+        if(getProgressInfo().isCancelled()) {
+            throw new RuntimeException(new InterruptedException());
+        }
         if (slot.isInput()) {
             progressInfo.resolve("GC").log("Clearing input slot " + slot.getDisplayName());
             slot.destroyData();

@@ -31,6 +31,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameter;
@@ -193,19 +194,31 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
         super.onDeserialized(node, issues, notifications);
 
         if(isEnableDefaultCustomExpressionVariables() && customExpressionVariables.getParameters().isEmpty()) {
+
+            if("ij1-roi-filter-statistics".equals(getInfo().getId())) {
+                System.out.println();
+            }
+
             // Transfer parameters "custom-expression-variables" and "custom-filter-variables" into the standard expression storage if they are found
             try {
                 deserializeLegacyCustomExpressionVariables(node, "custom-expression-variables");
                 deserializeLegacyCustomExpressionVariables(node, "custom-filter-variables");
                 deserializeLegacyCustomExpressionVariables(node, "custom-variables");
             } catch (Throwable e) {
+                issues.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                        new GraphNodeValidationReportContext(this),
+                        "Error while reading parameters",
+                        "A parameter could not be upgraded to the JIPipe 3.x format. Please report this to the JIPipe developer.",
+                        "Please report this to the JIPipe developer",
+                        e.toString()));
+                e.printStackTrace();
             }
         }
     }
 
     private void deserializeLegacyCustomExpressionVariables(JsonNode node, String jsonPropertyKey) throws IOException {
         if(node.has(jsonPropertyKey)) {
-            JIPipeCustomExpressionVariablesParameter value = JsonUtils.getObjectMapper().readerFor(JIPipeCustomExpressionVariablesParameter.class).readValue(node.get(jsonPropertyKey));
+            JIPipeDynamicParameterCollection value = JsonUtils.getObjectMapper().readerFor(JIPipeCustomExpressionVariablesParameter.class).readValue(node.get(jsonPropertyKey));
             for (Map.Entry<String, JIPipeParameterAccess> entry : value.getParameters().entrySet()) {
                 customExpressionVariables.addParameter((JIPipeMutableParameterAccess) entry.getValue());
             }
