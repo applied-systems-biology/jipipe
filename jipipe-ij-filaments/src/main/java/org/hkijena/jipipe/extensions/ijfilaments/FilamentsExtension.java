@@ -146,6 +146,7 @@ public class FilamentsExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("filaments-skeleton-to-filaments-3d", SkeletonToFilaments3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/path-mode-spiro.png"));
 
         registerNodeType("filaments-set-vertex-properties", ChangeFilamentVertexPropertiesAlgorithm.class, UIUtils.getIconURLFromResources("actions/stock_edit.png"));
+        registerNodeType("filaments-set-edge-properties", ChangeFilamentEdgePropertiesAlgorithm.class, UIUtils.getIconURLFromResources("actions/stock_edit.png"));
 
         registerNodeType("filaments-filter-vertices-by-properties", FilterFilamentVerticesByProperties.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("filaments-filter-edges-by-properties", FilterFilamentEdgesByProperties.class, UIUtils.getIconURLFromResources("actions/filter.png"));

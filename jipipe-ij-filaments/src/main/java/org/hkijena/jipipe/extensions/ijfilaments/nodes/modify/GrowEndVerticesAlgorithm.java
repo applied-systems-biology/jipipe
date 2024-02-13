@@ -215,7 +215,7 @@ public class GrowEndVerticesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.iterations = iterations;
     }
 
-    @JIPipeDocumentation(name = "Vertex mask", description = "Additional mask applied to the vertices. If the vertex mask returns FALSE, the vertex is not eroded.")
+    @JIPipeDocumentation(name = "Vertex mask", description = "Allows to limit the calculations to a specific set of vertices.")
     @JIPipeParameter("vertex-filter")
     public VertexMaskParameter getVertexMask() {
         return vertexMask;

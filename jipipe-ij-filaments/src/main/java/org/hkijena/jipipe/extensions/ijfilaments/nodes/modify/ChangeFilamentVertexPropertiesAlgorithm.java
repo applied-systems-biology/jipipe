@@ -15,6 +15,7 @@ import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVa
 import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
+import org.hkijena.jipipe.extensions.ijfilaments.parameters.VertexMaskParameter;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertexVariablesInfo;
 import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
@@ -35,15 +36,16 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
     private JIPipeExpressionParameter centroidT = new JIPipeExpressionParameter("default");
     private JIPipeExpressionParameter radius = new JIPipeExpressionParameter("default");
     private JIPipeExpressionParameter value = new JIPipeExpressionParameter("default");
-
     private JIPipeExpressionParameter physicalSizeX = new JIPipeExpressionParameter("default");
-
     private JIPipeExpressionParameter physicalSizeY = new JIPipeExpressionParameter("default");
-
     private JIPipeExpressionParameter physicalSizeZ = new JIPipeExpressionParameter("default");
+
+    private final VertexMaskParameter vertexMask;
 
     public ChangeFilamentVertexPropertiesAlgorithm(JIPipeNodeInfo info) {
         super(info);
+        this.vertexMask = new VertexMaskParameter();
+        registerSubParameter(vertexMask);
     }
 
     public ChangeFilamentVertexPropertiesAlgorithm(ChangeFilamentVertexPropertiesAlgorithm other) {
@@ -58,6 +60,8 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
         this.physicalSizeX = new JIPipeExpressionParameter(other.physicalSizeX);
         this.physicalSizeY = new JIPipeExpressionParameter(other.physicalSizeY);
         this.physicalSizeZ = new JIPipeExpressionParameter(other.physicalSizeZ);
+        this.vertexMask = new VertexMaskParameter(other.vertexMask);
+        registerSubParameter(vertexMask);
     }
 
     @Override
@@ -69,7 +73,7 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         getDefaultCustomExpressionVariables().writeToVariables(variables);
 
-        for (FilamentVertex vertex : outputData.vertexSet()) {
+        for (FilamentVertex vertex : vertexMask.filter(outputData, outputData.vertexSet(), variables)) {
             // Write variables
             for (Map.Entry<String, String> entry : vertex.getMetadata().entrySet()) {
                 variables.set("metadata." + entry.getKey(), entry.getValue());
@@ -299,6 +303,12 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
     @JIPipeParameter("physical-size-z")
     public void setPhysicalSizeZ(JIPipeExpressionParameter physicalSizeZ) {
         this.physicalSizeZ = physicalSizeZ;
+    }
+
+    @JIPipeDocumentation(name = "Vertex mask", description = "Allows to only target a specific set of vertices.")
+    @JIPipeParameter("vertex-filter")
+    public VertexMaskParameter getVertexMask() {
+        return vertexMask;
     }
 
     @Override

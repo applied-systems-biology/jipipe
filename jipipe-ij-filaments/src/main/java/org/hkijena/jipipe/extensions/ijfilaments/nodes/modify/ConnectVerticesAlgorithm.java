@@ -22,6 +22,7 @@ import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVa
 import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
+import org.hkijena.jipipe.extensions.ijfilaments.parameters.VertexMaskParameter;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentUnconnectedEdgeVariablesInfo;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
@@ -54,9 +55,12 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
     private JIPipeExpressionParameter scoringFunction = new JIPipeExpressionParameter("0");
     private OptionalIntegerParameter limitConnections = new OptionalIntegerParameter(false, 1);
     private boolean enforceEdgesWithinMask = true;
+    private final VertexMaskParameter vertexMask;
 
     public ConnectVerticesAlgorithm(JIPipeNodeInfo info) {
         super(info);
+        this.vertexMask = new VertexMaskParameter();
+        registerSubParameter(vertexMask);
     }
 
     public ConnectVerticesAlgorithm(ConnectVerticesAlgorithm other) {
@@ -70,6 +74,8 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
         this.enforceEdgesWithinMask = other.enforceEdgesWithinMask;
         this.scoringFunction = new JIPipeExpressionParameter(other.scoringFunction);
         this.limitConnections = new OptionalIntegerParameter(other.limitConnections);
+        this.vertexMask = new VertexMaskParameter(other.vertexMask);
+        registerSubParameter(vertexMask);
     }
 
     @JIPipeDocumentation(name = "Scoring function", description = "Expression executed per edge candidate to generate a score for limited connections. " +
@@ -153,6 +159,12 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
     @Override
     public boolean isEnableDefaultCustomExpressionVariables() {
         return true;
+    }
+
+    @JIPipeDocumentation(name = "Vertex mask", description = "Additional filter applied to the vertices prior to candidate edge selection.")
+    @JIPipeParameter("vertex-filter")
+    public VertexMaskParameter getVertexMask() {
+        return vertexMask;
     }
 
     @JIPipeDocumentation(name = "Candidate edge filter", description = "Filter expression that determines if an edge is considered as candidate")
@@ -279,6 +291,9 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
                     if (!connectAcrossT && current.getNonSpatialLocation().getFrame() != other.getNonSpatialLocation().getFrame()) {
                         continue;
                     }
+                    if(progressInfo.isCancelled()) {
+                        return;
+                    }
 
                     if (mask != null) {
                         if (hasDirection) {
@@ -315,6 +330,10 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
                                 continue;
                             }
                         }
+                    }
+
+                    if(progressInfo.isCancelled()) {
+                        return;
                     }
 
                     // Calculate other direction
@@ -386,6 +405,11 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
         int successes = 0;
         Map<FilamentVertex, Integer> connectionCount = new HashMap<>();
         for (EdgeCandidate candidate : candidates.stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList())) {
+
+            if(progressInfo.isCancelled()) {
+                return;
+            }
+
             if (limitConnections.isEnabled()) {
                 int c1 = connectionCount.getOrDefault(candidate.source, 0);
                 int c2 = connectionCount.getOrDefault(candidate.target, 0);
