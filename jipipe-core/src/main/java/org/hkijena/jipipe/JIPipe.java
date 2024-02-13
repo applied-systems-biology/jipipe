@@ -637,6 +637,9 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 if (!isValidExtensionId(extension.getDependencyId())) {
                     System.err.println("Invalid extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension " + extension + ". REFUSING TO REGISTER AS OF JIPIPE VERSION 3!");
                     progressInfo.log("Invalid extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension " + extension + ". REFUSING TO REGISTER AS OF JIPIPE VERSION 3!");
+
+                    allJavaExtensionInstances.add(null);
+                    allJavaExtensionPluginInfos.add(null);
                     continue;
                 } else {
                     if (!allJavaExtensionsByID.containsKey(extension.getDependencyId())) {
@@ -664,6 +667,9 @@ public class JIPipe extends AbstractService implements JIPipeService {
         do {
             impliedLoadedJavaExtensionsChanged = false;
             for (JIPipeJavaExtension extension : allJavaExtensionInstances) {
+                if(extension == null) {
+                    continue;
+                }
                 if (extension.isCoreExtension() || extensionRegistry.getStartupExtensions().contains(extension.getDependencyId()) || impliedLoadedJavaExtensions.contains(extension.getDependencyId())) {
                     if (isValidExtensionId(extension.getDependencyId())) {
                         if (!impliedLoadedJavaExtensions.contains(extension.getDependencyId())) {
@@ -689,8 +695,11 @@ public class JIPipe extends AbstractService implements JIPipeService {
         boolean preActivationScheduledSave = false;
 
         for (int i = 0; i < allJavaExtensionInstances.size(); i++) {
-            IJ.showProgress(i + 1, pluginList.size());
+            IJ.showProgress(i + 1, allJavaExtensionInstances.size());
             JIPipeJavaExtension extension = allJavaExtensionInstances.get(i);
+            if(extension == null) {
+                continue;
+            }
             try {
                 extensionRegistry.registerKnownExtension(extension);
 
