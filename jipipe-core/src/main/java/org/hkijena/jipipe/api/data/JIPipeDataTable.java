@@ -1343,20 +1343,14 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         String text = "Copying data from " + sourceSlot.getDisplayName() + " to " + getDisplayName();
         int rowCount = sourceSlot.getRowCount();
         for (int row = 0; row < rowCount; ++row) {
-            progressInfo.resolveAndLog(text, row, rowCount);
-            addData(sourceSlot.getDataItemStore(row), sourceSlot.getTextAnnotations(row), JIPipeTextAnnotationMergeMode.Merge, sourceSlot.getDataContext(row), progressInfo);
-
-            // Copy data annotations
-            Map<String, JIPipeDataItemStore> dataAnnotationItemStoreMap;
-            long stamp = stampedLock.writeLock();
-            try {
-                dataAnnotationItemStoreMap = sourceSlot.getDataAnnotationItemStoreMap_(row);
-                for (Map.Entry<String, JIPipeDataItemStore> entry : dataAnnotationItemStoreMap.entrySet()) {
-                    setDataAnnotationItemStore_(row, entry.getKey(), entry.getValue());
-                }
-            } finally {
-                stampedLock.unlock(stamp);
-            }
+            JIPipeProgressInfo addDataProgress = progressInfo.resolveAndLog(text, row, rowCount);
+            addData(sourceSlot.getDataItemStore(row),
+                    sourceSlot.getTextAnnotations(row),
+                    JIPipeTextAnnotationMergeMode.OverwriteExisting,
+                    sourceSlot.getDataAnnotations(row),
+                    JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                    sourceSlot.getDataContext(row),
+                    addDataProgress);
         }
     }
 
@@ -1482,14 +1476,17 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
             }
             for (ArrayList<JIPipeDataItemStore> list : dataAnnotationsArrays.values()) {
                 for (int i = 0; i < list.size(); i++) {
-                    try {
-                        list.get(i).removeUser(this);
-                        if (list.get(i).canClose())
-                            list.get(i).close();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                    JIPipeDataItemStore dataItemStore = list.get(i);
+                    if(dataItemStore != null) {
+                        try {
+                            dataItemStore.removeUser(this);
+                            if (dataItemStore.canClose())
+                                dataItemStore.close();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                        list.set(i, null);
                     }
-                    list.set(i, null);
                 }
             }
         } finally {
