@@ -104,17 +104,17 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
+    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         // Set parameters of ROI statistics algorithm
         roiStatisticsAlgorithm.setMeasurements(measurements);
         roiStatisticsAlgorithm.setMeasureInPhysicalUnits(measureInPhysicalUnits);
 
         // Continue with run
-        super.run(progressInfo);
+        super.run(runContext, progressInfo);
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROIListData inputRois = (ROIListData) iterationStep.getInputData("Input", ROIListData.class, progressInfo).duplicate(progressInfo);
         ImagePlusData inputReference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
@@ -128,7 +128,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
         if (inputReference != null) {
             roiStatisticsAlgorithm.getInputSlot("Reference").addData(inputReference, progressInfo);
         }
-        roiStatisticsAlgorithm.run(progressInfo);
+        roiStatisticsAlgorithm.run(runContext, progressInfo);
         ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
         roiStatisticsAlgorithm.clearSlotData();
 

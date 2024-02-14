@@ -78,7 +78,7 @@ public class CopyPath extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Path input = iterationStep.getInputData("Source", PathData.class, progressInfo).toPath();
         Path destination = iterationStep.getInputData("Destination", PathData.class, progressInfo).toPath();
 

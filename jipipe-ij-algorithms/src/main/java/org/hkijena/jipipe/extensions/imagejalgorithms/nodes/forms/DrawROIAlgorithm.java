@@ -58,9 +58,9 @@ public class DrawROIAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgorit
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
         // Generate the output first
-        super.runParameterSet(progressInfo, parameterAnnotations);
+        super.runParameterSet(runContext, progressInfo, parameterAnnotations);
 
         if (isPassThrough())
             return;

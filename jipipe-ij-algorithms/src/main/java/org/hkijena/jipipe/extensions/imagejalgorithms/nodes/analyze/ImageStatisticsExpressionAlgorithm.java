@@ -91,7 +91,7 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus img = iterationStep.getInputData("Image", ImagePlusGreyscaleData.class, progressInfo).getImage();
 
         // Get all indices and group them

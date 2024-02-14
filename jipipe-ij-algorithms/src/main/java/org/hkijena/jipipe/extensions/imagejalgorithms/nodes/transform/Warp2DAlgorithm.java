@@ -122,7 +122,7 @@ public class Warp2DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus img = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
         ImagePlus vectorField = iterationStep.getInputData("Vector field", ImagePlusGreyscale32FData.class, progressInfo).getImage();
         ImagePlus result = IJ.createHyperStack(img.getTitle() + " warped",

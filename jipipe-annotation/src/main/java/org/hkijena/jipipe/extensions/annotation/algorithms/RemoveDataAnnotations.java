@@ -32,7 +32,7 @@ public class RemoveDataAnnotations extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         for (String name : ImmutableList.copyOf(iterationStep.getMergedDataAnnotations().keySet())) {
             if (nameFilter.test(name)) {
                 iterationStep.getMergedDataAnnotations().remove(name);

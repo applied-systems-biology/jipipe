@@ -55,7 +55,7 @@ public class DisplayRangeCalibrationAlgorithm extends JIPipeSimpleIteratingAlgor
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus image = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getDuplicateImage();
         ImageJUtils.calibrate(image, calibrationMode, customMin, customMax);
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(image), progressInfo);
@@ -95,11 +95,11 @@ public class DisplayRangeCalibrationAlgorithm extends JIPipeSimpleIteratingAlgor
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        super.reportValidity(context, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
         if(calibrationMode == ImageJCalibrationMode.Custom && customMax < customMin) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    context,
+                    reportContext,
                     "Invalid custom min/max",
                     "The custom min cannot be larger than the custom max"));
         }

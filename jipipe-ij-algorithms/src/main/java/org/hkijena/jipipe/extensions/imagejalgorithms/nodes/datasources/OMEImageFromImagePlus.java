@@ -37,7 +37,7 @@ public class OMEImageFromImagePlus extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData imagePlusData = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo);
         ROIListData rois = iterationStep.getInputRow("ROI") >= 0 ? iterationStep.getInputData("ROI", ROIListData.class, progressInfo) : new ROIListData();
         OMEImageData omeImageData = new OMEImageData(imagePlusData.getImage(), rois, null);

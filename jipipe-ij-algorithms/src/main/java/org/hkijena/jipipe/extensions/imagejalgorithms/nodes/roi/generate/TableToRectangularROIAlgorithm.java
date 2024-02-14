@@ -92,23 +92,23 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        super.reportValidity(context, report);
-        report.report(new ParameterValidationReportContext(context, this, "Column 'X1'", "column-x1"), columnX1);
-        report.report(new ParameterValidationReportContext(context, this, "Column 'Y1'", "column-y1"), columnY1);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
+        report.report(new ParameterValidationReportContext(reportContext, this, "Column 'X1'", "column-x1"), columnX1);
+        report.report(new ParameterValidationReportContext(reportContext, this, "Column 'Y1'", "column-y1"), columnY1);
 
         if (anchor == Anchor.TopLeft || anchor == Anchor.Center) {
-            report.report(new ParameterValidationReportContext(context, this, "Column 'Width'", "column-width"), columnWidth);
-            report.report(new ParameterValidationReportContext(context, this, "Column 'Height'", "column-height"), columnHeight);
+            report.report(new ParameterValidationReportContext(reportContext, this, "Column 'Width'", "column-width"), columnWidth);
+            report.report(new ParameterValidationReportContext(reportContext, this, "Column 'Height'", "column-height"), columnHeight);
         }
         if (anchor == Anchor.TwoPoints) {
-            report.report(new ParameterValidationReportContext(context, this, "Column 'X2'", "column-x2"), columnX2);
-            report.report(new ParameterValidationReportContext(context, this, "Column 'Y2'", "column-y2"), columnY2);
+            report.report(new ParameterValidationReportContext(reportContext, this, "Column 'X2'", "column-x2"), columnX2);
+            report.report(new ParameterValidationReportContext(reportContext, this, "Column 'Y2'", "column-y2"), columnY2);
         }
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData table = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         ROIListData rois = new ROIListData();
 

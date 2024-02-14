@@ -135,11 +135,11 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
 
         if (isPassThrough() && canPassThrough()) {
             progressInfo.log("Data passed through to output");
-            runPassThrough(progressInfo);
+            runPassThrough(runContext, progressInfo);
             return;
         }
 
@@ -171,12 +171,12 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
         }
 
         final int numIterationSteps = iterationSteps.size();
-        if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1) {
+        if (!supportsParallelization() || !isParallelizationEnabled() || runContext.getThreadPool() == null || runContext.getThreadPool().getMaxThreads() <= 1) {
             for (int i = 0; i < iterationSteps.size(); i++) {
                 if (progressInfo.isCancelled())
                     return;
                 JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, iterationSteps.size());
-                runIteration(iterationSteps.get(i), new JIPipeMutableIterationContext(i, numIterationSteps), slotProgress);
+                runIteration(iterationSteps.get(i), new JIPipeMutableIterationContext(i, numIterationSteps), runContext, slotProgress);
             }
         } else {
             List<Runnable> tasks = new ArrayList<>();
@@ -186,11 +186,14 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
                     if (progressInfo.isCancelled())
                         return;
                     JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", rowIndex, iterationSteps.size());
-                    runIteration(iterationSteps.get(rowIndex), new JIPipeMutableIterationContext(rowIndex, numIterationSteps), slotProgress);
+                    runIteration(iterationSteps.get(rowIndex), new JIPipeMutableIterationContext(rowIndex, numIterationSteps), runContext, slotProgress);
                 });
             }
-            progressInfo.log(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d", tasks.size(), getParallelizationBatchSize(), getThreadPool().getMaxThreads()));
-            for (Future<Exception> batch : getThreadPool().scheduleBatches(tasks, getParallelizationBatchSize())) {
+            progressInfo.log(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d",
+                    tasks.size(),
+                    getParallelizationBatchSize(),
+                    runContext.getThreadPool().getMaxThreads()));
+            for (Future<Exception> batch : runContext.getThreadPool().scheduleBatches(tasks, getParallelizationBatchSize())) {
                 try {
                     Exception exception = batch.get();
                     if (exception != null)
@@ -267,9 +270,10 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
      *
      * @param iterationStep    The data interface
      * @param iterationContext The iteration context
+     * @param runContext
      * @param progressInfo     the progress info from the run
      */
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         for (JIPipeInputDataSlot inputSlot : getDataInputSlots()) {
             JIPipeOutputDataSlot outputSlot = getCorrespondingOutputSlot(inputSlot);
             if (outputSlot == null)

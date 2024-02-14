@@ -58,7 +58,7 @@ public class OutlineRoi3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROI3DListData data = (ROI3DListData) iterationStep.getInputData(getFirstInputSlot(), ROI3DListData.class, progressInfo).duplicate(progressInfo);
         data.outline(outline, ignoreErrors, progressInfo);
         iterationStep.addOutputData(getFirstOutputSlot(), data, progressInfo);

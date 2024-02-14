@@ -61,7 +61,7 @@ public class ColorRoi3DByNameAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROI3DListData rois = new ROI3DListData(iterationStep.getInputData(getFirstInputSlot(), ROI3DListData.class, progressInfo));
         Set<String> names = new HashSet<>();
         for (ROI3D roi : rois) {

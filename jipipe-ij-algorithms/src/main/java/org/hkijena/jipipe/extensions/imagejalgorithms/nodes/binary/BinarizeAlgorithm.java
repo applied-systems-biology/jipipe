@@ -66,14 +66,14 @@ public class BinarizeAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ManualThreshold8U2DAlgorithm algorithm = JIPipe.createNode(ManualThreshold8U2DAlgorithm.class);
         if (!invert)
             algorithm.setThreshold(new IntNumberRangeParameter(1, 256));
         else
             algorithm.setThreshold(new IntNumberRangeParameter(256, 1));
         algorithm.getFirstInputSlot().addData(iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class, progressInfo), progressInfo);
-        algorithm.run(progressInfo);
+        algorithm.run(runContext, progressInfo);
         iterationStep.addOutputData(getFirstOutputSlot(), algorithm.getFirstOutputSlot().getData(0, ImagePlusGreyscaleMaskData.class, progressInfo), progressInfo);
     }
 }

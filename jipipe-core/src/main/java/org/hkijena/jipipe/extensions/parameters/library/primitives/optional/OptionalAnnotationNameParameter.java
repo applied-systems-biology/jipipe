@@ -38,11 +38,11 @@ public class OptionalAnnotationNameParameter extends OptionalStringParameter imp
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         if (isEnabled()) {
             if (!StringUtils.isNullOrEmpty(getContent())) {
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
-                        context,
+                        reportContext,
                         "The annotation name is empty!",
                         "Annotation names cannot be empty!"));
             }

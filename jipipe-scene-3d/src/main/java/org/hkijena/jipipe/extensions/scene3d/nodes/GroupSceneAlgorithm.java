@@ -31,7 +31,7 @@ public class GroupSceneAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Scene3DData inputData = iterationStep.getInputData(getFirstInputSlot(), Scene3DData.class, progressInfo);
         Scene3DData outputData = new Scene3DData();
         Scene3DGroupNode groupNode = new Scene3DGroupNode();

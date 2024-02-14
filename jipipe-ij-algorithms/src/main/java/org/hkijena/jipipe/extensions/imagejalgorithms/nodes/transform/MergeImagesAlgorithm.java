@@ -43,7 +43,7 @@ public class MergeImagesAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData targetImageData = iterationStep.getInputData("Target", ImagePlusData.class, progressInfo);
         ImagePlus output = targetImageData.getDuplicateImage();
         ImagePlus src = iterationStep.getInputData("Source", targetImageData.getClass(), progressInfo).getImage();

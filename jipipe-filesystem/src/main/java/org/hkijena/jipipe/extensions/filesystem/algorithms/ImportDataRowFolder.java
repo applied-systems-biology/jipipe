@@ -63,7 +63,7 @@ public class ImportDataRowFolder extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Path folder = iterationStep.getInputData("Data row folder", FolderData.class, progressInfo).toPath();
         JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(progressInfo, folder), dataType.getInfo().getDataClass(), progressInfo);
         List<JIPipeTextAnnotation> annotations = new ArrayList<>();
@@ -99,17 +99,17 @@ public class ImportDataRowFolder extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        super.reportValidity(context, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
         if (dataType.getInfo() == null) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    context,
+                    reportContext,
                     "Please select a data type!",
                     "This node requires you to select a data type that should be imported.",
                     "Please select a data type in the parameters"));
         } else if (ReflectionUtils.isAbstractOrInterface(dataType.getInfo().getDataClass())) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    context,
+                    reportContext,
                     "Data type is generic!",
                     "This node requires you to select a data type that does not act as general concept.",
                     "Please select a data type in the parameters"));

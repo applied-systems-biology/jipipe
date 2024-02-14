@@ -73,7 +73,6 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.awt.*;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -1294,8 +1293,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        report.report(context, nodeRegistry);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        report.report(reportContext, nodeRegistry);
         for (JIPipeDependency extension : failedExtensions) {
             if (extension != null) {
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
@@ -1307,7 +1306,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
             }
         }
         for (JIPipeDependency extension : registeredExtensions) {
-            report.report(context, extension);
+            report.report(reportContext, extension);
         }
     }
 

@@ -93,7 +93,7 @@ public class StackToDimensionMergerAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
         List<ImagePlus> inputImages = new ArrayList<>();
         for (ImagePlusData data : iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo)) {

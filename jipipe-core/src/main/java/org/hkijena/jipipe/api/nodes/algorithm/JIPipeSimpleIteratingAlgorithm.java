@@ -109,7 +109,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
         if (getDataInputSlotCount() > 1)
             throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new GraphNodeValidationReportContext(this),
                     "Too many input slots for JIPipeSimpleIteratingAlgorithm!",
@@ -117,7 +117,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                     "Please contact the plugin developers and tell them to let algorithm '" + getInfo().getId() + "' inherit from 'JIPipeIteratingAlgorithm' instead."));
         if (isPassThrough() && canPassThrough()) {
             progressInfo.log("Data passed through to output");
-            runPassThrough(progressInfo);
+            runPassThrough(runContext, progressInfo);
             return;
         }
 
@@ -179,7 +179,8 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
         // Execute the workload
         boolean hasAdaptiveParameters = getAdaptiveParameterSettings().isEnabled() && !getAdaptiveParameterSettings().getOverriddenParameters().isEmpty();
         final int numIterationSteps = iterationSteps.size();
-        if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1 || iterationSteps.size() <= 1 || hasAdaptiveParameters) {
+        if (!supportsParallelization() || !isParallelizationEnabled() || runContext.getThreadPool() == null ||
+                runContext.getThreadPool().getMaxThreads() <= 1 || iterationSteps.size() <= 1 || hasAdaptiveParameters) {
             for (int i = 0; i < iterationSteps.size(); i++) {
                 if (progressInfo.isCancelled())
                     return;
@@ -188,7 +189,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                 if (isPassThrough()) {
                     runPassThrough(slotProgress, iterationSteps.get(i));
                 } else {
-                    runIteration(iterationSteps.get(i), new JIPipeMutableIterationContext(i, numIterationSteps), slotProgress);
+                    runIteration(iterationSteps.get(i), new JIPipeMutableIterationContext(i, numIterationSteps), runContext, slotProgress);
                 }
             }
         } else {
@@ -204,12 +205,15 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                     if (isPassThrough()) {
                         runPassThrough(slotProgress, iterationSteps.get(iterationStepIndex));
                     } else {
-                        runIteration(iterationSteps.get(iterationStepIndex), new JIPipeMutableIterationContext(iterationStepIndex, numIterationSteps), slotProgress);
+                        runIteration(iterationSteps.get(iterationStepIndex), new JIPipeMutableIterationContext(iterationStepIndex, numIterationSteps), runContext, slotProgress);
                     }
                 });
             }
-            progressInfo.log(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d", tasks.size(), getParallelizationBatchSize(), getThreadPool().getMaxThreads()));
-            for (Future<Exception> batch : getThreadPool().scheduleBatches(tasks, getParallelizationBatchSize())) {
+            progressInfo.log(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d",
+                    tasks.size(),
+                    getParallelizationBatchSize(),
+                    runContext.getThreadPool().getMaxThreads()));
+            for (Future<Exception> batch : runContext.getThreadPool().scheduleBatches(tasks, getParallelizationBatchSize())) {
                 try {
                     Exception exception = batch.get();
                     if (exception != null)
@@ -301,9 +305,9 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         if (getDataInputSlots().size() > 1) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context,
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext,
                     "Error in source code detected!",
                     "The developer of this algorithm chose the wrong node type. The one that was selected only supports at most one input.",
                     "Please contact the plugin developers and tell them to let algorithm '" + getInfo().getId() + "' inherit from 'JIPipeIteratingAlgorithm' instead."));
@@ -314,10 +318,11 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
      * Runs code on one data row
      *
      * @param iterationStep    The data interface
-     * @param iterationContext
+     * @param iterationContext the iteration context
+     * @param runContext the run context
      * @param progressInfo     the progress info from the run
      */
-    protected abstract void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo);
+    protected abstract void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo);
 
     @Override
     public boolean supportsParallelization() {

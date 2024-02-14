@@ -65,7 +65,7 @@ public class ExtractImageInRoiAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus image = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
         ROIListData rois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
 

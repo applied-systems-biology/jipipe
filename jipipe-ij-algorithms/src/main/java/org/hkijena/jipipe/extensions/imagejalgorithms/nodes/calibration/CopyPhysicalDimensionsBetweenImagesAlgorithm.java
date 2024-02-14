@@ -28,7 +28,7 @@ public class CopyPhysicalDimensionsBetweenImagesAlgorithm extends JIPipeIteratin
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus source = iterationStep.getInputData("Source", ImagePlusData.class, progressInfo).getImage();
         ImagePlus target = iterationStep.getInputData("Target", ImagePlusData.class, progressInfo).getDuplicateImage();
 

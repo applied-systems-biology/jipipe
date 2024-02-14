@@ -102,7 +102,7 @@ public class MaskTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus imp = iterationStep.getInputData(getFirstInputSlot(), ImagePlus3DGreyscaleMaskData.class, progressInfo).getImage();
         progressInfo.log("Marching cubes ...");
         float[] vertices = MarchingCubes.marchingCubes(imp, 0, 0, 0, 0, physicalSizes, forceMeshLengthUnit, meshLengthUnit);

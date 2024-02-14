@@ -52,7 +52,7 @@ public class Merge2DToHyperstackAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
         if (iterationStep.getInputRows(getFirstInputSlot()).isEmpty()) {
             progressInfo.log("No inputs. Skipping.");

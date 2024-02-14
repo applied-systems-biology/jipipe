@@ -128,14 +128,14 @@ public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
     }
 
     @Override
-    protected void runPassThrough(JIPipeProgressInfo progressInfo) {
+    protected void runPassThrough(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         for (JIPipeInputDataSlot inputSlot : getDataInputSlots()) {
             getOutputSlot(inputSlot.getName()).addDataFromSlot(inputSlot, progressInfo);
         }
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
+    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         for (JIPipeDataSlot inputSlot : getInputSlots()) {
             JIPipeDataSlot outputSlot = getOutputSlot(inputSlot.getName());
             outputSlot.addDataFromSlot(inputSlot, progressInfo);

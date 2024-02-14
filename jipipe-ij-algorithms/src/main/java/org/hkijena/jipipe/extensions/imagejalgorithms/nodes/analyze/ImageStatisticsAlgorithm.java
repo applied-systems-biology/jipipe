@@ -82,7 +82,7 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusGreyscaleData inputImage = iterationStep.getInputData("Image", ImagePlusGreyscaleData.class, progressInfo);
         ROIListData inputRois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
         if (inputRois == null || inputRois.isEmpty()) {
@@ -100,7 +100,7 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         roiStatisticsAlgorithm.clearSlotData();
         roiStatisticsAlgorithm.getInputSlot("ROI").addData(inputRois, progressInfo);
         roiStatisticsAlgorithm.getInputSlot("Reference").addData(inputImage, progressInfo);
-        roiStatisticsAlgorithm.run(progressInfo.resolve("Calculate statistics"));
+        roiStatisticsAlgorithm.run(runContext, progressInfo.resolve("Calculate statistics"));
         ResultsTableData outputResults = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
         roiStatisticsAlgorithm.clearSlotData();
 

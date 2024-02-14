@@ -51,7 +51,7 @@ public class AnnotationTableFromFile extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         FileData fileData = iterationStep.getInputData(getFirstInputSlot(), FileData.class, progressInfo);
         ResultsTableData resultsTableData = ResultsTableData.fromCSV(fileData.toPath());
         iterationStep.addOutputData(getFirstOutputSlot(), new AnnotationTableData(resultsTableData), progressInfo);

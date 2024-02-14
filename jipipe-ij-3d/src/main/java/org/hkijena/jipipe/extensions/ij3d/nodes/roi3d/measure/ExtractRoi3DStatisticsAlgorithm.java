@@ -39,7 +39,7 @@ public class ExtractRoi3DStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROI3DListData roi = iterationStep.getInputData("ROI", ROI3DListData.class, progressInfo);
         ImagePlusData reference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
         ImageHandler referenceHandler;

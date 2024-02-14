@@ -188,7 +188,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
 
         // Adaptive parameter backups
         Map<String, Object> parameterBackups = new HashMap<>();
@@ -212,7 +212,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
             if (isPassThrough()) {
                 runPassThrough(slotProgress, iterationStep);
             } else {
-                runIteration(iterationStep, new JIPipeMutableIterationContext(0, 1), slotProgress);
+                runIteration(iterationStep, new JIPipeMutableIterationContext(0, 1), runContext, slotProgress);
             }
             return;
         }
@@ -251,7 +251,9 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         boolean hasAdaptiveParameters = getAdaptiveParameterSettings().isEnabled() && !getAdaptiveParameterSettings().getOverriddenParameters().isEmpty();
         final int numIterationSteps = iterationSteps.size();
 
-        if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1 || iterationSteps.size() <= 1 || hasAdaptiveParameters) {
+        if (!supportsParallelization() || !isParallelizationEnabled() ||
+                runContext.getThreadPool() == null || runContext.getThreadPool().getMaxThreads() <= 1 ||
+                iterationSteps.size() <= 1 || hasAdaptiveParameters) {
             for (int i = 0; i < iterationSteps.size(); i++) {
                 if (progressInfo.isCancelled())
                     return;
@@ -260,7 +262,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
                 if (isPassThrough()) {
                     runPassThrough(slotProgress, iterationSteps.get(i));
                 } else {
-                    runIteration(iterationSteps.get(i), new JIPipeMutableIterationContext(i, numIterationSteps), slotProgress);
+                    runIteration(iterationSteps.get(i), new JIPipeMutableIterationContext(i, numIterationSteps), runContext, slotProgress);
                 }
             }
         } else {
@@ -277,12 +279,15 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
                     if (isPassThrough()) {
                         runPassThrough(slotProgress, iterationStep);
                     } else {
-                        runIteration(iterationStep, new JIPipeMutableIterationContext(iterationStepIndex, numIterationSteps), slotProgress);
+                        runIteration(iterationStep, new JIPipeMutableIterationContext(iterationStepIndex, numIterationSteps), runContext, slotProgress);
                     }
                 });
             }
-            progressInfo.log(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d", tasks.size(), getParallelizationBatchSize(), getThreadPool().getMaxThreads()));
-            for (Future<Exception> batch : getThreadPool().scheduleBatches(tasks, getParallelizationBatchSize())) {
+            progressInfo.log(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d",
+                    tasks.size(),
+                    getParallelizationBatchSize(),
+                    runContext.getThreadPool().getMaxThreads()));
+            for (Future<Exception> batch : runContext.getThreadPool().scheduleBatches(tasks, getParallelizationBatchSize())) {
                 try {
                     Exception exception = batch.get();
                     if (exception != null)
@@ -381,9 +386,10 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
      *
      * @param iterationStep    The data interface
      * @param iterationContext The iteration context
+     * @param runContext
      * @param progressInfo     the progress from the run
      */
-    protected abstract void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo);
+    protected abstract void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo);
 
     @Override
     public boolean supportsParallelization() {

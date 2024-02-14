@@ -58,7 +58,7 @@ public class ImposeMaxima3DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus inputImage = iterationStep.getInputData("Input", ImagePlus3DGreyscaleData.class, progressInfo).getImage();
         ImagePlus maximaImage = iterationStep.getInputData("Maxima", ImagePlus3DGreyscaleMaskData.class, progressInfo).getImage();
 

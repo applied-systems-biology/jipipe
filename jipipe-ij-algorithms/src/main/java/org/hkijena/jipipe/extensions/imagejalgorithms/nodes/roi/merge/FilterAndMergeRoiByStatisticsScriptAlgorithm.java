@@ -86,11 +86,11 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends JIPipeIteratin
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
+    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         PythonInterpreter pythonInterpreter = new PythonInterpreter();
         JythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
         pythonDataRow = new ArrayList<>();
-        super.run(progressInfo);
+        super.run(runContext, progressInfo);
         // Pass input to script
         pythonInterpreter.set("roi_lists", pythonDataRow);
         pythonInterpreter.exec(code.getCode(getProjectDirectory()));
@@ -113,7 +113,7 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends JIPipeIteratin
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROIListData inputRois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
         ImagePlusData inputReference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
@@ -123,7 +123,7 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends JIPipeIteratin
         if (inputReference != null) {
             roiStatisticsAlgorithm.getInputSlot("Reference").addData(inputReference, progressInfo);
         }
-        roiStatisticsAlgorithm.run(progressInfo);
+        roiStatisticsAlgorithm.run(runContext, progressInfo);
         ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
 
         List<PyDictionary> roiList = new ArrayList<>();
@@ -146,10 +146,10 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends JIPipeIteratin
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        super.reportValidity(context, report);
-        JythonUtils.checkScriptValidity(code.getCode(getProjectDirectory()), scriptParameters, new ParameterValidationReportContext(context, this, "Script", "code"), report);
-        JythonUtils.checkScriptParametersValidity(scriptParameters, new ParameterValidationReportContext(context, this, "Script parameters", "script-parameters"), report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
+        JythonUtils.checkScriptValidity(code.getCode(getProjectDirectory()), scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script", "code"), report);
+        JythonUtils.checkScriptParametersValidity(scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script parameters", "script-parameters"), report);
     }
 
     @Override

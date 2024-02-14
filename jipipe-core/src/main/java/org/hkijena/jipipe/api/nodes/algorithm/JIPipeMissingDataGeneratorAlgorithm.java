@@ -131,11 +131,11 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
 
         if (isPassThrough() && canPassThrough()) {
             progressInfo.log("Data passed through to output");
-            runPassThrough(progressInfo);
+            runPassThrough(runContext, progressInfo);
             return;
         }
 
@@ -168,7 +168,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
         }
 
         final int numIterationSteps = iterationSteps.size();
-        if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1) {
+        if (!supportsParallelization() || !isParallelizationEnabled() || runContext.getThreadPool() == null || runContext.getThreadPool().getMaxThreads() <= 1) {
             for (int i = 0; i < iterationSteps.size(); i++) {
                 if (progressInfo.isCancelled())
                     return;
@@ -186,8 +186,11 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
                     runIteration(iterationSteps.get(rowIndex), new JIPipeMutableIterationContext(rowIndex, numIterationSteps), slotProgress);
                 });
             }
-            progressInfo.log(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d", tasks.size(), getParallelizationBatchSize(), getThreadPool().getMaxThreads()));
-            for (Future<Exception> batch : getThreadPool().scheduleBatches(tasks, getParallelizationBatchSize())) {
+            progressInfo.log(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d",
+                    tasks.size(),
+                    getParallelizationBatchSize(),
+                    runContext.getThreadPool().getMaxThreads()));
+            for (Future<Exception> batch : runContext.getThreadPool().scheduleBatches(tasks, getParallelizationBatchSize())) {
                 try {
                     Exception exception = batch.get();
                     if (exception != null)

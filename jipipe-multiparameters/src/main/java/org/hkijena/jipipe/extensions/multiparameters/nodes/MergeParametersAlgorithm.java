@@ -31,7 +31,7 @@ public class MergeParametersAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ParametersData outputData = new ParametersData();
         for (JIPipeDataSlot inputSlot : getInputSlots()) {
             ParametersData inputData = iterationStep.getInputData(inputSlot, ParametersData.class, progressInfo);

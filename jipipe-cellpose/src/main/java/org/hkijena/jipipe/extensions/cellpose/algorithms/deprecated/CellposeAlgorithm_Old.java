@@ -176,13 +176,13 @@ public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        super.reportValidity(context, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
         if (!isPassThrough()) {
             if (overrideEnvironment.isEnabled()) {
-                report.report(context, overrideEnvironment.getContent());
+                report.report(reportContext, overrideEnvironment.getContent());
             } else {
-                CellposeSettings.checkPythonSettings(context, report);
+                CellposeSettings.checkPythonSettings(reportContext, report);
             }
         }
     }
@@ -198,7 +198,7 @@ public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
         ImmutableList<Integer> inputRowList = ImmutableList.copyOf(iterationStep.getInputRows("Input"));
         Path workDirectory = getNewScratch();

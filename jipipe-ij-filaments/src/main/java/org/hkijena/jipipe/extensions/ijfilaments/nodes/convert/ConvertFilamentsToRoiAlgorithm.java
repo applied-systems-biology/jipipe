@@ -44,7 +44,7 @@ public class ConvertFilamentsToRoiAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Filaments3DData inputData = iterationStep.getInputData(getFirstInputSlot(), Filaments3DData.class, progressInfo);
         ROIListData outputData = inputData.toRoi(ignoreNon2DEdges, withEdges, withVertices, forcedLineThickness.orElse(-1), forcedVertexRadius.orElse(-1));
 

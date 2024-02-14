@@ -61,7 +61,7 @@ public class ColorRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROI3DListData outputData = new ROI3DListData();
 
         ROI3DListData inputRois = iterationStep.getInputData("ROI", ROI3DListData.class, progressInfo);

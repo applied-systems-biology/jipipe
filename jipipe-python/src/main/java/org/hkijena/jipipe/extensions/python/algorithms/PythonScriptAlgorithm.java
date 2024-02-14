@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
@@ -120,20 +121,20 @@ public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
         target.add(PythonAdapterExtensionSettings.getInstance().getPythonAdapterLibraryEnvironment());
     }
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        super.reportValidity(context, report);
-        JythonUtils.checkScriptParametersValidity(scriptParameters, new ParameterValidationReportContext(context, this, "Script parameters", "script-parameters"), report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
+        JythonUtils.checkScriptParametersValidity(scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script parameters", "script-parameters"), report);
         if (!isPassThrough()) {
             if (overrideEnvironment.isEnabled()) {
-                report.report(new ParameterValidationReportContext(context, this, "Override Python environment", "override-python-environment"), overrideEnvironment.getContent());
+                report.report(new ParameterValidationReportContext(reportContext, this, "Override Python environment", "override-python-environment"), overrideEnvironment.getContent());
             } else {
-                PythonExtensionSettings.checkPythonSettings(context, report);
+                PythonExtensionSettings.checkPythonSettings(reportContext, report);
             }
         }
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
         StringBuilder code = new StringBuilder();
 
         // Install the adapter that provides the JIPipe API

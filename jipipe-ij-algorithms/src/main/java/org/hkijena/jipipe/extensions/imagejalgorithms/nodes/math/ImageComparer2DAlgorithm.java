@@ -98,7 +98,7 @@ public class ImageComparer2DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus leftOperand = null;
         ImagePlus rightOperand = null;
         for (Map.Entry<String, JIPipeParameterAccess> entry : operands.getParameters().entrySet()) {
@@ -169,21 +169,21 @@ public class ImageComparer2DAlgorithm extends JIPipeIteratingAlgorithm {
 
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        super.reportValidity(context, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
         Set<Operand> existing = new HashSet<>();
         for (Map.Entry<String, JIPipeParameterAccess> entry : operands.getParameters().entrySet()) {
             Operand operand = entry.getValue().get(Operand.class);
             if (operand == null) {
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                        new ParameterValidationReportContext(context, this, "Operands", "operands"),
+                        new ParameterValidationReportContext(reportContext, this, "Operands", "operands"),
                         "Operand not selected!",
                         "Please ensure that all operands are selected"));
             }
             if (operand != null) {
                 if (existing.contains(operand)) {
                     report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                            new ParameterValidationReportContext(context, this, "Operands", "operands"),
+                            new ParameterValidationReportContext(reportContext, this, "Operands", "operands"),
                             "Duplicate operand assignment!",
                             "Operand '" + operand + "' is already assigned.",
                             "Please assign the other operand."));

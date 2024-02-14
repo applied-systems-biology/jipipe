@@ -115,7 +115,7 @@ public class GeodesicDistanceMap2DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus markerImage = iterationStep.getInputData(getInputSlot("Marker"), ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
         ImagePlus maskImage = iterationStep.getInputData(getInputSlot("Mask"), ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
 

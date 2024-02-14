@@ -55,7 +55,7 @@ public class RelativizePaths extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         PathData parent = iterationStep.getInputData("Parent", PathData.class, progressInfo);
         PathData child = iterationStep.getInputData("Child", PathData.class, progressInfo);
 

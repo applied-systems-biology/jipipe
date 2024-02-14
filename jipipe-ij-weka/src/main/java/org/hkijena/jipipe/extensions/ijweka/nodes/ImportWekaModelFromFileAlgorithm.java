@@ -33,7 +33,7 @@ public class ImportWekaModelFromFileAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         FileData modelFileData = iterationStep.getInputData("Model file", FileData.class, progressInfo);
         FileData dataFileData = iterationStep.getInputData("Data file", FileData.class, progressInfo);
         try (IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo)) {

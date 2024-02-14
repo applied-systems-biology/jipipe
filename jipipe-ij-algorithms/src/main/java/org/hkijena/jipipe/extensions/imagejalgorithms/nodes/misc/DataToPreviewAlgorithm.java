@@ -43,7 +43,7 @@ public class DataToPreviewAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         JIPipeData data = iterationStep.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo);
         Component preview = data.createThumbnail(previewWidth, previewHeight, progressInfo).renderToComponent(previewWidth, previewHeight);
         if (preview != null) {
@@ -64,17 +64,17 @@ public class DataToPreviewAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        super.reportValidity(context, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
         if (previewWidth < 1) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new ParameterValidationReportContext(context, this, "Preview width", "preview-width"),
+                    new ParameterValidationReportContext(reportContext, this, "Preview width", "preview-width"),
                     "Preview width too small!",
                     "The preview width must be greater than zero!"));
         }
         if (previewHeight < 1) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new ParameterValidationReportContext(context, this, "Preview height", "preview-height"),
+                    new ParameterValidationReportContext(reportContext, this, "Preview height", "preview-height"),
                     "Preview height too small!",
                     "The preview height must be greater than zero!"));
         }

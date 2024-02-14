@@ -83,7 +83,7 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getImage();
 
@@ -116,7 +116,7 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             scale2DAlgorithm.setxAxis(xAxis);
             scale2DAlgorithm.setyAxis(yAxis);
             scale2DAlgorithm.getFirstInputSlot().addData(new ImagePlusData(img), progressInfo);
-            scale2DAlgorithm.run(progressInfo);
+            scale2DAlgorithm.run(runContext, progressInfo);
             img = scale2DAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
         }
 

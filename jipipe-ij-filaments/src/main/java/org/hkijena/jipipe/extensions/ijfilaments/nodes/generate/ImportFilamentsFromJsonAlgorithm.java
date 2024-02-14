@@ -28,7 +28,7 @@ public class ImportFilamentsFromJsonAlgorithm extends JIPipeSimpleIteratingAlgor
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Path path = iterationStep.getInputData(getFirstInputSlot(), FileData.class, progressInfo).toPath();
         Filaments3DData graph = JsonUtils.readFromFile(path, Filaments3DData.class);
         iterationStep.addOutputData(getFirstOutputSlot(), graph, progressInfo);

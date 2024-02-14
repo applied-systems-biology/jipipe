@@ -50,7 +50,7 @@ public class AnnotateWithPathProperties extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         List<JIPipeTextAnnotation> annotations = new ArrayList<>();
         PathData pathData = iterationStep.getInputData(getFirstInputSlot(), PathData.class, progressInfo);
 

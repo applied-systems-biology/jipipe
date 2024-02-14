@@ -54,7 +54,7 @@ public class ResultsTableFromGUI extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
         for (Window window : WindowManager.getAllNonImageWindows()) {
             if (window instanceof TextWindow) {

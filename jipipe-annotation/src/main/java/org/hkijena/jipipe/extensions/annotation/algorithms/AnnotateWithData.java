@@ -48,7 +48,7 @@ public class AnnotateWithData extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         JIPipeDataSlot inputDataSlot = getInputSlot("Input");
         JIPipeDataSlot inputAnnotationSlot = getInputSlot("Annotation");
         int dataRow = iterationStep.getInputSlotRows().get(inputDataSlot);

@@ -11,6 +11,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
@@ -114,7 +115,7 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
+    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         CLIJCommandNodeInfo info = (CLIJCommandNodeInfo) getInfo();
         try {
             this.pluginInstance = info.getPluginInfo().createInstance();
@@ -127,12 +128,12 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
         }
         this.pluginInstance.setClij(clij2.getCLIJ());
 
-        super.run(progressInfo);
+        super.run(runContext, progressInfo);
         this.pluginInstance = null;
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         CLIJCommandNodeInfo info = (CLIJCommandNodeInfo) getInfo();
 
         // Prepare inputs

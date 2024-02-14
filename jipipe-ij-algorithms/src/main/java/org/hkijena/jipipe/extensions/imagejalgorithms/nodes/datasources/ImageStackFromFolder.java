@@ -113,7 +113,7 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Path inputFolder = iterationStep.getInputData(getFirstInputSlot(), FolderData.class, progressInfo).toPath();
         try {
             progressInfo.log("Looking for files in " + inputFolder);
@@ -143,7 +143,7 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
             for (int i = 0; i < inputFiles.size(); i++) {
                 Path file = inputFiles.get(i);
                 JIPipeProgressInfo fileProgress = progressInfo.resolveAndLog(file.getFileName().toString(), i, inputFiles.size());
-                ImagePlus image = ImagePlusFromFile.readImageFrom(file, forceNativeImport, fileProgress);
+                ImagePlus image = ImagePlusFromFile.readImageFrom(file, forceNativeImport, runContext, fileProgress);
                 images.add(image);
             }
 

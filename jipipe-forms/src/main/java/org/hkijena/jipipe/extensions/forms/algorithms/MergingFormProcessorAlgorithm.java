@@ -73,7 +73,7 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
+    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         JIPipeDataSlot dataSlot = getInputSlot("Data");
         JIPipeDataSlot formsSlot = getInputSlot("Forms");
         JIPipeDataSlot outputDataSlot = getOutputSlot("Data");

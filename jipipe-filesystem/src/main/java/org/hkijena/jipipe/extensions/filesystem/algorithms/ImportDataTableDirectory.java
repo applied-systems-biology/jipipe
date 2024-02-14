@@ -69,7 +69,7 @@ public class ImportDataTableDirectory extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         if (ignoreInputTextAnnotations)
             iterationStep.setMergedTextAnnotations(new HashMap<>());
         if (ignoreInputDataAnnotations)

@@ -64,7 +64,7 @@ public class LocalImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Map<String, ImagePlus> images = new HashMap<>();
         for (JIPipeDataSlot slot : getDataInputSlots()) {
             images.put(slot.getName(), iterationStep.getInputData(slot, ImagePlusGreyscale32FData.class, progressInfo).getImage());

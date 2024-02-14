@@ -104,7 +104,7 @@ public class ROIDrawerFormData extends FormData {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
 
     }
 

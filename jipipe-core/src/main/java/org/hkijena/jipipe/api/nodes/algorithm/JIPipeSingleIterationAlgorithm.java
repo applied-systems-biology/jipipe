@@ -141,7 +141,7 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
 
         // Adaptive parameter backups
         Map<String, Object> parameterBackups = new HashMap<>();
@@ -165,7 +165,7 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
             if (isPassThrough()) {
                 runPassThrough(slotProgress, iterationStep);
             } else {
-                runIteration(iterationStep, new JIPipeMutableIterationContext(row, 1), slotProgress);
+                runIteration(iterationStep, new JIPipeMutableIterationContext(row, 1), runContext, slotProgress);
             }
             return;
         }
@@ -184,7 +184,7 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
             if (isPassThrough()) {
                 runPassThrough(slotProgress, iterationSteps.get(i));
             } else {
-                runIteration(iterationSteps.get(i), new JIPipeMutableIterationContext(i, iterationSteps.size()), slotProgress);
+                runIteration(iterationSteps.get(i), new JIPipeMutableIterationContext(i, iterationSteps.size()), runContext, slotProgress);
             }
         }
     }
@@ -248,9 +248,10 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
      *
      * @param iterationStep    The data interface
      * @param iterationContext The iteration context
+     * @param runContext the run context
      * @param progressInfo     the progress from the run
      */
-    protected abstract void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo);
+    protected abstract void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo);
 
     @Override
     public boolean supportsParallelization() {

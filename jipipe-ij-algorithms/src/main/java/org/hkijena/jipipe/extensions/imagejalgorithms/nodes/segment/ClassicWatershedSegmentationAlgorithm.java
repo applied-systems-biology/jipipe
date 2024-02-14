@@ -53,7 +53,7 @@ public class ClassicWatershedSegmentationAlgorithm extends JIPipeIteratingAlgori
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus inputImage = iterationStep.getInputData("Image", ImagePlus3DGreyscaleData.class, progressInfo).getImage();
         double hMin, hMax;
         if (customHMin.isEnabled()) {

@@ -477,12 +477,12 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         if (exportWidth <= 0) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context, "Export width is too small!", "The export width must be at least 1"));
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext, "Export width is too small!", "The export width must be at least 1"));
         }
         if (exportHeight <= 0) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context, "Export height is too small!", "The export height must be at least 1"));
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext, "Export height is too small!", "The export height must be at least 1"));
         }
     }
 

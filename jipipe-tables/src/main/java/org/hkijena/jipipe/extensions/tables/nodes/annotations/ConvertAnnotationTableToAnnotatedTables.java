@@ -63,7 +63,7 @@ public class ConvertAnnotationTableToAnnotatedTables extends JIPipeSimpleIterati
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         AnnotationTableData inputData = iterationStep.getInputData(getFirstInputSlot(), AnnotationTableData.class, progressInfo);
         HashSet<String> annotationColumns = new HashSet<>(inputData.getColumnNames());
         TableColumn mergedColumn = inputData.getMergedColumn(annotationColumns, ", ", "=");

@@ -106,7 +106,7 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus[] images = new ImagePlus[ChannelColor.values().length];
         ImagePlus firstImage = null;
         for (int i = 0; i < ChannelColor.values().length; ++i) {
@@ -252,20 +252,20 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
 
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         Set<ChannelColor> existing = new HashSet<>();
         for (Map.Entry<String, JIPipeParameterAccess> entry : channelColorAssignment.getParameters().entrySet()) {
             ChannelColor color = entry.getValue().get(ChannelColor.class);
             if (color == null) {
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                        new ParameterValidationReportContext(context, this, "Channel colors", "channel-color-assignments"),
+                        new ParameterValidationReportContext(reportContext, this, "Channel colors", "channel-color-assignments"),
                         "No channel color selected!",
                         "Please ensure that all channels are assigned a color."));
             }
             if (color != null) {
                 if (existing.contains(color)) {
                     report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                            new ParameterValidationReportContext(context, this, "Channel colors", "channel-color-assignments"),
+                            new ParameterValidationReportContext(reportContext, this, "Channel colors", "channel-color-assignments"),
                             "Duplicate color assignment!",
                             "Color '" + color + "' is already assigned.",
                             "Please assign another color."));

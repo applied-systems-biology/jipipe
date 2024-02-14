@@ -99,7 +99,7 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus channel1Img = iterationStep.getInputData("Channel 1", ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
         ImagePlus channel2Img = iterationStep.getInputData("Channel 2", ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
         channel2Img = ImageJUtils.convertToSameTypeIfNeeded(channel2Img, channel1Img, true);

@@ -125,9 +125,9 @@ public class PythonEnvironment extends JIPipeEnvironment {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         if (StringUtils.isNullOrEmpty(getExecutablePath()) || !Files.isRegularFile(getAbsoluteExecutablePath())) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context,
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext,
                     "Executable does not exist",
                     "You need to provide a Python executable",
                     "Provide a Python executable"));

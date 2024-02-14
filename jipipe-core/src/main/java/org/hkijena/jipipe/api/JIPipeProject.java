@@ -453,8 +453,8 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        graph.reportValidity(context, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        graph.reportValidity(reportContext, report);
     }
 
     /**

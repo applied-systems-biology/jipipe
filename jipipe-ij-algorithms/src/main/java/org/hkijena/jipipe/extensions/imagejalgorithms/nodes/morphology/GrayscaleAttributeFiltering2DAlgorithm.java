@@ -55,7 +55,7 @@ public class GrayscaleAttributeFiltering2DAlgorithm extends JIPipeIteratingAlgor
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus inputImg = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         ImagePlus outputImg = ImageJUtils.generateForEachIndexedZCTSlice(inputImg, (image, index) -> {
             ImageProcessor result;

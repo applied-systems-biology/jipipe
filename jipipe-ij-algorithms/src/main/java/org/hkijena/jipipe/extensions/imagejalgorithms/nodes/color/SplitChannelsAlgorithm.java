@@ -107,7 +107,7 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus image = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
 
         // If we have a grayscale image then we can just skip everything
@@ -221,17 +221,17 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         if (annotateWithChannelIndex && StringUtils.isNullOrEmpty(annotationColumnChannelIndex)) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new ParameterValidationReportContext(context, this, "Channel assignment", "channel-assignment"),
+                    new ParameterValidationReportContext(reportContext, this, "Channel assignment", "channel-assignment"),
                     "Column name is empty!",
                     "You enabled adding the channel index as output annotation, but the column name is empty",
                     "Change the column name to a non-empty string"));
         }
         if (annotateWithSlotName && StringUtils.isNullOrEmpty(annotationColumnSlotName)) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new ParameterValidationReportContext(context, this, "Channel assignment", "channel-assignment"),
+                    new ParameterValidationReportContext(reportContext, this, "Channel assignment", "channel-assignment"),
                     "Column name is empty!",
                     "You enabled adding the channel index as output annotation, but the column name is empty",
                     "Change the column name to a non-empty string"));

@@ -96,7 +96,7 @@ public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo);
         ImagePlus originalImg = inputData.getImage();
         ImagePlus img;
@@ -116,7 +116,7 @@ public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             crop = new Rectangle(left, top, originalImg.getWidth(), originalImg.getHeight());
             addBorder2DAlgorithm.clearSlotData();
             addBorder2DAlgorithm.getFirstInputSlot().addData(inputData, new ArrayList<>(iterationStep.getMergedTextAnnotations().values()), JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
-            addBorder2DAlgorithm.run(progressInfo.resolve("Add border"));
+            addBorder2DAlgorithm.run(runContext, progressInfo.resolve("Add border"));
             img = addBorder2DAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
             addBorder2DAlgorithm.clearSlotData();
         }

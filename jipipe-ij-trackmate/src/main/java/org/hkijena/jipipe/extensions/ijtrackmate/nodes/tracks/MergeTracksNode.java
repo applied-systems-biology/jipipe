@@ -43,7 +43,7 @@ public class MergeTracksNode extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         List<TrackCollectionData> spotCollections = iterationStep.getInputData(getFirstInputSlot(), TrackCollectionData.class, progressInfo);
         if (spotCollections.isEmpty())
             return;

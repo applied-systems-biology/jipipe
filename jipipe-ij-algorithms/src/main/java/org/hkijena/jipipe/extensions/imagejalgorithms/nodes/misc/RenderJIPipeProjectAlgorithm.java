@@ -49,7 +49,7 @@ public class RenderJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         try {
             JIPipeProject project = JIPipeProject.loadProject(iterationStep.getInputData(getFirstInputSlot(), FileData.class, progressInfo).toPath(),
                     new UnspecifiedValidationReportContext(),

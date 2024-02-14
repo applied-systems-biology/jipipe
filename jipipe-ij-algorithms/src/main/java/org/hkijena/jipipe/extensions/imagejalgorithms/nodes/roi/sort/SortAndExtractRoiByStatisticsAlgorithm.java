@@ -87,17 +87,17 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends JIPipeIteratingAlgor
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
+    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         // Set parameters of ROI statistics algorithm
         roiStatisticsAlgorithm.getMeasurements().setNativeValue(sortOrderList.getNativeMeasurementEnumValue());
 
         // Continue with run
-        super.run(progressInfo);
+        super.run(runContext, progressInfo);
     }
 
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
         ROIListData inputRois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
         ImagePlusData inputReference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
@@ -111,7 +111,7 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends JIPipeIteratingAlgor
         if (inputReference != null) {
             roiStatisticsAlgorithm.getInputSlot("Reference").addData(inputReference, progressInfo);
         }
-        roiStatisticsAlgorithm.run(progressInfo);
+        roiStatisticsAlgorithm.run(runContext, progressInfo);
         ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
 
         // Apply sorting

@@ -123,7 +123,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
+    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         JIPipeDataSlot formsSlot = getInputSlot("Forms");
         JIPipeDataSlot formsOutputSlot = getOutputSlot("Forms");
 

@@ -54,7 +54,7 @@ public class RunImageJExporterAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         JIPipeDataTable dataTable = new JIPipeDataTable(exporterType.getInstance().getExportedJIPipeDataType());
         for (Integer row : iterationStep.getInputRows(getFirstInputSlot())) {
             dataTable.addData(getFirstInputSlot().getDataItemStore(row),
@@ -69,13 +69,13 @@ public class RunImageJExporterAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         if (exporterType.getInstance() == null) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new ParameterValidationReportContext(context, this, "Exporter type", "exporter-type"),
+                    new ParameterValidationReportContext(reportContext, this, "Exporter type", "exporter-type"),
                     "No exporter type selected!", "No exporter type was selected", "Please select an exporter"));
         }
-        super.reportValidity(context, report);
+        super.reportValidity(reportContext, report);
     }
 
     @JIPipeDocumentation(name = "Set export parameters", description = "Sets the export parameters via its default UI")

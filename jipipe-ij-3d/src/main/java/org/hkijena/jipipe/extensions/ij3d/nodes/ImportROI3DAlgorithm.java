@@ -42,7 +42,7 @@ public class ImportROI3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Path path = iterationStep.getInputData(getFirstInputSlot(), FileData.class, progressInfo).toPath();
         ROI3DListData roi3D = ROI3DListData.importData(path, progressInfo.resolve("Import ROI3D"));
         iterationStep.addOutputData(getFirstOutputSlot(), roi3D, progressInfo);

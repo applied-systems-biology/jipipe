@@ -87,7 +87,7 @@ public class GenerateVectorFromMathExpression extends JIPipeSimpleIteratingAlgor
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus img = IJ.createHyperStack("Generated", width, height, sizeC, sizeZ, sizeT, 32);
         JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
         variableSet.putAnnotations(iterationStep.getMergedTextAnnotations());

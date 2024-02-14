@@ -25,7 +25,7 @@ public class MergeFilamentsAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Filaments3DData outputData = new Filaments3DData();
         for (Filaments3DData data : iterationStep.getInputData(getFirstInputSlot(), Filaments3DData.class, progressInfo)) {
             outputData.mergeWith(data);

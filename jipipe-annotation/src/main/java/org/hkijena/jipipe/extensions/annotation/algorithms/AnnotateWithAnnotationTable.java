@@ -107,10 +107,10 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
         if (isPassThrough() && canPassThrough()) {
             progressInfo.log("Data passed through to output");
-            runPassThrough(progressInfo);
+            runPassThrough(runContext, progressInfo);
             return;
         }
 
@@ -189,7 +189,7 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
     }
 
     @Override
-    protected void runPassThrough(JIPipeProgressInfo progressInfo) {
+    protected void runPassThrough(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         getFirstOutputSlot().addDataFromSlot(getInputSlot("Data"), progressInfo);
     }
 

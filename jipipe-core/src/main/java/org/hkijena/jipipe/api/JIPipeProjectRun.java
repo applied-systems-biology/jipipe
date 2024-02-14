@@ -28,6 +28,7 @@ import org.hkijena.jipipe.api.looping.LoopStartNode;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
@@ -52,7 +53,6 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
     private final JIPipeRunSettings configuration;
     JIPipeGraph copiedGraph;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-    private JIPipeFixedThreadPool threadPool;
 
     /**
      * @param project       The project
@@ -171,10 +171,20 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
         progressInfo.log("Preparing output folders ...");
         prepare();
         progressInfo.log("Outputs will be written to " + configuration.getOutputPath());
+
+        JIPipeFixedThreadPool threadPool = null;
+
         try {
             progressInfo.log("Running pipeline with " + configuration.getNumThreads() + " threads ...\n");
+
+            // Create thread pool
             threadPool = new JIPipeFixedThreadPool(configuration.getNumThreads());
-            runPipeline();
+
+            // Create context
+            JIPipeGraphNodeRunContext runContext = new JIPipeGraphNodeRunContext();
+            runContext.setThreadPool(threadPool);
+
+            runPipeline(runContext);
         } catch (Exception e) {
             progressInfo.log(e.toString());
             progressInfo.log(ExceptionUtils.getStackTrace(e));
@@ -190,7 +200,6 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
             if (threadPool != null) {
                 threadPool.shutdown();
             }
-            threadPool = null;
 
             // Clear all slots
             for (JIPipeGraphNode node : copiedGraph.getGraphNodes()) {
@@ -224,7 +233,7 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
         }
     }
 
-    private void runPipeline() {
+    private void runPipeline(JIPipeGraphNodeRunContext runContext) {
         Set<JIPipeGraphNode> unExecutableAlgorithms = copiedGraph.getDeactivatedNodes(!configuration.isIgnoreDeactivatedInputs());
         Set<JIPipeGraphNode> executedAlgorithms = new HashSet<>();
         List<JIPipeDataSlot> traversedSlots = copiedGraph.traverseSlots();
@@ -255,7 +264,7 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
                 progressInfo.setProgress(i);
                 JIPipeProgressInfo subProgress = progressInfo.resolve(node.getDisplayName());
                 if (!executedAlgorithms.contains(node)) {
-                    runNode(executedAlgorithms, node, subProgress);
+                    runNode(executedAlgorithms, node, runContext, subProgress);
                 }
             }
         }
@@ -318,7 +327,7 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
                     // Ensure the algorithm has run
                     if (!executedAlgorithms.contains(node)) {
                         if (!unExecutableAlgorithms.contains(node)) {
-                            runNode(executedAlgorithms, node, subProgress);
+                            runNode(executedAlgorithms, node, runContext, subProgress);
                         } else {
                             executedAlgorithms.add(node);
                         }
@@ -346,9 +355,8 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
                             if (loop.getLoopStartNode().isPassThrough()) {
                                 group.setIterationMode(GraphWrapperAlgorithm.IterationMode.PassThrough);
                             }
-                            group.setThreadPool(threadPool);
 
-                            // IMPORTANT! Otherwise the nested JIPipeGraphRunner will run into an infinite depth loop
+                            // IMPORTANT! Otherwise, the nested JIPipeGraphRunner will run into an infinite depth loop
                             ((LoopStartNode) loopGraph.getEquivalentAlgorithm(loop.getLoopStartNode()))
                                     .setIterationMode(GraphWrapperAlgorithm.IterationMode.PassThrough);
 
@@ -359,7 +367,7 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
                             }
 
                             // Execute the loop
-                            group.run(subProgress.detachProgress());
+                            group.run(runContext, subProgress.detachProgress());
 
                             // Pass output data
                             for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> entry : loopGraphSlotMap.entrySet()) {
@@ -411,7 +419,7 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
             int absoluteIndex = index + preprocessorNodes.size() + traversedSlots.size() - 1;
             progressInfo.setProgress(absoluteIndex);
             JIPipeProgressInfo subProgress = progressInfo.resolve(node.getDisplayName());
-            runNode(executedAlgorithms, node, subProgress);
+            runNode(executedAlgorithms, node, runContext, subProgress);
         }
 
         progressInfo.resolve("GC").log("GC status: " + gc);
@@ -422,7 +430,7 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
         gc.markAllAsCompleted();
     }
 
-    private void runNode(Set<JIPipeGraphNode> executedAlgorithms, JIPipeGraphNode node, JIPipeProgressInfo progressInfo) {
+    private void runNode(Set<JIPipeGraphNode> executedAlgorithms, JIPipeGraphNode node, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         progressInfo.log("");
 
         // If enabled try to extract outputs from cache
@@ -433,10 +441,7 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
 
         if (!dataLoadedFromCache) {
             try {
-                if (node instanceof JIPipeAlgorithm) {
-                    ((JIPipeAlgorithm) node).setThreadPool(threadPool);
-                }
-                node.run(progressInfo);
+                node.run(runContext, progressInfo);
             } catch (HeadlessException e) {
                 throw new JIPipeValidationRuntimeException(
                         new GraphNodeValidationReportContext(node),
@@ -451,10 +456,6 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
                         "An error occurred during processing",
                         "Please refer to the other error messages.",
                         "Please follow the instructions for the other error messages.");
-            } finally {
-                if (node instanceof JIPipeAlgorithm) {
-                    ((JIPipeAlgorithm) node).setThreadPool(null);
-                }
             }
         } else {
             progressInfo.log("Output data was loaded from cache. Not executing.");

@@ -69,7 +69,7 @@ public class AssembleExtractedROIAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         JIPipeDataSlot targetImageSlot = getInputSlot("Target");
         JIPipeDataSlot roiSlot = getInputSlot("ROI");
         for (Integer targetImageRow : iterationStep.getInputRows(targetImageSlot)) {

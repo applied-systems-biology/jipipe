@@ -59,7 +59,7 @@ public class ExportDataTableByParameter extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Path outputPath = this.outputDirectory;
         if (!outputPath.isAbsolute()) {
             if (relativeToProjectDir && getProjectDirectory() != null) {

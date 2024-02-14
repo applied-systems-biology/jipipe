@@ -197,7 +197,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
 
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
 
     }
 

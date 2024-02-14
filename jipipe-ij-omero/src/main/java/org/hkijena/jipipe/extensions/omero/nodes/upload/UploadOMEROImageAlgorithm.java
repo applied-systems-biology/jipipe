@@ -81,7 +81,7 @@ public class UploadOMEROImageAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         OMEImageData imageData = iterationStep.getInputData("Images", OMEImageData.class, progressInfo);
         long datasetId = iterationStep.getInputData("Target dataset", OMERODatasetReferenceData.class, progressInfo).getDatasetId();
 
@@ -177,9 +177,9 @@ public class UploadOMEROImageAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        super.reportValidity(context, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
         OMEROCredentialsEnvironment environment = overrideCredentials.getContentOrDefault(OMEROSettings.getInstance().getDefaultCredentials());
-        report.report(new GraphNodeValidationReportContext(context, this), environment);
+        report.report(new GraphNodeValidationReportContext(reportContext, this), environment);
     }
 }

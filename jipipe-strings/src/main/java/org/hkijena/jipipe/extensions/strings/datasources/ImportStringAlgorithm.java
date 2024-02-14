@@ -28,7 +28,7 @@ public class ImportStringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         FileData fileData = iterationStep.getInputData(getFirstInputSlot(), FileData.class, progressInfo);
         try {
             String data = new String(Files.readAllBytes(fileData.toPath()));

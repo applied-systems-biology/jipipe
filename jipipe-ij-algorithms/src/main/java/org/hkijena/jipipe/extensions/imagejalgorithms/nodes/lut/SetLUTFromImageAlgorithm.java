@@ -58,7 +58,7 @@ public class SetLUTFromImageAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData data = iterationStep.getInputData("Input", ImagePlusGreyscaleData.class, progressInfo);
         ImagePlusData lutData = iterationStep.getInputData("LUT", ImagePlus2DColorRGBData.class, progressInfo);
         if (duplicateImage)

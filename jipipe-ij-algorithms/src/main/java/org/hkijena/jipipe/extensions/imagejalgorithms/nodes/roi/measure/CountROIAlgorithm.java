@@ -52,7 +52,7 @@ public class CountROIAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runPassThrough(JIPipeProgressInfo progressInfo) {
+    protected void runPassThrough(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         getFirstOutputSlot().addData(new AnnotationTableData(), progressInfo);
     }
 
@@ -62,9 +62,9 @@ public class CountROIAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
         currentResult = new AnnotationTableData();
-        super.runParameterSet(progressInfo, parameterAnnotations);
+        super.runParameterSet(runContext, progressInfo, parameterAnnotations);
 
         // We do a custom merge into one final table
         List<JIPipeTextAnnotation> annotations = new ArrayList<>();
@@ -78,7 +78,7 @@ public class CountROIAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         // write into result
         int row = currentResult.addRow();
         for (JIPipeDataSlot inputSlot : getDataInputSlots()) {

@@ -40,7 +40,7 @@ public class SpotDetectorNode extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus image = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
         SpotDetectorData spotDetectorData = iterationStep.getInputData("Spot detector", SpotDetectorData.class, progressInfo);
 

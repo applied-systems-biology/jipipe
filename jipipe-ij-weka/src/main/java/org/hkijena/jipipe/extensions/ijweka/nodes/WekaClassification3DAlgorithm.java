@@ -44,7 +44,7 @@ public class WekaClassification3DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData image = iterationStep.getInputData("Image", ImagePlus3DData.class, progressInfo);
         WekaModelData modelData = iterationStep.getInputData("Model", WekaModelData.class, progressInfo);
         WekaSegmentation segmentation = modelData.getSegmentation();

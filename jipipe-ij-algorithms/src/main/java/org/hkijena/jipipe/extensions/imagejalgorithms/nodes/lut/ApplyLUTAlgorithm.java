@@ -45,7 +45,7 @@ public class ApplyLUTAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo);
         ImagePlus outputData = ImageJUtils.renderToRGBWithLUTIfNeeded(inputData.getImage(), progressInfo);
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusColorRGBData(outputData), progressInfo);

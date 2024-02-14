@@ -221,8 +221,8 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        targetNodeCopy.reportValidity(context, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        targetNodeCopy.reportValidity(reportContext, report);
     }
 
     @Override

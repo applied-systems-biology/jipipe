@@ -47,7 +47,7 @@ public class TrackingNode extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         SpotsCollectionData spotsCollectionData = iterationStep.getInputData("Spots", SpotsCollectionData.class, progressInfo);
         SpotTrackerData spotTrackerData = iterationStep.getInputData("Spot tracker", SpotTrackerData.class, progressInfo);
         final SpotTracker tracker = spotTrackerData.getTrackerFactory().create(spotsCollectionData.getSpots(), spotTrackerData.getSettings());

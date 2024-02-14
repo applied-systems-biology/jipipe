@@ -72,7 +72,7 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData inputTable = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         ResultsTableData outputTable;
         if (!ignoreEmptyTables || inputTable.getRowCount() > 0) {
@@ -155,7 +155,7 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
                 pairParameter.setKey(new StringQueryExpression("\"" + inputTable.getColumnName(counterColumn) + "\""));
                 pairParameter.setValue(SortOrder.Ascending);
                 sortTableRowsAlgorithm.getSortOrderList().add(pairParameter);
-                sortTableRowsAlgorithm.run(progressInfo.resolve("Sort table"));
+                sortTableRowsAlgorithm.run(runContext, progressInfo.resolve("Sort table"));
                 outputTable = sortTableRowsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
             }
         } else {

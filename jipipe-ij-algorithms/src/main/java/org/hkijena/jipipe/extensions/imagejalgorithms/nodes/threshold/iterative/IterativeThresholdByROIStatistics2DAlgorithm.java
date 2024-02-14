@@ -18,9 +18,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameter;
 import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.analyze.FindParticles2D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.measure.RoiStatisticsAlgorithm;
@@ -35,7 +33,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementExp
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -86,7 +83,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
+    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
         // Set parameters of find particles
         findParticles2DAlgorithm.clearSlotData();
@@ -98,11 +95,11 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         roiStatisticsAlgorithm.setMeasureInPhysicalUnits(measureInPhysicalUnits);
 
         // Continue with run
-        super.run(progressInfo);
+        super.run(runContext, progressInfo);
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus inputImage = iterationStep.getInputData("Input", ImagePlusGreyscale8UData.class, progressInfo).getImage();
         ImagePlus referenceImage;
         {
@@ -150,7 +147,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
             for (int i = 0; i < thresholds.size(); i++) {
                 int threshold = thresholds.get(i);
                 JIPipeProgressInfo thresholdProgress = progressInfo.resolve(index.toString()).resolveAndLog("Threshold " + threshold, i, thresholds.size());
-                ThresholdingResult result = applyThreshold(inputIp, referenceIp, threshold, roiFilterVariables, thresholdCriteriaVariables, accumulationVariables, thresholdProgress);
+                ThresholdingResult result = applyThreshold(inputIp, referenceIp, threshold, roiFilterVariables, thresholdCriteriaVariables, accumulationVariables, runContext, thresholdProgress);
                 if (result != null) {
                     results.add(result);
                     if (!optimize)
@@ -199,7 +196,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         iterationStep.addOutputData("ROI", outputROI, annotations, thresholdAnnotationStrategy, progressInfo);
     }
 
-    private ThresholdingResult applyThreshold(ImageProcessor inputIp, ImageProcessor referenceIp, int threshold, JIPipeExpressionVariablesMap roiFilterVariables, JIPipeExpressionVariablesMap thresholdCriteriaVariables, JIPipeExpressionVariablesMap accumulationVariables, JIPipeProgressInfo progressInfo) {
+    private ThresholdingResult applyThreshold(ImageProcessor inputIp, ImageProcessor referenceIp, int threshold, JIPipeExpressionVariablesMap roiFilterVariables, JIPipeExpressionVariablesMap thresholdCriteriaVariables, JIPipeExpressionVariablesMap accumulationVariables, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus inputReference = new ImagePlus("reference", referenceIp);
 
         // Calculate mask
@@ -212,7 +209,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         {
             findParticles2DAlgorithm.clearSlotData();
             findParticles2DAlgorithm.getInputSlot("Mask").addData(new ImagePlusGreyscaleMaskData(maskImage), progressInfo);
-            findParticles2DAlgorithm.run(progressInfo);
+            findParticles2DAlgorithm.run(runContext, progressInfo);
             rois = findParticles2DAlgorithm.getFirstOutputSlot().getData(0, ROIListData.class, progressInfo);
             findParticles2DAlgorithm.clearSlotData();
         }
@@ -224,7 +221,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
             roiStatisticsAlgorithm.clearSlotData();
             roiStatisticsAlgorithm.getInputSlot("ROI").addData(rois, progressInfo);
             roiStatisticsAlgorithm.getInputSlot("Reference").addData(new ImagePlusGreyscaleData(inputReference), progressInfo);
-            roiStatisticsAlgorithm.run(progressInfo);
+            roiStatisticsAlgorithm.run(runContext, progressInfo);
             ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
 
             // Apply filter

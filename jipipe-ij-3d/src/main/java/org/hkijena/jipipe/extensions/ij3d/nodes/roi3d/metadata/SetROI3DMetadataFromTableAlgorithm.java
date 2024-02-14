@@ -42,7 +42,7 @@ public class SetROI3DMetadataFromTableAlgorithm extends JIPipeIteratingAlgorithm
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROI3DListData rois = new ROI3DListData(iterationStep.getInputData("ROI", ROI3DListData.class, progressInfo));
         ResultsTableData metadata = iterationStep.getInputData("Metadata", ResultsTableData.class, progressInfo);
         TableColumn indexColumn = roiIndexColumn.pickOrGenerateColumn(metadata);

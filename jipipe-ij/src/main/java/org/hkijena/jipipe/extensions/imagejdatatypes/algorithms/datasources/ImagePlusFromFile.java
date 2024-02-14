@@ -87,19 +87,20 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
     /**
      * Loads an image from a file path
      *
-     * @param fileName           the image file name
+     * @param fileName          the image file name
      * @param forceNativeImport forces the native IJ.open command. otherwise, Bio-Formats might be used
-     * @param progressInfo       progress
+     * @param runContext the run context
+     * @param progressInfo      progress
      * @return the generated data
      */
-    public static ImagePlus readImageFrom(Path fileName, boolean forceNativeImport, JIPipeProgressInfo progressInfo) {
+    public static ImagePlus readImageFrom(Path fileName, boolean forceNativeImport, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus image;
         if (!forceNativeImport && !CoreImageJUtils.supportsNativeImageImport(fileName)) {
             // Pass to bioformats
             progressInfo.log("Using BioFormats importer. Please use the Bio-Formats importer node for more settings.");
             BioFormatsImporter importer = JIPipe.createNode(BioFormatsImporter.class);
             importer.getFirstInputSlot().addData(new FileData(fileName), progressInfo);
-            importer.run(progressInfo);
+            importer.run(runContext, progressInfo);
             image = importer.getFirstOutputSlot().getData(0, OMEImageData.class, progressInfo).getImage();
         } else {
             try (IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
@@ -112,7 +113,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
             progressInfo.log("Using BioFormats importer. Please use the Bio-Formats importer node for more settings.");
             BioFormatsImporter importer = JIPipe.createNode(BioFormatsImporter.class);
             importer.getFirstInputSlot().addData(new FileData(fileName), progressInfo);
-            importer.run(progressInfo);
+            importer.run(runContext, progressInfo);
             image = importer.getFirstOutputSlot().getData(0, OMEImageData.class, progressInfo).getImage();
         }
         if (image == null) {
@@ -155,10 +156,10 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         FileData fileData = iterationStep.getInputData(getFirstInputSlot(), FileData.class, progressInfo);
         ImagePlusData outputData;
-        ImagePlus image = readImageFrom(fileData.toPath(), forceNativeImport, progressInfo);
+        ImagePlus image = readImageFrom(fileData.toPath(), forceNativeImport, runContext, progressInfo);
         if (removeLut) {
             ImageJUtils.removeLUT(image, null);
         }

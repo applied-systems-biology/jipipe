@@ -41,7 +41,7 @@ public class ModifyPath extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         PathData input = iterationStep.getInputData(getFirstInputSlot(), PathData.class, progressInfo);
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         if (accessAnnotations) {

@@ -27,7 +27,7 @@ public class MergeROI3DAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         List<ROI3DListData> inputData = iterationStep.getInputData(getFirstInputSlot(), ROI3DListData.class, progressInfo);
         if (!inputData.isEmpty()) {
             ROI3DListData outputData = new ROI3DListData();

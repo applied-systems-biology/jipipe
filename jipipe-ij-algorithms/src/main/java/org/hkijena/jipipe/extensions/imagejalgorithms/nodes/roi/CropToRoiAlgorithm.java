@@ -59,7 +59,7 @@ public class CropToRoiAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus input = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
         ROIListData rois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
         Rectangle bounds = rois.getBounds();

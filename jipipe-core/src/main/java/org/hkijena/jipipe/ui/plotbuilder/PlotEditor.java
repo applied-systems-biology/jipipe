@@ -196,10 +196,10 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         if (getPlotType().getInfo() == null) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    context,
+                    reportContext,
                     "Plot type not selected!",
                     "Please select a plot type!"));
         }

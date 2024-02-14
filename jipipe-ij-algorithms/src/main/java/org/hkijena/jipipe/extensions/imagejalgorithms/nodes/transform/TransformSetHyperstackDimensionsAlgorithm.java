@@ -45,7 +45,7 @@ public class TransformSetHyperstackDimensionsAlgorithm extends JIPipeSimpleItera
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus image = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         ImagePlusPropertiesExpressionParameterVariablesInfo.extractValues(variables, image, iterationStep.getMergedTextAnnotations().values());

@@ -45,7 +45,7 @@ public class DistributeDataRandomlyByPercentageAlgorithm extends JIPipeMergingAl
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         if (getInputSlots().isEmpty())
             return;
         Map<String, Double> weightMap = new HashMap<>();

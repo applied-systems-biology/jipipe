@@ -69,7 +69,7 @@ public class ConvolveByImage2DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus img = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getDuplicateImage();
         ImagePlus imgKernel = iterationStep.getInputData("Kernel", ImagePlus2DGreyscale32FData.class, progressInfo).getDuplicateImage();
         FloatProcessor processor = (FloatProcessor) imgKernel.getProcessor();

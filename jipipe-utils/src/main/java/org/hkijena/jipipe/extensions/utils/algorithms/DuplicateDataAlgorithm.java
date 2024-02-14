@@ -25,7 +25,7 @@ public class DuplicateDataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         JIPipeData duplicate = iterationStep.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo).duplicate(progressInfo);
         iterationStep.addOutputData(getFirstOutputSlot(), duplicate, progressInfo);
     }

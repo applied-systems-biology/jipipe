@@ -193,10 +193,10 @@ public class JsonExtensionLoaderExtension extends JIPipePrepackagedDefaultJavaEx
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        super.reportValidity(context, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
         for (JsonExtensionRegistrationTask task : registrationTasks) {
-            report.report(new CustomValidationReportContext(context, "Unregistered JSON extensions"), task);
+            report.report(new CustomValidationReportContext(reportContext, "Unregistered JSON extensions"), task);
         }
     }
 

@@ -69,7 +69,7 @@ public class MergeTableColumnsSimpleAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         List<TableColumn> columnList = new ArrayList<>();
         List<ResultsTableData> inputTables = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         int nRow = 0;

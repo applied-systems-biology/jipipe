@@ -77,7 +77,7 @@ public class OverlapMeasureLabelsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus sourceImage = iterationStep.getInputData("Image 1", ImagePlus3DGreyscaleData.class, progressInfo).getImage();
         ImagePlus targetImage = iterationStep.getInputData("Image 2", ImagePlus3DGreyscaleData.class, progressInfo).getImage();
 

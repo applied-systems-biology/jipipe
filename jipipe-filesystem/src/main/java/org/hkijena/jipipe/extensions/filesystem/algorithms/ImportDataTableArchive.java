@@ -68,7 +68,7 @@ public class ImportDataTableArchive extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Path archiveFile = iterationStep.getInputData("Archive", FileData.class, progressInfo).toPath();
         try (JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo, archiveFile)) {
             JIPipeDataTable dataTable = JIPipeDataTable.importData(storage, progressInfo.resolve("Import"));

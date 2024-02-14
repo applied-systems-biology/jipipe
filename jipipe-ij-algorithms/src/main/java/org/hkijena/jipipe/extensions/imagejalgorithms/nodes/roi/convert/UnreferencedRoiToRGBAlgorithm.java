@@ -117,20 +117,20 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         if (preferAssociatedImage) {
             for (Map.Entry<Optional<ImagePlus>, ROIListData> referenceEntry : iterationStep.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo).groupByReferenceImage().entrySet()) {
                 ROIListData inputData = (ROIListData) referenceEntry.getValue().duplicate(progressInfo);
-                processROIList(iterationStep, inputData, referenceEntry.getKey().orElse(null), progressInfo);
+                processROIList(iterationStep, inputData, referenceEntry.getKey().orElse(null), runContext, progressInfo);
             }
         } else {
             ROIListData inputData = (ROIListData) iterationStep.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo).duplicate(progressInfo);
-            processROIList(iterationStep, inputData, null, progressInfo);
+            processROIList(iterationStep, inputData, null, runContext, progressInfo);
         }
 
     }
 
-    private void processROIList(JIPipeSingleIterationStep iterationStep, ROIListData inputData, ImagePlus reference, JIPipeProgressInfo progressInfo) {
+    private void processROIList(JIPipeSingleIterationStep iterationStep, ROIListData inputData, ImagePlus reference, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         // Find the bounds and future stack position
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
@@ -158,7 +158,7 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
                     JIPipe.createNode("ij1-roi-statistics");
             statisticsAlgorithm.getMeasurements().setNativeValue(Measurement.Centroid.getNativeValue());
             statisticsAlgorithm.getInputSlot("ROI").addData(inputData, progressInfo);
-            statisticsAlgorithm.run(progressInfo);
+            statisticsAlgorithm.run(runContext, progressInfo);
             ResultsTableData centroids = statisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
             for (int row = 0; row < centroids.getRowCount(); row++) {
                 Point centroid = new Point((int) centroids.getValueAsDouble(row, "X"),

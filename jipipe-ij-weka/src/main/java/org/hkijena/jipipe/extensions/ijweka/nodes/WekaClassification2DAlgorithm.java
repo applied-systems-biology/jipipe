@@ -50,7 +50,7 @@ public class WekaClassification2DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus image = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getDuplicateImage();
         WekaModelData modelData = iterationStep.getInputData("Model", WekaModelData.class, progressInfo);
         WekaSegmentation segmentation = modelData.getSegmentation();
@@ -93,7 +93,7 @@ public class WekaClassification2DAlgorithm extends JIPipeIteratingAlgorithm {
                         // Generate tiles
                         tileImage2DAlgorithm.clearSlotData();
                         tileImage2DAlgorithm.getFirstInputSlot().addData(new ImagePlusData(wholeSlice), progressInfo);
-                        tileImage2DAlgorithm.run(progressInfo.resolve("Generate tiles"));
+                        tileImage2DAlgorithm.run(runContext, progressInfo.resolve("Generate tiles"));
 
                         // Classify tiles
                         JIPipeDataTable tileTable = tileImage2DAlgorithm.getFirstOutputSlot();
@@ -107,7 +107,7 @@ public class WekaClassification2DAlgorithm extends JIPipeIteratingAlgorithm {
                         // Merge tiles
                         unTileImage2DAlgorithm.clearSlotData();
                         unTileImage2DAlgorithm.getFirstInputSlot().addDataFromTable(tileTable, progressInfo);
-                        unTileImage2DAlgorithm.run(progressInfo.resolve("Merge tiles"));
+                        unTileImage2DAlgorithm.run(runContext, progressInfo.resolve("Merge tiles"));
 
                         classified = unTileImage2DAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
 

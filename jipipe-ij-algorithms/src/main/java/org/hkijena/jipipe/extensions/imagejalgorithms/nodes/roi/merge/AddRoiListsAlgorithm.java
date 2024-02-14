@@ -52,7 +52,7 @@ public class AddRoiListsAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROIListData result = new ROIListData();
         for (ROIListData rois : iterationStep.getInputData("Target", ROIListData.class, progressInfo)) {
             result.mergeWith(rois);

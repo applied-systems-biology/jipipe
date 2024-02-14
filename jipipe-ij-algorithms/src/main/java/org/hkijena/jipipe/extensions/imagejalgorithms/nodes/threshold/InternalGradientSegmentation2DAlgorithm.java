@@ -115,7 +115,7 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
         ImagePlus img = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
@@ -131,7 +131,7 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
             if (applyFirstCLAHE) {
                 contrastEnhancerCopy.clearSlotData();
                 contrastEnhancerCopy.getFirstInputSlot().addData(new ImagePlusGreyscaleData(processedSlice), progressInfo);
-                contrastEnhancerCopy.run(progressInfo);
+                contrastEnhancerCopy.run(runContext, progressInfo);
                 processedSlice = contrastEnhancerCopy.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
             }
 
@@ -144,14 +144,14 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
             if (applySecondCLAHE) {
                 contrastEnhancerCopy.clearSlotData();
                 contrastEnhancerCopy.getFirstInputSlot().addData(new ImagePlusGreyscaleData(processedSlice), progressInfo);
-                contrastEnhancerCopy.run(progressInfo);
+                contrastEnhancerCopy.run(runContext, progressInfo);
                 processedSlice = contrastEnhancerCopy.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
             }
 
             // Convert image to mask and threshold with given auto threshold method
             autoThresholdingCopy.clearSlotData();
             autoThresholdingCopy.getFirstInputSlot().addData(new ImagePlusGreyscaleData(processedSlice), progressInfo);
-            autoThresholdingCopy.run(progressInfo);
+            autoThresholdingCopy.run(runContext, progressInfo);
             processedSlice = autoThresholdingCopy.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
 
             // Apply set of rank filters
@@ -287,8 +287,8 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        super.reportValidity(context, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
         report.report(new ParameterValidationReportContext(this, "Auto thresholding", "auto-thresholding"), autoThresholding);
         report.report(new ParameterValidationReportContext(this, "CLAHE", "clahe-enhancing"), contrastEnhancer);
     }

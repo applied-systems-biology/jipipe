@@ -60,7 +60,7 @@ public class ImagePlusFromGUI extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         List<ImagePlus> rawImages = new ArrayList<>();
         if (onlyActiveImage) {
             ImagePlus img = WindowManager.getCurrentImage();

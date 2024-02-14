@@ -56,7 +56,7 @@ public class AnnotateByTablePropertiesAlgorithm extends JIPipeSimpleIteratingAlg
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData data = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
 
         List<JIPipeTextAnnotation> annotationList = new ArrayList<>();

@@ -70,7 +70,7 @@ public class SkeletonToSimplifiedFilamentsFijiAlgorithm extends JIPipeIteratingA
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus skeleton = iterationStep.getInputData("Skeleton", ImagePlus3DGreyscaleMaskData.class, progressInfo).getImage();
         Roi excludeRoi = null;
         ImagePlus referenceImage = null;

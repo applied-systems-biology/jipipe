@@ -59,7 +59,7 @@ public class TracksToRGBNode extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         TrackCollectionData spotsCollectionData = iterationStep.getInputData("Tracks", TrackCollectionData.class, progressInfo);
         ImagePlus reference;
         {

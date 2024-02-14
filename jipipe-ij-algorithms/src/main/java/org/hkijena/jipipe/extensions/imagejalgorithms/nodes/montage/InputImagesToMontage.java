@@ -89,7 +89,7 @@ public class InputImagesToMontage extends JIPipeMergingAlgorithm {
 
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Map<ImagePlus, String> labelledImages = new HashMap<>();
         Map<ImagePlus, String> sortingLabels = new HashMap<>();
         for (int row : iterationStep.getInputRows(getFirstInputSlot())) {

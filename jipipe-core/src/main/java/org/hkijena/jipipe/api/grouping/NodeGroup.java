@@ -244,12 +244,12 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        super.reportValidity(context, report);
-        report.report(new ParameterValidationReportContext(context, this, "Exported parameters", "exported-parameters"), exportedParameters);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
+        report.report(new ParameterValidationReportContext(reportContext, this, "Exported parameters", "exported-parameters"), exportedParameters);
 
         // Only check if the graph creates a valid group output
-        report.report(context, getGroupOutput());
+        report.report(reportContext, getGroupOutput());
     }
 
     @JIPipeDocumentation(name = "Show limited parameter set", description = "If enabled, only the exported parameters, name, and description are shown as parameters. " +

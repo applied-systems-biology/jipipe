@@ -275,9 +275,10 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
     /**
      * Runs the workload
      *
+     * @param runContext the context of the run process
      * @param progressInfo progress passed from the runner
      */
-    public abstract void run(JIPipeProgressInfo progressInfo);
+    public abstract void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo);
 
     /**
      * Returns the algorithm name

@@ -193,19 +193,19 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        super.reportValidity(context, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
         if (!isPassThrough()) {
             if (overrideEnvironment.isEnabled()) {
-                report.report(context, overrideEnvironment.getContent());
+                report.report(reportContext, overrideEnvironment.getContent());
             } else {
-                CellposeSettings.checkPythonSettings(context, report);
+                CellposeSettings.checkPythonSettings(reportContext, report);
             }
         }
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Path workDirectory = getNewScratch();
         progressInfo.log("Work directory is " + workDirectory);
 

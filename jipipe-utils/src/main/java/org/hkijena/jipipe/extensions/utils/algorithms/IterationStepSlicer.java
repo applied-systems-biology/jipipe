@@ -38,7 +38,7 @@ public class IterationStepSlicer extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ArrayList<Integer> rows = new ArrayList<>(iterationStep.getInputRows(getFirstInputSlot()));
         HashSet<Integer> indices = new HashSet<>(sliceRange.getIntegers(0, rows.size(), new JIPipeExpressionVariablesMap()));
         for (int i = 0; i < rows.size(); i++) {

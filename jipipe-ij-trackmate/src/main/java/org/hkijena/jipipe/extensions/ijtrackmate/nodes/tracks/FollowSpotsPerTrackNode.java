@@ -73,7 +73,7 @@ public class FollowSpotsPerTrackNode extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus sourceImage = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
         TrackCollectionData data = iterationStep.getInputData("Tracks", TrackCollectionData.class, progressInfo);
         Calibration calibration = data.getImage().getCalibration();

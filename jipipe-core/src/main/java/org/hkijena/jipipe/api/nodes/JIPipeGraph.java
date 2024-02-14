@@ -1434,7 +1434,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         for (Map.Entry<UUID, JIPipeGraphNode> entry : nodeUUIDs.entrySet()) {
             JIPipeGraphNode node = entry.getValue();
             if (node instanceof JIPipeAlgorithm) {
@@ -1442,7 +1442,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 if (!algorithm.isEnabled() || (algorithm.canPassThrough() && algorithm.isPassThrough()) || algorithm.isSkipped())
                     continue;
             }
-            report.report(new GraphNodeValidationReportContext(context, node), node);
+            report.report(new GraphNodeValidationReportContext(reportContext, node), node);
         }
         if (!RuntimeSettings.getInstance().isAllowSkipAlgorithmsWithoutInput()) {
             for (JIPipeDataSlot slot : graph.vertexSet()) {
@@ -1451,7 +1451,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 if (slot.isInput()) {
                     if (!slot.getInfo().isOptional() && graph.incomingEdgesOf(slot).isEmpty()) {
                         report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                                new GraphNodeSlotValidationReportContext(context, slot.getNode(), slot.getName(), slot.getSlotType()),
+                                new GraphNodeSlotValidationReportContext(reportContext, slot.getNode(), slot.getName(), slot.getSlotType()),
                                 "An input slot has no incoming data!",
                                 "Input slots must always be provided with input data.",
                                 "Please connect the slot to an output of another algorithm."));

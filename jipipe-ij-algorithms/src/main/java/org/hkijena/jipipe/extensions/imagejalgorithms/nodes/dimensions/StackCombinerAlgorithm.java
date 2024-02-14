@@ -42,7 +42,7 @@ public class StackCombinerAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData targetData = iterationStep.getInputData("Target", ImagePlusData.class, progressInfo);
         ImagePlus src = iterationStep.getInputData("Source", targetData.getClass(), progressInfo).getImage();
         ImagePlus target = targetData.getImage();

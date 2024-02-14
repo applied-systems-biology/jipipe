@@ -71,13 +71,13 @@ public class ExportImageDirectorySlotAlgorithm extends JIPipeIteratingAlgorithm 
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
         existingMetadata.clear();
-        super.runParameterSet(progressInfo, parameterAnnotations);
+        super.runParameterSet(runContext, progressInfo, parameterAnnotations);
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         JIPipeDataSlot imageSlot = getInputSlot("Input");
 
         Path outputDirectory = iterationStep.getInputData("Output directory", FolderData.class, progressInfo).toPath();

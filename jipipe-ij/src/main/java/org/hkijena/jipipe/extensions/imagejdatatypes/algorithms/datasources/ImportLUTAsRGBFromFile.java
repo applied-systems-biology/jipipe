@@ -32,7 +32,7 @@ public class ImportLUTAsRGBFromFile extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         String lutFile = iterationStep.getInputData(getFirstInputSlot(), FileData.class, progressInfo).getPath();
         LUT lut = LutLoader.openLut(lutFile);
         ByteProcessor processor = new ByteProcessor(256, 1);

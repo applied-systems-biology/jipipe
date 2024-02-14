@@ -195,7 +195,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         backupWindows();
         try {
             prepareInputData(iterationStep, progressInfo);
@@ -396,19 +396,19 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         long roiInputSlotCount = getNonParameterInputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ROIListData.class).count();
         long roiOutputSlotCount = getOutputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ROIListData.class).count();
         if (roiInputSlotCount > 1) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    context,
+                    reportContext,
                     "Too many ROI inputs!",
                     "ImageJ1 has no concept of multiple ROI Managers.",
                     "Please make sure to only have at most one ROI data input."));
         }
         if (roiOutputSlotCount > 1) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    context,
+                    reportContext,
                     "Too many ROI outputs!",
                     "ImageJ1 has no concept of multiple ROI Managers.",
                     "Please make sure to only have at most one ROI data outputs."));
@@ -416,7 +416,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
         for (String key : macroParameters.getParameters().keySet()) {
             if (!MacroUtils.isValidVariableName(key)) {
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                        new ParameterValidationReportContext(context, this, "Macro parameters", "macro-parameters"),
+                        new ParameterValidationReportContext(reportContext, this, "Macro parameters", "macro-parameters"),
                         "'" + key + "' is an invalid ImageJ macro variable name!",
                         "Please ensure that macro variables are compatible with the ImageJ macro language."));
             }

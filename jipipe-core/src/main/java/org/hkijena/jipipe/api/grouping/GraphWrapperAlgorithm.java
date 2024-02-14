@@ -199,17 +199,17 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeIter
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
+    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         if (iterationMode == IterationMode.PassThrough) {
-            runWithDataPassThrough(progressInfo);
+            runWithDataPassThrough(runContext, progressInfo);
         } else {
-            runPerBatch(progressInfo);
+            runPerBatch(runContext, progressInfo);
         }
     }
 
-    private void runPerBatch(JIPipeProgressInfo progressInfo) {
+    private void runPerBatch(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         if (getDataInputSlots().isEmpty()) {
-            runWithDataPassThrough(progressInfo);
+            runWithDataPassThrough(runContext, progressInfo);
             return;
         }
         List<JIPipeMultiIterationStep> iterationSteps = generateDataBatchesGenerationResult(getDataInputSlots(), progressInfo).getDataBatches();
@@ -232,25 +232,12 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeIter
             }
 
             // Run the graph
-            try {
-                for (JIPipeGraphNode value : wrappedGraph.getGraphNodes()) {
-                    if (value instanceof JIPipeAlgorithm) {
-                        ((JIPipeAlgorithm) value).setThreadPool(getThreadPool());
-                    }
-                }
-                JIPipeGraphRunner runner = new JIPipeGraphRunner(wrappedGraph);
-                runner.setThreadPool(getThreadPool());
-                runner.setProgressInfo(batchProgress.detachProgress().resolve("Sub-graph"));
-                runner.setAlgorithmsWithExternalInput(Collections.singleton(getGroupInput()));
-                runner.getPersistentDataNodes().add(getGroupOutput());
-                runner.run();
-            } finally {
-                for (JIPipeGraphNode value : wrappedGraph.getGraphNodes()) {
-                    if (value instanceof JIPipeAlgorithm) {
-                        ((JIPipeAlgorithm) value).setThreadPool(null);
-                    }
-                }
-            }
+            JIPipeGraphRunner runner = new JIPipeGraphRunner(wrappedGraph);
+            runner.setRunContext(runContext);
+            runner.setProgressInfo(batchProgress.detachProgress().resolve("Group"));
+            runner.setAlgorithmsWithExternalInput(Collections.singleton(getGroupInput()));
+            runner.getPersistentDataNodes().add(getGroupOutput());
+            runner.run();
 
             // Copy into output
             for (JIPipeDataSlot outputSlot : getOutputSlots()) {
@@ -263,7 +250,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeIter
         }
     }
 
-    private void runWithDataPassThrough(JIPipeProgressInfo progressInfo) {
+    private void runWithDataPassThrough(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         // Iterate through own input slots and pass them to the equivalents in group input
         for (JIPipeDataSlot inputSlot : getInputSlots()) {
             JIPipeDataSlot groupInputSlot = getGroupInput().getInputSlot(inputSlot.getName());
@@ -271,25 +258,12 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeIter
         }
 
         // Run the graph
-        try {
-            for (JIPipeGraphNode value : wrappedGraph.getGraphNodes()) {
-                if (value instanceof JIPipeAlgorithm) {
-                    ((JIPipeAlgorithm) value).setThreadPool(getThreadPool());
-                }
-            }
-            JIPipeGraphRunner runner = new JIPipeGraphRunner(wrappedGraph);
-            runner.setThreadPool(getThreadPool());
-            runner.setProgressInfo(progressInfo.detachProgress().resolve("Sub-graph"));
-            runner.setAlgorithmsWithExternalInput(Collections.singleton(getGroupInput()));
-            runner.getPersistentDataNodes().add(getGroupOutput());
-            runner.run();
-        } finally {
-            for (JIPipeGraphNode value : wrappedGraph.getGraphNodes()) {
-                if (value instanceof JIPipeAlgorithm) {
-                    ((JIPipeAlgorithm) value).setThreadPool(null);
-                }
-            }
-        }
+        JIPipeGraphRunner runner = new JIPipeGraphRunner(wrappedGraph);
+        runner.setProgressInfo(progressInfo.detachProgress().resolve("Sub-graph"));
+        runner.setAlgorithmsWithExternalInput(Collections.singleton(getGroupInput()));
+        runner.getPersistentDataNodes().add(getGroupOutput());
+        runner.setRunContext(runContext);
+        runner.run();
 
         // Copy into output
         for (JIPipeDataSlot outputSlot : getOutputSlots()) {
@@ -308,10 +282,10 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeIter
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        super.reportValidity(context, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
 
-        report.report(new ParameterValidationReportContext(context, this, "Wrapped graph", "wrapped-graph"), wrappedGraph);
+        report.report(new ParameterValidationReportContext(reportContext, this, "Wrapped graph", "wrapped-graph"), wrappedGraph);
     }
 
     @Override

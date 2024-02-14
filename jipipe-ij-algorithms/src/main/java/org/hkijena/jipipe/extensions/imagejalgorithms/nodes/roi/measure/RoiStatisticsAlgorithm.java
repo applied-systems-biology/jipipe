@@ -89,7 +89,7 @@ public class RoiStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROIListData roi = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
         ImagePlus reference = getReferenceImage(iterationStep, progressInfo);
         if (roi.isEmpty()) {

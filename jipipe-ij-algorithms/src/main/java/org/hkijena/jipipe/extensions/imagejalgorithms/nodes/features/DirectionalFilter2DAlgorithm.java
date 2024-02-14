@@ -92,7 +92,7 @@ public class DirectionalFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         DirectionalFilter filter = new DirectionalFilter(this.type, this.operation, this.lineLength, this.nDirections);
         filter.addAlgoListener(new AlgoListener() {
             @Override

@@ -47,14 +47,14 @@ public class TransformEqualizeDimensionsAlgorithm extends JIPipeIteratingAlgorit
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus image = iterationStep.getInputData("Input", ImagePlusData.class, progressInfo).getImage();
         ImagePlus referenceImage = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo).getImage();
 
         if (equalWidthAndHeight) {
             scale2DAlgorithm.clearSlotData();
             scale2DAlgorithm.getFirstInputSlot().addData(new ImagePlusData(image), progressInfo);
-            scale2DAlgorithm.run(progressInfo.resolve("2D scaling"));
+            scale2DAlgorithm.run(runContext, progressInfo.resolve("2D scaling"));
             image = scale2DAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
             scale2DAlgorithm.clearSlotData();
         }

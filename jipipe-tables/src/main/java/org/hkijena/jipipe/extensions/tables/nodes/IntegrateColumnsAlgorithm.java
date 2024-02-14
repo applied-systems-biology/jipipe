@@ -70,7 +70,7 @@ public class IntegrateColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData input = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         List<TableColumn> resultColumns = new ArrayList<>();
         for (IntegratingTableColumnProcessorParameter processor : processorParameters) {
@@ -93,8 +93,8 @@ public class IntegrateColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        report.report(new ParameterValidationReportContext(context, this, "Processors", "processors"), processorParameters);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        report.report(new ParameterValidationReportContext(reportContext, this, "Processors", "processors"), processorParameters);
     }
 
     @JIPipeDocumentation(name = "Processors", description = "Defines which columns are processed")

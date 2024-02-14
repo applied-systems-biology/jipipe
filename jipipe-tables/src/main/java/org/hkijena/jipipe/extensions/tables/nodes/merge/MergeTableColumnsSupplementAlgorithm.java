@@ -76,7 +76,7 @@ public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorit
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData inputTarget = new ResultsTableData(iterationStep.getInputData("Target", ResultsTableData.class, progressInfo));
         ResultsTableData inputSource = new ResultsTableData(iterationStep.getInputData("Source", ResultsTableData.class, progressInfo));
 

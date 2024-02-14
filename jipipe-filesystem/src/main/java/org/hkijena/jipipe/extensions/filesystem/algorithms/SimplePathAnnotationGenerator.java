@@ -69,7 +69,7 @@ public class SimplePathAnnotationGenerator extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         if (!StringUtils.isNullOrEmpty(generatedAnnotation)) {
             FolderData inputData = iterationStep.getInputData(getFirstInputSlot(), FolderData.class, progressInfo);
             boolean removeThisExtension = removeExtensions && Files.isRegularFile(inputData.toPath());

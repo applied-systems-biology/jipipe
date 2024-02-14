@@ -55,7 +55,7 @@ public class ROIDataFromFile extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         FileData fileData = iterationStep.getInputData(getFirstInputSlot(), FileData.class, progressInfo);
         List<Roi> rois = ROIListData.loadRoiListFromFile(fileData.toPath());
         iterationStep.addOutputData(getFirstOutputSlot(), new ROIListData(rois), progressInfo);

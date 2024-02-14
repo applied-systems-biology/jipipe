@@ -55,7 +55,7 @@ public class ScaleRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROIListData data = iterationStep.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo);
         data = data.scale(scaleX, scaleY, centerScale);
         iterationStep.addOutputData(getFirstOutputSlot(), data, progressInfo);

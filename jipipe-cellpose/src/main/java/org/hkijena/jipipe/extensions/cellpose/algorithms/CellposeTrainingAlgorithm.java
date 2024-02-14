@@ -261,7 +261,7 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
         // Prepare folders
         Path workDirectory = getNewScratch();
@@ -288,7 +288,7 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
                     .getData(ImagePlus3DGreyscale16UData.class, progressInfo).getImage();
             mask = ImageJUtils.ensureEqualSize(mask, raw, true);
             if (tweaksSettings.isGenerateConnectedComponents())
-                mask = applyConnectedComponents(mask, rowProgress.resolveAndLog("Connected components"));
+                mask = applyConnectedComponents(mask, runContext, rowProgress.resolveAndLog("Connected components"));
             dataIs3D |= raw.getNDimensions() > 2 && enable3DSegmentation;
 
             saveImagesToPath(trainingDir, imageCounter, rowProgress, raw, mask);
@@ -300,7 +300,7 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
             ImagePlus mask = labelDataAnnotation.queryFirst(getInputSlot("Test data").getDataAnnotations(row))
                     .getData(ImagePlus3DGreyscale16UData.class, progressInfo).getImage();
             if (tweaksSettings.isGenerateConnectedComponents())
-                mask = applyConnectedComponents(mask, rowProgress.resolveAndLog("Connected components"));
+                mask = applyConnectedComponents(mask, runContext, rowProgress.resolveAndLog("Connected components"));
             mask = ImageJUtils.ensureEqualSize(mask, raw, true);
 
             saveImagesToPath(testDir, imageCounter, rowProgress, raw, mask);
@@ -448,21 +448,21 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         }
     }
 
-    private ImagePlus applyConnectedComponents(ImagePlus mask, JIPipeProgressInfo progressInfo) {
+    private ImagePlus applyConnectedComponents(ImagePlus mask, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         progressInfo.log("Apply MorphoLibJ connected components labeling (8-connectivity, 16-bit) to " + mask);
         if (enable3DSegmentation) {
             ConnectedComponentsLabeling3DAlgorithm algorithm = JIPipe.createNode(ConnectedComponentsLabeling3DAlgorithm.class);
             algorithm.setConnectivity(Neighborhood3D.TwentySixConnected);
             algorithm.setOutputType(new JIPipeDataInfoRef(ImagePlusGreyscale16UData.class));
             algorithm.getFirstInputSlot().addData(new ImagePlus3DGreyscaleMaskData(mask), progressInfo);
-            algorithm.run(progressInfo);
+            algorithm.run(runContext, progressInfo);
             return algorithm.getFirstOutputSlot().getData(0, ImagePlusGreyscale16UData.class, progressInfo).getImage();
         } else {
             ConnectedComponentsLabeling2DAlgorithm algorithm = JIPipe.createNode(ConnectedComponentsLabeling2DAlgorithm.class);
             algorithm.setConnectivity(Neighborhood2D.EightConnected);
             algorithm.setOutputType(new JIPipeDataInfoRef(ImagePlusGreyscale16UData.class));
             algorithm.getFirstInputSlot().addData(new ImagePlus3DGreyscaleMaskData(mask), progressInfo);
-            algorithm.run(progressInfo);
+            algorithm.run(runContext, progressInfo);
             return algorithm.getFirstOutputSlot().getData(0, ImagePlusGreyscale16UData.class, progressInfo).getImage();
         }
     }

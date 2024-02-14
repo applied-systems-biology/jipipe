@@ -25,7 +25,7 @@ public class Roi3DToRoi2DConverterAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROI3DListData inputRois = iterationStep.getInputData(getFirstInputSlot(), ROI3DListData.class, progressInfo);
         ROIListData outputRois = inputRois.toRoi2D(progressInfo);
         iterationStep.addOutputData(getFirstOutputSlot(), outputRois, progressInfo);

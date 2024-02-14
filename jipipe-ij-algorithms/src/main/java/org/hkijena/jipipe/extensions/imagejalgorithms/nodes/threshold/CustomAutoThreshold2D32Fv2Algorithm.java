@@ -111,7 +111,7 @@ public class CustomAutoThreshold2D32Fv2Algorithm extends JIPipeIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscale32FData.class, progressInfo);
         ImagePlus inputImage = inputData.getImage();
         ImagePlus outputImage = IJ.createHyperStack(inputImage.getTitle() + " Thresholded",

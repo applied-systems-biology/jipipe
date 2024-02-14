@@ -46,7 +46,7 @@ public class AnnotateDataWithTableValues extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         JIPipeData data = iterationStep.getInputData("Data", JIPipeData.class, progressInfo);
         ResultsTableData tableData = iterationStep.getInputData("Table", ResultsTableData.class, progressInfo);
 

@@ -39,7 +39,7 @@ public class BitwiseLogicalOperationAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus img = iterationStep.getInputData("Input 1", ImagePlusGreyscale8UData.class, progressInfo).getDuplicateImage();
         ImagePlus second = iterationStep.getInputData("Input 2", ImagePlusGreyscale8UData.class, progressInfo).getImage();
         if (!ImageJUtils.imagesHaveSameSize(img, second)) {

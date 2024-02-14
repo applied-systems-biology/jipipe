@@ -32,7 +32,7 @@ public class PrettifyXMLAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         String xml = iterationStep.getInputData(getFirstInputSlot(), XMLData.class, progressInfo).getData();
         String transformed = XmlUtils.prettyPrint(xml, indent, ignoreDeclaration);
         iterationStep.addOutputData(getFirstOutputSlot(), new XMLData(transformed), progressInfo);

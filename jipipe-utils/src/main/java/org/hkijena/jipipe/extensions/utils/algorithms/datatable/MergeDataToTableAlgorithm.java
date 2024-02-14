@@ -28,7 +28,7 @@ public class MergeDataToTableAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         JIPipeDataTable dataTable = new JIPipeDataTable(JIPipeData.class);
         for (int row : iterationStep.getInputSlotRows().get(getFirstInputSlot())) {
             dataTable.addData(getFirstInputSlot().getDataItemStore(row),

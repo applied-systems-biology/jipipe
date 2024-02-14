@@ -40,7 +40,7 @@ public class DataAnnotationToStringAnnotation extends JIPipeSimpleIteratingAlgor
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
         for (String name : ImmutableList.copyOf(iterationStep.getMergedDataAnnotations().keySet())) {
             if (nameFilter.test(name)) {

@@ -67,7 +67,7 @@ public class SetSingleAnnotation extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
         for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
             variableSet.set(annotation.getName(), annotation.getValue());

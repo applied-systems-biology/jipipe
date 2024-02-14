@@ -32,7 +32,7 @@ public class SetOverlayAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus img = iterationStep.getInputData("Input", ImagePlusData.class, progressInfo).getDuplicateImage();
         ROIListData rois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
         Overlay overlay = new Overlay();

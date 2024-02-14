@@ -70,7 +70,7 @@ public class MorphologicalReconstruction2DAlgorithm extends JIPipeIteratingAlgor
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus markerImage = iterationStep.getInputData("Marker", ImagePlusGreyscaleData.class, progressInfo).getImage();
         ImagePlus maskImage = iterationStep.getInputData("Mask", ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
         maskImage = ImageJUtils.ensureEqualSize(maskImage, markerImage, true);

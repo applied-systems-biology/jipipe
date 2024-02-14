@@ -58,7 +58,7 @@ public class TransformEqualCanvasSize2DAlgorithm extends JIPipeMergingAlgorithm 
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
         int wNew = 0;
         int hNew = 0;

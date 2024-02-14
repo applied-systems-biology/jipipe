@@ -70,15 +70,15 @@ public abstract class FunctionParameter<I, P, O> implements JIPipeValidatable {
 
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         if (input instanceof JIPipeValidatable) {
-            report.report(new CustomValidationReportContext(context, "Input"), (JIPipeValidatable) input);
+            report.report(new CustomValidationReportContext(reportContext, "Input"), (JIPipeValidatable) input);
         }
         if (parameter instanceof JIPipeValidatable) {
-            report.report(new CustomValidationReportContext(context, "Parameter"), (JIPipeValidatable) parameter);
+            report.report(new CustomValidationReportContext(reportContext, "Parameter"), (JIPipeValidatable) parameter);
         }
         if (output instanceof JIPipeValidatable) {
-            report.report(new CustomValidationReportContext(context, "Output"), (JIPipeValidatable) output);
+            report.report(new CustomValidationReportContext(reportContext, "Output"), (JIPipeValidatable) output);
         }
     }
 

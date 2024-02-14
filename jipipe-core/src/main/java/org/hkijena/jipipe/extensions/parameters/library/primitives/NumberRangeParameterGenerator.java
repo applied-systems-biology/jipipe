@@ -40,17 +40,17 @@ public class NumberRangeParameterGenerator extends DefaultJIPipeParameterGenerat
     private double stepSize = 1;
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         if (minNumber <= maxNumber) {
             if (stepSize <= 0) {
-                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context, "Invalid step size!",
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext, "Invalid step size!",
                         "The step size cannot be zero or negative.",
                         "Please ensure that the step size is greater than zero.",
                         JsonUtils.toPrettyJsonString(this)));
             }
         } else {
             if (stepSize >= 0) {
-                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context, "Invalid step size!",
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext, "Invalid step size!",
                         "The step size cannot be zero or negative.",
                         "Please ensure that the step size is greater than zero.",
                         JsonUtils.toPrettyJsonString(this)));

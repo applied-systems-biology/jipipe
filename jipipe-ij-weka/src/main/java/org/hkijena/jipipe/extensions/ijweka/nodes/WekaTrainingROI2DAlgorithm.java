@@ -91,7 +91,7 @@ public class WekaTrainingROI2DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Map<Integer, ROIListData> groupedROIs = new HashMap<>();
         for (JIPipeInputDataSlot inputSlot : getInputSlots()) {
             if (inputSlot.acceptsTrivially(ROIListData.class)) {
@@ -150,11 +150,11 @@ public class WekaTrainingROI2DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        super.reportValidity(context, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
         if (getInputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ROIListData.class).count() < 2) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    context,
+                    reportContext,
                     "Weka requires at least two classes!", "The Weka algorithm cannot be trained if you do not have at least two classes",
                     "Add at least two ROI List inputs"));
         }

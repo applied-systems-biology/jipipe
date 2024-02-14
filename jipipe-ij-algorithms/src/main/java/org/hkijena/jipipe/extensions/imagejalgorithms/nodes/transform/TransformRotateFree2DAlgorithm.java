@@ -77,7 +77,7 @@ public class TransformRotateFree2DAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus imp = ImageJUtils.rotate(inputData.getImage(), angle, expandCanvas, backgroundColor, outputRoi, progressInfo);
         iterationStep.addOutputData("Output", new ImagePlusData(imp), progressInfo);

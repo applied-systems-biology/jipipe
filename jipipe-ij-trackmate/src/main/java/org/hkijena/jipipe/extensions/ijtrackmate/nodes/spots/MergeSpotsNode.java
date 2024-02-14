@@ -42,7 +42,7 @@ public class MergeSpotsNode extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         List<SpotsCollectionData> spotCollections = iterationStep.getInputData(getFirstInputSlot(), SpotsCollectionData.class, progressInfo);
         if (spotCollections.isEmpty())
             return;

@@ -48,7 +48,7 @@ public class MergeLabelsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus inputImage = iterationStep.getInputData("Labels", ImagePlusGreyscaleData.class, progressInfo).getImage();
         ROIListData rois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
         if (rois.isEmpty()) {

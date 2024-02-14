@@ -80,7 +80,7 @@ public class ConvolveByParameter2DAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
 
@@ -103,10 +103,10 @@ public class ConvolveByParameter2DAlgorithm extends JIPipeSimpleIteratingAlgorit
 
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         if (matrix.getRowCount() == 0 || matrix.getColumnCount() == 0) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new ParameterValidationReportContext(context, this, "Matrix", "matrix"),
+                    new ParameterValidationReportContext(reportContext, this, "Matrix", "matrix"),
                     "No matrix provided!",
                     "The convolution matrix is empty.",
                     "Please add rows and columns to the matrix."));

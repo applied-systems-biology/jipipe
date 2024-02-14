@@ -265,9 +265,9 @@ public class JIPipeNodeRegistry implements JIPipeValidatable, JIPipeService.Data
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         for (JIPipeNodeRegistrationTask task : registrationTasks) {
-            report.report(context, task);
+            report.report(reportContext, task);
         }
     }
 

@@ -70,7 +70,7 @@ public class RoiFloodFillAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROIListData inputRoi = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
         ImagePlus inputImage = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
 

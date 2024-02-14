@@ -46,7 +46,7 @@ public class ExtractDataAnnotation extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         String targetedAnnotationName = annotationNameQuery.queryFirst(iterationStep.getMergedDataAnnotations().keySet(), new JIPipeExpressionVariablesMap());
         if (targetedAnnotationName == null) {
             if (ignoreMissingAnnotations)

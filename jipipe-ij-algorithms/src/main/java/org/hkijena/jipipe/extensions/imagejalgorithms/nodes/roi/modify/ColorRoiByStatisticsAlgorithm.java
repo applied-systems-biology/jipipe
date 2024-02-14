@@ -76,17 +76,17 @@ public class ColorRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
+    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         // Set parameters of ROI statistics algorithm
         roiStatisticsAlgorithm.getMeasurements().setNativeValue(fillMeasurement.getNativeValue() | lineMeasurement.getNativeValue());
 
         // Continue with run
-        super.run(progressInfo);
+        super.run(runContext, progressInfo);
     }
 
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROIListData outputData = new ROIListData();
 
         ROIListData inputRois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
@@ -98,7 +98,7 @@ public class ColorRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         if (inputReference != null) {
             roiStatisticsAlgorithm.getInputSlot("Reference").addData(inputReference, progressInfo);
         }
-        roiStatisticsAlgorithm.run(progressInfo);
+        roiStatisticsAlgorithm.run(runContext, progressInfo);
         ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
 
         // Apply color map

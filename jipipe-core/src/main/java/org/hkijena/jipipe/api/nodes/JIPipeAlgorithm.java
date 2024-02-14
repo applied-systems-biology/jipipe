@@ -53,7 +53,6 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
     private boolean skipped = false;
     private boolean passThrough = false;
     private RuntimePartitionReferenceParameter runtimePartition = new RuntimePartitionReferenceParameter();
-    private JIPipeFixedThreadPool threadPool;
     private final JIPipeCustomExpressionVariablesParameter customExpressionVariables;
 
     /**
@@ -95,24 +94,25 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
+    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         if (passThrough && canAutoPassThrough()) {
             progressInfo.log("Data passed through to output");
-            runPassThrough(progressInfo);
+            runPassThrough(runContext, progressInfo);
         }
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
 
     }
 
     /**
      * Runs the pass through. Override this for custom implementations if you want
      *
+     * @param runContext the context of the running operation
      * @param progressInfo the progress
      */
-    protected void runPassThrough(JIPipeProgressInfo progressInfo) {
+    protected void runPassThrough(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         if (!canAutoPassThrough()) {
             throw new RuntimeException("Auto pass through not allowed!");
         }
@@ -359,20 +359,6 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
      */
     public boolean isPostprocessor() {
         return false;
-    }
-
-    public JIPipeFixedThreadPool getThreadPool() {
-        return threadPool;
-    }
-
-    /**
-     * Sets the thread pool.
-     * Depending on the implementation, the pool is just ignored.
-     *
-     * @param threadPool can be null (forces single-threaded run)
-     */
-    public void setThreadPool(JIPipeFixedThreadPool threadPool) {
-        this.threadPool = threadPool;
     }
 
     /**
