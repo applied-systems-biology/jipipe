@@ -4,9 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import net.imagej.ImageJ;
+import org.hkijena.jipipe.api.run.JIPipeLegacyProjectRun;
 import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.JIPipeProjectRun;
-import org.hkijena.jipipe.api.JIPipeRunSettings;
+import org.hkijena.jipipe.api.run.JIPipeLegacyRunSettings;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
@@ -201,7 +201,7 @@ public class JIPipeCLI {
             }
         }
 
-        JIPipeRunSettings settings = new JIPipeRunSettings();
+        JIPipeLegacyRunSettings settings = new JIPipeLegacyRunSettings();
         settings.setNumThreads(numThreads);
         settings.setOutputPath(outputFolder);
         settings.setSaveToDisk(saveToDisk);
@@ -214,7 +214,7 @@ public class JIPipeCLI {
             }
         }
 
-        JIPipeProjectRun run = new JIPipeProjectRun(project, settings);
+        JIPipeLegacyProjectRun run = new JIPipeLegacyProjectRun(project, settings);
         run.getProgressInfo().setLogToStdOut(true);
         run.run();
 

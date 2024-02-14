@@ -18,6 +18,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.run.JIPipeLegacyProjectRun;
+import org.hkijena.jipipe.api.run.JIPipeLegacyRunSettings;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -33,7 +35,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
     private final JIPipeGraphNode targetNode;
     private final QuickRunSettings settings;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-    private JIPipeProjectRun run;
+    private JIPipeLegacyProjectRun run;
     private JIPipeGraphNode targetNodeCopy;
 
     /**
@@ -50,7 +52,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
     }
 
     private void initialize() {
-        JIPipeRunSettings configuration = new JIPipeRunSettings();
+        JIPipeLegacyRunSettings configuration = new JIPipeLegacyRunSettings();
         configuration.setOutputPath(settings.getOutputPath());
         configuration.setLoadFromCache(settings.isLoadFromCache());
         configuration.setStoreToCache(settings.isStoreToCache());
@@ -63,7 +65,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
         // The test bench will handle this!
         configuration.setIgnoreDeactivatedInputs(true);
 
-        run = new JIPipeProjectRun(project, configuration);
+        run = new JIPipeLegacyProjectRun(project, configuration);
         run.setProgressInfo(progressInfo);
         targetNodeCopy = run.getGraph().getEquivalentAlgorithm(targetNode);
         ((JIPipeAlgorithm) targetNodeCopy).setEnabled(true);
@@ -207,7 +209,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
      *
      * @return the pipeline run
      */
-    public JIPipeProjectRun getRun() {
+    public JIPipeLegacyProjectRun getRun() {
         return run;
     }
 

@@ -11,8 +11,9 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api;
+package org.hkijena.jipipe.api.run;
 
+import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
@@ -26,9 +27,9 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Settings for an {@link JIPipeProjectRun}
+ * Settings for an {@link JIPipeLegacyProjectRun}
  */
-public class JIPipeRunSettings extends AbstractJIPipeParameterCollection {
+public class JIPipeLegacyRunSettings extends AbstractJIPipeParameterCollection {
     private Path outputPath;
     private boolean loadFromCache = true;
     private boolean storeToCache = false;

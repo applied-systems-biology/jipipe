@@ -34,6 +34,7 @@ import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.api.run.JIPipeLegacyProjectRun;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -611,7 +612,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
     }
 
     /**
-     * The storage path is used in {@link JIPipeProjectRun} to indicate where output data is written
+     * The storage path is used in {@link JIPipeLegacyProjectRun} to indicate where output data is written
      * This is only used internally
      *
      * @return Storage path
@@ -621,7 +622,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
     }
 
     /**
-     * Sets the storage path. Used by {@link JIPipeProjectRun}
+     * Sets the storage path. Used by {@link JIPipeLegacyProjectRun}
      *
      * @param storagePath Storage path
      */
@@ -631,7 +632,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
 
     /**
      * Returns the internal storage path relative to the output folder.
-     * Used internally by {@link JIPipeProjectRun}
+     * Used internally by {@link JIPipeLegacyProjectRun}
      *
      * @return Storage path relative to the output folder
      */
@@ -641,7 +642,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
 
     /**
      * Sets the internal storage path relative to the output folder.
-     * Used internally by {@link JIPipeProjectRun}
+     * Used internally by {@link JIPipeLegacyProjectRun}
      *
      * @param internalStoragePath Path relative to the output folder
      */

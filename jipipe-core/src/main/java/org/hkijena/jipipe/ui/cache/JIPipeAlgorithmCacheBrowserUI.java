@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.ui.cache;
 
+import org.hkijena.jipipe.api.run.JIPipeLegacyProjectRun;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeProjectRun;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.cache.JIPipeCache;
 import org.hkijena.jipipe.api.cache.JIPipeCacheClearOutdatedRun;
@@ -54,7 +54,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * UI around an {@link JIPipeProjectRun} result
+ * UI around an {@link JIPipeLegacyProjectRun} result
  */
 public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel implements JIPipeCache.ModifiedEventListener, JIPipeRunnable.InterruptedEventListener, JIPipeRunnable.FinishedEventListener {
     private final JIPipeGraphNode graphNode;

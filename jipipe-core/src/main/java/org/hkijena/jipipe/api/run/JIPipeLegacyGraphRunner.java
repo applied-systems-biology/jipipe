@@ -11,9 +11,12 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api;
+package org.hkijena.jipipe.api.run;
 
 import com.google.common.collect.BiMap;
+import org.hkijena.jipipe.api.JIPipeGraphGCHelper;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
@@ -33,9 +36,9 @@ import java.util.*;
  * Executes an {@link JIPipeGraph}.
  * This does not do any data storage or caching.
  * Use this class for nested algorithm graph runs (like {@link org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm})
- * Use {@link JIPipeProjectRun} for full project runs.
+ * Use {@link JIPipeLegacyProjectRun} for full project runs.
  */
-public class JIPipeGraphRunner implements JIPipeRunnable, JIPipeGraphGCHelper.SlotCompletedEventListener {
+public class JIPipeLegacyGraphRunner implements JIPipeRunnable, JIPipeGraphGCHelper.SlotCompletedEventListener {
 
     private final JIPipeGraph algorithmGraph;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
@@ -48,7 +51,7 @@ public class JIPipeGraphRunner implements JIPipeRunnable, JIPipeGraphGCHelper.Sl
      *
      * @param algorithmGraph the algorithm graph to run
      */
-    public JIPipeGraphRunner(JIPipeGraph algorithmGraph) {
+    public JIPipeLegacyGraphRunner(JIPipeGraph algorithmGraph) {
         this.algorithmGraph = algorithmGraph;
     }
 
@@ -176,7 +179,7 @@ public class JIPipeGraphRunner implements JIPipeRunnable, JIPipeGraphGCHelper.Sl
                             group.setIterationMode(GraphWrapperAlgorithm.IterationMode.PassThrough);
                         }
 
-                        // IMPORTANT! Otherwise the nested JIPipeGraphRunner will run into an infinite depth loop
+                        // IMPORTANT! Otherwise the nested JIPipeLegacyGraphRunner will run into an infinite depth loop
                         ((LoopStartNode) loopGraph.getEquivalentAlgorithm(loop.getLoopStartNode()))
                                 .setIterationMode(GraphWrapperAlgorithm.IterationMode.PassThrough);
 

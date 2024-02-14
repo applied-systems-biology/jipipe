@@ -23,6 +23,8 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.run.JIPipeLegacyProjectRun;
+import org.hkijena.jipipe.api.run.JIPipeLegacyRunSettings;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
@@ -123,12 +125,12 @@ public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         Path rowStoragePath = getFirstOutputSlot().getRowStoragePath(getFirstOutputSlot().getRowCount());
 
         // Generate the run
-        JIPipeRunSettings settings = new JIPipeRunSettings();
+        JIPipeLegacyRunSettings settings = new JIPipeLegacyRunSettings();
         settings.setOutputPath(rowStoragePath);
         settings.setStoreToCache(false);
         settings.setLoadFromCache(false);
         settings.setNumThreads(threads.isEnabled() ? threads.getContent() : RuntimeSettings.getInstance().getDefaultRunThreads());
-        JIPipeProjectRun run = new JIPipeProjectRun(project, settings);
+        JIPipeLegacyProjectRun run = new JIPipeLegacyProjectRun(project, settings);
         run.setProgressInfo(progressInfo.resolve("Project " + projectFile.getFileName().toString()));
 
         run.run();

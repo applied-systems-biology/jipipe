@@ -21,7 +21,7 @@ import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
-import org.hkijena.jipipe.api.JIPipeGraphRunner;
+import org.hkijena.jipipe.api.run.JIPipeLegacyGraphRunner;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -232,7 +232,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeIter
             }
 
             // Run the graph
-            JIPipeGraphRunner runner = new JIPipeGraphRunner(wrappedGraph);
+            JIPipeLegacyGraphRunner runner = new JIPipeLegacyGraphRunner(wrappedGraph);
             runner.setRunContext(runContext);
             runner.setProgressInfo(batchProgress.detachProgress().resolve("Group"));
             runner.setAlgorithmsWithExternalInput(Collections.singleton(getGroupInput()));
@@ -258,7 +258,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeIter
         }
 
         // Run the graph
-        JIPipeGraphRunner runner = new JIPipeGraphRunner(wrappedGraph);
+        JIPipeLegacyGraphRunner runner = new JIPipeLegacyGraphRunner(wrappedGraph);
         runner.setProgressInfo(progressInfo.detachProgress().resolve("Sub-graph"));
         runner.setAlgorithmsWithExternalInput(Collections.singleton(getGroupInput()));
         runner.getPersistentDataNodes().add(getGroupOutput());

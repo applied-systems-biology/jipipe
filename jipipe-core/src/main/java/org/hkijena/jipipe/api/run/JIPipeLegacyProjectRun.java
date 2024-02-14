@@ -11,12 +11,13 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api;
+package org.hkijena.jipipe.api.run;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.BiMap;
 import ij.IJ;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -48,9 +49,9 @@ import java.util.*;
 /**
  * Runnable instance of an {@link JIPipeProject}
  */
-public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.SlotCompletedEventListener {
+public class JIPipeLegacyProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.SlotCompletedEventListener {
     private final JIPipeProject project;
-    private final JIPipeRunSettings configuration;
+    private final JIPipeLegacyRunSettings configuration;
     JIPipeGraph copiedGraph;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
@@ -58,7 +59,7 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
      * @param project       The project
      * @param configuration Run configuration
      */
-    public JIPipeProjectRun(JIPipeProject project, JIPipeRunSettings configuration) {
+    public JIPipeLegacyProjectRun(JIPipeProject project, JIPipeLegacyRunSettings configuration) {
         // First clean up the graph
         project.rebuildAliasIds(false);
         this.project = project;
@@ -72,19 +73,19 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
     }
 
     /**
-     * Loads a JIPipeProjectRun from a folder
+     * Loads a JIPipeLegacyProjectRun from a folder
      *
      * @param folder        Folder containing the run
      * @param notifications notifications for the user
      * @return The loaded run
      * @throws IOException Triggered by {@link com.fasterxml.jackson.databind.ObjectMapper}
      */
-    public static JIPipeProjectRun loadFromFolder(Path folder, JIPipeValidationReport report, JIPipeNotificationInbox notifications) throws IOException {
+    public static JIPipeLegacyProjectRun loadFromFolder(Path folder, JIPipeValidationReport report, JIPipeNotificationInbox notifications) throws IOException {
         Path parameterFile = folder.resolve("project.jip");
         JIPipeProject project = JIPipeProject.loadProject(parameterFile, new UnspecifiedValidationReportContext(), report, notifications);
-        JIPipeRunSettings configuration = new JIPipeRunSettings();
+        JIPipeLegacyRunSettings configuration = new JIPipeLegacyRunSettings();
         configuration.setOutputPath(folder);
-        JIPipeProjectRun run = new JIPipeProjectRun(project, configuration);
+        JIPipeLegacyProjectRun run = new JIPipeLegacyProjectRun(project, configuration);
         run.prepare();
         return run;
     }
@@ -356,7 +357,7 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
                                 group.setIterationMode(GraphWrapperAlgorithm.IterationMode.PassThrough);
                             }
 
-                            // IMPORTANT! Otherwise, the nested JIPipeGraphRunner will run into an infinite depth loop
+                            // IMPORTANT! Otherwise, the nested JIPipeLegacyGraphRunner will run into an infinite depth loop
                             ((LoopStartNode) loopGraph.getEquivalentAlgorithm(loop.getLoopStartNode()))
                                     .setIterationMode(GraphWrapperAlgorithm.IterationMode.PassThrough);
 
@@ -508,7 +509,7 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
     /**
      * @return The run configuration
      */
-    public JIPipeRunSettings getConfiguration() {
+    public JIPipeLegacyRunSettings getConfiguration() {
         return configuration;
     }
 

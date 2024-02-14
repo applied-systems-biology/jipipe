@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.ui.running;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeProjectRun;
-import org.hkijena.jipipe.api.JIPipeRunSettings;
+import org.hkijena.jipipe.api.run.JIPipeLegacyProjectRun;
+import org.hkijena.jipipe.api.run.JIPipeLegacyRunSettings;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
@@ -51,11 +51,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Settings UI for {@link org.hkijena.jipipe.api.JIPipeRunSettings}
+ * Settings UI for {@link JIPipeLegacyRunSettings}
  */
 public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
 
-    private JIPipeProjectRun run;
+    private JIPipeLegacyProjectRun run;
 
     /**
      * @param workbenchUI workbench UI
@@ -117,9 +117,9 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
     private void initializeSetupGUI() {
 
         try {
-            JIPipeRunSettings settings = new JIPipeRunSettings();
+            JIPipeLegacyRunSettings settings = new JIPipeLegacyRunSettings();
             settings.setOutputPath(RuntimeSettings.generateTempDirectory(""));
-            run = new JIPipeProjectRun(getProjectWorkbench().getProject(), settings);
+            run = new JIPipeLegacyProjectRun(getProjectWorkbench().getProject(), settings);
         } catch (Exception e) {
             openError(e);
             return;
