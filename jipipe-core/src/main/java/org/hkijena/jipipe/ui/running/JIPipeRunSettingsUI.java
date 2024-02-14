@@ -14,7 +14,8 @@
 package org.hkijena.jipipe.ui.running;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.run.JIPipeLegacyProjectRun;
+import org.hkijena.jipipe.api.run.JIPipeGraphRun;
+import org.hkijena.jipipe.api.run.JIPipeGraphRunSettings;
 import org.hkijena.jipipe.api.run.JIPipeLegacyProjectRunSettings;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -55,7 +56,7 @@ import java.util.stream.Collectors;
  */
 public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
 
-    private JIPipeLegacyProjectRun run;
+    private JIPipeGraphRun run;
 
     /**
      * @param workbenchUI workbench UI
@@ -117,9 +118,9 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
     private void initializeSetupGUI() {
 
         try {
-            JIPipeLegacyProjectRunSettings settings = new JIPipeLegacyProjectRunSettings();
+            JIPipeGraphRunSettings settings = new JIPipeGraphRunSettings();
             settings.setOutputPath(RuntimeSettings.generateTempDirectory(""));
-            run = new JIPipeLegacyProjectRun(getProjectWorkbench().getProject(), settings);
+            run = new JIPipeGraphRun(getProjectWorkbench().getProject(), settings);
         } catch (Exception e) {
             openError(e);
             return;
@@ -240,7 +241,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
                         int row = checkBoxes.size();
                         JCheckBox checkBox = new JCheckBox(outputSlot.getName(), true);
                         checkBox.addActionListener(e -> {
-                            JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentAlgorithm(node);
+                            JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentNode(node);
                             runAlgorithm.getOutputSlot(outputSlot.getName()).getInfo().setSaveOutputs(checkBox.isSelected());
                         });
                         JLabel compartmentLabel = new JLabel(node.getCompartmentDisplayName(),
@@ -291,7 +292,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
                 }
                 for (JIPipeDataSlot slot : outputSlots) {
                     JIPipeGraphNode node = slot.getNode();
-                    JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentAlgorithm(node);
+                    JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentNode(node);
                     runAlgorithm.getOutputSlot(slot.getName()).getInfo().setSaveOutputs(true);
                 }
             });
@@ -304,7 +305,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
                 }
                 for (JIPipeDataSlot slot : outputSlots) {
                     JIPipeGraphNode node = slot.getNode();
-                    JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentAlgorithm(node);
+                    JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentNode(node);
                     runAlgorithm.getOutputSlot(slot.getName()).getInfo().setSaveOutputs(false);
                 }
             });

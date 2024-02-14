@@ -1225,6 +1225,11 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
         return Collections.unmodifiableList(result);
     }
 
+    @Override
+    public String toString() {
+        return nodeUUIDs.size() + " nodes, " + graph.vertexSet().size() + " slots, " + graph.edgeSet().size() + " edges";
+    }
+
     public JIPipeGraphConnection getConnection(JIPipeDataSlot source, JIPipeDataSlot target) {
         JIPipeGraphEdge edge = graph.getEdge(source, target);
         return new JIPipeGraphConnection(this, source, target, edge);
@@ -1586,7 +1591,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
      * @param foreign An algorithm
      * @return Equivalent algorithm within this graph
      */
-    public JIPipeGraphNode getEquivalentAlgorithm(JIPipeGraphNode foreign) {
+    public JIPipeGraphNode getEquivalentNode(JIPipeGraphNode foreign) {
         return getNodeByUUID(foreign.getUUIDInParentGraph());
     }
 

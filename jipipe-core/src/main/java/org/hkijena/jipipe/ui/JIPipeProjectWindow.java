@@ -21,6 +21,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeProjectMetadata;
+import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.run.JIPipeLegacyProjectRun;
 import org.hkijena.jipipe.api.JIPipeProjectTemplate;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
@@ -392,7 +393,7 @@ public class JIPipeProjectWindow extends JFrame {
                         return;
                 }
 
-                JIPipeLegacyProjectRun run = JIPipeLegacyProjectRun.loadFromFolder(path, report, notifications);
+                JIPipeGraphRun run = JIPipeGraphRun.loadFromFolder(path, report, notifications);
                 run.getProject().setWorkDirectory(path);
                 JIPipeProjectWindow window = openProjectInThisOrNewWindow("Open JIPipe output", run.getProject(), false, false);
                 if (window == null)

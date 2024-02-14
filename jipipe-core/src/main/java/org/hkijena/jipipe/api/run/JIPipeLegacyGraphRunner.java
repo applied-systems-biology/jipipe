@@ -180,7 +180,7 @@ public class JIPipeLegacyGraphRunner implements JIPipeRunnable, JIPipeGraphGCHel
                         }
 
                         // IMPORTANT! Otherwise the nested JIPipeLegacyGraphRunner will run into an infinite depth loop
-                        ((LoopStartNode) loopGraph.getEquivalentAlgorithm(loop.getLoopStartNode()))
+                        ((LoopStartNode) loopGraph.getEquivalentNode(loop.getLoopStartNode()))
                                 .setIterationMode(GraphWrapperAlgorithm.IterationMode.PassThrough);
 
                         // Pass input data from inputs of loop into equivalent input of group

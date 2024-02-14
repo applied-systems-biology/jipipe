@@ -18,8 +18,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.run.JIPipeLegacyProjectRun;
-import org.hkijena.jipipe.api.run.JIPipeLegacyProjectRunSettings;
+import org.hkijena.jipipe.api.run.JIPipeGraphRun;
+import org.hkijena.jipipe.api.run.JIPipeGraphRunSettings;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -35,7 +35,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
     private final JIPipeGraphNode targetNode;
     private final QuickRunSettings settings;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-    private JIPipeLegacyProjectRun run;
+    private JIPipeGraphRun run;
     private JIPipeGraphNode targetNodeCopy;
 
     /**
@@ -52,7 +52,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
     }
 
     private void initialize() {
-        JIPipeLegacyProjectRunSettings configuration = new JIPipeLegacyProjectRunSettings();
+        JIPipeGraphRunSettings configuration = new JIPipeGraphRunSettings();
         configuration.setOutputPath(settings.getOutputPath());
         configuration.setLoadFromCache(settings.isLoadFromCache());
         configuration.setStoreToCache(settings.isStoreToCache());
@@ -65,9 +65,9 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
         // The test bench will handle this!
         configuration.setIgnoreDeactivatedInputs(true);
 
-        run = new JIPipeLegacyProjectRun(project, configuration);
+        run = new JIPipeGraphRun(project, configuration);
         run.setProgressInfo(progressInfo);
-        targetNodeCopy = run.getGraph().getEquivalentAlgorithm(targetNode);
+        targetNodeCopy = run.getGraph().getEquivalentNode(targetNode);
         ((JIPipeAlgorithm) targetNodeCopy).setEnabled(true);
 
         // Disable storing intermediate results
@@ -103,7 +103,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
                     handledNodes.add(predecessorNode);
                     if (!predecessorNode.getInfo().isRunnable())
                         continue;
-                    JIPipeGraphNode projectPredecessorNode = project.getGraph().getEquivalentAlgorithm(predecessorNode);
+                    JIPipeGraphNode projectPredecessorNode = project.getGraph().getEquivalentNode(predecessorNode);
                     Map<String, JIPipeDataTable> slotMap = project.getCache().query(projectPredecessorNode, projectPredecessorNode.getUUIDInParentGraph(), progressInfo);
 
                     if (slotMap.isEmpty()) {
@@ -209,7 +209,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
      *
      * @return the pipeline run
      */
-    public JIPipeLegacyProjectRun getRun() {
+    public JIPipeGraphRun getRun() {
         return run;
     }
 

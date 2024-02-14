@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.resultanalysis;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.run.JIPipeLegacyProjectRun;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.*;
@@ -61,7 +62,7 @@ import java.util.Set;
  */
 public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel implements JIPipeParameterCollection.ParameterChangedEventListener {
 
-    private final JIPipeLegacyProjectRun run;
+    private final JIPipeGraphRun run;
     private final JIPipeDataSlot slot;
     private final SearchTextField searchTextField = new SearchTextField();
     private final Ribbon ribbon = new Ribbon();
@@ -76,7 +77,7 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel imp
      * @param run         The run
      * @param slot        The slot
      */
-    public JIPipeResultDataSlotTableUI(JIPipeProjectWorkbench workbenchUI, JIPipeLegacyProjectRun run, JIPipeDataSlot slot) {
+    public JIPipeResultDataSlotTableUI(JIPipeProjectWorkbench workbenchUI, JIPipeGraphRun run, JIPipeDataSlot slot) {
         super(workbenchUI);
         this.run = run;
         this.slot = slot;
