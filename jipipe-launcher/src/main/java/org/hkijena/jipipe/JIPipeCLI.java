@@ -6,7 +6,7 @@ import com.google.common.collect.ImmutableList;
 import net.imagej.ImageJ;
 import org.hkijena.jipipe.api.run.JIPipeLegacyProjectRun;
 import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.run.JIPipeLegacyRunSettings;
+import org.hkijena.jipipe.api.run.JIPipeLegacyProjectRunSettings;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
@@ -201,7 +201,7 @@ public class JIPipeCLI {
             }
         }
 
-        JIPipeLegacyRunSettings settings = new JIPipeLegacyRunSettings();
+        JIPipeLegacyProjectRunSettings settings = new JIPipeLegacyProjectRunSettings();
         settings.setNumThreads(numThreads);
         settings.setOutputPath(outputFolder);
         settings.setSaveToDisk(saveToDisk);

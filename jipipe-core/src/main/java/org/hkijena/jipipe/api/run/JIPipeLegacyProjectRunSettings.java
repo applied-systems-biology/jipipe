@@ -29,7 +29,7 @@ import java.util.UUID;
 /**
  * Settings for an {@link JIPipeLegacyProjectRun}
  */
-public class JIPipeLegacyRunSettings extends AbstractJIPipeParameterCollection {
+public class JIPipeLegacyProjectRunSettings extends AbstractJIPipeParameterCollection {
     private Path outputPath;
     private boolean loadFromCache = true;
     private boolean storeToCache = false;

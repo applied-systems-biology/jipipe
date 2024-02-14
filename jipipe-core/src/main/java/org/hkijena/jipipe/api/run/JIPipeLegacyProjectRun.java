@@ -51,7 +51,7 @@ import java.util.*;
  */
 public class JIPipeLegacyProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.SlotCompletedEventListener {
     private final JIPipeProject project;
-    private final JIPipeLegacyRunSettings configuration;
+    private final JIPipeLegacyProjectRunSettings configuration;
     JIPipeGraph copiedGraph;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
@@ -59,7 +59,7 @@ public class JIPipeLegacyProjectRun implements JIPipeRunnable, JIPipeGraphGCHelp
      * @param project       The project
      * @param configuration Run configuration
      */
-    public JIPipeLegacyProjectRun(JIPipeProject project, JIPipeLegacyRunSettings configuration) {
+    public JIPipeLegacyProjectRun(JIPipeProject project, JIPipeLegacyProjectRunSettings configuration) {
         // First clean up the graph
         project.rebuildAliasIds(false);
         this.project = project;
@@ -83,7 +83,7 @@ public class JIPipeLegacyProjectRun implements JIPipeRunnable, JIPipeGraphGCHelp
     public static JIPipeLegacyProjectRun loadFromFolder(Path folder, JIPipeValidationReport report, JIPipeNotificationInbox notifications) throws IOException {
         Path parameterFile = folder.resolve("project.jip");
         JIPipeProject project = JIPipeProject.loadProject(parameterFile, new UnspecifiedValidationReportContext(), report, notifications);
-        JIPipeLegacyRunSettings configuration = new JIPipeLegacyRunSettings();
+        JIPipeLegacyProjectRunSettings configuration = new JIPipeLegacyProjectRunSettings();
         configuration.setOutputPath(folder);
         JIPipeLegacyProjectRun run = new JIPipeLegacyProjectRun(project, configuration);
         run.prepare();
@@ -509,7 +509,7 @@ public class JIPipeLegacyProjectRun implements JIPipeRunnable, JIPipeGraphGCHelp
     /**
      * @return The run configuration
      */
-    public JIPipeLegacyRunSettings getConfiguration() {
+    public JIPipeLegacyProjectRunSettings getConfiguration() {
         return configuration;
     }
 

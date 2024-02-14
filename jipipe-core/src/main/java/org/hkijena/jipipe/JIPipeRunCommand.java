@@ -15,7 +15,7 @@ package org.hkijena.jipipe;
 
 import org.hkijena.jipipe.api.run.JIPipeLegacyProjectRun;
 import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.run.JIPipeLegacyRunSettings;
+import org.hkijena.jipipe.api.run.JIPipeLegacyProjectRunSettings;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
@@ -101,7 +101,7 @@ public class JIPipeRunCommand implements Command {
                     "Try to load the parameter file in the JIPipe GUI.");
         }
 
-        JIPipeLegacyRunSettings configuration = new JIPipeLegacyRunSettings();
+        JIPipeLegacyProjectRunSettings configuration = new JIPipeLegacyProjectRunSettings();
         configuration.setLoadFromCache(false);
         configuration.setStoreToCache(false);
         configuration.setOutputPath(outputDirectory.toPath());
