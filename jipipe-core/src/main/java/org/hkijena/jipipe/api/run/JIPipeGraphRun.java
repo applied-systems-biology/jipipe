@@ -244,6 +244,9 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable {
 
     private void runFlowGraphNode(Object flowGraphNode, JIPipeProgressInfo progressInfo) {
         if(flowGraphNode instanceof JIPipeInputDataSlot) {
+            // TODO: standard copy operation will clash with loops
+            // Store results in local cache?
+            // Maybe have Map<JIPipeDataSlot, JIPipeDataSlot>? for overrides?
             JIPipeOutputDataSlot outputSlot = (JIPipeOutputDataSlot) flowGraphNode;
             progressInfo.resolve(outputSlot.getNode().getDisplayName())
         }
