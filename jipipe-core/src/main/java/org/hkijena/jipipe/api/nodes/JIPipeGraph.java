@@ -1193,6 +1193,36 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
     }
 
     /**
+     * Copies the selected algorithms into a new graph
+     * Connections between the nodes are kept
+     * UUIDs are kept
+     * Nodes are copied shallow
+     *
+     * @param nodes        the nodes
+     * @param withInternal also copy internal algorithms
+     * @param skipLocked   skip locked nodes
+     * @return graph that only contains the selected algorithms, UUIDs are the same between the original and copies
+     */
+    public JIPipeGraph extractShallow(Collection<JIPipeGraphNode> nodes, boolean withInternal, boolean skipLocked) {
+        JIPipeGraph graph = new JIPipeGraph();
+        for (JIPipeGraphNode node : nodes) {
+            if (!withInternal && !node.getCategory().canExtract())
+                continue;
+            if (node.isUiLocked() && skipLocked)
+                continue;
+            graph.insertNode(node.getUUIDInParentGraph(), node, null);
+        }
+        for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : getSlotEdges()) {
+            JIPipeDataSlot source = edge.getKey();
+            JIPipeDataSlot target = edge.getValue();
+            if (nodes.contains(source.getNode()) && nodes.contains(target.getNode())) {
+                graph.connect(graph.getEquivalentSlot(source), graph.getEquivalentSlot(target));
+            }
+        }
+        return graph;
+    }
+
+    /**
      * @return The number of all algorithms
      */
     public int getNodeCount() {

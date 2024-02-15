@@ -135,7 +135,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
             project.getCache().clearOutdated(getProgressInfo().resolveAndLog("Remove outdated cache"));
         }
 
-        // Disable all algorithms that are not dependencies of the benched algorithm
+        // Disable all algorithms that are not dependencies of the target algorithm
         Set<JIPipeGraphNode> predecessorAlgorithms = findPredecessorsWithoutCache();
         if (!settings.isExcludeSelected())
             predecessorAlgorithms.add(targetNodeCopy);
