@@ -129,7 +129,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable {
         }
 
         progressInfo.log("Run ending at " + StringUtils.formatDateTime(LocalDateTime.now()));
-        progressInfo.log("\nAnalysis required " + StringUtils.formatDuration(System.currentTimeMillis() - startTime) + " to execute.\n");
+        progressInfo.log("\n--> Required " + StringUtils.formatDuration(System.currentTimeMillis() - startTime) + " to execute.\n");
 
         try {
             if (configuration.getOutputPath() != null)
@@ -359,13 +359,27 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable {
                 runFlowGraphNode(bestCandidate, progressInfo);
 
                 // Delete
-                dataFlowGraph.removeVertex(bestCandidate);
-                endpoints.remove(bestCandidate);
+                cleanupFlowGraphNode(bestCandidate, dataFlowGraph, endpoints, progressInfo);
             }
         }
         finally {
             progressInfo.setWithSpinner(false);
         }
+    }
+
+    private void cleanupFlowGraphNode(Object flowGraphNode, DefaultDirectedWeightedGraph<Object, DefaultWeightedEdge> dataFlowGraph, Set<Object> endpoints, JIPipeProgressInfo progressInfo) {
+
+        if(flowGraphNode instanceof JIPipeAlgorithm) {
+            // Clear inputs
+            for (JIPipeInputDataSlot inputSlot : ((JIPipeAlgorithm) flowGraphNode).getInputSlots()) {
+                progressInfo.resolve("GC").log("Clear input '" + inputSlot.getName() + "' of node '" + inputSlot.getNode().getDisplayName() + "'");
+                inputSlot.clear();
+            }
+        }
+
+        // Remove from flow graph
+        dataFlowGraph.removeVertex(flowGraphNode);
+        endpoints.remove(flowGraphNode);
     }
 
     private void runFlowGraphNode(Object flowGraphNode, JIPipeProgressInfo progressInfo) {
@@ -378,18 +392,19 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable {
         }
         else if(flowGraphNode instanceof JIPipeOutputDataSlot) {
             JIPipeOutputDataSlot outputSlot = (JIPipeOutputDataSlot) flowGraphNode;
-            progressInfo.resolve(outputSlot.getNode().getDisplayName()).resolve(outputSlot.getDisplayName()).log("Status is " + outputSlot);
+            progressInfo.resolve(outputSlot.getNode().getDisplayName()).log("Contents of data slot " + outputSlot);
         }
         else if(flowGraphNode instanceof JIPipeAlgorithm) {
             JIPipeAlgorithm algorithm = (JIPipeAlgorithm) flowGraphNode;
-            JIPipeProgressInfo algorithmProgress = progressInfo.resolveAndLog(algorithm.getDisplayName());
+            JIPipeProgressInfo algorithmProgress = progressInfo.resolve(algorithm.getDisplayName());
+            algorithmProgress.log("Executing " + algorithm.getUUIDInParentGraph());
             if(algorithm.isSkipped() || !algorithm.isEnabled() || !algorithm.getInfo().isRunnable()) {
                 algorithmProgress.log("Not runnable (skipped/disabled/node info not marked as runnable). Workload will not be executed!");
                 return;
             }
 
             try {
-                algorithm.run(runContext, progressInfo);
+                algorithm.run(runContext, algorithmProgress);
             } catch (Exception e) {
                 throw new JIPipeValidationRuntimeException(
                         new GraphNodeValidationReportContext(algorithm),
