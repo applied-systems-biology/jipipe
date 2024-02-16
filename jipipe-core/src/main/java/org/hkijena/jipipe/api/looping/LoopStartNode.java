@@ -3,10 +3,7 @@ package org.hkijena.jipipe.api.looping;
 import com.google.common.primitives.Ints;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
@@ -33,6 +30,8 @@ import java.util.List;
 @JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Data")
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data")
+@JIPipeHidden
+@Deprecated
 public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeIterationStepAlgorithm {
 
     private GraphWrapperAlgorithm.IterationMode iterationMode = GraphWrapperAlgorithm.IterationMode.IteratingDataBatch;

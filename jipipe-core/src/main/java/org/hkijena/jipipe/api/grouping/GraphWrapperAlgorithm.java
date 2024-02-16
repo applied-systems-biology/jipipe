@@ -462,9 +462,9 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeIter
                 case PassThrough:
                     return "Pass data through";
                 case MergingDataBatch:
-                    return "Per merging data batch";
+                    return "Loop (multiple data per slot)";
                 case IteratingDataBatch:
-                    return "Per iterating data batch";
+                    return "Loop (single data per slot)";
                 default:
                     throw new UnsupportedOperationException();
             }
@@ -499,11 +499,11 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeIter
                     return "Passes data from the inputs through the I/O nodes of the wrapped graph. " +
                             "The wrapped graph is then executed once.";
                 case IteratingDataBatch:
-                    return "Iterates through all data batches of the group node. " +
+                    return "Iterates through all iteration steps of the group node. " +
                             "The wrapped graph is executed for each data batch. " +
                             "This uses an iterating data batch (only one data row per slot per batch)";
                 case MergingDataBatch:
-                    return "Iterates through all data batches of the group node. " +
+                    return "Iterates through all iteration steps of the group node. " +
                             "The wrapped graph is executed for each data batch. " +
                             "This uses an merging data batch (multiple data rows per slot per batch)";
                 default:

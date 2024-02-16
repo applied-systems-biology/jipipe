@@ -1,22 +1,31 @@
 package org.hkijena.jipipe.api.run;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.*;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,19 +37,25 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable {
     private final JIPipeProject project;
     private final JIPipeGraph graph;
     private final JIPipeGraphRunSettings configuration;
-    private JIPipeGraphGCHelper graphGCHelper;
     private JIPipeGraphNodeRunContext runContext;
+    private final List<JIPipeRuntimePartition> runtimePartitions;
 
     public JIPipeGraphRun(JIPipeGraph graph, JIPipeGraphRunSettings configuration) {
         this.configuration = configuration;
         this.project = null;
         this.graph = new JIPipeGraph(graph);
+        this.runtimePartitions = new ArrayList<>();
+        this.runtimePartitions.add(new JIPipeRuntimePartition());
     }
 
     public JIPipeGraphRun(JIPipeProject project, JIPipeGraphRunSettings configuration) {
         this.project = project;
         this.graph = new JIPipeGraph(project.getGraph());
         this.configuration = configuration;
+        this.runtimePartitions = new ArrayList<>();
+        for (JIPipeRuntimePartition runtimePartition : project.getRuntimePartitions().toList()) {
+            this.runtimePartitions.add(new JIPipeRuntimePartition(runtimePartition));
+        }
     }
 
     public static JIPipeGraphRun loadFromFolder(Path path, JIPipeValidationReport report, JIPipeNotificationInbox notifications) {
@@ -69,7 +84,15 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable {
                 "\n");
         progressInfo.log("Erasing skipped/disabled algorithms ...");
         cleanGraph(graph, progressInfo.resolve("Preprocessing/Cleanup"));
-        graphGCHelper = new JIPipeGraphGCHelper(graph);
+
+        long startTime = System.currentTimeMillis();
+        progressInfo.log("JIPipe run starting at " + StringUtils.formatDateTime(LocalDateTime.now()));
+        progressInfo.log("Preparing ...");
+        initializeInternalStoragePaths();
+        initializeScratchDirectory();
+        initializeRelativeDirectories();
+        assignDataStoragePaths();
+        progressInfo.log("Outputs will be written to " + configuration.getOutputPath());
 
         try (JIPipeFixedThreadPool threadPool = new JIPipeFixedThreadPool(configuration.getNumThreads())) {
 
@@ -79,14 +102,43 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable {
             runContext.setThreadPool(threadPool);
 
             // Start iteration on initial graph
-            progressInfo.log("Starting first iteration ...");
+            progressInfo.log("--> Starting first iteration ...");
             runOrPartitionGraph(graph, progressInfo);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
         finally {
-            graphGCHelper = null;
             runContext = null;
+
+            // Clear all slots
+            for (JIPipeGraphNode node : graph.getGraphNodes()) {
+                node.clearSlotData();
+            }
+        }
+
+        // Postprocessing
+        progressInfo.log("Postprocessing steps ...");
+        try {
+            if (configuration.getOutputPath() != null && configuration.isSaveToDisk())
+                project.saveProject(configuration.getOutputPath().resolve("project.jip"));
+        } catch (IOException e) {
+            throw new JIPipeValidationRuntimeException(e,
+                    "Could not save project to '" + configuration.getOutputPath().resolve("project.jip") + "'!",
+                    "Either the path is invalid, or you have no permission to write to the disk, or the disk space is full",
+                    "Check if you can write to the output directory.");
+        }
+
+        progressInfo.log("Run ending at " + StringUtils.formatDateTime(LocalDateTime.now()));
+        progressInfo.log("\nAnalysis required " + StringUtils.formatDuration(System.currentTimeMillis() - startTime) + " to execute.\n");
+
+        try {
+            if (configuration.getOutputPath() != null)
+                Files.write(configuration.getOutputPath().resolve("log.txt"), progressInfo.getLog().toString().getBytes(Charsets.UTF_8));
+        } catch (IOException e) {
+            throw new JIPipeValidationRuntimeException(e,
+                    "Could not write log '" + configuration.getOutputPath().resolve("log.txt") + "'!",
+                    "Either the path is invalid, or you have no permission to write to the disk, or the disk space is full",
+                    "Check if you can write to the output directory.");
         }
     }
 
@@ -104,13 +156,73 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable {
         }
     }
 
+    /**
+     * Iterates through output slots and assigns the data storage paths
+     */
+    private void assignDataStoragePaths() {
+        if (configuration.getOutputPath() != null) {
+            if (!Files.exists(configuration.getOutputPath())) {
+                try {
+                    Files.createDirectories(configuration.getOutputPath());
+                } catch (IOException e) {
+                    throw new JIPipeValidationRuntimeException(e,
+                            "Could not create necessary directory '" + configuration.getOutputPath() + "'!",
+                            "Either the path is invalid, or you do not have permissions to create the directory",
+                            "Check if the path is valid and the parent directories are writeable by your current user");
+                }
+            }
+
+            // Apply output path to the data slots
+            for (JIPipeDataSlot slot : graph.getSlotNodes()) {
+                if (slot.isOutput()) {
+                    slot.setSlotStoragePath(configuration.getOutputPath().resolve(slot.getNode().getInternalStoragePath().resolve(slot.getName())));
+                    try {
+                        Files.createDirectories(slot.getSlotStoragePath());
+                    } catch (IOException e) {
+                        throw new JIPipeValidationRuntimeException(e,
+                                "Could not create necessary directory '" + slot.getSlotStoragePath() + "'!",
+                                "Either the path is invalid, or you do not have permissions to create the directory",
+                                "Check if the path is valid and the parent directories are writeable by your current user");
+                    }
+                }
+            }
+        }
+    }
+
+    private void initializeScratchDirectory() {
+        try {
+            Files.createDirectories(configuration.getOutputPath().resolve("_scratch"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        for (JIPipeGraphNode algorithm : graph.getGraphNodes()) {
+            algorithm.setScratchBaseDirectory(configuration.getOutputPath().resolve("_scratch"));
+        }
+    }
+
+    private void initializeRelativeDirectories() {
+        for (JIPipeGraphNode algorithm : graph.getGraphNodes()) {
+            algorithm.setBaseDirectory(null);
+        }
+    }
+
+    private void initializeInternalStoragePaths() {
+        for (JIPipeGraphNode node : graph.getGraphNodes()) {
+            JIPipeProjectCompartment compartment = project.getCompartments().get(node.getCompartmentUUIDInParentGraph());
+            node.setInternalStoragePath(Paths.get(StringUtils.safeJsonify(compartment.getAliasIdInParentGraph()))
+                    .resolve(StringUtils.safeJsonify(graph.getAliasIdOf(node))));
+            node.setProjectDirectory(project.getWorkDirectory());
+            node.setRuntimeProject(project);
+        }
+    }
+
     public void runOrPartitionGraph(JIPipeGraph graph, JIPipeProgressInfo progressInfo) {
         progressInfo.log("Iterating on graph " + graph + " ...");
         DirectedAcyclicGraph<Set<JIPipeGraphNode>, DefaultEdge> partitionGraph = calculatePartitionGraph(graph);
         progressInfo.log("-> Partition graph has " + partitionGraph.vertexSet().size() + " vertices, " + partitionGraph.edgeSet().size() + " edges");
         if (partitionGraph.vertexSet().size() == 1) {
             progressInfo.log("--> Single partition. Running graph.");
-            runGraph(graph, partitionGraph.vertexSet().iterator().next(), progressInfo);
+            runPartitionNodeSet(graph, progressInfo, partitionGraph.vertexSet().iterator().next());
         } else if (partitionGraph.vertexSet().size() > 1) {
             progressInfo.log("--> Multiple partitions. Executing partitions in topological order.");
             TopologicalOrderIterator<Set<JIPipeGraphNode>, DefaultEdge> orderIterator = new TopologicalOrderIterator<>(partitionGraph);
@@ -119,12 +231,26 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable {
                 Set<JIPipeGraphNode> partitionNodeSet = partitionNodeSets.get(i);
                 if (partitionNodeSet.isEmpty())
                     continue;
-                JIPipeProgressInfo partitionProgress = progressInfo.resolve("Partition " + ((JIPipeAlgorithm) partitionNodeSet.iterator().next()).getRuntimePartition().getIndex());
-                runGraph(graph, partitionNodeSet, partitionProgress);
+                runPartitionNodeSet(graph, progressInfo, partitionNodeSet);
             }
         } else {
             progressInfo.log("--> Nothing to do");
         }
+    }
+
+    private void runPartitionNodeSet(JIPipeGraph graph, JIPipeProgressInfo progressInfo, Set<JIPipeGraphNode> partitionNodeSet) {
+        int partitionId = 0;
+        for (JIPipeGraphNode graphNode : partitionNodeSet) {
+            if(graphNode instanceof JIPipeAlgorithm) {
+                partitionId = ((JIPipeAlgorithm) graphNode).getRuntimePartition().getIndex();
+            }
+        }
+        partitionId = Math.max(0, Math.min(partitionId, runtimePartitions.size() - 1));
+        JIPipeRuntimePartition runtimePartition = runtimePartitions.get(partitionId);
+        progressInfo.log("--> Selected runtime partition id=" + partitionId + " name=" + runtimePartition.getName());
+
+        JIPipeProgressInfo partitionProgress = progressInfo.resolve("Partition " + partitionId);
+        runGraph(graph, partitionNodeSet, partitionProgress);
     }
 
     private DefaultDirectedWeightedGraph<Object, DefaultWeightedEdge> buildDataFlowGraph(JIPipeGraph graph, Set<JIPipeGraphNode> nodeFilter) {
@@ -244,11 +370,11 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable {
 
     private void runFlowGraphNode(Object flowGraphNode, JIPipeProgressInfo progressInfo) {
         if(flowGraphNode instanceof JIPipeInputDataSlot) {
-            // TODO: standard copy operation will clash with loops
-            // Store results in local cache?
-            // Maybe have Map<JIPipeDataSlot, JIPipeDataSlot>? for overrides?
-            JIPipeOutputDataSlot outputSlot = (JIPipeOutputDataSlot) flowGraphNode;
-            progressInfo.resolve(outputSlot.getNode().getDisplayName())
+            JIPipeInputDataSlot inputSlot = (JIPipeInputDataSlot) flowGraphNode;
+            for (JIPipeGraphEdge graphEdge : graph.getGraph().incomingEdgesOf(inputSlot)) {
+                JIPipeDataSlot outputSlot = graph.getGraph().getEdgeSource(graphEdge);
+                inputSlot.addDataFromTable(outputSlot, progressInfo);
+            }
         }
         else if(flowGraphNode instanceof JIPipeOutputDataSlot) {
             JIPipeOutputDataSlot outputSlot = (JIPipeOutputDataSlot) flowGraphNode;
@@ -260,6 +386,17 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable {
             if(algorithm.isSkipped() || !algorithm.isEnabled() || !algorithm.getInfo().isRunnable()) {
                 algorithmProgress.log("Not runnable (skipped/disabled/node info not marked as runnable). Workload will not be executed!");
                 return;
+            }
+
+            try {
+                algorithm.run(runContext, progressInfo);
+            } catch (Exception e) {
+                throw new JIPipeValidationRuntimeException(
+                        new GraphNodeValidationReportContext(algorithm),
+                        e,
+                        "An error occurred during processing",
+                        "On running the algorithm '" + algorithm.getDisplayName(),
+                        "Please follow the instructions for the other error messages.");
             }
         }
         else {

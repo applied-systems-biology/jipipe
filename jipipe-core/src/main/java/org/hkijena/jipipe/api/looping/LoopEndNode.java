@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.api.looping;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -18,6 +19,8 @@ import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 @JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Data")
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data")
+@JIPipeHidden
+@Deprecated
 public class LoopEndNode extends IOInterfaceAlgorithm {
 
     private GraphWrapperAlgorithm.IterationMode iterationMode = GraphWrapperAlgorithm.IterationMode.IteratingDataBatch;
