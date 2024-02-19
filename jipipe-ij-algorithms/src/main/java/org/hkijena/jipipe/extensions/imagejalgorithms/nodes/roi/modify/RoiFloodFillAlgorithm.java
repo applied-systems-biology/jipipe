@@ -16,8 +16,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.modify;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Roi;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -34,11 +34,11 @@ import java.awt.*;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@JIPipeDocumentation(name = "Flood fill", description = "Starts a flood fill (magic wand) operation starting at the location of the ROI. Multiple operations are applied for each point within the ROI. Returns the generated outlines.")
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
+@SetJIPipeDocumentation(name = "Flood fill", description = "Starts a flood fill (magic wand) operation starting at the location of the ROI. Multiple operations are applied for each point within the ROI. Returns the generated outlines.")
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", create = true)
 public class RoiFloodFillAlgorithm extends JIPipeIteratingAlgorithm {
 
     private double tolerance = 0;
@@ -98,7 +98,7 @@ public class RoiFloodFillAlgorithm extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), outputRoi, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Tolerance")
+    @SetJIPipeDocumentation(name = "Tolerance")
     @JIPipeParameter("tolerance")
     public double getTolerance() {
         return tolerance;
@@ -109,7 +109,7 @@ public class RoiFloodFillAlgorithm extends JIPipeIteratingAlgorithm {
         this.tolerance = tolerance;
     }
 
-    @JIPipeDocumentation(name = "Mode")
+    @SetJIPipeDocumentation(name = "Mode")
     @JIPipeParameter("mode")
     public Mode getMode() {
         return mode;
@@ -120,7 +120,7 @@ public class RoiFloodFillAlgorithm extends JIPipeIteratingAlgorithm {
         this.mode = mode;
     }
 
-    @JIPipeDocumentation(name = "Smooth")
+    @SetJIPipeDocumentation(name = "Smooth")
     @JIPipeParameter("smooth")
     public boolean isSmooth() {
         return smooth;

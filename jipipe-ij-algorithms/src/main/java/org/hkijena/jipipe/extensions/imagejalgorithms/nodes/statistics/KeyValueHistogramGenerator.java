@@ -8,8 +8,8 @@ import gnu.trove.map.hash.TDoubleDoubleHashMap;
 import gnu.trove.map.hash.TDoubleObjectHashMap;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -39,11 +39,11 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import java.util.Arrays;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Key/Value Histogram 5D", description = "This node consumes two images with the same dimensions that respectively contain the keys and value components of each pixel position. The values assigned to each key are collected and integrated, thus allowing to generate histograms. Allows the generation of normalized and cumulative histograms.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Key", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Value", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Histogram", autoCreate = true)
+@SetJIPipeDocumentation(name = "Key/Value Histogram 5D", description = "This node consumes two images with the same dimensions that respectively contain the keys and value components of each pixel position. The values assigned to each key are collected and integrated, thus allowing to generate histograms. Allows the generation of normalized and cumulative histograms.")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Key", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Value", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Histogram", create = true)
 public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
     private String outputKeyColumn = "key";
 
@@ -192,7 +192,7 @@ public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
         return ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(sourceArea, width, height, rois, mask, sliceIndex);
     }
 
-    @JIPipeDocumentation(name = "Extract values from ...", description = "Determines from which image areas the pixel values used for extracting the values")
+    @SetJIPipeDocumentation(name = "Extract values from ...", description = "Determines from which image areas the pixel values used for extracting the values")
     @JIPipeParameter("source-area")
     public ImageROITargetArea getSourceArea() {
         return sourceArea;
@@ -204,7 +204,7 @@ public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
         ImageJAlgorithmUtils.updateROIOrMaskSlot(sourceArea, getSlotConfiguration());
     }
 
-    @JIPipeDocumentation(name = "Output column (keys)", description = "The table column where the keys will be written to")
+    @SetJIPipeDocumentation(name = "Output column (keys)", description = "The table column where the keys will be written to")
     @JIPipeParameter(value = "output-key-column", uiOrder = 100)
     @StringParameterSettings(monospace = true)
     public String getOutputKeyColumn() {
@@ -216,7 +216,7 @@ public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
         this.outputKeyColumn = outputKeyColumn;
     }
 
-    @JIPipeDocumentation(name = "Output column (integrated values)", description = "The table column where the integrated values will be written to")
+    @SetJIPipeDocumentation(name = "Output column (integrated values)", description = "The table column where the integrated values will be written to")
     @JIPipeParameter(value = "output-value-column", uiOrder = 110)
     @StringParameterSettings(monospace = true)
     public String getOutputValueColumn() {
@@ -228,7 +228,7 @@ public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
         this.outputValueColumn = outputValueColumn;
     }
 
-    @JIPipeDocumentation(name = "Integration function", description = "The function that integrates the values assigned to the same key")
+    @SetJIPipeDocumentation(name = "Integration function", description = "The function that integrates the values assigned to the same key")
     @JIPipeParameter("integration-function")
     @JIPipeExpressionParameterVariable(key = "values", name = "Values", description = "The values to be integrated")
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
@@ -241,7 +241,7 @@ public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
         this.integrationFunction = integrationFunction;
     }
 
-    @JIPipeDocumentation(name = "Cumulative", description = "If enabled, the histogram will be cumulative")
+    @SetJIPipeDocumentation(name = "Cumulative", description = "If enabled, the histogram will be cumulative")
     @JIPipeParameter("cumulative")
     public boolean isCumulative() {
         return cumulative;
@@ -252,7 +252,7 @@ public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
         this.cumulative = cumulative;
     }
 
-    @JIPipeDocumentation(name = "Normalize", description = "If enabled, normalizes the values")
+    @SetJIPipeDocumentation(name = "Normalize", description = "If enabled, normalizes the values")
     @JIPipeParameter("normalize")
     public boolean isNormalize() {
         return normalize;

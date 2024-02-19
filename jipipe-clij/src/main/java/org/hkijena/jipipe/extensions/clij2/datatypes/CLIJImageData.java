@@ -3,8 +3,8 @@ package org.hkijena.jipipe.extensions.clij2.datatypes;
 import ij.ImagePlus;
 import net.haesleinhuepf.clij.clearcl.ClearCLBuffer;
 import net.haesleinhuepf.clij2.CLIJ2;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHeavyData;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
@@ -25,10 +25,10 @@ import java.awt.*;
 /**
  * Contains a CLIJ image
  */
-@JIPipeDocumentation(name = "GPU image", description = "Image data stored on the GPU utilized by CLIJ")
+@SetJIPipeDocumentation(name = "GPU image", description = "Image data stored on the GPU utilized by CLIJ")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains one image file with one of following extensions: *.tif, *.tiff, *.png, *.jpeg, *.jpeg, *.png. " +
         "We recommend the usage of TIFF.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/imageplus-data.schema.json")
-@JIPipeHeavyData
+@LabelAsJIPipeHeavyData
 public class CLIJImageData implements JIPipeData {
 
     ClearCLBuffer image;

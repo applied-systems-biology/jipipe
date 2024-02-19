@@ -17,8 +17,8 @@ import ij.ImagePlus;
 import ij.plugin.Resizer;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -37,11 +37,11 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImagePlusPropertiesExp
 /**
  * Wrapper around {@link ImageProcessor}
  */
-@JIPipeDocumentation(name = "Scale 3D image", description = "Scales a 3D image.")
-@JIPipeNode(menuPath = "Transform", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image", aliasName = "Scale... (3D)")
+@SetJIPipeDocumentation(name = "Scale 3D image", description = "Scales a 3D image.")
+@DefineJIPipeNode(menuPath = "Transform", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image", aliasName = "Scale... (3D)")
 public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private InterpolationMethod interpolationMethod = InterpolationMethod.Bilinear;
@@ -139,7 +139,7 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Interpolation", description = "The interpolation method")
+    @SetJIPipeDocumentation(name = "Interpolation", description = "The interpolation method")
     @JIPipeParameter("interpolation-method")
     public InterpolationMethod getInterpolationMethod() {
         return interpolationMethod;
@@ -150,7 +150,7 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.interpolationMethod = interpolationMethod;
     }
 
-    @JIPipeDocumentation(name = "X axis", description = "How the X axis should be scaled")
+    @SetJIPipeDocumentation(name = "X axis", description = "How the X axis should be scaled")
     @JIPipeParameter("x-axis")
     @JIPipeExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariablesInfo.class)
     public OptionalJIPipeExpressionParameter getxAxis() {
@@ -162,7 +162,7 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.xAxis = xAxis;
     }
 
-    @JIPipeDocumentation(name = "Y axis", description = "How the Y axis should be scaled")
+    @SetJIPipeDocumentation(name = "Y axis", description = "How the Y axis should be scaled")
     @JIPipeParameter("y-axis")
     @JIPipeExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariablesInfo.class)
     public OptionalJIPipeExpressionParameter getyAxis() {
@@ -174,7 +174,7 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.yAxis = yAxis;
     }
 
-    @JIPipeDocumentation(name = "Z axis", description = "How the Z axis should be scaled")
+    @SetJIPipeDocumentation(name = "Z axis", description = "How the Z axis should be scaled")
     @JIPipeParameter("z-axis")
     @JIPipeExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariablesInfo.class)
     public OptionalJIPipeExpressionParameter getzAxis() {

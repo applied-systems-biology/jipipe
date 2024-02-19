@@ -80,6 +80,14 @@ public class MessagePanel extends FormPanel {
             this.background = background;
             this.foreground = foreground;
         }
+
+        public Color getBackground() {
+            return background;
+        }
+
+        public Color getForeground() {
+            return foreground;
+        }
     }
 
     public static class Message extends JPanel implements MouseListener {

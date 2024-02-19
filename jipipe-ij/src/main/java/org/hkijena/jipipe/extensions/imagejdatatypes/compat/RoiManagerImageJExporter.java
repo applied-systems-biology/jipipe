@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.compat;
 
 import ij.plugin.frame.RoiManager;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.ImageJDataExporter;
 import org.hkijena.jipipe.api.compat.ImageJExportParameters;
@@ -12,7 +12,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import java.util.ArrayList;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Export to ROI Manager", description = "Exports provided ROI into the ImageJ ROI manager")
+@SetJIPipeDocumentation(name = "Export to ROI Manager", description = "Exports provided ROI into the ImageJ ROI manager")
 public class RoiManagerImageJExporter implements ImageJDataExporter {
     @Override
     public List<Object> exportData(JIPipeDataTable dataTable, ImageJExportParameters parameters, JIPipeProgressInfo progressInfo) {

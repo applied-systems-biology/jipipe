@@ -15,8 +15,8 @@
 package org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks;
 
 import fiji.plugin.trackmate.Spot;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -28,10 +28,10 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "Merge tracks", description = "Merges track lists. Please ensure that the spots are sourced from the same image.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nSplit/Merge")
-@JIPipeInputSlot(value = TrackCollectionData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = TrackCollectionData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Merge tracks", description = "Merges track lists. Please ensure that the spots are sourced from the same image.")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nSplit/Merge")
+@AddJIPipeInputSlot(value = TrackCollectionData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = TrackCollectionData.class, slotName = "Output", create = true)
 public class MergeTracksNode extends JIPipeMergingAlgorithm {
 
     public MergeTracksNode(JIPipeNodeInfo info) {

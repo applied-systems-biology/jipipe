@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.collect.ImmutableList;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeMetadata;
 import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 import org.hkijena.jipipe.api.grouping.JsonNodeRegistrationTask;
@@ -116,7 +116,7 @@ public class JIPipeJsonExtension extends AbstractJIPipeParameterCollection imple
     @Override
     @JsonGetter("metadata")
     @JIPipeParameter("metadata")
-    @JIPipeDocumentation(name = "Metadata", description = "Additional extension metadata")
+    @SetJIPipeDocumentation(name = "Metadata", description = "Additional extension metadata")
     public JIPipeMetadata getMetadata() {
         return metadata;
     }
@@ -135,7 +135,7 @@ public class JIPipeJsonExtension extends AbstractJIPipeParameterCollection imple
     @JsonGetter("id")
     @JIPipeParameter("id")
     @StringParameterSettings(monospace = true)
-    @JIPipeDocumentation(name = "Unique extension ID", description = "A unique identifier for the extension. It must have following format: " +
+    @SetJIPipeDocumentation(name = "Unique extension ID", description = "A unique identifier for the extension. It must have following format: " +
             "[Author]:[Extension] where [Author] contains information about who developed the extension. An example is <i>org.hkijena:my-extension</i>")
     public String getDependencyId() {
         return id;
@@ -156,7 +156,7 @@ public class JIPipeJsonExtension extends AbstractJIPipeParameterCollection imple
     @JsonGetter("version")
     @JIPipeParameter("version")
     @StringParameterSettings(monospace = true)
-    @JIPipeDocumentation(name = "Version", description = "The version of this extension. A common format is x.y.z or x.y.z.w")
+    @SetJIPipeDocumentation(name = "Version", description = "The version of this extension. A common format is x.y.z or x.y.z.w")
     public String getDependencyVersion() {
         return version;
     }
@@ -202,7 +202,7 @@ public class JIPipeJsonExtension extends AbstractJIPipeParameterCollection imple
         return updateSiteDependenciesParameter;
     }
 
-    @JIPipeDocumentation(name = "ImageJ update site dependencies", description = "ImageJ update sites that should be enabled for the extension to work. " +
+    @SetJIPipeDocumentation(name = "ImageJ update site dependencies", description = "ImageJ update sites that should be enabled for the extension to work. " +
             "Users will get a notification if a site is not activated or found. Both name and URL should be set. The URL is only used if a site with the same name " +
             "does not already exist in the user's repository.")
     @JIPipeParameter(value = "update-site-dependencies", uiOrder = 10)

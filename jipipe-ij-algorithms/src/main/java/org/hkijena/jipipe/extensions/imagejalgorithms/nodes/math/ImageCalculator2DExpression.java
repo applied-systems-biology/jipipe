@@ -3,8 +3,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.math;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
@@ -29,11 +29,11 @@ import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import java.util.HashMap;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Image calculator 2D (Expression)", description = "Applies a pixel-wise mathematical operation that produces a single output image.")
-@JIPipeInputSlot(value = ImagePlusGreyscale32FData.class)
-@JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", autoCreate = true)
-@JIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process", aliasName = "Image Calculator... (expression)")
+@SetJIPipeDocumentation(name = "Image calculator 2D (Expression)", description = "Applies a pixel-wise mathematical operation that produces a single output image.")
+@AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", create = true)
+@DefineJIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process", aliasName = "Image Calculator... (expression)")
 public class ImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
 
     private JIPipeExpressionParameter expression = new JIPipeExpressionParameter("(I1 + I2) / 2");
@@ -121,7 +121,7 @@ public class ImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale32FData(result), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Expression", description = "The mathematical expression that is applied to each pixel position in the input images. Additionally to the " +
+    @SetJIPipeDocumentation(name = "Expression", description = "The mathematical expression that is applied to each pixel position in the input images. Additionally to the " +
             "positional variables, there are variables available that are named according to the input slots and contain the current pixel value of this slot.")
     @JIPipeParameter("expression")
     @JIPipeExpressionParameterSettings(variableSource = PixelCoordinate5DExpressionParameterVariablesInfo.class, hint = "per pixel")

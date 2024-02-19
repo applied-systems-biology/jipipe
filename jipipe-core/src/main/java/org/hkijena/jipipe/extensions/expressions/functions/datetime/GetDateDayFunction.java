@@ -1,13 +1,13 @@
 package org.hkijena.jipipe.extensions.expressions.functions.datetime;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Get current day of the month", description = "Returns the current day of the month as integer")
+@SetJIPipeDocumentation(name = "Get current day of the month", description = "Returns the current day of the month as integer")
 public class GetDateDayFunction extends ExpressionFunction {
 
     public GetDateDayFunction() {

@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.api.nodes.algorithm;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
@@ -54,7 +54,7 @@ public class JIPipeMissingDataGeneratorIterationStepGenerationSettings extends A
 
     }
 
-    @JIPipeDocumentation(name = "Force flow graph solver", description = "If enabled, disable the faster dictionary-based solver. Use this if you experience unexpected behavior.")
+    @SetJIPipeDocumentation(name = "Force flow graph solver", description = "If enabled, disable the faster dictionary-based solver. Use this if you experience unexpected behavior.")
     @JIPipeParameter("force-flow-graph-solver")
     public boolean isForceFlowGraphSolver() {
         return forceFlowGraphSolver;
@@ -65,7 +65,7 @@ public class JIPipeMissingDataGeneratorIterationStepGenerationSettings extends A
         this.forceFlowGraphSolver = forceFlowGraphSolver;
     }
 
-    @JIPipeDocumentation(name = "Grouping method", description = "Algorithms with multiple inputs require to match the incoming data " +
+    @SetJIPipeDocumentation(name = "Grouping method", description = "Algorithms with multiple inputs require to match the incoming data " +
             "to data sets. This allows you to determine how interesting data annotation columns are extracted from the incoming data. " +
             "Union matches using the union of annotation columns. Intersection intersects the sets of available columns. You can also" +
             " customize which columns should be included or excluded.")
@@ -80,7 +80,7 @@ public class JIPipeMissingDataGeneratorIterationStepGenerationSettings extends A
 
     }
 
-    @JIPipeDocumentation(name = "Custom grouping columns", description = "Only used if 'Grouping method' is set to 'Custom'. " +
+    @SetJIPipeDocumentation(name = "Custom grouping columns", description = "Only used if 'Grouping method' is set to 'Custom'. " +
             "Determines which annotation columns are referred to group data sets. ")
     @JIPipeParameter(value = "custom-matched-columns-expression", uiOrder = 999, pinned = true)
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
@@ -95,7 +95,7 @@ public class JIPipeMissingDataGeneratorIterationStepGenerationSettings extends A
         this.customColumns = customColumns;
     }
 
-    @JIPipeDocumentation(name = "Limit", description = "Limits which data batches are generated. The first index is zero.")
+    @SetJIPipeDocumentation(name = "Limit", description = "Limits which data batches are generated. The first index is zero.")
     @JIPipeParameter(value = "limit")
     public OptionalIntegerRange getLimit() {
         return limit;
@@ -106,7 +106,7 @@ public class JIPipeMissingDataGeneratorIterationStepGenerationSettings extends A
         this.limit = limit;
     }
 
-    @JIPipeDocumentation(name = "Allow merging", description = "If enabled, there can be multiple rows per data batch for any slot. " +
+    @SetJIPipeDocumentation(name = "Allow merging", description = "If enabled, there can be multiple rows per data batch for any slot. " +
             "Otherwise, only one will be present at most.")
     @JIPipeParameter("allow-merging")
     public boolean isAllowMerging() {
@@ -118,7 +118,7 @@ public class JIPipeMissingDataGeneratorIterationStepGenerationSettings extends A
         this.allowMerging = allowMerging;
     }
 
-    @JIPipeDocumentation(name = "Merge same annotation values", description = "Determines which strategy is applied if data sets that " +
+    @SetJIPipeDocumentation(name = "Merge same annotation values", description = "Determines which strategy is applied if data sets that " +
             "define different values for the same annotation columns are encountered.")
     @JIPipeParameter("annotation-merge-strategy")
     public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {
@@ -130,7 +130,7 @@ public class JIPipeMissingDataGeneratorIterationStepGenerationSettings extends A
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
 
-    @JIPipeDocumentation(name = "Merge same data annotation values", description = "Determines which strategy is applied if different values for the same data annotation columns are encountered.")
+    @SetJIPipeDocumentation(name = "Merge same data annotation values", description = "Determines which strategy is applied if different values for the same data annotation columns are encountered.")
     @JIPipeParameter("data-annotation-merge-strategy")
     public JIPipeDataAnnotationMergeMode getDataAnnotationMergeStrategy() {
         return dataAnnotationMergeStrategy;

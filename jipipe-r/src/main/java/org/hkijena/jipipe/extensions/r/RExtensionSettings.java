@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.r;
 
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -76,7 +76,7 @@ public class RExtensionSettings extends AbstractJIPipeParameterCollection implem
         return false;
     }
 
-    @JIPipeDocumentation(name = "R environment", description = "Describes the R environment to use.")
+    @SetJIPipeDocumentation(name = "R environment", description = "Describes the R environment to use.")
     @JIPipeParameter("r-environment")
     public REnvironment getEnvironment() {
         return environment;
@@ -87,7 +87,7 @@ public class RExtensionSettings extends AbstractJIPipeParameterCollection implem
         this.environment = environment;
     }
 
-    @JIPipeDocumentation(name = "Presets", description = "List of presets stored for R environments.")
+    @SetJIPipeDocumentation(name = "Presets", description = "List of presets stored for R environments.")
     @JIPipeParameter("presets")
     public REnvironment.List getPresets() {
         return presets;
@@ -98,7 +98,7 @@ public class RExtensionSettings extends AbstractJIPipeParameterCollection implem
         this.presets = presets;
     }
 
-    @JIPipeDocumentation(name = "Easy installer repositories", description = "Allows to change the repositories for the EasyInstaller")
+    @SetJIPipeDocumentation(name = "Easy installer repositories", description = "Allows to change the repositories for the EasyInstaller")
     @JIPipeParameter("easy-installer-repositories")
     public StringList getEasyInstallerRepositories() {
         return easyInstallerRepositories;

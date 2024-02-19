@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.api.compartments.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 
@@ -22,8 +22,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
  * A graph compartment output
  * Transfers data 1:1 from input to output
  */
-@JIPipeDocumentation(name = "Compartment output", description = "Output of a compartment")
-@JIPipeNode()
+@SetJIPipeDocumentation(name = "Compartment output", description = "Output of a compartment")
+@DefineJIPipeNode()
 public class JIPipeCompartmentOutput extends IOInterfaceAlgorithm {
 
     /**

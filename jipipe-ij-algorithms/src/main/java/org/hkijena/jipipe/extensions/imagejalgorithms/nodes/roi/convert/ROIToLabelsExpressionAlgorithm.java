@@ -4,8 +4,8 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -25,13 +25,13 @@ import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
 
-@JIPipeDocumentation(name = "ROI to Labels (Expression)", description = "Converts ROI and an optional reference image into a label image. " +
+@SetJIPipeDocumentation(name = "ROI to Labels (Expression)", description = "Converts ROI and an optional reference image into a label image. " +
         "Each ROI is assigned its own label. Alternatively, the label can be set generated from an expression. If no reference image is provided, " +
         "the dimensions are estimated from the ROI. The background color (where no ROI is located) is zero.")
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", description = "Optional reference image used to calculate the size of the output", autoCreate = true, optional = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Labels", description = "Output label image", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", description = "Optional reference image used to calculate the size of the output", create = true, optional = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Labels", description = "Output label image", create = true)
 public class ROIToLabelsExpressionAlgorithm extends JIPipeIteratingAlgorithm {
 
     private OptionalJIPipeExpressionParameter roiToLabelTransformation = new OptionalJIPipeExpressionParameter(false, "index");
@@ -143,7 +143,7 @@ public class ROIToLabelsExpressionAlgorithm extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale32FData(result), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "ROI to label function", description = "Expression that converts a ROI into its numeric label index. Must return a number. If disabled, each ROI is assigned its own label.")
+    @SetJIPipeDocumentation(name = "ROI to label function", description = "Expression that converts a ROI into its numeric label index. Must return a number. If disabled, each ROI is assigned its own label.")
     @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class)
     @JIPipeParameter("roi-to-label-transformation")
     public OptionalJIPipeExpressionParameter getRoiToLabelTransformation() {
@@ -155,7 +155,7 @@ public class ROIToLabelsExpressionAlgorithm extends JIPipeIteratingAlgorithm {
         this.roiToLabelTransformation = roiToLabelTransformation;
     }
 
-    @JIPipeDocumentation(name = "Draw outline", description = "If enabled, the label value is drawn as outline")
+    @SetJIPipeDocumentation(name = "Draw outline", description = "If enabled, the label value is drawn as outline")
     @JIPipeParameter("draw-outline")
     public boolean isDrawOutline() {
         return drawOutline;
@@ -166,7 +166,7 @@ public class ROIToLabelsExpressionAlgorithm extends JIPipeIteratingAlgorithm {
         this.drawOutline = drawOutline;
     }
 
-    @JIPipeDocumentation(name = "Fill outline", description = "If enabled, the ROI is filled with the label value")
+    @SetJIPipeDocumentation(name = "Fill outline", description = "If enabled, the ROI is filled with the label value")
     @JIPipeParameter("fill-outline")
     public boolean isFillOutline() {
         return fillOutline;

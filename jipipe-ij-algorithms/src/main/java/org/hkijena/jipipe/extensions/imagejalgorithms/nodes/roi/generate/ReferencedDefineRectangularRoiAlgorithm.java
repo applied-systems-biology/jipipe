@@ -15,9 +15,9 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.generate;
 
 import ij.ImagePlus;
 import ij.gui.ShapeRoi;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHidden;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
@@ -35,13 +35,13 @@ import java.awt.*;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@JIPipeDocumentation(name = "Define rectangular ROI (referenced)", description = "Manually defines a rectangular ROI. This algorithm requires a reference " +
+@SetJIPipeDocumentation(name = "Define rectangular ROI (referenced)", description = "Manually defines a rectangular ROI. This algorithm requires a reference " +
         "image, but also allows more flexibility in defining the rectangles.")
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 @Deprecated
-@JIPipeHidden
+@LabelAsJIPipeHidden
 public class ReferencedDefineRectangularRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     private Margin.List rectangles = new Margin.List();
@@ -89,7 +89,7 @@ public class ReferencedDefineRectangularRoiAlgorithm extends JIPipeIteratingAlgo
         }
     }
 
-    @JIPipeDocumentation(name = "Rectangles", description = "List of rectangles")
+    @SetJIPipeDocumentation(name = "Rectangles", description = "List of rectangles")
     @JIPipeParameter("rectangles")
     public Margin.List getRectangles() {
         return rectangles;
@@ -100,7 +100,7 @@ public class ReferencedDefineRectangularRoiAlgorithm extends JIPipeIteratingAlgo
         this.rectangles = rectangles;
     }
 
-    @JIPipeDocumentation(name = "Split output", description = "If enabled, each rectangle is put into its own ROI list")
+    @SetJIPipeDocumentation(name = "Split output", description = "If enabled, each rectangle is put into its own ROI list")
     @JIPipeParameter("split")
     public boolean isSplit() {
         return split;

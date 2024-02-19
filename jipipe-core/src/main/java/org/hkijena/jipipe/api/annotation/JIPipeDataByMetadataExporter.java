@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.api.annotation;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
@@ -56,7 +56,7 @@ public class JIPipeDataByMetadataExporter extends AbstractJIPipeParameterCollect
         this.forceName = other.forceName;
     }
 
-    @JIPipeDocumentation(name = "File name", description = "This expression is used to generate the file names. You have all metadata available as variables. By default, it will summarize all variables (annotations) into a long string. " +
+    @SetJIPipeDocumentation(name = "File name", description = "This expression is used to generate the file names. You have all metadata available as variables. By default, it will summarize all variables (annotations) into a long string. " +
             "If you do not want to customize the file name, you can create you own string based on available annotations. For example, you can insert <code>#Dataset + \"_\" + Threshold</code> to store the data set and a threshold annotation.\n\n" +
             "You can use the following function to automatically generate the name from annotations: <code>SUMMARIZE_ANNOTATIONS_MAP(annotations, \"#\")</code>")
     @JIPipeParameter(value = "file-name", important = true)
@@ -70,7 +70,7 @@ public class JIPipeDataByMetadataExporter extends AbstractJIPipeParameterCollect
         this.fileNameGenerator = fileNameGenerator;
     }
 
-    @JIPipeDocumentation(name = "Force name", description = "If true, the output files are forced to use the generated name. Otherwise, internal names are utilized.")
+    @SetJIPipeDocumentation(name = "Force name", description = "If true, the output files are forced to use the generated name. Otherwise, internal names are utilized.")
     @JIPipeParameter("force-name")
     public boolean isForceName() {
         return forceName;
@@ -81,7 +81,7 @@ public class JIPipeDataByMetadataExporter extends AbstractJIPipeParameterCollect
         this.forceName = forceName;
     }
 
-    @JIPipeDocumentation(name = "Make compatible to file systems", description = "If enabled, the generated name/path is compatible to common file systems")
+    @SetJIPipeDocumentation(name = "Make compatible to file systems", description = "If enabled, the generated name/path is compatible to common file systems")
     @JIPipeParameter("make-filesystem-compatible")
     public boolean isMakeFilesystemCompatible() {
         return makeFilesystemCompatible;

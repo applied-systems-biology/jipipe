@@ -14,7 +14,7 @@
 
 package org.hkijena.jipipe.extensions.ijweka.parameters.collections;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
@@ -37,7 +37,7 @@ public class WekaTiling3DSettings extends AbstractJIPipeParameterCollection {
         this.tileSizeZ = other.tileSizeZ;
     }
 
-    @JIPipeDocumentation(name = "Apply tiling", description = "If enabled, the input image is first split into tiles that are processed individually by the Weka segmentation. " +
+    @SetJIPipeDocumentation(name = "Apply tiling", description = "If enabled, the input image is first split into tiles that are processed individually by the Weka segmentation. " +
             "This can greatly reduce the memory cost.")
     @JIPipeParameter(value = "apply-tiling", uiOrder = -100, important = true)
     public boolean isApplyTiling() {
@@ -49,7 +49,7 @@ public class WekaTiling3DSettings extends AbstractJIPipeParameterCollection {
         this.applyTiling = applyTiling;
     }
 
-    @JIPipeDocumentation(name = "Tile width", description = "Width of each tile")
+    @SetJIPipeDocumentation(name = "Tile width", description = "Width of each tile")
     @JIPipeParameter("tile-size-x")
     public int getTileSizeX() {
         return tileSizeX;
@@ -60,7 +60,7 @@ public class WekaTiling3DSettings extends AbstractJIPipeParameterCollection {
         this.tileSizeX = tileSizeX;
     }
 
-    @JIPipeDocumentation(name = "Tile height", description = "Height of each tile")
+    @SetJIPipeDocumentation(name = "Tile height", description = "Height of each tile")
     @JIPipeParameter("tile-size-y")
     public int getTileSizeY() {
         return tileSizeY;
@@ -71,7 +71,7 @@ public class WekaTiling3DSettings extends AbstractJIPipeParameterCollection {
         this.tileSizeY = tileSizeY;
     }
 
-    @JIPipeDocumentation(name = "Tile depth", description = "Depth of each tile")
+    @SetJIPipeDocumentation(name = "Tile depth", description = "Depth of each tile")
     @JIPipeParameter("tile-size-z")
     public int getTileSizeZ() {
         return tileSizeZ;

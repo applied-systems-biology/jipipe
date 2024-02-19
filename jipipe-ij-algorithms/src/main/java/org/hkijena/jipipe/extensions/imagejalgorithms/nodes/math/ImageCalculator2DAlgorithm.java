@@ -15,8 +15,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.math;
 
 import ij.ImagePlus;
 import ij.plugin.ImageCalculator;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.nodes.*;
@@ -42,13 +42,13 @@ import java.util.Set;
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@JIPipeDocumentation(name = "Image calculator 2D", description = "Applies a mathematical operation between two images. " +
+@SetJIPipeDocumentation(name = "Image calculator 2D", description = "Applies a mathematical operation between two images. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input 1", autoCreate = true, description = "The first operand")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input 2", autoCreate = true, description = "The second operand")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true, description = "The calculation result")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process", aliasName = "Image Calculator...")
+@DefineJIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input 1", create = true, description = "The first operand")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input 2", create = true, description = "The second operand")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true, description = "The calculation result")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process", aliasName = "Image Calculator...")
 public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private Operation operation = Operation.Difference;
@@ -165,7 +165,7 @@ public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Function", description = "The function is applied to each pixel pair.")
+    @SetJIPipeDocumentation(name = "Function", description = "The function is applied to each pixel pair.")
     @JIPipeParameter("operation")
     public Operation getOperation() {
         return operation;
@@ -177,13 +177,13 @@ public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Operands", description = "Determines which input image is which operand.")
+    @SetJIPipeDocumentation(name = "Operands", description = "Determines which input image is which operand.")
     @JIPipeParameter("operand")
     public InputSlotMapParameterCollection getOperands() {
         return operands;
     }
 
-    @JIPipeDocumentation(name = "Generate 32-bit floating point output", description = "Determines whether to keep the input data type or generate a 32-bit floating point output.")
+    @SetJIPipeDocumentation(name = "Generate 32-bit floating point output", description = "Determines whether to keep the input data type or generate a 32-bit floating point output.")
     @JIPipeParameter(value = "floating-point-output", important = true)
     public boolean isFloatingPointOutput() {
         return floatingPointOutput;

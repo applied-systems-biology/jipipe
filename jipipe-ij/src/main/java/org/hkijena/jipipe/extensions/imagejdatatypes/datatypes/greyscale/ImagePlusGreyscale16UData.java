@@ -16,9 +16,9 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ShortProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHeavyData;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
@@ -33,9 +33,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
  * These image data types exist to address general processing solely based on bit-depth (e.g. process all 2D image planes).
  * Conversion works through {@link org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.ImplicitImageTypeConverter}
  */
-@JIPipeDocumentation(name = "Image (16 bit)", description = "A 16-bit greyscale image")
-@JIPipeNode(menuPath = "Images\nGreyscale")
-@JIPipeHeavyData
+@SetJIPipeDocumentation(name = "Image (16 bit)", description = "A 16-bit greyscale image")
+@DefineJIPipeNode(menuPath = "Images\nGreyscale")
+@LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ShortProcessor.class, colorSpace = GreyscaleColorSpace.class, pixelType = Short.class, bitDepth = 16)
 public class ImagePlusGreyscale16UData extends ImagePlusGreyscaleData {
 

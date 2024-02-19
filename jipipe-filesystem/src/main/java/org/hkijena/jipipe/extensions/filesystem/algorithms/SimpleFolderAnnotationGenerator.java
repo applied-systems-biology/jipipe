@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHidden;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -34,11 +34,11 @@ import org.hkijena.jipipe.utils.StringUtils;
 /**
  * Algorithm that generates annotations from folder names
  */
-@JIPipeDocumentation(name = "Folders to annotations", description = "Creates an annotation for each path based on its name")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For paths")
-@JIPipeInputSlot(value = PathData.class, slotName = "Folders", autoCreate = true)
-@JIPipeOutputSlot(value = PathData.class, slotName = "Annotated folders", autoCreate = true)
-@JIPipeHidden
+@SetJIPipeDocumentation(name = "Folders to annotations", description = "Creates an annotation for each path based on its name")
+@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For paths")
+@AddJIPipeInputSlot(value = PathData.class, slotName = "Folders", create = true)
+@AddJIPipeOutputSlot(value = PathData.class, slotName = "Annotated folders", create = true)
+@LabelAsJIPipeHidden
 public class SimpleFolderAnnotationGenerator extends JIPipeSimpleIteratingAlgorithm {
 
     private String generatedAnnotation = "";
@@ -75,7 +75,7 @@ public class SimpleFolderAnnotationGenerator extends JIPipeSimpleIteratingAlgori
     /**
      * @return The generated annotation type
      */
-    @JIPipeDocumentation(name = "Generated annotation", description = "Select which annotation type is generated for each folder")
+    @SetJIPipeDocumentation(name = "Generated annotation", description = "Select which annotation type is generated for each folder")
     @JIPipeParameter("generated-annotation")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public String getGeneratedAnnotation() {

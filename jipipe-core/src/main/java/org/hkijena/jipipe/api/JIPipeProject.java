@@ -813,7 +813,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
     }
 
     /**
-     * Returns a list of all nodes that generate heavy data ({@link JIPipeHeavyData}) and are intermediate (see getIntermediateAlgorithms()).
+     * Returns a list of all nodes that generate heavy data ({@link LabelAsJIPipeHeavyData}) and are intermediate (see getIntermediateAlgorithms()).
      * Skips all nodes that do not save outputs.
      *
      * @return intermediate nodes with heavy data

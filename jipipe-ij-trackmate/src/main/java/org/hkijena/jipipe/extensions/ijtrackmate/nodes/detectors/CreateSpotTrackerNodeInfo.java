@@ -37,7 +37,7 @@ import java.util.*;
 
 public class CreateSpotTrackerNodeInfo implements JIPipeNodeInfo {
 
-    private static final JIPipeOutputSlot OUTPUT_SLOT = new DefaultJIPipeOutputSlot(SpotTrackerData.class, "Spot tracker", "The generated spot tracker", null, true, JIPipeDataSlotRole.Data);
+    private static final AddJIPipeOutputSlot OUTPUT_SLOT = new DefaultAddJIPipeOutputSlot(SpotTrackerData.class, "Spot tracker", "The generated spot tracker", null, true, JIPipeDataSlotRole.Data);
     private final String id;
     private final String name;
     private final HTMLText description;
@@ -131,12 +131,12 @@ public class CreateSpotTrackerNodeInfo implements JIPipeNodeInfo {
     }
 
     @Override
-    public List<JIPipeInputSlot> getInputSlots() {
+    public List<AddJIPipeInputSlot> getInputSlots() {
         return Collections.emptyList();
     }
 
     @Override
-    public List<JIPipeOutputSlot> getOutputSlots() {
+    public List<AddJIPipeOutputSlot> getOutputSlots() {
         return Collections.singletonList(OUTPUT_SLOT);
     }
 

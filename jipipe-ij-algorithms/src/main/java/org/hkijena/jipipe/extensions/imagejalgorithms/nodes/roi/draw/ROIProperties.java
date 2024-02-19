@@ -15,7 +15,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.draw;
 
 import ij.gui.Roi;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
@@ -54,7 +54,7 @@ public class ROIProperties extends AbstractJIPipeParameterCollection {
         this.lineWidth = other.lineWidth;
     }
 
-    @JIPipeDocumentation(name = "Slice position (Z)", description = "Allows to relocate the ROI to a different Z-position. " +
+    @SetJIPipeDocumentation(name = "Slice position (Z)", description = "Allows to relocate the ROI to a different Z-position. " +
             "The first index is 1. If set to zero, the ROI is located on all slices.")
     @JIPipeParameter("position-z")
     public int getPositionZ() {
@@ -66,7 +66,7 @@ public class ROIProperties extends AbstractJIPipeParameterCollection {
         this.positionZ = positionZ;
     }
 
-    @JIPipeDocumentation(name = "Slice position (Channel)", description = "Allows to relocate the ROI to a different channel-position. Please note " +
+    @SetJIPipeDocumentation(name = "Slice position (Channel)", description = "Allows to relocate the ROI to a different channel-position. Please note " +
             "that 'Channel' refers to an image slice and not to a pixel channel. " +
             "The first index is 1. If set to zero, the ROI is located on all channels.")
     @JIPipeParameter("position-c")
@@ -79,7 +79,7 @@ public class ROIProperties extends AbstractJIPipeParameterCollection {
         this.positionC = positionC;
     }
 
-    @JIPipeDocumentation(name = "Slice position (Frame)", description = "Allows to relocate the ROI to a different frame/time-position. " +
+    @SetJIPipeDocumentation(name = "Slice position (Frame)", description = "Allows to relocate the ROI to a different frame/time-position. " +
             "The first index is 1. If set to zero, the ROI is located on all frames.")
     @JIPipeParameter("position-t")
     public int getPositionT() {
@@ -91,7 +91,7 @@ public class ROIProperties extends AbstractJIPipeParameterCollection {
         this.positionT = positionT;
     }
 
-    @JIPipeDocumentation(name = "Fill color", description = "Allows to change the fill color when rendered as RGB and within ImageJ")
+    @SetJIPipeDocumentation(name = "Fill color", description = "Allows to change the fill color when rendered as RGB and within ImageJ")
     @JIPipeParameter("fill-color")
     public OptionalColorParameter getFillColor() {
         return fillColor;
@@ -102,7 +102,7 @@ public class ROIProperties extends AbstractJIPipeParameterCollection {
         this.fillColor = fillColor;
     }
 
-    @JIPipeDocumentation(name = "Line color", description = "Allows to change the line color when rendered as RGB and within ImageJ")
+    @SetJIPipeDocumentation(name = "Line color", description = "Allows to change the line color when rendered as RGB and within ImageJ")
     @JIPipeParameter("line-color")
     public OptionalColorParameter getLineColor() {
         return lineColor;
@@ -113,7 +113,7 @@ public class ROIProperties extends AbstractJIPipeParameterCollection {
         this.lineColor = lineColor;
     }
 
-    @JIPipeDocumentation(name = "Line width", description = "Allows to change the line width when rendered as RGB and within ImageJ")
+    @SetJIPipeDocumentation(name = "Line width", description = "Allows to change the line width when rendered as RGB and within ImageJ")
     @JIPipeParameter("line-width")
     public double getLineWidth() {
         return lineWidth;
@@ -124,7 +124,7 @@ public class ROIProperties extends AbstractJIPipeParameterCollection {
         this.lineWidth = lineWidth;
     }
 
-    @JIPipeDocumentation(name = "ROI name", description = "Allows to change the ROI name")
+    @SetJIPipeDocumentation(name = "ROI name", description = "Allows to change the ROI name")
     @JIPipeParameter("roi-name")
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getRoiName() {

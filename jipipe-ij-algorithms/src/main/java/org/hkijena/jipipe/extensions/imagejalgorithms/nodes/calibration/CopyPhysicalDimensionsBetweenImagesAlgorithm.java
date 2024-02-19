@@ -2,8 +2,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.calibration;
 
 import ij.ImagePlus;
 import ij.measure.Calibration;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -12,11 +12,11 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
-@JIPipeDocumentation(name = "Copy physical dimensions", description = "Copies the phyiscal pixel sizes from the source to the target")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Calibration")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Source", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Target", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Copy physical dimensions", description = "Copies the phyiscal pixel sizes from the source to the target")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Calibration")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Source", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Target", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 public class CopyPhysicalDimensionsBetweenImagesAlgorithm extends JIPipeIteratingAlgorithm {
 
     public CopyPhysicalDimensionsBetweenImagesAlgorithm(JIPipeNodeInfo info) {

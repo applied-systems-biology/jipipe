@@ -144,7 +144,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
 
     @JIPipeParameter(value = "title", uiOrder = -1)
     @JsonGetter("title")
-    @JIPipeDocumentation(name = "Title", description = "The title (optional)")
+    @SetJIPipeDocumentation(name = "Title", description = "The title (optional)")
     public String getTitle() {
         return title;
     }
@@ -156,7 +156,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
     }
 
     @JIPipeParameter(value = "first-name", uiOrder = 0)
-    @JIPipeDocumentation(name = "First name", description = "The first name")
+    @SetJIPipeDocumentation(name = "First name", description = "The first name")
     @JsonGetter("first-name")
     public String getFirstName() {
         return firstName;
@@ -169,7 +169,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
     }
 
     @JIPipeParameter(value = "last-name", uiOrder = 1)
-    @JIPipeDocumentation(name = "Last name", description = "The last name")
+    @SetJIPipeDocumentation(name = "Last name", description = "The last name")
     @JsonGetter("last-name")
     public String getLastName() {
         return lastName;
@@ -182,7 +182,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
     }
 
     @JIPipeParameter(value = "affiliations-list", uiOrder = 3)
-    @JIPipeDocumentation(name = "Affiliations", description = "Author affiliations")
+    @SetJIPipeDocumentation(name = "Affiliations", description = "Author affiliations")
     @StringParameterSettings(multiline = true, monospace = true)
     @JsonGetter("affiliations-list")
     public StringList getAffiliations() {
@@ -199,7 +199,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
 
     @JIPipeParameter(value = "contact", uiOrder = 4)
     @StringParameterSettings(monospace = true)
-    @JIPipeDocumentation(name = "Contact info", description = "Information on how to contact the author, for example an E-Mail address.")
+    @SetJIPipeDocumentation(name = "Contact info", description = "Information on how to contact the author, for example an E-Mail address.")
     @JsonGetter("contact")
     public String getContact() {
         return contact;
@@ -213,7 +213,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
 
     @JIPipeParameter(value = "website", uiOrder = 5)
     @StringParameterSettings(monospace = true)
-    @JIPipeDocumentation(name = "Website", description = "An optional website URL")
+    @SetJIPipeDocumentation(name = "Website", description = "An optional website URL")
     @JsonGetter("website")
     public String getWebsite() {
         return website;
@@ -226,7 +226,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
     }
 
     @JIPipeParameter(value = "first-author", uiOrder = 6)
-    @JIPipeDocumentation(name = "Is first author", description = "If this author is marked as first author")
+    @SetJIPipeDocumentation(name = "Is first author", description = "If this author is marked as first author")
     @JsonGetter("first-author")
     public boolean isFirstAuthor() {
         return firstAuthor;
@@ -239,7 +239,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
     }
 
     @JIPipeParameter(value = "corresponding-author", uiOrder = 7)
-    @JIPipeDocumentation(name = "Is corresponding author", description = "If this author is marked as corresponding author")
+    @SetJIPipeDocumentation(name = "Is corresponding author", description = "If this author is marked as corresponding author")
     @JsonGetter("corresponding-author")
     public boolean isCorrespondingAuthor() {
         return correspondingAuthor;
@@ -252,7 +252,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
     }
 
     @JIPipeParameter(value = "custom-text", uiOrder = 8)
-    @JIPipeDocumentation(name = "Custom text", description = "Will be displayed in the author information window.")
+    @SetJIPipeDocumentation(name = "Custom text", description = "Will be displayed in the author information window.")
     @JsonGetter("custom-text")
     public HTMLText getCustomText() {
         return customText;

@@ -16,8 +16,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.color;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -42,10 +42,10 @@ import org.hkijena.jipipe.extensions.parameters.library.graph.InputSlotMapParame
 import java.util.*;
 import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Blend images", description = "Overlays greyscale or RGB images.")
-@JIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output")
+@SetJIPipeDocumentation(name = "Blend images", description = "Overlays greyscale or RGB images.")
+@DefineJIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
+@AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output")
 public class BlendImagesAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final InputSlotMapParameterCollection layers;
@@ -81,7 +81,7 @@ public class BlendImagesAlgorithm extends JIPipeIteratingAlgorithm {
         return false;
     }
 
-    @JIPipeDocumentation(name = "Render greyscale images to RGB", description = "If enabled, greyscale images are fully rendered to RGB, including their LUT. Otherwise, the greyscale images are only converted to RGB; the LUT is ignored.")
+    @SetJIPipeDocumentation(name = "Render greyscale images to RGB", description = "If enabled, greyscale images are fully rendered to RGB, including their LUT. Otherwise, the greyscale images are only converted to RGB; the LUT is ignored.")
     @JIPipeParameter("render-greyscale-images")
     public boolean isRenderGreyscaleImages() {
         return renderGreyscaleImages;
@@ -150,7 +150,7 @@ public class BlendImagesAlgorithm extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusColorRGBData(resultImage), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Layers", description = "Modify here how the images (layers) are merged. The order is determined by the priority value (lower values indicating a bottom layer) and if equal by the order of input slots.")
+    @SetJIPipeDocumentation(name = "Layers", description = "Modify here how the images (layers) are merged. The order is determined by the priority value (lower values indicating a bottom layer) and if equal by the order of input slots.")
     @JIPipeParameter("layers")
     public InputSlotMapParameterCollection getLayers() {
         return layers;

@@ -3,8 +3,8 @@ package org.hkijena.jipipe.extensions.ijfilaments.nodes.convert;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ColorProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -19,11 +19,11 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusCo
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.BitDepth;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
-@JIPipeDocumentation(name = "Convert filaments to RGB", description = "Visualizes filaments by rendering them onto an RGB image")
-@JIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Convert")
-@JIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true, optional = true)
-@JIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Convert filaments to RGB", description = "Visualizes filaments by rendering them onto an RGB image")
+@DefineJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Convert")
+@AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true, optional = true)
+@AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output", create = true)
 public class ConvertFilamentsToRGBAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final FilamentsDrawer filamentsDrawer;
@@ -42,13 +42,13 @@ public class ConvertFilamentsToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         registerSubParameter(filamentsDrawer);
     }
 
-    @JIPipeDocumentation(name = "Filament drawing settings", description = "The following settings control how filaments are visualized")
+    @SetJIPipeDocumentation(name = "Filament drawing settings", description = "The following settings control how filaments are visualized")
     @JIPipeParameter("filaments-drawer")
     public FilamentsDrawer getFilamentsDrawer() {
         return filamentsDrawer;
     }
 
-    @JIPipeDocumentation(name = "Draw over reference", description = "If enabled, draw over the reference image")
+    @SetJIPipeDocumentation(name = "Draw over reference", description = "If enabled, draw over the reference image")
     @JIPipeParameter("draw-over-reference")
     public boolean isDrawOverReference() {
         return drawOverReference;

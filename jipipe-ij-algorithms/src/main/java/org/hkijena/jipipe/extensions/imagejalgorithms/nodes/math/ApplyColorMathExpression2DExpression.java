@@ -2,8 +2,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.math;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
@@ -29,12 +29,12 @@ import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataPar
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "Color math expression", description = "Applies a mathematical operation to each pixel. " +
+@SetJIPipeDocumentation(name = "Color math expression", description = "Applies a mathematical operation to each pixel. " +
         "The three available channels can be addressed individually.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Math")
-@JIPipeInputSlot(value = ImagePlusColorData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusColorData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nMath", aliasName = "Macro... (per pixel, color)")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Math")
+@AddJIPipeInputSlot(value = ImagePlusColorData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusColorData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nMath", aliasName = "Macro... (per pixel, color)")
 public class ApplyColorMathExpression2DExpression extends JIPipeSimpleIteratingAlgorithm {
 
     private static final ColorSpace COLOR_SPACE_RGB = new RGBColorSpace();
@@ -60,7 +60,7 @@ public class ApplyColorMathExpression2DExpression extends JIPipeSimpleIteratingA
         emitNodeSlotsChangedEvent();
     }
 
-    @JIPipeDocumentation(name = "Output type", description = "Determines which data type is generated. Please note that channels are " +
+    @SetJIPipeDocumentation(name = "Output type", description = "Determines which data type is generated. Please note that channels are " +
             "re-interpreted, instead of converted.")
     @JIPipeParameter("output-type")
     @JIPipeDataParameterSettings(dataBaseClass = ImagePlusData.class)
@@ -145,7 +145,7 @@ public class ApplyColorMathExpression2DExpression extends JIPipeSimpleIteratingA
         iterationStep.addOutputData(getFirstOutputSlot(), JIPipe.createData(outputType.getInfo().getDataClass(), img), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Expression", description = "This expression is executed for each pixel. It provides the pixel components in the " +
+    @SetJIPipeDocumentation(name = "Expression", description = "This expression is executed for each pixel. It provides the pixel components in the " +
             "original color space, as well as in other color spaces. The expression must return an array with three components, " +
             "each component ranging from 0-255 (otherwise the values are automatically clamped). " +
             "Alternatively, the expression can return a number that encodes the color components as integer.")

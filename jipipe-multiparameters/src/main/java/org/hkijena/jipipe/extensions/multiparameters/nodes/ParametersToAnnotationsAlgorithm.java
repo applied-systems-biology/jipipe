@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.multiparameters.nodes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -18,11 +18,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Parameters to annotations", description = "Converts parameter data into annotations. " +
+@SetJIPipeDocumentation(name = "Parameters to annotations", description = "Converts parameter data into annotations. " +
         "Parameters are converted into JSON data.")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For parameters")
-@JIPipeInputSlot(value = ParametersData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ParametersData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For parameters")
+@AddJIPipeInputSlot(value = ParametersData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ParametersData.class, slotName = "Output", create = true)
 public class ParametersToAnnotationsAlgorithm extends JIPipeParameterlessSimpleIteratingAlgorithm {
 
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
@@ -46,7 +46,7 @@ public class ParametersToAnnotationsAlgorithm extends JIPipeParameterlessSimpleI
         iterationStep.addOutputData(getFirstOutputSlot(), data, annotationList, annotationMergeStrategy, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Merge existing annotations", description = "Determines how existing annotations are merged")
+    @SetJIPipeDocumentation(name = "Merge existing annotations", description = "Determines how existing annotations are merged")
     @JIPipeParameter("annotation-merge-strategy")
     public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {
         return annotationMergeStrategy;

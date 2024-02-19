@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
@@ -32,13 +32,13 @@ import java.nio.file.Files;
 /**
  * Applies subfolder navigation to each input folder
  */
-@JIPipeDocumentation(name = "Create directory", description = "Creates directories in the filesystem according to the input paths. " +
+@SetJIPipeDocumentation(name = "Create directory", description = "Creates directories in the filesystem according to the input paths. " +
         "If the path already exists, it will be silently skipped.")
-@JIPipeNode(nodeTypeCategory = FileSystemNodeTypeCategory.class)
+@DefineJIPipeNode(nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
 
-@JIPipeInputSlot(value = PathData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = FolderData.class, slotName = "Output", autoCreate = true)
+@AddJIPipeInputSlot(value = PathData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = FolderData.class, slotName = "Output", create = true)
 
 
 public class CreateDirectory extends JIPipeSimpleIteratingAlgorithm {
@@ -85,7 +85,7 @@ public class CreateDirectory extends JIPipeSimpleIteratingAlgorithm {
      * @return The subfolder
      */
     @JIPipeParameter("with-parents")
-    @JIPipeDocumentation(name = "With parents", description = "If enabled, parent folders are created if necessary. Otherwise an error is thrown.")
+    @SetJIPipeDocumentation(name = "With parents", description = "If enabled, parent folders are created if necessary. Otherwise an error is thrown.")
     public boolean isWithParents() {
         return withParents;
     }

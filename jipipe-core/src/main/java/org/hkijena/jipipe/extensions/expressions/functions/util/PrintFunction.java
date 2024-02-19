@@ -1,13 +1,13 @@
 package org.hkijena.jipipe.extensions.expressions.functions.util;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Print", description = "Outputs the provided values as string into the console. Returns the message.")
+@SetJIPipeDocumentation(name = "Print", description = "Outputs the provided values as string into the console. Returns the message.")
 public class PrintFunction extends ExpressionFunction {
     public PrintFunction() {
         super("PRINT", 0, Integer.MAX_VALUE);

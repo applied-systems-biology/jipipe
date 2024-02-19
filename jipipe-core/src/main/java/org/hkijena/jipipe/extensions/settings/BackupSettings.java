@@ -16,32 +16,22 @@ package org.hkijena.jipipe.extensions.settings;
 import ij.IJ;
 import ij.Prefs;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.backups.JIPipeProjectBackupSessionInfo;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalPathParameter;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
-import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.Timer;
-import javax.swing.*;
 import java.io.IOException;
-import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.FileTime;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.stream.Stream;
 
 
 public class BackupSettings extends AbstractJIPipeParameterCollection {
@@ -141,7 +131,7 @@ public class BackupSettings extends AbstractJIPipeParameterCollection {
         }
     }
 
-    @JIPipeDocumentation(name = "Enable", description = "If enabled, JIPipe will automatically save all projects into a separate folder for crash recovery.")
+    @SetJIPipeDocumentation(name = "Enable", description = "If enabled, JIPipe will automatically save all projects into a separate folder for crash recovery.")
     @JIPipeParameter("enable-backups")
     public boolean isEnableBackups() {
         return enableBackups;
@@ -157,7 +147,7 @@ public class BackupSettings extends AbstractJIPipeParameterCollection {
         }
     }
 
-    @JIPipeDocumentation(name = "Backup interval (minutes)", description = "Determines the interval between auto-saves")
+    @SetJIPipeDocumentation(name = "Backup interval (minutes)", description = "Determines the interval between auto-saves")
     @JIPipeParameter("backup-delay")
     public int getBackupDelay() {
         return backupDelay;
@@ -173,7 +163,7 @@ public class BackupSettings extends AbstractJIPipeParameterCollection {
         return true;
     }
 
-    @JIPipeDocumentation(name = "Custom backup path", description = "Allows to change the path where the auto-saves are placed. By default, they are put into a temporary directory.")
+    @SetJIPipeDocumentation(name = "Custom backup path", description = "Allows to change the path where the auto-saves are placed. By default, they are put into a temporary directory.")
     @JIPipeParameter("custom-backup-path")
     public OptionalPathParameter getCustomBackupPath() {
         return customBackupPath;

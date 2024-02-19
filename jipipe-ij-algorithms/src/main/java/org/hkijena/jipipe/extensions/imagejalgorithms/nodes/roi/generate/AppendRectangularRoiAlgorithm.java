@@ -14,9 +14,9 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.generate;
 
 import ij.gui.ShapeRoi;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHidden;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -33,14 +33,14 @@ import java.awt.*;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@JIPipeDocumentation(name = "Append rectangular ROI", description = "Appends manually defines rectangular ROI to all input ROI lists. " +
+@SetJIPipeDocumentation(name = "Append rectangular ROI", description = "Appends manually defines rectangular ROI to all input ROI lists. " +
         "Ths algorithm allows to add rectangles as margins. As no reference image is available, the reference area is defined by the " +
         "bounds of the already existing ROI.")
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Merge")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Merge")
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 @Deprecated
-@JIPipeHidden
+@LabelAsJIPipeHidden
 public class AppendRectangularRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Margin.List rectangles = new Margin.List();
@@ -77,7 +77,7 @@ public class AppendRectangularRoiAlgorithm extends JIPipeSimpleIteratingAlgorith
         iterationStep.addOutputData(getFirstOutputSlot(), currentData, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Rectangles", description = "List of rectangles")
+    @SetJIPipeDocumentation(name = "Rectangles", description = "List of rectangles")
     @JIPipeParameter("rectangles")
     public Margin.List getRectangles() {
         return rectangles;

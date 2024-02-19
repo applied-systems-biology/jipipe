@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.extensions.python.algorithms;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -43,14 +43,14 @@ import java.util.List;
 /**
  * An algorithm that allows to run Python code
  */
-@JIPipeDocumentation(name = "Jython script (multi-parameter capable, custom)", description = "Runs a Python script that has direct access to all input data slots. " +
+@SetJIPipeDocumentation(name = "Jython script (multi-parameter capable, custom)", description = "Runs a Python script that has direct access to all input data slots. " +
         "This node uses Jython, a Java interpreter for Python that currently does not support native functions (e.g. Numpy), but can access all Java types." +
         "Input slots can be accessed from variables 'input_slots' (array), 'input_slots_map' (map from name to slot). " +
         "Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot)." +
         "Slots are of their respective JIPipe types (JIPipeDataSlot) and are fully accessible from within Python. " +
         "This algorithm is capable of running over multiple parameter sets via an additional slot. Automatically generated annotations generated based on " +
         "the parameters are available as variable 'parameter_annotations'. Please do not forget to pass the annotations to the output if you want to want this.")
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
+@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
 public class JythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     private PythonScript code = new PythonScript();
@@ -116,7 +116,7 @@ public class JythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
         code.makeExternalScriptFileRelative(baseDirectory);
     }
 
-    @JIPipeDocumentation(name = "Script", description = "Access to the data batch is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations. " +
+    @SetJIPipeDocumentation(name = "Script", description = "Access to the data batch is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations. " +
             "A variable 'progress_info' provides the current progress logger instance.")
     @JIPipeParameter("code")
     public PythonScript getCode() {
@@ -129,7 +129,7 @@ public class JythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Script parameters", description = "The following parameters will be passed to the Python script. The variable name is equal to the unique parameter identifier.")
+    @SetJIPipeDocumentation(name = "Script parameters", description = "The following parameters will be passed to the Python script. The variable name is equal to the unique parameter identifier.")
     @JIPipeParameter(value = "script-parameters", persistence = JIPipeParameterSerializationMode.Object)
     public JIPipeDynamicParameterCollection getScriptParameters() {
         return scriptParameters;

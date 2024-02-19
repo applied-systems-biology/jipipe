@@ -18,9 +18,9 @@ import ij.gui.NewImage;
 import ij.plugin.filter.RankFilters;
 import ij.process.Blitter;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -39,16 +39,16 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
  * Segmenter node that thresholds via an auto threshold
  * Based on code from {@link fiji.threshold.Auto_Local_Threshold}
  */
-@JIPipeDocumentation(name = "Local auto threshold 2D (Contrast)", description = "Applies a local auto-thresholding algorithm. " +
+@SetJIPipeDocumentation(name = "Local auto threshold 2D (Contrast)", description = "Applies a local auto-thresholding algorithm. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.\n\n" +
         "Based on a simple contrast toggle. This procedure does not have user-provided parameters other than the kernel radius.\n" +
         "Sets the pixel value to either white or black depending on whether its current value is closest to the local Max or Min respectively.\n" +
         "The procedure is similar to Toggle Contrast Enhancement (see Soille, Morphological Image Analysis (2004), p. 259")
-@JIPipeNode(menuPath = "Threshold\nLocal", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
-@JIPipeCitation("G. Landini, 2013")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust\nAuto Local Threshold")
+@DefineJIPipeNode(menuPath = "Threshold\nLocal", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", create = true)
+@AddJIPipeCitation("G. Landini, 2013")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust\nAuto Local Threshold")
 public class ContrastLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean darkBackground = true;
@@ -121,7 +121,7 @@ public class ContrastLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIterating
         return iPlus;
     }
 
-    @JIPipeDocumentation(name = "Radius", description = "The radius of the circular local window.")
+    @SetJIPipeDocumentation(name = "Radius", description = "The radius of the circular local window.")
     @JIPipeParameter("radius")
     public int getRadius() {
         return radius;
@@ -153,7 +153,7 @@ public class ContrastLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIterating
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Dark background", description = "If the background color is dark. Disable this if your image has a bright background.")
+    @SetJIPipeDocumentation(name = "Dark background", description = "If the background color is dark. Disable this if your image has a bright background.")
     @JIPipeParameter("dark-background")
     public boolean isDarkBackground() {
         return darkBackground;

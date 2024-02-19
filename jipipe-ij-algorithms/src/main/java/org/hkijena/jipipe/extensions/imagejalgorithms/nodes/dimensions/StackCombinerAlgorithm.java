@@ -2,8 +2,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.dimensions;
 
 import ij.ImagePlus;
 import ij.ImageStack;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -20,14 +20,14 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
-@JIPipeDocumentation(name = "Combine stacks", description = "Combines the incoming stacks into one by adding the corresponding slices of the second stack to the first one. " +
+@SetJIPipeDocumentation(name = "Combine stacks", description = "Combines the incoming stacks into one by adding the corresponding slices of the second stack to the first one. " +
         "For example, this allows to combine two one-channel stacks with the same number of slices into one with two channels. " +
         "This node has similar functionality to the 'Merge stacks into dimension' node.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Target", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Source", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Combined", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks\nTools", aliasName = "Combine...")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Target", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Source", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Combined", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks\nTools", aliasName = "Combine...")
 public class StackCombinerAlgorithm extends JIPipeIteratingAlgorithm {
 
     private HyperstackDimension targetDimension = HyperstackDimension.Depth;
@@ -179,7 +179,7 @@ public class StackCombinerAlgorithm extends JIPipeIteratingAlgorithm {
         }, progressInfo.resolve("Copying original image"));
     }
 
-    @JIPipeDocumentation(name = "Combine ...", description = "Determines to which dimension the slices should be added to. The other dimensions must have exactly " +
+    @SetJIPipeDocumentation(name = "Combine ...", description = "Determines to which dimension the slices should be added to. The other dimensions must have exactly " +
             "the same size. Example: If Z is selected, the number of channels and frames must be equal in both input stacks.")
     @JIPipeParameter("target-dimension")
     public HyperstackDimension getTargetDimension() {

@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.math;
 
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -31,11 +31,11 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@JIPipeDocumentation(name = "Apply transformation", description = "Applies a mathematical function to each pixel. Supported operations are: ABS, INVERT, SQUARE, LOGARITHM, SQRT, and EXP")
-@JIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nMath", aliasName = "Math operation (pixel transformation)")
+@SetJIPipeDocumentation(name = "Apply transformation", description = "Applies a mathematical function to each pixel. Supported operations are: ABS, INVERT, SQUARE, LOGARITHM, SQRT, and EXP")
+@DefineJIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nMath", aliasName = "Math operation (pixel transformation)")
 public class ApplyTransform2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Transformation transformation = Transformation.Absolute;
@@ -88,7 +88,7 @@ public class ApplyTransform2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Function", description = "The function that is applied to each pixel.")
+    @SetJIPipeDocumentation(name = "Function", description = "The function that is applied to each pixel.")
     @JIPipeParameter("transformation-function")
     public Transformation getTransformation() {
         return transformation;

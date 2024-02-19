@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.tables.parameters.enums;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
@@ -44,7 +44,7 @@ public class TableColumnGeneratorParameter implements JIPipeValidatable {
         this.generatedType = other.generatedType;
     }
 
-    @JIPipeDocumentation(name = "Generator", description = "Which generator is responsible for generating the column")
+    @SetJIPipeDocumentation(name = "Generator", description = "Which generator is responsible for generating the column")
     @JsonGetter("generator-type")
     @JIPipeParameter("generator-type")
     public JIPipeDataInfoRef getGeneratorType() {
@@ -59,7 +59,7 @@ public class TableColumnGeneratorParameter implements JIPipeValidatable {
         this.generatorType = generatorType;
     }
 
-    @JIPipeDocumentation(name = "Generated type", description = "The column type to be generated")
+    @SetJIPipeDocumentation(name = "Generated type", description = "The column type to be generated")
     @JsonGetter("generated-type")
     @JIPipeParameter("generated-type")
     public ColumnContentType getGeneratedType() {

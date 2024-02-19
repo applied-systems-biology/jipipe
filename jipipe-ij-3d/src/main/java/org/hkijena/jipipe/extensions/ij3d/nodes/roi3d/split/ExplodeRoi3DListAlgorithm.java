@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.split;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -25,10 +25,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Split into individual 3D ROI lists", description = "Splits the 3D ROI lists into individual 3D ROI lists.")
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Split")
-@JIPipeInputSlot(value = ROI3DListData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Split into individual 3D ROI lists", description = "Splits the 3D ROI lists into individual 3D ROI lists.")
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Split")
+@AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", create = true)
 public class ExplodeRoi3DListAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private OptionalStringParameter generatedAnnotation = new OptionalStringParameter();
     private JIPipeExpressionParameter annotationValue = new JIPipeExpressionParameter("\"index=\" + index + \";name=\" + name");
@@ -86,7 +86,7 @@ public class ExplodeRoi3DListAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "ROI index annotation", description = "Optional. Annotation that is added to each individual ROI list. Contains the value index=[index];name=[name].")
+    @SetJIPipeDocumentation(name = "ROI index annotation", description = "Optional. Annotation that is added to each individual ROI list. Contains the value index=[index];name=[name].")
     @JIPipeParameter("generated-annotation")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public OptionalStringParameter getGeneratedAnnotation() {
@@ -98,7 +98,7 @@ public class ExplodeRoi3DListAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.generatedAnnotation = generatedAnnotation;
     }
 
-    @JIPipeDocumentation(name = "ROI name", description = "Allows to change the ROI name")
+    @SetJIPipeDocumentation(name = "ROI name", description = "Allows to change the ROI name")
     @JIPipeParameter("roi-name")
     @JIPipeExpressionParameterSettings(hint = "per ROI")
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)

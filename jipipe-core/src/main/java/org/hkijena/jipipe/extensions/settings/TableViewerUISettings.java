@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.settings;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
@@ -27,7 +27,7 @@ public class TableViewerUISettings extends AbstractJIPipeParameterCollection {
         return JIPipe.getSettings().getSettings(ID, TableViewerUISettings.class);
     }
 
-    @JIPipeDocumentation(name = "Show side bar", description = "If enabled, show a side bar with additional settings and tools")
+    @SetJIPipeDocumentation(name = "Show side bar", description = "If enabled, show a side bar with additional settings and tools")
     @JIPipeParameter("show-side-bar")
     public boolean isShowSideBar() {
         return showSideBar;

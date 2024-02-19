@@ -16,8 +16,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.math;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
@@ -41,11 +41,11 @@ import java.util.List;
 /**
  * Wrapper around {@link ImageProcessor}
  */
-@JIPipeDocumentation(name = "Generate vector field from math expression", description = "Generates a vector field by utilizing a math expression. " +
+@SetJIPipeDocumentation(name = "Generate vector field from math expression", description = "Generates a vector field by utilizing a math expression. " +
         "The expression must return an array of numbers (or scalar if there are only 1 components).")
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Annotations", autoCreate = true, optional = true, description = "Optional annotations that can be referenced in the expression")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Annotations", create = true, optional = true, description = "Optional annotations that can be referenced in the expression")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 public class GenerateVectorFromMathExpression extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter function = new JIPipeExpressionParameter("ARRAY(x / 3, x + y)");
@@ -205,7 +205,7 @@ public class GenerateVectorFromMathExpression extends JIPipeSimpleIteratingAlgor
         }
     }
 
-    @JIPipeDocumentation(name = "Function", description = "Generates a vector. Must return an array of numbers with the required vector components. " +
+    @SetJIPipeDocumentation(name = "Function", description = "Generates a vector. Must return an array of numbers with the required vector components. " +
             "If the vector has one component, it can also return a number.")
     @JIPipeParameter("function")
     @JIPipeExpressionParameterSettings(hint = "per pixel")
@@ -221,7 +221,7 @@ public class GenerateVectorFromMathExpression extends JIPipeSimpleIteratingAlgor
         this.function = transformation;
     }
 
-    @JIPipeDocumentation(name = "Width", description = "The width of the generated image")
+    @SetJIPipeDocumentation(name = "Width", description = "The width of the generated image")
     @JIPipeParameter("width")
     public int getWidth() {
         return width;
@@ -232,7 +232,7 @@ public class GenerateVectorFromMathExpression extends JIPipeSimpleIteratingAlgor
         this.width = width;
     }
 
-    @JIPipeDocumentation(name = "Height", description = "The height of the generated image")
+    @SetJIPipeDocumentation(name = "Height", description = "The height of the generated image")
     @JIPipeParameter("height")
     public int getHeight() {
         return height;
@@ -243,7 +243,7 @@ public class GenerateVectorFromMathExpression extends JIPipeSimpleIteratingAlgor
         this.height = height;
     }
 
-    @JIPipeDocumentation(name = "Number of slices (Z)", description = "Number of generated Z slices.")
+    @SetJIPipeDocumentation(name = "Number of slices (Z)", description = "Number of generated Z slices.")
     @JIPipeParameter("size-z")
     public int getSizeZ() {
         return sizeZ;
@@ -254,7 +254,7 @@ public class GenerateVectorFromMathExpression extends JIPipeSimpleIteratingAlgor
         this.sizeZ = sizeZ;
     }
 
-    @JIPipeDocumentation(name = "Number of channels (C)", description = "Number of generated channel slices.")
+    @SetJIPipeDocumentation(name = "Number of channels (C)", description = "Number of generated channel slices.")
     @JIPipeParameter("size-c")
     public int getSizeC() {
         return sizeC;
@@ -265,7 +265,7 @@ public class GenerateVectorFromMathExpression extends JIPipeSimpleIteratingAlgor
         this.sizeC = sizeC;
     }
 
-    @JIPipeDocumentation(name = "Number of frames (T)", description = "Number of generated frame slices.")
+    @SetJIPipeDocumentation(name = "Number of frames (T)", description = "Number of generated frame slices.")
     @JIPipeParameter("size-t")
     public int getSizeT() {
         return sizeT;
@@ -276,7 +276,7 @@ public class GenerateVectorFromMathExpression extends JIPipeSimpleIteratingAlgor
         this.sizeT = sizeT;
     }
 
-    @JIPipeDocumentation(name = "Component dimension", description = "Determines which dimension (Z, C, or T) contains the vector components.")
+    @SetJIPipeDocumentation(name = "Component dimension", description = "Determines which dimension (Z, C, or T) contains the vector components.")
     @JIPipeParameter("component-dimension")
     public HyperstackDimension getComponentDimension() {
         return componentDimension;

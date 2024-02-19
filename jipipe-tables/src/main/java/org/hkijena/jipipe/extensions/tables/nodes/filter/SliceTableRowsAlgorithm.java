@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.tables.nodes.filter;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -15,10 +15,10 @@ import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotations
 import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
-@JIPipeDocumentation(name = "Select table rows", description = "Allows to select/slice the only specific rows from the input table.")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Filter")
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Select table rows", description = "Allows to select/slice the only specific rows from the input table.")
+@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Filter")
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class SliceTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private IntegerRange limit = new IntegerRange("0-10");
@@ -41,7 +41,7 @@ public class SliceTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), outputTable, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Limit", description = "Determines which row indices are passed to the output. The first index is zero.")
+    @SetJIPipeDocumentation(name = "Limit", description = "Determines which row indices are passed to the output. The first index is zero.")
     @JIPipeParameter("limit")
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public IntegerRange getLimit() {

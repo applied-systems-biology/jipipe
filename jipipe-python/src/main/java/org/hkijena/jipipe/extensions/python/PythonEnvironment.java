@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.python;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -60,7 +60,7 @@ public class PythonEnvironment extends JIPipeEnvironment {
         this.environmentVariables = new StringQueryExpressionAndStringPairParameter.List(other.environmentVariables);
     }
 
-    @JIPipeDocumentation(name = "Environment type", description = "The kind of environment that should be executed. " +
+    @SetJIPipeDocumentation(name = "Environment type", description = "The kind of environment that should be executed. " +
             "Depending on the environment, you need to set the executable path to the Python executable, " +
             "to the Conda executable, or the environment directory (venv).")
     @JsonGetter("environment-type")
@@ -75,7 +75,7 @@ public class PythonEnvironment extends JIPipeEnvironment {
         this.type = type;
     }
 
-    @JIPipeDocumentation(name = "Arguments", description = "Arguments passed to the Python/Conda executable (depending on the environment type). " +
+    @SetJIPipeDocumentation(name = "Arguments", description = "Arguments passed to the Python/Conda executable (depending on the environment type). " +
             "This expression must return an array. You have two variables 'script_file' and 'python_executable'. 'script_file' is always " +
             "replaced by the Python script that is currently executed.")
     @JIPipeParameter("arguments")
@@ -91,7 +91,7 @@ public class PythonEnvironment extends JIPipeEnvironment {
         this.arguments = arguments;
     }
 
-    @JIPipeDocumentation(name = "Executable path", description = "Points to the main executable or directory used by Python. " +
+    @SetJIPipeDocumentation(name = "Executable path", description = "Points to the main executable or directory used by Python. " +
             "For system environments, point it to the Python executable. For Conda environments, point it to the Conda executable. " +
             "For virtual environments, point it to the Python executable inside ")
     @JIPipeParameter("executable-path")
@@ -110,7 +110,7 @@ public class PythonEnvironment extends JIPipeEnvironment {
         return PathUtils.relativeJIPipeUserDirToAbsolute(getExecutablePath());
     }
 
-    @JIPipeDocumentation(name = "Environment variables", description = "These variables are provided to the Python executable. Existing environment " +
+    @SetJIPipeDocumentation(name = "Environment variables", description = "These variables are provided to the Python executable. Existing environment " +
             "variables are available as variables")
     @JIPipeParameter("environment-variables")
     @PairParameterSettings(keyLabel = "Value", valueLabel = "Key")

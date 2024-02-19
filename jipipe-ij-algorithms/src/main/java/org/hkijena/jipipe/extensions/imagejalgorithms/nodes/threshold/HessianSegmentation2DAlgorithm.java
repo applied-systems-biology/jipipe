@@ -22,8 +22,8 @@ import imagescience.image.Aspects;
 import imagescience.image.FloatImage;
 import imagescience.image.Image;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -49,7 +49,7 @@ import java.util.Vector;
 /**
  * Segments using a Hessian
  */
-@JIPipeDocumentation(name = "Hessian segmentation 2D", description = "Segments by applying a Hessian and morphological postprocessing. " +
+@SetJIPipeDocumentation(name = "Hessian segmentation 2D", description = "Segments by applying a Hessian and morphological postprocessing. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.<br/>" +
         "If you want to further customize all steps, create a group or set of nodes that apply the following operations:" +
         "<ol>" +
@@ -58,9 +58,9 @@ import java.util.Vector;
         "<li>Auto Threshold 2D</li>" +
         "<li>Despeckle</li>" +
         "</ol>")
-@JIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", create = true)
 public class HessianSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final AutoThreshold2DAlgorithm autoThresholding;
@@ -174,7 +174,7 @@ public class HessianSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @JIPipeParameter("smoothing")
-    @JIPipeDocumentation(name = "Smoothing", description = "The smoothing scale at which the required image derivatives are computed. " +
+    @SetJIPipeDocumentation(name = "Smoothing", description = "The smoothing scale at which the required image derivatives are computed. " +
             "The scale is equal to the standard deviation of the Gaussian kernel used for differentiation and must be larger than zero. " +
             "In order to enforce physical isotropy, for each dimension, the scale is divided by the size of the image elements (aspect ratio) in that dimension.")
     public double getSmoothing() {
@@ -188,7 +188,7 @@ public class HessianSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @JIPipeParameter("gradient-radius")
-    @JIPipeDocumentation(name = "Gradient radius", description = "Radius of the internal gradient filter.")
+    @SetJIPipeDocumentation(name = "Gradient radius", description = "Radius of the internal gradient filter.")
     public double getGradientRadius() {
         return gradientRadius;
     }
@@ -200,7 +200,7 @@ public class HessianSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @JIPipeParameter(value = "auto-thresholding")
-    @JIPipeDocumentation(name = "Auto thresholding", description = "Parameters for underlying auto thresholding")
+    @SetJIPipeDocumentation(name = "Auto thresholding", description = "Parameters for underlying auto thresholding")
     public AutoThreshold2DAlgorithm getAutoThresholding() {
         return autoThresholding;
     }
@@ -211,7 +211,7 @@ public class HessianSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         report.report(new ParameterValidationReportContext(this, "Auto thresholding", "auto-thresholding"), autoThresholding);
     }
 
-    @JIPipeDocumentation(name = "Compare absolute", description = "Determines whether eigenvalues are compared in absolute sense")
+    @SetJIPipeDocumentation(name = "Compare absolute", description = "Determines whether eigenvalues are compared in absolute sense")
     @JIPipeParameter("compare-absolute")
     public boolean isCompareAbsolute() {
         return compareAbsolute;
@@ -223,7 +223,7 @@ public class HessianSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorit
 
     }
 
-    @JIPipeDocumentation(name = "Eigenvalue", description = "Allows you to choose whether the largest or smallest Eigenvalues are chosen")
+    @SetJIPipeDocumentation(name = "Eigenvalue", description = "Allows you to choose whether the largest or smallest Eigenvalues are chosen")
     @JIPipeParameter("eigenvalue-selection")
     public EigenvalueSelection2D getEigenvalueSelection() {
         return eigenvalueSelection;
@@ -235,7 +235,7 @@ public class HessianSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorit
 
     }
 
-    @JIPipeDocumentation(name = "Apply internal gradient filter", description = "If enabled, an internal gradient filter is applied to the hessian image.")
+    @SetJIPipeDocumentation(name = "Apply internal gradient filter", description = "If enabled, an internal gradient filter is applied to the hessian image.")
     @JIPipeParameter("apply-internal-gradient")
     public boolean isApplyInternalGradient() {
         return applyInternalGradient;
@@ -246,7 +246,7 @@ public class HessianSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.applyInternalGradient = applyInternalGradient;
     }
 
-    @JIPipeDocumentation(name = "Apply despeckle", description = "If enabled, a median filter is applied to the thresholded images.")
+    @SetJIPipeDocumentation(name = "Apply despeckle", description = "If enabled, a median filter is applied to the thresholded images.")
     @JIPipeParameter("apply-despeckle")
     public boolean isApplyDespeckle() {
         return applyDespeckle;
@@ -257,7 +257,7 @@ public class HessianSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.applyDespeckle = applyDespeckle;
     }
 
-    @JIPipeDocumentation(name = "Despeckle iterations", description = "How many times the despeckle is applied.")
+    @SetJIPipeDocumentation(name = "Despeckle iterations", description = "How many times the despeckle is applied.")
     @JIPipeParameter("despeckle-iterations")
     public int getDespeckleIterations() {
         return despeckleIterations;

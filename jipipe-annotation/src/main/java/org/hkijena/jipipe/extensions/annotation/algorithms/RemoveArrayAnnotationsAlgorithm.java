@@ -13,17 +13,17 @@
 
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -34,11 +34,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Remove array annotations", description = "Removes annotations or annotation columns that contain array values. " +
+@SetJIPipeDocumentation(name = "Remove array annotations", description = "Removes annotations or annotation columns that contain array values. " +
         "Array values are valid JSON arrays encased in [ and ].")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Filter")
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Filter")
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
 public class RemoveArrayAnnotationsAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     private boolean removeColumn = false;
@@ -84,7 +84,7 @@ public class RemoveArrayAnnotationsAlgorithm extends JIPipeParameterSlotAlgorith
         }
     }
 
-    @JIPipeDocumentation(name = "Remove whole columns", description = "If true, a whole annotation column is removed if one of the values is an array.")
+    @SetJIPipeDocumentation(name = "Remove whole columns", description = "If true, a whole annotation column is removed if one of the values is an array.")
     @JIPipeParameter("remove-column")
     public boolean isRemoveColumn() {
         return removeColumn;
@@ -95,7 +95,7 @@ public class RemoveArrayAnnotationsAlgorithm extends JIPipeParameterSlotAlgorith
         this.removeColumn = removeColumn;
     }
 
-    @JIPipeDocumentation(name = "Annotation column filter", description = "Allows to filter for specific annotation columns. ")
+    @SetJIPipeDocumentation(name = "Annotation column filter", description = "Allows to filter for specific annotation columns. ")
     @JIPipeParameter("annotation-name-filter")
     public StringQueryExpression getAnnotationNameFilter() {
         return annotationNameFilter;

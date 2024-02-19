@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
@@ -26,12 +26,12 @@ import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 /**
  * Applies subfolder navigation to each input folder
  */
-@JIPipeDocumentation(name = "File/folder name", description = "Extracts the file or folder name from incoming paths.")
-@JIPipeNode(menuPath = "Extract", nodeTypeCategory = FileSystemNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "File/folder name", description = "Extracts the file or folder name from incoming paths.")
+@DefineJIPipeNode(menuPath = "Extract", nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
 
-@JIPipeInputSlot(value = PathData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)
+@AddJIPipeInputSlot(value = PathData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = PathData.class, slotName = "Output", create = true)
 
 
 public class ExtractFileName extends JIPipeSimpleIteratingAlgorithm {

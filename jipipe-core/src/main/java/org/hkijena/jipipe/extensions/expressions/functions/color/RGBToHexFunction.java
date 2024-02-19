@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.expressions.functions.color;
 
 import com.google.common.collect.ImmutableList;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -11,7 +11,7 @@ import java.awt.*;
 import java.util.Collection;
 import java.util.List;
 
-@JIPipeDocumentation(name = "RGB to Hex color", description = "Converts an RGB color into a hex string #rrggbb")
+@SetJIPipeDocumentation(name = "RGB to Hex color", description = "Converts an RGB color into a hex string #rrggbb")
 public class RGBToHexFunction extends ExpressionFunction {
     public RGBToHexFunction() {
         super("RGB_TO_HEX", 1);

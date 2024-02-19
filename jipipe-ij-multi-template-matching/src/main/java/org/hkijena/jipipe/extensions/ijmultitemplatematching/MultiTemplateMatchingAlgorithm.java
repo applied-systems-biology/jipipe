@@ -19,8 +19,8 @@ import ij.gui.ShapeRoi;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -61,7 +61,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Multi-Template matching", description = "Template matching is an algorithm that can be used for object-detections in grayscale images. " +
+@SetJIPipeDocumentation(name = "Multi-Template matching", description = "Template matching is an algorithm that can be used for object-detections in grayscale images. " +
         "To perform template matching you will need a template image that is searched in the target image.\n" +
         "The best is to simply crop a typical region of interest from a representative image.\n\n\n\n" +
         "The algorithm computes the probability to find one (or several) template images provided by the user into a larger image. The algorithm uses the template image as a sliding window translated over the image, and at each position of the template computes a similarity score between the template and the image patch.\n" +
@@ -70,13 +70,13 @@ import java.util.stream.Collectors;
         "The extrema detection can list a large number of extrema in the first place. Usually a threshold on the score is then used to limit this number (i.e. returning local extrema with a score above/below the threshold).\n" +
         "To prevent overlapping detection of the same object, Non-Maxima Supression is performed after extrema detection.\n\n\n\n" +
         "Please visit https://github.com/multi-template-matching/MultiTemplateMatching-Fiji/wiki for more information about the Multi-Template Matching plugin.")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Template", autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", autoCreate = true, description = "Table containing information about the matched templates. To access the templates directly, enable 'Output matched templates'")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Assembled templates")
-@JIPipeNode(menuPath = "Analyze", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMulti-Template-Matching")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
+@AddJIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Template", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", create = true, description = "Table containing information about the matched templates. To access the templates directly, enable 'Output matched templates'")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Assembled templates")
+@DefineJIPipeNode(menuPath = "Analyze", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMulti-Template-Matching")
 public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
 
     public static final JIPipeDataSlotInfo OUTPUT_SLOT_MATCHED_TEMPLATES = new JIPipeDataSlotInfo(JIPipeDataTable.class, JIPipeSlotType.Output, "Matched templates", "Measurements attached to the matched templates.");
@@ -295,7 +295,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         return target;
     }
 
-    @JIPipeDocumentation(name = "Output matched templates", description = "If enabled, the measurements are also returned as data table containing the actual template images.")
+    @SetJIPipeDocumentation(name = "Output matched templates", description = "If enabled, the measurements are also returned as data table containing the actual template images.")
     @JIPipeParameter("output-matched-templates")
     public boolean isOutputMatchedTemplates() {
         return outputMatchedTemplates;
@@ -307,7 +307,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         toggleSlot(OUTPUT_SLOT_MATCHED_TEMPLATES, outputMatchedTemplates);
     }
 
-    @JIPipeDocumentation(name = "Flip template vertically", description = "Performing additional searches with the transformed template allows to maximize the probability to find the object, if the object is expected to have different orientations in the image.\n" +
+    @SetJIPipeDocumentation(name = "Flip template vertically", description = "Performing additional searches with the transformed template allows to maximize the probability to find the object, if the object is expected to have different orientations in the image.\n" +
             "This is due to the fact that the template matching only looks for translated version of the templates provided.\n" +
             "Possible transformations include flipping (also called mirroring), rotation (below). Scaling is not proposed in the interface but several templates at different scale can be provided in the multiple template version of the plugin.\n" +
             "If vertical and horizontal flipping are selected, then the plugin generates 2 additional templates for the corresponding transformation.")
@@ -321,7 +321,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         this.flipTemplateVertically = flipTemplateVertically;
     }
 
-    @JIPipeDocumentation(name = "Flip template horizontally", description = "Performing additional searches with the transformed template allows to maximize the probability to find the object, if the object is expected to have different orientations in the image.\n" +
+    @SetJIPipeDocumentation(name = "Flip template horizontally", description = "Performing additional searches with the transformed template allows to maximize the probability to find the object, if the object is expected to have different orientations in the image.\n" +
             "This is due to the fact that the template matching only looks for translated version of the templates provided.\n" +
             "Possible transformations include flipping (also called mirroring), rotation (below). Scaling is not proposed in the interface but several templates at different scale can be provided in the multiple template version of the plugin.\n" +
             "If vertical and horizontal flipping are selected, then the plugin generates 2 additional templates for the corresponding transformation.")
@@ -335,7 +335,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         this.flipTemplateHorizontally = flipTemplateHorizontally;
     }
 
-    @JIPipeDocumentation(name = "Additional template rotations", description = "It is possible to provide a list of clockwise rotations in degrees e.g.: 45,90,180.\n" +
+    @SetJIPipeDocumentation(name = "Additional template rotations", description = "It is possible to provide a list of clockwise rotations in degrees e.g.: 45,90,180.\n" +
             "As with flipping, performing searches with rotated version of the template increases the probability to find the object if it is expected to be rotated.\n" +
             "If flipping is selected, both the original and flipped versions of the template will be rotated.\n\n\n" +
             "NOTE: The template must be of rectangular shape, i.e. for angles not corresponding to \"square rotations\" (not a multiple of 90°) the rotated template will have some background area which are filled either with the modal gray value of the template (Fiji) or" +
@@ -350,7 +350,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         this.rotateTemplate = rotateTemplate;
     }
 
-    @JIPipeDocumentation(name = "Scoring method", description = "This is the formula used to compute the probability map. " +
+    @SetJIPipeDocumentation(name = "Scoring method", description = "This is the formula used to compute the probability map. " +
             "The choice is limited to normalised scores to be able to compare different correlation maps when multiple templates are used.\n\n" +
             "<ul>" +
             "\n" +
@@ -371,7 +371,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         this.templateMatchingMethod = templateMatchingMethod;
     }
 
-    @JIPipeDocumentation(name = "Enable non-maxima suppression", description = "Enables the non-maxima-suppression algorithm that removes bounding boxes that overlap too much.")
+    @SetJIPipeDocumentation(name = "Enable non-maxima suppression", description = "Enables the non-maxima-suppression algorithm that removes bounding boxes that overlap too much.")
     @JIPipeParameter("with-non-maxima-suppression")
     public boolean isWithNonMaximaSuppression() {
         return withNonMaximaSuppression;
@@ -382,7 +382,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         this.withNonMaximaSuppression = withNonMaximaSuppression;
     }
 
-    @JIPipeDocumentation(name = "Expected number of objects (N)", description = "This is the expected number of object expected in each image. The plugin will return N or less predicted locations of the object.")
+    @SetJIPipeDocumentation(name = "Expected number of objects (N)", description = "This is the expected number of object expected in each image. The plugin will return N or less predicted locations of the object.")
     @JIPipeParameter("expected-number-of-objects")
     public int getExpectedNumberOfObjects() {
         return expectedNumberOfObjects;
@@ -396,7 +396,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         return true;
     }
 
-    @JIPipeDocumentation(name = "Score threshold (N>1)", description = "Ranges from 0.0 to 1.0. Used for the extrema detection on the score map(s).\n" +
+    @SetJIPipeDocumentation(name = "Score threshold (N>1)", description = "Ranges from 0.0 to 1.0. Used for the extrema detection on the score map(s).\n" +
             "If the difference-score is used, only minima below this threshold are collected before NMS (i.e. increase to evaluate more hits).\n" +
             "If a correlation-score is used, only maxima above this threshold are collected before NMS (i.e. decrease to evaluate more hits).")
     @JIPipeParameter("multi-object-score-threshold")
@@ -412,7 +412,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         return true;
     }
 
-    @JIPipeDocumentation(name = "Maximum overlap (N>1)", description = "Ranges from 0.0 to 1.0. Typically in the range 0.1-0.5.\n" +
+    @SetJIPipeDocumentation(name = "Maximum overlap (N>1)", description = "Ranges from 0.0 to 1.0. Typically in the range 0.1-0.5.\n" +
             "This parameter is for the Non-Maxima Suppression (NMS). It must be adjusted to prevent overlapping detections while keeping detections of close objects. " +
             "This is the maximal value allowed for the ratio of the Intersection Over Union (IoU) area between overlapping bounding boxes.\n" +
             "If 2 bounding boxes are overlapping above this threshold, then the lower score one is discarded.")
@@ -429,7 +429,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         return true;
     }
 
-    @JIPipeDocumentation(name = "Restrict to ROI", description = "If enabled, the template matching is restricted to the bounding box of the supplied ROI.")
+    @SetJIPipeDocumentation(name = "Restrict to ROI", description = "If enabled, the template matching is restricted to the bounding box of the supplied ROI.")
     @JIPipeParameter("restrict-to-roi")
     public boolean isRestrictToROI() {
         return restrictToROI;
@@ -447,7 +447,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/draw-use-tilt.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/draw-use-tilt.png")
-    @JIPipeDocumentation(name = "Generate angles", description = "Generates additional rotation angles by providing the distance between them.")
+    @SetJIPipeDocumentation(name = "Generate angles", description = "Generates additional rotation angles by providing the distance between them.")
     public void generateRotations(JIPipeWorkbench workbench) {
         JSpinner startAngle = new JSpinner(new SpinnerNumberModel(0, Integer.MIN_VALUE, Integer.MAX_VALUE, 1));
         JSpinner endAngle = new JSpinner(new SpinnerNumberModel(360, Integer.MIN_VALUE, Integer.MAX_VALUE, 1));
@@ -488,7 +488,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Assemble templates", description = "If enabled, all matched templates are put at their matched located within the original image. You can choose to overlay them over the original image or generate an empty image.")
+    @SetJIPipeDocumentation(name = "Assemble templates", description = "If enabled, all matched templates are put at their matched located within the original image. You can choose to overlay them over the original image or generate an empty image.")
     @JIPipeParameter("assemble-templates")
     public boolean isAssembleTemplates() {
         return assembleTemplates;
@@ -514,7 +514,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Assemble templates background", description = "If enabled, 'Assemble templates' will be put to an image of the given background. Please note that ")
+    @SetJIPipeDocumentation(name = "Assemble templates background", description = "If enabled, 'Assemble templates' will be put to an image of the given background. Please note that ")
     @JIPipeParameter("assemble-templates-background")
     public OptionalColorParameter getAssembleTemplatesBackground() {
         return assembleTemplatesBackground;
@@ -525,7 +525,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         this.assembleTemplatesBackground = assembleTemplatesBackground;
     }
 
-    @JIPipeDocumentation(name = "Assemble templates output", description = "If enabled, override the type of the generated assembly. If disabled, it has the same type as the input image.")
+    @SetJIPipeDocumentation(name = "Assemble templates output", description = "If enabled, override the type of the generated assembly. If disabled, it has the same type as the input image.")
     @JIPipeParameter("assemble-templates-output")
     @JIPipeDataParameterSettings(dataBaseClass = ImagePlusData.class)
     public OptionalDataInfoRefParameter getAssembleTemplatesOutput() {

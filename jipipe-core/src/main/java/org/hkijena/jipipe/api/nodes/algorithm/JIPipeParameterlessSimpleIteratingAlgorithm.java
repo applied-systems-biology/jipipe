@@ -16,7 +16,7 @@ package org.hkijena.jipipe.api.nodes.algorithm;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -179,7 +179,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
         return 1;
     }
 
-    @JIPipeDocumentation(name = "Enable parallelization", description = "If enabled, the workload can be calculated across multiple threads to for speedup. " +
+    @SetJIPipeDocumentation(name = "Enable parallelization", description = "If enabled, the workload can be calculated across multiple threads to for speedup. " +
             "Please note that the actual usage of multiple threads depend on the runtime settings and the algorithm implementation. " +
             "We recommend to use the runtime parameters to control parallelization in most cases.")
     @JIPipeParameter(value = "jipipe:parallelization:enabled", pinned = true)
@@ -194,7 +194,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
         this.parallelizationEnabled = parallelizationEnabled;
     }
 
-    @JIPipeDocumentation(name = "Input management", description = "This algorithm has one input and will iterate through each row of its input and apply the workload. " +
+    @SetJIPipeDocumentation(name = "Input management", description = "This algorithm has one input and will iterate through each row of its input and apply the workload. " +
             "Use following settings to control which data batches are generated.")
     @JIPipeParameter(value = "jipipe:data-batch-generation", hidden = true)
     public IterationStepGenerationSettings getDataBatchGenerationSettings() {
@@ -256,7 +256,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
             this.limit = new OptionalIntegerRange(other.limit);
         }
 
-        @JIPipeDocumentation(name = "Limit", description = "Limits which data batches are generated. The first index is zero.")
+        @SetJIPipeDocumentation(name = "Limit", description = "Limits which data batches are generated. The first index is zero.")
         @JIPipeParameter("limit")
         public OptionalIntegerRange getLimit() {
             return limit;

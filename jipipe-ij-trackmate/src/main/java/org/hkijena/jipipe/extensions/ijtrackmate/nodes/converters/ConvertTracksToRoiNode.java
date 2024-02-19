@@ -3,8 +3,8 @@ package org.hkijena.jipipe.extensions.ijtrackmate.nodes.converters;
 import fiji.plugin.trackmate.Spot;
 import ij.ImagePlus;
 import ij.gui.EllipseRoi;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -26,10 +26,10 @@ import java.awt.*;
 import java.util.List;
 import java.util.*;
 
-@JIPipeDocumentation(name = "Convert tracks to ROI", description = "Converts TrackMate tracks into ROI lists. Each lists contains the spot ROI of one track.")
-@JIPipeNode(menuPath = "Tracking\nConvert", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = TrackCollectionData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Convert tracks to ROI", description = "Converts TrackMate tracks into ROI lists. Each lists contains the spot ROI of one track.")
+@DefineJIPipeNode(menuPath = "Tracking\nConvert", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = TrackCollectionData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class ConvertTracksToRoiNode extends JIPipeSimpleIteratingAlgorithm {
 
     private NamedTextAnnotationGeneratorExpression.List annotationGenerator = new NamedTextAnnotationGeneratorExpression.List();
@@ -135,7 +135,7 @@ public class ConvertTracksToRoiNode extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Generated annotations", description = "This list contains expressions to generate annotations for each spot")
+    @SetJIPipeDocumentation(name = "Generated annotations", description = "This list contains expressions to generate annotations for each spot")
     @JIPipeParameter("generated-annotations")
     @JIPipeExpressionParameterVariable(fromClass = TrackFeatureVariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
@@ -151,7 +151,7 @@ public class ConvertTracksToRoiNode extends JIPipeSimpleIteratingAlgorithm {
         this.annotationGenerator = annotationGenerator;
     }
 
-    @JIPipeDocumentation(name = "Fill color", description = "Allows to change the fill color when rendered as RGB and within ImageJ. " + ColorUtils.PARSE_COLOR_DESCRIPTION)
+    @SetJIPipeDocumentation(name = "Fill color", description = "Allows to change the fill color when rendered as RGB and within ImageJ. " + ColorUtils.PARSE_COLOR_DESCRIPTION)
     @JIPipeParameter("fill-color")
     @JIPipeExpressionParameterVariable(fromClass = TrackSpotFeatureVariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
@@ -170,7 +170,7 @@ public class ConvertTracksToRoiNode extends JIPipeSimpleIteratingAlgorithm {
         this.fillColor = fillColor;
     }
 
-    @JIPipeDocumentation(name = "Line color", description = "Allows to change the line color when rendered as RGB and within ImageJ. " + ColorUtils.PARSE_COLOR_DESCRIPTION)
+    @SetJIPipeDocumentation(name = "Line color", description = "Allows to change the line color when rendered as RGB and within ImageJ. " + ColorUtils.PARSE_COLOR_DESCRIPTION)
     @JIPipeParameter("line-color")
     @JIPipeExpressionParameterVariable(fromClass = TrackSpotFeatureVariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
@@ -189,7 +189,7 @@ public class ConvertTracksToRoiNode extends JIPipeSimpleIteratingAlgorithm {
         this.lineColor = lineColor;
     }
 
-    @JIPipeDocumentation(name = "Line width", description = "Allows to change the line width when rendered as RGB and within ImageJ. The annotation value is converted to an integer.")
+    @SetJIPipeDocumentation(name = "Line width", description = "Allows to change the line width when rendered as RGB and within ImageJ. The annotation value is converted to an integer.")
     @JIPipeParameter("line-width")
     @JIPipeExpressionParameterVariable(fromClass = TrackSpotFeatureVariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
@@ -208,7 +208,7 @@ public class ConvertTracksToRoiNode extends JIPipeSimpleIteratingAlgorithm {
         this.lineWidth = lineWidth;
     }
 
-    @JIPipeDocumentation(name = "ROI name", description = "Allows to change the ROI name")
+    @SetJIPipeDocumentation(name = "ROI name", description = "Allows to change the ROI name")
     @JIPipeParameter("roi-name")
     @JIPipeExpressionParameterVariable(fromClass = TrackSpotFeatureVariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)

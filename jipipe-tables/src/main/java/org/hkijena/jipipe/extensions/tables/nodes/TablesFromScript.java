@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.extensions.tables.nodes;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -43,13 +43,13 @@ import java.util.List;
 /**
  * Algorithm that annotates all data with the same annotation
  */
-@JIPipeDocumentation(name = "Table from script", description = "Executes a Python-script that generates a table. " +
+@SetJIPipeDocumentation(name = "Table from script", description = "Executes a Python-script that generates a table. " +
         "There must be an array 'tables' that contains all input rows as dictionary with following entries: 'data', 'nrow', and 'annotations'. " +
         "'data' is a dictionary with the column name as key and values being an array of strings or doubles. " +
         "'nrow' is an integer that contains the number of rows. " +
         "'annotations' is a dictionary from string to string containing all annotations")
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class TablesFromScript extends JIPipeAlgorithm {
 
     private PythonInterpreter pythonInterpreter;
@@ -107,7 +107,7 @@ public class TablesFromScript extends JIPipeAlgorithm {
         this.pythonInterpreter = null;
     }
 
-    @JIPipeDocumentation(name = "Script", description = "here must be an array 'tables' that contains all input rows as dictionary with following entries: 'data', 'nrow', and 'annotations'. " +
+    @SetJIPipeDocumentation(name = "Script", description = "here must be an array 'tables' that contains all input rows as dictionary with following entries: 'data', 'nrow', and 'annotations'. " +
             "<ul><li>'data' is a dictionary with the column name as key and values being an array of strings or doubles.</li>" +
             "<li>'nrow' is an integer that contains the number of rows.</li>" +
             "<li>'annotations' is a dictionary from string to string containing all annotations</li></ul>")
@@ -121,7 +121,7 @@ public class TablesFromScript extends JIPipeAlgorithm {
         this.code = code;
     }
 
-    @JIPipeDocumentation(name = "Script parameters", description = "The following parameters will be passed to the Python script. The variable name is equal to the unique parameter identifier.")
+    @SetJIPipeDocumentation(name = "Script parameters", description = "The following parameters will be passed to the Python script. The variable name is equal to the unique parameter identifier.")
     @JIPipeParameter(value = "script-parameters", persistence = JIPipeParameterSerializationMode.Object)
     public JIPipeDynamicParameterCollection getScriptParameters() {
         return scriptParameters;

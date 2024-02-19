@@ -22,9 +22,9 @@ import ij.measure.ResultsTable;
 import ij.plugin.ZProjector;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -50,15 +50,15 @@ import java.util.List;
  * Segments using a Hough circle transform
  * This code is based on <a href="https://github.com/closms/detectcircles">...</a>
  */
-@JIPipeDocumentation(name = "Circular Hough segmentation 2D (fast)", description = "Finds circular 2D objects via a Hough transform. This implementation is based on code by Michael Closson and is generally faster than the other Hough-based segmentation. " +
+@SetJIPipeDocumentation(name = "Circular Hough segmentation 2D (fast)", description = "Finds circular 2D objects via a Hough transform. This implementation is based on code by Michael Closson and is generally faster than the other Hough-based segmentation. " +
         "It outputs the segmented mask, the maximum Hough accumulator image, and a table of all detected circles (x, y, Diameter, and Score)." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeCitation("https://github.com/closms/detectcircles")
-@JIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Accumulator", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", autoCreate = true)
+@DefineJIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeCitation("https://github.com/closms/detectcircles")
+@AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Accumulator", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", create = true)
 public class FastCircularHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final int minEdgeVal = 1;
@@ -337,7 +337,7 @@ public class FastCircularHoughSegmentation2DAlgorithm extends JIPipeSimpleIterat
         measurements.addRows(new ResultsTableData(rt));
     }
 
-    @JIPipeDocumentation(name = "Min radius", description = "Minimum radius of circles in pixels")
+    @SetJIPipeDocumentation(name = "Min radius", description = "Minimum radius of circles in pixels")
     @JIPipeParameter("min-radius")
     public int getMinRadius() {
         return minRadius;
@@ -348,7 +348,7 @@ public class FastCircularHoughSegmentation2DAlgorithm extends JIPipeSimpleIterat
         this.minRadius = minRadius;
     }
 
-    @JIPipeDocumentation(name = "Max radius", description = "Maximum radius of circles in pixels")
+    @SetJIPipeDocumentation(name = "Max radius", description = "Maximum radius of circles in pixels")
     @JIPipeParameter("max-radius")
     public int getMaxRadius() {
         return maxRadius;
@@ -359,7 +359,7 @@ public class FastCircularHoughSegmentation2DAlgorithm extends JIPipeSimpleIterat
         this.maxRadius = maxRadius;
     }
 
-    @JIPipeDocumentation(name = "Min score", description = "Minimum score for a circle to be detected")
+    @SetJIPipeDocumentation(name = "Min score", description = "Minimum score for a circle to be detected")
     @JIPipeParameter("min-score")
     public double getMinScore() {
         return minScore;

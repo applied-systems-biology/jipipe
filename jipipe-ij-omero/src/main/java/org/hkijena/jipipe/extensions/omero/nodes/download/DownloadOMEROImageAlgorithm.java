@@ -25,8 +25,8 @@ import omero.gateway.SecurityContext;
 import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.model.ImageData;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -59,10 +59,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Download image from OMERO", description = "Imports an image from OMERO into ImageJ")
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeInputSlot(value = OMEROImageReferenceData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = OMEImageData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Download image from OMERO", description = "Imports an image from OMERO into ImageJ")
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = OMEROImageReferenceData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = OMEImageData.class, slotName = "Output", create = true)
 public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
     private OptionalAnnotationNameParameter titleAnnotation = new OptionalAnnotationNameParameter("Image title", true);
@@ -204,7 +204,7 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         }
     }
 
-    @JIPipeDocumentation(name = "Annotate with OMERO image ID", description = "If enabled, adds the OMERO image ID as annotation")
+    @SetJIPipeDocumentation(name = "Annotate with OMERO image ID", description = "If enabled, adds the OMERO image ID as annotation")
     @JIPipeParameter("id-annotation")
     public OptionalAnnotationNameParameter getIdAnnotation() {
         return idAnnotation;
@@ -215,7 +215,7 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         this.idAnnotation = idAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Override OMERO credentials", description = "Allows to override the OMERO credentials provided in the JIPipe application settings")
+    @SetJIPipeDocumentation(name = "Override OMERO credentials", description = "Allows to override the OMERO credentials provided in the JIPipe application settings")
     @JIPipeParameter("override-credentials")
     public OptionalOMEROCredentialsEnvironment getOverrideCredentials() {
         return overrideCredentials;
@@ -227,7 +227,7 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     }
 
 
-    @JIPipeDocumentation(name = "Annotate with image title", description = "Optional annotation type where the image title is written.")
+    @SetJIPipeDocumentation(name = "Annotate with image title", description = "Optional annotation type where the image title is written.")
     @JIPipeParameter("title-annotation")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public OptionalAnnotationNameParameter getTitleAnnotation() {
@@ -244,19 +244,19 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         return true;
     }
 
-    @JIPipeDocumentation(name = "Bio-Formats options", description = "Settings for Bio-Formats, which is utilized for importing images from OMERO")
+    @SetJIPipeDocumentation(name = "Bio-Formats options", description = "Settings for Bio-Formats, which is utilized for importing images from OMERO")
     @JIPipeParameter(value = "image-import-parameters", collapsed = true)
     public ImageImportParameters getImageImportParameters() {
         return imageImportParameters;
     }
 
-    @JIPipeDocumentation(name = "Import key-value pairs", description = "OMERO key-value pairs can be imported into annotations")
+    @SetJIPipeDocumentation(name = "Import key-value pairs", description = "OMERO key-value pairs can be imported into annotations")
     @JIPipeParameter("key-value-pair-to-annotation-importer")
     public OMEROKeyValuePairToAnnotationImporter getKeyValuePairToAnnotationImporter() {
         return keyValuePairToAnnotationImporter;
     }
 
-    @JIPipeDocumentation(name = "Import tags", description = "OMERO tags can be imported into annotations")
+    @SetJIPipeDocumentation(name = "Import tags", description = "OMERO tags can be imported into annotations")
     @JIPipeParameter("tag-to-annotation-importer")
     public OMEROTagToAnnotationImporter getTagToAnnotationImporter() {
         return tagToAnnotationImporter;

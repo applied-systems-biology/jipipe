@@ -6,9 +6,9 @@ import net.imagej.ImgPlus;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import org.apache.commons.io.FilenameUtils;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -51,18 +51,18 @@ import java.util.List;
 
 import static org.hkijena.jipipe.extensions.ilastik.utils.ImgUtils.*;
 
-@JIPipeDocumentation(name = "Ilastik pixel classification", description = "Assigns labels to pixels based on pixel features and user annotations. " +
+@SetJIPipeDocumentation(name = "Ilastik pixel classification", description = "Assigns labels to pixels based on pixel features and user annotations. " +
         "Please note that results will be generated for each image and each project (pairwise).")
-@JIPipeCitation("Pixel classification documentation: https://www.ilastik.org/documentation/pixelclassification/pixelclassification")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Ilastik")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true, description = "The image(s) to classify.")
-@JIPipeInputSlot(value = IlastikModelData.class, slotName = "Project", autoCreate = true, description = "The Ilastik project. Must support pixel classification.")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Probabilities", description = "Multi-channel image where pixel values represent the probability that that pixel belongs to the class represented by that channel")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Simple Segmentation", description = "A single-channel image where the (integer) pixel values indicate the class to which a pixel belongs. " +
+@AddJIPipeCitation("Pixel classification documentation: https://www.ilastik.org/documentation/pixelclassification/pixelclassification")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Ilastik")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true, description = "The image(s) to classify.")
+@AddJIPipeInputSlot(value = IlastikModelData.class, slotName = "Project", create = true, description = "The Ilastik project. Must support pixel classification.")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Probabilities", description = "Multi-channel image where pixel values represent the probability that that pixel belongs to the class represented by that channel")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Simple Segmentation", description = "A single-channel image where the (integer) pixel values indicate the class to which a pixel belongs. " +
         "For this image, every pixel with the same value should belong to the same class of pixels")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Uncertainty", description = "Image where pixel intensity is proportional to the uncertainty found when trying to classify that pixel")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Features", description = "Multi-channel image where each channel represents one of the computed pixel features")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Labels", description = "Image representing the users’ manually created annotations")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Uncertainty", description = "Image where pixel intensity is proportional to the uncertainty found when trying to classify that pixel")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Features", description = "Multi-channel image where each channel represents one of the computed pixel features")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Labels", description = "Image representing the users’ manually created annotations")
 public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     public static final String PROJECT_TYPE = "PixelClassification";
@@ -254,7 +254,7 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
         }
     }
 
-    @JIPipeDocumentation(name = "Validate Ilastik project", description = "Determines how/if the node validates the input projects. This is done to check if the project is supported by this node.")
+    @SetJIPipeDocumentation(name = "Validate Ilastik project", description = "Determines how/if the node validates the input projects. This is done to check if the project is supported by this node.")
     @JIPipeParameter("project-validation-mode")
     public IlastikProjectValidationMode getProjectValidationMode() {
         return projectValidationMode;
@@ -265,14 +265,14 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
         this.projectValidationMode = projectValidationMode;
     }
 
-    @JIPipeDocumentation(name = "Generated outputs", description = "Select which outputs should be generated. " +
+    @SetJIPipeDocumentation(name = "Generated outputs", description = "Select which outputs should be generated. " +
             "Please note that the number of outputs impacts the performance.")
     @JIPipeParameter("output-parameters")
     public OutputParameters getOutputParameters() {
         return outputParameters;
     }
 
-    @JIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
+    @SetJIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
             "the processing was finished. Disable this to make it possible to debug your scripts. The directories are accessible via the logs (Tools &gt; Logs).")
     @JIPipeParameter("cleanup-afterwards")
     public boolean isCleanUpAfterwards() {
@@ -284,7 +284,7 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
         this.cleanUpAfterwards = cleanUpAfterwards;
     }
 
-    @JIPipeDocumentation(name = "Override Ilastik environment", description = "If enabled, a different Ilastik environment is used for this node. Otherwise " +
+    @SetJIPipeDocumentation(name = "Override Ilastik environment", description = "If enabled, a different Ilastik environment is used for this node. Otherwise " +
             "the one in the Project > Application settings > Extensions > Ilastik is used.")
     @JIPipeParameter("override-environment")
     public OptionalProcessEnvironment getOverrideEnvironment() {
@@ -330,7 +330,7 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
             this.outputLabels = other.outputLabels;
         }
 
-        @JIPipeDocumentation(name = "Output probabilities", description = "Exports a multi-channel image where pixel values represent the probability that that pixel belongs to the class represented by that channel")
+        @SetJIPipeDocumentation(name = "Output probabilities", description = "Exports a multi-channel image where pixel values represent the probability that that pixel belongs to the class represented by that channel")
         @JIPipeParameter("output-probabilities")
         public boolean isOutputProbabilities() {
             return outputProbabilities;
@@ -341,7 +341,7 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
             this.outputProbabilities = outputProbabilities;
         }
 
-        @JIPipeDocumentation(name = "Output simple segmentation", description = "Produces a single-channel image where the (integer) pixel values indicate the class to which a pixel belongs. " +
+        @SetJIPipeDocumentation(name = "Output simple segmentation", description = "Produces a single-channel image where the (integer) pixel values indicate the class to which a pixel belongs. " +
                 "For this image, every pixel with the same value should belong to the same class of pixels")
         @JIPipeParameter("output-simple-segmentation")
         public boolean isOutputSimpleSegmentation() {
@@ -353,7 +353,7 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
             this.outputSimpleSegmentation = outputSimpleSegmentation;
         }
 
-        @JIPipeDocumentation(name = "Output uncertainty", description = "Produces an image where pixel intensity is proportional to the uncertainty found when trying to classify that pixel")
+        @SetJIPipeDocumentation(name = "Output uncertainty", description = "Produces an image where pixel intensity is proportional to the uncertainty found when trying to classify that pixel")
         @JIPipeParameter("output-uncertainty")
         public boolean isOutputUncertainty() {
             return outputUncertainty;
@@ -364,7 +364,7 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
             this.outputUncertainty = outputUncertainty;
         }
 
-        @JIPipeDocumentation(name = "Output features", description = "Outputs a multi-channel image where each channel represents one of the computed pixel features")
+        @SetJIPipeDocumentation(name = "Output features", description = "Outputs a multi-channel image where each channel represents one of the computed pixel features")
         @JIPipeParameter("output-features")
         public boolean isOutputFeatures() {
             return outputFeatures;
@@ -375,7 +375,7 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
             this.outputFeatures = outputFeatures;
         }
 
-        @JIPipeDocumentation(name = "Output labels", description = "Outputs an image representing the users’ manually created annotations")
+        @SetJIPipeDocumentation(name = "Output labels", description = "Outputs an image representing the users’ manually created annotations")
         @JIPipeParameter("output-labels")
         public boolean isOutputLabels() {
             return outputLabels;

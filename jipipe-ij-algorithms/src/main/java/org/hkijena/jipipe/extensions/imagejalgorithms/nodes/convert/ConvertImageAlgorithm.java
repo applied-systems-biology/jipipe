@@ -2,8 +2,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.convert;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -16,10 +16,10 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataParameterSettings;
 
-@JIPipeDocumentation(name = "Convert image", description = "Converts an image into another image type")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Output", autoCreate = true)
-@JIPipeNode(menuPath = "Convert", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "Convert image", description = "Converts an image into another image type")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Output", create = true)
+@DefineJIPipeNode(menuPath = "Convert", nodeTypeCategory = ImagesNodeTypeCategory.class)
 public class ConvertImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeDataInfoRef generatedImageType = new JIPipeDataInfoRef("imagej-imgplus-greyscale-8u");
@@ -39,7 +39,7 @@ public class ConvertImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), JIPipe.createData(generatedImageType.getInfo().getDataClass(), image), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Output image type", description = "The image type that is generated.")
+    @SetJIPipeDocumentation(name = "Output image type", description = "The image type that is generated.")
     @JIPipeParameter("generated-image-type")
     @JIPipeDataParameterSettings(dataBaseClass = ImagePlusData.class)
     public JIPipeDataInfoRef getGeneratedImageType() {

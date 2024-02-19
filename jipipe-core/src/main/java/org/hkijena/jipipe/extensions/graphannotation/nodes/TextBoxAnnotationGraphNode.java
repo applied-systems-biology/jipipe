@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.graphannotation.nodes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.GraphAnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -11,8 +11,8 @@ import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeAnnotationGraphNod
 
 import java.awt.*;
 
-@JIPipeDocumentation(name = "Text box", description = "An annotation that contains text")
-@JIPipeNode(nodeTypeCategory = GraphAnnotationsNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "Text box", description = "An annotation that contains text")
+@DefineJIPipeNode(nodeTypeCategory = GraphAnnotationsNodeTypeCategory.class)
 public class TextBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphNode {
     private final ShapeParameters shapeParameters;
 
@@ -29,7 +29,7 @@ public class TextBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphNo
         registerSubParameter(shapeParameters);
     }
 
-    @JIPipeDocumentation(name = "Shape", description = "The following settings allow to modify the text box shape")
+    @SetJIPipeDocumentation(name = "Shape", description = "The following settings allow to modify the text box shape")
     @JIPipeParameter(value = "shape-parameters", uiOrder = -10)
     public ShapeParameters getShapeParameters() {
         return shapeParameters;
@@ -69,7 +69,7 @@ public class TextBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphNo
             this.borderThickness = other.borderThickness;
         }
 
-        @JIPipeDocumentation(name = "Fill color", description = "The fill color of this node")
+        @SetJIPipeDocumentation(name = "Fill color", description = "The fill color of this node")
         @JIPipeParameter("fill-color")
         public OptionalColorParameter getFillColor() {
             return fillColor;
@@ -80,7 +80,7 @@ public class TextBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphNo
             this.fillColor = fillColor;
         }
 
-        @JIPipeDocumentation(name = "Border color", description = "The border color of this node")
+        @SetJIPipeDocumentation(name = "Border color", description = "The border color of this node")
         @JIPipeParameter("border-color")
         public Color getBorderColor() {
             return borderColor;
@@ -91,7 +91,7 @@ public class TextBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphNo
             this.borderColor = borderColor;
         }
 
-        @JIPipeDocumentation(name = "Border thickness", description = "The thickness of the border")
+        @SetJIPipeDocumentation(name = "Border thickness", description = "The thickness of the border")
         @JIPipeParameter("border-thickness")
         public int getBorderThickness() {
             return borderThickness;

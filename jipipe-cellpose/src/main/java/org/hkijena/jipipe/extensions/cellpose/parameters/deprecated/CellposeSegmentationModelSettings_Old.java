@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.cellpose.parameters.deprecated;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -23,7 +23,7 @@ public class CellposeSegmentationModelSettings_Old extends AbstractJIPipeParamet
         this.enableGPU = other.enableGPU;
     }
 
-    @JIPipeDocumentation(name = "Model", description = "The model type that should be used.")
+    @SetJIPipeDocumentation(name = "Model", description = "The model type that should be used.")
     @JIPipeParameter("model")
     public CellposeModel getModel() {
         return model;
@@ -43,7 +43,7 @@ public class CellposeSegmentationModelSettings_Old extends AbstractJIPipeParamet
         return super.isParameterUIVisible(tree, access);
     }
 
-    @JIPipeDocumentation(name = "Mean diameter", description = "Mean diameter of the model. Only necessary if you are using a " +
+    @SetJIPipeDocumentation(name = "Mean diameter", description = "Mean diameter of the model. Only necessary if you are using a " +
             "custom model. If you retrained a pretrained model, set following values:" +
             "<ul>" +
             "<li>Model based on Cytoplasm: Set to 30.0</li>" +
@@ -59,7 +59,7 @@ public class CellposeSegmentationModelSettings_Old extends AbstractJIPipeParamet
         this.meanDiameter = meanDiameter;
     }
 
-    @JIPipeDocumentation(name = "With GPU", description = "Utilize a GPU if available. Please note that you need to setup Cellpose " +
+    @SetJIPipeDocumentation(name = "With GPU", description = "Utilize a GPU if available. Please note that you need to setup Cellpose " +
             "to allow usage of your GPU. Also ensure that enough memory is available.")
     @JIPipeParameter("enable-gpu")
     public boolean isEnableGPU() {

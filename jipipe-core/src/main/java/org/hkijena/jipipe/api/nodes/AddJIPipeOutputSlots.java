@@ -11,16 +11,21 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api;
+package org.hkijena.jipipe.api.nodes;
 
-import java.lang.annotation.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Annotates a {@link org.hkijena.jipipe.api.data.JIPipeData} type as being "heavy" (large file size).
- * This information is used to guide users.
+ * Required to allow multiple {@link AddJIPipeOutputSlot}
  */
-@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Inherited
-public @interface JIPipeHeavyData {
+@Target(ElementType.TYPE)
+public @interface AddJIPipeOutputSlots {
+    /**
+     * @return output slots
+     */
+    AddJIPipeOutputSlot[] value();
 }

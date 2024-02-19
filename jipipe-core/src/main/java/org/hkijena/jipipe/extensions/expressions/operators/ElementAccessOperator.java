@@ -1,14 +1,14 @@
 package org.hkijena.jipipe.extensions.expressions.operators;
 
 import com.google.common.collect.ImmutableList;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionOperator;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.*;
 
-@JIPipeDocumentation(name = "Element access", description = "Access the array element at given position. The first position is zero. If a string is provided, the character at the given position is returned instead.")
+@SetJIPipeDocumentation(name = "Element access", description = "Access the array element at given position. The first position is zero. If a string is provided, the character at the given position is returned instead.")
 public class ElementAccessOperator extends ExpressionOperator {
 
     public ElementAccessOperator(String symbol, int precedence) {

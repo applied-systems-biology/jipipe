@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.functions.collections;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Slice Left", description = "Returns a sublist/substring of an array/string/map keys containing all items before (exclusive) an index.")
+@SetJIPipeDocumentation(name = "Slice Left", description = "Returns a sublist/substring of an array/string/map keys containing all items before (exclusive) an index.")
 public class SliceBeforeFunction extends ExpressionFunction {
 
     public SliceBeforeFunction() {

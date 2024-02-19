@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.expressions;
 
-import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
+import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ import java.util.Objects;
  * An expression that is used to query annotations
  */
 @JIPipeExpressionParameterSettings(variableSource = AnnotationQueryExpressionVariablesInfo.class, hint = "per annotation (key, value)")
-@JIPipeDocumentationDescription(description = "This parameter is an expression that has two modes: " +
+@AddJIPipeDocumentationDescription(description = "This parameter is an expression that has two modes: " +
         "(1) Selecting an existing annotation by its name, and (2) Matching an existing annotation by boolean operators<br/>" +
         "<ol><li>Type in the name of the existing annotation. Put the name in double quotes (optional, but recommended). Example: <pre>\"#Dataset\"</pre></li>" +
         "<li>The function iterates through all annotations. It should return TRUE for one of them. You will have 'key' and 'value' available within the expression. Example: <pre>key == \"#Dataset\"</pre></li></ol>")

@@ -14,12 +14,12 @@
 
 package org.hkijena.jipipe.extensions.ijweka.parameters.features;
 
-import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
+import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
 
 /**
  * Enum of the standard {@link trainableSegmentation.WekaSegmentation} features supported by {@link trainableSegmentation.FeatureStack}
  */
-@JIPipeDocumentationDescription(description = "<ul>" +
+@AddJIPipeDocumentationDescription(description = "<ul>" +
         "<li>Gaussian blur: performs \uD835\uDC5B individual convolutions with Gaussian kernels with the normal \uD835\uDC5B variations of \uD835\uDF0E. The larger the radius the more blurred the image becomes until the pixels are homogeneous.</li>" +
         "<li>Sobel filter: calculates an approximation of the gradient of the image intensity at each pixel. Gaussian blurs with \uD835\uDF0E varying as usual are performed prior to the filter.</li>" +
         "<li>Hessian: Calculates a Hessian matrix \uD835\uDC3B at each pixel. Prior to the application of any filters, a Gaussian blur with varying \uD835\uDF0E is performed. </li>" +
@@ -44,7 +44,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
         "<li>Entropy: draws a circle of radius \uD835\uDC5F around each pixel; gets the histogram of that circle split in numBins chunks; then calculates the entropy as ∑\uD835\uDC5D in histogram−\uD835\uDC5D∗log2(\uD835\uDC5D), where \uD835\uDC5D is the probability of each chunk in the histogram. numBins is equal to 32,64,128,256. \uD835\uDC5F is equal to \uD835\uDF0E.</li>" +
         "<li>Neighbors: shifts the image in 8 directions by an certain number of pixel, \uD835\uDF0E. Therefore creates 8\uD835\uDC5B feature images.\n</li>" +
         "</ul>")
-@JIPipeDocumentationDescription(description = "More information: https://imagej.net/plugins/tws/")
+@AddJIPipeDocumentationDescription(description = "More information: https://imagej.net/plugins/tws/")
 public enum WekaFeature2D {
     Gaussian_blur,
     Sobel_filter,

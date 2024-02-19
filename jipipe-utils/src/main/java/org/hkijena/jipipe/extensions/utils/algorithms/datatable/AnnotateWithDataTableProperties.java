@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.utils.algorithms.datatable;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -17,10 +17,10 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
 import java.util.ArrayList;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Annotate with data table properties", description = "Annotates data table data with properties (e.g., the size)")
-@JIPipeInputSlot(value = JIPipeDataTable.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeDataTable.class, slotName = "Output", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For data tables")
+@SetJIPipeDocumentation(name = "Annotate with data table properties", description = "Annotates data table data with properties (e.g., the size)")
+@AddJIPipeInputSlot(value = JIPipeDataTable.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = JIPipeDataTable.class, slotName = "Output", create = true)
+@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For data tables")
 public class AnnotateWithDataTableProperties extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalAnnotationNameParameter numRowsAnnotation = new OptionalAnnotationNameParameter("Num Rows", true);
@@ -51,7 +51,7 @@ public class AnnotateWithDataTableProperties extends JIPipeSimpleIteratingAlgori
         iterationStep.addOutputData(getFirstOutputSlot(), inputData, annotationList, mergeMode, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Annotate with number of rows", description = "If enabled, annotate the data table with its number of rows")
+    @SetJIPipeDocumentation(name = "Annotate with number of rows", description = "If enabled, annotate the data table with its number of rows")
     @JIPipeParameter("num-rows-annotation")
     public OptionalAnnotationNameParameter getNumRowsAnnotation() {
         return numRowsAnnotation;
@@ -62,7 +62,7 @@ public class AnnotateWithDataTableProperties extends JIPipeSimpleIteratingAlgori
         this.numRowsAnnotation = numRowsAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with number of text annotation columns", description = "If enabled, annotate the data table with the number of text annotation columns")
+    @SetJIPipeDocumentation(name = "Annotate with number of text annotation columns", description = "If enabled, annotate the data table with the number of text annotation columns")
     @JIPipeParameter("num-text-annotation-columns-annotation")
     public OptionalAnnotationNameParameter getNumTextAnnotationColumns() {
         return numTextAnnotationColumns;
@@ -73,7 +73,7 @@ public class AnnotateWithDataTableProperties extends JIPipeSimpleIteratingAlgori
         this.numTextAnnotationColumns = numTextAnnotationColumns;
     }
 
-    @JIPipeDocumentation(name = "Annotate with number of data annotation columns", description = "If enabled, annotate the data table with the number of data annotation columns")
+    @SetJIPipeDocumentation(name = "Annotate with number of data annotation columns", description = "If enabled, annotate the data table with the number of data annotation columns")
     @JIPipeParameter("num-data-annotation-columns-annotation")
     public OptionalAnnotationNameParameter getNumDataAnnotationColumns() {
         return numDataAnnotationColumns;
@@ -84,7 +84,7 @@ public class AnnotateWithDataTableProperties extends JIPipeSimpleIteratingAlgori
         this.numDataAnnotationColumns = numDataAnnotationColumns;
     }
 
-    @JIPipeDocumentation(name = "Annotation merge mode", description = "Determines what happens if there is already an existing annotation with the same name")
+    @SetJIPipeDocumentation(name = "Annotation merge mode", description = "Determines what happens if there is already an existing annotation with the same name")
     @JIPipeParameter("merge-mode")
     public JIPipeTextAnnotationMergeMode getMergeMode() {
         return mergeMode;

@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.forms.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -34,7 +34,7 @@ public abstract class SimpleFormGeneratorAlgorithm extends FormGeneratorAlgorith
         registerSubParameter(formData);
     }
 
-    @JIPipeDocumentation(name = "Form element", description = "Use following settings to setup the generated form element.")
+    @SetJIPipeDocumentation(name = "Form element", description = "Use following settings to setup the generated form element.")
     @JIPipeParameter("form-data")
     public FormData getFormData() {
         return formData;

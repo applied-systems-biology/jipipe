@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.omero.parameters;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -25,7 +25,7 @@ public class AnnotationsToOMEROTagExporter extends AbstractJIPipeParameterCollec
         this.tagListAnnotation = new OptionalAnnotationNameParameter(other.tagListAnnotation);
     }
 
-    @JIPipeDocumentation(name = "Tag list annotation", description = "If enabled, extract all tag names from a single annotation that contains a JSON-serialized list of names. If no JSON data is found, " +
+    @SetJIPipeDocumentation(name = "Tag list annotation", description = "If enabled, extract all tag names from a single annotation that contains a JSON-serialized list of names. If no JSON data is found, " +
             "the whole annotation is converted into a tag. Nested JSON arrays are flattened. Numbers are converted into strings. JSON objects are ignored.")
     @JIPipeParameter("tag-list-annotation")
     public OptionalAnnotationNameParameter getTagListAnnotation() {

@@ -18,7 +18,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.collect.ImmutableList;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.python.installers.BasicPortableEnvPythonInstaller;
@@ -34,7 +34,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Python: Download & install Cellpose (CPU)", description = "Creates a new Python environment with Cellpose installed. " +
+@SetJIPipeDocumentation(name = "Python: Download & install Cellpose (CPU)", description = "Creates a new Python environment with Cellpose installed. " +
         "Uses a portable Python distribution. ")
 @ExternalEnvironmentInfo(category = "Cellpose")
 public class PortableCellposeEnvInstaller extends BasicPortableEnvPythonInstaller {

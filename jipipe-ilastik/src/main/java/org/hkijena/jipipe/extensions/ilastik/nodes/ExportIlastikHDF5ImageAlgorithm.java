@@ -5,8 +5,8 @@ import net.imagej.ImgPlus;
 import net.imagej.axis.AxisType;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
@@ -35,11 +35,11 @@ import java.util.Map;
 
 import static org.hkijena.jipipe.extensions.ilastik.utils.ImgUtils.DEFAULT_AXES;
 
-@JIPipeDocumentation(name = "Export Ilastik HDF5 image", description = "Exports an image into the Ilastik HDF5 format")
-@JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
-@JIPipeOutputSlot(value = FileData.class, slotName = "HDF5 File", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nSave")
+@SetJIPipeDocumentation(name = "Export Ilastik HDF5 image", description = "Exports an image into the Ilastik HDF5 format")
+@DefineJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
+@AddJIPipeOutputSlot(value = FileData.class, slotName = "HDF5 File", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nSave")
 public class ExportIlastikHDF5ImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter hdf5Path = new JIPipeExpressionParameter("\"exported_data\"");
@@ -91,7 +91,7 @@ public class ExportIlastikHDF5ImageAlgorithm extends JIPipeSimpleIteratingAlgori
         });
     }
 
-    @JIPipeDocumentation(name = "HDF5 internal path", description = "Path to the HDF5 data set to export")
+    @SetJIPipeDocumentation(name = "HDF5 internal path", description = "Path to the HDF5 data set to export")
     @JIPipeParameter("hdf5-path")
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getHdf5Path() {
@@ -103,7 +103,7 @@ public class ExportIlastikHDF5ImageAlgorithm extends JIPipeSimpleIteratingAlgori
         this.hdf5Path = hdf5Path;
     }
 
-    @JIPipeDocumentation(name = "Axes", description = "The order of the axes. Allowed values are X, Y, Z, C, and T")
+    @SetJIPipeDocumentation(name = "Axes", description = "The order of the axes. Allowed values are X, Y, Z, C, and T")
     @JIPipeParameter("axes")
     @StringParameterSettings(monospace = true)
     public String getAxes() {

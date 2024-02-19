@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.scene3d.nodes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
@@ -20,10 +20,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Export 3D scene", description = "Exports a 3D scene to Collada 1.4.1 (DAE)")
-@JIPipeInputSlot(value = Scene3DData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = FileData.class, slotName = "Exported file", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "3D scenes")
+@SetJIPipeDocumentation(name = "Export 3D scene", description = "Exports a 3D scene to Collada 1.4.1 (DAE)")
+@AddJIPipeInputSlot(value = Scene3DData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = FileData.class, slotName = "Exported file", create = true)
+@DefineJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "3D scenes")
 public class ExportScene3DToColladaAlgorithm2 extends JIPipeIteratingAlgorithm {
 
     private DataExportExpressionParameter filePath = new DataExportExpressionParameter();
@@ -67,7 +67,7 @@ public class ExportScene3DToColladaAlgorithm2 extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new FileData(outputFile), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "File path", description = "Expression that generates the output file path")
+    @SetJIPipeDocumentation(name = "File path", description = "Expression that generates the output file path")
     @JIPipeParameter("file-path")
     public DataExportExpressionParameter getFilePath() {
         return filePath;
@@ -78,7 +78,7 @@ public class ExportScene3DToColladaAlgorithm2 extends JIPipeIteratingAlgorithm {
         this.filePath = filePath;
     }
 
-    @JIPipeDocumentation(name = "Index/simplify meshes", description = "If enabled, meshes are automatically indexed (simplified), which reduces the size of the output file, but needs additional processing time")
+    @SetJIPipeDocumentation(name = "Index/simplify meshes", description = "If enabled, meshes are automatically indexed (simplified), which reduces the size of the output file, but needs additional processing time")
     @JIPipeParameter("index-meshes")
     public boolean isIndexMeshes() {
         return indexMeshes;

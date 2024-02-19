@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -26,10 +26,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@JIPipeDocumentation(name = "Simplify annotations", description = "Merges multiple annotations that are used for data batch generation into a single annotation. Deletes or downgrades annotations that were involved in the merge.")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class)
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Simplify annotations", description = "Merges multiple annotations that are used for data batch generation into a single annotation. Deletes or downgrades annotations that were involved in the merge.")
+@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
 public class SimplifyAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private AnnotationQueryExpression annotationFilter = new AnnotationQueryExpression("STRING_STARTS_WITH(key, \"#\")");
@@ -91,7 +91,7 @@ public class SimplifyAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm
                 progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Annotation filter", description = "Determines which annotations will be combined. ")
+    @SetJIPipeDocumentation(name = "Annotation filter", description = "Determines which annotations will be combined. ")
     @JIPipeParameter("annotation-filter")
     public AnnotationQueryExpression getAnnotationFilter() {
         return annotationFilter;
@@ -102,7 +102,7 @@ public class SimplifyAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.annotationFilter = annotationFilter;
     }
 
-    @JIPipeDocumentation(name = "Rename function", description = "The function is applied to the annotation name to determine its new name. ")
+    @SetJIPipeDocumentation(name = "Rename function", description = "The function is applied to the annotation name to determine its new name. ")
     @JIPipeParameter(value = "rename-function", important = true)
     public StringQueryExpression getRenameFunction() {
         return renameFunction;
@@ -113,7 +113,7 @@ public class SimplifyAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.renameFunction = renameFunction;
     }
 
-    @JIPipeDocumentation(name = "Generated annotation", description = "The name of the generated annotation.")
+    @SetJIPipeDocumentation(name = "Generated annotation", description = "The name of the generated annotation.")
     @JIPipeParameter(value = "generated-annotation-name", important = true)
     @StringParameterSettings(monospace = true)
     public String getGeneratedAnnotationName() {
@@ -125,7 +125,7 @@ public class SimplifyAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.generatedAnnotationName = generatedAnnotationName;
     }
 
-    @JIPipeDocumentation(name = "Combined annotations", description = "The operation to apply with annotations that have been combined.")
+    @SetJIPipeDocumentation(name = "Combined annotations", description = "The operation to apply with annotations that have been combined.")
     @JIPipeParameter(value = "annotation-removal-mode", important = true)
     public AnnotationRemovalMode getAnnotationRemovalMode() {
         return annotationRemovalMode;
@@ -137,7 +137,7 @@ public class SimplifyAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm
         emitParameterUIChangedEvent();
     }
 
-    @JIPipeDocumentation(name = "Combination function", description = "Function that determines how annotation names and values are combined.")
+    @SetJIPipeDocumentation(name = "Combination function", description = "Function that determines how annotation names and values are combined.")
     @JIPipeParameter("combination-function")
     public JIPipeExpressionParameter getCombinationFunction() {
         return combinationFunction;

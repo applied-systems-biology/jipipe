@@ -11,7 +11,7 @@ import ij.gui.EllipseRoi;
 import ij.gui.Line;
 import ij.gui.Roi;
 import mcib3d.image3d.ImageHandler;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
@@ -58,7 +58,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Filaments 3D", description = "Stores 3D filaments as graph")
+@SetJIPipeDocumentation(name = "Filaments 3D", description = "Stores 3D filaments as graph")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "A *.json file containing a JGraphT graph in its serialized form",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
 @JsonSerialize(using = FilamentsDataSerializer.class)

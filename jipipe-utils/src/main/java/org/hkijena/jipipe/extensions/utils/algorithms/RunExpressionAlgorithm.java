@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.utils.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -23,11 +23,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@JIPipeDocumentation(name = "Run expression", description = "Passes data through from the input to the output and runs the expression for each incoming data row. " +
+@SetJIPipeDocumentation(name = "Run expression", description = "Passes data through from the input to the output and runs the expression for each incoming data row. " +
         "The result of the expression may or may not be used as annotation.")
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Data", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", create = true)
 public class RunExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter expression = new JIPipeExpressionParameter();
@@ -45,7 +45,7 @@ public class RunExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.writeToAnnotationMergeStrategy = other.writeToAnnotationMergeStrategy;
     }
 
-    @JIPipeDocumentation(name = "Expression", description = "Expression that is executed per data batch. " +
+    @SetJIPipeDocumentation(name = "Expression", description = "Expression that is executed per data batch. " +
             "All annotations are available as variables, including variables 'data_string' and 'data_type' that provide information about the current data.")
     @JIPipeParameter("expression")
     @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class)
@@ -58,7 +58,7 @@ public class RunExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.expression = expression;
     }
 
-    @JIPipeDocumentation(name = "Write result to annotation", description = "If enabled, the expression result is written to an annotation.")
+    @SetJIPipeDocumentation(name = "Write result to annotation", description = "If enabled, the expression result is written to an annotation.")
     @JIPipeParameter("write-to-annotation")
     public OptionalAnnotationNameParameter getWriteToAnnotation() {
         return writeToAnnotation;
@@ -69,7 +69,7 @@ public class RunExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.writeToAnnotation = writeToAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotation merge strategy", description = "If 'Write result to annotation' is enabled, apply following strategy if an annotation " +
+    @SetJIPipeDocumentation(name = "Annotation merge strategy", description = "If 'Write result to annotation' is enabled, apply following strategy if an annotation " +
             "already exists")
     @JIPipeParameter("write-to-annotation-merge-strategy")
     public JIPipeTextAnnotationMergeMode getWriteToAnnotationMergeStrategy() {

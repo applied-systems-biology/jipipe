@@ -1,14 +1,14 @@
 package org.hkijena.jipipe.extensions.expressions.functions.math;
 
 import org.apache.commons.math3.util.Precision;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "Round to decimals", description = "Rounds a number to a specified number of decimals")
+@SetJIPipeDocumentation(name = "Round to decimals", description = "Rounds a number to a specified number of decimals")
 public class RoundToDecimalsFunction extends ExpressionFunction {
     public RoundToDecimalsFunction() {
         super("ROUNDD", 2);

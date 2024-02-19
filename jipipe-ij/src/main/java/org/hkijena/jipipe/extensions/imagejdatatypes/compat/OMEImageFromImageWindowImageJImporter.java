@@ -5,7 +5,7 @@ import ij.ImagePlus;
 import ij.WindowManager;
 import ij.gui.Roi;
 import ij.plugin.frame.RoiManager;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.ImageJDataImporter;
 import org.hkijena.jipipe.api.compat.ImageJImportParameters;
@@ -17,7 +17,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "Import OME Image from ImageJ window", description = "Imports an image window into JIPipe")
+@SetJIPipeDocumentation(name = "Import OME Image from ImageJ window", description = "Imports an image window into JIPipe")
 public class OMEImageFromImageWindowImageJImporter implements ImageJDataImporter {
 
     @Override

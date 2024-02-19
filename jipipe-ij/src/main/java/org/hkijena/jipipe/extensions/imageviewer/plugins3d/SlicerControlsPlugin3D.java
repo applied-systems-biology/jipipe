@@ -4,7 +4,7 @@ import ij3d.AxisConstants;
 import ij3d.Content;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -364,7 +364,7 @@ public class SlicerControlsPlugin3D extends JIPipeImageViewerPlugin3D implements
 
         private boolean opaqueTextures = false;
 
-        @JIPipeDocumentation(name = "X slices")
+        @SetJIPipeDocumentation(name = "X slices")
         @JIPipeParameter("x")
         public IntegerRange getX() {
             return x;
@@ -375,7 +375,7 @@ public class SlicerControlsPlugin3D extends JIPipeImageViewerPlugin3D implements
             this.x = x;
         }
 
-        @JIPipeDocumentation(name = "Y slices")
+        @SetJIPipeDocumentation(name = "Y slices")
         @JIPipeParameter("y")
         public IntegerRange getY() {
             return y;
@@ -386,7 +386,7 @@ public class SlicerControlsPlugin3D extends JIPipeImageViewerPlugin3D implements
             this.y = y;
         }
 
-        @JIPipeDocumentation(name = "Z slices")
+        @SetJIPipeDocumentation(name = "Z slices")
         @JIPipeParameter("z")
         public IntegerRange getZ() {
             return z;

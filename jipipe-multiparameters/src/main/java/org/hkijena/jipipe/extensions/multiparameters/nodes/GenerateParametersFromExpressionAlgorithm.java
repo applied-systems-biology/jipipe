@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.multiparameters.nodes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
@@ -30,10 +30,10 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.util.*;
 
-@JIPipeDocumentation(name = "Generate parameters from expression", description = "Generates a table of parameters from expressions defined in the 'Generated parameter columns' parameter.")
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Annotations", description = "Optional data that act as source for annotations.", autoCreate = true, optional = true)
-@JIPipeOutputSlot(value = ParametersData.class, slotName = "Parameters", description = "Generated parameters", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "Generate parameters from expression", description = "Generates a table of parameters from expressions defined in the 'Generated parameter columns' parameter.")
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Annotations", description = "Optional data that act as source for annotations.", create = true, optional = true)
+@AddJIPipeOutputSlot(value = ParametersData.class, slotName = "Parameters", description = "Generated parameters", create = true)
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private ParameterCollectionList columns;
@@ -151,7 +151,7 @@ public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleItera
         return true;
     }
 
-    @JIPipeDocumentation(name = "Generated parameter columns", description = "Each item within this list defines a column in the generated parameter table. You must set the following properties: " +
+    @SetJIPipeDocumentation(name = "Generated parameter columns", description = "Each item within this list defines a column in the generated parameter table. You must set the following properties: " +
             "<ul>" +
             "<li>Key: the internal key of the parameter that is referred to. You can look it up by clicking the (?) icon next to a parameter and reading the technical info in the documentation that will be shown.</li>" +
             "<li>Type: the data type of the parameter. Please ensure to select the correct type.</li>" +
@@ -185,7 +185,7 @@ public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleItera
             this.valuesAreJson = other.valuesAreJson;
         }
 
-        @JIPipeDocumentation(name = "Key", description = "The parameter key")
+        @SetJIPipeDocumentation(name = "Key", description = "The parameter key")
         @JIPipeParameter("key")
         @StringParameterSettings(monospace = true)
         public String getKey() {
@@ -197,7 +197,7 @@ public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleItera
             this.key = key;
         }
 
-        @JIPipeDocumentation(name = "Type", description = "The parameter type")
+        @SetJIPipeDocumentation(name = "Type", description = "The parameter type")
         @JIPipeParameter("type")
         public JIPipeParameterTypeInfoRef getType() {
             return type;
@@ -208,7 +208,7 @@ public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleItera
             this.type = type;
         }
 
-        @JIPipeDocumentation(name = "Values", description = "Generated values")
+        @SetJIPipeDocumentation(name = "Values", description = "Generated values")
         @JIPipeParameter("values")
         @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
         @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
@@ -222,7 +222,7 @@ public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleItera
             this.values = values;
         }
 
-        @JIPipeDocumentation(name = "Values are JSON", description = "Whether values are JSON")
+        @SetJIPipeDocumentation(name = "Values are JSON", description = "Whether values are JSON")
         @JIPipeParameter("values-are-json")
         public boolean isValuesAreJson() {
             return valuesAreJson;

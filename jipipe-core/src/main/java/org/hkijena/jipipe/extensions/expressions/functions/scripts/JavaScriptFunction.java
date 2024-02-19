@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.functions.scripts;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -12,7 +12,7 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.util.List;
 
-@JIPipeDocumentation(name = "JavaScript", description = "Runs embedded Javascript")
+@SetJIPipeDocumentation(name = "JavaScript", description = "Runs embedded Javascript")
 public class JavaScriptFunction extends ExpressionFunction {
 
     public JavaScriptFunction() {

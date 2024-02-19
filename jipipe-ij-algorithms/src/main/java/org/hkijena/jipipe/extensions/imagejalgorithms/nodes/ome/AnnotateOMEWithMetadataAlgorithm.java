@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.ome;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -25,10 +25,10 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Annotate with OME metadata", description = "Annotates an OME image with metadata extracted from the OME metadata")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For images")
-@JIPipeInputSlot(value = OMEImageData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = OMEImageData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Annotate with OME metadata", description = "Annotates an OME image with metadata extracted from the OME metadata")
+@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For images")
+@AddJIPipeInputSlot(value = OMEImageData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = OMEImageData.class, slotName = "Output", create = true)
 public class AnnotateOMEWithMetadataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private ParameterCollectionList entries = ParameterCollectionList.containingCollection(Entry.class);
     private JIPipeTextAnnotationMergeMode annotationMergeMode = JIPipeTextAnnotationMergeMode.Merge;
@@ -60,7 +60,7 @@ public class AnnotateOMEWithMetadataAlgorithm extends JIPipeSimpleIteratingAlgor
         iterationStep.addOutputData(getFirstOutputSlot(), data, annotationList, annotationMergeMode, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Generated annotations", description = "The list of generated annotations.")
+    @SetJIPipeDocumentation(name = "Generated annotations", description = "The list of generated annotations.")
     @JIPipeParameter("entries")
     @ParameterCollectionListTemplate(Entry.class)
     public ParameterCollectionList getEntries() {
@@ -72,7 +72,7 @@ public class AnnotateOMEWithMetadataAlgorithm extends JIPipeSimpleIteratingAlgor
         this.entries = entries;
     }
 
-    @JIPipeDocumentation(name = "Annotation merge mode", description = "Determines how newly generated annotations are merged with existing ones")
+    @SetJIPipeDocumentation(name = "Annotation merge mode", description = "Determines how newly generated annotations are merged with existing ones")
     @JIPipeParameter("annotation-merge-mode")
     public JIPipeTextAnnotationMergeMode getAnnotationMergeMode() {
         return annotationMergeMode;
@@ -95,7 +95,7 @@ public class AnnotateOMEWithMetadataAlgorithm extends JIPipeSimpleIteratingAlgor
             this.annotationName = new JIPipeExpressionParameter(other.annotationName);
         }
 
-        @JIPipeDocumentation(name = "OME metadata", description = "The metadata to query from OME")
+        @SetJIPipeDocumentation(name = "OME metadata", description = "The metadata to query from OME")
         @JIPipeParameter(value = "accessor", uiOrder = -100)
         public OMEAccessorParameter getAccessor() {
             return accessor;
@@ -106,7 +106,7 @@ public class AnnotateOMEWithMetadataAlgorithm extends JIPipeSimpleIteratingAlgor
             this.accessor = accessor;
         }
 
-        @JIPipeDocumentation(name = "Annotation name", description = "The name of the output annotation.")
+        @SetJIPipeDocumentation(name = "Annotation name", description = "The name of the output annotation.")
         @JIPipeParameter(value = "annotation-name", uiOrder = -90)
         @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
         public JIPipeExpressionParameter getAnnotationName() {

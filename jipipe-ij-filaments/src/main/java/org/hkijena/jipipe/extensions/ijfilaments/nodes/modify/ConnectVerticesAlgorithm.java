@@ -2,13 +2,13 @@ package org.hkijena.jipipe.extensions.ijfilaments.nodes.modify;
 
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
@@ -41,11 +41,11 @@ import java.awt.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Connect filament vertices", description = "Connect existing vertices based on customizable criteria.")
-@JIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
-@JIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", optional = true, autoCreate = true)
+@SetJIPipeDocumentation(name = "Connect filament vertices", description = "Connect existing vertices based on customizable criteria.")
+@DefineJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
+@AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", optional = true, create = true)
 public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
     private boolean connectAcrossC = false;
     private boolean connectAcrossT = false;
@@ -79,7 +79,7 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
         registerSubParameter(vertexMask);
     }
 
-    @JIPipeDocumentation(name = "Scoring function", description = "Expression executed per edge candidate to generate a score for limited connections. " +
+    @SetJIPipeDocumentation(name = "Scoring function", description = "Expression executed per edge candidate to generate a score for limited connections. " +
             "Higher scores are selected first.")
     @JIPipeParameter("scoring-function")
     @JIPipeExpressionParameterSettings(hint = "per candidate edge")
@@ -104,7 +104,7 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
         this.scoringFunction = scoringFunction;
     }
 
-    @JIPipeDocumentation(name = "Limit created edges", description = "If enabled, limit the number of created edges per vertex. Uses a scoring function to determine an order.")
+    @SetJIPipeDocumentation(name = "Limit created edges", description = "If enabled, limit the number of created edges per vertex. Uses a scoring function to determine an order.")
     @JIPipeParameter("limit-connections")
     public OptionalIntegerParameter getLimitConnections() {
         return limitConnections;
@@ -124,7 +124,7 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
         return super.isParameterUIVisible(tree, access);
     }
 
-    @JIPipeDocumentation(name = "Prevent edges outside mask", description = "If enabled and a mask is available, check if edges crosses outside the mask boundaries and exclude those from being marked as candidate edge")
+    @SetJIPipeDocumentation(name = "Prevent edges outside mask", description = "If enabled and a mask is available, check if edges crosses outside the mask boundaries and exclude those from being marked as candidate edge")
     @JIPipeParameter("enforce-edges-within-mask")
     public boolean isEnforceEdgesWithinMask() {
         return enforceEdgesWithinMask;
@@ -135,7 +135,7 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
         this.enforceEdgesWithinMask = enforceEdgesWithinMask;
     }
 
-    @JIPipeDocumentation(name = "Color new edges", description = "Allows to color newly made edges")
+    @SetJIPipeDocumentation(name = "Color new edges", description = "Allows to color newly made edges")
     @JIPipeParameter("new-edge-color")
     public OptionalColorParameter getNewEdgeColor() {
         return newEdgeColor;
@@ -146,7 +146,7 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
         this.newEdgeColor = newEdgeColor;
     }
 
-    @JIPipeDocumentation(name = "Require direction", description = "Only considers vertices that have a degree of 1, which allows the calculation of a direction")
+    @SetJIPipeDocumentation(name = "Require direction", description = "Only considers vertices that have a degree of 1, which allows the calculation of a direction")
     @JIPipeParameter("require-direction")
     public boolean isRequireDirection() {
         return requireDirection;
@@ -162,13 +162,13 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
         return true;
     }
 
-    @JIPipeDocumentation(name = "Vertex mask", description = "Additional filter applied to the vertices prior to candidate edge selection.")
+    @SetJIPipeDocumentation(name = "Vertex mask", description = "Additional filter applied to the vertices prior to candidate edge selection.")
     @JIPipeParameter("vertex-filter")
     public VertexMaskParameter getVertexMask() {
         return vertexMask;
     }
 
-    @JIPipeDocumentation(name = "Candidate edge filter", description = "Filter expression that determines if an edge is considered as candidate")
+    @SetJIPipeDocumentation(name = "Candidate edge filter", description = "Filter expression that determines if an edge is considered as candidate")
     @JIPipeParameter("filter-function")
     @JIPipeExpressionParameterSettings(hint = "per candidate edge")
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
@@ -192,7 +192,7 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
         this.filterFunction = filterFunction;
     }
 
-    @JIPipeDocumentation(name = "Connect across channels", description = "If enabled, the algorithm considers also endpoints between different channel planes.")
+    @SetJIPipeDocumentation(name = "Connect across channels", description = "If enabled, the algorithm considers also endpoints between different channel planes.")
     @JIPipeParameter("connect-across-c")
     public boolean isConnectAcrossC() {
         return connectAcrossC;
@@ -203,7 +203,7 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
         this.connectAcrossC = connectAcrossC;
     }
 
-    @JIPipeDocumentation(name = "Connect across frames", description = "If enabled, the algorithm considers also endpoints between different frame planes.")
+    @SetJIPipeDocumentation(name = "Connect across frames", description = "If enabled, the algorithm considers also endpoints between different frame planes.")
     @JIPipeParameter("connect-across-t")
     public boolean isConnectAcrossT() {
         return connectAcrossT;
@@ -214,7 +214,7 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
         this.connectAcrossT = connectAcrossT;
     }
 
-    @JIPipeDocumentation(name = "Connect in 3D", description = "If enabled, the algorithm will look for endpoints in other Z planes.")
+    @SetJIPipeDocumentation(name = "Connect in 3D", description = "If enabled, the algorithm will look for endpoints in other Z planes.")
     @JIPipeParameter("enable-3d")
     public boolean isEnable3D() {
         return enable3D;

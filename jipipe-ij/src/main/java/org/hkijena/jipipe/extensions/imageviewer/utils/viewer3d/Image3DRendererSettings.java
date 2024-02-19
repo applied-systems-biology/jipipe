@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d;
 
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
@@ -25,7 +25,7 @@ public class Image3DRendererSettings extends AbstractJIPipeParameterCollection {
         this.overrideResamplingFactor = new OptionalIntegerParameter(other.overrideResamplingFactor);
     }
 
-    @JIPipeDocumentation(name = "Render type", description = "The way how images are rendered in 3D")
+    @SetJIPipeDocumentation(name = "Render type", description = "The way how images are rendered in 3D")
     @JIPipeParameter("render-type")
     public Image3DRenderType getRenderType() {
         return renderType;
@@ -36,7 +36,7 @@ public class Image3DRendererSettings extends AbstractJIPipeParameterCollection {
         this.renderType = renderType;
     }
 
-    @JIPipeDocumentation(name = "Force resampling", description = "If enabled, set the resampling factor manually. Otherwise it is determined by the maximum allocated memory.")
+    @SetJIPipeDocumentation(name = "Force resampling", description = "If enabled, set the resampling factor manually. Otherwise it is determined by the maximum allocated memory.")
     @JIPipeParameter("override-resampling-factor")
     public OptionalIntegerParameter getOverrideResamplingFactor() {
         return overrideResamplingFactor;
@@ -47,7 +47,7 @@ public class Image3DRendererSettings extends AbstractJIPipeParameterCollection {
         this.overrideResamplingFactor = overrideResamplingFactor;
     }
 
-    @JIPipeDocumentation(name = "Maximum GPU memory (MB)", description = "The maximum memory allocated to the image display. Determines the resolution factor if not manually overridden. The lowest value is 64.")
+    @SetJIPipeDocumentation(name = "Maximum GPU memory (MB)", description = "The maximum memory allocated to the image display. Determines the resolution factor if not manually overridden. The lowest value is 64.")
     @JIPipeParameter("maximum-memory")
     public int getMaximumMemory() {
         return maximumMemory;

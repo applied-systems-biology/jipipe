@@ -3,8 +3,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.threshold.color;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -29,11 +29,11 @@ import org.hkijena.jipipe.extensions.parameters.library.ranges.NumberRangeParame
 import java.util.ArrayList;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Manual color threshold (HSB)", description = "Thresholds HSB images.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Threshold\nColor")
-@JIPipeInputSlot(value = ImagePlusColorHSBData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust")
+@SetJIPipeDocumentation(name = "Manual color threshold (HSB)", description = "Thresholds HSB images.")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Threshold\nColor")
+@AddJIPipeInputSlot(value = ImagePlusColorHSBData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust")
 public class ManualHSBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private IntNumberRangeParameter hueThreshold = new IntNumberRangeParameter(0, 256);
@@ -113,7 +113,7 @@ public class ManualHSBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(result), annotations, thresholdAnnotationStrategy, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Hue threshold", description = "Thresholds the hue channel (Channel 1)")
+    @SetJIPipeDocumentation(name = "Hue threshold", description = "Thresholds the hue channel (Channel 1)")
     @JIPipeParameter(value = "hue-threshold", uiOrder = -10)
     @NumberRangeParameterSettings(min = 0, max = 256, trackBackground = HSBHueTrackBackground.class, invertedMode = NumberRangeInvertedMode.OutsideMinMax)
     public IntNumberRangeParameter getHueThreshold() {
@@ -125,7 +125,7 @@ public class ManualHSBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.hueThreshold = hueThreshold;
     }
 
-    @JIPipeDocumentation(name = "Brightness threshold", description = "Thresholds the brightness channel (Channel 3)")
+    @SetJIPipeDocumentation(name = "Brightness threshold", description = "Thresholds the brightness channel (Channel 3)")
     @JIPipeParameter(value = "brightness-threshold", uiOrder = -8)
     @NumberRangeParameterSettings(min = 0, max = 256, trackBackground = BlackToWhiteTrackBackground.class, invertedMode = NumberRangeInvertedMode.OutsideMinMax)
     public IntNumberRangeParameter getBrightnessThreshold() {
@@ -137,7 +137,7 @@ public class ManualHSBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.brightnessThreshold = brightnessThreshold;
     }
 
-    @JIPipeDocumentation(name = "Saturation threshold", description = "Thresholds the saturation channel (Channel 2)")
+    @SetJIPipeDocumentation(name = "Saturation threshold", description = "Thresholds the saturation channel (Channel 2)")
     @JIPipeParameter(value = "saturation-threshold", uiOrder = -9)
     @NumberRangeParameterSettings(min = 0, max = 256, trackBackground = WhiteToRedTrackBackground.class, invertedMode = NumberRangeInvertedMode.OutsideMinMax)
     public IntNumberRangeParameter getSaturationThreshold() {
@@ -149,7 +149,7 @@ public class ManualHSBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.saturationThreshold = saturationThreshold;
     }
 
-    @JIPipeDocumentation(name = "Min threshold annotation (H)", description = "If enabled, annotate with the min hue threshold")
+    @SetJIPipeDocumentation(name = "Min threshold annotation (H)", description = "If enabled, annotate with the min hue threshold")
     @JIPipeParameter("annotate-min-hue")
     public OptionalAnnotationNameParameter getMinHueThresholdAnnotation() {
         return minHueThresholdAnnotation;
@@ -160,7 +160,7 @@ public class ManualHSBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.minHueThresholdAnnotation = minHueThresholdAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Max threshold annotation (H)", description = "If enabled, annotate with the max hue threshold")
+    @SetJIPipeDocumentation(name = "Max threshold annotation (H)", description = "If enabled, annotate with the max hue threshold")
     @JIPipeParameter("annotate-max-hue")
     public OptionalAnnotationNameParameter getMaxHueThresholdAnnotation() {
         return maxHueThresholdAnnotation;
@@ -171,7 +171,7 @@ public class ManualHSBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.maxHueThresholdAnnotation = maxHueThresholdAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Min threshold annotation (B)", description = "If enabled, annotate with the min brightness threshold")
+    @SetJIPipeDocumentation(name = "Min threshold annotation (B)", description = "If enabled, annotate with the min brightness threshold")
     @JIPipeParameter("annotate-min-brightness")
     public OptionalAnnotationNameParameter getMinBrightnessThresholdAnnotation() {
         return minBrightnessThresholdAnnotation;
@@ -182,7 +182,7 @@ public class ManualHSBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.minBrightnessThresholdAnnotation = minBrightnessThresholdAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Max threshold annotation (B)", description = "If enabled, annotate with the max brightness threshold")
+    @SetJIPipeDocumentation(name = "Max threshold annotation (B)", description = "If enabled, annotate with the max brightness threshold")
     @JIPipeParameter("annotate-max-brightness")
     public OptionalAnnotationNameParameter getMaxBrightnessThresholdAnnotation() {
         return maxBrightnessThresholdAnnotation;
@@ -193,7 +193,7 @@ public class ManualHSBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.maxBrightnessThresholdAnnotation = maxBrightnessThresholdAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Min threshold annotation (S)", description = "If enabled, annotate with the min saturation threshold")
+    @SetJIPipeDocumentation(name = "Min threshold annotation (S)", description = "If enabled, annotate with the min saturation threshold")
     @JIPipeParameter("annotate-min-saturation")
     public OptionalAnnotationNameParameter getMinSaturationThresholdAnnotation() {
         return minSaturationThresholdAnnotation;
@@ -204,7 +204,7 @@ public class ManualHSBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.minSaturationThresholdAnnotation = minSaturationThresholdAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Max threshold annotation (S)", description = "If enabled, annotate with the max saturation threshold")
+    @SetJIPipeDocumentation(name = "Max threshold annotation (S)", description = "If enabled, annotate with the max saturation threshold")
     @JIPipeParameter("annotate-max-saturation")
     public OptionalAnnotationNameParameter getMaxSaturationThresholdAnnotation() {
         return maxSaturationThresholdAnnotation;
@@ -215,7 +215,7 @@ public class ManualHSBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.maxSaturationThresholdAnnotation = maxSaturationThresholdAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Threshold annotation strategy", description = "Determines what happens if annotations are already present.")
+    @SetJIPipeDocumentation(name = "Threshold annotation strategy", description = "Determines what happens if annotations are already present.")
     @JIPipeParameter("threshold-annotation-strategy")
     public JIPipeTextAnnotationMergeMode getThresholdAnnotationStrategy() {
         return thresholdAnnotationStrategy;

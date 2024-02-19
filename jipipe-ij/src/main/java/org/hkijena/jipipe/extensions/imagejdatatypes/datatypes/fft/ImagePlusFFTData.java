@@ -19,9 +19,9 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.plugin.FFT;
 import ij.process.FHT;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHeavyData;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
@@ -39,9 +39,9 @@ import java.nio.file.Path;
 /**
  * Image in frequency space
  */
-@JIPipeDocumentation(name = "FFT Image")
-@JIPipeNode(menuPath = "Images\nFFT")
-@JIPipeHeavyData
+@SetJIPipeDocumentation(name = "FFT Image")
+@DefineJIPipeNode(menuPath = "Images\nFFT")
+@LabelAsJIPipeHeavyData
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains two image files: fht.ome.tif / fht.tif and power_spectrum.ome.tif / power_spectrum.tif, as well as a file fht_info.json. Either the OME TIFF or TIFF " +
         "must be present. fht.ome.tif / fht.tif contains the FHT (float32). power_spectrum.ome.tif / power_spectrum.tif contains the power spectrum (float32). " +
         "fht_info.json contains a JSON object that defines following properties: quadrant-swap-needed (boolean), original-width (integer), original-height (integer), " +

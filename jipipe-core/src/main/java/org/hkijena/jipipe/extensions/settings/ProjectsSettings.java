@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.settings;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProjectTemplate;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -49,7 +49,7 @@ public class ProjectsSettings extends AbstractJIPipeParameterCollection {
         return JIPipe.getSettings().getSettings(ID, ProjectsSettings.class);
     }
 
-    @JIPipeDocumentation(name = "Recent projects", description = "List of recent projects")
+    @SetJIPipeDocumentation(name = "Recent projects", description = "List of recent projects")
     @JIPipeParameter("recent-projects")
     public PathList getRecentProjects() {
         return recentProjects;
@@ -61,7 +61,7 @@ public class ProjectsSettings extends AbstractJIPipeParameterCollection {
 
     }
 
-    @JIPipeDocumentation(name = "Recent JSON extension projects", description = "List of recent JSON extension projects")
+    @SetJIPipeDocumentation(name = "Recent JSON extension projects", description = "List of recent JSON extension projects")
     @JIPipeParameter("recent-json-extension-projects")
     public PathList getRecentJsonExtensionProjects() {
         return recentJsonExtensionProjects;
@@ -111,7 +111,7 @@ public class ProjectsSettings extends AbstractJIPipeParameterCollection {
         }
     }
 
-    @JIPipeDocumentation(name = "New project template", description = "Template used for creating new projects")
+    @SetJIPipeDocumentation(name = "New project template", description = "Template used for creating new projects")
     @JIPipeParameter("new-project-template-2")
     public ProjectTemplateEnum getProjectTemplate() {
         return projectTemplate;
@@ -122,7 +122,7 @@ public class ProjectsSettings extends AbstractJIPipeParameterCollection {
         this.projectTemplate = projectTemplate;
     }
 
-    @JIPipeDocumentation(name = "Restore tabs on opening projects", description = "If enabled, JIPipe attempts to restore the tabs when opening a project.")
+    @SetJIPipeDocumentation(name = "Restore tabs on opening projects", description = "If enabled, JIPipe attempts to restore the tabs when opening a project.")
     @JIPipeParameter("restore-tabs")
     public boolean isRestoreTabs() {
         return restoreTabs;
@@ -133,7 +133,7 @@ public class ProjectsSettings extends AbstractJIPipeParameterCollection {
         this.restoreTabs = restoreTabs;
     }
 
-    @JIPipeDocumentation(name = "Template downloader repositories", description = "List of repositories for the 'Get more templates' feature")
+    @SetJIPipeDocumentation(name = "Template downloader repositories", description = "List of repositories for the 'Get more templates' feature")
     @JIPipeParameter("template-download-repositories")
     public StringList getProjectTemplateDownloadRepositories() {
         return projectTemplateDownloadRepositories;

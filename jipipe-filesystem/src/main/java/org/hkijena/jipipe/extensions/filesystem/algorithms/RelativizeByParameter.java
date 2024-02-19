@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
@@ -31,13 +31,13 @@ import java.nio.file.Paths;
 /**
  * Applies subfolder navigation to each input folder
  */
-@JIPipeDocumentation(name = "Relativize paths by string", description = "Modifies the incoming paths so that they are relative to a parent " +
+@SetJIPipeDocumentation(name = "Relativize paths by string", description = "Modifies the incoming paths so that they are relative to a parent " +
         "path defined by the parameter. If you leave the parameter empty, the paths are un-changed.")
-@JIPipeNode(menuPath = "Modify", nodeTypeCategory = FileSystemNodeTypeCategory.class)
+@DefineJIPipeNode(menuPath = "Modify", nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
 
-@JIPipeInputSlot(value = PathData.class, slotName = "Child", autoCreate = true)
-@JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)
+@AddJIPipeInputSlot(value = PathData.class, slotName = "Child", create = true)
+@AddJIPipeOutputSlot(value = PathData.class, slotName = "Output", create = true)
 
 
 public class RelativizeByParameter extends JIPipeSimpleIteratingAlgorithm {
@@ -74,7 +74,7 @@ public class RelativizeByParameter extends JIPipeSimpleIteratingAlgorithm {
      * @return The subfolder
      */
     @JIPipeParameter("parent-path")
-    @JIPipeDocumentation(name = "Path name", description = "The file or folder name of the output paths. If empty, the original path is unchanged.")
+    @SetJIPipeDocumentation(name = "Path name", description = "The file or folder name of the output paths. If empty, the original path is unchanged.")
     public Path getParentPath() {
         return parentPath;
     }

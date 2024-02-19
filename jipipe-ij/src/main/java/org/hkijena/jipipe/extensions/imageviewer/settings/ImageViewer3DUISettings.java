@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.imageviewer.settings;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.Image3DRendererSettings;
@@ -34,7 +34,7 @@ public class ImageViewer3DUISettings extends AbstractJIPipeParameterCollection {
         return JIPipe.getSettings().getSettings(ID, ImageViewer3DUISettings.class);
     }
 
-    @JIPipeDocumentation(name = "Show side bar", description = "If enabled, show a side bar with additional settings and tools")
+    @SetJIPipeDocumentation(name = "Show side bar", description = "If enabled, show a side bar with additional settings and tools")
     @JIPipeParameter("show-side-bar")
     public boolean isShowSideBar() {
         return showSideBar;
@@ -45,13 +45,13 @@ public class ImageViewer3DUISettings extends AbstractJIPipeParameterCollection {
         this.showSideBar = showSideBar;
     }
 
-    @JIPipeDocumentation(name = "Default image rendering settings", description = "Default settings for the image rendering")
+    @SetJIPipeDocumentation(name = "Default image rendering settings", description = "Default settings for the image rendering")
     @JIPipeParameter("renderer-settings")
     public Image3DRendererSettings getRendererSettings() {
         return rendererSettings;
     }
 
-    @JIPipeDocumentation(name = "Animation FPS", description = "The default animation FPS")
+    @SetJIPipeDocumentation(name = "Animation FPS", description = "The default animation FPS")
     @JIPipeParameter("default-animation-fps")
     public double getDefaultAnimationFPS() {
         return defaultAnimationFPS;

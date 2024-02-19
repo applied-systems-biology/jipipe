@@ -2,8 +2,8 @@ package org.hkijena.jipipe.extensions.multiparameters.nodes;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -21,10 +21,10 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Annotations to parameters", description = "Converts annotations into parameter data.")
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Parameters")
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ParametersData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Annotations to parameters", description = "Converts annotations into parameter data.")
+@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Parameters")
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ParametersData.class, slotName = "Output", create = true)
 public class AnnotationsToParametersAlgorithm extends JIPipeParameterlessSimpleIteratingAlgorithm {
 
     private JIPipeDynamicParameterCollection extractedParameters = new JIPipeDynamicParameterCollection(true,
@@ -43,14 +43,14 @@ public class AnnotationsToParametersAlgorithm extends JIPipeParameterlessSimpleI
         registerSubParameter(extractedParameters);
     }
 
-    @JIPipeDocumentation(name = "Extracted parameters", description = "Add parameter items into following list to extract them from annotations. " +
+    @SetJIPipeDocumentation(name = "Extracted parameters", description = "Add parameter items into following list to extract them from annotations. " +
             "The unique parameter key is used as annotation name. If an annotation does not exist, the value defined here is used.")
     @JIPipeParameter("extracted-parameters")
     public JIPipeDynamicParameterCollection getExtractedParameters() {
         return extractedParameters;
     }
 
-    @JIPipeDocumentation(name = "Ignore invalid values", description = "If enabled, invalid annotation values that cannot be loaded as parameters are ignored.")
+    @SetJIPipeDocumentation(name = "Ignore invalid values", description = "If enabled, invalid annotation values that cannot be loaded as parameters are ignored.")
     @JIPipeParameter("ignore-invalid-valid")
     public boolean isIgnoreInvalidValues() {
         return ignoreInvalidValues;

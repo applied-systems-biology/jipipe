@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.io;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -30,11 +30,11 @@ import java.util.stream.Collectors;
 /**
  * Imports {@link ImagePlusData} from the GUI
  */
-@JIPipeDocumentation(name = "Table to ImageJ", description = "Opens all incoming tables in ImageJ")
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nExport")
+@SetJIPipeDocumentation(name = "Table to ImageJ", description = "Opens all incoming tables in ImageJ")
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
+@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nExport")
 public class ResultsTableToGUI extends JIPipeSimpleIteratingAlgorithm {
 
     public ResultsTableToGUI(JIPipeNodeInfo info) {

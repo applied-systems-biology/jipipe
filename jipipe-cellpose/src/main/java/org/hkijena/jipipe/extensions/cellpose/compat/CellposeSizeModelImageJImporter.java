@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.cellpose.compat;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.ImageJDataImporter;
 import org.hkijena.jipipe.api.compat.ImageJImportParameters;
@@ -13,7 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Import Cellpose size model file", description = "Imports a Cellpose size model file.")
+@SetJIPipeDocumentation(name = "Import Cellpose size model file", description = "Imports a Cellpose size model file.")
 public class CellposeSizeModelImageJImporter implements ImageJDataImporter {
     @Override
     public JIPipeDataTable importData(List<Object> objects, ImageJImportParameters parameters, JIPipeProgressInfo progressInfo) {

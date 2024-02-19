@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.metadata;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -17,10 +17,10 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Extract 3D ROI metadata as table", description = "Extracts the metadata (properties map) of each 3D ROI and writes them into a table")
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Metadata")
-@JIPipeInputSlot(value = ROI3DListData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Extract 3D ROI metadata as table", description = "Extracts the metadata (properties map) of each 3D ROI and writes them into a table")
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Metadata")
+@AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class ExtractROI3DMetadataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalStringParameter nameColumn = new OptionalStringParameter("ROI Name", false);
@@ -59,7 +59,7 @@ public class ExtractROI3DMetadataAlgorithm extends JIPipeSimpleIteratingAlgorith
         iterationStep.addOutputData(getFirstOutputSlot(), table, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Add ROI name", description = "If enabled, add a column with the ROI name")
+    @SetJIPipeDocumentation(name = "Add ROI name", description = "If enabled, add a column with the ROI name")
     @JIPipeParameter("name-column")
     public OptionalStringParameter getNameColumn() {
         return nameColumn;
@@ -70,7 +70,7 @@ public class ExtractROI3DMetadataAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.nameColumn = nameColumn;
     }
 
-    @JIPipeDocumentation(name = "Add ROI index", description = "If enabled, add a column with the ROI index")
+    @SetJIPipeDocumentation(name = "Add ROI index", description = "If enabled, add a column with the ROI index")
     @JIPipeParameter("index-column")
     public OptionalStringParameter getIndexColumn() {
         return indexColumn;

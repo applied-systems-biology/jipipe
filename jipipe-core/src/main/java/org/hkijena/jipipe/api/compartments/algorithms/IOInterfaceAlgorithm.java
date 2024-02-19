@@ -16,8 +16,8 @@ package org.hkijena.jipipe.api.compartments.algorithms;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
@@ -29,8 +29,8 @@ import java.util.*;
 /**
  * Algorithm that passes the input to the output
  */
-@JIPipeDocumentation(name = "IO Interface", description = "Passes its input to its output without changes.")
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "IO Interface", description = "Passes its input to its output without changes.")
+@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
 
     /**

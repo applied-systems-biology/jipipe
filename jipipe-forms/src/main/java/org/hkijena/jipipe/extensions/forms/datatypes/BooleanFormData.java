@@ -2,8 +2,8 @@ package org.hkijena.jipipe.extensions.forms.datatypes;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -22,7 +22,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.awt.*;
 import java.util.Collections;
 
-@JIPipeDocumentation(name = "Boolean input form", description = "A form element that allows the user to input a boolean (true/false) value")
+@SetJIPipeDocumentation(name = "Boolean input form", description = "A form element that allows the user to input a boolean (true/false) value")
 public class BooleanFormData extends ParameterFormData {
 
     private boolean value = true;
@@ -45,7 +45,7 @@ public class BooleanFormData extends ParameterFormData {
         return FormData.importData(storage, BooleanFormData.class, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Initial value", description = "The initial value")
+    @SetJIPipeDocumentation(name = "Initial value", description = "The initial value")
     @JIPipeParameter("initial-value")
     public boolean getValue() {
         return value;
@@ -56,14 +56,14 @@ public class BooleanFormData extends ParameterFormData {
         this.value = value;
     }
 
-    @JIPipeDocumentation(name = "Form element I/O", description = "Use following settings to determine how to extract initial values " +
+    @SetJIPipeDocumentation(name = "Form element I/O", description = "Use following settings to determine how to extract initial values " +
             "from annotations and where to store the user-defined value.")
     @JIPipeParameter("form:io")
     public SingleAnnotationIOSettings getAnnotationIOSettings() {
         return annotationIOSettings;
     }
 
-    @JIPipeDocumentation(name = "Value for 'TRUE'", description = "The annotation value that is written if the form value is TRUE")
+    @SetJIPipeDocumentation(name = "Value for 'TRUE'", description = "The annotation value that is written if the form value is TRUE")
     @JIPipeParameter("true-string")
     public OptionalStringParameter getTrueString() {
         return trueString;
@@ -74,7 +74,7 @@ public class BooleanFormData extends ParameterFormData {
         this.trueString = trueString;
     }
 
-    @JIPipeDocumentation(name = "Value for 'FALSE'", description = "The annotation value that is written if the form value is FALSE")
+    @SetJIPipeDocumentation(name = "Value for 'FALSE'", description = "The annotation value that is written if the form value is FALSE")
     @JIPipeParameter("false-string")
     public OptionalStringParameter getFalseString() {
         return falseString;
@@ -89,7 +89,7 @@ public class BooleanFormData extends ParameterFormData {
     public Component getEditor(JIPipeWorkbench workbench) {
         JIPipeParameterTree tree = new JIPipeParameterTree(this);
         JIPipeReflectionParameterAccess access = (JIPipeReflectionParameterAccess) tree.getParameters().get("initial-value");
-        access.setDocumentation(new JIPipeDefaultDocumentation(getName(), getDescription().getBody()));
+        access.setDocumentation(new JIPipeDocumentation(getName(), getDescription().getBody()));
         return JIPipe.getParameterTypes().createEditorFor(workbench, new JIPipeParameterTree(access), access);
     }
 

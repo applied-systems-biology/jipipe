@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.plots.nodes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
@@ -156,20 +156,20 @@ public class PlotTables2Algorithm extends JIPipeMergingAlgorithm {
         inputColumns.endModificationBlock();
     }
 
-    @JIPipeDocumentation(name = "Plot parameters")
+    @SetJIPipeDocumentation(name = "Plot parameters")
     @JIPipeParameter("plot-parameters")
     public PlotData getPlotTypeParameters() {
         return plotTypeParameters;
     }
 
-    @JIPipeDocumentation(name = "Input columns", description = "Please define which input table columns are copied into the plot. " +
+    @SetJIPipeDocumentation(name = "Input columns", description = "Please define which input table columns are copied into the plot. " +
             "To find out which columns are available, run the quick run on input data. You can also generate missing columns.<br/><strong>If you want to select existing columns, we recommend to put the names into double quotes, e.g., <code>\"Sepal.Length\"</code>.</strong>")
     @JIPipeParameter(value = "input-columns")
     public JIPipeDynamicParameterCollection getInputColumns() {
         return inputColumns;
     }
 
-    @JIPipeDocumentation(name = "Series name", description = "Expression that is used to generate the series name")
+    @SetJIPipeDocumentation(name = "Series name", description = "Expression that is used to generate the series name")
     @JIPipeParameter("series-name")
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public StringQueryExpression getSeriesName() {

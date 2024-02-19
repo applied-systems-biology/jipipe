@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.modify;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -28,10 +28,10 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiOutline;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@JIPipeDocumentation(name = "Outline ROI", description = "Converts the ROI into polygons, bounding rectangles, or convex hulls.")
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
-@JIPipeInputSlot(value = ROIListData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Outline ROI", description = "Converts the ROI into polygons, bounding rectangles, or convex hulls.")
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class OutlineRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private RoiOutline outline = RoiOutline.ClosedPolygon;
@@ -62,7 +62,7 @@ public class OutlineRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Outline method", description = "The outlining method that should be applied.")
+    @SetJIPipeDocumentation(name = "Outline method", description = "The outlining method that should be applied.")
     @JIPipeParameter("outline")
     public RoiOutline getOutline() {
         return outline;

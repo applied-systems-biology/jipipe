@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -32,10 +32,10 @@ import org.hkijena.jipipe.utils.StringUtils;
 /**
  * Generates annotations from filenames
  */
-@JIPipeDocumentation(name = "Unique annotation", description = "Generates a unique annotation for each row based on its index. The annotations will have the format (Base name)[(row index)]")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Annotated data", autoCreate = true)
+@SetJIPipeDocumentation(name = "Unique annotation", description = "Generates a unique annotation for each row based on its index. The annotations will have the format (Base name)[(row index)]")
+@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Data", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Annotated data", create = true)
 public class GenerateUniqueAnnotation extends JIPipeSimpleIteratingAlgorithm {
 
     private String generatedAnnotation = "#uid";
@@ -77,7 +77,7 @@ public class GenerateUniqueAnnotation extends JIPipeSimpleIteratingAlgorithm {
     /**
      * @return Generated annotation type
      */
-    @JIPipeDocumentation(name = "Generated annotation", description = "Select which annotation type is generated for each data row")
+    @SetJIPipeDocumentation(name = "Generated annotation", description = "Select which annotation type is generated for each data row")
     @JIPipeParameter("generated-annotation")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public String getGeneratedAnnotation() {
@@ -95,7 +95,7 @@ public class GenerateUniqueAnnotation extends JIPipeSimpleIteratingAlgorithm {
     }
 
 
-    @JIPipeDocumentation(name = "Merge same annotation values", description = "Determines which strategy is applied if an annotation already exists.")
+    @SetJIPipeDocumentation(name = "Merge same annotation values", description = "Determines which strategy is applied if an annotation already exists.")
     @JIPipeParameter("annotation-merge-strategy")
     public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {
         return annotationMergeStrategy;
@@ -106,7 +106,7 @@ public class GenerateUniqueAnnotation extends JIPipeSimpleIteratingAlgorithm {
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
 
-    @JIPipeDocumentation(name = "Base name", description = "Prefix for the generated annotation. Can be empty.")
+    @SetJIPipeDocumentation(name = "Base name", description = "Prefix for the generated annotation. Can be empty.")
     @StringParameterSettings(monospace = true)
     @JIPipeParameter("base-name")
     public String getBaseName() {

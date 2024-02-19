@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.api.run;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
@@ -41,7 +41,7 @@ public class JIPipeGraphRunSettings extends AbstractJIPipeParameterCollection {
     private Set<UUID> disableSaveToDiskNodes = new HashSet<>();
 
     @JIPipeParameter(value = "output-path", uiOrder = -999)
-    @JIPipeDocumentation(name = "Output folder")
+    @SetJIPipeDocumentation(name = "Output folder")
     @PathParameterSettings(ioMode = PathIOMode.Save, pathMode = PathType.DirectoriesOnly)
     public Path getOutputPath() {
         return outputPath;
@@ -58,7 +58,7 @@ public class JIPipeGraphRunSettings extends AbstractJIPipeParameterCollection {
 
     }
 
-    @JIPipeDocumentation(name = "Load from cache", description = "If enabled, the results are automatically loaded from a cache if possible.")
+    @SetJIPipeDocumentation(name = "Load from cache", description = "If enabled, the results are automatically loaded from a cache if possible.")
     @JIPipeParameter("load-from-cache")
     public boolean isLoadFromCache() {
         return loadFromCache;
@@ -69,7 +69,7 @@ public class JIPipeGraphRunSettings extends AbstractJIPipeParameterCollection {
         this.loadFromCache = loadFromCache;
     }
 
-    @JIPipeDocumentation(name = "Save to cache", description = "If enabled, the results and intermediate results are stored into a cache. " +
+    @SetJIPipeDocumentation(name = "Save to cache", description = "If enabled, the results and intermediate results are stored into a cache. " +
             "This cache is limited by the RAM. Will be ignored if the global JIPipe cache settings are disabled.")
     @JIPipeParameter("store-to-cache")
     public boolean isStoreToCache() {
@@ -81,7 +81,7 @@ public class JIPipeGraphRunSettings extends AbstractJIPipeParameterCollection {
         this.storeToCache = storeToCache;
     }
 
-    @JIPipeDocumentation(name = "Number of threads", description = "Maximum number of threads that are allocated to the tasks. " +
+    @SetJIPipeDocumentation(name = "Number of threads", description = "Maximum number of threads that are allocated to the tasks. " +
             "Please note that the actual allocation depends on the algorithms.")
     @JIPipeParameter("num-threads")
     public int getNumThreads() {

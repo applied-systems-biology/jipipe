@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.strings.datasources;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
@@ -14,10 +14,10 @@ import org.hkijena.jipipe.extensions.strings.StringData;
 import java.io.IOException;
 import java.nio.file.Files;
 
-@JIPipeDocumentation(name = "Import text", description = "Imports a text/string from a file")
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeInputSlot(value = FileData.class, slotName = "File", autoCreate = true)
-@JIPipeOutputSlot(value = StringData.class, slotName = "Text", autoCreate = true)
+@SetJIPipeDocumentation(name = "Import text", description = "Imports a text/string from a file")
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = FileData.class, slotName = "File", create = true)
+@AddJIPipeOutputSlot(value = StringData.class, slotName = "Text", create = true)
 public class ImportStringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public ImportStringAlgorithm(JIPipeNodeInfo info) {
         super(info);

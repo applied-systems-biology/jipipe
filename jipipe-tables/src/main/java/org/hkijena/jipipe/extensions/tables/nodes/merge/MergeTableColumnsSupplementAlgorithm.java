@@ -15,8 +15,8 @@
 package org.hkijena.jipipe.extensions.tables.nodes.merge;
 
 import com.google.common.collect.Sets;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -37,11 +37,11 @@ import java.util.*;
 /**
  * Algorithm that integrates columns
  */
-@JIPipeDocumentation(name = "Merge table columns (supplement)", description = "Merges columns from the source table into the target table. You can choose one or multiple reference columns that determine which rows from each table should be merged together.")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Merge")
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Target", autoCreate = true)
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Source", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Merge table columns (supplement)", description = "Merges columns from the source table into the target table. You can choose one or multiple reference columns that determine which rows from each table should be merged together.")
+@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Merge")
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Target", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Source", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorithm {
 
     private TableColumnNormalization rowNormalization = TableColumnNormalization.ZeroOrEmpty;
@@ -175,7 +175,7 @@ public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorit
         return result;
     }
 
-    @JIPipeDocumentation(name = "Row normalization", description = "Determines how missing column values are handled if the input tables have different numbers of rows. " +
+    @SetJIPipeDocumentation(name = "Row normalization", description = "Determines how missing column values are handled if the input tables have different numbers of rows. " +
             "You can set it to zero/empty (depending on numeric or string type), to the row number (starting with zero), copy the last value, or cycle.")
     @JIPipeParameter("row-normalization")
     public TableColumnNormalization getRowNormalization() {
@@ -187,7 +187,7 @@ public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorit
         this.rowNormalization = rowNormalization;
     }
 
-    @JIPipeDocumentation(name = "Column filter", description = "Determines which columns are copied from source to target.")
+    @SetJIPipeDocumentation(name = "Column filter", description = "Determines which columns are copied from source to target.")
     @JIPipeParameter("column-filter")
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public StringQueryExpression getColumnFilter() {
@@ -199,7 +199,7 @@ public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorit
         this.columnFilter = columnFilter;
     }
 
-    @JIPipeDocumentation(name = "Reference columns", description = "Columns that should act as reference points for the merging of the rows from different tables.")
+    @SetJIPipeDocumentation(name = "Reference columns", description = "Columns that should act as reference points for the merging of the rows from different tables.")
     @JIPipeParameter(value = "reference-columns", important = true)
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public StringQueryExpression getReferenceColumns() {
@@ -211,7 +211,7 @@ public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorit
         this.referenceColumns = referenceColumns;
     }
 
-    @JIPipeDocumentation(name = "Extend target to fit source", description = "If enabled, values of the target table are added if there are more rows in the source than in the target.")
+    @SetJIPipeDocumentation(name = "Extend target to fit source", description = "If enabled, values of the target table are added if there are more rows in the source than in the target.")
     @JIPipeParameter("extend-target")
     public boolean isExtendTarget() {
         return extendTarget;
@@ -222,7 +222,7 @@ public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorit
         this.extendTarget = extendTarget;
     }
 
-    @JIPipeDocumentation(name = "Skip empty target conditions", description = "If enabled, skips the addition of values from the source if the target does not have an equivalent condition.")
+    @SetJIPipeDocumentation(name = "Skip empty target conditions", description = "If enabled, skips the addition of values from the source if the target does not have an equivalent condition.")
     @JIPipeParameter("skip-empty-target")
     public boolean isSkipEmptyTarget() {
         return skipEmptyTarget;

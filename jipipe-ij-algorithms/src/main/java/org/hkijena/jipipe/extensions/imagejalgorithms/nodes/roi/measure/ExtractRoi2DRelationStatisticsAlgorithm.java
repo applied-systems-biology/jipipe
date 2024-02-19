@@ -1,8 +1,8 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.measure;
 
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -17,12 +17,12 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
-@JIPipeDocumentation(name = "Extract pairwise 2D ROI statistics", description = "Extracts all pairwise statistics between the 2D ROI")
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI 1", autoCreate = true)
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI 2", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true, optional = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", autoCreate = true)
+@SetJIPipeDocumentation(name = "Extract pairwise 2D ROI statistics", description = "Extracts all pairwise statistics between the 2D ROI")
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI 1", create = true)
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI 2", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true, optional = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", create = true)
 public class ExtractRoi2DRelationStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private ROI2DRelationMeasurementSetParameter measurements = new ROI2DRelationMeasurementSetParameter();
@@ -64,7 +64,7 @@ public class ExtractRoi2DRelationStatisticsAlgorithm extends JIPipeIteratingAlgo
         iterationStep.addOutputData(getFirstOutputSlot(), outputResults, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Only measure if objects co-localize", description = "If enabled, only co-localizing objects are measured")
+    @SetJIPipeDocumentation(name = "Only measure if objects co-localize", description = "If enabled, only co-localizing objects are measured")
     @JIPipeParameter("require-colocalization")
     public boolean isRequireColocalization() {
         return requireColocalization;
@@ -75,7 +75,7 @@ public class ExtractRoi2DRelationStatisticsAlgorithm extends JIPipeIteratingAlgo
         this.requireColocalization = requireColocalization;
     }
 
-    @JIPipeDocumentation(name = "Precise colocalization", description = "If enabled, the object co-localization for the 'Only measure if objects co-localize' setting tests for voxel colocalization (slower)." +
+    @SetJIPipeDocumentation(name = "Precise colocalization", description = "If enabled, the object co-localization for the 'Only measure if objects co-localize' setting tests for voxel colocalization (slower)." +
             " Otherwise, only the bounding boxes are compared (faster).")
     @JIPipeParameter("precise-colocalization")
     public boolean isPreciseColocalization() {
@@ -87,7 +87,7 @@ public class ExtractRoi2DRelationStatisticsAlgorithm extends JIPipeIteratingAlgo
         this.preciseColocalization = preciseColocalization;
     }
 
-    @JIPipeDocumentation(name = "Measurements", description = "The measurements that will be extracted")
+    @SetJIPipeDocumentation(name = "Measurements", description = "The measurements that will be extracted")
     @JIPipeParameter("measurements")
     public ROI2DRelationMeasurementSetParameter getMeasurements() {
         return measurements;
@@ -98,7 +98,7 @@ public class ExtractRoi2DRelationStatisticsAlgorithm extends JIPipeIteratingAlgo
         this.measurements = measurements;
     }
 
-    @JIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
+    @SetJIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
     @JIPipeParameter("measure-in-physical-units")
     public boolean isMeasureInPhysicalUnits() {
         return measureInPhysicalUnits;

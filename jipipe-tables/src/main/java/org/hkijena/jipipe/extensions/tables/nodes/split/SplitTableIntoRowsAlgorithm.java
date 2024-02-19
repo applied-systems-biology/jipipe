@@ -14,8 +14,8 @@
 
 package org.hkijena.jipipe.extensions.tables.nodes.split;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -33,10 +33,10 @@ import java.util.List;
 /**
  * Algorithm that integrates columns
  */
-@JIPipeDocumentation(name = "Split table into rows", description = "Splits a table into individual rows")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Split")
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Split table into rows", description = "Splits a table into individual rows")
+@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Split")
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class SplitTableIntoRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean annotateWithValues = false;
@@ -75,7 +75,7 @@ public class SplitTableIntoRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         }
     }
 
-    @JIPipeDocumentation(name = "Annotate with values", description = "If enabled, output tables are annotated with the values. " +
+    @SetJIPipeDocumentation(name = "Annotate with values", description = "If enabled, output tables are annotated with the values. " +
             "The annotation name is the column name, while the annotation value is the value of the row.")
     @JIPipeParameter("annotate-with-values")
     public boolean isAnnotateWithValues() {

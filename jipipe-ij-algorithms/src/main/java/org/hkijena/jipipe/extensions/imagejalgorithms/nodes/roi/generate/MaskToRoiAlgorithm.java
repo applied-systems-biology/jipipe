@@ -17,8 +17,8 @@ import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.plugin.filter.ThresholdToSelection;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -30,10 +30,10 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
-@JIPipeDocumentation(name = "Mask to ROI", description = "Converts pixel values equal or higher than the given threshold to a ROI. This will create a single ROI that contains holes. If a higher-dimensional image is provided, the operation is applied for each slice.")
-@JIPipeNode(menuPath = "ROI", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Mask to ROI", description = "Converts pixel values equal or higher than the given threshold to a ROI. This will create a single ROI that contains holes. If a higher-dimensional image is provided, the operation is applied for each slice.")
+@DefineJIPipeNode(menuPath = "ROI", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class MaskToRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private int threshold = 255;
@@ -68,7 +68,7 @@ public class MaskToRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), result, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Threshold", description = "Pixel values equal or higher to this value are added to the ROI.")
+    @SetJIPipeDocumentation(name = "Threshold", description = "Pixel values equal or higher to this value are added to the ROI.")
     @JIPipeParameter("threshold")
     public int getThreshold() {
         return threshold;
@@ -79,7 +79,7 @@ public class MaskToRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.threshold = threshold;
     }
 
-    @JIPipeDocumentation(name = "Invert threshold", description = "Changes the behavior that values less than the threshold value are selected as ROI.")
+    @SetJIPipeDocumentation(name = "Invert threshold", description = "Changes the behavior that values less than the threshold value are selected as ROI.")
     @JIPipeParameter("invert-threshold")
     public boolean isInvertThreshold() {
         return invertThreshold;

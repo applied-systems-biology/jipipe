@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.expressions.functions.quantities;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -21,7 +21,7 @@ import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "Get quantity value", description = "Parses a quantity string '[value] [unit]' and extracts the value as number.")
+@SetJIPipeDocumentation(name = "Get quantity value", description = "Parses a quantity string '[value] [unit]' and extracts the value as number.")
 public class QuantityGetValueFunction extends ExpressionFunction {
 
     public QuantityGetValueFunction() {

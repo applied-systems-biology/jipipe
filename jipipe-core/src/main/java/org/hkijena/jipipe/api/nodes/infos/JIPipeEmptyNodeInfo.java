@@ -76,12 +76,12 @@ public class JIPipeEmptyNodeInfo implements JIPipeNodeInfo {
     }
 
     @Override
-    public List<JIPipeInputSlot> getInputSlots() {
+    public List<AddJIPipeInputSlot> getInputSlots() {
         return Collections.emptyList();
     }
 
     @Override
-    public List<JIPipeOutputSlot> getOutputSlots() {
+    public List<AddJIPipeOutputSlot> getOutputSlots() {
         return Collections.emptyList();
     }
 

@@ -1,12 +1,12 @@
 package org.hkijena.jipipe.extensions.expressions.functions.collections;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "Create array", description = "Creates a new array that contains the parameters.")
+@SetJIPipeDocumentation(name = "Create array", description = "Creates a new array that contains the parameters.")
 public class CreateArrayFunction extends ExpressionFunction {
 
     public CreateArrayFunction() {

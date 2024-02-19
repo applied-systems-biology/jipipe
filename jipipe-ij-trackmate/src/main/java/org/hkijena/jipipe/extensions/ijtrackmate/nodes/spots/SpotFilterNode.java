@@ -2,8 +2,8 @@ package org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots;
 
 import fiji.plugin.trackmate.Spot;
 import fiji.plugin.trackmate.SpotCollection;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -22,10 +22,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Filter spots", description = "Filter TrackMate spots via expressions")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nFilter")
-@JIPipeInputSlot(value = SpotsCollectionData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = SpotsCollectionData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Filter spots", description = "Filter TrackMate spots via expressions")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nFilter")
+@AddJIPipeInputSlot(value = SpotsCollectionData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = SpotsCollectionData.class, slotName = "Output", create = true)
 public class SpotFilterNode extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter filter = new JIPipeExpressionParameter("quality > 30");
@@ -86,7 +86,7 @@ public class SpotFilterNode extends JIPipeSimpleIteratingAlgorithm {
         ++index;
     }
 
-    @JIPipeDocumentation(name = "Filter", description = "The expression is executed per spot. If it returns TRUE, the spot is kept.")
+    @SetJIPipeDocumentation(name = "Filter", description = "The expression is executed per spot. If it returns TRUE, the spot is kept.")
     @JIPipeParameter(value = "filter", important = true)
     @JIPipeExpressionParameterSettings(hint = "per spot")
     @JIPipeExpressionParameterVariable(fromClass = SpotFeatureVariablesInfo.class)

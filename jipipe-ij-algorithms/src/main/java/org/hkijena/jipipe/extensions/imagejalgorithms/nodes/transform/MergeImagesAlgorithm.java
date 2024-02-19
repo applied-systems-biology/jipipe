@@ -2,8 +2,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.transform;
 
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -22,11 +22,11 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 
-@JIPipeDocumentation(name = "Insert image (masked)", description = "Overlays the target image with the source image according to a mask or ROI.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Target", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Source", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Insert image (masked)", description = "Overlays the target image with the source image according to a mask or ROI.")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Target", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Source", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 public class MergeImagesAlgorithm extends JIPipeIteratingAlgorithm {
 
     private ImageROITargetArea targetArea = ImageROITargetArea.InsideMask;
@@ -70,7 +70,7 @@ public class MergeImagesAlgorithm extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(output), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Overwrite", description = "Determines where pixels are overwritten.")
+    @SetJIPipeDocumentation(name = "Overwrite", description = "Determines where pixels are overwritten.")
     @JIPipeParameter("roi:target-area")
     public ImageROITargetArea getTargetArea() {
         return targetArea;

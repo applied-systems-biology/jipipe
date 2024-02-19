@@ -19,8 +19,8 @@ import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import ij.ImagePlus;
 import ij.plugin.ChannelArranger;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -52,11 +52,11 @@ import java.util.List;
 /**
  * Wrapper around {@link ij.plugin.ChannelArranger}
  */
-@JIPipeDocumentation(name = "Arrange channels", description = "Reorders the channels of each input image")
-@JIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nColor", aliasName = "Arrange Channels...")
+@SetJIPipeDocumentation(name = "Arrange channels", description = "Reorders the channels of each input image")
+@DefineJIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nColor", aliasName = "Arrange Channels...")
 public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private IntegerAndIntegerPairParameter.List channelReordering = new IntegerAndIntegerPairParameter.List();
@@ -172,7 +172,7 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Channel reordering", description = "The channel with index on the left hand side is assigned to the channel with the index on the right hand side. " +
+    @SetJIPipeDocumentation(name = "Channel reordering", description = "The channel with index on the left hand side is assigned to the channel with the index on the right hand side. " +
             "The first index is 0. Channels left out of this assignment stay at the same index after transformation.")
     @JIPipeParameter("channel-reordering")
     @PairParameterSettings(singleRow = false, keyLabel = "Source channel", valueLabel = "Target channel")
@@ -185,7 +185,7 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.channelReordering = channelReordering;
     }
 
-    @JIPipeDocumentation(name = "Keep same channel count", description = "If enabled, instructions that change the number of channels are ignored.")
+    @SetJIPipeDocumentation(name = "Keep same channel count", description = "If enabled, instructions that change the number of channels are ignored.")
     @JIPipeParameter("keep-same-channel-count")
     public boolean isKeepSameChannelCount() {
         return keepSameChannelCount;
@@ -196,7 +196,7 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.keepSameChannelCount = keepSameChannelCount;
     }
 
-    @JIPipeDocumentation(name = "Simple reorder", description = "Allows you to input the reordering like in ImageJ.")
+    @SetJIPipeDocumentation(name = "Simple reorder", description = "Allows you to input the reordering like in ImageJ.")
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/imagej.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/imagej.png")
     public void setToExample(JIPipeWorkbench parent) {
         String reordering = JOptionPane.showInputDialog(parent.getWindow(),

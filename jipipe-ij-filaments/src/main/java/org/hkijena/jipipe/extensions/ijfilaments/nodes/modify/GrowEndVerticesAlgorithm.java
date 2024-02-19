@@ -1,13 +1,13 @@
 package org.hkijena.jipipe.extensions.ijfilaments.nodes.modify;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
@@ -26,10 +26,10 @@ import org.hkijena.jipipe.extensions.ijfilaments.util.Point3d;
 import java.util.HashSet;
 import java.util.Set;
 
-@JIPipeDocumentation(name = "Grow end vertices (direction)", description = "Iteratively adds vertices to end points (degree 1) and grows them in the direction determined by the neighbor")
-@JIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
-@JIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Grow end vertices (direction)", description = "Iteratively adds vertices to end points (degree 1) and grows them in the direction determined by the neighbor")
+@DefineJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
+@AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
 public class GrowEndVerticesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private int iterations = 1;
@@ -154,7 +154,7 @@ public class GrowEndVerticesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), graph, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Azimuth", description = "Expression that determines the azimuth (angle in the xy-plane) for the new vertex")
+    @SetJIPipeDocumentation(name = "Azimuth", description = "Expression that determines the azimuth (angle in the xy-plane) for the new vertex")
     @JIPipeParameter("azimuth")
     @JIPipeExpressionParameterSettings(hint = "per origin vertex")
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
@@ -170,7 +170,7 @@ public class GrowEndVerticesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.azimuthExpression = azimuthExpression;
     }
 
-    @JIPipeDocumentation(name = "Attitude", description = "Expression that determines the attitude (angle in z) for the new vertex")
+    @SetJIPipeDocumentation(name = "Attitude", description = "Expression that determines the attitude (angle in z) for the new vertex")
     @JIPipeParameter("attitude")
     @JIPipeExpressionParameterSettings(hint = "per origin vertex")
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
@@ -186,7 +186,7 @@ public class GrowEndVerticesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.attitudeExpression = attitudeExpression;
     }
 
-    @JIPipeDocumentation(name = "Distance", description = "Expression that determines the distance between the origin and new vertex")
+    @SetJIPipeDocumentation(name = "Distance", description = "Expression that determines the distance between the origin and new vertex")
     @JIPipeExpressionParameterSettings(hint = "per origin vertex")
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(name = "Default", key = "default", description = "The default value calculated from the direction of the neighbor node")
@@ -202,7 +202,7 @@ public class GrowEndVerticesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.distanceExpression = distanceExpression;
     }
 
-    @JIPipeDocumentation(name = "Iterations", description = "The number of growth iterations")
+    @SetJIPipeDocumentation(name = "Iterations", description = "The number of growth iterations")
     @JIPipeParameter("iterations")
     public int getIterations() {
         return iterations;
@@ -213,7 +213,7 @@ public class GrowEndVerticesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.iterations = iterations;
     }
 
-    @JIPipeDocumentation(name = "Vertex mask", description = "Allows to limit the calculations to a specific set of vertices.")
+    @SetJIPipeDocumentation(name = "Vertex mask", description = "Allows to limit the calculations to a specific set of vertices.")
     @JIPipeParameter("vertex-filter")
     public VertexMaskParameter getVertexMask() {
         return vertexMask;

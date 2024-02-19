@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.imagej2;
 import net.imagej.ops.Op;
 import net.imagej.ops.OpInfo;
 import net.imagej.ops.OpService;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
@@ -68,10 +68,10 @@ public class ImageJ2OpNode extends JIPipeIteratingAlgorithm {
 
     private static JIPipeSlotConfiguration createSlotConfiguration(JIPipeNodeInfo info) {
         JIPipeDefaultMutableSlotConfiguration slotConfiguration = new JIPipeDefaultMutableSlotConfiguration();
-        for (JIPipeInputSlot inputSlot : info.getInputSlots()) {
+        for (AddJIPipeInputSlot inputSlot : info.getInputSlots()) {
             slotConfiguration.addSlot(new JIPipeDataSlotInfo(inputSlot), false);
         }
-        for (JIPipeOutputSlot outputSlot : info.getOutputSlots()) {
+        for (AddJIPipeOutputSlot outputSlot : info.getOutputSlots()) {
             slotConfiguration.addSlot(new JIPipeDataSlotInfo(outputSlot), false);
         }
         slotConfiguration.setInputSealed(true);
@@ -143,7 +143,7 @@ public class ImageJ2OpNode extends JIPipeIteratingAlgorithm {
         parameterToModuleItemAssignment.put(key, moduleItem);
     }
 
-    @JIPipeDocumentation(name = "ImageJ2 parameters", description = "Following parameters were extracted from the ImageJ2 interface:")
+    @SetJIPipeDocumentation(name = "ImageJ2 parameters", description = "Following parameters were extracted from the ImageJ2 interface:")
     @JIPipeParameter("module-parameters")
     public JIPipeDynamicParameterCollection getModuleParameters() {
         return moduleParameters;

@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.omero;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import omero.gateway.LoginCredentials;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -60,7 +60,7 @@ public class OMEROCredentialsEnvironment extends JIPipeEnvironment {
         return StringUtils.orElse(userName, "[no user]") + "@" + StringUtils.orElse(host, "[no host]") + ":" + port;
     }
 
-    @JIPipeDocumentation(name = "Host", description = "The server host. For example <code>localhost</code>, <code>my.server.name</code>, or <code>wss://my.server.name</code>.")
+    @SetJIPipeDocumentation(name = "Host", description = "The server host. For example <code>localhost</code>, <code>my.server.name</code>, or <code>wss://my.server.name</code>.")
     @JIPipeParameter(value = "host", uiOrder = -100, important = true)
     @StringParameterSettings(monospace = true)
     @JsonGetter("host")
@@ -74,7 +74,7 @@ public class OMEROCredentialsEnvironment extends JIPipeEnvironment {
         this.host = host;
     }
 
-    @JIPipeDocumentation(name = "Port", description = "The server port. Set to zero to use the global default port.")
+    @SetJIPipeDocumentation(name = "Port", description = "The server port. Set to zero to use the global default port.")
     @JIPipeParameter(value = "port", uiOrder = -99, important = true)
     @JsonGetter("port")
     public int getPort() {
@@ -87,7 +87,7 @@ public class OMEROCredentialsEnvironment extends JIPipeEnvironment {
         this.port = port;
     }
 
-    @JIPipeDocumentation(name = "User name", description = "The user name")
+    @SetJIPipeDocumentation(name = "User name", description = "The user name")
     @JIPipeParameter(value = "user-name", uiOrder = -98, important = true)
     @StringParameterSettings(monospace = true)
     @JsonGetter("user-name")
@@ -101,7 +101,7 @@ public class OMEROCredentialsEnvironment extends JIPipeEnvironment {
         this.userName = userName;
     }
 
-    @JIPipeDocumentation(name = "Password", description = "The password. The password is not saved in clear text, but encoded in Base64, which can be easily decoded by scripts. " +
+    @SetJIPipeDocumentation(name = "Password", description = "The password. The password is not saved in clear text, but encoded in Base64, which can be easily decoded by scripts. " +
             "If you use JIPipe in a GUI environment, it will ask for the credentials when running a pipeline if you do not provide the password. In a CLI environment, the pipeline will fail.")
     @JIPipeParameter(value = "password", uiOrder = -97, important = true)
     @JsonGetter("password")
@@ -115,7 +115,7 @@ public class OMEROCredentialsEnvironment extends JIPipeEnvironment {
         this.password = password;
     }
 
-    @JIPipeDocumentation(name = "E-Mail", description = "The E-Mail address sent to the server")
+    @SetJIPipeDocumentation(name = "E-Mail", description = "The E-Mail address sent to the server")
     @JIPipeParameter(value = "e-mail", important = true, uiOrder = -96)
     @JsonGetter("e-mail")
     public String getEmail() {
@@ -128,7 +128,7 @@ public class OMEROCredentialsEnvironment extends JIPipeEnvironment {
         this.email = email;
     }
 
-    @JIPipeDocumentation(name = "Web-client URL", description = "URL of the OMERO web-client. Used for displaying data.")
+    @SetJIPipeDocumentation(name = "Web-client URL", description = "URL of the OMERO web-client. Used for displaying data.")
     @JIPipeParameter(value = "webclient-url", important = true, uiOrder = -95)
     @StringParameterSettings(monospace = true)
     @JsonGetter("webclient-url")

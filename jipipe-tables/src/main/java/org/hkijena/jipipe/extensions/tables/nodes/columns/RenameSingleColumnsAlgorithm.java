@@ -14,8 +14,8 @@
 
 package org.hkijena.jipipe.extensions.tables.nodes.columns;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -35,10 +35,10 @@ import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 /**
  * Algorithm that removes columns
  */
-@JIPipeDocumentation(name = "Rename single columns", description = "Renames columns")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
-@JIPipeInputSlot(value = TableColumn.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = TableColumn.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Rename single columns", description = "Renames columns")
+@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = TableColumn.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = TableColumn.class, slotName = "Output", create = true)
 public class RenameSingleColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private StringQueryExpressionAndStringPairParameter.List renamingEntries = new StringQueryExpressionAndStringPairParameter.List();
@@ -86,7 +86,7 @@ public class RenameSingleColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm
         report.report(new ParameterValidationReportContext(reportContext, this, "Renaming entries", "renaming-entries"), renamingEntries);
     }
 
-    @JIPipeDocumentation(name = "Renaming entries", description = "You can rename one or multiple columns.")
+    @SetJIPipeDocumentation(name = "Renaming entries", description = "You can rename one or multiple columns.")
     @JIPipeParameter("renaming-entries")
     @PairParameterSettings(singleRow = false, keyLabel = "Old name", valueLabel = "New name")
     public StringQueryExpressionAndStringPairParameter.List getRenamingEntries() {

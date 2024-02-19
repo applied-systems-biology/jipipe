@@ -15,8 +15,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.math;
 
 import ij.IJ;
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
@@ -36,10 +36,10 @@ import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@JIPipeDocumentation(name = "Generate image from math expression", description = "Applies a mathematical operation to each pixel. The value is written into the image.")
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Annotations", autoCreate = true, optional = true, description = "Optional annotations that can be referenced in the expression")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Generate image from math expression", description = "Applies a mathematical operation to each pixel. The value is written into the image.")
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Annotations", create = true, optional = true, description = "Optional annotations that can be referenced in the expression")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter function = new JIPipeExpressionParameter("x + y");
@@ -109,7 +109,7 @@ public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Function", description = "The function that is applied to each pixel. The expression should return a number.")
+    @SetJIPipeDocumentation(name = "Function", description = "The function that is applied to each pixel. The expression should return a number.")
     @JIPipeParameter("function")
     @JIPipeExpressionParameterSettings(hint = "per pixel")
     @JIPipeExpressionParameterVariable(fromClass = PixelCoordinate5DExpressionParameterVariablesInfo.class)
@@ -124,7 +124,7 @@ public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm
         this.function = transformation;
     }
 
-    @JIPipeDocumentation(name = "Width", description = "The width of the generated image")
+    @SetJIPipeDocumentation(name = "Width", description = "The width of the generated image")
     @JIPipeParameter("width")
     public int getWidth() {
         return width;
@@ -135,7 +135,7 @@ public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm
         this.width = width;
     }
 
-    @JIPipeDocumentation(name = "Height", description = "The height of the generated image")
+    @SetJIPipeDocumentation(name = "Height", description = "The height of the generated image")
     @JIPipeParameter("height")
     public int getHeight() {
         return height;
@@ -146,7 +146,7 @@ public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm
         this.height = height;
     }
 
-    @JIPipeDocumentation(name = "Number of slices (Z)", description = "Number of generated Z slices.")
+    @SetJIPipeDocumentation(name = "Number of slices (Z)", description = "Number of generated Z slices.")
     @JIPipeParameter("size-z")
     public int getSizeZ() {
         return sizeZ;
@@ -157,7 +157,7 @@ public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm
         this.sizeZ = sizeZ;
     }
 
-    @JIPipeDocumentation(name = "Number of channels (C)", description = "Number of generated channel slices.")
+    @SetJIPipeDocumentation(name = "Number of channels (C)", description = "Number of generated channel slices.")
     @JIPipeParameter("size-c")
     public int getSizeC() {
         return sizeC;
@@ -168,7 +168,7 @@ public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm
         this.sizeC = sizeC;
     }
 
-    @JIPipeDocumentation(name = "Number of frames (T)", description = "Number of generated frame slices.")
+    @SetJIPipeDocumentation(name = "Number of frames (T)", description = "Number of generated frame slices.")
     @JIPipeParameter("size-t")
     public int getSizeT() {
         return sizeT;

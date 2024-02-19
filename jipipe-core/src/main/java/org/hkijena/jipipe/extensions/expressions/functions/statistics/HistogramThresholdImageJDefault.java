@@ -1,9 +1,9 @@
 package org.hkijena.jipipe.extensions.expressions.functions.statistics;
 
 import ij.process.AutoThresholder;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 
-@JIPipeDocumentation(name = "Histogram threshold (ImageJ default)", description = "Calculates a threshold from a " +
+@SetJIPipeDocumentation(name = "Histogram threshold (ImageJ default)", description = "Calculates a threshold from a " +
         "histogram using the ImageJ default algorithm.")
 public class HistogramThresholdImageJDefault extends HistogramThresholdFunction {
     public HistogramThresholdImageJDefault() {

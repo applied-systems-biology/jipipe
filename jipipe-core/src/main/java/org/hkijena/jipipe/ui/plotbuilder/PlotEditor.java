@@ -18,7 +18,7 @@ import com.google.common.collect.HashBiMap;
 import ij.macro.Variable;
 import ij.measure.ResultsTable;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
@@ -212,7 +212,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
 
     }
 
-    @JIPipeDocumentation(name = "Plot type", description = "The type of plot to be generated.")
+    @SetJIPipeDocumentation(name = "Plot type", description = "The type of plot to be generated.")
     @JIPipeParameter(value = "plot-type", priority = Priority.HIGH)
     @JIPipeDataParameterSettings(dataBaseClass = PlotData.class, dataClassFilter = PlotDataClassFilter.class)
     public JIPipeDataInfoRef getPlotType() {
@@ -255,7 +255,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
         }
     }
 
-    @JIPipeDocumentation(name = "Plot parameters")
+    @SetJIPipeDocumentation(name = "Plot parameters")
     @JIPipeParameter("plot")
     public PlotData getCurrentPlot() {
         return currentPlot;

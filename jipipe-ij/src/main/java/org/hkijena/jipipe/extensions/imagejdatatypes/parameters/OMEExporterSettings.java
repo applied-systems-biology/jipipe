@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.parameters;
 
 import ome.xml.model.enums.DimensionOrder;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
@@ -43,7 +43,7 @@ public class OMEExporterSettings extends AbstractJIPipeParameterCollection {
         this.dimensionOrder = other.dimensionOrder;
     }
 
-    @JIPipeDocumentation(name = "Split Z into files", description = "If enabled, each Z is written into its own file")
+    @SetJIPipeDocumentation(name = "Split Z into files", description = "If enabled, each Z is written into its own file")
     @JIPipeParameter("split-z")
     public boolean isSplitZ() {
         return splitZ;
@@ -54,7 +54,7 @@ public class OMEExporterSettings extends AbstractJIPipeParameterCollection {
         this.splitZ = splitZ;
     }
 
-    @JIPipeDocumentation(name = "Split channels into files", description = "If enabled, each channel is written into its own file")
+    @SetJIPipeDocumentation(name = "Split channels into files", description = "If enabled, each channel is written into its own file")
     @JIPipeParameter("split-c")
     public boolean isSplitC() {
         return splitC;
@@ -65,7 +65,7 @@ public class OMEExporterSettings extends AbstractJIPipeParameterCollection {
         this.splitC = splitC;
     }
 
-    @JIPipeDocumentation(name = "Split frames into files", description = "If enabled, each time frame is written into its own file")
+    @SetJIPipeDocumentation(name = "Split frames into files", description = "If enabled, each time frame is written into its own file")
     @JIPipeParameter("split-t")
     public boolean isSplitT() {
         return splitT;
@@ -76,7 +76,7 @@ public class OMEExporterSettings extends AbstractJIPipeParameterCollection {
         this.splitT = splitT;
     }
 
-    @JIPipeDocumentation(name = "Zero-pad file names", description = "If enabled, file names are zero-padded")
+    @SetJIPipeDocumentation(name = "Zero-pad file names", description = "If enabled, file names are zero-padded")
     @JIPipeParameter("zero-padding")
     public boolean isPadded() {
         return padded;
@@ -87,7 +87,7 @@ public class OMEExporterSettings extends AbstractJIPipeParameterCollection {
         this.padded = padded;
     }
 
-    @JIPipeDocumentation(name = "Save ROIs", description = "If enabled, ROI are saved into the OME TIFF file")
+    @SetJIPipeDocumentation(name = "Save ROIs", description = "If enabled, ROI are saved into the OME TIFF file")
     @JIPipeParameter("save-roi")
     public boolean isSaveROI() {
         return saveROI;
@@ -98,7 +98,7 @@ public class OMEExporterSettings extends AbstractJIPipeParameterCollection {
         this.saveROI = saveROI;
     }
 
-    @JIPipeDocumentation(name = "No LUT", description = "If enabled, no LUT information is saved into the OME TIFF file")
+    @SetJIPipeDocumentation(name = "No LUT", description = "If enabled, no LUT information is saved into the OME TIFF file")
     @JIPipeParameter("no-lut")
     public boolean isNoLUT() {
         return noLUT;
@@ -109,7 +109,7 @@ public class OMEExporterSettings extends AbstractJIPipeParameterCollection {
         this.noLUT = noLUT;
     }
 
-    @JIPipeDocumentation(name = "Compression", description = "The compression method that should be applied")
+    @SetJIPipeDocumentation(name = "Compression", description = "The compression method that should be applied")
     @JIPipeParameter("compression")
     public OMETIFFCompression getCompression() {
         return compression;
@@ -120,7 +120,7 @@ public class OMEExporterSettings extends AbstractJIPipeParameterCollection {
         this.compression = compression;
     }
 
-    @JIPipeDocumentation(name = "Stack order", description = "In which order stacks are saved")
+    @SetJIPipeDocumentation(name = "Stack order", description = "In which order stacks are saved")
     @JIPipeParameter("stack-order")
     public DimensionOrder getDimensionOrder() {
         return dimensionOrder;

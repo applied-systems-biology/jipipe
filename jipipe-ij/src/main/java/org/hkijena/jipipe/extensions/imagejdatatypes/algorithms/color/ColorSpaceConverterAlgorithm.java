@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.color;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -37,7 +37,7 @@ public abstract class ColorSpaceConverterAlgorithm extends JIPipeSimpleIterating
         this.outputColorSpace = other.outputColorSpace;
     }
 
-    @JIPipeDocumentation(name = "Reinterpret channels", description = "If enabled, the image channels are reinterpreted instead of converted.")
+    @SetJIPipeDocumentation(name = "Reinterpret channels", description = "If enabled, the image channels are reinterpreted instead of converted.")
     @JIPipeParameter("reinterpret-channels")
     public boolean isReinterpret() {
         return reinterpret;

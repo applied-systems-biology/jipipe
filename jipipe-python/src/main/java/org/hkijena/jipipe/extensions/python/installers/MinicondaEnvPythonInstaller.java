@@ -13,12 +13,12 @@
 
 package org.hkijena.jipipe.extensions.python.installers;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
-@JIPipeDocumentation(name = "Install Miniconda 3", description = "Installs Miniconda 3")
+@SetJIPipeDocumentation(name = "Install Miniconda 3", description = "Installs Miniconda 3")
 public class MinicondaEnvPythonInstaller extends BasicMinicondaEnvPythonInstaller {
     /**
      * @param workbench       the workbench
@@ -58,7 +58,7 @@ public class MinicondaEnvPythonInstaller extends BasicMinicondaEnvPythonInstalle
         private boolean installTiffFile = true;
         private boolean installPandas = true;
 
-        @JIPipeDocumentation(name = "Install Numpy", description = "Install the numpy library")
+        @SetJIPipeDocumentation(name = "Install Numpy", description = "Install the numpy library")
         @JIPipeParameter("install-numpy")
         public boolean isInstallNumpy() {
             return installNumpy;
@@ -69,7 +69,7 @@ public class MinicondaEnvPythonInstaller extends BasicMinicondaEnvPythonInstalle
             this.installNumpy = installNumpy;
         }
 
-        @JIPipeDocumentation(name = "Install Scikit Image", description = "Install the scikit-image library")
+        @SetJIPipeDocumentation(name = "Install Scikit Image", description = "Install the scikit-image library")
         @JIPipeParameter("install-scikit-image")
         public boolean isInstallScikitImage() {
             return installScikitImage;
@@ -80,7 +80,7 @@ public class MinicondaEnvPythonInstaller extends BasicMinicondaEnvPythonInstalle
             this.installScikitImage = installScikitImage;
         }
 
-        @JIPipeDocumentation(name = "Install Scikit Learn", description = "Install the scikit-learn library")
+        @SetJIPipeDocumentation(name = "Install Scikit Learn", description = "Install the scikit-learn library")
         @JIPipeParameter("install-scikit-learn")
         public boolean isInstallScikitLearn() {
             return installScikitLearn;
@@ -91,7 +91,7 @@ public class MinicondaEnvPythonInstaller extends BasicMinicondaEnvPythonInstalle
             this.installScikitLearn = installScikitLearn;
         }
 
-        @JIPipeDocumentation(name = "Install TIFFFile", description = "Install the tifffile library")
+        @SetJIPipeDocumentation(name = "Install TIFFFile", description = "Install the tifffile library")
         @JIPipeParameter("install-tifffile")
         public boolean isInstallTiffFile() {
             return installTiffFile;
@@ -102,7 +102,7 @@ public class MinicondaEnvPythonInstaller extends BasicMinicondaEnvPythonInstalle
             this.installTiffFile = installTiffFile;
         }
 
-        @JIPipeDocumentation(name = "Install Pandas", description = "Installs the pandas library")
+        @SetJIPipeDocumentation(name = "Install Pandas", description = "Installs the pandas library")
         @JIPipeParameter("install-pandas")
         public boolean isInstallPandas() {
             return installPandas;

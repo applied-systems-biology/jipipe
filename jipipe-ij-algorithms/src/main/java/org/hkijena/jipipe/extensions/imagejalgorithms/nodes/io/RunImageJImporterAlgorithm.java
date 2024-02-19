@@ -1,8 +1,8 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.io;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -30,10 +30,10 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 
 import javax.swing.*;
 
-@JIPipeDocumentation(name = "Import from ImageJ", description = "Runs an ImageJ importer. You can select the utilized importer type in the parameters.")
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nImport")
+@SetJIPipeDocumentation(name = "Import from ImageJ", description = "Runs an ImageJ importer. You can select the utilized importer type in the parameters.")
+@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nImport")
 public class RunImageJImporterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private ImageJDataImporterRef importerType = new ImageJDataImporterRef();
@@ -75,7 +75,7 @@ public class RunImageJImporterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         super.reportValidity(reportContext, report);
     }
 
-    @JIPipeDocumentation(name = "Set import parameters", description = "Sets the import parameters via its default UI")
+    @SetJIPipeDocumentation(name = "Set import parameters", description = "Sets the import parameters via its default UI")
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/configure.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/configure.png")
     public void setImporterParametersFromUI(JIPipeWorkbench parent) {
@@ -95,7 +95,7 @@ public class RunImageJImporterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Importer type", description = "Please select the importer type")
+    @SetJIPipeDocumentation(name = "Importer type", description = "Please select the importer type")
     @JIPipeParameter(value = "importer-type", important = true)
     public ImageJDataImporterRef getImporterType() {
         return importerType;
@@ -106,7 +106,7 @@ public class RunImageJImporterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.importerType = importerType;
     }
 
-    @JIPipeDocumentation(name = "Import parameters", description = "Please setup the following parameters to indicate which data is imported")
+    @SetJIPipeDocumentation(name = "Import parameters", description = "Please setup the following parameters to indicate which data is imported")
     @JIPipeParameter("import-parameters")
     public ImageJImportParameters getImportParameters() {
         return importParameters;

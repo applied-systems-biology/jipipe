@@ -16,8 +16,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.blur;
 import ij.ImagePlus;
 import ij.plugin.GaussianBlur3D;
 import ij.plugin.filter.GaussianBlur;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -32,12 +32,12 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 /**
  * Wrapper around {@link GaussianBlur}
  */
-@JIPipeDocumentation(name = "Gaussian blur 3D", description = "Applies convolution with a Gaussian function in 3D space for smoothing. " +
+@SetJIPipeDocumentation(name = "Gaussian blur 3D", description = "Applies convolution with a Gaussian function in 3D space for smoothing. " +
         "If higher-dimensional data is provided, the filter is applied to each 3D slice.")
-@JIPipeNode(menuPath = "Blur", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nFilters", aliasName = "Gaussian Blur 3D...")
+@DefineJIPipeNode(menuPath = "Blur", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nFilters", aliasName = "Gaussian Blur 3D...")
 public class GaussianBlur3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private double sigmaX = 1;
@@ -79,7 +79,7 @@ public class GaussianBlur3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
 
-    @JIPipeDocumentation(name = "Sigma (X)", description = "Standard deviation of the Gaussian (pixels) in X direction. ")
+    @SetJIPipeDocumentation(name = "Sigma (X)", description = "Standard deviation of the Gaussian (pixels) in X direction. ")
     @JIPipeParameter("sigma-x")
     public double getSigmaX() {
         return sigmaX;
@@ -91,7 +91,7 @@ public class GaussianBlur3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Sigma (Y)", description = "Standard deviation of the Gaussian (pixels) in Y direction." +
+    @SetJIPipeDocumentation(name = "Sigma (Y)", description = "Standard deviation of the Gaussian (pixels) in Y direction." +
             " If zero or less, sigma in X direction is automatically used instead.")
     @JIPipeParameter("sigma-y")
     public double getSigmaY() {
@@ -104,7 +104,7 @@ public class GaussianBlur3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Sigma (Z)", description = "Standard deviation of the Gaussian (pixels) in Z direction." +
+    @SetJIPipeDocumentation(name = "Sigma (Z)", description = "Standard deviation of the Gaussian (pixels) in Z direction." +
             " If zero or less, sigma in X direction is automatically used instead.")
     @JIPipeParameter("sigma-z")
     public double getSigmaZ() {

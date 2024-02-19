@@ -20,8 +20,8 @@ import imagescience.feature.Hessian;
 import imagescience.image.Aspects;
 import imagescience.image.FloatImage;
 import imagescience.image.Image;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -40,12 +40,12 @@ import java.util.Vector;
 /**
  * Wrapper around {@link EDM}
  */
-@JIPipeDocumentation(name = "Hessian 2D", description = "Computes Hessian eigenimages of images." +
+@SetJIPipeDocumentation(name = "Hessian 2D", description = "Computes Hessian eigenimages of images." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nFeatureJ", aliasName = "FeatureJ Hessian")
+@DefineJIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nFeatureJ", aliasName = "FeatureJ Hessian")
 public class Hessian2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private EigenvalueSelection2D eigenvalueSelection = EigenvalueSelection2D.Largest;
@@ -105,7 +105,7 @@ public class Hessian2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             return eigenimages.get(1).imageplus();
     }
 
-    @JIPipeDocumentation(name = "Eigenvalue", description = "Allows you to choose whether the largest or smallest Eigenvalues are chosen")
+    @SetJIPipeDocumentation(name = "Eigenvalue", description = "Allows you to choose whether the largest or smallest Eigenvalues are chosen")
     @JIPipeParameter("eigenvalue-selection")
     public EigenvalueSelection2D getEigenvalueSelection2D() {
         return eigenvalueSelection;
@@ -118,7 +118,7 @@ public class Hessian2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("smoothing")
-    @JIPipeDocumentation(name = "Smoothing", description = "The smoothing scale at which the required image derivatives are computed. " +
+    @SetJIPipeDocumentation(name = "Smoothing", description = "The smoothing scale at which the required image derivatives are computed. " +
             "The scale is equal to the standard deviation of the Gaussian kernel used for differentiation and must be larger than zero. " +
             "In order to enforce physical isotropy, for each dimension, the scale is divided by the size of the image elements (aspect ratio) in that dimension.")
     public double getSmoothing() {
@@ -131,7 +131,7 @@ public class Hessian2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Compare absolute", description = "Determines whether eigenvalues are compared in absolute sense")
+    @SetJIPipeDocumentation(name = "Compare absolute", description = "Determines whether eigenvalues are compared in absolute sense")
     @JIPipeParameter("compare-absolute")
     public boolean isCompareAbsolute() {
         return compareAbsolute;

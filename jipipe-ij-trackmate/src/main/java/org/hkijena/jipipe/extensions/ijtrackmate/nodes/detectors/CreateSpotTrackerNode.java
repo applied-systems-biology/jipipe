@@ -15,7 +15,7 @@
 package org.hkijena.jipipe.extensions.ijtrackmate.nodes.detectors;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -62,7 +62,7 @@ public class CreateSpotTrackerNode extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), spotDetectorData, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Spot tracker settings")
+    @SetJIPipeDocumentation(name = "Spot tracker settings")
     @JIPipeParameter(value = "spot-tracker-parameters", resourceClass = TrackMateExtension.class, iconURL = "/org/hkijena/jipipe/extensions/ijtrackmate/icons/trackmate.png")
     public JIPipeDynamicParameterCollection getParameters() {
         return parameters;

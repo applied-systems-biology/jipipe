@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.strings.nodes.text;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
@@ -15,10 +15,10 @@ import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.strings.StringData;
 
-@JIPipeDocumentation(name = "Process text (expression)", description = "Processes text with an expression.")
-@JIPipeNode(menuPath = "Text", nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
-@JIPipeInputSlot(value = StringData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = StringData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Process text (expression)", description = "Processes text with an expression.")
+@DefineJIPipeNode(menuPath = "Text", nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = StringData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = StringData.class, slotName = "Output", create = true)
 public class ProcessTextDataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter textProcessor = new JIPipeExpressionParameter("text");
@@ -44,7 +44,7 @@ public class ProcessTextDataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new StringData(output), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Text processor", description = "An expression that allows to process the text.")
+    @SetJIPipeDocumentation(name = "Text processor", description = "An expression that allows to process the text.")
     @JIPipeParameter(value = "text-processor")
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(name = "Text", key = "text", description = "The input text")

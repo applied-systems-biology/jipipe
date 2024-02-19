@@ -1,8 +1,8 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.io;
 
 import ij.gui.Roi;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
@@ -20,11 +20,11 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.nio.file.Path;
 import java.util.*;
 
-@JIPipeDocumentation(name = "Export ROI", description = "Exports a ROI list into one or multiple ROI files")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = FileData.class, slotName = "Exported file", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "ROI")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nSave")
+@SetJIPipeDocumentation(name = "Export ROI", description = "Exports a ROI list into one or multiple ROI files")
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = FileData.class, slotName = "Exported file", create = true)
+@DefineJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "ROI")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nSave")
 public class ExportROIAlgorithm2 extends JIPipeIteratingAlgorithm {
     private boolean exportAsROIFile = false;
     private DataExportExpressionParameter filePath = new DataExportExpressionParameter();
@@ -77,7 +77,7 @@ public class ExportROIAlgorithm2 extends JIPipeIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "File path", description = "Expression that generates the output file path")
+    @SetJIPipeDocumentation(name = "File path", description = "Expression that generates the output file path")
     @JIPipeParameter("file-path")
     public DataExportExpressionParameter getFilePath() {
         return filePath;
@@ -88,7 +88,7 @@ public class ExportROIAlgorithm2 extends JIPipeIteratingAlgorithm {
         this.filePath = filePath;
     }
 
-    @JIPipeDocumentation(name = "Force exporting *.roi files", description = "If true, the exporter will always export *.roi files and if necessary split the ROI list.")
+    @SetJIPipeDocumentation(name = "Force exporting *.roi files", description = "If true, the exporter will always export *.roi files and if necessary split the ROI list.")
     @JIPipeParameter("export-as-roi-file")
     public boolean isExportAsROIFile() {
         return exportAsROIFile;

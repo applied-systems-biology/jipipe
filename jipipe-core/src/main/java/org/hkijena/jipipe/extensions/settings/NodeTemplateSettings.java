@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.settings;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -27,7 +27,7 @@ public class NodeTemplateSettings extends AbstractJIPipeParameterCollection {
         JIPipe.getInstance().getNodeTemplatesRefreshedEventEmitter().emit(new NodeTemplatesRefreshedEvent());
     }
 
-    @JIPipeDocumentation(name = "Node templates", description = "List of globally available node templates.")
+    @SetJIPipeDocumentation(name = "Node templates", description = "List of globally available node templates.")
     @JIPipeParameter("node-templates")
     public JIPipeNodeTemplate.List getNodeTemplates() {
         return nodeTemplates;
@@ -38,7 +38,7 @@ public class NodeTemplateSettings extends AbstractJIPipeParameterCollection {
         this.nodeTemplates = nodeTemplates;
     }
 
-    @JIPipeDocumentation(name = "Template downloader repositories", description = "List of repositories for the 'Get more templates' feature")
+    @SetJIPipeDocumentation(name = "Template downloader repositories", description = "List of repositories for the 'Get more templates' feature")
     @JIPipeParameter("template-download-repositories")
     public StringList getNodeTemplateDownloadRepositories() {
         return nodeTemplateDownloadRepositories;

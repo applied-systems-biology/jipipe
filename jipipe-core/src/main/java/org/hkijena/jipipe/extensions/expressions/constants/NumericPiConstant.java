@@ -13,10 +13,10 @@
 
 package org.hkijena.jipipe.extensions.expressions.constants;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionConstant;
 
-@JIPipeDocumentation(name = "Pi", description = "Evaluates to " + Math.PI)
+@SetJIPipeDocumentation(name = "Pi", description = "Evaluates to " + Math.PI)
 public class NumericPiConstant extends ExpressionConstant {
     public NumericPiConstant() {
         super("pi", Math.PI);

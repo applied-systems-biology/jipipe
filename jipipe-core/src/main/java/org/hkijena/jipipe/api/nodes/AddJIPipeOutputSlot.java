@@ -19,12 +19,12 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import java.lang.annotation.*;
 
 /**
- * Annotates an {@link JIPipeGraphNode} with an input slot.
+ * Annotates an {@link JIPipeGraphNode} with an output slot.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@Repeatable(JIPipeInputSlots.class)
-public @interface JIPipeInputSlot {
+@Repeatable(AddJIPipeOutputSlots.class)
+public @interface AddJIPipeOutputSlot {
     /**
      * The data class
      *
@@ -47,19 +47,23 @@ public @interface JIPipeInputSlot {
     String description() default "";
 
     /**
+     * An optional inherited slot. Used if autoCreate is true
+     * Either can be a valid input slot name to inherit the type of the input slot,
+     * or can be '*' to inherit the type of the first slot
+     *
+     * @return inherited slot
+     * @deprecated non-functional as of JIPipe version 1.78.0
+     */
+    @Deprecated
+    String inheritedSlot() default "";
+
+    /**
      * If true, {@link JIPipeGraphNode} automatically configures its slots based on annotations (unless a custom {@link org.hkijena.jipipe.api.data.JIPipeSlotConfiguration}
      * is provided.
      *
      * @return if auto-configuration is enabled
      */
-    boolean autoCreate() default false;
-
-    /**
-     * If true, the input is considered optional. The node will still run without a connection to the input (with an empty data table)
-     *
-     * @return if the input is optional
-     */
-    boolean optional() default false;
+    boolean create() default false;
 
     /**
      * Assigns a role to the slot for internal usage within the node's code.

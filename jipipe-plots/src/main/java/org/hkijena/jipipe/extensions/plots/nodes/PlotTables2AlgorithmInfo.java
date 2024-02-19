@@ -63,8 +63,8 @@ public class PlotTables2AlgorithmInfo implements JIPipeNodeInfo {
     }
 
     @Override
-    public List<JIPipeInputSlot> getInputSlots() {
-        return Collections.singletonList(new DefaultJIPipeInputSlot(ResultsTableData.class, "Input", "The table(s) to be plotted", false, false, JIPipeDataSlotRole.Data));
+    public List<AddJIPipeInputSlot> getInputSlots() {
+        return Collections.singletonList(new DefaultAddJIPipeInputSlot(ResultsTableData.class, "Input", "The table(s) to be plotted", false, false, JIPipeDataSlotRole.Data));
     }
 
     public JIPipeDataInfo getPlotDataType() {
@@ -72,8 +72,8 @@ public class PlotTables2AlgorithmInfo implements JIPipeNodeInfo {
     }
 
     @Override
-    public List<JIPipeOutputSlot> getOutputSlots() {
-        return Collections.singletonList(new DefaultJIPipeOutputSlot(PlotData.class, "Output", "The generated plots", null, false, JIPipeDataSlotRole.Data));
+    public List<AddJIPipeOutputSlot> getOutputSlots() {
+        return Collections.singletonList(new DefaultAddJIPipeOutputSlot(PlotData.class, "Output", "The generated plots", null, false, JIPipeDataSlotRole.Data));
     }
 
     @Override

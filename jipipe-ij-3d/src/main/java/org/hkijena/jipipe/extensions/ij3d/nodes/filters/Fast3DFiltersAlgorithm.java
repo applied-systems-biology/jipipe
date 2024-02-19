@@ -12,7 +12,7 @@ import mcib_plugins.Filter3D.Filter3Dmax;
 import mcib_plugins.Filter3D.Filter3DmaxLocal;
 import mcib_plugins.Filter3D.Filter3Dmean;
 import mcib_plugins.Filter3D.Filter3Dmin;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -83,7 +83,7 @@ public abstract class Fast3DFiltersAlgorithm extends JIPipeSimpleIteratingAlgori
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(outputImage), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Radius (X)", description = "Radius of the ellipsoidal kernel in the X direction")
+    @SetJIPipeDocumentation(name = "Radius (X)", description = "Radius of the ellipsoidal kernel in the X direction")
     @JIPipeParameter("kernel-x")
     public Quantity getKernelX() {
         return kernelX;
@@ -94,7 +94,7 @@ public abstract class Fast3DFiltersAlgorithm extends JIPipeSimpleIteratingAlgori
         this.kernelX = kernelX;
     }
 
-    @JIPipeDocumentation(name = "Radius (Y)", description = "Radius of the ellipsoidal kernel in the Y direction")
+    @SetJIPipeDocumentation(name = "Radius (Y)", description = "Radius of the ellipsoidal kernel in the Y direction")
     @JIPipeParameter("kernel-y")
     public Quantity getKernelY() {
         return kernelY;
@@ -105,7 +105,7 @@ public abstract class Fast3DFiltersAlgorithm extends JIPipeSimpleIteratingAlgori
         this.kernelY = kernelY;
     }
 
-    @JIPipeDocumentation(name = "Radius (Z)", description = "Radius of the ellipsoidal kernel in the Z direction")
+    @SetJIPipeDocumentation(name = "Radius (Z)", description = "Radius of the ellipsoidal kernel in the Z direction")
     @JIPipeParameter("kernel-z")
     public Quantity getKernelZ() {
         return kernelZ;
@@ -116,7 +116,7 @@ public abstract class Fast3DFiltersAlgorithm extends JIPipeSimpleIteratingAlgori
         this.kernelZ = kernelZ;
     }
 
-    @JIPipeDocumentation(name = "Number of threads", description = "The number of threads for parallel processing")
+    @SetJIPipeDocumentation(name = "Number of threads", description = "The number of threads for parallel processing")
     @JIPipeParameter("num-threads")
     public int getNumThreads() {
         return numThreads;
@@ -132,7 +132,7 @@ public abstract class Fast3DFiltersAlgorithm extends JIPipeSimpleIteratingAlgori
         return false;
     }
 
-    @JIPipeDocumentation(name = "Prefer isotropic filter (faster)", description = "If possible, utilize a faster implementation using a rolling ball algorithm. " +
+    @SetJIPipeDocumentation(name = "Prefer isotropic filter (faster)", description = "If possible, utilize a faster implementation using a rolling ball algorithm. " +
             "Requires that the radii are the same. Not supported on all filters. If isotropic filtering is not possible or disabled, the node will fall back to a parallelized algorithm.")
     @JIPipeParameter("prefer-isotropic-filter")
     public boolean isPreferIsotropicFilter() {

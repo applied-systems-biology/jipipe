@@ -5,9 +5,9 @@ import ij.process.ImageProcessor;
 import mcib3d.image3d.ImageHandler;
 import mcib3d.image3d.processing.CannyEdge3D;
 import mcib3d.image3d.processing.SymmetryFilter;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -23,16 +23,16 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import java.util.HashMap;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "3D symmetry filter", description = "Compute the gradients of the image based on the Canny edge detector. " +
+@SetJIPipeDocumentation(name = "3D symmetry filter", description = "Compute the gradients of the image based on the Canny edge detector. " +
         "Then the symmetry filter will vote for the voxels inside the object based on the gradient vector direction.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Features")
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Symmetry", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Symmetry smoothed", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Edges", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Bin", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "BinEdge", autoCreate = true)
-@JIPipeCitation("https://mcib3d.frama.io/3d-suite-imagej/plugins/Filters/3D-Edge-and-Symmetry-Filter/")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Features")
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Symmetry", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Symmetry smoothed", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Edges", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Bin", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "BinEdge", create = true)
+@AddJIPipeCitation("https://mcib3d.frama.io/3d-suite-imagej/plugins/Filters/3D-Edge-and-Symmetry-Filter/")
 public class SymmetryFilter3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     boolean improved = true;
@@ -101,7 +101,7 @@ public class SymmetryFilter3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData("BinEdge", new ImagePlusGreyscaleData(binEdge), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Alpha", description = "The smoothing in canny edge detection, the smaller the value, the smoother the edges.")
+    @SetJIPipeDocumentation(name = "Alpha", description = "The smoothing in canny edge detection, the smaller the value, the smoother the edges.")
     @JIPipeParameter("alpha")
     public double getAlpha() {
         return alpha;
@@ -112,7 +112,7 @@ public class SymmetryFilter3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.alpha = alpha;
     }
 
-    @JIPipeDocumentation(name = "Radius", description = "The radius of the object whose symmetry is to be detected.")
+    @SetJIPipeDocumentation(name = "Radius", description = "The radius of the object whose symmetry is to be detected.")
     @JIPipeParameter("radius")
     public int getRadius() {
         return radius;
@@ -123,7 +123,7 @@ public class SymmetryFilter3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.radius = radius;
     }
 
-    @JIPipeDocumentation(name = "Normalize", description = "Internal values. See Gertych et al. for references.")
+    @SetJIPipeDocumentation(name = "Normalize", description = "Internal values. See Gertych et al. for references.")
     @JIPipeParameter("normalize")
     public double getNormalize() {
         return normalize;
@@ -134,7 +134,7 @@ public class SymmetryFilter3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.normalize = normalize;
     }
 
-    @JIPipeDocumentation(name = "Scaling", description = "Internal values. See Gertych et al. for references.")
+    @SetJIPipeDocumentation(name = "Scaling", description = "Internal values. See Gertych et al. for references.")
     @JIPipeParameter("scaling")
     public double getScaling() {
         return scaling;
@@ -145,7 +145,7 @@ public class SymmetryFilter3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.scaling = scaling;
     }
 
-    @JIPipeDocumentation(name = "Improved seed detection", description = "Modified implementation to better detect seeds inside objects rather than objects themselves.")
+    @SetJIPipeDocumentation(name = "Improved seed detection", description = "Modified implementation to better detect seeds inside objects rather than objects themselves.")
     @JIPipeParameter("improved-seed-detection")
     public boolean isImproved() {
         return improved;

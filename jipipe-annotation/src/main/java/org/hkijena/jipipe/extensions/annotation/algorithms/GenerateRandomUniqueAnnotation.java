@@ -13,17 +13,17 @@
 
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -37,11 +37,11 @@ import java.util.List;
 /**
  * Generates annotations from filenames
  */
-@JIPipeDocumentation(name = "Random annotation", description = "Generates a unique random numeric annotation. " +
+@SetJIPipeDocumentation(name = "Random annotation", description = "Generates a unique random numeric annotation. " +
         "The value range is [0, number of rows]. This is useful for randomly distributing data.")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Annotated data", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Data", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Annotated data", create = true)
 public class GenerateRandomUniqueAnnotation extends JIPipeParameterSlotAlgorithm {
 
     private String generatedAnnotation = "#Random";
@@ -93,7 +93,7 @@ public class GenerateRandomUniqueAnnotation extends JIPipeParameterSlotAlgorithm
     /**
      * @return Generated annotation type
      */
-    @JIPipeDocumentation(name = "Generated annotation", description = "Select which annotation type is generated for each data row")
+    @SetJIPipeDocumentation(name = "Generated annotation", description = "Select which annotation type is generated for each data row")
     @JIPipeParameter("generated-annotation")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public String getGeneratedAnnotation() {
@@ -111,7 +111,7 @@ public class GenerateRandomUniqueAnnotation extends JIPipeParameterSlotAlgorithm
     }
 
 
-    @JIPipeDocumentation(name = "Merge same annotation values", description = "Determines which strategy is applied if an annotation already exists.")
+    @SetJIPipeDocumentation(name = "Merge same annotation values", description = "Determines which strategy is applied if an annotation already exists.")
     @JIPipeParameter("annotation-merge-strategy")
     public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {
         return annotationMergeStrategy;

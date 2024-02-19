@@ -15,9 +15,9 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.color;
 
 import ij.ImagePlus;
 import ij.process.ColorProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHeavyData;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
@@ -35,9 +35,9 @@ import java.awt.*;
  * It acts as base and intermediate type between colored images. The convertFrom(data) method copies the color space
  * Conversion works through {@link org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.ImplicitImageTypeConverter}
  */
-@JIPipeDocumentation(name = "2D Image (Color)", description = "A colored image")
-@JIPipeNode(menuPath = "Images\n2D\nColor")
-@JIPipeHeavyData
+@SetJIPipeDocumentation(name = "2D Image (Color)", description = "A colored image")
+@DefineJIPipeNode(menuPath = "Images\n2D\nColor")
+@LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ColorProcessor.class, colorSpace = RGBColorSpace.class, pixelType = Integer.class, bitDepth = 24, numDimensions = 2)
 public class ImagePlus2DColorData extends ImagePlus2DData {
 

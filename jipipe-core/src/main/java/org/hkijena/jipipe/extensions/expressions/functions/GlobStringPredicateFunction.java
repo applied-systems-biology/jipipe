@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.expressions.functions;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -21,7 +21,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "String matches (Glob)", description = "Tests if the left operand matches the pattern described within the right operand. " +
+@SetJIPipeDocumentation(name = "String matches (Glob)", description = "Tests if the left operand matches the pattern described within the right operand. " +
         "There can be multiple right operands; in such case, the function returns true if any matches.")
 public class GlobStringPredicateFunction extends ExpressionFunction {
 

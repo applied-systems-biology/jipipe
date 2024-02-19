@@ -1,8 +1,8 @@
 package org.hkijena.jipipe.extensions.ijfilaments.nodes.filter;
 
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -13,11 +13,11 @@ import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
-@JIPipeDocumentation(name = "Remove border filaments", description = "Removes filament components that are within a specified distance of the image borders.")
-@JIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Filter")
-@JIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true)
-@JIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Remove border filaments", description = "Removes filament components that are within a specified distance of the image borders.")
+@DefineJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Filter")
+@AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true)
+@AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
 public class RemoveBorderFilaments extends JIPipeIteratingAlgorithm {
 
     private boolean removeInX = true;
@@ -50,7 +50,7 @@ public class RemoveBorderFilaments extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Check X coordinate", description = "If enabled, check if the object's X coordinate")
+    @SetJIPipeDocumentation(name = "Check X coordinate", description = "If enabled, check if the object's X coordinate")
     @JIPipeParameter("remove-in-x")
     public boolean isRemoveInX() {
         return removeInX;
@@ -61,7 +61,7 @@ public class RemoveBorderFilaments extends JIPipeIteratingAlgorithm {
         this.removeInX = removeInX;
     }
 
-    @JIPipeDocumentation(name = "Check Y coordinate", description = "If enabled, check if the object's Y coordinate")
+    @SetJIPipeDocumentation(name = "Check Y coordinate", description = "If enabled, check if the object's Y coordinate")
     @JIPipeParameter("remove-in-y")
     public boolean isRemoveInY() {
         return removeInY;
@@ -72,7 +72,7 @@ public class RemoveBorderFilaments extends JIPipeIteratingAlgorithm {
         this.removeInY = removeInY;
     }
 
-    @JIPipeDocumentation(name = "Check Z coordinate", description = "If enabled, check if the object's Z coordinate")
+    @SetJIPipeDocumentation(name = "Check Z coordinate", description = "If enabled, check if the object's Z coordinate")
     @JIPipeParameter("remove-in-z")
     public boolean isRemoveInZ() {
         return removeInZ;
@@ -83,7 +83,7 @@ public class RemoveBorderFilaments extends JIPipeIteratingAlgorithm {
         this.removeInZ = removeInZ;
     }
 
-    @JIPipeDocumentation(name = "Border distance", description = "The maximum distance to the border (defaults to zero)")
+    @SetJIPipeDocumentation(name = "Border distance", description = "The maximum distance to the border (defaults to zero)")
     @JIPipeParameter("border-distance")
     public double getBorderDistance() {
         return borderDistance;
@@ -94,7 +94,7 @@ public class RemoveBorderFilaments extends JIPipeIteratingAlgorithm {
         this.borderDistance = borderDistance;
     }
 
-    @JIPipeDocumentation(name = "Use thickness", description = "If enabled, the thickness of the vertices is considered while determining if a vertex crosses the border. Otherwise, only the center point is used (thickness zero)")
+    @SetJIPipeDocumentation(name = "Use thickness", description = "If enabled, the thickness of the vertices is considered while determining if a vertex crosses the border. Otherwise, only the center point is used (thickness zero)")
     @JIPipeParameter("use-thickness")
     public boolean isUseThickness() {
         return useThickness;

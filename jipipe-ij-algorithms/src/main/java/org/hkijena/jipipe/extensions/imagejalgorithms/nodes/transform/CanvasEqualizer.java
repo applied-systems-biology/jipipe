@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.transform;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
@@ -157,7 +157,7 @@ public class CanvasEqualizer extends AbstractJIPipeParameterCollection {
         return ipNew;
     }
 
-    @JIPipeDocumentation(name = "X axis", description = "Defines the size of the output canvas")
+    @SetJIPipeDocumentation(name = "X axis", description = "Defines the size of the output canvas")
     @JIPipeParameter("x-axis-expression")
     @JIPipeExpressionParameterVariable(key = "width", name = "Width", description = "Calculated width of the output image")
     @JIPipeExpressionParameterVariable(key = "height", name = "Height", description = "Calculated height of the output image")
@@ -171,7 +171,7 @@ public class CanvasEqualizer extends AbstractJIPipeParameterCollection {
         this.xAxis = xAxis;
     }
 
-    @JIPipeDocumentation(name = "Y axis", description = "Defines the size of the output canvas")
+    @SetJIPipeDocumentation(name = "Y axis", description = "Defines the size of the output canvas")
     @JIPipeParameter("y-axis-expression")
     @JIPipeExpressionParameterVariable(key = "width", name = "Width", description = "Calculated width of the output image")
     @JIPipeExpressionParameterVariable(key = "height", name = "Height", description = "Calculated height of the output image")
@@ -185,7 +185,7 @@ public class CanvasEqualizer extends AbstractJIPipeParameterCollection {
         this.yAxis = yAxis;
     }
 
-    @JIPipeDocumentation(name = "Background color", description = "The color of the outside canvas")
+    @SetJIPipeDocumentation(name = "Background color", description = "The color of the outside canvas")
     @JIPipeParameter("background-color")
     public Color getBackgroundColor() {
         return backgroundColor;
@@ -196,7 +196,7 @@ public class CanvasEqualizer extends AbstractJIPipeParameterCollection {
         this.backgroundColor = backgroundColor;
     }
 
-    @JIPipeDocumentation(name = "Anchor", description = "From which point to expand the canvas")
+    @SetJIPipeDocumentation(name = "Anchor", description = "From which point to expand the canvas")
     @JIPipeParameter("anchor")
     public Anchor getAnchor() {
         return anchor;

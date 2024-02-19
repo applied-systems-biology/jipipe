@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.strings;
 
 import com.google.common.base.Charsets;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-@JIPipeDocumentation(name = "Json", description = "Text in JSON format")
+@SetJIPipeDocumentation(name = "Json", description = "Text in JSON format")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.json file that stores the current data.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
 public class JsonData extends StringData {

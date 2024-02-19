@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.scene3d.datatypes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHeavyData;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.utils.JIPipeSerializedJsonObjectData;
@@ -17,8 +17,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.nio.file.Path;
 import java.util.*;
 
-@JIPipeDocumentation(name = "3D scene", description = "3D objects arranged in a scene")
-@JIPipeHeavyData
+@SetJIPipeDocumentation(name = "3D scene", description = "3D objects arranged in a scene")
+@LabelAsJIPipeHeavyData
 public class Scene3DData extends JIPipeSerializedJsonObjectData implements List<Scene3DNode> {
 
     private final List<Scene3DNode> nodes = new ArrayList<>();

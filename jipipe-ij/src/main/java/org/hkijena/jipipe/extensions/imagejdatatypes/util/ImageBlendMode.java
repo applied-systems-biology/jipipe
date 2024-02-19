@@ -1,9 +1,9 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.util;
 
 import ij.process.ColorProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
+import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
 
-@JIPipeDocumentationDescription(description = "See https://en.wikipedia.org/wiki/Blend_modes")
+@AddJIPipeDocumentationDescription(description = "See https://en.wikipedia.org/wiki/Blend_modes")
 public enum ImageBlendMode {
     Normal("Normal"),
     Multiply("Multiply"),

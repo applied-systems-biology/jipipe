@@ -14,8 +14,8 @@
 
 package org.hkijena.jipipe.extensions.tables.nodes.filter;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
@@ -35,10 +35,10 @@ import java.util.Set;
 /**
  * Algorithm that integrates columns
  */
-@JIPipeDocumentation(name = "Filter tables", description = "Filters tables by their properties.")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Filter")
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Filter tables", description = "Filters tables by their properties.")
+@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Filter")
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class FilterTablesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter filters = new JIPipeExpressionParameter("");
@@ -83,7 +83,7 @@ public class FilterTablesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Include annotations", description = "If enabled, annotations are also available as string variables. Please note that " +
+    @SetJIPipeDocumentation(name = "Include annotations", description = "If enabled, annotations are also available as string variables. Please note that " +
             "table data specific variables will overwrite annotations with the same name.")
     @JIPipeParameter("include-annotations")
     public boolean isIncludeAnnotations() {
@@ -95,7 +95,7 @@ public class FilterTablesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.includeAnnotations = includeAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Filters", description = "Expression that is applied per table to determine if it is filtered out. Must return a boolean.")
+    @SetJIPipeDocumentation(name = "Filters", description = "Expression that is applied per table to determine if it is filtered out. Must return a boolean.")
     @JIPipeParameter("filters")
     @JIPipeExpressionParameterVariable(fromClass = VariablesInfo.class)
     public JIPipeExpressionParameter getFilters() {

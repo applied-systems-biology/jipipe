@@ -6,9 +6,9 @@ import ij.gui.Line;
 import ij.gui.Roi;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -29,14 +29,14 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
-@JIPipeDocumentation(name = "Detect lines 2D (Hough)", description = "Finds lines within the image via a Hough lines transformation. " + "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Binary")
-@JIPipeCitation("Based on code by David Chatting, https://github.com/davidchatting/hough_lines/blob/master/HoughTransform.java")
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Mask", description = "Mask that contains the segmented edges. ", autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Lines", autoCreate = true, description = "The detected lines represented as ROI")
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", autoCreate = true, description = "Mask that contains the detected lines")
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Results", autoCreate = true, description = "The detected lines as table")
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Accumulator", autoCreate = true, description = "The Hough array")
+@SetJIPipeDocumentation(name = "Detect lines 2D (Hough)", description = "Finds lines within the image via a Hough lines transformation. " + "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Binary")
+@AddJIPipeCitation("Based on code by David Chatting, https://github.com/davidchatting/hough_lines/blob/master/HoughTransform.java")
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Mask", description = "Mask that contains the segmented edges. ", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Lines", create = true, description = "The detected lines represented as ROI")
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", create = true, description = "Mask that contains the detected lines")
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Results", create = true, description = "The detected lines as table")
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Accumulator", create = true, description = "The Hough array")
 public class LinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalIntegerParameter selectTopN = new OptionalIntegerParameter(true, 10);
@@ -160,7 +160,7 @@ public class LinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         iterationStep.addOutputData("Results", outputTable, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Select top N lines", description = "If enabled, only the top N lines according to their scores are selected.")
+    @SetJIPipeDocumentation(name = "Select top N lines", description = "If enabled, only the top N lines according to their scores are selected.")
     @JIPipeParameter("select-top-n")
     public OptionalIntegerParameter getSelectTopN() {
         return selectTopN;
@@ -171,7 +171,7 @@ public class LinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.selectTopN = selectTopN;
     }
 
-    @JIPipeDocumentation(name = "Accumulator threshold", description = "The percentage threshold above which lines are determined from the hough array")
+    @SetJIPipeDocumentation(name = "Accumulator threshold", description = "The percentage threshold above which lines are determined from the hough array")
     @JIPipeParameter("accumulator-threshold")
     public int getAccumulatorThreshold() {
         return accumulatorThreshold;
@@ -182,7 +182,7 @@ public class LinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.accumulatorThreshold = accumulatorThreshold;
     }
 
-    @JIPipeDocumentation(name = "Pixel threshold", description = "If enabled (default), points are only counted if they are above the specified threshold. This this mode is deactivated, each pixel is counted, but weighted by its intensity.")
+    @SetJIPipeDocumentation(name = "Pixel threshold", description = "If enabled (default), points are only counted if they are above the specified threshold. This this mode is deactivated, each pixel is counted, but weighted by its intensity.")
     @JIPipeParameter("pixel-threshold")
     public OptionalFloatParameter getPixelThreshold() {
         return pixelThreshold;
@@ -193,7 +193,7 @@ public class LinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.pixelThreshold = pixelThreshold;
     }
 
-    @JIPipeDocumentation(name = "ROI name", description = "The name of the generated line ROI is calculated from this expression")
+    @SetJIPipeDocumentation(name = "ROI name", description = "The name of the generated line ROI is calculated from this expression")
     @JIPipeParameter("roi-name-expression")
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(key = "img_c", name = "Image C", description = "Current channel slice (zero-based)")

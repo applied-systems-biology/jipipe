@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.parameters.library.references;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.compat.ImageJDataExporter;
 import org.hkijena.jipipe.api.compat.ImageJExportParameters;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -72,7 +72,7 @@ public class ImageJDataExportOperationRef extends AbstractJIPipeParameterCollect
         this.id = id;
     }
 
-    @JIPipeDocumentation(name = "Override activation", description = "If enabled, overrides the activation status")
+    @SetJIPipeDocumentation(name = "Override activation", description = "If enabled, overrides the activation status")
     @JIPipeParameter("activate")
     @JsonGetter("activate")
     public OptionalBooleanParameter getActivate() {
@@ -85,7 +85,7 @@ public class ImageJDataExportOperationRef extends AbstractJIPipeParameterCollect
         this.activate = activate;
     }
 
-    @JIPipeDocumentation(name = "Override no windows", description = "If enabled, overrides the 'no windows' status")
+    @SetJIPipeDocumentation(name = "Override no windows", description = "If enabled, overrides the 'no windows' status")
     @JIPipeParameter("no-windows")
     @JsonGetter("no-windows")
     public OptionalBooleanParameter getNoWindows() {
@@ -98,7 +98,7 @@ public class ImageJDataExportOperationRef extends AbstractJIPipeParameterCollect
         this.noWindows = noWindows;
     }
 
-    @JIPipeDocumentation(name = "Override append", description = "If enabled, overrides the 'append' status")
+    @SetJIPipeDocumentation(name = "Override append", description = "If enabled, overrides the 'append' status")
     @JIPipeParameter("append")
     @JsonGetter("append")
     public OptionalBooleanParameter getAppend() {
@@ -111,7 +111,7 @@ public class ImageJDataExportOperationRef extends AbstractJIPipeParameterCollect
         this.append = append;
     }
 
-    @JIPipeDocumentation(name = "Override duplicate", description = "If enabled, overrides the 'duplicate' status")
+    @SetJIPipeDocumentation(name = "Override duplicate", description = "If enabled, overrides the 'duplicate' status")
     @JIPipeParameter("duplicate")
     @JsonGetter("duplicate")
     public OptionalBooleanParameter getDuplicate() {
@@ -124,7 +124,7 @@ public class ImageJDataExportOperationRef extends AbstractJIPipeParameterCollect
         this.duplicate = duplicate;
     }
 
-    @JIPipeDocumentation(name = "Override name", description = "If enabled, overrides the name")
+    @SetJIPipeDocumentation(name = "Override name", description = "If enabled, overrides the name")
     @JIPipeParameter("name")
     @JsonGetter("name")
     public OptionalStringParameter getName() {

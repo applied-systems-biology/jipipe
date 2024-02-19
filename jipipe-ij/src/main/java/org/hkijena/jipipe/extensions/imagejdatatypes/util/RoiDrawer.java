@@ -20,7 +20,7 @@ import ij.gui.ImageCanvas;
 import ij.gui.Roi;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -113,7 +113,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
         this.ignoreT = other.ignoreT;
     }
 
-    @JIPipeDocumentation(name = "Opacity", description = "Opacity of the added ROI and labels. If zero, they are not visible. If set to one, they are fully visible.")
+    @SetJIPipeDocumentation(name = "Opacity", description = "Opacity of the added ROI and labels. If zero, they are not visible. If set to one, they are fully visible.")
     @JIPipeParameter("opacity")
     @NumberParameterSettings(step = 0.1)
     public double getOpacity() {
@@ -128,7 +128,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
         return true;
     }
 
-    @JIPipeDocumentation(name = "Draw outline", description = "If enabled, draw a white outline of the ROI")
+    @SetJIPipeDocumentation(name = "Draw outline", description = "If enabled, draw a white outline of the ROI")
     @JIPipeParameter("draw-outline-mode")
     public ROIElementDrawingMode getDrawOutlineMode() {
         return drawOutlineMode;
@@ -139,7 +139,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
         this.drawOutlineMode = drawOutlineMode;
     }
 
-    @JIPipeDocumentation(name = "Draw filled outline", description = "If enabled, fill the ROI areas")
+    @SetJIPipeDocumentation(name = "Draw filled outline", description = "If enabled, fill the ROI areas")
     @JIPipeParameter("fill-outline-mode")
     public ROIElementDrawingMode getDrawFilledOutlineMode() {
         return drawFilledOutlineMode;
@@ -150,7 +150,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
         this.drawFilledOutlineMode = drawFilledOutlineMode;
     }
 
-    @JIPipeDocumentation(name = "Label font family", description = "The font family of the label")
+    @SetJIPipeDocumentation(name = "Label font family", description = "The font family of the label")
     @JIPipeParameter("label-font-family")
     public FontFamilyParameter getLabelFontFamily() {
         return labelFontFamily;
@@ -161,7 +161,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
         this.labelFontFamily = labelFontFamily;
     }
 
-    @JIPipeDocumentation(name = "Draw labels", description = "Allows to draw labels on top of ROI.")
+    @SetJIPipeDocumentation(name = "Draw labels", description = "Allows to draw labels on top of ROI.")
     @JIPipeParameter("drawn-label")
     public RoiLabel getDrawnLabel() {
         return drawnLabel;
@@ -172,7 +172,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
         this.drawnLabel = drawnLabel;
     }
 
-    @JIPipeDocumentation(name = "Label foreground", description = "The text color of the label (if enabled)")
+    @SetJIPipeDocumentation(name = "Label foreground", description = "The text color of the label (if enabled)")
     @JIPipeParameter("label-foreground")
     public Color getLabelForeground() {
         return labelForeground;
@@ -183,7 +183,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
         this.labelForeground = labelForeground;
     }
 
-    @JIPipeDocumentation(name = "Label background", description = "The background color of the label (if enabled)")
+    @SetJIPipeDocumentation(name = "Label background", description = "The background color of the label (if enabled)")
     @JIPipeParameter("label-background")
     public OptionalColorParameter getLabelBackground() {
         return labelBackground;
@@ -194,7 +194,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
         this.labelBackground = labelBackground;
     }
 
-    @JIPipeDocumentation(name = "Label size", description = "Font size of drawn labels")
+    @SetJIPipeDocumentation(name = "Label size", description = "Font size of drawn labels")
     @JIPipeParameter("label-size")
     public int getLabelSize() {
         return labelSize;
@@ -208,7 +208,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
         return true;
     }
 
-    @JIPipeDocumentation(name = "Override fill color", description = "If enabled, the fill color will be overridden by this value. " +
+    @SetJIPipeDocumentation(name = "Override fill color", description = "If enabled, the fill color will be overridden by this value. " +
             "If a ROI has no fill color, it will always fall back to this color.")
     @JIPipeParameter("override-fill-color")
     public OptionalColorParameter getOverrideFillColor() {
@@ -220,7 +220,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
         this.overrideFillColor = overrideFillColor;
     }
 
-    @JIPipeDocumentation(name = "Override line color", description = "If enabled, the line color will be overridden by this value. " +
+    @SetJIPipeDocumentation(name = "Override line color", description = "If enabled, the line color will be overridden by this value. " +
             "If a ROI has no line color, it will always fall back to this color.")
     @JIPipeParameter("override-line-color")
     public OptionalColorParameter getOverrideLineColor() {
@@ -232,7 +232,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
         this.overrideLineColor = overrideLineColor;
     }
 
-    @JIPipeDocumentation(name = "Override line width", description = "If enabled, the line width will be overridden by this value. " +
+    @SetJIPipeDocumentation(name = "Override line width", description = "If enabled, the line width will be overridden by this value. " +
             "If a ROI has a line width equal or less than zero, it will fall back to this value.")
     @JIPipeParameter("override-line-width")
     public OptionalDoubleParameter getOverrideLineWidth() {
@@ -244,7 +244,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
         this.overrideLineWidth = overrideLineWidth;
     }
 
-    @JIPipeDocumentation(name = "Draw over reference", description = "If enabled, draw the ROI over the reference image.")
+    @SetJIPipeDocumentation(name = "Draw over reference", description = "If enabled, draw the ROI over the reference image.")
     @JIPipeParameter("draw-over")
     public boolean isDrawOver() {
         return drawOver;
@@ -255,7 +255,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
         this.drawOver = drawOver;
     }
 
-    @JIPipeDocumentation(name = "Ignore Z", description = "If enabled, ROI will show outside their Z layer")
+    @SetJIPipeDocumentation(name = "Ignore Z", description = "If enabled, ROI will show outside their Z layer")
     @JIPipeParameter("ignore-z")
     public boolean isIgnoreZ() {
         return ignoreZ;
@@ -266,7 +266,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
         this.ignoreZ = ignoreZ;
     }
 
-    @JIPipeDocumentation(name = "Ignore channel", description = "If enabled, ROI will show outside their channel (C) layer")
+    @SetJIPipeDocumentation(name = "Ignore channel", description = "If enabled, ROI will show outside their channel (C) layer")
     @JIPipeParameter("ignore-c")
     public boolean isIgnoreC() {
         return ignoreC;
@@ -277,7 +277,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
         this.ignoreC = ignoreC;
     }
 
-    @JIPipeDocumentation(name = "Ignore frame", description = "If enabled, ROI will show outside their frame (T) layer")
+    @SetJIPipeDocumentation(name = "Ignore frame", description = "If enabled, ROI will show outside their frame (T) layer")
     @JIPipeParameter("ignore-t")
     public boolean isIgnoreT() {
         return ignoreT;

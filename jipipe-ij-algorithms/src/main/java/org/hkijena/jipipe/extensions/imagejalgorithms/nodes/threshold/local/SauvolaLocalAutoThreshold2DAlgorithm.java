@@ -19,9 +19,9 @@ import ij.plugin.filter.RankFilters;
 import ij.process.Blitter;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -40,13 +40,13 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
  * Segmenter node that thresholds via an auto threshold
  * Based on code from {@link fiji.threshold.Auto_Local_Threshold}
  */
-@JIPipeDocumentation(name = "Local auto threshold 2D (Sauvola)", description = "Applies a local auto-thresholding algorithm. " +
+@SetJIPipeDocumentation(name = "Local auto threshold 2D (Sauvola)", description = "Applies a local auto-thresholding algorithm. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeNode(menuPath = "Threshold\nLocal", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
-@JIPipeCitation("Sauvola J. and Pietaksinen M. (2000) \"Adaptive Document Image Binarization\" Pattern Recognition, 33(2): 225-236")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust\nAuto Local Threshold")
+@DefineJIPipeNode(menuPath = "Threshold\nLocal", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", create = true)
+@AddJIPipeCitation("Sauvola J. and Pietaksinen M. (2000) \"Adaptive Document Image Binarization\" Pattern Recognition, 33(2): 225-236")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust\nAuto Local Threshold")
 public class SauvolaLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private boolean darkBackground = true;
     private double k = 0.5;
@@ -127,7 +127,7 @@ public class SauvolaLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingA
         return iPlus;
     }
 
-    @JIPipeDocumentation(name = "K", description = "Value of the parameter 'k' in the threshold formula (see Sauvola et al., 2000). A recommended value is 0.5.")
+    @SetJIPipeDocumentation(name = "K", description = "Value of the parameter 'k' in the threshold formula (see Sauvola et al., 2000). A recommended value is 0.5.")
     @JIPipeParameter("k")
     public double getK() {
         return k;
@@ -138,7 +138,7 @@ public class SauvolaLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingA
         this.k = k;
     }
 
-    @JIPipeDocumentation(name = "R", description = "Value of the parameter 'r' in the threshold formula (see Sauvola et al., 2000). A recommended value is 128.")
+    @SetJIPipeDocumentation(name = "R", description = "Value of the parameter 'r' in the threshold formula (see Sauvola et al., 2000). A recommended value is 128.")
     @JIPipeParameter("r")
     public double getR() {
         return r;
@@ -149,7 +149,7 @@ public class SauvolaLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingA
         this.r = r;
     }
 
-    @JIPipeDocumentation(name = "Radius", description = "The radius of the circular local window.")
+    @SetJIPipeDocumentation(name = "Radius", description = "The radius of the circular local window.")
     @JIPipeParameter("radius")
     public int getRadius() {
         return radius;
@@ -181,7 +181,7 @@ public class SauvolaLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingA
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Dark background", description = "If the background color is dark. Disable this if your image has a bright background.")
+    @SetJIPipeDocumentation(name = "Dark background", description = "If the background color is dark. Disable this if your image has a bright background.")
     @JIPipeParameter("dark-background")
     public boolean isDarkBackground() {
         return darkBackground;

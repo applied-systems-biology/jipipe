@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.python.adapter;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.EasyInstallExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.parameters.api.optional.OptionalParameter;
@@ -27,7 +27,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 
-@JIPipeDocumentation(name = "Install Python adapter (EasyInstall)", description = "Installs the JIPipe-Python library from a remote repository")
+@SetJIPipeDocumentation(name = "Install Python adapter (EasyInstall)", description = "Installs the JIPipe-Python library from a remote repository")
 public class JIPipePythonAdapterLibraryEnvironmentInstaller extends EasyInstallExternalEnvironmentInstaller<JIPipePythonAdapterLibraryEnvironment> {
 
 

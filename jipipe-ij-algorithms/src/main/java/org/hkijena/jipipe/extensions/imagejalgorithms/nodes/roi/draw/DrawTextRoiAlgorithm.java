@@ -1,8 +1,8 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.draw;
 
 import ij.gui.TextRoi;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -23,11 +23,11 @@ import org.hkijena.jipipe.extensions.parameters.library.roi.FixedMargin;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
-@JIPipeDocumentation(name = "Draw text ROI", description = "Draws a text ROI")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", description = "Optional existing list of ROI. The new ROI will be appended to it.", optional = true, autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", description = "Reference image for the positioning. If not set, the area covered by the existing ROI are used (or width=0, height=0)", optional = true, autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Draw")
+@SetJIPipeDocumentation(name = "Draw text ROI", description = "Draws a text ROI")
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", description = "Optional existing list of ROI. The new ROI will be appended to it.", optional = true, create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", description = "Reference image for the positioning. If not set, the area covered by the existing ROI are used (or width=0, height=0)", optional = true, create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", create = true)
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Draw")
 public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final ROIProperties roiProperties;
@@ -111,14 +111,14 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), target, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "ROI properties", description = "Use the following settings to customize the generated ROI")
+    @SetJIPipeDocumentation(name = "ROI properties", description = "Use the following settings to customize the generated ROI")
     @JIPipeParameter("roi-properties")
     public ROIProperties getRoiProperties() {
         return roiProperties;
     }
 
 
-    @JIPipeDocumentation(name = "Font family", description = "The font of the text")
+    @SetJIPipeDocumentation(name = "Font family", description = "The font of the text")
     @JIPipeParameter("font-family")
     public FontFamilyParameter getFontFamily() {
         return fontFamily;
@@ -129,7 +129,7 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.fontFamily = fontFamily;
     }
 
-    @JIPipeDocumentation(name = "Text", description = "Expression that generates the text")
+    @SetJIPipeDocumentation(name = "Text", description = "Expression that generates the text")
     @JIPipeParameter(value = "text", important = true)
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getText() {
@@ -141,7 +141,7 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.text = text;
     }
 
-    @JIPipeDocumentation(name = "Font size", description = "The size of the text")
+    @SetJIPipeDocumentation(name = "Font size", description = "The size of the text")
     @JIPipeParameter("font-size")
     public int getFontSize() {
         return fontSize;
@@ -152,7 +152,7 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.fontSize = fontSize;
     }
 
-    @JIPipeDocumentation(name = "Font style", description = "The style of the text")
+    @SetJIPipeDocumentation(name = "Font style", description = "The style of the text")
     @JIPipeParameter("font-style")
     public FontStyleParameter getFontStyle() {
         return fontStyle;
@@ -163,7 +163,7 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.fontStyle = fontStyle;
     }
 
-    @JIPipeDocumentation(name = "Location", description = "Determines the location of the text relative to the reference image/bounds of existing ROI")
+    @SetJIPipeDocumentation(name = "Location", description = "Determines the location of the text relative to the reference image/bounds of existing ROI")
     @JIPipeParameter("location")
     public FixedMargin getLocation() {
         return location;
@@ -174,7 +174,7 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.location = location;
     }
 
-    @JIPipeDocumentation(name = "Center at location", description = "If enabled, the calculated (x,y) location will be the center of the text")
+    @SetJIPipeDocumentation(name = "Center at location", description = "If enabled, the calculated (x,y) location will be the center of the text")
     @JIPipeParameter("center")
     public boolean isCenter() {
         return center;
@@ -185,7 +185,7 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.center = center;
     }
 
-    @JIPipeDocumentation(name = "Angle", description = "Angle of the text")
+    @SetJIPipeDocumentation(name = "Angle", description = "Angle of the text")
     @JIPipeParameter("angle")
     public double getAngle() {
         return angle;
@@ -196,7 +196,7 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.angle = angle;
     }
 
-    @JIPipeDocumentation(name = "Antialiased text", description = "If enabled, text will be antialiased")
+    @SetJIPipeDocumentation(name = "Antialiased text", description = "If enabled, text will be antialiased")
     @JIPipeParameter("antialiased")
     public boolean isAntialiased() {
         return antialiased;

@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -43,13 +43,13 @@ import java.nio.file.Path;
 /**
  * Algorithm that annotates all data with the same annotation
  */
-@JIPipeDocumentation(name = "Split & filter by annotation (Script)", description = "Executes a Python-script for each annotation row that allows redirection to a specified output slot (or to remove it). " +
+@SetJIPipeDocumentation(name = "Split & filter by annotation (Script)", description = "Executes a Python-script for each annotation row that allows redirection to a specified output slot (or to remove it). " +
         "All annotations are passed as dictionary 'annotations' that can be modified using Python functions. The values are then extracted and " +
         "converted into their respective JIPipe types. The target slot is extracted from a variable 'output_slot' that should be present within the script." +
         " If the variable is set to null or empty, the data is discarded.")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Filter")
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Input")
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output")
+@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Filter")
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input")
+@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output")
 public class SplitByAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
 
     private PythonInterpreter pythonInterpreter;
@@ -130,7 +130,7 @@ public class SplitByAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Script", description = "All annotations are passed as dictionary 'annotations' that can be modified using Python functions. The values are then extracted and " +
+    @SetJIPipeDocumentation(name = "Script", description = "All annotations are passed as dictionary 'annotations' that can be modified using Python functions. The values are then extracted and " +
             "converted into their respective JIPipe types. The target slot is extracted from a variable 'output_slot' that should be present within the script." +
             " If the variable is set to null or empty, the data is discarded.")
     @JIPipeParameter("code")
@@ -143,7 +143,7 @@ public class SplitByAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
         this.code = code;
     }
 
-    @JIPipeDocumentation(name = "Script parameters", description = "The following parameters will be passed to the Python script. The variable name is equal to the unique parameter identifier.")
+    @SetJIPipeDocumentation(name = "Script parameters", description = "The following parameters will be passed to the Python script. The variable name is equal to the unique parameter identifier.")
     @JIPipeParameter(value = "script-parameters", persistence = JIPipeParameterSerializationMode.Object)
     public JIPipeDynamicParameterCollection getScriptParameters() {
         return scriptParameters;

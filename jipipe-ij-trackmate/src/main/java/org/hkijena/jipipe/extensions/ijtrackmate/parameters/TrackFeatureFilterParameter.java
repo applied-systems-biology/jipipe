@@ -17,7 +17,7 @@ package org.hkijena.jipipe.extensions.ijtrackmate.parameters;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import fiji.plugin.trackmate.features.FeatureFilter;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
@@ -44,7 +44,7 @@ public class TrackFeatureFilterParameter extends AbstractJIPipeParameterCollecti
         this.above = other.above;
     }
 
-    @JIPipeDocumentation(name = "Feature")
+    @SetJIPipeDocumentation(name = "Feature")
     @JsonGetter("feature")
     @JIPipeParameter("feature")
     public TrackFeature getFeature() {
@@ -57,7 +57,7 @@ public class TrackFeatureFilterParameter extends AbstractJIPipeParameterCollecti
         this.feature = feature;
     }
 
-    @JIPipeDocumentation(name = "Value")
+    @SetJIPipeDocumentation(name = "Value")
     @JsonGetter("value")
     @JIPipeParameter("value")
     public double getValue() {
@@ -70,7 +70,7 @@ public class TrackFeatureFilterParameter extends AbstractJIPipeParameterCollecti
         this.value = value;
     }
 
-    @JIPipeDocumentation(name = "Mode")
+    @SetJIPipeDocumentation(name = "Mode")
     @JsonGetter("is-above")
     @JIPipeParameter("is-above")
     @BooleanParameterSettings(comboBoxStyle = true, trueLabel = "[feature] > [value]", falseLabel = "[feature] < [value]")

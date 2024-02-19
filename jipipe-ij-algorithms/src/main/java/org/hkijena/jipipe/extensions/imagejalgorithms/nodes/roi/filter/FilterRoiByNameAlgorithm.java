@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.filter;
 
 import ij.gui.Roi;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -35,10 +35,10 @@ import java.util.Set;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@JIPipeDocumentation(name = "Filter ROI by properties (expression)", description = "Filters the ROI list elements by the name and other basic properties.")
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Filter ROI by properties (expression)", description = "Filters the ROI list elements by the name and other basic properties.")
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class FilterRoiByNameAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter filters = new JIPipeExpressionParameter();
@@ -91,7 +91,7 @@ public class FilterRoiByNameAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("filter")
-    @JIPipeDocumentation(name = "Filter", description = "Filtering expression. This is applied per ROI. " +
+    @SetJIPipeDocumentation(name = "Filter", description = "Filtering expression. This is applied per ROI. " +
             "Click the 'f' button to see all available variables you can test.")
     @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class, hint = "per ROI")
     public JIPipeExpressionParameter getFilters() {
@@ -103,7 +103,7 @@ public class FilterRoiByNameAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.filters = filters;
     }
 
-    @JIPipeDocumentation(name = "Output empty lists", description = "If enabled, the node will also output empty lists.")
+    @SetJIPipeDocumentation(name = "Output empty lists", description = "If enabled, the node will also output empty lists.")
     @JIPipeParameter("output-empty-lists")
     public boolean isOutputEmptyLists() {
         return outputEmptyLists;

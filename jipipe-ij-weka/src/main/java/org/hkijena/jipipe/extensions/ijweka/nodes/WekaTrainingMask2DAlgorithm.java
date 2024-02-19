@@ -1,8 +1,8 @@
 package org.hkijena.jipipe.extensions.ijweka.nodes;
 
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -25,13 +25,13 @@ import weka.classifiers.Classifier;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Train Weka model from mask (2D)", description = "Trains a Weka model on 2D image data that classified into two classes via a mask. " +
+@SetJIPipeDocumentation(name = "Train Weka model from mask (2D)", description = "Trains a Weka model on 2D image data that classified into two classes via a mask. " +
         "Can only train on a single image. " +
         "Use the multi-image node if you want to train from multiple images.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
-@JIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Image", description = "Image on which the training should be applied", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlus2DGreyscaleMaskData.class, slotName = "Mask", description = "Mask that marks foreground objects via white pixels (255) and the background with black pixels (0)", autoCreate = true)
-@JIPipeOutputSlot(value = WekaModelData.class, slotName = "Trained model", description = "The model", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
+@AddJIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Image", description = "Image on which the training should be applied", create = true)
+@AddJIPipeInputSlot(value = ImagePlus2DGreyscaleMaskData.class, slotName = "Mask", description = "Mask that marks foreground objects via white pixels (255) and the background with black pixels (0)", create = true)
+@AddJIPipeOutputSlot(value = WekaModelData.class, slotName = "Trained model", description = "The model", create = true)
 public class WekaTrainingMask2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private WekaFeature2DSettings featureSettings = new WekaFeature2DSettings();
@@ -86,13 +86,13 @@ public class WekaTrainingMask2DAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Classifier", description = "Settings for the classifier")
+    @SetJIPipeDocumentation(name = "Classifier", description = "Settings for the classifier")
     @JIPipeParameter("classifier-settings")
     public WekaClassifierSettings getClassifierSettings() {
         return classifierSettings;
     }
 
-    @JIPipeDocumentation(name = "Features", description = "Settings regarding the features used for training")
+    @SetJIPipeDocumentation(name = "Features", description = "Settings regarding the features used for training")
     @JIPipeParameter("feature-settings")
     public WekaFeature2DSettings getFeatureSettings() {
         return featureSettings;

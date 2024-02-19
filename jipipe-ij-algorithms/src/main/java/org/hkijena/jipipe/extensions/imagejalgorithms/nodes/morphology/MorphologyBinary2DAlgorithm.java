@@ -16,9 +16,9 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.morphology;
 import ij.ImagePlus;
 import ij.Prefs;
 import ij.process.ByteProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHidden;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -33,12 +33,12 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@JIPipeDocumentation(name = "Morphological operation (binary) 2D", description = "Applies a morphological operation to binary images." +
+@SetJIPipeDocumentation(name = "Morphological operation (binary) 2D", description = "Applies a morphological operation to binary images." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeNode(menuPath = "Morphology", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
-@JIPipeHidden
+@DefineJIPipeNode(menuPath = "Morphology", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", create = true)
+@LabelAsJIPipeHidden
 public class MorphologyBinary2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Operation operation = Operation.Dilate;
@@ -97,7 +97,7 @@ public class MorphologyBinary2DAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Operation", description = "The morphological operation")
+    @SetJIPipeDocumentation(name = "Operation", description = "The morphological operation")
     @JIPipeParameter("operation")
     public Operation getOperation() {
         return operation;
@@ -109,7 +109,7 @@ public class MorphologyBinary2DAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
     }
 
-    @JIPipeDocumentation(name = "Iterations", description = "How many times the operation is applied")
+    @SetJIPipeDocumentation(name = "Iterations", description = "How many times the operation is applied")
     @JIPipeParameter("iterations")
     public int getIterations() {
         return iterations;

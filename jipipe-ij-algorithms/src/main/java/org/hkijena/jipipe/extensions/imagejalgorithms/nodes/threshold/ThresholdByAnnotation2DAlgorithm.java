@@ -18,8 +18,8 @@ import ij.ImagePlus;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
@@ -40,12 +40,12 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
 /**
  * Wrapper around {@link ImageProcessor}
  */
-@JIPipeDocumentation(name = "Threshold by annotations", description = "Thresholds the image with a manual threshold provided by annotations. " +
+@SetJIPipeDocumentation(name = "Threshold by annotations", description = "Thresholds the image with a manual threshold provided by annotations. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust")
+@DefineJIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust")
 public class ThresholdByAnnotation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalAnnotationNameParameter minThresholdAnnotation = new OptionalAnnotationNameParameter("Min Threshold", true);
@@ -125,7 +125,7 @@ public class ThresholdByAnnotation2DAlgorithm extends JIPipeSimpleIteratingAlgor
                 progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Min threshold annotation", description = "Annotation that contains the minimum pixel value. If disabled, this assumes the negative infinity.")
+    @SetJIPipeDocumentation(name = "Min threshold annotation", description = "Annotation that contains the minimum pixel value. If disabled, this assumes the negative infinity.")
     @JIPipeParameter("min-threshold-annotation")
     public OptionalAnnotationNameParameter getMinThresholdAnnotation() {
         return minThresholdAnnotation;
@@ -136,7 +136,7 @@ public class ThresholdByAnnotation2DAlgorithm extends JIPipeSimpleIteratingAlgor
         this.minThresholdAnnotation = minThresholdAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Max threshold annotation", description = "Annotation that contains the maximum pixel value. If disabled, this assumes positive infinity.")
+    @SetJIPipeDocumentation(name = "Max threshold annotation", description = "Annotation that contains the maximum pixel value. If disabled, this assumes positive infinity.")
     @JIPipeParameter("max-threshold-annotation")
     public OptionalAnnotationNameParameter getMaxThresholdAnnotation() {
         return maxThresholdAnnotation;

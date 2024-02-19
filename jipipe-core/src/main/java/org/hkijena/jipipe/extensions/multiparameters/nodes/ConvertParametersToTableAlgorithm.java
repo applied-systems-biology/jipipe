@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.multiparameters.nodes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
@@ -11,10 +11,10 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
-@JIPipeDocumentation(name = "Convert parameters to table", description = "Converts parameter data into da table")
-@JIPipeInputSlot(slotName = "Input", value = ParametersData.class, autoCreate = true)
-@JIPipeOutputSlot(slotName = "Output", value = ResultsTableData.class, autoCreate = true)
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Convert")
+@SetJIPipeDocumentation(name = "Convert parameters to table", description = "Converts parameter data into da table")
+@AddJIPipeInputSlot(slotName = "Input", value = ParametersData.class, create = true)
+@AddJIPipeOutputSlot(slotName = "Output", value = ResultsTableData.class, create = true)
+@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Convert")
 public class ConvertParametersToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public ConvertParametersToTableAlgorithm(JIPipeNodeInfo info) {
         super(info);

@@ -16,9 +16,9 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.datasources;
 import ij.IJ;
 import ij.ImagePlus;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -46,14 +46,14 @@ import java.util.List;
 /**
  * Loads an image data from a file via IJ.openFile()
  */
-@JIPipeDocumentation(name = "Import image", description = "Loads an image via the native ImageJ functions.")
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeInputSlot(value = FileData.class, slotName = "Files", description = "The image file", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Image", description = "Imported image", autoCreate = true)
-@JIPipeCitation("Melissa Linkert, Curtis T. Rueden, Chris Allan, Jean-Marie Burel, Will Moore, Andrew Patterson, Brian Loranger, Josh Moore, " +
+@SetJIPipeDocumentation(name = "Import image", description = "Loads an image via the native ImageJ functions.")
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = FileData.class, slotName = "Files", description = "The image file", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Image", description = "Imported image", create = true)
+@AddJIPipeCitation("Melissa Linkert, Curtis T. Rueden, Chris Allan, Jean-Marie Burel, Will Moore, Andrew Patterson, Brian Loranger, Josh Moore, " +
         "Carlos Neves, Donald MacDonald, Aleksandra Tarkowska, Caitlin Sticco, Emma Hill, Mike Rossner, Kevin W. Eliceiri, " +
         "and Jason R. Swedlow (2010) Metadata matters: access to image data in the real world. The Journal of Cell Biology 189(5), 777-782")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File", aliasName = "Open (image)")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File", aliasName = "Open (image)")
 public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeDataInfoRef generatedImageType = new JIPipeDataInfoRef("imagej-imgplus");
@@ -122,7 +122,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
         return image;
     }
 
-    @JIPipeDocumentation(name = "Force native ImageJ importer", description = "If enabled, always use the native ImageJ file importer, even if the file looks like it can only be read by Bio-Formats")
+    @SetJIPipeDocumentation(name = "Force native ImageJ importer", description = "If enabled, always use the native ImageJ file importer, even if the file looks like it can only be read by Bio-Formats")
     @JIPipeParameter("force-native-import")
     public boolean isForceNativeImport() {
         return forceNativeImport;
@@ -133,7 +133,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
         this.forceNativeImport = forceNativeImport;
     }
 
-    @JIPipeDocumentation(name = "Remove overlays", description = "If enabled, remove overlay ROIs from the imported image")
+    @SetJIPipeDocumentation(name = "Remove overlays", description = "If enabled, remove overlay ROIs from the imported image")
     @JIPipeParameter("remove-overlay")
     public boolean isRemoveOverlay() {
         return removeOverlay;
@@ -144,7 +144,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
         this.removeOverlay = removeOverlay;
     }
 
-    @JIPipeDocumentation(name = "Remove LUT", description = "If enabled, remove the LUT information if present")
+    @SetJIPipeDocumentation(name = "Remove LUT", description = "If enabled, remove the LUT information if present")
     @JIPipeParameter("remove-lut")
     public boolean isRemoveLut() {
         return removeLut;
@@ -174,7 +174,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), outputData, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Title annotation", description = "Optional annotation type where the image title is written.")
+    @SetJIPipeDocumentation(name = "Title annotation", description = "Optional annotation type where the image title is written.")
     @JIPipeParameter("title-annotation")
     public OptionalAnnotationNameParameter getTitleAnnotation() {
         return titleAnnotation;
@@ -185,7 +185,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
         this.titleAnnotation = titleAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Generated image type", description = "The image type that is generated.")
+    @SetJIPipeDocumentation(name = "Generated image type", description = "The image type that is generated.")
     @JIPipeParameter("generated-image-type")
     @JIPipeDataParameterSettings(dataBaseClass = ImagePlusData.class)
     public JIPipeDataInfoRef getGeneratedImageType() {

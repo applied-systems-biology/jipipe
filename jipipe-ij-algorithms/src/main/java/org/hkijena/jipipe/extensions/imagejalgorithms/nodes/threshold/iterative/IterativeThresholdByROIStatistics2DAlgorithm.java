@@ -6,8 +6,8 @@ import ij.gui.Roi;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -38,14 +38,14 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Object-based iterative thresholding 2D", description = "Applies a ROI detection and measurement for each threshold value. Based on the user-provided ROI criteria the threshold is either accepted or rejected. " +
+@SetJIPipeDocumentation(name = "Object-based iterative thresholding 2D", description = "Applies a ROI detection and measurement for each threshold value. Based on the user-provided ROI criteria the threshold is either accepted or rejected. " +
         "Returns the mask with the first applicable threshold or an image with zero values. "
         + "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Threshold\nIterative")
-@JIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input", description = "The image to be thresholded", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Reference", description = "An optional reference image for the ROI statistics. If none is provided, the input image is used as reference.", optional = true, autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", description = "The generated mask", autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", description = "Pre-filtered ROI (according to the criteria)", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Threshold\nIterative")
+@AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input", description = "The image to be thresholded", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Reference", description = "An optional reference image for the ROI statistics. If none is provided, the input image is used as reference.", optional = true, create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", description = "The generated mask", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", description = "Pre-filtered ROI (according to the criteria)", create = true)
 public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final RoiStatisticsAlgorithm roiStatisticsAlgorithm =
@@ -270,7 +270,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         return true;
     }
 
-    @JIPipeDocumentation(name = "Measurements", description = "The measurements to calculate.")
+    @SetJIPipeDocumentation(name = "Measurements", description = "The measurements to calculate.")
     @JIPipeParameter(value = "measurements", important = true)
     public ImageStatisticsSetParameter getMeasurements() {
         return measurements;
@@ -281,7 +281,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         this.measurements = measurements;
     }
 
-    @JIPipeDocumentation(name = "Thresholds", description = "Determines which thresholds should be tested")
+    @SetJIPipeDocumentation(name = "Thresholds", description = "Determines which thresholds should be tested")
     @JIPipeParameter("thresholds")
     public IntegerRange getThresholds() {
         return thresholds;
@@ -292,7 +292,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         this.thresholds = thresholds;
     }
 
-    @JIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
+    @SetJIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
     @JIPipeParameter("measure-in-physical-units")
     public boolean isMeasureInPhysicalUnits() {
         return measureInPhysicalUnits;
@@ -303,7 +303,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         this.measureInPhysicalUnits = measureInPhysicalUnits;
     }
 
-    @JIPipeDocumentation(name = "Threshold annotation strategy", description = "Determines what happens if annotations are already present.")
+    @SetJIPipeDocumentation(name = "Threshold annotation strategy", description = "Determines what happens if annotations are already present.")
     @JIPipeParameter("threshold-annotation-strategy")
     public JIPipeTextAnnotationMergeMode getThresholdAnnotationStrategy() {
         return thresholdAnnotationStrategy;
@@ -314,7 +314,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         this.thresholdAnnotationStrategy = thresholdAnnotationStrategy;
     }
 
-    @JIPipeDocumentation(name = "Threshold combination function", description = "This expression combines multiple thresholds into one numeric threshold.")
+    @SetJIPipeDocumentation(name = "Threshold combination function", description = "This expression combines multiple thresholds into one numeric threshold.")
     @JIPipeExpressionParameterSettings(variableSource = ThresholdsExpressionParameterVariablesInfo.class)
     @JIPipeParameter("threshold-combine-expression")
     public JIPipeExpressionParameter getThresholdCombinationExpression() {
@@ -326,7 +326,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         this.thresholdCombinationExpression = thresholdCombinationExpression;
     }
 
-    @JIPipeDocumentation(name = "Threshold annotation", description = "Puts the generated threshold(s) into an annotation.")
+    @SetJIPipeDocumentation(name = "Threshold annotation", description = "Puts the generated threshold(s) into an annotation.")
     @JIPipeParameter("threshold-annotation")
     public OptionalAnnotationNameParameter getThresholdAnnotation() {
         return thresholdAnnotation;
@@ -337,7 +337,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         this.thresholdAnnotation = thresholdAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Exclude edge ROI", description = "If enabled, edge ROI are filtered out")
+    @SetJIPipeDocumentation(name = "Exclude edge ROI", description = "If enabled, edge ROI are filtered out")
     @JIPipeParameter("exclude-edge-roi")
     public boolean isExcludeEdgeROIs() {
         return excludeEdgeROIs;
@@ -348,13 +348,13 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         this.excludeEdgeROIs = excludeEdgeROIs;
     }
 
-    @JIPipeDocumentation(name = "Threshold filtering", description = "The following parameters determine how ROI and thresholds are selected.")
+    @SetJIPipeDocumentation(name = "Threshold filtering", description = "The following parameters determine how ROI and thresholds are selected.")
     @JIPipeParameter("filtering")
     public FilteringParameters getFilteringParameters() {
         return filteringParameters;
     }
 
-    @JIPipeDocumentation(name = "Scoring", description = "The following parameters allow to find optimal thresholds based on scoring. Please note that the algorithm will select the result with the maximum score.")
+    @SetJIPipeDocumentation(name = "Scoring", description = "The following parameters allow to find optimal thresholds based on scoring. Please note that the algorithm will select the result with the maximum score.")
     @JIPipeParameter("scoring")
     public ScoreParameters getScoreParameters() {
         return scoreParameters;
@@ -372,7 +372,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
             this.thresholdCriteriaExpression = other.thresholdCriteriaExpression;
         }
 
-        @JIPipeDocumentation(name = "ROI filter", description = "This expression is applied for each ROI and determines whether the ROI fulfills the required criteria.")
+        @SetJIPipeDocumentation(name = "ROI filter", description = "This expression is applied for each ROI and determines whether the ROI fulfills the required criteria.")
         @JIPipeExpressionParameterSettings(variableSource = MeasurementExpressionParameterVariablesInfo.class)
         @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
         @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
@@ -387,7 +387,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
             this.roiFilterExpression = roiFilterExpression;
         }
 
-        @JIPipeDocumentation(name = "Threshold criteria", description = "This expression is applied for each threshold after the ROI were filtered.")
+        @SetJIPipeDocumentation(name = "Threshold criteria", description = "This expression is applied for each threshold after the ROI were filtered.")
         @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
         @JIPipeExpressionParameterVariable(key = "all_roi", name = "All ROI", description = "A list of all ROI that were detected in this iteration")
         @JIPipeExpressionParameterVariable(key = "filtered_roi", name = "Filtered ROI", description = "A list of all filtered ROI that were detected in this iteration")
@@ -418,7 +418,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
             this.scoreAccumulationExpression = new JIPipeExpressionParameter(other.scoreAccumulationExpression);
         }
 
-        @JIPipeDocumentation(name = "Score function", description = "If enabled, assigns a score to each filtered ROI that is accumulated. This score is maximized to find the best threshold. If disabled, the first threshold is applied where the criteria match.")
+        @SetJIPipeDocumentation(name = "Score function", description = "If enabled, assigns a score to each filtered ROI that is accumulated. This score is maximized to find the best threshold. If disabled, the first threshold is applied where the criteria match.")
         @JIPipeParameter(value = "score", important = true)
         @JIPipeExpressionParameterVariable(fromClass = MeasurementExpressionParameterVariablesInfo.class)
         @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
@@ -433,7 +433,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
             this.scoreExpression = scoreExpression;
         }
 
-        @JIPipeDocumentation(name = "Score accumulation function", description = "Expression that determines how the scores are accumulated")
+        @SetJIPipeDocumentation(name = "Score accumulation function", description = "Expression that determines how the scores are accumulated")
         @JIPipeParameter("score-accumulation")
         @JIPipeExpressionParameterVariable(key = "scores", name = "List of scores", description = "The list of scores")
         public JIPipeExpressionParameter getScoreAccumulationExpression() {

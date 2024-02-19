@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import ij.measure.ResultsTable;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -98,7 +98,7 @@ public class PlotDataSeries extends ResultsTableData implements JIPipeParameterC
         return column;
     }
 
-    @JIPipeDocumentation(name = "Name", description = "Name of this data series")
+    @SetJIPipeDocumentation(name = "Name", description = "Name of this data series")
     @JIPipeParameter("name")
     @JsonGetter("name")
     public String getName() {

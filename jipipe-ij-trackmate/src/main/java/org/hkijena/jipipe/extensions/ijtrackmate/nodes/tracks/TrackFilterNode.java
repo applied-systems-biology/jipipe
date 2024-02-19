@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -20,10 +20,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Filter tracks", description = "Filter TrackMate spots via expressions")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nFilter")
-@JIPipeInputSlot(value = TrackCollectionData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = TrackCollectionData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Filter tracks", description = "Filter TrackMate spots via expressions")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nFilter")
+@AddJIPipeInputSlot(value = TrackCollectionData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = TrackCollectionData.class, slotName = "Output", create = true)
 public class TrackFilterNode extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter filter = new JIPipeExpressionParameter("track_displacement > 10");
@@ -84,7 +84,7 @@ public class TrackFilterNode extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), trackCollectionData, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Filter", description = "The expression is executed per track. If it returns TRUE, the track is kept.")
+    @SetJIPipeDocumentation(name = "Filter", description = "The expression is executed per track. If it returns TRUE, the track is kept.")
     @JIPipeParameter(value = "filter", important = true)
     @JIPipeExpressionParameterSettings(hint = "per track")
     @JIPipeExpressionParameterVariable(fromClass = TrackFeatureVariablesInfo.class)

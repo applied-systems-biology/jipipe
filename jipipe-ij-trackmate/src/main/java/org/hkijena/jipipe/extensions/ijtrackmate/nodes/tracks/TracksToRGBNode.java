@@ -18,8 +18,8 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -38,11 +38,11 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Collections;
 
-@JIPipeDocumentation(name = "Convert tracks to RGB", description = "Visualizes tracks")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nVisualize")
-@JIPipeInputSlot(value = TrackCollectionData.class, slotName = "Tracks", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusColorRGBData.class, slotName = "Image", autoCreate = true, optional = true, description = "")
-@JIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Convert tracks to RGB", description = "Visualizes tracks")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nVisualize")
+@AddJIPipeInputSlot(value = TrackCollectionData.class, slotName = "Tracks", create = true)
+@AddJIPipeInputSlot(value = ImagePlusColorRGBData.class, slotName = "Image", create = true, optional = true, description = "")
+@AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output", create = true)
 public class TracksToRGBNode extends JIPipeIteratingAlgorithm {
     private TrackDrawer trackDrawer = new TrackDrawer();
 
@@ -90,7 +90,7 @@ public class TracksToRGBNode extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Track visualization", description = "The following settings control how tracks are visualized")
+    @SetJIPipeDocumentation(name = "Track visualization", description = "The following settings control how tracks are visualized")
     @JIPipeParameter("track-visualization")
     public TrackDrawer getTrackDrawer() {
         return trackDrawer;
@@ -100,7 +100,7 @@ public class TracksToRGBNode extends JIPipeIteratingAlgorithm {
         this.trackDrawer = trackDrawer;
     }
 
-    @JIPipeDocumentation(name = "Magnification", description = "Magnification applied during the rendering")
+    @SetJIPipeDocumentation(name = "Magnification", description = "Magnification applied during the rendering")
     @JIPipeParameter("magnification")
     public double getMagnification() {
         return magnification;

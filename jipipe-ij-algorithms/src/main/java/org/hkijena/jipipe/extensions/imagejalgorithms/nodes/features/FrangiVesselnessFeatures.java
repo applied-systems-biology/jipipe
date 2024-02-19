@@ -19,8 +19,8 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.ImageProcessor;
 import mpicbg.imglib.type.numeric.real.FloatType;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -37,11 +37,11 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 /**
  * Applies CLAHE image enhancing
  */
-@JIPipeDocumentation(name = "Frangi vesselness", description = "Applies the vesselness filter developed by Frangi et al.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Features")
-@JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nFilters", aliasName = "Frangi Vesselness")
+@SetJIPipeDocumentation(name = "Frangi vesselness", description = "Applies the vesselness filter developed by Frangi et al.")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Features")
+@AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nFilters", aliasName = "Frangi Vesselness")
 public class FrangiVesselnessFeatures extends JIPipeSimpleIteratingAlgorithm {
 
     private int numScales = 1;
@@ -140,7 +140,7 @@ public class FrangiVesselnessFeatures extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("num-scales")
-    @JIPipeDocumentation(name = "Scales", description = "How many intermediate steps between minimum and maximum scales should be applied.")
+    @SetJIPipeDocumentation(name = "Scales", description = "How many intermediate steps between minimum and maximum scales should be applied.")
     public int getNumScales() {
         return numScales;
     }
@@ -152,7 +152,7 @@ public class FrangiVesselnessFeatures extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("min-scale")
-    @JIPipeDocumentation(name = "Minimum scale", description = "The minimum scale that is applied")
+    @SetJIPipeDocumentation(name = "Minimum scale", description = "The minimum scale that is applied")
     public double getMinimumScale() {
         return minimumScale;
     }
@@ -164,7 +164,7 @@ public class FrangiVesselnessFeatures extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("max-scale")
-    @JIPipeDocumentation(name = "Maximum scale", description = "The maximum scale that is applied")
+    @SetJIPipeDocumentation(name = "Maximum scale", description = "The maximum scale that is applied")
     public double getMaximumScale() {
         return maximumScale;
     }
@@ -175,7 +175,7 @@ public class FrangiVesselnessFeatures extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Invert colors", description = "Invert colors before applying the filter. This is useful if you look for bright structures within a dark background.")
+    @SetJIPipeDocumentation(name = "Invert colors", description = "Invert colors before applying the filter. This is useful if you look for bright structures within a dark background.")
     @JIPipeParameter("invert")
     public boolean isInvert() {
         return invert;
@@ -186,7 +186,7 @@ public class FrangiVesselnessFeatures extends JIPipeSimpleIteratingAlgorithm {
         this.invert = invert;
     }
 
-    @JIPipeDocumentation(name = "Apply per slice", description = "Applies the vesselness filter for each 2D slice instead for the whole multi-dimensional image.")
+    @SetJIPipeDocumentation(name = "Apply per slice", description = "Applies the vesselness filter for each 2D slice instead for the whole multi-dimensional image.")
     @JIPipeParameter("per-slice")
     public SlicingMode getSlicingMode() {
         return slicingMode;

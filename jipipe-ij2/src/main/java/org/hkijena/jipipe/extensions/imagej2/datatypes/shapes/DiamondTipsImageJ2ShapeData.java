@@ -2,13 +2,13 @@ package org.hkijena.jipipe.extensions.imagej2.datatypes.shapes;
 
 import net.imglib2.algorithm.neighborhood.DiamondTipsShape;
 import net.imglib2.algorithm.neighborhood.Shape;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
-@JIPipeDocumentation(name = "IJ2 Diamond Tips Shape")
+@SetJIPipeDocumentation(name = "IJ2 Diamond Tips Shape")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single JSON file that stores the status information.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
 public class DiamondTipsImageJ2ShapeData extends ImageJ2ShapeData {
@@ -41,7 +41,7 @@ public class DiamondTipsImageJ2ShapeData extends ImageJ2ShapeData {
         return "IJ2 Diamond Tips Shape (radius=" + radius + ")";
     }
 
-    @JIPipeDocumentation(name = "Radius")
+    @SetJIPipeDocumentation(name = "Radius")
     @JIPipeParameter("radius")
     public long getRadius() {
         return radius;

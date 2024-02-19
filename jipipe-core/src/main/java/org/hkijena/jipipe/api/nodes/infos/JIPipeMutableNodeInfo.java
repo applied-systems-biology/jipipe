@@ -31,8 +31,8 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
     private String name;
     private HTMLText description = new HTMLText();
     private JIPipeNodeTypeCategory category;
-    private List<JIPipeInputSlot> inputSlots = new ArrayList<>();
-    private List<JIPipeOutputSlot> outputSlots = new ArrayList<>();
+    private List<AddJIPipeInputSlot> inputSlots = new ArrayList<>();
+    private List<AddJIPipeOutputSlot> outputSlots = new ArrayList<>();
     private String menuPath;
 
     private Class<? extends JIPipeData> dataSourceMenuLocation = JIPipeEmptyData.class;
@@ -110,7 +110,7 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
 
 
     @Override
-    public List<JIPipeInputSlot> getInputSlots() {
+    public List<AddJIPipeInputSlot> getInputSlots() {
         return inputSlots;
     }
 
@@ -119,12 +119,12 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
      *
      * @param inputSlots Input slots
      */
-    public void setInputSlots(List<JIPipeInputSlot> inputSlots) {
+    public void setInputSlots(List<AddJIPipeInputSlot> inputSlots) {
         this.inputSlots = inputSlots;
     }
 
     @Override
-    public List<JIPipeOutputSlot> getOutputSlots() {
+    public List<AddJIPipeOutputSlot> getOutputSlots() {
         return outputSlots;
     }
 
@@ -133,7 +133,7 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
      *
      * @param outputSlots Output slots
      */
-    public void setOutputSlots(List<JIPipeOutputSlot> outputSlots) {
+    public void setOutputSlots(List<AddJIPipeOutputSlot> outputSlots) {
         this.outputSlots = outputSlots;
     }
 

@@ -2,8 +2,8 @@ package org.hkijena.jipipe.extensions.ijweka.nodes;
 
 import ij.ImagePlus;
 import ij.gui.Roi;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
@@ -38,12 +38,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Train Weka model from ROI (3D)", description = "Trains a Weka model on 3D image data. The inputs are ROI that are assigned to the classes and trained on the input image."+
+@SetJIPipeDocumentation(name = "Train Weka model from ROI (3D)", description = "Trains a Weka model on 3D image data. The inputs are ROI that are assigned to the classes and trained on the input image."+
         "Can only train on a single image. Please convert ROI to labels/masks and use the appropriate nodes if you want to train on multiple images.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
-@JIPipeInputSlot(value = ImagePlus3DData.class, slotName = "Image", description = "Image on which the training should be applied", autoCreate = true)
-@JIPipeInputSlot(value = ROIListData.class)
-@JIPipeOutputSlot(value = WekaModelData.class, slotName = "Trained model", description = "The model", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
+@AddJIPipeInputSlot(value = ImagePlus3DData.class, slotName = "Image", description = "Image on which the training should be applied", create = true)
+@AddJIPipeInputSlot(value = ROIListData.class)
+@AddJIPipeOutputSlot(value = WekaModelData.class, slotName = "Trained model", description = "The model", create = true)
 public class WekaTrainingROI3DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final InputSlotMapParameterCollection classAssignment;
@@ -160,19 +160,19 @@ public class WekaTrainingROI3DAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Classifier", description = "Settings for the classifier")
+    @SetJIPipeDocumentation(name = "Classifier", description = "Settings for the classifier")
     @JIPipeParameter("classifier-settings")
     public WekaClassifierSettings getClassifierSettings() {
         return classifierSettings;
     }
 
-    @JIPipeDocumentation(name = "Features", description = "Settings regarding the features used for training")
+    @SetJIPipeDocumentation(name = "Features", description = "Settings regarding the features used for training")
     @JIPipeParameter("feature-settings")
     public WekaFeature3DSettings getFeatureSettings() {
         return featureSettings;
     }
 
-    @JIPipeDocumentation(name = "Classes", description = "Assign the numeric classes to the input ROI slots")
+    @SetJIPipeDocumentation(name = "Classes", description = "Assign the numeric classes to the input ROI slots")
     @JIPipeParameter("class-assignment")
     public InputSlotMapParameterCollection getClassAssignment() {
         return classAssignment;

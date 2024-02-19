@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.omnipose.parameters;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
@@ -27,7 +27,7 @@ public class OmniposeSegmentationTweaksSettings extends AbstractJIPipeParameterC
         this.fastMode = other.fastMode;
     }
 
-    @JIPipeDocumentation(name = "Fast mode", description = "disable dynamics on full image (makes algorithm faster for images with large diameters)")
+    @SetJIPipeDocumentation(name = "Fast mode", description = "disable dynamics on full image (makes algorithm faster for images with large diameters)")
     @JIPipeParameter("fast-mode")
     public boolean isFastMode() {
         return fastMode;
@@ -38,7 +38,7 @@ public class OmniposeSegmentationTweaksSettings extends AbstractJIPipeParameterC
         this.fastMode = fastMode;
     }
 
-    @JIPipeDocumentation(name = "Cluster", description = "DBSCAN clustering. Reduces oversegmentation of thin features")
+    @SetJIPipeDocumentation(name = "Cluster", description = "DBSCAN clustering. Reduces oversegmentation of thin features")
     @JIPipeParameter("cluster")
     public boolean isCluster() {
         return cluster;
@@ -49,7 +49,7 @@ public class OmniposeSegmentationTweaksSettings extends AbstractJIPipeParameterC
         this.cluster = cluster;
     }
 
-    @JIPipeDocumentation(name = "Anisotropy (3D)", description = "For 3D segmentation, optional rescaling factor " +
+    @SetJIPipeDocumentation(name = "Anisotropy (3D)", description = "For 3D segmentation, optional rescaling factor " +
             "(e.g. set to 2.0 if Z is sampled half as dense as X or Y)")
     @JIPipeParameter("anisotropy")
     public OptionalDoubleParameter getAnisotropy() {
@@ -61,7 +61,7 @@ public class OmniposeSegmentationTweaksSettings extends AbstractJIPipeParameterC
         this.anisotropy = anisotropy;
     }
 
-    @JIPipeDocumentation(name = "Average all networks", description = "Runs the 4 built-in networks and averages them if True, runs one network if disabled")
+    @SetJIPipeDocumentation(name = "Average all networks", description = "Runs the 4 built-in networks and averages them if True, runs one network if disabled")
     @JIPipeParameter("net-average")
     public boolean isNetAverage() {
         return netAverage;
@@ -72,7 +72,7 @@ public class OmniposeSegmentationTweaksSettings extends AbstractJIPipeParameterC
         this.netAverage = netAverage;
     }
 
-    @JIPipeDocumentation(name = "Interpolate (2D)", description = "Interpolate during 2D dynamics (not available in 3D)")
+    @SetJIPipeDocumentation(name = "Interpolate (2D)", description = "Interpolate during 2D dynamics (not available in 3D)")
     @JIPipeParameter("interpolate")
     public boolean isInterpolate() {
         return interpolate;
@@ -83,7 +83,7 @@ public class OmniposeSegmentationTweaksSettings extends AbstractJIPipeParameterC
         this.interpolate = interpolate;
     }
 
-    @JIPipeDocumentation(name = "Disable resample", description = "Disable dynamics on full image (makes algorithm faster for images with large diameters)")
+    @SetJIPipeDocumentation(name = "Disable resample", description = "Disable dynamics on full image (makes algorithm faster for images with large diameters)")
     @JIPipeParameter("no-resample")
     public boolean isDisableResample() {
         return disableResample;

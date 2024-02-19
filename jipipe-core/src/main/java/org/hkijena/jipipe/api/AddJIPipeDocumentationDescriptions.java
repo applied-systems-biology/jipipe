@@ -5,10 +5,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Container for multiple {@link JIPipeDocumentationDescription}
+ * Container for multiple {@link AddJIPipeDocumentationDescription}
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-public @interface JIPipeDocumentationDescriptions {
-    JIPipeDocumentationDescription[] value();
+public @interface AddJIPipeDocumentationDescriptions {
+    AddJIPipeDocumentationDescription[] value();
 }

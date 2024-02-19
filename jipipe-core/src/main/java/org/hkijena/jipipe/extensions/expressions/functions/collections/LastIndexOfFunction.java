@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.functions.collections;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
@@ -16,7 +16,7 @@ import java.util.Map;
 
 import static org.hkijena.jipipe.extensions.expressions.functions.EvaluateFunction.parseVariableAssignment;
 
-@JIPipeDocumentation(name = "Last index of", description = "Finds the last index of the array where the condition applies. Returns -1 if none match.")
+@SetJIPipeDocumentation(name = "Last index of", description = "Finds the last index of the array where the condition applies. Returns -1 if none match.")
 public class LastIndexOfFunction extends ExpressionFunction {
     public LastIndexOfFunction() {
         super("LAST_INDEX_WHERE", 2, Integer.MAX_VALUE);

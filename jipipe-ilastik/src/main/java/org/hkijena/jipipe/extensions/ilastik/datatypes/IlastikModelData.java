@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.ilastik.datatypes;
 
 import ij.IJ;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
@@ -26,7 +26,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Collections;
 
-@JIPipeDocumentation(name = "Ilastik project", description = "An Ilastik project")
+@SetJIPipeDocumentation(name = "Ilastik project", description = "An Ilastik project")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "A *.ilp project file",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/ilastik-model-data.schema.json")
 public class IlastikModelData implements JIPipeData {

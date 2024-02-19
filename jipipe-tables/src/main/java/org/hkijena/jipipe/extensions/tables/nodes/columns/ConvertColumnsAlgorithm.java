@@ -14,8 +14,8 @@
 
 package org.hkijena.jipipe.extensions.tables.nodes.columns;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -38,11 +38,11 @@ import java.util.Map;
 /**
  * Algorithm that integrates columns
  */
-@JIPipeDocumentation(name = "Apply function to columns", description = "Applies a converting function to all column values. " +
+@SetJIPipeDocumentation(name = "Apply function to columns", description = "Applies a converting function to all column values. " +
         "The result of the operation is stored in the same or a new column.")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class ConvertColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private ConvertingTableColumnProcessorParameterList processorParameters = new ConvertingTableColumnProcessorParameterList();
@@ -99,7 +99,7 @@ public class ConvertColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), output, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Processors", description = "Defines which columns are processed")
+    @SetJIPipeDocumentation(name = "Processors", description = "Defines which columns are processed")
     @JIPipeParameter("processors")
     public ConvertingTableColumnProcessorParameterList getProcessorParameters() {
         return processorParameters;
@@ -110,7 +110,7 @@ public class ConvertColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.processorParameters = processorParameters;
     }
 
-    @JIPipeDocumentation(name = "Append to existing table", description = "If enabled, the converted columns are appended to the existing table. Existing columns are overwritten.")
+    @SetJIPipeDocumentation(name = "Append to existing table", description = "If enabled, the converted columns are appended to the existing table. Existing columns are overwritten.")
     @JIPipeParameter("append")
     public boolean isAppend() {
         return append;

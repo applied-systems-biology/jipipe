@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.parameters.library.filesystem;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.utils.PathIOMode;
@@ -31,7 +31,7 @@ public class FileChooserBookmark extends AbstractJIPipeParameterCollection {
         this.path = other.path;
     }
 
-    @JIPipeDocumentation(name = "Name", description = "The name of the bookmark")
+    @SetJIPipeDocumentation(name = "Name", description = "The name of the bookmark")
     @JsonGetter("name")
     @JIPipeParameter("name")
     public String getName() {
@@ -44,7 +44,7 @@ public class FileChooserBookmark extends AbstractJIPipeParameterCollection {
         this.name = name;
     }
 
-    @JIPipeDocumentation(name = "Path", description = "The path")
+    @SetJIPipeDocumentation(name = "Path", description = "The path")
     @JIPipeParameter("path")
     @PathParameterSettings(pathMode = PathType.DirectoriesOnly, ioMode = PathIOMode.Open)
     @JsonGetter("path")

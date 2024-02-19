@@ -4,7 +4,7 @@ import com.google.common.primitives.Ints;
 import net.imglib2.algorithm.neighborhood.CenteredRectangleShape;
 import net.imglib2.algorithm.neighborhood.RectangleShape;
 import net.imglib2.algorithm.neighborhood.Shape;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
@@ -12,7 +12,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.IntegerList;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
-@JIPipeDocumentation(name = "IJ2 Centered Rectangle Shape", description = "This specific factory differs to RectangleShape in that it allows non-isotropic rectangular shapes. However, it constrains the the neighborhood to be symmetric by its origin.\n" +
+@SetJIPipeDocumentation(name = "IJ2 Centered Rectangle Shape", description = "This specific factory differs to RectangleShape in that it allows non-isotropic rectangular shapes. However, it constrains the the neighborhood to be symmetric by its origin.\n" +
         "The size of the neighborhood is specified by an int[] span array, so that in every dimension d, the extent of the neighborhood is given by 2 × span[d] + 1.")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single JSON file that stores the status information.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
@@ -39,7 +39,7 @@ public class CenteredRectangleImageJ2ShapeData extends ImageJ2ShapeData {
         return (CenteredRectangleImageJ2ShapeData) ImageJ2ShapeData.importData(storage, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Span")
+    @SetJIPipeDocumentation(name = "Span")
     @JIPipeParameter("span")
     public IntegerList getSpan() {
         return span;
@@ -50,7 +50,7 @@ public class CenteredRectangleImageJ2ShapeData extends ImageJ2ShapeData {
         this.span = span;
     }
 
-    @JIPipeDocumentation(name = "Skip center")
+    @SetJIPipeDocumentation(name = "Skip center")
     @JIPipeParameter("skip-center")
     public boolean isSkipCenter() {
         return skipCenter;

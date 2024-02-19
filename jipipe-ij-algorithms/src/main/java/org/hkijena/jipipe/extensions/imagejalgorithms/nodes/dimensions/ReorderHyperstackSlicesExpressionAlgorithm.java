@@ -3,8 +3,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.dimensions;
 import com.google.common.collect.ImmutableList;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -25,11 +25,11 @@ import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Reorder hyperstack slices (Expression)", description = "Uses an expression that iterates through all hyperstack slices to assign a new location within the output hyperstack. " +
+@SetJIPipeDocumentation(name = "Reorder hyperstack slices (Expression)", description = "Uses an expression that iterates through all hyperstack slices to assign a new location within the output hyperstack. " +
         "Can also filter slices based on the location.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 public class ReorderHyperstackSlicesExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter newLocationExpression = new JIPipeExpressionParameter("ARRAY(c, z, t)");
@@ -99,7 +99,7 @@ public class ReorderHyperstackSlicesExpressionAlgorithm extends JIPipeSimpleIter
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "New slice location", description = "Expression that returns an array with the new Z, channel, and frame location (zero-based) of the slice. " +
+    @SetJIPipeDocumentation(name = "New slice location", description = "Expression that returns an array with the new Z, channel, and frame location (zero-based) of the slice. " +
             "If the expression returns a boolen TRUE, the original location is preserved. If the expression returns a boolean FALSE or an empty array, " +
             "the slice is discarded. Locations do not need to be consecutive and positive (compensation by the algorithm). Duplicate locations are not supported and will be overwritten by one of the " +
             "affected images.")
@@ -125,7 +125,7 @@ public class ReorderHyperstackSlicesExpressionAlgorithm extends JIPipeSimpleIter
         return true;
     }
 
-    @JIPipeDocumentation(name = "Silently override duplicate indices", description = "If enabled, duplicate plane indices are ignored and silently overriden")
+    @SetJIPipeDocumentation(name = "Silently override duplicate indices", description = "If enabled, duplicate plane indices are ignored and silently overriden")
     @JIPipeParameter("silently-override")
     public boolean isSilentlyOverride() {
         return silentlyOverride;

@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.ijfilaments.nodes.filter;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -19,10 +19,10 @@ import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentEdgeVariablesInfo;
 import java.util.HashSet;
 import java.util.Set;
 
-@JIPipeDocumentation(name = "Filter filament edges", description = "Filters filament edges by various properties")
-@JIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Filter")
-@JIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Filter filament edges", description = "Filters filament edges by various properties")
+@DefineJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Filter")
+@AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
 public class FilterFilamentEdgesByProperties extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter filter = new JIPipeExpressionParameter("");
@@ -58,7 +58,7 @@ public class FilterFilamentEdgesByProperties extends JIPipeSimpleIteratingAlgori
         iterationStep.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Only keep edge if", description = "If the filter is left empty or returns TRUE, the vertex is kept. Otherwise the vertex is deleted.")
+    @SetJIPipeDocumentation(name = "Only keep edge if", description = "If the filter is left empty or returns TRUE, the vertex is kept. Otherwise the vertex is deleted.")
     @JIPipeParameter("filter")
     @JIPipeExpressionParameterVariable(fromClass = FilamentEdgeVariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)

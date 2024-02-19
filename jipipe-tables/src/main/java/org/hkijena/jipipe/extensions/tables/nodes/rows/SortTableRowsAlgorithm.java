@@ -14,8 +14,8 @@
 
 package org.hkijena.jipipe.extensions.tables.nodes.rows;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -39,10 +39,10 @@ import java.util.Comparator;
 /**
  * Algorithm that integrates columns
  */
-@JIPipeDocumentation(name = "Sort table rows", description = "Sorts the table rows by columns")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Sort table rows", description = "Sorts the table rows by columns")
+@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class SortTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private StringQueryExpressionAndSortOrderPairParameter.List sortOrderList = new StringQueryExpressionAndSortOrderPairParameter.List();
@@ -142,7 +142,7 @@ public class SortTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         return result;
     }
 
-    @JIPipeDocumentation(name = "Reverse sort order", description = "If enabled, the sort order is reversed.")
+    @SetJIPipeDocumentation(name = "Reverse sort order", description = "If enabled, the sort order is reversed.")
     @JIPipeParameter("reverse-sort-order")
     public boolean isReverseSortOrder() {
         return reverseSortOrder;
@@ -159,7 +159,7 @@ public class SortTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         report.report(new ParameterValidationReportContext(this, "Filters", "sort-order"), sortOrderList);
     }
 
-    @JIPipeDocumentation(name = "Filters", description = "Allows you determine by which columns the table is sorted. The order determines the " +
+    @SetJIPipeDocumentation(name = "Filters", description = "Allows you determine by which columns the table is sorted. The order determines the " +
             "sorting priority. Columns can be matched multiple times. ")
     @JIPipeParameter("sort-order")
     @PairParameterSettings(singleRow = false)
@@ -172,7 +172,7 @@ public class SortTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.sortOrderList = sortOrderList;
     }
 
-    @JIPipeDocumentation(name = "Sort strings by natural order", description = "If enabled, strings are sorted by natural order (e.g. 1, 2, 15 100, ...). If disabled, " +
+    @SetJIPipeDocumentation(name = "Sort strings by natural order", description = "If enabled, strings are sorted by natural order (e.g. 1, 2, 15 100, ...). If disabled, " +
             "strings are sorted lexicographically (e.g. 1, 15, 100, 2)")
     @JIPipeParameter("use-natural-sort-order")
     public boolean isUseNaturalSortOrder() {

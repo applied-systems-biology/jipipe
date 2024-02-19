@@ -2,8 +2,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.calibration;
 
 import ij.ImagePlus;
 import ij.measure.Calibration;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -20,12 +20,12 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImagePlusPropertiesExp
 import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
 import org.hkijena.jipipe.utils.StringUtils;
 
-@JIPipeDocumentation(name = "Set physical dimensions from expressions", description = "Allows to set the physical dimensions of the incoming images. This node allows " +
+@SetJIPipeDocumentation(name = "Set physical dimensions from expressions", description = "Allows to set the physical dimensions of the incoming images. This node allows " +
         "to utilize expressions that have access to annotations and image properties.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Calibration")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nProperties")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Calibration")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nProperties")
 public class SetPhysicalDimensionsByExpressionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalJIPipeExpressionParameter physicalDimensionX = new OptionalJIPipeExpressionParameter();
@@ -86,7 +86,7 @@ public class SetPhysicalDimensionsByExpressionsAlgorithm extends JIPipeSimpleIte
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Physical dimension (X)", description = "If enabled, sets the physical dimension of the image")
+    @SetJIPipeDocumentation(name = "Physical dimension (X)", description = "If enabled, sets the physical dimension of the image")
     @JIPipeParameter("physical-dimension-x")
     @JIPipeExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariablesInfo.class)
     public OptionalJIPipeExpressionParameter getPhysicalDimensionX() {
@@ -98,7 +98,7 @@ public class SetPhysicalDimensionsByExpressionsAlgorithm extends JIPipeSimpleIte
         this.physicalDimensionX = physicalDimensionX;
     }
 
-    @JIPipeDocumentation(name = "Physical dimension (Y)", description = "If enabled, sets the physical dimension of the image")
+    @SetJIPipeDocumentation(name = "Physical dimension (Y)", description = "If enabled, sets the physical dimension of the image")
     @JIPipeParameter("physical-dimension-y")
     @JIPipeExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariablesInfo.class)
     public OptionalJIPipeExpressionParameter getPhysicalDimensionY() {
@@ -110,7 +110,7 @@ public class SetPhysicalDimensionsByExpressionsAlgorithm extends JIPipeSimpleIte
         this.physicalDimensionY = physicalDimensionY;
     }
 
-    @JIPipeDocumentation(name = "Physical dimension (Z)", description = "If enabled, sets the physical dimension of the image")
+    @SetJIPipeDocumentation(name = "Physical dimension (Z)", description = "If enabled, sets the physical dimension of the image")
     @JIPipeParameter("physical-dimension-z")
     @JIPipeExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariablesInfo.class)
     public OptionalJIPipeExpressionParameter getPhysicalDimensionZ() {
@@ -122,7 +122,7 @@ public class SetPhysicalDimensionsByExpressionsAlgorithm extends JIPipeSimpleIte
         this.physicalDimensionZ = physicalDimensionZ;
     }
 
-    @JIPipeDocumentation(name = "Physical dimension (T)", description = "If enabled, sets the physical dimension of the image. Please note that only the unit is supported.")
+    @SetJIPipeDocumentation(name = "Physical dimension (T)", description = "If enabled, sets the physical dimension of the image. Please note that only the unit is supported.")
     @JIPipeParameter("physical-dimension-t")
     @JIPipeExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariablesInfo.class)
     public OptionalJIPipeExpressionParameter getPhysicalDimensionT() {
@@ -134,7 +134,7 @@ public class SetPhysicalDimensionsByExpressionsAlgorithm extends JIPipeSimpleIte
         this.physicalDimensionT = physicalDimensionT;
     }
 
-    @JIPipeDocumentation(name = "Physical dimension (Value)", description = "If enabled, sets the physical dimension of the image. Please note that only the unit is supported.")
+    @SetJIPipeDocumentation(name = "Physical dimension (Value)", description = "If enabled, sets the physical dimension of the image. Please note that only the unit is supported.")
     @JIPipeParameter("physical-dimension-value")
     @JIPipeExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariablesInfo.class)
     public OptionalJIPipeExpressionParameter getPhysicalDimensionValue() {

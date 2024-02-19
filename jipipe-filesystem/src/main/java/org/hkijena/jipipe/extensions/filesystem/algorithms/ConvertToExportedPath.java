@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
@@ -18,10 +18,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Get export path", description = "Generates an export path for the input data and returns it as JIPipe path data")
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "Get export path", description = "Generates an export path for the input data and returns it as JIPipe path data")
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = PathData.class, slotName = "Output", create = true)
+@DefineJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class)
 public class ConvertToExportedPath extends JIPipeSimpleIteratingAlgorithm {
 
     private DataExportExpressionParameter filePath = new DataExportExpressionParameter();
@@ -55,7 +55,7 @@ public class ConvertToExportedPath extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new PathData(outputPath), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "File path", description = "Expression that generates the output file path")
+    @SetJIPipeDocumentation(name = "File path", description = "Expression that generates the output file path")
     @JIPipeParameter("file-path")
     public DataExportExpressionParameter getFilePath() {
         return filePath;

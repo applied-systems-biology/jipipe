@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.parameters.api.enums;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.DefaultJIPipeParameterGenerator;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.DynamicStringSetParameter;
@@ -39,7 +39,7 @@ public class EnumParameterGenerator extends DefaultJIPipeParameterGenerator {
         return result;
     }
 
-    @JIPipeDocumentation(name = "Values", description = "The values that should be generated")
+    @SetJIPipeDocumentation(name = "Values", description = "The values that should be generated")
     @JIPipeParameter("generated-values")
     public DynamicStringSetParameter getGeneratedValues() {
         return generatedValues;

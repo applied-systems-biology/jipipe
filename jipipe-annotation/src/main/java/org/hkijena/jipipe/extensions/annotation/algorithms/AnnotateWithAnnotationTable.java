@@ -3,8 +3,8 @@ package org.hkijena.jipipe.extensions.annotation.algorithms;
 import com.google.common.primitives.Ints;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -27,11 +27,11 @@ import java.util.*;
 /**
  * Algorithm that merges the annotations of all inputs and outputs the data with the shared annotations
  */
-@JIPipeDocumentation(name = "Annotate by annotation table", description = "Merges matching annotations from an annotation table into the data set. Note: Please use 'Annotate with table values' if you intend to copy information from a table into the annotation set of a data.")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
-@JIPipeInputSlot(value = AnnotationTableData.class, slotName = "Annotations", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Annotated data", autoCreate = true)
+@SetJIPipeDocumentation(name = "Annotate by annotation table", description = "Merges matching annotations from an annotation table into the data set. Note: Please use 'Annotate with table values' if you intend to copy information from a table into the annotation set of a data.")
+@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Data", create = true)
+@AddJIPipeInputSlot(value = AnnotationTableData.class, slotName = "Annotations", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Annotated data", create = true)
 public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
 
     private JIPipeIteratingAlgorithmIterationStepGenerationSettings tableMergeSettings = new JIPipeIteratingAlgorithmIterationStepGenerationSettings();
@@ -59,7 +59,7 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
         registerSubParameter(tableMergeSettings);
     }
 
-    @JIPipeDocumentation(name = "Table row matching", description = "The following settings determine how rows are matched up between " +
+    @SetJIPipeDocumentation(name = "Table row matching", description = "The following settings determine how rows are matched up between " +
             "the annotation table and the incoming data table.")
     @JIPipeParameter(value = "table-merge-settings",
             iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/connector-orthogonal.png",
@@ -193,7 +193,7 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
         getFirstOutputSlot().addDataFromSlot(getInputSlot("Data"), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Replace all existing annotations", description = "If enabled, existing annotations will not be carried over into the output.")
+    @SetJIPipeDocumentation(name = "Replace all existing annotations", description = "If enabled, existing annotations will not be carried over into the output.")
     @JIPipeParameter("discard-existing-annotations")
     public boolean isDiscardExistingAnnotations() {
         return discardExistingAnnotations;

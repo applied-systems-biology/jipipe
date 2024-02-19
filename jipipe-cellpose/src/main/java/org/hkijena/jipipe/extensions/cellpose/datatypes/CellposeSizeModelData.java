@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.cellpose.datatypes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
@@ -18,7 +18,7 @@ import java.nio.file.Path;
 /**
  * Wrapper around Cellpose models
  */
-@JIPipeDocumentation(name = "Cellpose size model", description = "A Cellpose size model")
+@SetJIPipeDocumentation(name = "Cellpose size model", description = "A Cellpose size model")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "A single .npy file that contains the Cellpose size model",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/cellpose-size-model-data.schema.json")
 public class CellposeSizeModelData implements JIPipeData {

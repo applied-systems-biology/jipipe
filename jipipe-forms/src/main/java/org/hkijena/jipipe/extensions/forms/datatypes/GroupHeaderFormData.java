@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.forms.datatypes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
@@ -13,7 +13,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import java.awt.*;
 
-@JIPipeDocumentation(name = "Group header form", description = "Generates a group header element that allows to structure forms.")
+@SetJIPipeDocumentation(name = "Group header form", description = "Generates a group header element that allows to structure forms.")
 public class GroupHeaderFormData extends ParameterFormData {
 
     public GroupHeaderFormData() {

@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.functions.math;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -8,7 +8,7 @@ import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 import java.util.List;
 import java.util.Random;
 
-@JIPipeDocumentation(name = "Random number", description = "Calculates a random real number within the interval [0, 1). One argument (x): " +
+@SetJIPipeDocumentation(name = "Random number", description = "Calculates a random real number within the interval [0, 1). One argument (x): " +
         "the number will be between [0, x]. Two arguments (x, y): the number will be between [x, y).")
 public class RandomFunction extends ExpressionFunction {
 

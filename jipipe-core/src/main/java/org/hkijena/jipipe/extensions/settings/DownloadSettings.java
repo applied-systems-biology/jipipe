@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
@@ -91,7 +91,7 @@ public class DownloadSettings extends AbstractJIPipeParameterCollection {
         }
     }
 
-    @JIPipeDocumentation(name = "Prefer custom downloader", description = "If enabled, a custom downloader process is preferred.")
+    @SetJIPipeDocumentation(name = "Prefer custom downloader", description = "If enabled, a custom downloader process is preferred.")
     @JIPipeParameter("prefer-external-downloader")
     public boolean isPreferCustomDownloader() {
         return preferCustomDownloader;
@@ -102,7 +102,7 @@ public class DownloadSettings extends AbstractJIPipeParameterCollection {
         this.preferCustomDownloader = preferCustomDownloader;
     }
 
-    @JIPipeDocumentation(name = "Custom downloader", description = "A process for downloading files. If not set, JIPipe will fall back to its native Java-based downloading tool.")
+    @SetJIPipeDocumentation(name = "Custom downloader", description = "A process for downloading files. If not set, JIPipe will fall back to its native Java-based downloading tool.")
     @JIPipeParameter("external-downloader-process")
     public DownloadEnvironment getExternalDownloaderProcess() {
         return externalDownloaderProcess;
@@ -122,7 +122,7 @@ public class DownloadSettings extends AbstractJIPipeParameterCollection {
             super(other);
         }
 
-        @JIPipeDocumentation(name = "Arguments", description = "Arguments passed to the process.")
+        @SetJIPipeDocumentation(name = "Arguments", description = "Arguments passed to the process.")
         @JIPipeParameter("arguments")
         @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class)
         @JIPipeExpressionParameterVariable(name = "Output file", key = "output_file", description = "The downloaded file")

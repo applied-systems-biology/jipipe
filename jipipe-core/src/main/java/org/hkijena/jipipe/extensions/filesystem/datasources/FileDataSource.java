@@ -13,15 +13,15 @@
 
 package org.hkijena.jipipe.extensions.filesystem.datasources;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -43,9 +43,9 @@ import java.util.Objects;
 /**
  * Provides an input file
  */
-@JIPipeDocumentation(name = "File", description = "Converts the path parameter into file data.")
-@JIPipeOutputSlot(value = FileData.class, slotName = "Filename", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "File", description = "Converts the path parameter into file data.")
+@AddJIPipeOutputSlot(value = FileData.class, slotName = "Filename", create = true)
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class FileDataSource extends JIPipeAlgorithm {
 
     private Path currentWorkingDirectory;
@@ -82,7 +82,7 @@ public class FileDataSource extends JIPipeAlgorithm {
      * @return The file name
      */
     @JIPipeParameter("file-name")
-    @JIPipeDocumentation(name = "File name")
+    @SetJIPipeDocumentation(name = "File name")
     @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.FilesOnly)
     public Path getFileName() {
         return fileName;
@@ -106,7 +106,7 @@ public class FileDataSource extends JIPipeAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Needs to exist", description = "If true, the selected file needs to exist.")
+    @SetJIPipeDocumentation(name = "Needs to exist", description = "If true, the selected file needs to exist.")
     @JIPipeParameter("needs-to-exist")
     public boolean isNeedsToExist() {
         return needsToExist;

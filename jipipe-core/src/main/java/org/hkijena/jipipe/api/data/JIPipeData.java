@@ -44,10 +44,10 @@ import java.util.stream.Collectors;
  * <p>
  * Update: 1.74.0: The class is now closable, which is useful for handling external resources. {@link JIPipeDataTable} and {@link JIPipeDataItemStore} were adapted to handle the close() automatically.
  */
-@JIPipeDocumentation(name = "Data", description = "Generic data. Can hold any supported JIPipe data.")
+@SetJIPipeDocumentation(name = "Data", description = "Generic data. Can hold any supported JIPipe data.")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Unknown storage schema (generic data)",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-empty-data.schema.json")
-@JIPipeCommonData
+@LabelAsJIPipeCommonData
 public interface JIPipeData extends Closeable, AutoCloseable {
 
     /**
@@ -57,7 +57,7 @@ public interface JIPipeData extends Closeable, AutoCloseable {
      * @return The name of the data class
      */
     static String getNameOf(Class<? extends JIPipeData> klass) {
-        JIPipeDocumentation[] annotations = klass.getAnnotationsByType(JIPipeDocumentation.class);
+        SetJIPipeDocumentation[] annotations = klass.getAnnotationsByType(SetJIPipeDocumentation.class);
         if (annotations.length > 0) {
             return annotations[0].name();
         } else {
@@ -72,7 +72,7 @@ public interface JIPipeData extends Closeable, AutoCloseable {
      * @return The data class description
      */
     static String getDescriptionOf(Class<? extends JIPipeData> klass) {
-        JIPipeDocumentation[] annotations = klass.getAnnotationsByType(JIPipeDocumentation.class);
+        SetJIPipeDocumentation[] annotations = klass.getAnnotationsByType(SetJIPipeDocumentation.class);
         if (annotations.length > 0) {
             return DocumentationUtils.getDocumentationDescription(annotations[0]);
         } else {
@@ -87,7 +87,7 @@ public interface JIPipeData extends Closeable, AutoCloseable {
      * @return The menu path of the data class
      */
     static String getMenuPathOf(Class<? extends JIPipeData> klass) {
-        JIPipeNode[] annotations = klass.getAnnotationsByType(JIPipeNode.class);
+        DefineJIPipeNode[] annotations = klass.getAnnotationsByType(DefineJIPipeNode.class);
         if (annotations.length > 0) {
             return annotations[0].menuPath();
         } else {
@@ -102,7 +102,7 @@ public interface JIPipeData extends Closeable, AutoCloseable {
      * @return If the data should be hidden from user
      */
     static boolean isHidden(Class<? extends JIPipeData> klass) {
-        return klass.getAnnotationsByType(JIPipeHidden.class).length > 0;
+        return klass.getAnnotationsByType(LabelAsJIPipeHidden.class).length > 0;
     }
 
     /**
@@ -112,7 +112,7 @@ public interface JIPipeData extends Closeable, AutoCloseable {
      * @return If this data is considered as having a large size
      */
     static boolean isHeavy(Class<? extends JIPipeData> klass) {
-        return klass.getAnnotationsByType(JIPipeHeavyData.class).length > 0;
+        return klass.getAnnotationsByType(LabelAsJIPipeHeavyData.class).length > 0;
     }
 
     /**
@@ -122,7 +122,7 @@ public interface JIPipeData extends Closeable, AutoCloseable {
      * @return If this data is commonly used
      */
     static boolean isCommon(Class<? extends JIPipeData> klass) {
-        return klass.getAnnotationsByType(JIPipeCommonData.class).length > 0;
+        return klass.getAnnotationsByType(LabelAsJIPipeCommonData.class).length > 0;
     }
 
 

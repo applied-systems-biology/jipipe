@@ -3,9 +3,9 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.segment;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import inra.ijpb.watershed.Watershed;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -21,14 +21,14 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.Imag
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
 
-@JIPipeDocumentation(name = "Classic watershed", description = "Performs segmentation via watershed on a 2D or 3D image using flooding simulations. Please note that this node returns labels instead of masks.")
-@JIPipeCitation("\"Determining watersheds in digital pictures via flooding simulations.\" Lausanne-DL tentative. International Society for Optics and Photonics, 1990")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Segment")
-@JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Image", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Labels", autoCreate = true)
-@JIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
+@SetJIPipeDocumentation(name = "Classic watershed", description = "Performs segmentation via watershed on a 2D or 3D image using flooding simulations. Please note that this node returns labels instead of masks.")
+@AddJIPipeCitation("\"Determining watersheds in digital pictures via flooding simulations.\" Lausanne-DL tentative. International Society for Optics and Photonics, 1990")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Segment")
+@AddJIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Image", create = true)
+@AddJIPipeOutputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Labels", create = true)
+@AddJIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
         "Bioinformatics (Oxford Univ Press) 32(22): 3532-3534, PMID 27412086, doi:10.1093/bioinformatics/btw413")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nSegmentation", aliasName = "Classic Watershed")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nSegmentation", aliasName = "Classic Watershed")
 public class ClassicWatershedSegmentationAlgorithm extends JIPipeIteratingAlgorithm {
 
     private Neighborhood2D3D connectivity = Neighborhood2D3D.NoDiagonals;
@@ -91,7 +91,7 @@ public class ClassicWatershedSegmentationAlgorithm extends JIPipeIteratingAlgori
         }
     }
 
-    @JIPipeDocumentation(name = "Connectivity", description = "Determines the pixel neighborhood for the flood fill algorithm.")
+    @SetJIPipeDocumentation(name = "Connectivity", description = "Determines the pixel neighborhood for the flood fill algorithm.")
     @JIPipeParameter("connectivity")
     public Neighborhood2D3D getConnectivity() {
         return connectivity;
@@ -102,7 +102,7 @@ public class ClassicWatershedSegmentationAlgorithm extends JIPipeIteratingAlgori
         this.connectivity = connectivity;
     }
 
-    @JIPipeDocumentation(name = "Custom H-Min", description = "Allows to customize the H-Min parameter of the watershed")
+    @SetJIPipeDocumentation(name = "Custom H-Min", description = "Allows to customize the H-Min parameter of the watershed")
     @JIPipeParameter("custom-h-min")
     public OptionalDoubleParameter getCustomHMin() {
         return customHMin;
@@ -113,7 +113,7 @@ public class ClassicWatershedSegmentationAlgorithm extends JIPipeIteratingAlgori
         this.customHMin = customHMin;
     }
 
-    @JIPipeDocumentation(name = "Custom H-Max", description = "Allows to customize the H-Max parameter of the watershed")
+    @SetJIPipeDocumentation(name = "Custom H-Max", description = "Allows to customize the H-Max parameter of the watershed")
     @JIPipeParameter("custom-h-max")
     public OptionalDoubleParameter getCustomHMax() {
         return customHMax;
@@ -124,7 +124,7 @@ public class ClassicWatershedSegmentationAlgorithm extends JIPipeIteratingAlgori
         this.customHMax = customHMax;
     }
 
-    @JIPipeDocumentation(name = "Only apply to ...", description = "Determines where the watershed is applied.")
+    @SetJIPipeDocumentation(name = "Only apply to ...", description = "Determines where the watershed is applied.")
     @JIPipeParameter("target-area")
     public ImageROITargetArea getTargetArea() {
         return targetArea;
@@ -136,7 +136,7 @@ public class ClassicWatershedSegmentationAlgorithm extends JIPipeIteratingAlgori
         ImageJAlgorithmUtils.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
     }
 
-    @JIPipeDocumentation(name = "Apply per slice", description = "If enabled, 3D data is split into 2D slices and the watershed algorithm is applied per slice.")
+    @SetJIPipeDocumentation(name = "Apply per slice", description = "If enabled, 3D data is split into 2D slices and the watershed algorithm is applied per slice.")
     @JIPipeParameter("apply-per-slice")
     public boolean isApplyPerSlice() {
         return applyPerSlice;

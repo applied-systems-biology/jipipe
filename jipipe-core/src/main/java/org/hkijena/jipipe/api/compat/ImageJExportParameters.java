@@ -2,7 +2,7 @@ package org.hkijena.jipipe.api.compat;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
@@ -34,7 +34,7 @@ public class ImageJExportParameters extends AbstractJIPipeParameterCollection {
         this.duplicate = other.duplicate;
     }
 
-    @JIPipeDocumentation(name = "Activate", description = "If enabled, the associated window(s) are put into the foreground")
+    @SetJIPipeDocumentation(name = "Activate", description = "If enabled, the associated window(s) are put into the foreground")
     @JIPipeParameter("activate")
     @JsonGetter("activate")
     public boolean isActivate() {
@@ -47,7 +47,7 @@ public class ImageJExportParameters extends AbstractJIPipeParameterCollection {
         this.activate = activate;
     }
 
-    @JIPipeDocumentation(name = "Avoid creating windows", description = "If enabled, no windows should be created")
+    @SetJIPipeDocumentation(name = "Avoid creating windows", description = "If enabled, no windows should be created")
     @JIPipeParameter("no-windows")
     @JsonGetter("no-windows")
     public boolean isNoWindows() {
@@ -60,7 +60,7 @@ public class ImageJExportParameters extends AbstractJIPipeParameterCollection {
         this.noWindows = noWindows;
     }
 
-    @JIPipeDocumentation(name = "Name", description = "The name associated to this data")
+    @SetJIPipeDocumentation(name = "Name", description = "The name associated to this data")
     @JIPipeParameter("name")
     @JsonGetter("name")
     public String getName() {
@@ -73,7 +73,7 @@ public class ImageJExportParameters extends AbstractJIPipeParameterCollection {
         this.name = name;
     }
 
-    @JIPipeDocumentation(name = "Append data", description = "If enabled, data is appended if possible")
+    @SetJIPipeDocumentation(name = "Append data", description = "If enabled, data is appended if possible")
     @JIPipeParameter("append")
     @JsonGetter("append")
     public boolean isAppend() {
@@ -86,7 +86,7 @@ public class ImageJExportParameters extends AbstractJIPipeParameterCollection {
         this.append = append;
     }
 
-    @JIPipeDocumentation(name = "Duplicate data", description = "If enabled, a duplicate is exported if possible")
+    @SetJIPipeDocumentation(name = "Duplicate data", description = "If enabled, a duplicate is exported if possible")
     @JIPipeParameter("duplicate")
     public boolean isDuplicate() {
         return duplicate;

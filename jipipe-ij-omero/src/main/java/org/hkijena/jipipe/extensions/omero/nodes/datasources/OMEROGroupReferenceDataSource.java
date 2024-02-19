@@ -13,14 +13,14 @@
 
 package org.hkijena.jipipe.extensions.omero.nodes.datasources;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -28,9 +28,9 @@ import org.hkijena.jipipe.extensions.omero.datatypes.OMEROGroupReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROProjectReferenceData;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.LongList;
 
-@JIPipeDocumentation(name = "Define group IDs", description = "Manually defines OMERO group ids.")
-@JIPipeOutputSlot(value = OMEROGroupReferenceData.class, slotName = "Output", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class, menuPath = "OMERO")
+@SetJIPipeDocumentation(name = "Define group IDs", description = "Manually defines OMERO group ids.")
+@AddJIPipeOutputSlot(value = OMEROGroupReferenceData.class, slotName = "Output", create = true)
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class, menuPath = "OMERO")
 public class OMEROGroupReferenceDataSource extends JIPipeSimpleIteratingAlgorithm {
 
     private LongList groupIds = new LongList();
@@ -52,7 +52,7 @@ public class OMEROGroupReferenceDataSource extends JIPipeSimpleIteratingAlgorith
         }
     }
 
-    @JIPipeDocumentation(name = "Group IDs", description = "List of group IDs")
+    @SetJIPipeDocumentation(name = "Group IDs", description = "List of group IDs")
     @JIPipeParameter("group-ids")
     public LongList getGroupIds() {
         return groupIds;

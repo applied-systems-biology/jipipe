@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.omero.datatypes;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import omero.gateway.model.ProjectData;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
@@ -24,7 +24,6 @@ import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.extensions.omero.OMEROCredentialsEnvironment;
-import org.hkijena.jipipe.extensions.omero.OMEROExtension;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -40,7 +39,7 @@ import java.nio.file.Path;
 /**
  * Data that stores a reference to an OMERO project
  */
-@JIPipeDocumentation(name = "OMERO Project", description = "An OMERO project ID")
+@SetJIPipeDocumentation(name = "OMERO Project", description = "An OMERO project ID")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.json file that stores the <pre>project-id</pre> in a JSON object.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/omero-project-reference-data.schema.json")
 public class OMEROProjectReferenceData implements JIPipeData {

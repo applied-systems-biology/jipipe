@@ -13,14 +13,14 @@
 
 package org.hkijena.jipipe.extensions.expressions.functions.collections;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 
 import java.util.List;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Get map keys", description = "Returns the keys of a map as array")
+@SetJIPipeDocumentation(name = "Get map keys", description = "Returns the keys of a map as array")
 public class GetMapKeysFunction extends ExpressionFunction {
 
     public GetMapKeysFunction() {

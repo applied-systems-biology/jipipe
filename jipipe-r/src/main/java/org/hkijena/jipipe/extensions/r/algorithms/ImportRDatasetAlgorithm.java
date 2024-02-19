@@ -1,15 +1,15 @@
 package org.hkijena.jipipe.extensions.r.algorithms;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
@@ -32,9 +32,9 @@ import javax.swing.*;
 import java.nio.file.Path;
 import java.util.List;
 
-@JIPipeDocumentation(name = "R data set", description = "Imports a standard R data set (datasets package) as table.")
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "R data set", description = "Imports a standard R data set (datasets package) as table.")
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Dataset dataset = Dataset.iris;
@@ -76,7 +76,7 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Override R environment", description = "If enabled, a different R environment is used for this Node.")
+    @SetJIPipeDocumentation(name = "Override R environment", description = "If enabled, a different R environment is used for this Node.")
     @JIPipeParameter("override-environment")
     public OptionalREnvironment getOverrideEnvironment() {
         return overrideEnvironment;
@@ -99,7 +99,7 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), resultsTableData, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Dataset", description = "Determines which data set should be imported")
+    @SetJIPipeDocumentation(name = "Dataset", description = "Determines which data set should be imported")
     @JIPipeParameter("dataset")
     @EnumParameterSettings(itemInfo = DatasetEnumItemInfo.class)
     public Dataset getDataset() {

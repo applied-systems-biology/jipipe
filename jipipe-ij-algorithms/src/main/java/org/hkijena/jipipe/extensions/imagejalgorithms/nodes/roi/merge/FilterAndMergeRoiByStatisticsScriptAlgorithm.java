@@ -15,8 +15,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.merge;
 
 import ij.gui.Roi;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -47,13 +47,13 @@ import java.util.List;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@JIPipeDocumentation(name = "Filter & merge ROI by statistics (Script)", description = "Executes a script that has full control over the input ROI lists. The Python script contains a variable 'row_lists' " +
+@SetJIPipeDocumentation(name = "Filter & merge ROI by statistics (Script)", description = "Executes a script that has full control over the input ROI lists. The Python script contains a variable 'row_lists' " +
         "that contains dictionaries with following entries: 'roi_list' is a list of dictionaries, 'annotations' is a dictionary containing the annotations. Each 'data' dictionary has " +
         "an item 'data' containing the ImageJ ROI, and a dictionary 'stats' with the extracted statistics.")
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true, optional = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true, optional = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final RoiStatisticsAlgorithm roiStatisticsAlgorithm =
@@ -158,7 +158,7 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends JIPipeIteratin
         code.makeExternalScriptFileRelative(baseDirectory);
     }
 
-    @JIPipeDocumentation(name = "Script", description = "Each table is passed as dictionary 'table' " +
+    @SetJIPipeDocumentation(name = "Script", description = "Each table is passed as dictionary 'table' " +
             "with the column name as key and values being an array of strings or doubles. " +
             "The number of input rows can be accessed via the 'nrow' variable.")
     @JIPipeParameter("code")
@@ -171,7 +171,7 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends JIPipeIteratin
         this.code = code;
     }
 
-    @JIPipeDocumentation(name = "Script parameters", description = "The following parameters will be passed to the Python script. The variable name is equal to the unique parameter identifier.")
+    @SetJIPipeDocumentation(name = "Script parameters", description = "The following parameters will be passed to the Python script. The variable name is equal to the unique parameter identifier.")
     @JIPipeParameter(value = "script-parameters", persistence = JIPipeParameterSerializationMode.Object)
     public JIPipeDynamicParameterCollection getScriptParameters() {
         return scriptParameters;

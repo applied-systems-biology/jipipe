@@ -14,14 +14,14 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.algorithms;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -34,10 +34,10 @@ import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataPar
 /**
  * Converts ImageJ data type into each other
  */
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeDocumentation(name = "Convert ImageJ image", description = "Converts an ImageJ image into another ImageJ image data type")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@SetJIPipeDocumentation(name = "Convert ImageJ image", description = "Converts an ImageJ image into another ImageJ image data type")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)
 public class ImageTypeConverter extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeDataInfoRef outputType = new JIPipeDataInfoRef(ImagePlusData.class);
@@ -61,7 +61,7 @@ public class ImageTypeConverter extends JIPipeSimpleIteratingAlgorithm {
         this.outputType = other.outputType;
     }
 
-    @JIPipeDocumentation(name = "Output image type", description = "Determines the output image type")
+    @SetJIPipeDocumentation(name = "Output image type", description = "Determines the output image type")
     @JIPipeParameter(value = "output-type", important = true)
     @JIPipeDataParameterSettings(dataBaseClass = ImagePlusData.class)
     public JIPipeDataInfoRef getOutputType() {

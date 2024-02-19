@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.omero;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -33,7 +33,7 @@ public class OMEROSettings extends AbstractJIPipeParameterCollection implements 
         return JIPipe.getSettings().getSettings(ID, OMEROSettings.class);
     }
 
-    @JIPipeDocumentation(name = "Default credentials", description = "The default credentials for the OMERO server")
+    @SetJIPipeDocumentation(name = "Default credentials", description = "The default credentials for the OMERO server")
     @JIPipeParameter("default-credentials")
     public OMEROCredentialsEnvironment getDefaultCredentials() {
         return defaultCredentials;
@@ -44,7 +44,7 @@ public class OMEROSettings extends AbstractJIPipeParameterCollection implements 
         this.defaultCredentials = defaultCredentials;
     }
 
-    @JIPipeDocumentation(name = "Presets", description = "The list of presets")
+    @SetJIPipeDocumentation(name = "Presets", description = "The list of presets")
     @JIPipeParameter("presets")
     public OMEROCredentialsEnvironment.List getPresets() {
         return presets;

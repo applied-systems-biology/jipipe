@@ -13,14 +13,14 @@
 
 package org.hkijena.jipipe.extensions.expressions.functions.variables;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 
 import java.util.HashMap;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Get all variables as map", description = "Returns all variables at map.")
+@SetJIPipeDocumentation(name = "Get all variables as map", description = "Returns all variables at map.")
 public class GetVariablesAsMapFunction extends ExpressionFunction {
 
     public GetVariablesAsMapFunction() {

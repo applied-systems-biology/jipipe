@@ -1,12 +1,12 @@
 package org.hkijena.jipipe.extensions.expressions.functions.control;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "Switch/case", description = "Multiple IF_ELSE instructions flattened into a function. The function of parameters is defined by if they are even or odd in their order (starting from 1). " +
+@SetJIPipeDocumentation(name = "Switch/case", description = "Multiple IF_ELSE instructions flattened into a function. The function of parameters is defined by if they are even or odd in their order (starting from 1). " +
         "Odd parameters must resolve to Boolean values (TRUE/FALSE). The following even parameter defines the value that is returned if the last parameter is TRUE. The function chooses the first value associated to a TRUE. If you have an uneven number of parameters, then " +
         "the last one is the value returned if none of the conditions is TRUE.")
 public class SwitchCaseFunction extends ExpressionFunction {

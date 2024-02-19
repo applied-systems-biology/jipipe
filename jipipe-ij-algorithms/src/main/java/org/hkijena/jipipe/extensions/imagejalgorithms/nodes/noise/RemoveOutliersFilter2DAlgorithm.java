@@ -15,8 +15,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.noise;
 
 import ij.ImagePlus;
 import ij.plugin.filter.RankFilters;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -32,13 +32,13 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 /**
  * Wrapper around {@link RankFilters}
  */
-@JIPipeDocumentation(name = "Remove outliers 2D", description = "Filter that replaces pixel values by the median if they deviate too much from it. " +
+@SetJIPipeDocumentation(name = "Remove outliers 2D", description = "Filter that replaces pixel values by the median if they deviate too much from it. " +
         "If a multi-channel image is provided, the operation is applied to each channel. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nNoise", aliasName = "Remove Outliers...")
+@DefineJIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nNoise", aliasName = "Remove Outliers...")
 public class RemoveOutliersFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private double radius = 1;
@@ -84,7 +84,7 @@ public class RemoveOutliersFilter2DAlgorithm extends JIPipeSimpleIteratingAlgori
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Radius", description = "Radius of the filter kernel. See ImageJ>Process>Filters>Show Circular Masks for a reference.")
+    @SetJIPipeDocumentation(name = "Radius", description = "Radius of the filter kernel. See ImageJ>Process>Filters>Show Circular Masks for a reference.")
     @JIPipeParameter("radius")
     public double getRadius() {
         return radius;
@@ -100,7 +100,7 @@ public class RemoveOutliersFilter2DAlgorithm extends JIPipeSimpleIteratingAlgori
         return true;
     }
 
-    @JIPipeDocumentation(name = "Mode", description = "Determines whether to modify pixels smaller or greater than the local median.")
+    @SetJIPipeDocumentation(name = "Mode", description = "Determines whether to modify pixels smaller or greater than the local median.")
     @JIPipeParameter("mode")
     public Mode getMode() {
         return mode;
@@ -112,7 +112,7 @@ public class RemoveOutliersFilter2DAlgorithm extends JIPipeSimpleIteratingAlgori
 
     }
 
-    @JIPipeDocumentation(name = "Threshold", description = "Determines by how much a pixel has to deviate from the local median to be replaced by it.")
+    @SetJIPipeDocumentation(name = "Threshold", description = "Determines by how much a pixel has to deviate from the local median to be replaced by it.")
     @JIPipeParameter("threshold")
     public float getThreshold() {
         return threshold;

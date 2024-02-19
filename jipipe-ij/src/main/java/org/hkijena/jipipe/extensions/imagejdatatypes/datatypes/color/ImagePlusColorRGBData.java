@@ -16,9 +16,9 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ColorProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHeavyData;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
@@ -33,9 +33,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
  * These image data types exist to address general processing solely based on bit-depth (e.g. process all 2D image planes).
  * Conversion works through {@link org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.ImplicitImageTypeConverter}
  */
-@JIPipeDocumentation(name = "Image (RGB)", description = "A colored image (RGB colors)")
-@JIPipeNode(menuPath = "Images\nColor")
-@JIPipeHeavyData
+@SetJIPipeDocumentation(name = "Image (RGB)", description = "A colored image (RGB colors)")
+@DefineJIPipeNode(menuPath = "Images\nColor")
+@LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ColorProcessor.class, colorSpace = RGBColorSpace.class, pixelType = Integer.class, bitDepth = 24)
 public class ImagePlusColorRGBData extends ImagePlusColorData {
 

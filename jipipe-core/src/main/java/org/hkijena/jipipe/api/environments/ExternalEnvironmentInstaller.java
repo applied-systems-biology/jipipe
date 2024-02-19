@@ -1,12 +1,13 @@
 package org.hkijena.jipipe.api.environments;
 
 import org.hkijena.jipipe.api.JIPipeRunnable;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 /**
  * Contains instructions to install an environment.
- * Use {@link org.hkijena.jipipe.api.JIPipeDocumentation} to set the name and description for this installer
+ * Use {@link SetJIPipeDocumentation} to set the name and description for this installer
  */
 public abstract class ExternalEnvironmentInstaller implements JIPipeRunnable {
 

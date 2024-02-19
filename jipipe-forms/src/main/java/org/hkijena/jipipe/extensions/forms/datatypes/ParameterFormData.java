@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.forms.datatypes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
@@ -49,7 +49,7 @@ public abstract class ParameterFormData extends FormData {
         frame.setVisible(true);
     }
 
-    @JIPipeDocumentation(name = "Name", description = "Name of the form element. Hidden if 'Show name' is disabled.")
+    @SetJIPipeDocumentation(name = "Name", description = "Name of the form element. Hidden if 'Show name' is disabled.")
     @JIPipeParameter(value = "form:name", uiOrder = -100)
     public String getName() {
         return name;
@@ -60,7 +60,7 @@ public abstract class ParameterFormData extends FormData {
         this.name = name;
     }
 
-    @JIPipeDocumentation(name = "Description", description = "Description of the element displayed to the user.")
+    @SetJIPipeDocumentation(name = "Description", description = "Description of the element displayed to the user.")
     @JIPipeParameter(value = "form:description", uiOrder = -80)
     public HTMLText getDescription() {
         return description;
@@ -71,7 +71,7 @@ public abstract class ParameterFormData extends FormData {
         this.description = description;
     }
 
-    @JIPipeDocumentation(name = "Show name", description = "If enabled, the name of the form element is shown next to it.")
+    @SetJIPipeDocumentation(name = "Show name", description = "If enabled, the name of the form element is shown next to it.")
     @JIPipeParameter("form:show-name")
     public boolean isShowName() {
         return showName;

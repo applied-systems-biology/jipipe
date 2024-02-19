@@ -14,12 +14,11 @@
 package org.hkijena.jipipe.ui.grapheditor.algorithmpipeline;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.history.JIPipeDedicatedGraphHistoryJournal;
@@ -264,9 +263,9 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
                         continue;
                     if (!actionAnnotation.showInContextMenu())
                         continue;
-                    JIPipeDocumentation documentationAnnotation = method.getAnnotation(JIPipeDocumentation.class);
+                    SetJIPipeDocumentation documentationAnnotation = method.getAnnotation(SetJIPipeDocumentation.class);
                     if (documentationAnnotation == null) {
-                        documentationAnnotation = new JIPipeDefaultDocumentation(method.getName(), "");
+                        documentationAnnotation = new JIPipeDocumentation(method.getName(), "");
                     }
                     URL iconURL;
                     if (UIUtils.DARK_THEME && !StringUtils.isNullOrEmpty(actionAnnotation.iconDarkURL())) {

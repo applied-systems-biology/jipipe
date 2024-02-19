@@ -9,19 +9,18 @@
  *
  * The project code is licensed under BSD 2-Clause.
  * See the LICENSE file provided with the code for the full license.
+ *
  */
 
-package org.hkijena.jipipe.api;
+package org.hkijena.jipipe.api.nodes;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * Marks a class as hidden
- */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface JIPipeHidden {
+public @interface AddJIPipeNodeAliases {
+    AddJIPipeNodeAlias[] value();
 }

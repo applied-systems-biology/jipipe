@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
 import com.google.common.collect.ImmutableList;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -38,10 +38,10 @@ import java.util.List;
 /**
  * Generates annotations from filenames
  */
-@JIPipeDocumentation(name = "Rename annotation", description = "Renames one or multiple annotations.")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Modify")
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Rename annotation", description = "Renames one or multiple annotations.")
+@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Modify")
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
 public class RenameAnnotation extends JIPipeSimpleIteratingAlgorithm {
 
     private StringQueryExpressionAndStringPairParameter.List renamingItems = new StringQueryExpressionAndStringPairParameter.List();
@@ -88,7 +88,7 @@ public class RenameAnnotation extends JIPipeSimpleIteratingAlgorithm {
                 progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Renaming items", description = "Determines which annotation columns are renamed.")
+    @SetJIPipeDocumentation(name = "Renaming items", description = "Determines which annotation columns are renamed.")
     @JIPipeParameter("renaming-items")
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @PairParameterSettings(keyLabel = "From", valueLabel = "To")
@@ -101,7 +101,7 @@ public class RenameAnnotation extends JIPipeSimpleIteratingAlgorithm {
         this.renamingItems = renamingItems;
     }
 
-    @JIPipeDocumentation(name = "Merge same annotation values", description = "Determines which strategy is applied if an annotation already exists.")
+    @SetJIPipeDocumentation(name = "Merge same annotation values", description = "Determines which strategy is applied if an annotation already exists.")
     @JIPipeParameter("annotation-merge-strategy")
     public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {
         return annotationMergeStrategy;

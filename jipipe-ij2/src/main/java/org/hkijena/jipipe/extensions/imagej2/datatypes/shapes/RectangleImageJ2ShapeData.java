@@ -2,13 +2,13 @@ package org.hkijena.jipipe.extensions.imagej2.datatypes.shapes;
 
 import net.imglib2.algorithm.neighborhood.RectangleShape;
 import net.imglib2.algorithm.neighborhood.Shape;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
-@JIPipeDocumentation(name = "IJ2 Rectangle Shape", description = "A 2D rectangle shape")
+@SetJIPipeDocumentation(name = "IJ2 Rectangle Shape", description = "A 2D rectangle shape")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single JSON file that stores the status information.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
 public class RectangleImageJ2ShapeData extends ImageJ2ShapeData {
@@ -34,7 +34,7 @@ public class RectangleImageJ2ShapeData extends ImageJ2ShapeData {
         return (RectangleImageJ2ShapeData) ImageJ2ShapeData.importData(storage, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Span")
+    @SetJIPipeDocumentation(name = "Span")
     @JIPipeParameter("span")
     public int getSpan() {
         return span;
@@ -45,7 +45,7 @@ public class RectangleImageJ2ShapeData extends ImageJ2ShapeData {
         this.span = span;
     }
 
-    @JIPipeDocumentation(name = "Skip center")
+    @SetJIPipeDocumentation(name = "Skip center")
     @JIPipeParameter("skip-center")
     public boolean isSkipCenter() {
         return skipCenter;

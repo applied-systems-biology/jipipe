@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.filter;
 
 import ij.gui.Roi;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -34,10 +34,10 @@ import java.util.List;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@JIPipeDocumentation(name = "Slice ROI list", description = "Extracts a sublist of ROI from the input")
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Slice ROI list", description = "Extracts a sublist of ROI from the input")
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class SliceROIListAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private IntegerRange selectedIndices = new IntegerRange();
@@ -85,7 +85,7 @@ public class SliceROIListAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), outputRois, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Selected indices", description = "The output will only contain the ROI indices specified in by the value. For example, the value '0' returns the first ROI. A value of '0-4' returns the top 5 items.")
+    @SetJIPipeDocumentation(name = "Selected indices", description = "The output will only contain the ROI indices specified in by the value. For example, the value '0' returns the first ROI. A value of '0-4' returns the top 5 items.")
     @JIPipeParameter("selected-indices")
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public IntegerRange getSelectedIndices() {
@@ -97,7 +97,7 @@ public class SliceROIListAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.selectedIndices = selectedIndices;
     }
 
-    @JIPipeDocumentation(name = "Ignore missing items", description = "If enabled, there will be not error if you select too many items (e.g. if the list only contains " +
+    @SetJIPipeDocumentation(name = "Ignore missing items", description = "If enabled, there will be not error if you select too many items (e.g. if the list only contains " +
             "10 items, but you select the top 20)")
     @JIPipeParameter("auto-clamp")
     public boolean isAutoClamp() {

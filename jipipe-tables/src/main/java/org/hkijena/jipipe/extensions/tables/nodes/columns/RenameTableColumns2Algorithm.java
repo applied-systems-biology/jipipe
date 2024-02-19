@@ -14,8 +14,8 @@
 
 package org.hkijena.jipipe.extensions.tables.nodes.columns;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -40,10 +40,10 @@ import java.util.Objects;
 /**
  * Algorithm that removes columns
  */
-@JIPipeDocumentation(name = "Rename table column", description = "Renames columns")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Rename table column", description = "Renames columns")
+@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class RenameTableColumns2Algorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private ParameterCollectionList renamingEntries = ParameterCollectionList.containingCollection(RenamingEntry.class);
@@ -91,7 +91,7 @@ public class RenameTableColumns2Algorithm extends JIPipeSimpleIteratingAlgorithm
         iterationStep.addOutputData(getFirstOutputSlot(), table, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Renaming entries", description = "You can rename one or multiple columns.")
+    @SetJIPipeDocumentation(name = "Renaming entries", description = "You can rename one or multiple columns.")
     @StringParameterSettings(monospace = true)
     @PairParameterSettings(singleRow = false, keyLabel = "From", valueLabel = "To")
     @JIPipeParameter("renaming-entries")
@@ -117,7 +117,7 @@ public class RenameTableColumns2Algorithm extends JIPipeSimpleIteratingAlgorithm
             this.newName = new JIPipeExpressionParameter(other.newName);
         }
 
-        @JIPipeDocumentation(name = "Column to be renamed", description = "The column to be renamed")
+        @SetJIPipeDocumentation(name = "Column to be renamed", description = "The column to be renamed")
         @JIPipeParameter("source-column")
         @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
         public StringQueryExpression getSourceColumn() {
@@ -129,7 +129,7 @@ public class RenameTableColumns2Algorithm extends JIPipeSimpleIteratingAlgorithm
             this.sourceColumn = sourceColumn;
         }
 
-        @JIPipeDocumentation(name = "New name", description = "The new name of the column")
+        @SetJIPipeDocumentation(name = "New name", description = "The new name of the column")
         @JIPipeParameter("new-name")
         @JIPipeExpressionParameterVariable(name = "Current name", key = "current_name", description = "The current name")
         @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)

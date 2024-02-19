@@ -13,13 +13,13 @@
 
 package org.hkijena.jipipe.extensions.expressions.functions.collections;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 
 import java.util.*;
 
-@JIPipeDocumentation(name = "Create map", description = "Creates a map from multiple pair arrays. Use the PAIR(key, value) function to create pairs. Duplicate keys are overwritten by newer values.")
+@SetJIPipeDocumentation(name = "Create map", description = "Creates a map from multiple pair arrays. Use the PAIR(key, value) function to create pairs. Duplicate keys are overwritten by newer values.")
 public class CreateMapFunction extends ExpressionFunction {
 
     public CreateMapFunction() {

@@ -4,8 +4,8 @@ import com.google.common.collect.MinMaxPriorityQueue;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -26,11 +26,11 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Register ROI 2D (by intensity)", description = "Tests multiple locations of the specified ROI within the image and finds the scale, rotation, and translation of the ROI where its components align to the maximum average intensity.")
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Register")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Image", autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Registered ROI", autoCreate = true)
+@SetJIPipeDocumentation(name = "Register ROI 2D (by intensity)", description = "Tests multiple locations of the specified ROI within the image and finds the scale, rotation, and translation of the ROI where its components align to the maximum average intensity.")
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Register")
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true)
+@AddJIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Image", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Registered ROI", create = true)
 public class RegisterRoiToImageByBrightnessAlgorithm extends JIPipeIteratingAlgorithm {
 
     private JIPipeExpressionParameter rotationRange = new JIPipeExpressionParameter("MAKE_SEQUENCE(-180, 180, 1)");
@@ -133,7 +133,7 @@ public class RegisterRoiToImageByBrightnessAlgorithm extends JIPipeIteratingAlgo
         }
     }
 
-    @JIPipeDocumentation(name = "Step (X/Y)", description = "The step size in the X and Y direction")
+    @SetJIPipeDocumentation(name = "Step (X/Y)", description = "The step size in the X and Y direction")
     @JIPipeParameter("xy-step")
     public int getXyStep() {
         return xyStep;
@@ -144,7 +144,7 @@ public class RegisterRoiToImageByBrightnessAlgorithm extends JIPipeIteratingAlgo
         this.xyStep = xyStep;
     }
 
-    @JIPipeDocumentation(name = "Rotation range", description = "Expression that generates the rotations to be tested")
+    @SetJIPipeDocumentation(name = "Rotation range", description = "Expression that generates the rotations to be tested")
     @JIPipeParameter("rotation-range")
     public JIPipeExpressionParameter getRotationRange() {
         return rotationRange;
@@ -155,7 +155,7 @@ public class RegisterRoiToImageByBrightnessAlgorithm extends JIPipeIteratingAlgo
         this.rotationRange = rotationRange;
     }
 
-    @JIPipeDocumentation(name = "Scale range", description = "Expression that generates the scales to be tested")
+    @SetJIPipeDocumentation(name = "Scale range", description = "Expression that generates the scales to be tested")
     @JIPipeParameter("scale-range")
     public JIPipeExpressionParameter getScaleRange() {
         return scaleRange;

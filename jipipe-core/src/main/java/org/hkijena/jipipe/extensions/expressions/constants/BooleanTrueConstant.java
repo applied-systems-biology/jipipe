@@ -13,10 +13,10 @@
 
 package org.hkijena.jipipe.extensions.expressions.constants;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionConstant;
 
-@JIPipeDocumentation(name = "Boolean TRUE", description = "A boolean value that evaluates to TRUE")
+@SetJIPipeDocumentation(name = "Boolean TRUE", description = "A boolean value that evaluates to TRUE")
 public class BooleanTrueConstant extends ExpressionConstant {
     public BooleanTrueConstant() {
         super("true", true);

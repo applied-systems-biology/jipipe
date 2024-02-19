@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHidden;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -33,11 +33,11 @@ import org.hkijena.jipipe.utils.StringUtils;
 /**
  * Generates annotations from filenames
  */
-@JIPipeDocumentation(name = "Files to annotations", description = "Creates an annotation for each file based on its file name")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For paths")
-@JIPipeInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
-@JIPipeOutputSlot(value = FileData.class, slotName = "Annotated files", autoCreate = true)
-@JIPipeHidden
+@SetJIPipeDocumentation(name = "Files to annotations", description = "Creates an annotation for each file based on its file name")
+@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For paths")
+@AddJIPipeInputSlot(value = FileData.class, slotName = "Files", create = true)
+@AddJIPipeOutputSlot(value = FileData.class, slotName = "Annotated files", create = true)
+@LabelAsJIPipeHidden
 public class SimpleFileAnnotationGenerator extends JIPipeSimpleIteratingAlgorithm {
 
     private String generatedAnnotation = "#Dataset";
@@ -74,7 +74,7 @@ public class SimpleFileAnnotationGenerator extends JIPipeSimpleIteratingAlgorith
     /**
      * @return Generated annotation type
      */
-    @JIPipeDocumentation(name = "Generated annotation", description = "Select which annotation type is generated for each file")
+    @SetJIPipeDocumentation(name = "Generated annotation", description = "Select which annotation type is generated for each file")
     @JIPipeParameter("generated-annotation")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public String getGeneratedAnnotation() {

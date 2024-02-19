@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.omero.parameters;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -29,7 +29,7 @@ public class AnnotationsToOMEROKeyValuePairExporter extends AbstractJIPipeParame
         this.keyValuePairValue = new JIPipeExpressionParameter(other.keyValuePairValue);
     }
 
-    @JIPipeDocumentation(name = "Enabled", description = "Determined if the import of key-value pairs is enabled")
+    @SetJIPipeDocumentation(name = "Enabled", description = "Determined if the import of key-value pairs is enabled")
     @JIPipeParameter(value = "enabled", uiOrder = -100)
     public boolean isEnabled() {
         return enabled;
@@ -40,7 +40,7 @@ public class AnnotationsToOMEROKeyValuePairExporter extends AbstractJIPipeParame
         this.enabled = enabled;
     }
 
-    @JIPipeDocumentation(name = "Filter annotations", description = "Allows to only target specific annotations to be exported as key-value pair")
+    @SetJIPipeDocumentation(name = "Filter annotations", description = "Allows to only target specific annotations to be exported as key-value pair")
     @JIPipeParameter(value = "filter", uiOrder = -90)
     @JIPipeExpressionParameterSettings(hint = "per annotation")
     @JIPipeExpressionParameterVariable(name = "Annotation name", description = "The name/key of the annotation", key = "key")
@@ -54,7 +54,7 @@ public class AnnotationsToOMEROKeyValuePairExporter extends AbstractJIPipeParame
         this.filter = filter;
     }
 
-    @JIPipeDocumentation(name = "Key-value pair key", description = "Expression that generates the key of the key-value pair")
+    @SetJIPipeDocumentation(name = "Key-value pair key", description = "Expression that generates the key of the key-value pair")
     @JIPipeParameter(value = "key-value-pair-key", uiOrder = -80)
     @JIPipeExpressionParameterSettings(hint = "per annotation")
     @JIPipeExpressionParameterVariable(name = "Annotation name", description = "The name/key of the annotation", key = "key")
@@ -68,7 +68,7 @@ public class AnnotationsToOMEROKeyValuePairExporter extends AbstractJIPipeParame
         this.keyValuePairKey = keyValuePairKey;
     }
 
-    @JIPipeDocumentation(name = "Key-value pair value", description = "Expression that generates the value of the key-value pair")
+    @SetJIPipeDocumentation(name = "Key-value pair value", description = "Expression that generates the value of the key-value pair")
     @JIPipeParameter(value = "key-value-pair-value", uiOrder = -70)
     @JIPipeExpressionParameterSettings(hint = "per annotation")
     @JIPipeExpressionParameterVariable(name = "Annotation name", description = "The name/key of the annotation", key = "key")

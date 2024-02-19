@@ -16,8 +16,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.assemble;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -39,11 +39,11 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Extract from ROI", description = "Extracts parts of the incoming image within the given ROI by extracting the bounding area.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "ROI")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true)
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlus2DData.class, slotName = "Extracted", autoCreate = true)
+@SetJIPipeDocumentation(name = "Extract from ROI", description = "Extracts parts of the incoming image within the given ROI by extracting the bounding area.")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "ROI")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true)
+@AddJIPipeOutputSlot(value = ImagePlus2DData.class, slotName = "Extracted", create = true)
 public class ExtractFromROIAlgorithm extends JIPipeIteratingAlgorithm {
 
     private OptionalColorParameter outsideColor = new OptionalColorParameter(Color.BLACK, true);
@@ -115,7 +115,7 @@ public class ExtractFromROIAlgorithm extends JIPipeIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Set color outside ROI", description = "If enabled, the area outside the ROI (e.g. if you have a circular ROI) is set to this color. Otherwise, the bounding area of the ROI is taken as-is.")
+    @SetJIPipeDocumentation(name = "Set color outside ROI", description = "If enabled, the area outside the ROI (e.g. if you have a circular ROI) is set to this color. Otherwise, the bounding area of the ROI is taken as-is.")
     @JIPipeParameter("outside-color")
     public OptionalColorParameter getOutsideColor() {
         return outsideColor;
@@ -126,7 +126,7 @@ public class ExtractFromROIAlgorithm extends JIPipeIteratingAlgorithm {
         this.outsideColor = outsideColor;
     }
 
-    @JIPipeDocumentation(name = "Annotate with X location", description = "If enabled, the generated image is annotated with the top-left X coordinate of the ROI bounding box.")
+    @SetJIPipeDocumentation(name = "Annotate with X location", description = "If enabled, the generated image is annotated with the top-left X coordinate of the ROI bounding box.")
     @JIPipeParameter(value = "annotation-x", uiOrder = -50)
     public OptionalAnnotationNameParameter getAnnotationX() {
         return annotationX;
@@ -137,7 +137,7 @@ public class ExtractFromROIAlgorithm extends JIPipeIteratingAlgorithm {
         this.annotationX = annotationX;
     }
 
-    @JIPipeDocumentation(name = "Annotate with Y location", description = "If enabled, the generated image is annotated with the top-left Y coordinate of the ROI bounding box.")
+    @SetJIPipeDocumentation(name = "Annotate with Y location", description = "If enabled, the generated image is annotated with the top-left Y coordinate of the ROI bounding box.")
     @JIPipeParameter(value = "annotation-y", uiOrder = -45)
     public OptionalAnnotationNameParameter getAnnotationY() {
         return annotationY;
@@ -148,7 +148,7 @@ public class ExtractFromROIAlgorithm extends JIPipeIteratingAlgorithm {
         this.annotationY = annotationY;
     }
 
-    @JIPipeDocumentation(name = "Annotate with Z location", description = "If enabled, the generated image is annotated with the Z slice of the ROI. The first index is 1. A value of zero indicates that the ROI is located on all Z slices.")
+    @SetJIPipeDocumentation(name = "Annotate with Z location", description = "If enabled, the generated image is annotated with the Z slice of the ROI. The first index is 1. A value of zero indicates that the ROI is located on all Z slices.")
     @JIPipeParameter("annotation-z")
     public OptionalAnnotationNameParameter getAnnotationZ() {
         return annotationZ;
@@ -159,7 +159,7 @@ public class ExtractFromROIAlgorithm extends JIPipeIteratingAlgorithm {
         this.annotationZ = annotationZ;
     }
 
-    @JIPipeDocumentation(name = "Annotate with C location", description = "If enabled, the generated image is annotated with the channel slice of the ROI. The first index is 1. A value of zero indicates that the ROI is located on all C slices.")
+    @SetJIPipeDocumentation(name = "Annotate with C location", description = "If enabled, the generated image is annotated with the channel slice of the ROI. The first index is 1. A value of zero indicates that the ROI is located on all C slices.")
     @JIPipeParameter("annotation-c")
     public OptionalAnnotationNameParameter getAnnotationC() {
         return annotationC;
@@ -170,7 +170,7 @@ public class ExtractFromROIAlgorithm extends JIPipeIteratingAlgorithm {
         this.annotationC = annotationC;
     }
 
-    @JIPipeDocumentation(name = "Annotate with T location", description = "If enabled, the generated image is annotated with the frame slice of the ROI. The first index is 1. A value of zero indicates that the ROI is located on all T slices.")
+    @SetJIPipeDocumentation(name = "Annotate with T location", description = "If enabled, the generated image is annotated with the frame slice of the ROI. The first index is 1. A value of zero indicates that the ROI is located on all T slices.")
     @JIPipeParameter("annotation-t")
     public OptionalAnnotationNameParameter getAnnotationT() {
         return annotationT;
@@ -181,7 +181,7 @@ public class ExtractFromROIAlgorithm extends JIPipeIteratingAlgorithm {
         this.annotationT = annotationT;
     }
 
-    @JIPipeDocumentation(name = "X/Y location anchor", description = "Determines which X and Y locations are extracted as location.")
+    @SetJIPipeDocumentation(name = "X/Y location anchor", description = "Determines which X and Y locations are extracted as location.")
     @JIPipeParameter("xy-anchor")
     public Anchor getXyAnchor() {
         return xyAnchor;
@@ -192,7 +192,7 @@ public class ExtractFromROIAlgorithm extends JIPipeIteratingAlgorithm {
         this.xyAnchor = xyAnchor;
     }
 
-    @JIPipeDocumentation(name = "Annotate with ROI width", description = "If enabled, the generated image is annotated with the width of the ROI")
+    @SetJIPipeDocumentation(name = "Annotate with ROI width", description = "If enabled, the generated image is annotated with the width of the ROI")
     @JIPipeParameter("annotation-width")
     public OptionalAnnotationNameParameter getAnnotationBoundingWidth() {
         return annotationBoundingWidth;
@@ -203,7 +203,7 @@ public class ExtractFromROIAlgorithm extends JIPipeIteratingAlgorithm {
         this.annotationBoundingWidth = annotationBoundingWidth;
     }
 
-    @JIPipeDocumentation(name = "Annotate with ROI height", description = "If enabled, the generated image is annotated with the height of the ROI")
+    @SetJIPipeDocumentation(name = "Annotate with ROI height", description = "If enabled, the generated image is annotated with the height of the ROI")
     @JIPipeParameter("annotation-height")
     public OptionalAnnotationNameParameter getAnnotationBoundingHeight() {
         return annotationBoundingHeight;
@@ -214,7 +214,7 @@ public class ExtractFromROIAlgorithm extends JIPipeIteratingAlgorithm {
         this.annotationBoundingHeight = annotationBoundingHeight;
     }
 
-    @JIPipeDocumentation(name = "Annotation merging", description = "Determines how generated annotations are merged with existing annotations")
+    @SetJIPipeDocumentation(name = "Annotation merging", description = "Determines how generated annotations are merged with existing annotations")
     @JIPipeParameter("annotation-merging")
     public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {
         return annotationMergeStrategy;

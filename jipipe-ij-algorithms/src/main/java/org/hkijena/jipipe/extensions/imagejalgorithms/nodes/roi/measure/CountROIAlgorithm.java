@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.measure;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -20,14 +20,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Count ROI", description = "Outputs one table that contains the counts for each incoming ROI. " +
+@SetJIPipeDocumentation(name = "Count ROI", description = "Outputs one table that contains the counts for each incoming ROI. " +
         "Each ROI list produces one column in the output table and contains all annotations of the incoming ROI data. " +
         "You can add multiple input slots. " +
         "All output table column is named according to the slot name of the incoming ROI list." +
         "This node can merge ROI lists according to their annotations. The sum of the counts within the same data batch are generated.")
-@JIPipeInputSlot(value = ROIListData.class)
-@JIPipeOutputSlot(value = AnnotationTableData.class, slotName = "Counts")
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")
+@AddJIPipeInputSlot(value = ROIListData.class)
+@AddJIPipeOutputSlot(value = AnnotationTableData.class, slotName = "Counts")
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")
 public class CountROIAlgorithm extends JIPipeMergingAlgorithm {
 
     private AnnotationTableData currentResult;
@@ -95,7 +95,7 @@ public class CountROIAlgorithm extends JIPipeMergingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Add annotations", description = "If enabled, incoming annotations are added into the output table.")
+    @SetJIPipeDocumentation(name = "Add annotations", description = "If enabled, incoming annotations are added into the output table.")
     @JIPipeParameter("add-annotations")
     public boolean isAddAnnotations() {
         return addAnnotations;

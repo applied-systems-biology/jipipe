@@ -14,8 +14,8 @@
 
 package org.hkijena.jipipe.extensions.tables.nodes.columns;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -35,10 +35,10 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 /**
  * Algorithm that removes columns
  */
-@JIPipeDocumentation(name = "Rename column to annotation values", description = "Sets the name of specified columns to the value of the specified annotations.")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Rename column to annotation values", description = "Sets the name of specified columns to the value of the specified annotations.")
+@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class RenameTableColumnsToAnnotationAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private StringQueryExpressionAndStringQueryPairParameter.List renamingEntries = new StringQueryExpressionAndStringQueryPairParameter.List();
@@ -101,7 +101,7 @@ public class RenameTableColumnsToAnnotationAlgorithm extends JIPipeSimpleIterati
         report.report(new ParameterValidationReportContext(reportContext, this, "Renaming entries", "renaming-entries"), renamingEntries);
     }
 
-    @JIPipeDocumentation(name = "Renaming entries", description = "You can rename one or multiple columns.")
+    @SetJIPipeDocumentation(name = "Renaming entries", description = "You can rename one or multiple columns.")
     @JIPipeParameter("renaming-entries")
     @PairParameterSettings(singleRow = false, keyLabel = "Column name", valueLabel = "Annotation name")
     public StringQueryExpressionAndStringQueryPairParameter.List getRenamingEntries() {
@@ -113,7 +113,7 @@ public class RenameTableColumnsToAnnotationAlgorithm extends JIPipeSimpleIterati
         this.renamingEntries = renamingEntries;
     }
 
-    @JIPipeDocumentation(name = "Ignore missing columns", description = "If enabled, silently skip columns that could not be found")
+    @SetJIPipeDocumentation(name = "Ignore missing columns", description = "If enabled, silently skip columns that could not be found")
     @JIPipeParameter("ignore-missing-columns")
     public boolean isIgnoreMissingColumns() {
         return ignoreMissingColumns;
@@ -124,7 +124,7 @@ public class RenameTableColumnsToAnnotationAlgorithm extends JIPipeSimpleIterati
         this.ignoreMissingColumns = ignoreMissingColumns;
     }
 
-    @JIPipeDocumentation(name = "Ignore missing annotations", description = "If enabled, silently skip renaming operations where the annotation could not be found")
+    @SetJIPipeDocumentation(name = "Ignore missing annotations", description = "If enabled, silently skip renaming operations where the annotation could not be found")
     @JIPipeParameter("ignore-missing-annotations")
     public boolean isIgnoreMissingAnnotations() {
         return ignoreMissingAnnotations;

@@ -1,8 +1,8 @@
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
 import com.google.common.collect.ImmutableList;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -18,10 +18,10 @@ import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import java.util.ArrayList;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Convert data annotation to string annotation", description = "Convert data annotations to a strings and generates a string annotation based on it. The string annotations have the same names as the data annotations.")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Convert data annotation to string annotation", description = "Convert data annotations to a strings and generates a string annotation based on it. The string annotations have the same names as the data annotations.")
+@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
 public class DataAnnotationToStringAnnotation extends JIPipeSimpleIteratingAlgorithm {
 
     private StringQueryExpression nameFilter = new StringQueryExpression();
@@ -52,7 +52,7 @@ public class DataAnnotationToStringAnnotation extends JIPipeSimpleIteratingAlgor
         iterationStep.addOutputData(getFirstOutputSlot(), iterationStep.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), annotationList, annotationMergeStrategy, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Keep data annotations", description = "If enabled, data annotations are not deleted after converting them to a string annotation.")
+    @SetJIPipeDocumentation(name = "Keep data annotations", description = "If enabled, data annotations are not deleted after converting them to a string annotation.")
     @JIPipeParameter("keep-data-annotations")
     public boolean isKeepDataAnnotations() {
         return keepDataAnnotations;
@@ -63,7 +63,7 @@ public class DataAnnotationToStringAnnotation extends JIPipeSimpleIteratingAlgor
         this.keepDataAnnotations = keepDataAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Name filter", description = "Determines which data annotations are converted. ")
+    @SetJIPipeDocumentation(name = "Name filter", description = "Determines which data annotations are converted. ")
     @JIPipeParameter("name-filter")
     public StringQueryExpression getNameFilter() {
         return nameFilter;
@@ -74,7 +74,7 @@ public class DataAnnotationToStringAnnotation extends JIPipeSimpleIteratingAlgor
         this.nameFilter = nameFilter;
     }
 
-    @JIPipeDocumentation(name = "Merge same annotation values", description = "Determines how the newly created string annotations are merged into existing ones. ")
+    @SetJIPipeDocumentation(name = "Merge same annotation values", description = "Determines how the newly created string annotations are merged into existing ones. ")
     @JIPipeParameter("annotation-merge-strategy")
     public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {
         return annotationMergeStrategy;

@@ -14,8 +14,8 @@
 
 package org.hkijena.jipipe.extensions.tables.nodes.split;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -39,10 +39,10 @@ import java.util.List;
 /**
  * Algorithm that integrates columns
  */
-@JIPipeDocumentation(name = "Split table into columns", description = "Splits a table into individual columns")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Split")
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = TableColumn.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Split table into columns", description = "Splits a table into individual columns")
+@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Split")
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = TableColumn.class, slotName = "Output", create = true)
 public class SplitTableIntoColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalStringParameter generatedAnnotation = new OptionalStringParameter();
@@ -84,7 +84,7 @@ public class SplitTableIntoColumnsAlgorithm extends JIPipeSimpleIteratingAlgorit
         }
     }
 
-    @JIPipeDocumentation(name = "Generated annotation", description = "Optional. The annotation that is created for each table column. The column header will be stored inside it.")
+    @SetJIPipeDocumentation(name = "Generated annotation", description = "Optional. The annotation that is created for each table column. The column header will be stored inside it.")
     @JIPipeParameter("generated-annotation")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public OptionalStringParameter getGeneratedAnnotation() {
@@ -96,7 +96,7 @@ public class SplitTableIntoColumnsAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.generatedAnnotation = generatedAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Filters", description = "Allows you to filter only specific columns that will be extracted. ")
+    @SetJIPipeDocumentation(name = "Filters", description = "Allows you to filter only specific columns that will be extracted. ")
     @JIPipeParameter("filters")
     public StringQueryExpression getColumnFilter() {
         return columnFilter;

@@ -5,8 +5,8 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -27,11 +27,11 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import java.awt.*;
 import java.util.Collection;
 
-@JIPipeDocumentation(name = "Add border 2D", description = "Adds a border around the image. If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Transform")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust", aliasName = "Canvas Size... (advanced)")
+@SetJIPipeDocumentation(name = "Add border 2D", description = "Adds a border around the image. If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Transform")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust", aliasName = "Canvas Size... (advanced)")
 public class AddBorder2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private BorderMode borderMode = BorderMode.Constant;
@@ -181,7 +181,7 @@ public class AddBorder2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(withBorder), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Mode", description = "Determines how border values are generated")
+    @SetJIPipeDocumentation(name = "Mode", description = "Determines how border values are generated")
     @JIPipeParameter("border-mode")
     public BorderMode getBorderMode() {
         return borderMode;
@@ -192,7 +192,7 @@ public class AddBorder2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.borderMode = borderMode;
     }
 
-    @JIPipeDocumentation(name = "Border color", description = "Only applicable if the mode is 'Constant'. The value of the border. Return a number to return a greyscale value. " +
+    @SetJIPipeDocumentation(name = "Border color", description = "Only applicable if the mode is 'Constant'. The value of the border. Return a number to return a greyscale value. " +
             "Return an array to set the border to an RGB color.")
     @JIPipeParameter("border-color")
     @JIPipeExpressionParameterSettings(variableSource = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
@@ -205,7 +205,7 @@ public class AddBorder2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.borderColor = borderColor;
     }
 
-    @JIPipeDocumentation(name = "Margin left", description = "Pixels to add to the left of the image")
+    @SetJIPipeDocumentation(name = "Margin left", description = "Pixels to add to the left of the image")
     @JIPipeParameter("margin-left")
     @JIPipeExpressionParameterSettings(variableSource = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = ImageQueryExpressionVariablesInfo.class)
@@ -218,7 +218,7 @@ public class AddBorder2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.marginLeft = marginLeft;
     }
 
-    @JIPipeDocumentation(name = "Margin top", description = "Pixels to add to the top of the image")
+    @SetJIPipeDocumentation(name = "Margin top", description = "Pixels to add to the top of the image")
     @JIPipeParameter("margin-top")
     @JIPipeExpressionParameterSettings(variableSource = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = ImageQueryExpressionVariablesInfo.class)
@@ -231,7 +231,7 @@ public class AddBorder2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.marginTop = marginTop;
     }
 
-    @JIPipeDocumentation(name = "Margin right", description = "Pixels to add to the right of the image")
+    @SetJIPipeDocumentation(name = "Margin right", description = "Pixels to add to the right of the image")
     @JIPipeParameter("margin-right")
     @JIPipeExpressionParameterSettings(variableSource = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = ImageQueryExpressionVariablesInfo.class)
@@ -244,7 +244,7 @@ public class AddBorder2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.marginRight = marginRight;
     }
 
-    @JIPipeDocumentation(name = "Margin bottom", description = "Pixels to add to the bottom of the image")
+    @SetJIPipeDocumentation(name = "Margin bottom", description = "Pixels to add to the bottom of the image")
     @JIPipeParameter("margin-bottom")
     @JIPipeExpressionParameterSettings(variableSource = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = ImageQueryExpressionVariablesInfo.class)

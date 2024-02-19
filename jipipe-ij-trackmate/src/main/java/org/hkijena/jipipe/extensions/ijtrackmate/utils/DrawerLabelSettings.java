@@ -14,7 +14,7 @@
 
 package org.hkijena.jipipe.extensions.ijtrackmate.utils;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
@@ -37,7 +37,7 @@ public class DrawerLabelSettings extends AbstractJIPipeParameterCollection {
         this.labelSize = other.labelSize;
     }
 
-    @JIPipeDocumentation(name = "Label foreground", description = "The text color of the label (if enabled)")
+    @SetJIPipeDocumentation(name = "Label foreground", description = "The text color of the label (if enabled)")
     @JIPipeParameter("label-foreground")
     public Color getLabelForeground() {
         return labelForeground;
@@ -48,7 +48,7 @@ public class DrawerLabelSettings extends AbstractJIPipeParameterCollection {
         this.labelForeground = labelForeground;
     }
 
-    @JIPipeDocumentation(name = "Label background", description = "The background color of the label (if enabled)")
+    @SetJIPipeDocumentation(name = "Label background", description = "The background color of the label (if enabled)")
     @JIPipeParameter("label-background")
     public OptionalColorParameter getLabelBackground() {
         return labelBackground;
@@ -59,7 +59,7 @@ public class DrawerLabelSettings extends AbstractJIPipeParameterCollection {
         this.labelBackground = labelBackground;
     }
 
-    @JIPipeDocumentation(name = "Label size", description = "Font size of drawn labels")
+    @SetJIPipeDocumentation(name = "Label size", description = "Font size of drawn labels")
     @JIPipeParameter("label-size")
     public int getLabelSize() {
         return labelSize;
@@ -73,7 +73,7 @@ public class DrawerLabelSettings extends AbstractJIPipeParameterCollection {
         return true;
     }
 
-    @JIPipeDocumentation(name = "Draw labels", description = "If enabled, draw labels on top of the objects")
+    @SetJIPipeDocumentation(name = "Draw labels", description = "If enabled, draw labels on top of the objects")
     @JIPipeParameter("draw-labels")
     public boolean isDrawLabels() {
         return drawLabels;

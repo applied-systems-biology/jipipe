@@ -8,8 +8,8 @@ import gnu.trove.map.hash.TDoubleDoubleHashMap;
 import gnu.trove.map.hash.TDoubleObjectHashMap;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -34,11 +34,11 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.util.Arrays;
 
-@JIPipeDocumentation(name = "Threshold/Value statistics 5D", description = "This node consumes two images with the same dimensions that respectively contain the keys and value components of each pixel position. The values assigned to each key are collected and then integrated for each threshold in the key image.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Threshold", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Value", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Threshold/Value statistics 5D", description = "This node consumes two images with the same dimensions that respectively contain the keys and value components of each pixel position. The values assigned to each key are collected and then integrated for each threshold in the key image.")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Threshold", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Value", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class KeyValueThresholdStatisticsGenerator extends JIPipeIteratingAlgorithm {
     private String outputThresholdColumn = "threshold";
     private String outputForegroundColumn = "foreground";
@@ -168,7 +168,7 @@ public class KeyValueThresholdStatisticsGenerator extends JIPipeIteratingAlgorit
         iterationStep.addOutputData(getFirstOutputSlot(), outputTable, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Output column (keys)", description = "The table column where the keys will be written to")
+    @SetJIPipeDocumentation(name = "Output column (keys)", description = "The table column where the keys will be written to")
     @JIPipeParameter(value = "output-key-column", uiOrder = 100)
     @StringParameterSettings(monospace = true)
     public String getOutputThresholdColumn() {
@@ -180,7 +180,7 @@ public class KeyValueThresholdStatisticsGenerator extends JIPipeIteratingAlgorit
         this.outputThresholdColumn = outputThresholdColumn;
     }
 
-    @JIPipeDocumentation(name = "Output column (integrated foreground)", description = "The table column where the integrated foreground values will be written to")
+    @SetJIPipeDocumentation(name = "Output column (integrated foreground)", description = "The table column where the integrated foreground values will be written to")
     @JIPipeParameter(value = "output-foreground-column", uiOrder = 110)
     @StringParameterSettings(monospace = true)
     public String getOutputForegroundColumn() {
@@ -192,7 +192,7 @@ public class KeyValueThresholdStatisticsGenerator extends JIPipeIteratingAlgorit
         this.outputForegroundColumn = outputForegroundColumn;
     }
 
-    @JIPipeDocumentation(name = "Output column (integrated background)", description = "The table column where the integrated background values will be written to")
+    @SetJIPipeDocumentation(name = "Output column (integrated background)", description = "The table column where the integrated background values will be written to")
     @JIPipeParameter(value = "output-background-column", uiOrder = 120)
     @StringParameterSettings(monospace = true)
     public String getOutputBackgroundColumn() {
@@ -204,7 +204,7 @@ public class KeyValueThresholdStatisticsGenerator extends JIPipeIteratingAlgorit
         this.outputBackgroundColumn = outputBackgroundColumn;
     }
 
-    @JIPipeDocumentation(name = "Integration function (foreground)", description = "The function that integrates the values assigned to the same key")
+    @SetJIPipeDocumentation(name = "Integration function (foreground)", description = "The function that integrates the values assigned to the same key")
     @JIPipeParameter("integration-function-foreground")
     @JIPipeExpressionParameterVariable(key = "values_foreground", name = "Values (Foreground)", description = "The values to be integrated")
     @JIPipeExpressionParameterVariable(key = "values_background", name = "Values (Background)", description = "The values to be integrated")
@@ -218,7 +218,7 @@ public class KeyValueThresholdStatisticsGenerator extends JIPipeIteratingAlgorit
         this.integrationFunctionForeground = integrationFunctionForeground;
     }
 
-    @JIPipeDocumentation(name = "Integration function (background)", description = "The function that integrates the values assigned to the same key")
+    @SetJIPipeDocumentation(name = "Integration function (background)", description = "The function that integrates the values assigned to the same key")
     @JIPipeParameter("integration-function-background")
     @JIPipeExpressionParameterVariable(key = "values_foreground", name = "Values (Foreground)", description = "The values to be integrated")
     @JIPipeExpressionParameterVariable(key = "values_background", name = "Values (Background)", description = "The values to be integrated")
@@ -232,7 +232,7 @@ public class KeyValueThresholdStatisticsGenerator extends JIPipeIteratingAlgorit
         this.integrationFunctionBackground = integrationFunctionBackground;
     }
 
-    @JIPipeDocumentation(name = "Thresholding mode", description = "Determines how the thresholding behaves.")
+    @SetJIPipeDocumentation(name = "Thresholding mode", description = "Determines how the thresholding behaves.")
     @JIPipeParameter("invert-threshold")
     @BooleanParameterSettings(comboBoxStyle = true, trueLabel = "value > threshold", falseLabel = "value < threshold")
     public boolean isInvertThreshold() {

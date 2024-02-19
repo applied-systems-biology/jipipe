@@ -15,8 +15,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.fft;
 
 import ij.ImagePlus;
 import ij.plugin.FFT;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -30,11 +30,11 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.fft.ImagePlusFFT2
 /**
  * Applies a FFT forward transformation
  */
-@JIPipeDocumentation(name = "2D FFT inverse transformation", description = "Converts a frequency space image into an image in real space.")
-@JIPipeNode(menuPath = "FFT", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusFFT2DData.class, autoCreate = true, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlus2DData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nFFT", aliasName = "Inverse FFT")
+@SetJIPipeDocumentation(name = "2D FFT inverse transformation", description = "Converts a frequency space image into an image in real space.")
+@DefineJIPipeNode(menuPath = "FFT", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusFFT2DData.class, create = true, slotName = "Input")
+@AddJIPipeOutputSlot(value = ImagePlus2DData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nFFT", aliasName = "Inverse FFT")
 public class FFT2DInverseTransform extends JIPipeSimpleIteratingAlgorithm {
 
     /**

@@ -19,8 +19,8 @@ import ij.plugin.filter.EDM;
 import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -37,10 +37,10 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.parameters.library.util.SortOrder;
 
-@JIPipeDocumentation(name = "Merge labels (min thickness) 2D", description = "Merges labels until the thickness of the label reaches a minimum threshold. If the image has multiple slices, the algorithm is applied per slice.")
-@JIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Merge labels (min thickness) 2D", description = "Merges labels until the thickness of the label reaches a minimum threshold. If the image has multiple slices, the algorithm is applied per slice.")
+@DefineJIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
 public class MergeLabelsToThicknessAlgorithm extends JIPipeIteratingAlgorithm {
 
     private int minThickness = 10;
@@ -346,7 +346,7 @@ public class MergeLabelsToThicknessAlgorithm extends JIPipeIteratingAlgorithm {
         return ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(sourceArea, width, height, rois, mask, sliceIndex);
     }
 
-    @JIPipeDocumentation(name = "Extract values from ...", description = "Determines from which image areas the pixel values are extracted")
+    @SetJIPipeDocumentation(name = "Extract values from ...", description = "Determines from which image areas the pixel values are extracted")
     @JIPipeParameter("source-area")
     public ImageROITargetArea getSourceArea() {
         return sourceArea;
@@ -358,7 +358,7 @@ public class MergeLabelsToThicknessAlgorithm extends JIPipeIteratingAlgorithm {
         ImageJAlgorithmUtils.updateROIOrMaskSlot(sourceArea, getSlotConfiguration());
     }
 
-    @JIPipeDocumentation(name = "Minimum thickness", description = "The minimum thickness of the output labels (according to Euclidean Distance Transform)")
+    @SetJIPipeDocumentation(name = "Minimum thickness", description = "The minimum thickness of the output labels (according to Euclidean Distance Transform)")
     @JIPipeParameter(value = "minimum-thickness", important = true)
     public int getMinThickness() {
         return minThickness;
@@ -369,7 +369,7 @@ public class MergeLabelsToThicknessAlgorithm extends JIPipeIteratingAlgorithm {
         this.minThickness = minThickness;
     }
 
-    @JIPipeDocumentation(name = "Exclude zero", description = "If enabled, do not apply the algorithm to the zero label.")
+    @SetJIPipeDocumentation(name = "Exclude zero", description = "If enabled, do not apply the algorithm to the zero label.")
     @JIPipeParameter("exclude-zero")
     public boolean isExcludeZero() {
         return excludeZero;
@@ -380,7 +380,7 @@ public class MergeLabelsToThicknessAlgorithm extends JIPipeIteratingAlgorithm {
         this.excludeZero = excludeZero;
     }
 
-    @JIPipeDocumentation(name = "Sort order", description = "Determines from which direction the merging is applied (from lowest/ascending or highest/descending)")
+    @SetJIPipeDocumentation(name = "Sort order", description = "Determines from which direction the merging is applied (from lowest/ascending or highest/descending)")
     @JIPipeParameter("sort-order")
     public SortOrder getSortOrder() {
         return sortOrder;

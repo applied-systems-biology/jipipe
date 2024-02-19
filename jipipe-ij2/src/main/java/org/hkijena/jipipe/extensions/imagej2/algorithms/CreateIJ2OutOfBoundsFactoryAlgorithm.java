@@ -1,14 +1,14 @@
 package org.hkijena.jipipe.extensions.imagej2.algorithms;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -18,9 +18,9 @@ import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInf
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.utils.classfilters.NonGenericClassFilter;
 
-@JIPipeDocumentation(name = "Create Out Of Bounds factory", description = "Defines an ImageJ2 Out Of Bounds factory")
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeOutputSlot(value = ImageJ2OutOfBoundsFactoryData.class, slotName = "Factory", autoCreate = true)
+@SetJIPipeDocumentation(name = "Create Out Of Bounds factory", description = "Defines an ImageJ2 Out Of Bounds factory")
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeOutputSlot(value = ImageJ2OutOfBoundsFactoryData.class, slotName = "Factory", create = true)
 public class CreateIJ2OutOfBoundsFactoryAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeDataInfoRef factoryType = new JIPipeDataInfoRef("ij2-out-of-bounds-factory-empty");
@@ -41,7 +41,7 @@ public class CreateIJ2OutOfBoundsFactoryAlgorithm extends JIPipeSimpleIteratingA
         iterationStep.addOutputData(getFirstOutputSlot(), factoryData.duplicate(progressInfo), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Factory type", description = "The factory that should be generated")
+    @SetJIPipeDocumentation(name = "Factory type", description = "The factory that should be generated")
     @JIPipeDataParameterSettings(dataBaseClass = ImageJ2OutOfBoundsFactoryData.class, dataClassFilter = NonGenericClassFilter.class)
     @JIPipeParameter(value = "factory-type", important = true)
     public JIPipeDataInfoRef getFactoryType() {
@@ -61,7 +61,7 @@ public class CreateIJ2OutOfBoundsFactoryAlgorithm extends JIPipeSimpleIteratingA
         }
     }
 
-    @JIPipeDocumentation(name = "Factory parameters", description = "Use following settings to define the parameters of this Out Of Bounds factory")
+    @SetJIPipeDocumentation(name = "Factory parameters", description = "Use following settings to define the parameters of this Out Of Bounds factory")
     @JIPipeParameter(value = "factory-parameters")
     public ImageJ2OutOfBoundsFactoryData getFactoryData() {
         return factoryData;

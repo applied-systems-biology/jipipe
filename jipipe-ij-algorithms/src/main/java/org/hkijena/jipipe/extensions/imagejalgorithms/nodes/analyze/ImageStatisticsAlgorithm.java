@@ -15,8 +15,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.analyze;
 
 import ij.gui.ShapeRoi;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -39,14 +39,14 @@ import java.awt.*;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@JIPipeDocumentation(name = "Extract image statistics", description = "Extracts statistics of the whole image or a masked part. Please note " +
+@SetJIPipeDocumentation(name = "Extract image statistics", description = "Extracts statistics of the whole image or a masked part. Please note " +
         "that this node will not be able to extract the shape of masked areas. All shape-description features (Centroid, Perimeter, ...) are calculated on the " +
         "rectangle formed by the image dimensions.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Analyze")
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Image", autoCreate = true)
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true, optional = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Measure (whole image)")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Analyze")
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Image", create = true)
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true, optional = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Measure (whole image)")
 public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final RoiStatisticsAlgorithm roiStatisticsAlgorithm = JIPipe.createNode(RoiStatisticsAlgorithm.class);
@@ -107,7 +107,7 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), outputResults, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Extracted measurements", description = "Please select which measurements should be extracted. " +
+    @SetJIPipeDocumentation(name = "Extracted measurements", description = "Please select which measurements should be extracted. " +
             "Each measurement will be assigned to one or multiple output table columns.<br/><br/>" + ImageStatisticsSetParameter.ALL_DESCRIPTIONS)
     @JIPipeParameter(value = "measurements", important = true)
     public ImageStatisticsSetParameter getMeasurements() {
@@ -119,7 +119,7 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         this.measurements = measurements;
     }
 
-    @JIPipeDocumentation(name = "Generated annotation", description = "Optional. The annotation will contain the image slice position that was " +
+    @SetJIPipeDocumentation(name = "Generated annotation", description = "Optional. The annotation will contain the image slice position that was " +
             "used to generate the statistics.")
     @JIPipeParameter("index-annotation")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
@@ -132,7 +132,7 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         this.indexAnnotation = indexAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Apply per slice", description = "If true, the operation is applied for each Z-slice separately. If false, all Z-slices are put together.")
+    @SetJIPipeDocumentation(name = "Apply per slice", description = "If true, the operation is applied for each Z-slice separately. If false, all Z-slices are put together.")
     @JIPipeParameter("apply-per-slice")
     public boolean isApplyPerSlice() {
         return applyPerSlice;
@@ -143,7 +143,7 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         this.applyPerSlice = applyPerSlice;
     }
 
-    @JIPipeDocumentation(name = "Apply per channel", description = "If true, the operation is applied for each channel-slice separately. If false, all channel-slices are put together. " +
+    @SetJIPipeDocumentation(name = "Apply per channel", description = "If true, the operation is applied for each channel-slice separately. If false, all channel-slices are put together. " +
             "Please note that 'Channel' does not refer to a pixel channel like Red in RGB.")
     @JIPipeParameter("apply-per-channel")
     public boolean isApplyPerChannel() {
@@ -155,7 +155,7 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         this.applyPerChannel = applyPerChannel;
     }
 
-    @JIPipeDocumentation(name = "Apply per frame", description = "If true, the operation is applied for each frame separately. If false, all frames are put together.")
+    @SetJIPipeDocumentation(name = "Apply per frame", description = "If true, the operation is applied for each frame separately. If false, all frames are put together.")
     @JIPipeParameter("apply-per-frame")
     public boolean isApplyPerFrame() {
         return applyPerFrame;
@@ -166,7 +166,7 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         this.applyPerFrame = applyPerFrame;
     }
 
-    @JIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
+    @SetJIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
     @JIPipeParameter("measure-in-physical-units")
     public boolean isMeasureInPhysicalUnits() {
         return measureInPhysicalUnits;

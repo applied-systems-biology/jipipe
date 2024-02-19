@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -31,13 +31,13 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-@JIPipeDocumentation(name = "Export data (old version)", description = "Collects all incoming data into one or multiple folders that contain the raw output files. " +
+@SetJIPipeDocumentation(name = "Export data (old version)", description = "Collects all incoming data into one or multiple folders that contain the raw output files. " +
         "The output files are named according to the metadata columns and can be easily processed by humans or third-party scripts. " +
         "The output of this algorithm is the selected output directory. " +
         "Please note that you do not need to explicitly export data, as JIPipe automatically saves all output data.")
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
-@JIPipeOutputSlot(value = FolderData.class, slotName = "Output path", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Data", create = true)
+@AddJIPipeOutputSlot(value = FolderData.class, slotName = "Output path", create = true)
+@DefineJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class)
 public class ExportDataByParameter extends JIPipeAlgorithm {
 
     private Path outputDirectory = Paths.get("exported-data");
@@ -86,7 +86,7 @@ public class ExportDataByParameter extends JIPipeAlgorithm {
         return true;
     }
 
-    @JIPipeDocumentation(name = "Output relative to project directory", description = "If enabled, outputs will be preferably generated relative to the project directory. " +
+    @SetJIPipeDocumentation(name = "Output relative to project directory", description = "If enabled, outputs will be preferably generated relative to the project directory. " +
             "Otherwise, JIPipe will store the results in an automatically generated directory. " +
             "Has no effect if an absolute path is provided.")
     @JIPipeParameter("relative-to-project-dir")
@@ -99,7 +99,7 @@ public class ExportDataByParameter extends JIPipeAlgorithm {
         this.relativeToProjectDir = relativeToProjectDir;
     }
 
-    @JIPipeDocumentation(name = "Output directory", description = "Can be a relative or absolute directory. All collected files will be put into this directory. " +
+    @SetJIPipeDocumentation(name = "Output directory", description = "Can be a relative or absolute directory. All collected files will be put into this directory. " +
             "If relative, it is relative to the output slot's output directory that is generated based on the current run's output path.")
     @JIPipeParameter("output-directory")
     @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.DirectoriesOnly)
@@ -112,13 +112,13 @@ public class ExportDataByParameter extends JIPipeAlgorithm {
         this.outputDirectory = outputDirectory;
     }
 
-    @JIPipeDocumentation(name = "File name generation", description = "Following settings control how the output file names are generated from metadata columns.")
+    @SetJIPipeDocumentation(name = "File name generation", description = "Following settings control how the output file names are generated from metadata columns.")
     @JIPipeParameter("exporter")
     public JIPipeDataByMetadataExporter getExporter() {
         return exporter;
     }
 
-    @JIPipeDocumentation(name = "Split by output name", description = "If enabled, the exporter will attempt to split data by their output name. Has no effect if the exported data table is not an output of a node.")
+    @SetJIPipeDocumentation(name = "Split by output name", description = "If enabled, the exporter will attempt to split data by their output name. Has no effect if the exported data table is not an output of a node.")
     @JIPipeParameter("split-by-slot-name")
     public boolean isSplitBySlotName() {
         return splitBySlotName;

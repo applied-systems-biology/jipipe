@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.expressions.functions.string;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -21,7 +21,7 @@ import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 import java.util.List;
 import java.util.Objects;
 
-@JIPipeDocumentation(name = "String equals", description = "Tests if the left operand is the same as the right operand.")
+@SetJIPipeDocumentation(name = "String equals", description = "Tests if the left operand is the same as the right operand.")
 public class EqualsStringPredicateFunction extends ExpressionFunction {
 
     public EqualsStringPredicateFunction() {

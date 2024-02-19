@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.utils.algorithms.distribute;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -18,11 +18,11 @@ import org.hkijena.jipipe.extensions.parameters.library.graph.OutputSlotMapParam
 
 import java.util.*;
 
-@JIPipeDocumentation(name = "Split data randomly (count)", description = "Distributes data across the output slots, so a each of the slot is provided with the number of data as specified. " +
+@SetJIPipeDocumentation(name = "Split data randomly (count)", description = "Distributes data across the output slots, so a each of the slot is provided with the number of data as specified. " +
         "The output data is unique, meaning that there will be no overlaps between different slots. If there is not enough data available, the slots with the lower order (left/top) are preferred.")
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Split")
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class)
+@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Split")
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class)
 public class DistributeDataRandomlyByCountAlgorithm extends JIPipeMergingAlgorithm {
     private final OutputSlotMapParameterCollection counts;
 
@@ -78,7 +78,7 @@ public class DistributeDataRandomlyByCountAlgorithm extends JIPipeMergingAlgorit
         }
     }
 
-    @JIPipeDocumentation(name = "Counts", description = "Here you can set output counts for each slot.")
+    @SetJIPipeDocumentation(name = "Counts", description = "Here you can set output counts for each slot.")
     @JIPipeParameter("counts")
     public OutputSlotMapParameterCollection getCounts() {
         return counts;

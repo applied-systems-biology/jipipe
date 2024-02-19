@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.filesystem.compat;
 
 import ij.measure.ResultsTable;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.ImageJDataExporter;
 import org.hkijena.jipipe.api.compat.ImageJExportParameters;
@@ -13,7 +13,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "Export paths as table", description = "Exports paths as ImageJ table")
+@SetJIPipeDocumentation(name = "Export paths as table", description = "Exports paths as ImageJ table")
 public class PathDataToTableImageJExporter implements ImageJDataExporter {
     @Override
     public List<Object> exportData(JIPipeDataTable dataTable, ImageJExportParameters parameters, JIPipeProgressInfo progressInfo) {

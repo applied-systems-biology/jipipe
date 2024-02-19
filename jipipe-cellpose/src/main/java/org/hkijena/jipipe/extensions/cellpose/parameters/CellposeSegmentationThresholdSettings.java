@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.cellpose.parameters;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
@@ -21,7 +21,7 @@ public class CellposeSegmentationThresholdSettings extends AbstractJIPipeParamet
         this.excludeOnEdges = other.excludeOnEdges;
     }
 
-    @JIPipeDocumentation(name = "Exclude masks on edges", description = "Discard masks which touch edges of image")
+    @SetJIPipeDocumentation(name = "Exclude masks on edges", description = "Discard masks which touch edges of image")
     @JIPipeParameter("exclude-on-edges")
     public boolean isExcludeOnEdges() {
         return excludeOnEdges;
@@ -32,7 +32,7 @@ public class CellposeSegmentationThresholdSettings extends AbstractJIPipeParamet
         this.excludeOnEdges = excludeOnEdges;
     }
 
-    @JIPipeDocumentation(name = "Flow threshold (2D)", description = "Flow error threshold, 0 turns off this optional QC step. Default: 0.4")
+    @SetJIPipeDocumentation(name = "Flow threshold (2D)", description = "Flow error threshold, 0 turns off this optional QC step. Default: 0.4")
     @JIPipeParameter("flow-threshold")
     public double getFlowThreshold() {
         return flowThreshold;
@@ -43,7 +43,7 @@ public class CellposeSegmentationThresholdSettings extends AbstractJIPipeParamet
         this.flowThreshold = flowThreshold;
     }
 
-    @JIPipeDocumentation(name = "Cell probability threshold", description = "Cellprob threshold, default is 0, decrease to find more and larger masks")
+    @SetJIPipeDocumentation(name = "Cell probability threshold", description = "Cellprob threshold, default is 0, decrease to find more and larger masks")
     @JIPipeParameter("cell-probability-threshold")
     public double getCellProbabilityThreshold() {
         return cellProbabilityThreshold;
@@ -54,7 +54,7 @@ public class CellposeSegmentationThresholdSettings extends AbstractJIPipeParamet
         this.cellProbabilityThreshold = cellProbabilityThreshold;
     }
 
-    @JIPipeDocumentation(name = "Stitch threshold", description = "Compute masks in 2D then stitch together masks with IoU>0.9 across planes")
+    @SetJIPipeDocumentation(name = "Stitch threshold", description = "Compute masks in 2D then stitch together masks with IoU>0.9 across planes")
     @JIPipeParameter("stitch-threshold")
     public OptionalDoubleParameter getStitchThreshold() {
         return stitchThreshold;

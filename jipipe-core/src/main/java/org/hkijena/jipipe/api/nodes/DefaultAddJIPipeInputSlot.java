@@ -19,37 +19,32 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import java.lang.annotation.Annotation;
 
 /**
- * Default implementation of {@link JIPipeOutputSlot}
+ * Default implementation of {@link AddJIPipeInputSlot}
  */
-public class DefaultJIPipeOutputSlot implements JIPipeOutputSlot {
+public class DefaultAddJIPipeInputSlot implements AddJIPipeInputSlot {
 
     private final Class<? extends JIPipeData> value;
     private final String slotName;
     private final String description;
-    private final String inheritedSlot;
     private final boolean autoCreate;
+    private final boolean optional;
     private final JIPipeDataSlotRole role;
 
     /**
-     * @param value         the data class
-     * @param slotName      the slot name
-     * @param description   the description
-     * @param inheritedSlot An optional inherited slot.
-     * @param autoCreate    Automatically create the slot if supported by the algorithm
-     * @param role          the role
+     * @param value       the value
+     * @param slotName    the slot name
+     * @param description the slot description
+     * @param autoCreate  if the slot should be automatically created
+     * @param optional    if the slot is optional
+     * @param role        the role
      */
-    public DefaultJIPipeOutputSlot(Class<? extends JIPipeData> value, String slotName, String description, String inheritedSlot, boolean autoCreate, JIPipeDataSlotRole role) {
+    public DefaultAddJIPipeInputSlot(Class<? extends JIPipeData> value, String slotName, String description, boolean autoCreate, boolean optional, JIPipeDataSlotRole role) {
         this.value = value;
         this.slotName = slotName;
         this.description = description;
-        this.inheritedSlot = inheritedSlot;
         this.autoCreate = autoCreate;
+        this.optional = optional;
         this.role = role;
-    }
-
-    @Override
-    public JIPipeDataSlotRole role() {
-        return role;
     }
 
     @Override
@@ -63,23 +58,27 @@ public class DefaultJIPipeOutputSlot implements JIPipeOutputSlot {
     }
 
     @Override
-    @Deprecated
-    public String inheritedSlot() {
-        return inheritedSlot;
-    }
-
-    @Override
-    public boolean autoCreate() {
-        return autoCreate;
-    }
-
-    @Override
     public String description() {
         return description;
     }
 
     @Override
+    public boolean create() {
+        return autoCreate;
+    }
+
+    @Override
+    public boolean optional() {
+        return optional;
+    }
+
+    @Override
+    public JIPipeDataSlotRole role() {
+        return role;
+    }
+
+    @Override
     public Class<? extends Annotation> annotationType() {
-        return JIPipeOutputSlot.class;
+        return AddJIPipeInputSlot.class;
     }
 }

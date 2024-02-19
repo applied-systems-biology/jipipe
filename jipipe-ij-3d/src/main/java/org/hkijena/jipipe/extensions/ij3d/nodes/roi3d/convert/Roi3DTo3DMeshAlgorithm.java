@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.convert;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -19,10 +19,10 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
 
-@JIPipeDocumentation(name = "3D ROI to 3D scene", description = "Converts 3D ROI into a 3D scene.")
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
-@JIPipeInputSlot(value = ROI3DListData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = Scene3DData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "3D ROI to 3D scene", description = "Converts 3D ROI into a 3D scene.")
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
+@AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = Scene3DData.class, slotName = "Output", create = true)
 public class Roi3DTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private String meshNamePrefix;
@@ -47,7 +47,7 @@ public class Roi3DTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.smooth = other.smooth;
     }
 
-    @JIPipeDocumentation(name = "Smooth meshes", description = "If enabled, smooth the output meshes")
+    @SetJIPipeDocumentation(name = "Smooth meshes", description = "If enabled, smooth the output meshes")
     @JIPipeParameter("smooth")
     public boolean isSmooth() {
         return smooth;
@@ -58,7 +58,7 @@ public class Roi3DTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.smooth = smooth;
     }
 
-    @JIPipeDocumentation(name = "Mesh length", description = "If 'Force mesh length' and 'Physical dimensions' are enabled, scale the mesh to that 1 unit in its coordinate system is of the specified unit.")
+    @SetJIPipeDocumentation(name = "Mesh length", description = "If 'Force mesh length' and 'Physical dimensions' are enabled, scale the mesh to that 1 unit in its coordinate system is of the specified unit.")
     @JIPipeParameter("mesh-length-unit")
     public Quantity.LengthUnit getMeshLengthUnit() {
         return meshLengthUnit;
@@ -69,7 +69,7 @@ public class Roi3DTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.meshLengthUnit = meshLengthUnit;
     }
 
-    @JIPipeDocumentation(name = "Force mesh length", description = "If this option and 'Physical dimensions' are enabled, scale the mesh to that 1 unit in its coordinate system is of the unit specified in 'Mesh length'.")
+    @SetJIPipeDocumentation(name = "Force mesh length", description = "If this option and 'Physical dimensions' are enabled, scale the mesh to that 1 unit in its coordinate system is of the unit specified in 'Mesh length'.")
     @JIPipeParameter("force-mesh-length-unit")
     public boolean isForceMeshLengthUnit() {
         return forceMeshLengthUnit;
@@ -80,7 +80,7 @@ public class Roi3DTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.forceMeshLengthUnit = forceMeshLengthUnit;
     }
 
-    @JIPipeDocumentation(name = "Physical sizes", description = "If enabled, the physical voxel size is considered during the generation of the mesh")
+    @SetJIPipeDocumentation(name = "Physical sizes", description = "If enabled, the physical voxel size is considered during the generation of the mesh")
     @JIPipeParameter("physical-sizes")
     public boolean isPhysicalSizes() {
         return physicalSizes;
@@ -91,7 +91,7 @@ public class Roi3DTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.physicalSizes = physicalSizes;
     }
 
-    @JIPipeDocumentation(name = "Mesh name", description = "The prefix of the mesh")
+    @SetJIPipeDocumentation(name = "Mesh name", description = "The prefix of the mesh")
     @JIPipeParameter("mesh-name-prefix")
     public String getMeshNamePrefix() {
         return meshNamePrefix;
@@ -102,7 +102,7 @@ public class Roi3DTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.meshNamePrefix = meshNamePrefix;
     }
 
-    @JIPipeDocumentation(name = "Override mesh color", description = "Overrides the color (diffuse) of the mesh. Otherwise, the color is taken from the ROI")
+    @SetJIPipeDocumentation(name = "Override mesh color", description = "Overrides the color (diffuse) of the mesh. Otherwise, the color is taken from the ROI")
     @JIPipeParameter("override-mesh-color")
     public OptionalColorParameter getOverrideMeshColor() {
         return overrideMeshColor;

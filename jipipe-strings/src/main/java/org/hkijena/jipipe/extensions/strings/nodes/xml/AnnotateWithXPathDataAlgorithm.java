@@ -1,9 +1,9 @@
 package org.hkijena.jipipe.extensions.strings.nodes.xml;
 
 
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -31,12 +31,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Annotate with XML values", description = "Extracts a value from the input text data (via XPath) and annotates the data with the result. " +
+@SetJIPipeDocumentation(name = "Annotate with XML values", description = "Extracts a value from the input text data (via XPath) and annotates the data with the result. " +
         "Please visit https://www.w3schools.com/xml/xpath_intro.asp to learn about XPath.")
-@JIPipeCitation("XPath: https://www.w3schools.com/xml/xpath_intro.asp")
-@JIPipeNode(menuPath = "For XML", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
-@JIPipeInputSlot(value = XMLData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = XMLData.class, slotName = "Output", autoCreate = true)
+@AddJIPipeCitation("XPath: https://www.w3schools.com/xml/xpath_intro.asp")
+@DefineJIPipeNode(menuPath = "For XML", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = XMLData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = XMLData.class, slotName = "Output", create = true)
 public class AnnotateWithXPathDataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private ParameterCollectionList entries = ParameterCollectionList.containingCollection(Entry.class);
     private JIPipeTextAnnotationMergeMode annotationMergeMode = JIPipeTextAnnotationMergeMode.Merge;
@@ -78,7 +78,7 @@ public class AnnotateWithXPathDataAlgorithm extends JIPipeSimpleIteratingAlgorit
         iterationStep.addOutputData(getFirstOutputSlot(), data, annotationList, annotationMergeMode, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Generated annotations", description = "The list of generated annotations. Please visit https://www.w3schools.com/xml/xpath_intro.asp to learn more about XPath.")
+    @SetJIPipeDocumentation(name = "Generated annotations", description = "The list of generated annotations. Please visit https://www.w3schools.com/xml/xpath_intro.asp to learn more about XPath.")
     @JIPipeParameter("entries")
     @ParameterCollectionListTemplate(Entry.class)
     public ParameterCollectionList getEntries() {
@@ -90,7 +90,7 @@ public class AnnotateWithXPathDataAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.entries = entries;
     }
 
-    @JIPipeDocumentation(name = "Annotation merge mode", description = "Determines how newly generated annotations are merged with existing ones")
+    @SetJIPipeDocumentation(name = "Annotation merge mode", description = "Determines how newly generated annotations are merged with existing ones")
     @JIPipeParameter("annotation-merge-mode")
     public JIPipeTextAnnotationMergeMode getAnnotationMergeMode() {
         return annotationMergeMode;
@@ -101,7 +101,7 @@ public class AnnotateWithXPathDataAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.annotationMergeMode = annotationMergeMode;
     }
 
-    @JIPipeDocumentation(name = "Namespace map", description = "Allows to map namespaces to shortcuts for more convenient access")
+    @SetJIPipeDocumentation(name = "Namespace map", description = "Allows to map namespaces to shortcuts for more convenient access")
     @JIPipeParameter("namespace-map")
     @PairParameterSettings(keyLabel = "Shortcut", valueLabel = "Namespace")
     public StringAndStringPairParameter.List getNamespaceMap() {
@@ -125,7 +125,7 @@ public class AnnotateWithXPathDataAlgorithm extends JIPipeSimpleIteratingAlgorit
             this.annotationName = new JIPipeExpressionParameter(other.annotationName);
         }
 
-        @JIPipeDocumentation(name = "XPath", description = "An expression that returns the XPath of the XML entries. Please visit https://www.w3schools.com/xml/xpath_intro.asp to learn more about XPath.")
+        @SetJIPipeDocumentation(name = "XPath", description = "An expression that returns the XPath of the XML entries. Please visit https://www.w3schools.com/xml/xpath_intro.asp to learn more about XPath.")
         @JIPipeParameter(value = "xpath", uiOrder = -100)
         @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
         public JIPipeExpressionParameter getxPath() {
@@ -137,7 +137,7 @@ public class AnnotateWithXPathDataAlgorithm extends JIPipeSimpleIteratingAlgorit
             this.xPath = xPath;
         }
 
-        @JIPipeDocumentation(name = "Annotation name", description = "The name of the output annotation.")
+        @SetJIPipeDocumentation(name = "Annotation name", description = "The name of the output annotation.")
         @JIPipeParameter(value = "annotation-name", uiOrder = -90)
         @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
         public JIPipeExpressionParameter getAnnotationName() {

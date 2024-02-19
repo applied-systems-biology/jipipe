@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.expressions.functions;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Parse JSON", description = "Converts a JSON string to an object. Can output a boolean, string, number, array, or map.")
+@SetJIPipeDocumentation(name = "Parse JSON", description = "Converts a JSON string to an object. Can output a boolean, string, number, array, or map.")
 public class ParseJsonFunction extends ExpressionFunction {
 
     public ParseJsonFunction() {

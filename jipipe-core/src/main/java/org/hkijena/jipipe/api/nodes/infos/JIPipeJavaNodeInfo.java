@@ -20,10 +20,10 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHidden;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
 import org.hkijena.jipipe.api.nodes.*;
@@ -62,7 +62,7 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
         setMenuPath(getMenuPathOf(nodeClass));
         setDataSourceMenuLocation(getDataSourceMenuLocationOf(nodeClass));
         setAliases(getAliasesOf(nodeClass));
-        if (nodeClass.getAnnotation(JIPipeHidden.class) != null) {
+        if (nodeClass.getAnnotation(LabelAsJIPipeHidden.class) != null) {
             setHidden(true);
         }
         if(nodeClass.getAnnotation(Deprecated.class) != null) {
@@ -70,7 +70,7 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
         }
         setRunnable(JIPipeAlgorithm.class.isAssignableFrom(nodeClass));
         // Load additional citations
-        for (JIPipeCitation citation : nodeClass.getAnnotationsByType(JIPipeCitation.class)) {
+        for (AddJIPipeCitation citation : nodeClass.getAnnotationsByType(AddJIPipeCitation.class)) {
             getAdditionalCitations().add(citation.value());
         }
         initializeSlots();
@@ -83,7 +83,7 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
      * @return The name
      */
     public static String getNameOf(Class<? extends JIPipeGraphNode> klass) {
-        JIPipeDocumentation[] annotations = klass.getAnnotationsByType(JIPipeDocumentation.class);
+        SetJIPipeDocumentation[] annotations = klass.getAnnotationsByType(SetJIPipeDocumentation.class);
         if (annotations.length > 0) {
             return annotations[0].name();
         } else {
@@ -109,7 +109,7 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
      * @return The category
      */
     public static JIPipeNodeTypeCategory getCategoryOf(Class<? extends JIPipeGraphNode> klass) {
-        JIPipeNode[] annotations = klass.getAnnotationsByType(JIPipeNode.class);
+        DefineJIPipeNode[] annotations = klass.getAnnotationsByType(DefineJIPipeNode.class);
         if (annotations.length > 0) {
             Class<? extends JIPipeNodeTypeCategory> categoryClass = annotations[0].nodeTypeCategory();
             return (JIPipeNodeTypeCategory) ReflectionUtils.newInstance(categoryClass);
@@ -125,7 +125,7 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
      * @return The menu path
      */
     public static String getMenuPathOf(Class<? extends JIPipeGraphNode> klass) {
-        JIPipeNode[] annotations = klass.getAnnotationsByType(JIPipeNode.class);
+        DefineJIPipeNode[] annotations = klass.getAnnotationsByType(DefineJIPipeNode.class);
         if (annotations.length > 0) {
             return annotations[0].menuPath();
         } else {
@@ -142,7 +142,7 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
      * @return The menu path of the data class
      */
     static Class<? extends JIPipeData> getDataSourceMenuLocationOf(Class<? extends JIPipeGraphNode> klass) {
-        JIPipeNode[] annotations = klass.getAnnotationsByType(JIPipeNode.class);
+        DefineJIPipeNode[] annotations = klass.getAnnotationsByType(DefineJIPipeNode.class);
         if (annotations.length > 0) {
             return annotations[0].dataSourceMenuLocation();
         } else {
@@ -158,17 +158,17 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
      */
     public static List<JIPipeNodeMenuLocation> getAliasesOf(Class<? extends JIPipeGraphNode> klass) {
         List<JIPipeNodeMenuLocation> result = new ArrayList<>();
-        for (JIPipeNodeAlias location : klass.getAnnotationsByType(JIPipeNodeAlias.class)) {
+        for (AddJIPipeNodeAlias location : klass.getAnnotationsByType(AddJIPipeNodeAlias.class)) {
             result.add(new JIPipeNodeMenuLocation((JIPipeNodeTypeCategory) ReflectionUtils.newInstance(location.nodeTypeCategory()), location.menuPath(), location.aliasName()));
         }
         return result;
     }
 
     private void initializeSlots() {
-        for (JIPipeInputSlot slot : getInstanceClass().getAnnotationsByType(JIPipeInputSlot.class)) {
+        for (AddJIPipeInputSlot slot : getInstanceClass().getAnnotationsByType(AddJIPipeInputSlot.class)) {
             getInputSlots().add(slot);
         }
-        for (JIPipeOutputSlot slot : getInstanceClass().getAnnotationsByType(JIPipeOutputSlot.class)) {
+        for (AddJIPipeOutputSlot slot : getInstanceClass().getAnnotationsByType(AddJIPipeOutputSlot.class)) {
             getOutputSlots().add(slot);
         }
     }

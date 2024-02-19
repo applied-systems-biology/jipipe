@@ -1,14 +1,14 @@
 package org.hkijena.jipipe.extensions.imagej2.algorithms;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -18,9 +18,9 @@ import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInf
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.utils.classfilters.NonGenericClassFilter;
 
-@JIPipeDocumentation(name = "Create shape", description = "Defines an ImageJ2 shape")
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeOutputSlot(value = ImageJ2ShapeData.class, slotName = "Shape", autoCreate = true)
+@SetJIPipeDocumentation(name = "Create shape", description = "Defines an ImageJ2 shape")
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeOutputSlot(value = ImageJ2ShapeData.class, slotName = "Shape", create = true)
 public class CreateIJ2ShapeAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeDataInfoRef shapeType = new JIPipeDataInfoRef("ij2-shape-empty");
@@ -41,7 +41,7 @@ public class CreateIJ2ShapeAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), shapeData.duplicate(progressInfo), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Shape type", description = "The shape that should be generated")
+    @SetJIPipeDocumentation(name = "Shape type", description = "The shape that should be generated")
     @JIPipeDataParameterSettings(dataBaseClass = ImageJ2ShapeData.class, dataClassFilter = NonGenericClassFilter.class)
     @JIPipeParameter(value = "shape-type", important = true)
     public JIPipeDataInfoRef getShapeType() {
@@ -61,7 +61,7 @@ public class CreateIJ2ShapeAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Shape parameters", description = "Use following settings to define the parameters of this shape")
+    @SetJIPipeDocumentation(name = "Shape parameters", description = "Use following settings to define the parameters of this shape")
     @JIPipeParameter(value = "shape-parameters")
     public ImageJ2ShapeData getShapeData() {
         return shapeData;

@@ -17,8 +17,8 @@ import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -38,11 +38,11 @@ import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
 import java.awt.*;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Overlay with extracted ROI", description = "Assembles/overlays extracted ROI onto the target images.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "ROI")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Target", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlus2DData.class, slotName = "ROI", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Overlay with extracted ROI", description = "Assembles/overlays extracted ROI onto the target images.")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "ROI")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Target", create = true)
+@AddJIPipeInputSlot(value = ImagePlus2DData.class, slotName = "ROI", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 public class AssembleExtractedROIAlgorithm extends JIPipeMergingAlgorithm {
 
     private String annotationX = "X";
@@ -112,7 +112,7 @@ public class AssembleExtractedROIAlgorithm extends JIPipeMergingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "X location", description = "If enabled, the X location of each target image is extracted from its annotations. If you disable this, you can enable extraction of the width and center X as alternative.")
+    @SetJIPipeDocumentation(name = "X location", description = "If enabled, the X location of each target image is extracted from its annotations. If you disable this, you can enable extraction of the width and center X as alternative.")
     @JIPipeParameter(value = "annotation-x", uiOrder = -50)
     public String getAnnotationX() {
         return annotationX;
@@ -123,7 +123,7 @@ public class AssembleExtractedROIAlgorithm extends JIPipeMergingAlgorithm {
         this.annotationX = annotationX;
     }
 
-    @JIPipeDocumentation(name = "Y location", description = "If enabled, the Y location of each target image is extracted from its annotation. If you disable this, you can enable extraction of the width and center Y as alternative.")
+    @SetJIPipeDocumentation(name = "Y location", description = "If enabled, the Y location of each target image is extracted from its annotation. If you disable this, you can enable extraction of the width and center Y as alternative.")
     @JIPipeParameter(value = "annotation-y", uiOrder = -45)
     public String getAnnotationY() {
         return annotationY;
@@ -134,7 +134,7 @@ public class AssembleExtractedROIAlgorithm extends JIPipeMergingAlgorithm {
         this.annotationY = annotationY;
     }
 
-    @JIPipeDocumentation(name = "Get Z location", description = "If enabled, the Z location is extracted from the given annotation column. The first index is one. Zero indicates that the target is present in all Z slices.")
+    @SetJIPipeDocumentation(name = "Get Z location", description = "If enabled, the Z location is extracted from the given annotation column. The first index is one. Zero indicates that the target is present in all Z slices.")
     @JIPipeParameter("annotation-z")
     public OptionalStringParameter getAnnotationZ() {
         return annotationZ;
@@ -145,7 +145,7 @@ public class AssembleExtractedROIAlgorithm extends JIPipeMergingAlgorithm {
         this.annotationZ = annotationZ;
     }
 
-    @JIPipeDocumentation(name = "Get C location", description = "If enabled, the channel location is extracted from the given annotation column. The first index is one. Zero indicates that the target is present in all C slices.")
+    @SetJIPipeDocumentation(name = "Get C location", description = "If enabled, the channel location is extracted from the given annotation column. The first index is one. Zero indicates that the target is present in all C slices.")
     @JIPipeParameter("annotation-c")
     public OptionalStringParameter getAnnotationC() {
         return annotationC;
@@ -156,7 +156,7 @@ public class AssembleExtractedROIAlgorithm extends JIPipeMergingAlgorithm {
         this.annotationC = annotationC;
     }
 
-    @JIPipeDocumentation(name = "Get T location", description = "If enabled, the frame location is extracted from the given annotation column. The first index is one. Zero indicates that the target is present in all T slices.")
+    @SetJIPipeDocumentation(name = "Get T location", description = "If enabled, the frame location is extracted from the given annotation column. The first index is one. Zero indicates that the target is present in all T slices.")
     @JIPipeParameter("annotation-t")
     public OptionalStringParameter getAnnotationT() {
         return annotationT;
@@ -167,7 +167,7 @@ public class AssembleExtractedROIAlgorithm extends JIPipeMergingAlgorithm {
         this.annotationT = annotationT;
     }
 
-    @JIPipeDocumentation(name = "X/Y location anchor", description = "Determines how the X and Y locations are interpreted.")
+    @SetJIPipeDocumentation(name = "X/Y location anchor", description = "Determines how the X and Y locations are interpreted.")
     @JIPipeParameter("xy-anchor")
     public Anchor getXyAnchor() {
         return xyAnchor;
@@ -178,7 +178,7 @@ public class AssembleExtractedROIAlgorithm extends JIPipeMergingAlgorithm {
         this.xyAnchor = xyAnchor;
     }
 
-    @JIPipeDocumentation(name = "Apply scaling for greyscale conversions", description = "If enabled, the appropriate scaling is applied when converting between 16 and 8 bit images.")
+    @SetJIPipeDocumentation(name = "Apply scaling for greyscale conversions", description = "If enabled, the appropriate scaling is applied when converting between 16 and 8 bit images.")
     @JIPipeParameter("do-scaling")
     public boolean isDoScaling() {
         return doScaling;

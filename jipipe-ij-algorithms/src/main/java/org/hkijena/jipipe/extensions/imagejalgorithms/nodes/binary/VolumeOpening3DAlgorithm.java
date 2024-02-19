@@ -15,9 +15,9 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.binary;
 
 import ij.ImagePlus;
 import inra.ijpb.binary.BinaryImages;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -28,13 +28,13 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 
-@JIPipeDocumentation(name = "Volume opening 3D", description = "Removes all objects with an area smaller than the provided number of pixels. ")
-@JIPipeNode(menuPath = "Binary", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
-@JIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
+@SetJIPipeDocumentation(name = "Volume opening 3D", description = "Removes all objects with an area smaller than the provided number of pixels. ")
+@DefineJIPipeNode(menuPath = "Binary", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", create = true)
+@AddJIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
         "Bioinformatics (Oxford Univ Press) 32(22): 3532-3534, PMID 27412086, doi:10.1093/bioinformatics/btw413")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nBinary Images", aliasName = "Area Opening (3D)")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nBinary Images", aliasName = "Area Opening (3D)")
 public class VolumeOpening3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private int minPixels = 50;
@@ -58,7 +58,7 @@ public class VolumeOpening3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.minPixels = other.minPixels;
     }
 
-    @JIPipeDocumentation(name = "Min number of pixels", description = "Minimum number of pixels a connected component should have.")
+    @SetJIPipeDocumentation(name = "Min number of pixels", description = "Minimum number of pixels a connected component should have.")
     @JIPipeParameter("min-pixels")
     public int getMinPixels() {
         return minPixels;

@@ -40,8 +40,8 @@ import ome.xml.model.enums.DimensionOrder;
 import ome.xml.model.enums.EnumerationException;
 import ome.xml.model.enums.PixelType;
 import ome.xml.model.primitives.PositiveInteger;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHeavyData;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
@@ -79,9 +79,9 @@ import java.util.List;
 /**
  * Data that is a representation of all information saved in Bio-Formats
  */
-@JIPipeDocumentation(name = "OME Image", description = "Image that contains additional OME-XML metadata. " +
+@SetJIPipeDocumentation(name = "OME Image", description = "Image that contains additional OME-XML metadata. " +
         "It can be converted into an image, a ROI list, or an XML text.")
-@JIPipeHeavyData
+@LabelAsJIPipeHeavyData
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains one or multiple files in *.tif or *.ome.tif format. If OME TIFF is used, multiple tiff files can be present (due to the " +
         "ability of OME TIFF to link them together). Although, we do recommend having multiple files, as sometimes OME TIFF can store absolute paths. " +
         "If only standard TIFF files are present, only one will be loaded.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/ome-image-data.schema.json")

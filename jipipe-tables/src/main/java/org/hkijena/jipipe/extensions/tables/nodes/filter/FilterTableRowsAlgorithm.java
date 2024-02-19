@@ -15,8 +15,8 @@
 package org.hkijena.jipipe.extensions.tables.nodes.filter;
 
 import com.google.common.primitives.Doubles;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -39,10 +39,10 @@ import java.util.List;
 /**
  * Algorithm that integrates columns
  */
-@JIPipeDocumentation(name = "Filter table rows", description = "Filters tables by iterating through each row and testing a filter expression.")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Filter")
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Filter table rows", description = "Filters tables by iterating through each row and testing a filter expression.")
+@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Filter")
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class FilterTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter filters = new JIPipeExpressionParameter();
@@ -99,7 +99,7 @@ public class FilterTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), output, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Filters", description = "Allows you to select how to filter the values. " +
+    @SetJIPipeDocumentation(name = "Filters", description = "Allows you to select how to filter the values. " +
             "Each row is iterated individually and its columns are available as variables inside the expression. For example there are columns 'Area' and 'X'. " +
             "Then you can filter the table via an expression 'AREA > 100 AND X > 200 AND X < 1000'." +
             "Annotations are available as variables.")

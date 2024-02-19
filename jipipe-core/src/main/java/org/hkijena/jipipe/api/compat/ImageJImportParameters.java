@@ -2,7 +2,7 @@ package org.hkijena.jipipe.api.compat;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
@@ -25,7 +25,7 @@ public class ImageJImportParameters extends AbstractJIPipeParameterCollection {
         this.duplicate = other.duplicate;
     }
 
-    @JIPipeDocumentation(name = "Name", description = "The name associated to the imported data")
+    @SetJIPipeDocumentation(name = "Name", description = "The name associated to the imported data")
     @JIPipeParameter("name")
     @JsonGetter("name")
     public String getName() {
@@ -38,7 +38,7 @@ public class ImageJImportParameters extends AbstractJIPipeParameterCollection {
         this.name = name;
     }
 
-    @JIPipeDocumentation(name = "Duplicate data", description = "If enabled, a duplicate is imported if possible")
+    @SetJIPipeDocumentation(name = "Duplicate data", description = "If enabled, a duplicate is imported if possible")
     @JIPipeParameter("duplicate")
     public boolean isDuplicate() {
         return duplicate;

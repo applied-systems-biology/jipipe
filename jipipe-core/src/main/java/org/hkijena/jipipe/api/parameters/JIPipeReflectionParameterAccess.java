@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.api.parameters;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -32,7 +32,7 @@ public class JIPipeReflectionParameterAccess implements JIPipeParameterAccess {
     private Method getter;
     private Method setter;
     private double priority;
-    private JIPipeDocumentation documentation;
+    private SetJIPipeDocumentation documentation;
     private boolean hidden;
     private JIPipeParameterCollection source;
     private String shortKey;
@@ -77,11 +77,11 @@ public class JIPipeReflectionParameterAccess implements JIPipeParameterAccess {
     /**
      * @return Documentation of this parameter
      */
-    public JIPipeDocumentation getDocumentation() {
+    public SetJIPipeDocumentation getDocumentation() {
         return documentation;
     }
 
-    public void setDocumentation(JIPipeDocumentation documentation) {
+    public void setDocumentation(SetJIPipeDocumentation documentation) {
         this.documentation = documentation;
     }
 

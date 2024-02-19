@@ -1,8 +1,8 @@
 package org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.filter;
 
 import mcib3d.geom.Vector3D;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
@@ -21,10 +21,10 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.BooleanParame
 import java.util.HashSet;
 import java.util.Set;
 
-@JIPipeDocumentation(name = "Filter 3D ROI list", description = "Only passes 3D ROI lists that match the filter criteria.")
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
-@JIPipeInputSlot(value = ROI3DListData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Filter 3D ROI list", description = "Only passes 3D ROI lists that match the filter criteria.")
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
+@AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", create = true)
 public class FilterRoi3DListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter filter = new JIPipeExpressionParameter("count > 0");
@@ -67,7 +67,7 @@ public class FilterRoi3DListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Operation on filtered-out ROI", description = "Determines what kind of data is stored into the output if a ROI list was filtered out.")
+    @SetJIPipeDocumentation(name = "Operation on filtered-out ROI", description = "Determines what kind of data is stored into the output if a ROI list was filtered out.")
     @JIPipeParameter("output-empty-list")
     @BooleanParameterSettings(comboBoxStyle = true, trueLabel = "Output empty list", falseLabel = "Output nothing")
     public boolean isOutputEmptyLists() {
@@ -79,7 +79,7 @@ public class FilterRoi3DListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.outputEmptyLists = outputEmptyLists;
     }
 
-    @JIPipeDocumentation(name = "Include annotations", description = "If enabled, annotations are also available as string variables. Please note that " +
+    @SetJIPipeDocumentation(name = "Include annotations", description = "If enabled, annotations are also available as string variables. Please note that " +
             "ROI-list specific variables will overwrite annotations with the same name.")
     @JIPipeParameter("include-annotations")
     public boolean isIncludeAnnotations() {
@@ -91,7 +91,7 @@ public class FilterRoi3DListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.includeAnnotations = includeAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Filter", description = "The filter expression used to test ROI lists. Must return a boolean.")
+    @SetJIPipeDocumentation(name = "Filter", description = "The filter expression used to test ROI lists. Must return a boolean.")
     @JIPipeParameter("filter")
     @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class, hint = "per ROI list")
     public JIPipeExpressionParameter getFilter() {

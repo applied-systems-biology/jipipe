@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.functions.filesystem;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -10,7 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Get parent directory", description = "Returns the Nth (default 1) parent directory of the provided file/folder path.")
+@SetJIPipeDocumentation(name = "Get parent directory", description = "Returns the Nth (default 1) parent directory of the provided file/folder path.")
 public class GetParentDirectoryFunction extends ExpressionFunction {
     public GetParentDirectoryFunction() {
         super("GET_PARENT_DIRECTORY", 1, 2);

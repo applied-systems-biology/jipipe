@@ -22,8 +22,8 @@ import imagescience.feature.Hessian;
 import imagescience.image.Aspects;
 import imagescience.image.FloatImage;
 import imagescience.image.Image;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -48,14 +48,14 @@ import java.util.Vector;
 /**
  * Applies CLAHE image enhancing
  */
-@JIPipeDocumentation(name = "Meijering vesselness 2D", description = "Applies the vesselness filter developed by Meijering et al. " +
+@SetJIPipeDocumentation(name = "Meijering vesselness 2D", description = "Applies the vesselness filter developed by Meijering et al. " +
         "This filter only implements the first algorithm part that responds to neurite-like features, similar to the Frangi vesselness filter. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Features")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Features")
 
 
-@JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", autoCreate = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", create = true)
 public class MeijeringVesselness2DFeatures extends JIPipeSimpleIteratingAlgorithm {
 
     private DoubleList scales = new DoubleList();
@@ -183,7 +183,7 @@ public class MeijeringVesselness2DFeatures extends JIPipeSimpleIteratingAlgorith
         }
     }
 
-    @JIPipeDocumentation(name = "Invert colors", description = "Invert colors before applying the filter. This is useful if you look for bright structures within a dark background.")
+    @SetJIPipeDocumentation(name = "Invert colors", description = "Invert colors before applying the filter. This is useful if you look for bright structures within a dark background.")
     @JIPipeParameter("invert")
     public boolean isInvert() {
         return invert;
@@ -196,7 +196,7 @@ public class MeijeringVesselness2DFeatures extends JIPipeSimpleIteratingAlgorith
     }
 
     @NumberParameterSettings(step = 0.1)
-    @JIPipeDocumentation(name = "Correction constant", description = "Adjusts the sensitivity to deviation from a plate-like structure.")
+    @SetJIPipeDocumentation(name = "Correction constant", description = "Adjusts the sensitivity to deviation from a plate-like structure.")
     @JIPipeParameter("alpha")
     public double getAlpha() {
         return alpha;
@@ -208,7 +208,7 @@ public class MeijeringVesselness2DFeatures extends JIPipeSimpleIteratingAlgorith
 
     }
 
-    @JIPipeDocumentation(name = "Scales", description = "List of scales to test. They are also referenced as 'Sigmas'.")
+    @SetJIPipeDocumentation(name = "Scales", description = "List of scales to test. They are also referenced as 'Sigmas'.")
     @JIPipeParameter("scales")
     public DoubleList getScales() {
         return scales;

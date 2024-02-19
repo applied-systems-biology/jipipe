@@ -1,13 +1,13 @@
 package org.hkijena.jipipe.extensions.expressions.functions.string;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "Slice string", description = "Gets a substring. " +
+@SetJIPipeDocumentation(name = "Slice string", description = "Gets a substring. " +
         "This function will return the sub-string between two indices (first index is exclusive, second is inclusive). " +
         "If only one index is provided, all characters before the start index are included.")
 public class StringSliceBeforeFunction extends ExpressionFunction {

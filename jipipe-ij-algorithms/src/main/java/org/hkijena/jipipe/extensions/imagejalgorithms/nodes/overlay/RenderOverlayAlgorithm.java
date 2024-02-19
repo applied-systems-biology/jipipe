@@ -19,8 +19,8 @@ import ij.gui.ImageCanvas;
 import ij.gui.Roi;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -49,10 +49,10 @@ import java.util.Collections;
 /**
  * Wrapper around {@link RoiDrawer}
  */
-@JIPipeDocumentation(name = "Render overlay", description = "Renders the overlay ROI of an image to RGB")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "ROI")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Render overlay", description = "Renders the overlay ROI of an image to RGB")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "ROI")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output", create = true)
 public class RenderOverlayAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private ROIElementDrawingMode drawOutlineMode = ROIElementDrawingMode.Always;
@@ -181,7 +181,7 @@ public class RenderOverlayAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         targetStack.setProcessor(render, index.zeroSliceIndexToOneStackIndex(reference));
     }
 
-    @JIPipeDocumentation(name = "Opacity", description = "Opacity of the added ROI and labels. If zero, they are not visible. If set to one, they are fully visible.")
+    @SetJIPipeDocumentation(name = "Opacity", description = "Opacity of the added ROI and labels. If zero, they are not visible. If set to one, they are fully visible.")
     @JIPipeParameter("opacity")
     @NumberParameterSettings(step = 0.1)
     public double getOpacity() {
@@ -196,7 +196,7 @@ public class RenderOverlayAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         return true;
     }
 
-    @JIPipeDocumentation(name = "Draw outline", description = "If enabled, draw a white outline of the ROI")
+    @SetJIPipeDocumentation(name = "Draw outline", description = "If enabled, draw a white outline of the ROI")
     @JIPipeParameter("draw-outline-mode")
     public ROIElementDrawingMode getDrawOutlineMode() {
         return drawOutlineMode;
@@ -207,7 +207,7 @@ public class RenderOverlayAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.drawOutlineMode = drawOutlineMode;
     }
 
-    @JIPipeDocumentation(name = "Draw filled outline", description = "If enabled, fill the ROI areas")
+    @SetJIPipeDocumentation(name = "Draw filled outline", description = "If enabled, fill the ROI areas")
     @JIPipeParameter("fill-outline-mode")
     public ROIElementDrawingMode getDrawFilledOutlineMode() {
         return drawFilledOutlineMode;
@@ -218,7 +218,7 @@ public class RenderOverlayAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.drawFilledOutlineMode = drawFilledOutlineMode;
     }
 
-    @JIPipeDocumentation(name = "Draw labels", description = "Allows to draw labels on top of ROI.")
+    @SetJIPipeDocumentation(name = "Draw labels", description = "Allows to draw labels on top of ROI.")
     @JIPipeParameter("drawn-label")
     public RoiLabel getDrawnLabel() {
         return drawnLabel;
@@ -229,7 +229,7 @@ public class RenderOverlayAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.drawnLabel = drawnLabel;
     }
 
-    @JIPipeDocumentation(name = "Label foreground", description = "The text color of the label (if enabled)")
+    @SetJIPipeDocumentation(name = "Label foreground", description = "The text color of the label (if enabled)")
     @JIPipeParameter("label-foreground")
     public Color getLabelForeground() {
         return labelForeground;
@@ -240,7 +240,7 @@ public class RenderOverlayAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.labelForeground = labelForeground;
     }
 
-    @JIPipeDocumentation(name = "Label background", description = "The background color of the label (if enabled)")
+    @SetJIPipeDocumentation(name = "Label background", description = "The background color of the label (if enabled)")
     @JIPipeParameter("label-background")
     public OptionalColorParameter getLabelBackground() {
         return labelBackground;
@@ -251,7 +251,7 @@ public class RenderOverlayAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.labelBackground = labelBackground;
     }
 
-    @JIPipeDocumentation(name = "Label size", description = "Font size of drawn labels")
+    @SetJIPipeDocumentation(name = "Label size", description = "Font size of drawn labels")
     @JIPipeParameter("label-size")
     public int getLabelSize() {
         return labelSize;
@@ -265,7 +265,7 @@ public class RenderOverlayAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         return true;
     }
 
-    @JIPipeDocumentation(name = "Override fill color", description = "If enabled, the fill color will be overridden by this value. " +
+    @SetJIPipeDocumentation(name = "Override fill color", description = "If enabled, the fill color will be overridden by this value. " +
             "If a ROI has no fill color, it will always fall back to this color.")
     @JIPipeParameter("override-fill-color")
     public OptionalColorParameter getOverrideFillColor() {
@@ -277,7 +277,7 @@ public class RenderOverlayAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.overrideFillColor = overrideFillColor;
     }
 
-    @JIPipeDocumentation(name = "Override line color", description = "If enabled, the line color will be overridden by this value. " +
+    @SetJIPipeDocumentation(name = "Override line color", description = "If enabled, the line color will be overridden by this value. " +
             "If a ROI has no line color, it will always fall back to this color.")
     @JIPipeParameter("override-line-color")
     public OptionalColorParameter getOverrideLineColor() {
@@ -289,7 +289,7 @@ public class RenderOverlayAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.overrideLineColor = overrideLineColor;
     }
 
-    @JIPipeDocumentation(name = "Override line width", description = "If enabled, the line width will be overridden by this value. " +
+    @SetJIPipeDocumentation(name = "Override line width", description = "If enabled, the line width will be overridden by this value. " +
             "If a ROI has a line width equal or less than zero, it will fall back to this value.")
     @JIPipeParameter("override-line-width")
     public OptionalDoubleParameter getOverrideLineWidth() {
@@ -301,7 +301,7 @@ public class RenderOverlayAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.overrideLineWidth = overrideLineWidth;
     }
 
-    @JIPipeDocumentation(name = "Ignore Z", description = "If enabled, ROI will show outside their Z layer")
+    @SetJIPipeDocumentation(name = "Ignore Z", description = "If enabled, ROI will show outside their Z layer")
     @JIPipeParameter("ignore-z")
     public boolean isIgnoreZ() {
         return ignoreZ;
@@ -312,7 +312,7 @@ public class RenderOverlayAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.ignoreZ = ignoreZ;
     }
 
-    @JIPipeDocumentation(name = "Ignore channel", description = "If enabled, ROI will show outside their channel (C) layer")
+    @SetJIPipeDocumentation(name = "Ignore channel", description = "If enabled, ROI will show outside their channel (C) layer")
     @JIPipeParameter("ignore-c")
     public boolean isIgnoreC() {
         return ignoreC;
@@ -323,7 +323,7 @@ public class RenderOverlayAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.ignoreC = ignoreC;
     }
 
-    @JIPipeDocumentation(name = "Ignore frame", description = "If enabled, ROI will show outside their frame (T) layer")
+    @SetJIPipeDocumentation(name = "Ignore frame", description = "If enabled, ROI will show outside their frame (T) layer")
     @JIPipeParameter("ignore-t")
     public boolean isIgnoreT() {
         return ignoreT;
@@ -334,7 +334,7 @@ public class RenderOverlayAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.ignoreT = ignoreT;
     }
 
-    @JIPipeDocumentation(name = "Magnification", description = "Magnification applied during the rendering")
+    @SetJIPipeDocumentation(name = "Magnification", description = "Magnification applied during the rendering")
     @JIPipeParameter("magnification")
     public double getMagnification() {
         return magnification;
@@ -345,7 +345,7 @@ public class RenderOverlayAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.magnification = magnification;
     }
 
-    @JIPipeDocumentation(name = "Prefer render via overlay", description = "If enabled, the rendering via an ImageJ overlay is preferred even if the magnification is 1.0")
+    @SetJIPipeDocumentation(name = "Prefer render via overlay", description = "If enabled, the rendering via an ImageJ overlay is preferred even if the magnification is 1.0")
     @JIPipeParameter("prefer-render-via-overlay")
     public boolean isPreferRenderViaOverlay() {
         return preferRenderViaOverlay;

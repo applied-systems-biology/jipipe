@@ -1,9 +1,9 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.io;
 
 import ij.gui.Roi;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHidden;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -29,13 +29,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@JIPipeDocumentation(name = "Export ROI", description = "Deprecated. Please use the new node. Exports a ROI list into one or multiple ROI files")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = FileData.class, slotName = "Exported file", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "ROI")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nSave")
+@SetJIPipeDocumentation(name = "Export ROI", description = "Deprecated. Please use the new node. Exports a ROI list into one or multiple ROI files")
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = FileData.class, slotName = "Exported file", create = true)
+@DefineJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "ROI")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nSave")
 @Deprecated
-@JIPipeHidden
+@LabelAsJIPipeHidden
 public class ExportROIAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final Set<String> existingMetadata = new HashSet<>();
@@ -111,7 +111,7 @@ public class ExportROIAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Output relative to project directory", description = "If enabled, outputs will be preferably generated relative to the project directory. " +
+    @SetJIPipeDocumentation(name = "Output relative to project directory", description = "If enabled, outputs will be preferably generated relative to the project directory. " +
             "Otherwise, JIPipe will store the results in an automatically generated directory. " +
             "Has no effect if an absolute path is provided.")
     @JIPipeParameter("relative-to-project-dir")
@@ -124,7 +124,7 @@ public class ExportROIAlgorithm extends JIPipeIteratingAlgorithm {
         this.relativeToProjectDir = relativeToProjectDir;
     }
 
-    @JIPipeDocumentation(name = "Force exporting *.roi files", description = "If true, the exporter will always export *.roi files and if necessary split the ROI list.")
+    @SetJIPipeDocumentation(name = "Force exporting *.roi files", description = "If true, the exporter will always export *.roi files and if necessary split the ROI list.")
     @JIPipeParameter("export-as-roi-file")
     public boolean isExportAsROIFile() {
         return exportAsROIFile;
@@ -135,7 +135,7 @@ public class ExportROIAlgorithm extends JIPipeIteratingAlgorithm {
         this.exportAsROIFile = exportAsROIFile;
     }
 
-    @JIPipeDocumentation(name = "Output directory", description = "Can be a relative or absolute directory. All collected files will be put into this directory. " +
+    @SetJIPipeDocumentation(name = "Output directory", description = "Can be a relative or absolute directory. All collected files will be put into this directory. " +
             "If relative, it is relative to the output slot's output directory that is generated based on the current run's output path.")
     @JIPipeParameter("output-directory")
     @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.DirectoriesOnly)
@@ -148,7 +148,7 @@ public class ExportROIAlgorithm extends JIPipeIteratingAlgorithm {
         this.outputDirectory = outputDirectory;
     }
 
-    @JIPipeDocumentation(name = "File name generation", description = "Following settings control how the output file names are generated from metadata columns.")
+    @SetJIPipeDocumentation(name = "File name generation", description = "Following settings control how the output file names are generated from metadata columns.")
     @JIPipeParameter("exporter")
     public JIPipeDataByMetadataExporter getExporter() {
         return exporter;

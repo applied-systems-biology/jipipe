@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.extensions.python.algorithms;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -48,9 +48,9 @@ import java.util.Map;
 /**
  * An algorithm that allows to run Python code
  */
-@JIPipeDocumentation(name = "Python script (multi-parameter capable, custom)", description = "Runs a Python script that is executed once and has access to all incoming data. " +
+@SetJIPipeDocumentation(name = "Python script (multi-parameter capable, custom)", description = "Runs a Python script that is executed once and has access to all incoming data. " +
         "This node uses an existing dedicated Python interpreter that must be set up in the application settings.\n\nTo learn more about the JIPipe Python API, visit https://jipipe.hki-jena.de/apidocs/python-current/index.html")
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
+@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
 public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     private PythonScript code = new PythonScript();
@@ -85,7 +85,7 @@ public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
         registerSubParameter(scriptParameters);
     }
 
-    @JIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node. Otherwise " +
+    @SetJIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node. Otherwise " +
             "the one in the Project > Application settings > Extensions > Python is used.")
     @JIPipeParameter("override-environment")
     public OptionalPythonEnvironment getOverrideEnvironment() {
@@ -97,7 +97,7 @@ public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
         this.overrideEnvironment = overrideEnvironment;
     }
 
-    @JIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
+    @SetJIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
             "the processing was finished. Disable this to make it possible to debug your scripts. The directories are accessible via the logs (Tools &gt; Logs).")
     @JIPipeParameter("cleanup-afterwards")
     public boolean isCleanUpAfterwards() {
@@ -177,7 +177,7 @@ public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
         code.makeExternalScriptFileRelative(baseDirectory);
     }
 
-    @JIPipeDocumentation(name = "Script", description = "The Python script to be executed. " +
+    @SetJIPipeDocumentation(name = "Script", description = "The Python script to be executed. " +
             "The script comes with various API functions and variables that allow to communicate with JIPipe: " +
             "<ul>" +
             "<li><code>jipipe_inputs</code> is a dict of input slots.</li>" +
@@ -196,13 +196,13 @@ public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
         this.code = code;
     }
 
-    @JIPipeDocumentation(name = "Script parameters", description = "The following parameters will be passed to the Python script. The variable name is equal to the unique parameter identifier.")
+    @SetJIPipeDocumentation(name = "Script parameters", description = "The following parameters will be passed to the Python script. The variable name is equal to the unique parameter identifier.")
     @JIPipeParameter(value = "script-parameters", persistence = JIPipeParameterSerializationMode.Object)
     public JIPipeDynamicParameterCollection getScriptParameters() {
         return scriptParameters;
     }
 
-    @JIPipeDocumentation(name = "Annotation merge strategy", description = "Determines how annotations that are added in the Python script are " +
+    @SetJIPipeDocumentation(name = "Annotation merge strategy", description = "Determines how annotations that are added in the Python script are " +
             "merged into existing annotations.")
     @JIPipeParameter("annotation-merge-strategy")
     public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {

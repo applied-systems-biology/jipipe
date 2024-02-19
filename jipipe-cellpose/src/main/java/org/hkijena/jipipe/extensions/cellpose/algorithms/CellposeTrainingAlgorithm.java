@@ -5,8 +5,8 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
@@ -56,14 +56,14 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Cellpose training (2.x)", description = "Trains a model with Cellpose. You start from an existing model or train from scratch. " +
+@SetJIPipeDocumentation(name = "Cellpose training (2.x)", description = "Trains a model with Cellpose. You start from an existing model or train from scratch. " +
         "Incoming images are automatically converted to greyscale. Only 2D or 3D images are supported. For this node to work, you need to annotate a greyscale 16-bit or 8-bit label image column to each raw data input. " +
         "To do this, you can use the node 'Annotate with data'. By default, JIPipe will ensure that all connected components of this image are assigned a unique component. You can disable this feature via the parameters.")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Training data", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Test data", autoCreate = true, optional = true)
-@JIPipeInputSlot(value = CellposeModelData.class)
-@JIPipeOutputSlot(value = CellposeModelData.class, slotName = "Model", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Training data", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Test data", create = true, optional = true)
+@AddJIPipeInputSlot(value = CellposeModelData.class)
+@AddJIPipeOutputSlot(value = CellposeModelData.class, slotName = "Model", create = true)
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     public static final JIPipeDataSlotInfo INPUT_PRETRAINED_MODEL = new JIPipeDataSlotInfo(CellposeModelData.class, JIPipeSlotType.Input, "Pretrained Model", "A custom pretrained model");
@@ -132,7 +132,7 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         toggleSlot(OUTPUT_SIZE_MODEL, trainSizeModel);
     }
 
-    @JIPipeDocumentation(name = "Train size model", description = "If enabled, also train a size model")
+    @SetJIPipeDocumentation(name = "Train size model", description = "If enabled, also train a size model")
     @JIPipeParameter("train-size-model")
     public boolean isTrainSizeModel() {
         return trainSizeModel;
@@ -144,7 +144,7 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         updateSlots();
     }
 
-    @JIPipeDocumentation(name = "Mean diameter", description = "The cell diameter. Depending on the model, you can choose following values: " +
+    @SetJIPipeDocumentation(name = "Mean diameter", description = "The cell diameter. Depending on the model, you can choose following values: " +
             "<ul>" +
             "<li><b>Cytoplasm</b>: You need to rescale all your images that structures have a diameter of about 30 pixels.</li>" +
             "<li><b>Nuclei</b>: You need to rescale all your images that structures have a diameter of about 17 pixels.</li>" +
@@ -161,7 +161,7 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.diameter = diameter;
     }
 
-    @JIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
+    @SetJIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
             "the processing was finished. Disable this to make it possible to debug your scripts. The directories are accessible via the logs (Tools &gt; Logs).")
     @JIPipeParameter("cleanup-afterwards")
     public boolean isCleanUpAfterwards() {
@@ -173,7 +173,7 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.cleanUpAfterwards = cleanUpAfterwards;
     }
 
-    @JIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node. Otherwise " +
+    @SetJIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node. Otherwise " +
             "the one in the Project > Application settings > Extensions > Cellpose is used.")
     @JIPipeParameter("override-environment")
     public OptionalPythonEnvironment getOverrideEnvironment() {
@@ -185,7 +185,7 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.overrideEnvironment = overrideEnvironment;
     }
 
-    @JIPipeDocumentation(name = "Enable 3D segmentation", description = "If enabled, Cellpose will train in 3D. " +
+    @SetJIPipeDocumentation(name = "Enable 3D segmentation", description = "If enabled, Cellpose will train in 3D. " +
             "Otherwise, JIPipe will prepare the data by splitting 3D data into planes.")
     @JIPipeParameter(value = "enable-3d-segmentation", important = true)
     public boolean isEnable3DSegmentation() {
@@ -197,7 +197,7 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.enable3DSegmentation = enable3DSegmentation;
     }
 
-    @JIPipeDocumentation(name = "Label data annotation", description = "Determines which data annotation contains the labels. Please ensure that " +
+    @SetJIPipeDocumentation(name = "Label data annotation", description = "Determines which data annotation contains the labels. Please ensure that " +
             "the appropriate label data is annotated to the raw input data.")
     @JIPipeParameter("label-data-annotation")
     public DataAnnotationQueryExpression getLabelDataAnnotation() {
@@ -209,25 +209,25 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.labelDataAnnotation = labelDataAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Cellpose: GPU", description = "Controls how the graphics card is utilized.")
+    @SetJIPipeDocumentation(name = "Cellpose: GPU", description = "Controls how the graphics card is utilized.")
     @JIPipeParameter(value = "gpu-settings", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
     public CellposeGPUSettings getGpuSettings() {
         return gpuSettings;
     }
 
-    @JIPipeDocumentation(name = "Cellpose: Tweaks", description = "Advanced settings for the training.")
+    @SetJIPipeDocumentation(name = "Cellpose: Tweaks", description = "Advanced settings for the training.")
     @JIPipeParameter(value = "tweaks-settings", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
     public CellposeTrainingTweaksSettings getTweaksSettings() {
         return tweaksSettings;
     }
 
-    @JIPipeDocumentation(name = "Cellpose: Channels", description = "Determines which channels are used for the segmentation")
+    @SetJIPipeDocumentation(name = "Cellpose: Channels", description = "Determines which channels are used for the segmentation")
     @JIPipeParameter(value = "channel-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
     public CellposeChannelSettings getChannelSettings() {
         return channelSettings;
     }
 
-    @JIPipeDocumentation(name = "Model", description = "The pretrained model that should be used. You can either choose one of the models " +
+    @SetJIPipeDocumentation(name = "Model", description = "The pretrained model that should be used. You can either choose one of the models " +
             "provided by Cellpose, a custom model, or train from scratch. The pre-trained model has influence on the diameter and how the input images should be prepared:" +
             "<ul>" +
             "<li><b>Cytoplasm</b>: You need to rescale all your images that structures have a diameter of about 30 pixels.</li>" +
@@ -518,7 +518,7 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Epochs", description = "Number of epochs that should be trained.")
+    @SetJIPipeDocumentation(name = "Epochs", description = "Number of epochs that should be trained.")
     @JIPipeParameter("epochs")
     public int getNumEpochs() {
         return numEpochs;

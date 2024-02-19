@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.functions.filesystem;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -9,7 +9,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Combine paths", description = "Combines all parameters into a path.")
+@SetJIPipeDocumentation(name = "Combine paths", description = "Combines all parameters into a path.")
 public class PathCombineFunction extends ExpressionFunction {
     public PathCombineFunction() {
         super("PATH_COMBINE", 1, Integer.MAX_VALUE);

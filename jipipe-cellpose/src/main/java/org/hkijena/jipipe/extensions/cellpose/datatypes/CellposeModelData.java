@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.cellpose.datatypes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * Wrapper around Cellpose models
  */
-@JIPipeDocumentation(name = "Cellpose model", description = "A Cellpose model")
+@SetJIPipeDocumentation(name = "Cellpose model", description = "A Cellpose model")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "A single file without extension that contains the Cellpose model",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/cellpose-model-data.schema.json")
 public class CellposeModelData implements JIPipeData {

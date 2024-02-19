@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.ome;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -11,10 +11,10 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.strings.XMLData;
 
-@JIPipeDocumentation(name = "Extract OME XML", description = "Extracts the OME metadata XML from an OME image")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Convert")
-@JIPipeInputSlot(value = OMEImageData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = XMLData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Extract OME XML", description = "Extracts the OME metadata XML from an OME image")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Convert")
+@AddJIPipeInputSlot(value = OMEImageData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = XMLData.class, slotName = "Output", create = true)
 public class ExtractOMEXMLAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public ExtractOMEXMLAlgorithm(JIPipeNodeInfo info) {
         super(info);

@@ -86,7 +86,7 @@ public class JIPipeMetadata extends AbstractJIPipeParameterCollection {
         }
     }
 
-    @JIPipeDocumentation(name = "Categories", description = "List of categories that are useful for organization")
+    @SetJIPipeDocumentation(name = "Categories", description = "List of categories that are useful for organization")
     @JIPipeParameter("categories")
     @JsonGetter("categories")
     public PluginCategoriesEnumParameter.List getCategories() {
@@ -123,7 +123,7 @@ public class JIPipeMetadata extends AbstractJIPipeParameterCollection {
     /**
      * @return Gets the name
      */
-    @JIPipeDocumentation(name = "Name", description = "A name")
+    @SetJIPipeDocumentation(name = "Name", description = "A name")
     @JIPipeParameter(value = "name", uiOrder = 0)
     @JsonGetter("name")
     public String getName() {
@@ -144,7 +144,7 @@ public class JIPipeMetadata extends AbstractJIPipeParameterCollection {
     /**
      * @return the description
      */
-    @JIPipeDocumentation(name = "Description", description = "A description")
+    @SetJIPipeDocumentation(name = "Description", description = "A description")
     @JIPipeParameter(value = "description", uiOrder = 1)
     @JsonGetter("description")
     public HTMLText getDescription() {
@@ -162,7 +162,7 @@ public class JIPipeMetadata extends AbstractJIPipeParameterCollection {
         this.description = description;
     }
 
-    @JIPipeDocumentation(name = "Summary", description = "A short description")
+    @SetJIPipeDocumentation(name = "Summary", description = "A short description")
     @JIPipeParameter(value = "summary", uiOrder = 1)
     @JsonGetter("summary")
     public HTMLText getSummary() {
@@ -178,7 +178,7 @@ public class JIPipeMetadata extends AbstractJIPipeParameterCollection {
     /**
      * @return The authors
      */
-    @JIPipeDocumentation(name = "Authors", description = "The list of authors and their affiliations")
+    @SetJIPipeDocumentation(name = "Authors", description = "The list of authors and their affiliations")
     @JIPipeParameter(value = "authors", uiOrder = 2)
     @JsonGetter("authors")
     public JIPipeAuthorMetadata.List getAuthors() {
@@ -202,7 +202,7 @@ public class JIPipeMetadata extends AbstractJIPipeParameterCollection {
      *
      * @return list of acknowledged authors
      */
-    @JIPipeDocumentation(name = "Acknowledgements", description = "List of authors to acknowledge")
+    @SetJIPipeDocumentation(name = "Acknowledgements", description = "List of authors to acknowledge")
     @JIPipeParameter(value = "acknowledgements", uiOrder = 3)
     @JsonGetter("acknowledgements")
     public JIPipeAuthorMetadata.List getAcknowledgements() {
@@ -223,7 +223,7 @@ public class JIPipeMetadata extends AbstractJIPipeParameterCollection {
     /**
      * @return the website
      */
-    @JIPipeDocumentation(name = "Website", description = "The website")
+    @SetJIPipeDocumentation(name = "Website", description = "The website")
     @JIPipeParameter(value = "website", uiOrder = 4)
     @JsonGetter("website")
     public String getWebsite() {
@@ -246,7 +246,7 @@ public class JIPipeMetadata extends AbstractJIPipeParameterCollection {
     /**
      * @return the license
      */
-    @JIPipeDocumentation(name = "License", description = "A license name like GPL v2 or BSD 2-Clause. We recommend Open Source licenses.")
+    @SetJIPipeDocumentation(name = "License", description = "A license name like GPL v2 or BSD 2-Clause. We recommend Open Source licenses.")
     @JIPipeParameter(value = "license", uiOrder = 7)
     @JsonGetter("license")
     public String getLicense() {
@@ -268,7 +268,7 @@ public class JIPipeMetadata extends AbstractJIPipeParameterCollection {
     /**
      * @return the citation
      */
-    @JIPipeDocumentation(name = "Citation", description = "Reference to the work where the project is published")
+    @SetJIPipeDocumentation(name = "Citation", description = "Reference to the work where the project is published")
     @JIPipeParameter(value = "citation", uiOrder = 5)
     @StringParameterSettings(monospace = true)
     @JsonGetter("citation")
@@ -288,7 +288,7 @@ public class JIPipeMetadata extends AbstractJIPipeParameterCollection {
 
     }
 
-    @JIPipeDocumentation(name = "Dependency citations", description = "A list of external work to cite")
+    @SetJIPipeDocumentation(name = "Dependency citations", description = "A list of external work to cite")
     @JIPipeParameter(value = "dependency-citations", uiOrder = 6)
     @StringParameterSettings(monospace = true)
     @JsonGetter("dependency-citations")
@@ -303,7 +303,7 @@ public class JIPipeMetadata extends AbstractJIPipeParameterCollection {
 
     }
 
-    @JIPipeDocumentation(name = "Thumbnail", description = "A thumbnail image for various purposes")
+    @SetJIPipeDocumentation(name = "Thumbnail", description = "A thumbnail image for various purposes")
     @JIPipeParameter("thumbnail")
     @JsonGetter("thumbnail")
     public ImageParameter getThumbnail() {

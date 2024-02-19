@@ -6,8 +6,8 @@ import ij.ImageStack;
 import ij.process.ColorProcessor;
 import ij.process.FloatProcessor;
 import mpicbg.ij.integral.BlockPMCC;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -26,7 +26,7 @@ import java.util.Arrays;
 /**
  * Adapted from {@link mpicbg.ij.plugin.PMCCBlockFlow}, as the methods there are all protected/private
  */
-@JIPipeDocumentation(name = "Optical flow (PMCC Block MSE)", description = "Transfers image sequences into an optic flow field.\n" +
+@SetJIPipeDocumentation(name = "Optical flow (PMCC Block MSE)", description = "Transfers image sequences into an optic flow field.\n" +
         "Flow fields are calculated for each pair (t,t+1) of the sequence with length |T| independently. " +
         "The motion vector for each pixel in image t is estimated by searching the most similar looking pixel in image t+1. " +
         "The similarity measure is Pearson Product-Moment Correlation Coefficient of all pixels in a local vicinity. " +
@@ -34,10 +34,10 @@ import java.util.Arrays;
         "Both the size of the block and the search radius are parameters of the method.\n\n" +
         "The output is a two-channel image with (T-1) items. The pixels in each channel describe the relative location" +
         " of the next similar pixel in polar coordinates (default) or cartesian coordinates.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Optical flow")
-@JIPipeInputSlot(value = ImagePlus3DGreyscale32FData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlus4DGreyscale32FData.class, slotName = "Vector field", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nOptic Flow", aliasName = "Integral Block PMCC")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Optical flow")
+@AddJIPipeInputSlot(value = ImagePlus3DGreyscale32FData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlus4DGreyscale32FData.class, slotName = "Vector field", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nOptic Flow", aliasName = "Integral Block PMCC")
 public class PMCCBlockFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private int blockRadius = 8;
@@ -59,7 +59,7 @@ public class PMCCBlockFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.addLastIdentityField = other.addLastIdentityField;
     }
 
-    @JIPipeDocumentation(name = "Add identity field at end", description = "If enabled, the output will contain as many planes as the input. " +
+    @SetJIPipeDocumentation(name = "Add identity field at end", description = "If enabled, the output will contain as many planes as the input. " +
             "The last slide will map to identity (zero image)")
     @JIPipeParameter("add-last-identity-field")
     public boolean isAddLastIdentityField() {
@@ -71,7 +71,7 @@ public class PMCCBlockFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.addLastIdentityField = addLastIdentityField;
     }
 
-    @JIPipeDocumentation(name = "Relative distances", description = "If enabled, the output radius or x/y are relative to the max distance.")
+    @SetJIPipeDocumentation(name = "Relative distances", description = "If enabled, the output radius or x/y are relative to the max distance.")
     @JIPipeParameter("relative-distances")
     public boolean isRelativeDistances() {
         return relativeDistances;
@@ -82,7 +82,7 @@ public class PMCCBlockFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.relativeDistances = relativeDistances;
     }
 
-    @JIPipeDocumentation(name = "Block radius", description = "Determines the local vicinity that is used to calculate the similarity of two pixels.")
+    @SetJIPipeDocumentation(name = "Block radius", description = "Determines the local vicinity that is used to calculate the similarity of two pixels.")
     @JIPipeParameter("block-radius")
     public int getBlockRadius() {
         return blockRadius;
@@ -96,7 +96,7 @@ public class PMCCBlockFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         return true;
     }
 
-    @JIPipeDocumentation(name = "Max distance", description = "Maximum search distance for a most similar pixel. The maximum value is 127 due to performance reasons.")
+    @SetJIPipeDocumentation(name = "Max distance", description = "Maximum search distance for a most similar pixel. The maximum value is 127 due to performance reasons.")
     @JIPipeParameter("max-distance")
     public int getMaxDistance() {
         return maxDistance;
@@ -110,7 +110,7 @@ public class PMCCBlockFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         return true;
     }
 
-    @JIPipeDocumentation(name = "Output polar coordinates", description = "If enabled, the output contains polar coordinates (channel 0 being the radius and channel 1 being phi). " +
+    @SetJIPipeDocumentation(name = "Output polar coordinates", description = "If enabled, the output contains polar coordinates (channel 0 being the radius and channel 1 being phi). " +
             "If disabled, the output contains cartesian coordinates.")
     @JIPipeParameter("output-polar-coordinates")
     public boolean isOutputPolarCoordinates() {

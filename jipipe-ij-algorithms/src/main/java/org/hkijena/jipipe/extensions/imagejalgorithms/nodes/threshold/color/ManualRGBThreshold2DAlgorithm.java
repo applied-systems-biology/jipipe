@@ -3,8 +3,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.threshold.color;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -29,11 +29,11 @@ import org.hkijena.jipipe.extensions.parameters.library.ranges.NumberRangeParame
 import java.util.ArrayList;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Manual color threshold (RGB)", description = "Thresholds RGB images.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Threshold\nColor")
-@JIPipeInputSlot(value = ImagePlusColorRGBData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust")
+@SetJIPipeDocumentation(name = "Manual color threshold (RGB)", description = "Thresholds RGB images.")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Threshold\nColor")
+@AddJIPipeInputSlot(value = ImagePlusColorRGBData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust")
 public class ManualRGBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private IntNumberRangeParameter redThreshold = new IntNumberRangeParameter(0, 256);
@@ -113,7 +113,7 @@ public class ManualRGBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(result), annotations, thresholdAnnotationStrategy, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Red threshold", description = "Thresholds the red channel (Channel 1)")
+    @SetJIPipeDocumentation(name = "Red threshold", description = "Thresholds the red channel (Channel 1)")
     @JIPipeParameter(value = "red-threshold", uiOrder = -10)
     @NumberRangeParameterSettings(min = 0, max = 256, trackBackground = RGBRedTrackBackground.class, invertedMode = NumberRangeInvertedMode.OutsideMinMax)
     public IntNumberRangeParameter getRedThreshold() {
@@ -125,7 +125,7 @@ public class ManualRGBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.redThreshold = redThreshold;
     }
 
-    @JIPipeDocumentation(name = "Green threshold", description = "Thresholds the green channel (Channel 2)")
+    @SetJIPipeDocumentation(name = "Green threshold", description = "Thresholds the green channel (Channel 2)")
     @JIPipeParameter(value = "green-threshold", uiOrder = -9)
     @NumberRangeParameterSettings(min = 0, max = 256, trackBackground = RGBGreenTrackBackground.class, invertedMode = NumberRangeInvertedMode.OutsideMinMax)
     public IntNumberRangeParameter getGreenThreshold() {
@@ -137,7 +137,7 @@ public class ManualRGBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.greenThreshold = greenThreshold;
     }
 
-    @JIPipeDocumentation(name = "Blue threshold", description = "Thresholds the blue channel (Channel 3)")
+    @SetJIPipeDocumentation(name = "Blue threshold", description = "Thresholds the blue channel (Channel 3)")
     @JIPipeParameter(value = "blue-threshold", uiOrder = -8)
     @NumberRangeParameterSettings(min = 0, max = 256, trackBackground = RGBBlueTrackBackground.class, invertedMode = NumberRangeInvertedMode.OutsideMinMax)
     public IntNumberRangeParameter getBlueThreshold() {
@@ -149,7 +149,7 @@ public class ManualRGBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.blueThreshold = blueThreshold;
     }
 
-    @JIPipeDocumentation(name = "Min threshold annotation (R)", description = "If enabled, annotate with the min red threshold")
+    @SetJIPipeDocumentation(name = "Min threshold annotation (R)", description = "If enabled, annotate with the min red threshold")
     @JIPipeParameter("annotate-min-red")
     public OptionalAnnotationNameParameter getMinRedThresholdAnnotation() {
         return minRedThresholdAnnotation;
@@ -160,7 +160,7 @@ public class ManualRGBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.minRedThresholdAnnotation = minRedThresholdAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Max threshold annotation (R)", description = "If enabled, annotate with the max red threshold")
+    @SetJIPipeDocumentation(name = "Max threshold annotation (R)", description = "If enabled, annotate with the max red threshold")
     @JIPipeParameter("annotate-max-red")
     public OptionalAnnotationNameParameter getMaxRedThresholdAnnotation() {
         return maxRedThresholdAnnotation;
@@ -171,7 +171,7 @@ public class ManualRGBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.maxRedThresholdAnnotation = maxRedThresholdAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Min threshold annotation (G)", description = "If enabled, annotate with the min green threshold")
+    @SetJIPipeDocumentation(name = "Min threshold annotation (G)", description = "If enabled, annotate with the min green threshold")
     @JIPipeParameter("annotate-min-green")
     public OptionalAnnotationNameParameter getMinGreenThresholdAnnotation() {
         return minGreenThresholdAnnotation;
@@ -182,7 +182,7 @@ public class ManualRGBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.minGreenThresholdAnnotation = minGreenThresholdAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Max threshold annotation (G)", description = "If enabled, annotate with the max green threshold")
+    @SetJIPipeDocumentation(name = "Max threshold annotation (G)", description = "If enabled, annotate with the max green threshold")
     @JIPipeParameter("annotate-max-green")
     public OptionalAnnotationNameParameter getMaxGreenThresholdAnnotation() {
         return maxGreenThresholdAnnotation;
@@ -193,7 +193,7 @@ public class ManualRGBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.maxGreenThresholdAnnotation = maxGreenThresholdAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Min threshold annotation (B)", description = "If enabled, annotate with the min blue threshold")
+    @SetJIPipeDocumentation(name = "Min threshold annotation (B)", description = "If enabled, annotate with the min blue threshold")
     @JIPipeParameter("annotate-min-blue")
     public OptionalAnnotationNameParameter getMinBlueThresholdAnnotation() {
         return minBlueThresholdAnnotation;
@@ -204,7 +204,7 @@ public class ManualRGBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.minBlueThresholdAnnotation = minBlueThresholdAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Max threshold annotation (B)", description = "If enabled, annotate with the max blue threshold")
+    @SetJIPipeDocumentation(name = "Max threshold annotation (B)", description = "If enabled, annotate with the max blue threshold")
     @JIPipeParameter("annotate-max-blue")
     public OptionalAnnotationNameParameter getMaxBlueThresholdAnnotation() {
         return maxBlueThresholdAnnotation;
@@ -215,7 +215,7 @@ public class ManualRGBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.maxBlueThresholdAnnotation = maxBlueThresholdAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Threshold annotation strategy", description = "Determines what happens if annotations are already present.")
+    @SetJIPipeDocumentation(name = "Threshold annotation strategy", description = "Determines what happens if annotations are already present.")
     @JIPipeParameter("threshold-annotation-strategy")
     public JIPipeTextAnnotationMergeMode getThresholdAnnotationStrategy() {
         return thresholdAnnotationStrategy;

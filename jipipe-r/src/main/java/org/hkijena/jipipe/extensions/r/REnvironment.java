@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.r;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.apache.commons.lang3.SystemUtils;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -72,7 +72,7 @@ public class REnvironment extends JIPipeEnvironment {
         }
     }
 
-    @JIPipeDocumentation(name = "R executable", description = "The main R executable (R.exe on Windows)")
+    @SetJIPipeDocumentation(name = "R executable", description = "The main R executable (R.exe on Windows)")
     @JIPipeParameter("r-executable-path")
     @JsonGetter("r-executable-path")
     public Path getRExecutablePath() {
@@ -85,7 +85,7 @@ public class REnvironment extends JIPipeEnvironment {
         this.RExecutablePath = RExecutablePath;
     }
 
-    @JIPipeDocumentation(name = "RScript executable", description = "The RScript executable (RScript.exe on Windows)")
+    @SetJIPipeDocumentation(name = "RScript executable", description = "The RScript executable (RScript.exe on Windows)")
     @JIPipeParameter("rscript-executable-path")
     @JsonGetter("rscript-executable-path")
     public Path getRScriptExecutablePath() {
@@ -98,7 +98,7 @@ public class REnvironment extends JIPipeEnvironment {
         this.RScriptExecutablePath = RScriptExecutablePath;
     }
 
-    @JIPipeDocumentation(name = "Arguments", description = "Arguments passed to the Python/Conda executable (depending on the environment type). " +
+    @SetJIPipeDocumentation(name = "Arguments", description = "Arguments passed to the Python/Conda executable (depending on the environment type). " +
             "This expression must return an array. You have two variables 'script_file' and 'r_executable'. 'script_file' is always " +
             "replaced by the Python script that is currently executed.")
     @JIPipeParameter("arguments")
@@ -114,7 +114,7 @@ public class REnvironment extends JIPipeEnvironment {
         this.arguments = arguments;
     }
 
-    @JIPipeDocumentation(name = "Environment variables", description = "These variables are provided to the R executable. Existing environment " +
+    @SetJIPipeDocumentation(name = "Environment variables", description = "These variables are provided to the R executable. Existing environment " +
             "variables are available as variables")
     @JIPipeParameter("environment-variables")
     @PairParameterSettings(keyLabel = "Value", valueLabel = "Key")

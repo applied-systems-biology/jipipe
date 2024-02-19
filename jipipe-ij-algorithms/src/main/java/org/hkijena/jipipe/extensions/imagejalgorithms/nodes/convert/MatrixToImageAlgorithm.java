@@ -4,8 +4,8 @@ import ij.ImagePlus;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -30,10 +30,10 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
 
-@JIPipeDocumentation(name = "Convert matrix to image", description = "Converts a table that represents a matrix into an image. The matrix can contain color values (HEX colors) if a color image is requested.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Convert")
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlus2DData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Convert matrix to image", description = "Converts a table that represents a matrix into an image. The matrix can contain color values (HEX colors) if a color image is requested.")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Convert")
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlus2DData.class, slotName = "Output", create = true)
 public class MatrixToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private JIPipeDataInfoRef outputImageType = new JIPipeDataInfoRef(ImagePlusGreyscale32FData.class);
 
@@ -91,7 +91,7 @@ public class MatrixToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Output image type", description = "The image type that is generated.")
+    @SetJIPipeDocumentation(name = "Output image type", description = "The image type that is generated.")
     @JIPipeParameter(value = "output-image-type", important = true)
     @JIPipeDataParameterSettings(dataBaseClass = ImagePlusData.class, dataClassFilter = NonGenericImagePlusDataClassFilter.class)
     public JIPipeDataInfoRef getOutputImageType() {

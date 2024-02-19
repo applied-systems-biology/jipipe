@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.ijfilaments.util;
 
 import ij.process.ColorProcessor;
 import mcib3d.geom.Vector3D;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
@@ -51,7 +51,7 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
         this.hollowVertices = other.hollowVertices;
     }
 
-    @JIPipeDocumentation(name = "Hollow vertices", description = "If enabled, draw vertices as hollow spheres")
+    @SetJIPipeDocumentation(name = "Hollow vertices", description = "If enabled, draw vertices as hollow spheres")
     @JIPipeParameter("hollow-vertices")
     public boolean isHollowVertices() {
         return hollowVertices;
@@ -62,7 +62,7 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
         this.hollowVertices = hollowVertices;
     }
 
-    @JIPipeDocumentation(name = "Blend mode", description = "Determines how the rendered filaments are blended with the reference image")
+    @SetJIPipeDocumentation(name = "Blend mode", description = "Determines how the rendered filaments are blended with the reference image")
     @JIPipeParameter("blend-mode")
     public ImageBlendMode getBlendMode() {
         return blendMode;
@@ -73,7 +73,7 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
         this.blendMode = blendMode;
     }
 
-    @JIPipeDocumentation(name = "Override vertex color", description = "Allows to override the color of vertices")
+    @SetJIPipeDocumentation(name = "Override vertex color", description = "Allows to override the color of vertices")
     @JIPipeParameter("override-vertex-color")
     public OptionalColorParameter getOverrideVertexColor() {
         return overrideVertexColor;
@@ -84,7 +84,7 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
         this.overrideVertexColor = overrideVertexColor;
     }
 
-    @JIPipeDocumentation(name = "Override edge color", description = "Allows to override the color of edges")
+    @SetJIPipeDocumentation(name = "Override edge color", description = "Allows to override the color of edges")
     @JIPipeParameter("override-edge-color")
     public OptionalColorParameter getOverrideEdgeColor() {
         return overrideEdgeColor;
@@ -95,7 +95,7 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
         this.overrideEdgeColor = overrideEdgeColor;
     }
 
-    @JIPipeDocumentation(name = "Override vertex radius", description = "Allows to override the radius of each vertex")
+    @SetJIPipeDocumentation(name = "Override vertex radius", description = "Allows to override the radius of each vertex")
     @JIPipeParameter("override-vertex-radius")
     public OptionalIntegerParameter getOverrideVertexRadius() {
         return overrideVertexRadius;
@@ -106,7 +106,7 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
         this.overrideVertexRadius = overrideVertexRadius;
     }
 
-    @JIPipeDocumentation(name = "Draw vertices", description = "If enabled, draw vertices")
+    @SetJIPipeDocumentation(name = "Draw vertices", description = "If enabled, draw vertices")
     @JIPipeParameter("draw-vertices")
     public boolean isDrawVertices() {
         return drawVertices;
@@ -117,7 +117,7 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
         this.drawVertices = drawVertices;
     }
 
-    @JIPipeDocumentation(name = "Draw edges", description = "If enabled, draw edges")
+    @SetJIPipeDocumentation(name = "Draw edges", description = "If enabled, draw edges")
     @JIPipeParameter("draw-edges")
     public boolean isDrawEdges() {
         return drawEdges;
@@ -128,7 +128,7 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
         this.drawEdges = drawEdges;
     }
 
-    @JIPipeDocumentation(name = "Override edge thickness", description = "If enabled, override the edge thickness with the specified value. Otherwise, the edge thickness interpolates between the two vertex radii.")
+    @SetJIPipeDocumentation(name = "Override edge thickness", description = "If enabled, override the edge thickness with the specified value. Otherwise, the edge thickness interpolates between the two vertex radii.")
     @JIPipeParameter("override-edge-thickness")
     public OptionalIntegerParameter getOverrideEdgeThickness() {
         return overrideEdgeThickness;
@@ -139,7 +139,7 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
         this.overrideEdgeThickness = overrideEdgeThickness;
     }
 
-    @JIPipeDocumentation(name = "Opacity", description = "The opacity of the rendering")
+    @SetJIPipeDocumentation(name = "Opacity", description = "The opacity of the rendering")
     @JIPipeParameter("opacity")
     public double getOpacity() {
         return opacity;
@@ -150,7 +150,7 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
         this.opacity = opacity;
     }
 
-    @JIPipeDocumentation(name = "Ignore Z", description = "If enabled, the Z location of each each vertex will be ignored")
+    @SetJIPipeDocumentation(name = "Ignore Z", description = "If enabled, the Z location of each each vertex will be ignored")
     @JIPipeParameter("ignore-z")
     public boolean isIgnoreZ() {
         return ignoreZ;
@@ -161,7 +161,7 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
         this.ignoreZ = ignoreZ;
     }
 
-    @JIPipeDocumentation(name = "Ignore channel", description = "If enabled, ignore the channel (C) location of each vertex")
+    @SetJIPipeDocumentation(name = "Ignore channel", description = "If enabled, ignore the channel (C) location of each vertex")
     @JIPipeParameter("ignore-c")
     public boolean isIgnoreC() {
         return ignoreC;
@@ -172,7 +172,7 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
         this.ignoreC = ignoreC;
     }
 
-    @JIPipeDocumentation(name = "Ignore frame", description = "If enabled, ignore the frame (T) location of each vertex")
+    @SetJIPipeDocumentation(name = "Ignore frame", description = "If enabled, ignore the frame (T) location of each vertex")
     @JIPipeParameter("ignore-t")
     public boolean isIgnoreT() {
         return ignoreT;

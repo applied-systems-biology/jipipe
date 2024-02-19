@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.expressions;
 
-import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
+import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 
 import java.util.Collection;
@@ -22,7 +22,7 @@ import java.util.Collection;
  * An expression that is used to generate annotations for data
  */
 @JIPipeExpressionParameterSettings(variableSource = AnnotationGeneratorExpressionVariablesInfo.class)
-@JIPipeDocumentationDescription(description = "The expression result will be converted to a string. All existing annotations are available " +
+@AddJIPipeDocumentationDescription(description = "The expression result will be converted to a string. All existing annotations are available " +
         "as variables that can be accessed directly, or if they contain special characters or spaces via the $ operator.")
 public class AnnotationGeneratorExpression extends JIPipeExpressionParameter {
 

@@ -19,9 +19,9 @@ import ij.process.ImageProcessor;
 import inra.ijpb.morphology.Morphology;
 import inra.ijpb.morphology.Strel;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
@@ -46,17 +46,17 @@ import java.util.ArrayList;
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@JIPipeDocumentation(name = "Morphological operation 2D", description = "Applies a morphological operation to greyscale images. " +
+@SetJIPipeDocumentation(name = "Morphological operation 2D", description = "Applies a morphological operation to greyscale images. " +
         "Following operations are included: Erosion, Dilation, Opening, Closing, White Top Hat, Black Top Hat, Gradient, Laplacian, Internal Gradient, and External Gradient. " +
         "More information (including examples) can be found at https://imagej.net/MorphoLibJ.html\n" +
         "If a multi-channel image is provided, the operation is applied to each channel. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeNode(menuPath = "Morphology", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
+@DefineJIPipeNode(menuPath = "Morphology", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
         "Bioinformatics (Oxford Univ Press) 32(22): 3532-3534, PMID 27412086, doi:10.1093/bioinformatics/btw413")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nFiltering", aliasName = "Morphological Filters")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nFiltering", aliasName = "Morphological Filters")
 public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final AddBorder2DAlgorithm addBorder2DAlgorithm;
@@ -144,7 +144,7 @@ public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Operation", description = "The morphological operation. Following operations are supported: " +
+    @SetJIPipeDocumentation(name = "Operation", description = "The morphological operation. Following operations are supported: " +
             "<ul>" +
             "<li><b>Erosion: </b>A local minimum filter</li>" +
             "<li><b>Dilation: </b>A local maximum filter</li>" +
@@ -167,7 +167,7 @@ public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.operation = operation;
     }
 
-    @JIPipeDocumentation(name = "Radius", description = "Radius of the filter kernel in pixels.")
+    @SetJIPipeDocumentation(name = "Radius", description = "Radius of the filter kernel in pixels.")
     @JIPipeParameter("radius")
     public int getRadius() {
         return radius;
@@ -178,7 +178,7 @@ public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.radius = radius;
     }
 
-    @JIPipeDocumentation(name = "Structure element", description = "The structure element.")
+    @SetJIPipeDocumentation(name = "Structure element", description = "The structure element.")
     @JIPipeParameter("element")
     public Strel.Shape getElement() {
         return element;
@@ -189,7 +189,7 @@ public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.element = element;
     }
 
-    @JIPipeDocumentation(name = "Add border before applying operation", description = "If enabled, a custom border is created around the image and removed afterwards. Otherwise, MorphoLibJ will assume " +
+    @SetJIPipeDocumentation(name = "Add border before applying operation", description = "If enabled, a custom border is created around the image and removed afterwards. Otherwise, MorphoLibJ will assume " +
             "a default outside value determined by ImageJ.")
     @JIPipeParameter("add-border")
     public boolean isAddBorder() {
@@ -212,7 +212,7 @@ public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         return super.isParameterUIVisible(tree, subParameter);
     }
 
-    @JIPipeDocumentation(name = "Border settings", description = "The following settings control how the border is created around the image before applying the morphological operation. " +
+    @SetJIPipeDocumentation(name = "Border settings", description = "The following settings control how the border is created around the image before applying the morphological operation. " +
             "The border is automatically removed afterwards.")
     @JIPipeParameter("border-parameters")
     public AddBorder2DAlgorithm getAddBorder2DAlgorithm() {

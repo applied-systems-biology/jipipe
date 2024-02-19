@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.parameters.library.primitives.ranges;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
+import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.parameters.JIPipeCustomTextDescriptionParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -33,7 +33,7 @@ import java.util.*;
  * where from and to are inclusive. Returns the list of integers defined by the string. Empty ranges are ignored.
  * Spaces are ignored. Negative values must be enclosed in brackets
  */
-@JIPipeDocumentationDescription(description = "The format is the following: [range];[range];... with [range] either being a single integer or a range [from]-[to] (both inclusive). " +
+@AddJIPipeDocumentationDescription(description = "The format is the following: [range];[range];... with [range] either being a single integer or a range [from]-[to] (both inclusive). " +
         "Negative values must be enclosed in parentheses. Example: 0-5;1;(-1)-10. If you want more customization options use the expression mode and functions such as MAKE_SEQUENCE.")
 public class IntegerRange implements JIPipeCustomTextDescriptionParameter {
 

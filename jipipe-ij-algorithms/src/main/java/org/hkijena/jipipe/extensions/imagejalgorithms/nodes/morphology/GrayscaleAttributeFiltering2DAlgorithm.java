@@ -5,9 +5,9 @@ import ij.process.ImageProcessor;
 import inra.ijpb.algo.DefaultAlgoListener;
 import inra.ijpb.morphology.attrfilt.AreaOpeningQueue;
 import inra.ijpb.morphology.attrfilt.BoxDiagonalOpeningQueue;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -20,7 +20,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.Neighborhood2D;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
-@JIPipeDocumentation(name = "Grayscale attribute filtering 2D", description = "Attribute filters aim at removing components of an image based on a certain size criterion, rather than on intensity. " +
+@SetJIPipeDocumentation(name = "Grayscale attribute filtering 2D", description = "Attribute filters aim at removing components of an image based on a certain size criterion, rather than on intensity. " +
         "The most common and useful criterion is the number of pixels/voxels (i.e., the area or volume). " +
         "For example, a morphological size opening operation with a threshold value of 20 will remove all blobs containing fewer than 20 voxels. " +
         "The length of the diagonal of the bounding box can also be of interest to discriminate elongated versus round component shapes.\n\n" +
@@ -29,11 +29,11 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
         "<h2>Application to grayscale images</h2>\n\n" +
         "When applied to a grayscale image, attribute opening consists in generating a series of binary images by thresholding at each distinct gray level in the image. The binary attribute opening described above is then applied independently to each binary image and the grayscale output is computed as the union of the binary results. The final output is a grayscale image whose bright structures with the attribute below a given value have disappeared. A great advantage of this filter is that the contours of the structures area better preserved than opening with a structuring element.\n\n" +
         "As for classical morphological filters, grayscale attribute closing or tophat can be defined. Grayscale attribute closing consists in removing dark connected components whose size is smaller than a specified value. White [resp. Black] Attribute Top-Hat considers the difference of the attribute opening [resp. closing] with the original image, and can help identifying bright [resp. dark] structures with small size.")
-@JIPipeCitation("More information here: https://imagej.net/plugins/morpholibj#attribute-filtering")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Morphology")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nFiltering\nGray Scale Attribute Filtering")
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)
+@AddJIPipeCitation("More information here: https://imagej.net/plugins/morpholibj#attribute-filtering")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Morphology")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nFiltering\nGray Scale Attribute Filtering")
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
 public class GrayscaleAttributeFiltering2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private Operation operation = Operation.Opening;
@@ -103,7 +103,7 @@ public class GrayscaleAttributeFiltering2DAlgorithm extends JIPipeIteratingAlgor
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(outputImg), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Operation", description = "The operation that should be applied")
+    @SetJIPipeDocumentation(name = "Operation", description = "The operation that should be applied")
     @JIPipeParameter("operation")
     public Operation getOperation() {
         return operation;
@@ -114,7 +114,7 @@ public class GrayscaleAttributeFiltering2DAlgorithm extends JIPipeIteratingAlgor
         this.operation = operation;
     }
 
-    @JIPipeDocumentation(name = "Attribute", description = "The attribute that is used for filtering")
+    @SetJIPipeDocumentation(name = "Attribute", description = "The attribute that is used for filtering")
     @JIPipeParameter("attribute")
     public Attribute getAttribute() {
         return attribute;
@@ -125,7 +125,7 @@ public class GrayscaleAttributeFiltering2DAlgorithm extends JIPipeIteratingAlgor
         this.attribute = attribute;
     }
 
-    @JIPipeDocumentation(name = "Minimum value", description = "The minimum attribute value")
+    @SetJIPipeDocumentation(name = "Minimum value", description = "The minimum attribute value")
     @JIPipeParameter("minimum-value")
     public int getMinimumValue() {
         return minimumValue;
@@ -136,7 +136,7 @@ public class GrayscaleAttributeFiltering2DAlgorithm extends JIPipeIteratingAlgor
         this.minimumValue = minimumValue;
     }
 
-    @JIPipeDocumentation(name = "Connectivity", description = "The neighborhood connectivity")
+    @SetJIPipeDocumentation(name = "Connectivity", description = "The neighborhood connectivity")
     @JIPipeParameter("connectivity")
     public Neighborhood2D getConnectivity() {
         return connectivity;

@@ -14,12 +14,12 @@
 package org.hkijena.jipipe.extensions.expressions.operators;
 
 import org.apache.commons.lang3.math.NumberUtils;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.*;
 
-@JIPipeDocumentation(name = "Subtract", description = "Subtracts the right operand from the left operand. If the left operand is an array, the right operand is removed from the array. If the left operand is a map, the right operand is removed from the map's keys.")
+@SetJIPipeDocumentation(name = "Subtract", description = "Subtracts the right operand from the left operand. If the left operand is an array, the right operand is removed from the array. If the left operand is a map, the right operand is removed from the map's keys.")
 public class SubtractionFunctionOperator extends GenericOperator {
     public SubtractionFunctionOperator(int precedence) {
         super("-", precedence);

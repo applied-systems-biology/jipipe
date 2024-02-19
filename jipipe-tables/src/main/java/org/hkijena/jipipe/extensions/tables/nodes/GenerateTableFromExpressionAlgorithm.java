@@ -13,14 +13,14 @@
 
 package org.hkijena.jipipe.extensions.tables.nodes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -38,9 +38,9 @@ import org.hkijena.jipipe.extensions.tables.parameters.processors.ExpressionTabl
 /**
  * Algorithm that adds or replaces a column by a generated value
  */
-@JIPipeDocumentation(name = "Table from expressions", description = "Generates a table from expressions")
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Table from expressions", description = "Generates a table from expressions")
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class GenerateTableFromExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private ExpressionTableColumnGeneratorProcessorParameterList columns = new ExpressionTableColumnGeneratorProcessorParameterList();
@@ -98,7 +98,7 @@ public class GenerateTableFromExpressionAlgorithm extends JIPipeSimpleIteratingA
         report.report(new ParameterValidationReportContext(reportContext, this, "Columns", "columns"), columns);
     }
 
-    @JIPipeDocumentation(name = "Columns", description = "Columns to be generated")
+    @SetJIPipeDocumentation(name = "Columns", description = "Columns to be generated")
     @JIPipeParameter("columns")
     @JIPipeExpressionParameterSettings(variableSource = TableCellExpressionParameterVariablesInfo.class)
     @PairParameterSettings(singleRow = false, keyLabel = "Function", valueLabel = "Output column")
@@ -111,7 +111,7 @@ public class GenerateTableFromExpressionAlgorithm extends JIPipeSimpleIteratingA
         this.columns = columns;
     }
 
-    @JIPipeDocumentation(name = "Generated rows", description = "Determines how many rows to generate")
+    @SetJIPipeDocumentation(name = "Generated rows", description = "Determines how many rows to generate")
     @JIPipeParameter("generated-rows")
     public int getGeneratedRows() {
         return generatedRows;

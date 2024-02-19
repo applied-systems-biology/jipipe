@@ -1,12 +1,12 @@
 package org.hkijena.jipipe.extensions.expressions.functions;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.*;
 
-@JIPipeDocumentation(name = "Generate sequence by expression", description = "Applies the expression string for each item in the second parameter. The return values are collected and returned as array.")
+@SetJIPipeDocumentation(name = "Generate sequence by expression", description = "Applies the expression string for each item in the second parameter. The return values are collected and returned as array.")
 public class ExpressionSequenceFunction extends ExpressionFunction {
     public ExpressionSequenceFunction() {
         super("MAKE_SEQUENCE_EXPR", 2, 3);

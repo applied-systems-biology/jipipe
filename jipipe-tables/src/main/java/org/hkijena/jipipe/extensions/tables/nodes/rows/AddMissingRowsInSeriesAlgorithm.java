@@ -17,8 +17,8 @@ package org.hkijena.jipipe.extensions.tables.nodes.rows;
 import gnu.trove.list.TDoubleList;
 import gnu.trove.list.array.TDoubleArrayList;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -40,10 +40,10 @@ import org.hkijena.jipipe.extensions.tables.parameters.processors.ExpressionTabl
 import java.util.HashSet;
 import java.util.Set;
 
-@JIPipeDocumentation(name = "Add missing rows (series)", description = "Adds missing rows in a table that contains a numeric series of rows (e.g., a time series)")
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Append")
+@SetJIPipeDocumentation(name = "Add missing rows (series)", description = "Adds missing rows in a table that contains a numeric series of rows (e.g., a time series)")
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
+@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Append")
 public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private StringQueryExpression countingColumn = new StringQueryExpression();
@@ -175,7 +175,7 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
         }
     }
 
-    @JIPipeDocumentation(name = "Expected step", description = "The step between two consecutive series points. For example, the step between 5 and 6 is 1. If the calculated step is larger than the provided value, a new row is generated. Must be a positive number.")
+    @SetJIPipeDocumentation(name = "Expected step", description = "The step between two consecutive series points. For example, the step between 5 and 6 is 1. If the calculated step is larger than the provided value, a new row is generated. Must be a positive number.")
     @JIPipeParameter("expected-step")
     public double getExpectedStep() {
         return expectedStep;
@@ -189,7 +189,7 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
         return true;
     }
 
-    @JIPipeDocumentation(name = "Ignore empty tables", description = "If enabled, ignore empty tables")
+    @SetJIPipeDocumentation(name = "Ignore empty tables", description = "If enabled, ignore empty tables")
     @JIPipeParameter("ignore-empty-tables")
     public boolean isIgnoreEmptyTables() {
         return ignoreEmptyTables;
@@ -200,7 +200,7 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
         this.ignoreEmptyTables = ignoreEmptyTables;
     }
 
-    @JIPipeDocumentation(name = "Counting column", description = "The column that contains the counter (e.g., the time frame)")
+    @SetJIPipeDocumentation(name = "Counting column", description = "The column that contains the counter (e.g., the time frame)")
     @JIPipeParameter(value = "counting-column", important = true)
     @JIPipeExpressionParameterVariable(fromClass = CounterVariablesInfo.class)
     public StringQueryExpression getCountingColumn() {
@@ -212,7 +212,7 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
         this.countingColumn = countingColumn;
     }
 
-    @JIPipeDocumentation(name = "Default values", description = "Determines the default values if a row is missing")
+    @SetJIPipeDocumentation(name = "Default values", description = "Determines the default values if a row is missing")
     @JIPipeParameter("default-values")
     @JIPipeExpressionParameterVariable(fromClass = DefaultValuesVariablesInfo.class)
     public ExpressionTableColumnGeneratorProcessorParameterList getDefaultValues() {
@@ -224,7 +224,7 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
         this.defaultValues = defaultValues;
     }
 
-    @JIPipeDocumentation(name = "Custom minimum counter", description = "If enabled, override the automatically determined minimum counter. Otherwise, the minimum is the minimum in the whole table")
+    @SetJIPipeDocumentation(name = "Custom minimum counter", description = "If enabled, override the automatically determined minimum counter. Otherwise, the minimum is the minimum in the whole table")
     @JIPipeParameter("min-counter")
     @JIPipeExpressionParameterVariable(fromClass = CounterVariablesInfo.class)
     public OptionalJIPipeExpressionParameter getMinCounter() {
@@ -236,7 +236,7 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
         this.minCounter = minCounter;
     }
 
-    @JIPipeDocumentation(name = "Custom maximum counter", description = "If enabled, override the automatically determined maximum counter. Otherwise, the maximum is the maximum in the whole table")
+    @SetJIPipeDocumentation(name = "Custom maximum counter", description = "If enabled, override the automatically determined maximum counter. Otherwise, the maximum is the maximum in the whole table")
     @JIPipeParameter("max-counter")
     @JIPipeExpressionParameterVariable(fromClass = CounterVariablesInfo.class)
     public OptionalJIPipeExpressionParameter getMaxCounter() {

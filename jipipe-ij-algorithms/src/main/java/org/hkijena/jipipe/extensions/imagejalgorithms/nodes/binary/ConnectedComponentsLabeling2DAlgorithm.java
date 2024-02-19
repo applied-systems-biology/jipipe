@@ -18,9 +18,9 @@ import ij.ImageStack;
 import ij.process.ImageProcessor;
 import inra.ijpb.binary.BinaryImages;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -38,14 +38,14 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataParameterSettings;
 
-@JIPipeDocumentation(name = "Connected components labeling 2D", description = "Applies a connected components labeling on a mask. Each connected component is assigned a unique value in the output label image. " +
+@SetJIPipeDocumentation(name = "Connected components labeling 2D", description = "Applies a connected components labeling on a mask. Each connected component is assigned a unique value in the output label image. " +
         "If the image is non-binary, the connected components are generated per-input value. If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)
-@JIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
+@DefineJIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
+@AddJIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
         "Bioinformatics (Oxford Univ Press) 32(22): 3532-3534, PMID 27412086, doi:10.1093/bioinformatics/btw413")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nBinary Images", aliasName = "Connected Components Labeling (2D)")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nBinary Images", aliasName = "Connected Components Labeling (2D)")
 public class ConnectedComponentsLabeling2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Neighborhood2D connectivity = Neighborhood2D.EightConnected;
@@ -72,7 +72,7 @@ public class ConnectedComponentsLabeling2DAlgorithm extends JIPipeSimpleIteratin
         this.outputType = new JIPipeDataInfoRef(other.outputType);
     }
 
-    @JIPipeDocumentation(name = "Connectivity", description = "Determines the neighborhood around each pixel that is checked for connectivity")
+    @SetJIPipeDocumentation(name = "Connectivity", description = "Determines the neighborhood around each pixel that is checked for connectivity")
     @JIPipeParameter("connectivity")
     public Neighborhood2D getConnectivity() {
         return connectivity;
@@ -83,7 +83,7 @@ public class ConnectedComponentsLabeling2DAlgorithm extends JIPipeSimpleIteratin
         this.connectivity = connectivity;
     }
 
-    @JIPipeDocumentation(name = "Output type", description = "Determines the output label type. You can choose between an 8-bit, 16-bit, and 32-bit label.")
+    @SetJIPipeDocumentation(name = "Output type", description = "Determines the output label type. You can choose between an 8-bit, 16-bit, and 32-bit label.")
     @JIPipeParameter("output-type")
     @JIPipeDataParameterSettings(dataClassFilter = Image_8_16_32_Filter.class)
     public JIPipeDataInfoRef getOutputType() {

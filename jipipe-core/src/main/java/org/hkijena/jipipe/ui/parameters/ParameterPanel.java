@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui.parameters;
 import com.google.common.collect.Sets;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
@@ -414,7 +414,7 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable,
         }
 
         if (!noGroupHeaders) {
-            JIPipeDocumentation documentation = tree.getSourceDocumentation(parameterCollection);
+            SetJIPipeDocumentation documentation = tree.getSourceDocumentation(parameterCollection);
             boolean documentationIsEmpty = documentation == null || (StringUtils.isNullOrEmpty(documentation.name())
                     && StringUtils.isNullOrEmpty(DocumentationUtils.getDocumentationDescription(documentation)));
             boolean groupHeaderIsEmpty = documentationIsEmpty && !isModifiable && node.getActions().isEmpty();

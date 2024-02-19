@@ -19,8 +19,8 @@ import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.facility.TablesFacility;
 import omero.gateway.model.ImageData;
 import omero.gateway.model.TableData;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
@@ -46,11 +46,11 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
-@JIPipeDocumentation(name = "Attach table to OMERO image", description = "Attaches a table to an OMERO image")
-@JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Tables")
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Tables", autoCreate = true, description = "The table to attach")
-@JIPipeInputSlot(value = OMEROImageReferenceData.class, slotName = "Target", autoCreate = true, description = "The target OMERO image")
-@JIPipeOutputSlot(value = OMEROAnnotationReferenceData.class, slotName = "Tables", autoCreate = true, description = "Reference to the generated table annotation")
+@SetJIPipeDocumentation(name = "Attach table to OMERO image", description = "Attaches a table to an OMERO image")
+@DefineJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Tables")
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Tables", create = true, description = "The table to attach")
+@AddJIPipeInputSlot(value = OMEROImageReferenceData.class, slotName = "Target", create = true, description = "The target OMERO image")
+@AddJIPipeOutputSlot(value = OMEROAnnotationReferenceData.class, slotName = "Tables", create = true, description = "Reference to the generated table annotation")
 public class UploadOMEROTableAlgorithm extends JIPipeIteratingAlgorithm {
 
     private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
@@ -104,7 +104,7 @@ public class UploadOMEROTableAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Table name", description = "Expression that generates the name of the uploaded table. Please note that the directory will be ignored and 'unnamed' will be assumed if " +
+    @SetJIPipeDocumentation(name = "Table name", description = "Expression that generates the name of the uploaded table. Please note that the directory will be ignored and 'unnamed' will be assumed if " +
             "no name is provided.")
     @JIPipeParameter("file-name-generator")
     public DataExportExpressionParameter getFileNameGenerator() {
@@ -116,7 +116,7 @@ public class UploadOMEROTableAlgorithm extends JIPipeIteratingAlgorithm {
         this.fileNameGenerator = fileNameGenerator;
     }
 
-    @JIPipeDocumentation(name = "Override OMERO credentials", description = "Allows to override the OMERO credentials provided in the JIPipe application settings")
+    @SetJIPipeDocumentation(name = "Override OMERO credentials", description = "Allows to override the OMERO credentials provided in the JIPipe application settings")
     @JIPipeParameter("override-credentials")
     public OptionalOMEROCredentialsEnvironment getOverrideCredentials() {
         return overrideCredentials;

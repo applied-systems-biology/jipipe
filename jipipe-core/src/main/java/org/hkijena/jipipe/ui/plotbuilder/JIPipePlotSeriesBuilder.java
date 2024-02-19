@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.plotbuilder;
 
 import ij.measure.ResultsTable;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.validation.*;
@@ -107,7 +107,7 @@ public class JIPipePlotSeriesBuilder extends AbstractJIPipeParameterCollection i
         parameterAccess.set(parameter);
     }
 
-    @JIPipeDocumentation(name = "Data assignments", description = "Please select which data should be assigned to which plot input.")
+    @SetJIPipeDocumentation(name = "Data assignments", description = "Please select which data should be assigned to which plot input.")
     @JIPipeParameter("column-assignments")
     public JIPipeDynamicParameterCollection getColumnAssignments() {
         return columnAssignments;
@@ -117,7 +117,7 @@ public class JIPipePlotSeriesBuilder extends AbstractJIPipeParameterCollection i
         return plotType;
     }
 
-    @JIPipeDocumentation(name = "Name", description = "Name shown in the plot")
+    @SetJIPipeDocumentation(name = "Name", description = "Name shown in the plot")
     @JIPipeParameter("name")
     public String getName() {
         return name;
@@ -132,7 +132,7 @@ public class JIPipePlotSeriesBuilder extends AbstractJIPipeParameterCollection i
         return plotBuilderUI;
     }
 
-    @JIPipeDocumentation(name = "Enabled", description = "If the series is shown")
+    @SetJIPipeDocumentation(name = "Enabled", description = "If the series is shown")
     @JIPipeParameter(value = "enabled", hidden = true)
     public boolean isEnabled() {
         return enabled;

@@ -2,8 +2,8 @@ package org.hkijena.jipipe.extensions.batchassistant;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHidden;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
@@ -22,8 +22,8 @@ import org.jdesktop.swingx.JXTable;
 import javax.swing.*;
 import java.awt.*;
 
-@JIPipeDocumentation(name = "Data batch status", description = "Structural data indicating the status of a data batch")
-@JIPipeHidden
+@SetJIPipeDocumentation(name = "Data batch status", description = "Structural data indicating the status of a data batch")
+@LabelAsJIPipeHidden
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single JSON file that stores the status information.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
 @JIPipeFastThumbnail

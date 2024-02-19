@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.utils.algorithms.datatable;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -20,10 +20,10 @@ import org.hkijena.jipipe.extensions.expressions.DataAnnotationQueryExpression;
 import java.util.ArrayList;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Pull annotations from data tables", description = "Annotates the incoming data tables with text and data annotations from inside the data table")
-@JIPipeInputSlot(value = JIPipeDataTable.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeDataTable.class, slotName = "Output", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For data tables")
+@SetJIPipeDocumentation(name = "Pull annotations from data tables", description = "Annotates the incoming data tables with text and data annotations from inside the data table")
+@AddJIPipeInputSlot(value = JIPipeDataTable.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = JIPipeDataTable.class, slotName = "Output", create = true)
+@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For data tables")
 public class PullDataTableAnnotations extends JIPipeSimpleIteratingAlgorithm {
 
     private AnnotationQueryExpression textAnnotationFilter = new AnnotationQueryExpression();
@@ -54,7 +54,7 @@ public class PullDataTableAnnotations extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), inputData, textAnnotationList, textAnnotationMergeMode, dataAnnotationList, dataAnnotationMergeMode, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Text annotation filter", description = "Allows to filter only specific text annotations. Set to false to completely ignore all text annotations.")
+    @SetJIPipeDocumentation(name = "Text annotation filter", description = "Allows to filter only specific text annotations. Set to false to completely ignore all text annotations.")
     @JIPipeParameter("text-annotation-filter")
     public AnnotationQueryExpression getTextAnnotationFilter() {
         return textAnnotationFilter;
@@ -65,7 +65,7 @@ public class PullDataTableAnnotations extends JIPipeSimpleIteratingAlgorithm {
         this.textAnnotationFilter = textAnnotationFilter;
     }
 
-    @JIPipeDocumentation(name = "Data annotation filter", description = "Allows to filter only specific data annotations. Set to false to completely ignore all data annotations.")
+    @SetJIPipeDocumentation(name = "Data annotation filter", description = "Allows to filter only specific data annotations. Set to false to completely ignore all data annotations.")
     @JIPipeParameter("data-annotation-filter")
     public DataAnnotationQueryExpression getDataAnnotationFilter() {
         return dataAnnotationFilter;
@@ -76,7 +76,7 @@ public class PullDataTableAnnotations extends JIPipeSimpleIteratingAlgorithm {
         this.dataAnnotationFilter = dataAnnotationFilter;
     }
 
-    @JIPipeDocumentation(name = "Data annotation merge mode", description = "Determines what happens if there is already an existing data annotation with the same name")
+    @SetJIPipeDocumentation(name = "Data annotation merge mode", description = "Determines what happens if there is already an existing data annotation with the same name")
     @JIPipeParameter("data-annotation-merge-mode")
     public JIPipeDataAnnotationMergeMode getDataAnnotationMergeMode() {
         return dataAnnotationMergeMode;
@@ -87,7 +87,7 @@ public class PullDataTableAnnotations extends JIPipeSimpleIteratingAlgorithm {
         this.dataAnnotationMergeMode = dataAnnotationMergeMode;
     }
 
-    @JIPipeDocumentation(name = "Text annotation merge mode", description = "Determines what happens if there is already an existing text annotation with the same name")
+    @SetJIPipeDocumentation(name = "Text annotation merge mode", description = "Determines what happens if there is already an existing text annotation with the same name")
     @JIPipeParameter("text-annotation-merge-mode")
     public JIPipeTextAnnotationMergeMode getTextAnnotationMergeMode() {
         return textAnnotationMergeMode;

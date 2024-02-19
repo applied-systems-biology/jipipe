@@ -14,16 +14,16 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.generate;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -37,10 +37,10 @@ import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataPar
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@JIPipeDocumentation(name = "Create empty image", description = "Creates a new image that is black.")
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Annotations", autoCreate = true, optional = true, description = "Optional annotations that can be referenced in the expression")
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Create empty image", description = "Creates a new image that is black.")
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Annotations", create = true, optional = true, description = "Optional annotations that can be referenced in the expression")
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 public class GenerateZeroImage extends JIPipeSimpleIteratingAlgorithm {
 
     private int width = 256;
@@ -86,7 +86,7 @@ public class GenerateZeroImage extends JIPipeSimpleIteratingAlgorithm {
                 progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Data type", description = "The data type that should be created.")
+    @SetJIPipeDocumentation(name = "Data type", description = "The data type that should be created.")
     @JIPipeParameter("data-type")
     @JIPipeDataParameterSettings(dataBaseClass = ImagePlusData.class, dataClassFilter = NonGenericImagePlusDataClassFilter.class)
     public JIPipeDataInfoRef getDataType() {
@@ -101,7 +101,7 @@ public class GenerateZeroImage extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Width", description = "The width of the generated image")
+    @SetJIPipeDocumentation(name = "Width", description = "The width of the generated image")
     @JIPipeParameter(value = "width", uiOrder = -20)
     public int getWidth() {
         return width;
@@ -112,7 +112,7 @@ public class GenerateZeroImage extends JIPipeSimpleIteratingAlgorithm {
         this.width = width;
     }
 
-    @JIPipeDocumentation(name = "Height", description = "The height of the generated image")
+    @SetJIPipeDocumentation(name = "Height", description = "The height of the generated image")
     @JIPipeParameter(value = "height", uiOrder = -15)
     public int getHeight() {
         return height;
@@ -123,7 +123,7 @@ public class GenerateZeroImage extends JIPipeSimpleIteratingAlgorithm {
         this.height = height;
     }
 
-    @JIPipeDocumentation(name = "Number of slices (Z)", description = "Number of generated Z slices.")
+    @SetJIPipeDocumentation(name = "Number of slices (Z)", description = "Number of generated Z slices.")
     @JIPipeParameter("size-z")
     public int getSizeZ() {
         return sizeZ;
@@ -134,7 +134,7 @@ public class GenerateZeroImage extends JIPipeSimpleIteratingAlgorithm {
         this.sizeZ = sizeZ;
     }
 
-    @JIPipeDocumentation(name = "Number of channels (C)", description = "Number of generated channel slices.")
+    @SetJIPipeDocumentation(name = "Number of channels (C)", description = "Number of generated channel slices.")
     @JIPipeParameter("size-c")
     public int getSizeC() {
         return sizeC;
@@ -145,7 +145,7 @@ public class GenerateZeroImage extends JIPipeSimpleIteratingAlgorithm {
         this.sizeC = sizeC;
     }
 
-    @JIPipeDocumentation(name = "Number of frames (T)", description = "Number of generated frame slices.")
+    @SetJIPipeDocumentation(name = "Number of frames (T)", description = "Number of generated frame slices.")
     @JIPipeParameter("size-t")
     public int getSizeT() {
         return sizeT;

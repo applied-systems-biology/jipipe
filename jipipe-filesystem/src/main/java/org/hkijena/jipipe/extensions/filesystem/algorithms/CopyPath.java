@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 /**
  * Applies subfolder navigation to each input folder
  */
-@JIPipeDocumentation(name = "Copy path", description = "Copies a path to the destination path. " +
+@SetJIPipeDocumentation(name = "Copy path", description = "Copies a path to the destination path. " +
         "The behaviour depends on whether the source and destinations are files, folders, or do not exist. \n" +
         "[File] to [File]: The source is copied to the target file.\n" +
         "[File] to [Folder]: The source is copied to [Destination]/[Source file name]\n" +
@@ -43,12 +43,12 @@ import java.util.stream.Collectors;
         "[Folder] to [Folder]: By default, the contents of the source folder are copied into the destination folder. You can enable a parameter that instead " +
         "copies the contents into [Destination]/[Source folder name]\n" +
         "[Folder] to [Not existing]: The destination is automatically created. The [Folder] to [Folder] rule is applied.")
-@JIPipeNode(nodeTypeCategory = FileSystemNodeTypeCategory.class)
+@DefineJIPipeNode(nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
 
-@JIPipeInputSlot(value = PathData.class, slotName = "Source", autoCreate = true)
-@JIPipeInputSlot(value = PathData.class, slotName = "Destination", autoCreate = true)
-@JIPipeOutputSlot(value = PathData.class, slotName = "Copied path", autoCreate = true)
+@AddJIPipeInputSlot(value = PathData.class, slotName = "Source", create = true)
+@AddJIPipeInputSlot(value = PathData.class, slotName = "Destination", create = true)
+@AddJIPipeOutputSlot(value = PathData.class, slotName = "Copied path", create = true)
 
 
 public class CopyPath extends JIPipeIteratingAlgorithm {
@@ -143,7 +143,7 @@ public class CopyPath extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new PathData(destination), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Skip invalid paths", description = "If enabled, invalid copy instructions are skipped.")
+    @SetJIPipeDocumentation(name = "Skip invalid paths", description = "If enabled, invalid copy instructions are skipped.")
     @JIPipeParameter("skip-invalid")
     public boolean isSkipInvalid() {
         return skipInvalid;
@@ -154,7 +154,7 @@ public class CopyPath extends JIPipeIteratingAlgorithm {
         this.skipInvalid = skipInvalid;
     }
 
-    @JIPipeDocumentation(name = "Skip existing targets", description = "If enabled, no operations are executed if the target file/folder already exists.")
+    @SetJIPipeDocumentation(name = "Skip existing targets", description = "If enabled, no operations are executed if the target file/folder already exists.")
     @JIPipeParameter("skip-existing")
     public boolean isSkipExisting() {
         return skipExisting;
@@ -165,7 +165,7 @@ public class CopyPath extends JIPipeIteratingAlgorithm {
         this.skipExisting = skipExisting;
     }
 
-    @JIPipeDocumentation(name = "Append source directory name to destination", description = "If the source is a directory and this option is enabled, " +
+    @SetJIPipeDocumentation(name = "Append source directory name to destination", description = "If the source is a directory and this option is enabled, " +
             "its contents will be copied into [target]/[source directory name]. Otherwise they will be copied into [target].")
     @JIPipeParameter("append-directory-name-to-target")
     public boolean isAppendDirectoryNameToTarget() {

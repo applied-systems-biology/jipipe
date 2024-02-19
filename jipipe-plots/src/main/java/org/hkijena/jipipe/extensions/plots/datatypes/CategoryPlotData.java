@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.plots.datatypes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.jfree.data.category.CategoryDataset;
@@ -76,7 +76,7 @@ public abstract class CategoryPlotData extends PlotData {
         return dataset;
     }
 
-    @JIPipeDocumentation(name = "Category axis label", description = "Label of the X-axis")
+    @SetJIPipeDocumentation(name = "Category axis label", description = "Label of the X-axis")
     @JIPipeParameter("category-axis-label")
     public String getCategoryAxisLabel() {
         return categoryAxisLabel;
@@ -88,7 +88,7 @@ public abstract class CategoryPlotData extends PlotData {
 
     }
 
-    @JIPipeDocumentation(name = "Value axis label", description = "Label of the Y-axis")
+    @SetJIPipeDocumentation(name = "Value axis label", description = "Label of the Y-axis")
     @JIPipeParameter("value-axis-label")
     public String getValueAxisLabel() {
         return valueAxisLabel;
@@ -99,7 +99,7 @@ public abstract class CategoryPlotData extends PlotData {
         this.valueAxisLabel = valueAxisLabel;
     }
 
-    @JIPipeDocumentation(name = "Category axis font size", description = "Font size of the category axis")
+    @SetJIPipeDocumentation(name = "Category axis font size", description = "Font size of the category axis")
     @JIPipeParameter("category-axis-font-size")
     public int getCategoryAxisFontSize() {
         return categoryAxisFontSize;
@@ -110,7 +110,7 @@ public abstract class CategoryPlotData extends PlotData {
         this.categoryAxisFontSize = categoryAxisFontSize;
     }
 
-    @JIPipeDocumentation(name = "Value axis font size", description = "Font size of the value axis")
+    @SetJIPipeDocumentation(name = "Value axis font size", description = "Font size of the value axis")
     @JIPipeParameter("value-axis-font-size")
     public int getValueAxisFontSize() {
         return valueAxisFontSize;
@@ -121,7 +121,7 @@ public abstract class CategoryPlotData extends PlotData {
         this.valueAxisFontSize = valueAxisFontSize;
     }
 
-    @JIPipeDocumentation(name = "Value axis minimum", description = "Minimum of the value axis values. If disabled or infinite, the value is calculated automatically.")
+    @SetJIPipeDocumentation(name = "Value axis minimum", description = "Minimum of the value axis values. If disabled or infinite, the value is calculated automatically.")
     @JIPipeParameter("value-axis-minimum")
     public OptionalDoubleParameter getValueAxisMinimum() {
         return valueAxisMinimum;
@@ -132,7 +132,7 @@ public abstract class CategoryPlotData extends PlotData {
         this.valueAxisMinimum = valueAxisMinimum;
     }
 
-    @JIPipeDocumentation(name = "Value axis maximum", description = "Maximum of the value axis values. If disabled or infinite, the value is calculated automatically.")
+    @SetJIPipeDocumentation(name = "Value axis maximum", description = "Maximum of the value axis values. If disabled or infinite, the value is calculated automatically.")
     @JIPipeParameter("value-axis-maximum")
     public OptionalDoubleParameter getValueAxisMaximum() {
         return valueAxisMaximum;

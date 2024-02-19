@@ -16,8 +16,7 @@ package org.hkijena.jipipe.extensions.omero.datatypes;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import omero.gateway.model.AnnotationData;
-import omero.gateway.model.ProjectData;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
@@ -40,7 +39,7 @@ import java.nio.file.Path;
 /**
  * Data that stores a reference to an OMERO project
  */
-@JIPipeDocumentation(name = "OMERO Annotation", description = "An OMERO annotation ID")
+@SetJIPipeDocumentation(name = "OMERO Annotation", description = "An OMERO annotation ID")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.json file that stores the <pre>annotation-id</pre> in a JSON object.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/omero-project-reference-data.schema.json")
 public class OMEROAnnotationReferenceData implements JIPipeData {

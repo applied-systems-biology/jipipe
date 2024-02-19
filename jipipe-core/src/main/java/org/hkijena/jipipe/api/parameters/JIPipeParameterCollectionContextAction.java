@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.api.parameters;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import java.net.URL;
@@ -13,7 +13,7 @@ public interface JIPipeParameterCollectionContextAction extends Consumer<JIPipeW
      *
      * @return the documentation
      */
-    JIPipeDocumentation getDocumentation();
+    SetJIPipeDocumentation getDocumentation();
 
     /**
      * URL to the icon

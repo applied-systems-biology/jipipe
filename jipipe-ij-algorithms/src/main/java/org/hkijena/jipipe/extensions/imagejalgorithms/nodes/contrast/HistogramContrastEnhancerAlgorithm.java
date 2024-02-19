@@ -5,8 +5,8 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.*;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -23,11 +23,11 @@ import static ij.measure.Measurements.MIN_MAX;
  * This class is based on {@link ij.plugin.ContrastEnhancer}
  * This class is not very portable, so I adapted the code here
  */
-@JIPipeDocumentation(name = "Histogram-based contrast enhancer", description = "Implementation of the ImageJ contrast enhancer feature that uses histograms and normalization methods.")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Contrast")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process", aliasName = "Enhance Contrast...")
+@SetJIPipeDocumentation(name = "Histogram-based contrast enhancer", description = "Implementation of the ImageJ contrast enhancer feature that uses histograms and normalization methods.")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Contrast")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process", aliasName = "Enhance Contrast...")
 public class HistogramContrastEnhancerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Method method = Method.StretchHistogramAndNormalize;
@@ -72,7 +72,7 @@ public class HistogramContrastEnhancerAlgorithm extends JIPipeSimpleIteratingAlg
     }
 
 
-    @JIPipeDocumentation(name = "Saturated pixels (%)", description = "Only used if histogram stretching is used.\n" +
+    @SetJIPipeDocumentation(name = "Saturated pixels (%)", description = "Only used if histogram stretching is used.\n" +
             "Determines the number of pixels in the image that are allowed to become saturated. " +
             "Increasing this value increases contrast. " +
             "This value should be greater than zero to prevent a few outlying pixel from causing the histogram stretch to not work as intended. ")
@@ -89,7 +89,7 @@ public class HistogramContrastEnhancerAlgorithm extends JIPipeSimpleIteratingAlg
         return true;
     }
 
-    @JIPipeDocumentation(name = "Method", description = "The method that should be used to enhance the contrast.<br/>" +
+    @SetJIPipeDocumentation(name = "Method", description = "The method that should be used to enhance the contrast.<br/>" +
             "<ul><li>Stretch histogram sets the min/max display range to the min/max of the histogram.</li>" +
             "<li>Stretch histogram + normalize additionally will recalculate the pixel values of the image so the range" +
             " is equal to the maximum range for the data type, or 0 - 1.0 for float images. " +
@@ -108,7 +108,7 @@ public class HistogramContrastEnhancerAlgorithm extends JIPipeSimpleIteratingAlg
         this.method = method;
     }
 
-    @JIPipeDocumentation(name = "Use stack histogram", description = "If enabled, the histogram of all slices is used instead of the per-slice histograms.")
+    @SetJIPipeDocumentation(name = "Use stack histogram", description = "If enabled, the histogram of all slices is used instead of the per-slice histograms.")
     @JIPipeParameter("use-stack-histogram")
     public boolean isUseStackHistogram() {
         return useStackHistogram;

@@ -5,8 +5,8 @@ import com.google.common.collect.Multimap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import mcib3d.image3d.ImageHandler;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
@@ -29,14 +29,14 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
-@JIPipeDocumentation(name = "Filter 3D ROI by overlap", description = "Filters the 3D ROI lists by testing for mutual overlap. The ROI1 output contains all ROI1 input ROI that overlap with any of ROI2. " +
+@SetJIPipeDocumentation(name = "Filter 3D ROI by overlap", description = "Filters the 3D ROI lists by testing for mutual overlap. The ROI1 output contains all ROI1 input ROI that overlap with any of ROI2. " +
         "The ROI2 output contains all ROI2 input ROI that overlap with a ROI1 ROI.")
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
-@JIPipeInputSlot(value = ROI3DListData.class, slotName = "ROI 1", autoCreate = true)
-@JIPipeInputSlot(value = ROI3DListData.class, slotName = "ROI 2", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true, description = "An optional reference image", optional = true)
-@JIPipeOutputSlot(value = ROI3DListData.class, slotName = "ROI 1", autoCreate = true)
-@JIPipeOutputSlot(value = ROI3DListData.class, slotName = "ROI 2", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
+@AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "ROI 1", create = true)
+@AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "ROI 2", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true, description = "An optional reference image", optional = true)
+@AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "ROI 1", create = true)
+@AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "ROI 2", create = true)
 public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
     private ROI3DRelationMeasurementSetParameter overlapFilterMeasurements = new ROI3DRelationMeasurementSetParameter();
@@ -206,7 +206,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         return true;
     }
 
-    @JIPipeDocumentation(name = "ROI 1 filter", description = "Use following settings to determine how inputs into <b>ROI 1</b> are filtered " +
+    @SetJIPipeDocumentation(name = "ROI 1 filter", description = "Use following settings to determine how inputs into <b>ROI 1</b> are filtered " +
             "(by overlapping them with items in <b>ROI 2</b>). " +
             "Filtered ROI will be put into the corresponding <b>ROI 1</b> output.")
     @JIPipeParameter(value = "roi1", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/roi.png",
@@ -215,7 +215,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         return roi1Settings;
     }
 
-    @JIPipeDocumentation(name = "ROI 2 filter", description = "Use following settings to determine how inputs into <b>ROI 2</b> are filtered " +
+    @SetJIPipeDocumentation(name = "ROI 2 filter", description = "Use following settings to determine how inputs into <b>ROI 2</b> are filtered " +
             "(by overlapping them with items in <b>ROI 1</b>). " +
             "Filtered ROI will be put into the corresponding <b>ROI 2</b> output.")
     @JIPipeParameter(value = "roi2", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/roi.png",
@@ -224,7 +224,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         return roi2Settings;
     }
 
-    @JIPipeDocumentation(name = "Overlap filter measurements", description = "Measurements extracted for the overlap filter.")
+    @SetJIPipeDocumentation(name = "Overlap filter measurements", description = "Measurements extracted for the overlap filter.")
     @JIPipeParameter("overlap-filter-measurements")
     public ROI3DRelationMeasurementSetParameter getOverlapFilterMeasurements() {
         return overlapFilterMeasurements;
@@ -267,7 +267,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             this.ignoreT = other.ignoreT;
         }
 
-        @JIPipeDocumentation(name = "Ignore channel", description = "If enabled, ROI located at different channels are compared")
+        @SetJIPipeDocumentation(name = "Ignore channel", description = "If enabled, ROI located at different channels are compared")
         @JIPipeParameter("ignore-c")
         public boolean isIgnoreC() {
             return ignoreC;
@@ -278,7 +278,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             this.ignoreC = ignoreC;
         }
 
-        @JIPipeDocumentation(name = "Ignore frame", description = "If enabled, ROI located at different frames are compared")
+        @SetJIPipeDocumentation(name = "Ignore frame", description = "If enabled, ROI located at different frames are compared")
         @JIPipeParameter("ignore-t")
         public boolean isIgnoreT() {
             return ignoreT;
@@ -289,7 +289,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             this.ignoreT = ignoreT;
         }
 
-        @JIPipeDocumentation(name = "Enabled", description = "You can use this setting to disable generating this output.")
+        @SetJIPipeDocumentation(name = "Enabled", description = "You can use this setting to disable generating this output.")
         @JIPipeParameter("enabled")
         public boolean isEnabled() {
             return enabled;
@@ -300,7 +300,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             this.enabled = enabled;
         }
 
-        @JIPipeDocumentation(name = "Invert", description = "If enabled, ROI are stored into the output if they do not overlap.")
+        @SetJIPipeDocumentation(name = "Invert", description = "If enabled, ROI are stored into the output if they do not overlap.")
         @JIPipeParameter("invert")
         public boolean isInvert() {
             return invert;
@@ -311,7 +311,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             this.invert = invert;
         }
 
-        @JIPipeDocumentation(name = "Consume on overlap", description = "If enabled, ROI are consumed if an overlap is detected, meaning " +
+        @SetJIPipeDocumentation(name = "Consume on overlap", description = "If enabled, ROI are consumed if an overlap is detected, meaning " +
                 "that no other tested ROI can overlap with it. This is useful if you want to prevent duplicate overlaps (e.g., if you " +
                 "compare automated vs manually segmented blobs).")
         @JIPipeParameter("consume-overlap")
@@ -324,7 +324,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             this.consumeOnOverlap = consumeOnOverlap;
         }
 
-        @JIPipeDocumentation(name = "Overlap filter", description = "This filter is applied to any combination of ROIs that have an overlap. You will have three sets of measurements: ROI1, Overlap, and ROI2." +
+        @SetJIPipeDocumentation(name = "Overlap filter", description = "This filter is applied to any combination of ROIs that have an overlap. You will have three sets of measurements: ROI1, Overlap, and ROI2." +
                 "'ROI1'and 'ROI2' correspond to a ROI from the input slots,respectively. 'Overlap' is the overlap between these ROI." +
                 " Please open the expression builder to see a list of all available variables. If the filter is empty, " +
                 "no filtering is applied.")
@@ -342,7 +342,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             this.overlapFilter = overlapFilter;
         }
 
-        @JIPipeDocumentation(name = "Output overlapping regions", description = "If enabled, the overlapping regions, instead of the ROI are extracted.")
+        @SetJIPipeDocumentation(name = "Output overlapping regions", description = "If enabled, the overlapping regions, instead of the ROI are extracted.")
         @JIPipeParameter("output-overlaps")
         public boolean isOutputOverlaps() {
             return outputOverlaps;
@@ -353,7 +353,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             this.outputOverlaps = outputOverlaps;
         }
 
-        @JIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available. " +
+        @SetJIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available. " +
                 "Measurements will be in the physical sizes of the reference image.")
         @JIPipeParameter("measure-in-physical-units")
         public boolean isMeasureInPhysicalUnits() {
@@ -365,7 +365,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             this.measureInPhysicalUnits = measureInPhysicalUnits;
         }
 
-        @JIPipeDocumentation(name = "Only measure if objects co-localize", description = "If enabled, only co-localizing objects are measured")
+        @SetJIPipeDocumentation(name = "Only measure if objects co-localize", description = "If enabled, only co-localizing objects are measured")
         @JIPipeParameter("require-colocalization")
         public boolean isRequireColocalization() {
             return requireColocalization;
@@ -376,7 +376,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             this.requireColocalization = requireColocalization;
         }
 
-        @JIPipeDocumentation(name = "Precise colocalization", description = "If enabled, the object co-localization for the 'Only measure if objects co-localize' setting tests for voxel colocalization (slower)." +
+        @SetJIPipeDocumentation(name = "Precise colocalization", description = "If enabled, the object co-localization for the 'Only measure if objects co-localize' setting tests for voxel colocalization (slower)." +
                 " Otherwise, only the bounding boxes are compared (faster).")
         @JIPipeParameter("precise-colocalization")
         public boolean isPreciseColocalization() {

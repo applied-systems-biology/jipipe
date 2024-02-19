@@ -1,8 +1,8 @@
 package org.hkijena.jipipe.extensions.strings.datasources;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
@@ -17,10 +17,10 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 
-@JIPipeDocumentation(name = "Import JSON", description = "Imports JSON data from a file")
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeInputSlot(value = FileData.class, slotName = "File", autoCreate = true)
-@JIPipeOutputSlot(value = JsonData.class, slotName = "Json", autoCreate = true)
+@SetJIPipeDocumentation(name = "Import JSON", description = "Imports JSON data from a file")
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = FileData.class, slotName = "File", create = true)
+@AddJIPipeOutputSlot(value = JsonData.class, slotName = "Json", create = true)
 public class ImportJsonAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean validateJson = true;
@@ -48,7 +48,7 @@ public class ImportJsonAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Validate JSON", description = "If enabled, validate if the imported file contains valid JSON")
+    @SetJIPipeDocumentation(name = "Validate JSON", description = "If enabled, validate if the imported file contains valid JSON")
     @JIPipeParameter("validate-json")
     public boolean isValidateJson() {
         return validateJson;

@@ -2,8 +2,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.binary;
 
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
@@ -22,10 +22,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-@JIPipeDocumentation(name = "Conditional invert", description = "Inverts the image if a condition (based on statistics) is met. Otherwise, the image is not inverted.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Binary")
-@JIPipeInputSlot(slotName = "Input", value = ImagePlusGreyscaleMaskData.class, autoCreate = true)
-@JIPipeOutputSlot(slotName = "Output", value = ImagePlusGreyscaleMaskData.class, autoCreate = true)
+@SetJIPipeDocumentation(name = "Conditional invert", description = "Inverts the image if a condition (based on statistics) is met. Otherwise, the image is not inverted.")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Binary")
+@AddJIPipeInputSlot(slotName = "Input", value = ImagePlusGreyscaleMaskData.class, create = true)
+@AddJIPipeOutputSlot(slotName = "Output", value = ImagePlusGreyscaleMaskData.class, create = true)
 public class ConditionalInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter condition = new JIPipeExpressionParameter("num_white > num_black");
@@ -100,7 +100,7 @@ public class ConditionalInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Condition", description = "If the expression returns TRUE, the image will be inverted")
+    @SetJIPipeDocumentation(name = "Condition", description = "If the expression returns TRUE, the image will be inverted")
     @JIPipeParameter("condition")
     @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class)
     public JIPipeExpressionParameter getCondition() {
@@ -112,7 +112,7 @@ public class ConditionalInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.condition = condition;
     }
 
-    @JIPipeDocumentation(name = "Apply per slice", description = "If enabled, the operation is applied for each individual slice. Otherwise, statistics are extracted for the whole image.")
+    @SetJIPipeDocumentation(name = "Apply per slice", description = "If enabled, the operation is applied for each individual slice. Otherwise, statistics are extracted for the whole image.")
     @JIPipeParameter("apply-per-slice")
     public boolean isApplyPerSlice() {
         return applyPerSlice;

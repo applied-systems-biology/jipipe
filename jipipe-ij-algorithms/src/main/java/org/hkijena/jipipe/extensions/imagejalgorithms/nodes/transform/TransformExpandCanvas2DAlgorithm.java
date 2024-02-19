@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.transform;
 
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -32,11 +32,11 @@ import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
 
 import java.awt.*;
 
-@JIPipeDocumentation(name = "Expand canvas 2D", description = "Pads each image slice with a background color.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Transform")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust", aliasName = "Canvas Size...")
+@SetJIPipeDocumentation(name = "Expand canvas 2D", description = "Pads each image slice with a background color.")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Transform")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust", aliasName = "Canvas Size...")
 public class TransformExpandCanvas2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private NumericFunctionExpression xAxis = new NumericFunctionExpression();
@@ -69,7 +69,7 @@ public class TransformExpandCanvas2DAlgorithm extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(ImageJUtils.expandImageCanvas(imp, backgroundColor, wNew, hNew, anchor)), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "X axis", description = "Defines the size of the output canvas")
+    @SetJIPipeDocumentation(name = "X axis", description = "Defines the size of the output canvas")
     @JIPipeParameter("x-axis")
     public NumericFunctionExpression getxAxis() {
         return xAxis;
@@ -80,7 +80,7 @@ public class TransformExpandCanvas2DAlgorithm extends JIPipeIteratingAlgorithm {
         this.xAxis = xAxis;
     }
 
-    @JIPipeDocumentation(name = "Y axis", description = "Defines the size of the output canvas")
+    @SetJIPipeDocumentation(name = "Y axis", description = "Defines the size of the output canvas")
     @JIPipeParameter("y-axis")
     public NumericFunctionExpression getyAxis() {
         return yAxis;
@@ -91,7 +91,7 @@ public class TransformExpandCanvas2DAlgorithm extends JIPipeIteratingAlgorithm {
         this.yAxis = yAxis;
     }
 
-    @JIPipeDocumentation(name = "Background color", description = "The color of the outside canvas")
+    @SetJIPipeDocumentation(name = "Background color", description = "The color of the outside canvas")
     @JIPipeParameter("background-color")
     public Color getBackgroundColor() {
         return backgroundColor;
@@ -102,7 +102,7 @@ public class TransformExpandCanvas2DAlgorithm extends JIPipeIteratingAlgorithm {
         this.backgroundColor = backgroundColor;
     }
 
-    @JIPipeDocumentation(name = "Anchor", description = "From which point to expand the canvas")
+    @SetJIPipeDocumentation(name = "Anchor", description = "From which point to expand the canvas")
     @JIPipeParameter("anchor")
     public Anchor getAnchor() {
         return anchor;

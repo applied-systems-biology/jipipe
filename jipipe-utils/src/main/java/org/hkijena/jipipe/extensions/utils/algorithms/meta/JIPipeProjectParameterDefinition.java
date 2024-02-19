@@ -14,11 +14,11 @@
 package org.hkijena.jipipe.extensions.utils.algorithms.meta;
 
 import ij.IJ;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
@@ -39,11 +39,11 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Define JIPipe project parameters", description = "Defines parameters that will be put into JIPipe projects. The parameter key has two modes: " +
+@SetJIPipeDocumentation(name = "Define JIPipe project parameters", description = "Defines parameters that will be put into JIPipe projects. The parameter key has two modes: " +
         "If it matches with a pipeline parameter (that can be set up via a pipeline's settings), this parameter is changed. It can also match with an absolute path to a node's parameter with following format: " +
         "[node-id]/[node parameter key]")
-@JIPipeOutputSlot(value = ParametersData.class, slotName = "Parameters", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeOutputSlot(value = ParametersData.class, slotName = "Parameters", create = true)
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class JIPipeProjectParameterDefinition extends DefineParametersTableAlgorithm {
     public JIPipeProjectParameterDefinition(JIPipeNodeInfo info) {
         super(info);
@@ -54,7 +54,7 @@ public class JIPipeProjectParameterDefinition extends DefineParametersTableAlgor
     }
 
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/folder-open.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/folder-open.png")
-    @JIPipeDocumentation(name = "Load parameters from project", description = "Loads parameters from a project file")
+    @SetJIPipeDocumentation(name = "Load parameters from project", description = "Loads parameters from a project file")
     public void importParametersFromProject(JIPipeWorkbench workbench) {
         Path projectFile = FileChooserSettings.openFile(workbench.getWindow(), FileChooserSettings.LastDirectoryKey.Projects, "Import JIPipe project", UIUtils.EXTENSION_FILTER_JIP);
         if (projectFile != null) {

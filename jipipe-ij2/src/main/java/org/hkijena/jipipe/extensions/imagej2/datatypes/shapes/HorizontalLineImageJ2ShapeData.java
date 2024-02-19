@@ -2,13 +2,13 @@ package org.hkijena.jipipe.extensions.imagej2.datatypes.shapes;
 
 import net.imglib2.algorithm.neighborhood.HorizontalLineShape;
 import net.imglib2.algorithm.neighborhood.Shape;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
-@JIPipeDocumentation(name = "IJ2 Horizontal Line Shape", description = "A Shape representing finite, centered, symmetric lines, that are parallel to the image axes.")
+@SetJIPipeDocumentation(name = "IJ2 Horizontal Line Shape", description = "A Shape representing finite, centered, symmetric lines, that are parallel to the image axes.")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single JSON file that stores the status information.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
 public class HorizontalLineImageJ2ShapeData extends ImageJ2ShapeData {
@@ -47,7 +47,7 @@ public class HorizontalLineImageJ2ShapeData extends ImageJ2ShapeData {
         return "IJ2 Horizontal Line Shape (span=" + span + ", lineDimension=" + lineDimension + ",skipCenter=" + skipCenter + ")";
     }
 
-    @JIPipeDocumentation(name = "Span")
+    @SetJIPipeDocumentation(name = "Span")
     @JIPipeParameter("span")
     public long getSpan() {
         return span;
@@ -58,7 +58,7 @@ public class HorizontalLineImageJ2ShapeData extends ImageJ2ShapeData {
         this.span = span;
     }
 
-    @JIPipeDocumentation(name = "Line dimension")
+    @SetJIPipeDocumentation(name = "Line dimension")
     @JIPipeParameter("line-dimension")
     public int getLineDimension() {
         return lineDimension;
@@ -69,7 +69,7 @@ public class HorizontalLineImageJ2ShapeData extends ImageJ2ShapeData {
         this.lineDimension = lineDimension;
     }
 
-    @JIPipeDocumentation(name = "Skip center")
+    @SetJIPipeDocumentation(name = "Skip center")
     @JIPipeParameter("skip-center")
     public boolean isSkipCenter() {
         return skipCenter;

@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.expressions.functions.quantities;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -21,7 +21,7 @@ import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "Convert quantity", description = "Converts a quantity string '[value] [unit]' to another unit. Will throw an error if the unit is unknown. Supported are length, time, and weight units (metric).")
+@SetJIPipeDocumentation(name = "Convert quantity", description = "Converts a quantity string '[value] [unit]' to another unit. Will throw an error if the unit is unknown. Supported are length, time, and weight units (metric).")
 public class QuantityConvertFunction extends ExpressionFunction {
 
 

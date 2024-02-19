@@ -1,13 +1,13 @@
 package org.hkijena.jipipe.extensions.filesystem.datasources;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -20,9 +20,9 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 
-@JIPipeDocumentation(name = "Project user directory", description = "Returns a project user (Project > Project settings > User directories) folder as data")
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeOutputSlot(value = FolderData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Project user directory", description = "Returns a project user (Project > Project settings > User directories) folder as data")
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeOutputSlot(value = FolderData.class, slotName = "Output", create = true)
 public class ProjectUserFolderDataSource extends JIPipeSimpleIteratingAlgorithm {
 
     private String key = "";
@@ -53,7 +53,7 @@ public class ProjectUserFolderDataSource extends JIPipeSimpleIteratingAlgorithm 
         iterationStep.addOutputData(getFirstOutputSlot(), new FolderData(Objects.requireNonNull(projectDataDirs.get(key))), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Project user directory key", description = "The key of the project user directory. You can configure directories by navigating to Project > Project settings > User directories (or alternatively to Project > Project overview > User directories)")
+    @SetJIPipeDocumentation(name = "Project user directory key", description = "The key of the project user directory. You can configure directories by navigating to Project > Project settings > User directories (or alternatively to Project > Project overview > User directories)")
     @JIPipeParameter(value = "key", important = true)
     @StringParameterSettings(monospace = true)
     public String getKey() {

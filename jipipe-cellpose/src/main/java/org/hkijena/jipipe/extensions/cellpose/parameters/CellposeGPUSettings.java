@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.cellpose.parameters;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
@@ -17,7 +17,7 @@ public class CellposeGPUSettings extends AbstractJIPipeParameterCollection {
         this.gpuDevice = new OptionalIntegerParameter(other.gpuDevice);
     }
 
-    @JIPipeDocumentation(name = "GPU device", description = "Which GPU device to use")
+    @SetJIPipeDocumentation(name = "GPU device", description = "Which GPU device to use")
     @JIPipeParameter("gpu-device")
     public OptionalIntegerParameter getGpuDevice() {
         return gpuDevice;
@@ -28,7 +28,7 @@ public class CellposeGPUSettings extends AbstractJIPipeParameterCollection {
         this.gpuDevice = gpuDevice;
     }
 
-    @JIPipeDocumentation(name = "With GPU", description = "Utilize a GPU if available. Please note that you need to setup Cellpose " +
+    @SetJIPipeDocumentation(name = "With GPU", description = "Utilize a GPU if available. Please note that you need to setup Cellpose " +
             "to allow usage of your GPU. Also ensure that enough memory is available.")
     @JIPipeParameter("enable-gpu")
     public boolean isEnableGPU() {

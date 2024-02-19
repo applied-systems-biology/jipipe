@@ -16,8 +16,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.datasources;
 import ij.ImagePlus;
 import ij.ImageStack;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
@@ -48,12 +48,12 @@ import java.util.stream.Collectors;
 /**
  * Loads an image data from a file via IJ.openFile()
  */
-@JIPipeDocumentation(name = "Import image stack", description = "Loads an image stack via the native ImageJ functions. " +
+@SetJIPipeDocumentation(name = "Import image stack", description = "Loads an image stack via the native ImageJ functions. " +
         "The current implementation only allows 2D images to be imported and will show an error if higher-dimensional data is provided.")
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeInputSlot(value = FolderData.class, slotName = "Folder", description = "One or multiple directories", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Image", description = "The imported image(s)", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nImport", aliasName = "Image Sequence...")
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = FolderData.class, slotName = "Folder", description = "One or multiple directories", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Image", description = "The imported image(s)", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nImport", aliasName = "Image Sequence...")
 public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeDataInfoRef generatedImageType = new JIPipeDataInfoRef("imagej-imgplus");
@@ -90,7 +90,7 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
         this.forceNativeImport = other.forceNativeImport;
     }
 
-    @JIPipeDocumentation(name = "Force native ImageJ importer", description = "If enabled, always use the native ImageJ file importer, even if the file looks like it can only be read by Bio-Formats")
+    @SetJIPipeDocumentation(name = "Force native ImageJ importer", description = "If enabled, always use the native ImageJ file importer, even if the file looks like it can only be read by Bio-Formats")
     @JIPipeParameter("force-native-import")
     public boolean isForceNativeImport() {
         return forceNativeImport;
@@ -101,7 +101,7 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
         this.forceNativeImport = forceNativeImport;
     }
 
-    @JIPipeDocumentation(name = "Remove LUT", description = "If enabled, remove the LUT information if present")
+    @SetJIPipeDocumentation(name = "Remove LUT", description = "If enabled, remove the LUT information if present")
     @JIPipeParameter("remove-lut")
     public boolean isRemoveLut() {
         return removeLut;
@@ -177,7 +177,7 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Generated image type", description = "The image type that is generated.")
+    @SetJIPipeDocumentation(name = "Generated image type", description = "The image type that is generated.")
     @JIPipeParameter("generated-image-type")
     public JIPipeDataInfoRef getGeneratedImageType() {
         return generatedImageType;
@@ -190,7 +190,7 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
         emitNodeSlotsChangedEvent();
     }
 
-    @JIPipeDocumentation(name = "Output dimension", description = "Determines in which dimension the stack grows. You can choose between Z (default), channel, and time.")
+    @SetJIPipeDocumentation(name = "Output dimension", description = "Determines in which dimension the stack grows. You can choose between Z (default), channel, and time.")
     @JIPipeParameter("output-dimension")
     public HyperstackDimension getOutputDimension() {
         return outputDimension;
@@ -201,7 +201,7 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
         this.outputDimension = outputDimension;
     }
 
-    @JIPipeDocumentation(name = "Sort numerically", description = "If true, the files are sorted in a natural order. For example a1, a2, a15, a100, b1. Otherwise, they are " +
+    @SetJIPipeDocumentation(name = "Sort numerically", description = "If true, the files are sorted in a natural order. For example a1, a2, a15, a100, b1. Otherwise, they are " +
             "ordered lexicographically. For example a1, a100, a15, a2, b1")
     @JIPipeParameter("sort-numerically")
     public boolean isSortFilesNumerically() {
@@ -213,7 +213,7 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
         this.sortFilesNumerically = sortFilesNumerically;
     }
 
-    @JIPipeDocumentation(name = "File filter", description = "Allows you to filter the files.")
+    @SetJIPipeDocumentation(name = "File filter", description = "Allows you to filter the files.")
     @JIPipeParameter("filter-expression")
     public PathQueryExpression getFilterExpression() {
         return filterExpression;
@@ -224,7 +224,7 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
         this.filterExpression = filterExpression;
     }
 
-    @JIPipeDocumentation(name = "Slices to import", description = "Determines which files should be imported based on the sorted and filtered list of files. The first index is 0. Duplicates are allowed." +
+    @SetJIPipeDocumentation(name = "Slices to import", description = "Determines which files should be imported based on the sorted and filtered list of files. The first index is 0. Duplicates are allowed." +
             " If left empty, all slices will be imported. ")
     @JIPipeParameter("slice-indices")
     public IntegerRange getSlicesToImport() {
@@ -236,7 +236,7 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
         this.slicesToImport = slicesToImport;
     }
 
-    @JIPipeDocumentation(name = "Ignore invalid slice indices", description = "Used if you limit the imported slices via 'Slices to import'. If enabled, all invalid indices (e.g. negative ones or ones larger than the list) are ignored.")
+    @SetJIPipeDocumentation(name = "Ignore invalid slice indices", description = "Used if you limit the imported slices via 'Slices to import'. If enabled, all invalid indices (e.g. negative ones or ones larger than the list) are ignored.")
     @JIPipeParameter("ignore-invalid-slice-indices")
     public boolean isIgnoreInvalidSlices() {
         return ignoreInvalidSlices;

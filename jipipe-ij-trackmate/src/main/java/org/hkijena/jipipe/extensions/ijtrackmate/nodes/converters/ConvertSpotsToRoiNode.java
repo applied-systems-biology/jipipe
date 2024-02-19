@@ -3,8 +3,8 @@ package org.hkijena.jipipe.extensions.ijtrackmate.nodes.converters;
 import fiji.plugin.trackmate.Spot;
 import ij.ImagePlus;
 import ij.gui.EllipseRoi;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -25,10 +25,10 @@ import java.awt.*;
 import java.util.Map;
 import java.util.Optional;
 
-@JIPipeDocumentation(name = "Convert spots to ROI", description = "Converts TrackMate spots into ROI")
-@JIPipeNode(menuPath = "Tracking\nConvert", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = SpotsCollectionData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Convert spots to ROI", description = "Converts TrackMate spots into ROI")
+@DefineJIPipeNode(menuPath = "Tracking\nConvert", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = SpotsCollectionData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class ConvertSpotsToRoiNode extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalJIPipeExpressionParameter roiName = new OptionalJIPipeExpressionParameter(false, "\"ID\" + id");
@@ -117,7 +117,7 @@ public class ConvertSpotsToRoiNode extends JIPipeSimpleIteratingAlgorithm {
         return result;
     }
 
-    @JIPipeDocumentation(name = "Fill color", description = "Allows to change the fill color when rendered as RGB and within ImageJ. " + ColorUtils.PARSE_COLOR_DESCRIPTION)
+    @SetJIPipeDocumentation(name = "Fill color", description = "Allows to change the fill color when rendered as RGB and within ImageJ. " + ColorUtils.PARSE_COLOR_DESCRIPTION)
     @JIPipeParameter("fill-color")
     @JIPipeExpressionParameterVariable(fromClass = SpotFeatureVariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
@@ -133,7 +133,7 @@ public class ConvertSpotsToRoiNode extends JIPipeSimpleIteratingAlgorithm {
         this.fillColor = fillColor;
     }
 
-    @JIPipeDocumentation(name = "Line color", description = "Allows to change the line color when rendered as RGB and within ImageJ. " + ColorUtils.PARSE_COLOR_DESCRIPTION)
+    @SetJIPipeDocumentation(name = "Line color", description = "Allows to change the line color when rendered as RGB and within ImageJ. " + ColorUtils.PARSE_COLOR_DESCRIPTION)
     @JIPipeParameter("line-color")
     @JIPipeExpressionParameterVariable(fromClass = SpotFeatureVariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
@@ -149,7 +149,7 @@ public class ConvertSpotsToRoiNode extends JIPipeSimpleIteratingAlgorithm {
         this.lineColor = lineColor;
     }
 
-    @JIPipeDocumentation(name = "Line width", description = "Allows to change the line width when rendered as RGB and within ImageJ. The annotation value is converted to an integer.")
+    @SetJIPipeDocumentation(name = "Line width", description = "Allows to change the line width when rendered as RGB and within ImageJ. The annotation value is converted to an integer.")
     @JIPipeParameter("line-width")
     @JIPipeExpressionParameterVariable(fromClass = SpotFeatureVariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
@@ -165,7 +165,7 @@ public class ConvertSpotsToRoiNode extends JIPipeSimpleIteratingAlgorithm {
         this.lineWidth = lineWidth;
     }
 
-    @JIPipeDocumentation(name = "ROI name", description = "Allows to change the ROI name")
+    @SetJIPipeDocumentation(name = "ROI name", description = "Allows to change the ROI name")
     @JIPipeParameter("roi-name")
     @JIPipeExpressionParameterVariable(fromClass = SpotFeatureVariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)

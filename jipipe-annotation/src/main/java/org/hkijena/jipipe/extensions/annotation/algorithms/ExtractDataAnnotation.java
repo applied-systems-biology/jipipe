@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -20,10 +20,10 @@ import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalStringParameter;
 
-@JIPipeDocumentation(name = "Extract data annotations", description = "Extracts a data annotation.")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class)
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Extract data annotations", description = "Extracts a data annotation.")
+@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
 public class ExtractDataAnnotation extends JIPipeSimpleIteratingAlgorithm {
 
     private StringQueryExpression annotationNameQuery = new StringQueryExpression();
@@ -73,7 +73,7 @@ public class ExtractDataAnnotation extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), dataAnnotation.getData(JIPipeData.class, progressInfo), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Extracted data annotation", description = "Determines which annotation is extracted. If multiple match, the first matching annotation column is used. ")
+    @SetJIPipeDocumentation(name = "Extracted data annotation", description = "Determines which annotation is extracted. If multiple match, the first matching annotation column is used. ")
     @JIPipeParameter("annotation-name")
     public StringQueryExpression getAnnotationNameQuery() {
         return annotationNameQuery;
@@ -84,7 +84,7 @@ public class ExtractDataAnnotation extends JIPipeSimpleIteratingAlgorithm {
         this.annotationNameQuery = annotationNameQuery;
     }
 
-    @JIPipeDocumentation(name = "Ignore missing data annotations", description = "If enabled, data rows with a missing data annotation are ignored.")
+    @SetJIPipeDocumentation(name = "Ignore missing data annotations", description = "If enabled, data rows with a missing data annotation are ignored.")
     @JIPipeParameter("ignore-missing-annotations")
     public boolean isIgnoreMissingAnnotations() {
         return ignoreMissingAnnotations;
@@ -95,7 +95,7 @@ public class ExtractDataAnnotation extends JIPipeSimpleIteratingAlgorithm {
         this.ignoreMissingAnnotations = ignoreMissingAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Keep other data annotations", description = "If enabled, existing data annotations that is not the targeted annotation are kept.")
+    @SetJIPipeDocumentation(name = "Keep other data annotations", description = "If enabled, existing data annotations that is not the targeted annotation are kept.")
     @JIPipeParameter("keep-other-data-annotations")
     public boolean isKeepOtherDataAnnotations() {
         return keepOtherDataAnnotations;
@@ -106,7 +106,7 @@ public class ExtractDataAnnotation extends JIPipeSimpleIteratingAlgorithm {
         this.keepOtherDataAnnotations = keepOtherDataAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Annotate with current data", description = "If enabled, the current (main) data is converted into an annotation of the specified name")
+    @SetJIPipeDocumentation(name = "Annotate with current data", description = "If enabled, the current (main) data is converted into an annotation of the specified name")
     @JIPipeParameter("annotate-with-current-data")
     public OptionalStringParameter getAnnotateWithCurrentData() {
         return annotateWithCurrentData;
@@ -117,7 +117,7 @@ public class ExtractDataAnnotation extends JIPipeSimpleIteratingAlgorithm {
         this.annotateWithCurrentData = annotateWithCurrentData;
     }
 
-    @JIPipeDocumentation(name = "Keep current data annotation", description = "If enabled, the targeted data annotation is kept. Otherwise it is removed.")
+    @SetJIPipeDocumentation(name = "Keep current data annotation", description = "If enabled, the targeted data annotation is kept. Otherwise it is removed.")
     @JIPipeParameter("keep-current-annotation")
     public boolean isKeepCurrentAnnotation() {
         return keepCurrentAnnotation;

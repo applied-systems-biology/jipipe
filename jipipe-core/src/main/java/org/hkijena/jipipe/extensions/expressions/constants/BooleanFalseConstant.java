@@ -13,10 +13,10 @@
 
 package org.hkijena.jipipe.extensions.expressions.constants;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionConstant;
 
-@JIPipeDocumentation(name = "Boolean FALSE", description = "A boolean value that evaluates to FALSE")
+@SetJIPipeDocumentation(name = "Boolean FALSE", description = "A boolean value that evaluates to FALSE")
 public class BooleanFalseConstant extends ExpressionConstant {
     public BooleanFalseConstant() {
         super("false", false);

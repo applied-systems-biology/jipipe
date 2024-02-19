@@ -18,7 +18,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -84,7 +84,7 @@ public class JIPipeAlgorithmCompendiumUI extends JIPipeCompendiumUI<JIPipeNodeIn
 
         // Write algorithm slot info
         builder.append("<table style=\"margin-top: 10px;\">");
-        for (JIPipeInputSlot slot : info.getInputSlots()) {
+        for (AddJIPipeInputSlot slot : info.getInputSlots()) {
             JIPipeDataInfo dataInfo = JIPipeDataInfo.getInstance(slot.value());
             builder.append("<tr>");
             builder.append("<td><p style=\"background-color:#27ae60; color:white;border:3px solid #27ae60;border-radius:5px;text-align:center;\">Input</p></td>");
@@ -96,7 +96,7 @@ public class JIPipeAlgorithmCompendiumUI extends JIPipeCompendiumUI<JIPipeNodeIn
             }
             builder.append("</td></tr>");
         }
-        for (JIPipeOutputSlot slot : info.getOutputSlots()) {
+        for (AddJIPipeOutputSlot slot : info.getOutputSlots()) {
             JIPipeDataInfo dataInfo = JIPipeDataInfo.getInstance(slot.value());
             builder.append("<tr>");
             builder.append("<td><p style=\"background-color:#da4453; color:white;border:3px solid #da4453;border-radius:5px;text-align:center;\">Output</p></td>");
@@ -130,7 +130,7 @@ public class JIPipeAlgorithmCompendiumUI extends JIPipeCompendiumUI<JIPipeNodeIn
             if (subParameters == algorithm)
                 continue;
             builder.append("## ").append(traversed.getSourceDocumentationName(subParameters)).append("\n\n");
-            JIPipeDocumentation documentation = traversed.getSourceDocumentation(subParameters);
+            SetJIPipeDocumentation documentation = traversed.getSourceDocumentation(subParameters);
             if (documentation != null) {
                 builder.append(DocumentationUtils.getDocumentationDescription(documentation)).append("\n\n");
             }

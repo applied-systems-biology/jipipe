@@ -9,7 +9,7 @@ public class JIPipeProjectPermissions extends AbstractJIPipeParameterCollection 
     private boolean preventAddingDeletingNodes = false;
     private boolean preventModifyingSlots = false;
 
-    @JIPipeDocumentation(name = "Prevent adding/deleting nodes", description = "If enabled, users cannot add or delete nodes or compartments. Use this for teaching environments.")
+    @SetJIPipeDocumentation(name = "Prevent adding/deleting nodes", description = "If enabled, users cannot add or delete nodes or compartments. Use this for teaching environments.")
     @JIPipeParameter("prevent-adding-deleting-nodes")
     @JsonGetter("prevent-adding-deleting-nodes")
     public boolean isPreventAddingDeletingNodes() {
@@ -22,7 +22,7 @@ public class JIPipeProjectPermissions extends AbstractJIPipeParameterCollection 
         this.preventAddingDeletingNodes = preventAddingDeletingNodes;
     }
 
-    @JIPipeDocumentation(name = "Prevent modifying slots", description = "If enabled, users cannot modify slots (add, delete, edit). " +
+    @SetJIPipeDocumentation(name = "Prevent modifying slots", description = "If enabled, users cannot modify slots (add, delete, edit). " +
             "They can still re-label them. Use this for teaching environments.")
     @JIPipeParameter("prevent-modifying-slots")
     @JsonGetter("prevent-modifying-slots")

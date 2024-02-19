@@ -20,9 +20,9 @@ import ij.plugin.filter.RankFilters;
 import ij.process.Blitter;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -41,15 +41,15 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
  * Segmenter node that thresholds via an auto threshold
  * Based on code from {@link fiji.threshold.Auto_Local_Threshold}
  */
-@JIPipeDocumentation(name = "Local auto threshold 2D (Phansalkar)", description = "Applies a local auto-thresholding algorithm. " +
+@SetJIPipeDocumentation(name = "Local auto threshold 2D (Phansalkar)", description = "Applies a local auto-thresholding algorithm. " +
         "The threshold is calculated as <code>t = mean * (1 + p * exp(-q * mean) + k * ((stdev / r) - 1))</code>.\n\n" +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeNode(menuPath = "Threshold\nLocal", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
-@JIPipeCitation("Phansalskar N. et al. Adaptive local thresholding for detection of nuclei in diversity stained cytology images. " +
+@DefineJIPipeNode(menuPath = "Threshold\nLocal", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", create = true)
+@AddJIPipeCitation("Phansalskar N. et al. Adaptive local thresholding for detection of nuclei in diversity stained cytology images. " +
         "International Conference on Communications and Signal Processing (ICCSP), 2011, 218 - 220.")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust\nAuto Local Threshold")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust\nAuto Local Threshold")
 public class PhansalkarLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private boolean darkBackground = true;
     private double k = 0.25;
@@ -151,7 +151,7 @@ public class PhansalkarLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIterati
         return iPlus;
     }
 
-    @JIPipeDocumentation(name = "K", description = "Value of the parameter 'k' in the threshold formula (see Phansalskar et al., 2011). A recommended value is 0.25.")
+    @SetJIPipeDocumentation(name = "K", description = "Value of the parameter 'k' in the threshold formula (see Phansalskar et al., 2011). A recommended value is 0.25.")
     @JIPipeParameter("k")
     public double getK() {
         return k;
@@ -162,7 +162,7 @@ public class PhansalkarLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIterati
         this.k = k;
     }
 
-    @JIPipeDocumentation(name = "R", description = "Value of the parameter 'r' in the threshold formula (see Phansalskar et al., 2011). A recommended value is 0.5.")
+    @SetJIPipeDocumentation(name = "R", description = "Value of the parameter 'r' in the threshold formula (see Phansalskar et al., 2011). A recommended value is 0.5.")
     @JIPipeParameter("r")
     public double getR() {
         return r;
@@ -173,7 +173,7 @@ public class PhansalkarLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIterati
         this.r = r;
     }
 
-    @JIPipeDocumentation(name = "P", description = "Value of the parameter 'p' in the threshold formula (see Phansalskar et al., 2011). A recommended value is 2.")
+    @SetJIPipeDocumentation(name = "P", description = "Value of the parameter 'p' in the threshold formula (see Phansalskar et al., 2011). A recommended value is 2.")
     @JIPipeParameter("p")
     public double getP() {
         return p;
@@ -184,7 +184,7 @@ public class PhansalkarLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIterati
         this.p = p;
     }
 
-    @JIPipeDocumentation(name = "Q", description = "Value of the parameter 'q' in the threshold formula (see Phansalskar et al., 2011). A recommended value is 10.")
+    @SetJIPipeDocumentation(name = "Q", description = "Value of the parameter 'q' in the threshold formula (see Phansalskar et al., 2011). A recommended value is 10.")
     @JIPipeParameter("q")
     public double getQ() {
         return q;
@@ -195,7 +195,7 @@ public class PhansalkarLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIterati
         this.q = q;
     }
 
-    @JIPipeDocumentation(name = "Radius", description = "The radius of the circular local window.")
+    @SetJIPipeDocumentation(name = "Radius", description = "The radius of the circular local window.")
     @JIPipeParameter("radius")
     public int getRadius() {
         return radius;
@@ -228,7 +228,7 @@ public class PhansalkarLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIterati
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Dark background", description = "If the background color is dark. Disable this if your image has a bright background.")
+    @SetJIPipeDocumentation(name = "Dark background", description = "If the background color is dark. Disable this if your image has a bright background.")
     @JIPipeParameter("dark-background")
     public boolean isDarkBackground() {
         return darkBackground;

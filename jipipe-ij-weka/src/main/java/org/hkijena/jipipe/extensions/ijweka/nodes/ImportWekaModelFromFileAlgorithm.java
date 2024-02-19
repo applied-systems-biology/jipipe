@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.ijweka.nodes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
@@ -14,11 +14,11 @@ import org.hkijena.jipipe.extensions.ijweka.datatypes.WekaModelData;
 import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 import trainableSegmentation.WekaSegmentation;
 
-@JIPipeDocumentation(name = "Import Weka model", description = "Imports a Trainable Weka Segmentation model from a *.model/*.arff file")
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeInputSlot(value = FileData.class, slotName = "Model file", description = "The model file in *.model format", autoCreate = true)
-@JIPipeInputSlot(value = FileData.class, slotName = "Data file", description = "The data file in *.arff format", autoCreate = true, optional = true)
-@JIPipeOutputSlot(value = WekaModelData.class, slotName = "Output", description = "The model", autoCreate = true)
+@SetJIPipeDocumentation(name = "Import Weka model", description = "Imports a Trainable Weka Segmentation model from a *.model/*.arff file")
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = FileData.class, slotName = "Model file", description = "The model file in *.model format", create = true)
+@AddJIPipeInputSlot(value = FileData.class, slotName = "Data file", description = "The data file in *.arff format", create = true, optional = true)
+@AddJIPipeOutputSlot(value = WekaModelData.class, slotName = "Output", description = "The model", create = true)
 public class ImportWekaModelFromFileAlgorithm extends JIPipeIteratingAlgorithm {
 
     private boolean processing3D;
@@ -48,7 +48,7 @@ public class ImportWekaModelFromFileAlgorithm extends JIPipeIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Is processing 3D data", description = "If enabled, indicates that the model is a 3D model. <strong>Please ensure to set the correct value; otherwise " +
+    @SetJIPipeDocumentation(name = "Is processing 3D data", description = "If enabled, indicates that the model is a 3D model. <strong>Please ensure to set the correct value; otherwise " +
             "the Weka model will fail to import or behave in unexpected ways</strong>")
     @JIPipeParameter(value = "is-processing-3d", important = true)
     public boolean isProcessing3D() {

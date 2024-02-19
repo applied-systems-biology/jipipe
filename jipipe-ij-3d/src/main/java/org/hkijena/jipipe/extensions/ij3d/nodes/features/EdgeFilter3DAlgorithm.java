@@ -4,9 +4,9 @@ import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import mcib3d.image3d.ImageHandler;
 import mcib3d.image3d.processing.CannyEdge3D;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -22,15 +22,15 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import java.util.HashMap;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "3D edge filter", description = "3D Canny-Deriche edge detection filter. " +
+@SetJIPipeDocumentation(name = "3D edge filter", description = "3D Canny-Deriche edge detection filter. " +
         "Will compute the gradients of the image based on the Canny edge detector. ")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Features")
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Edges", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Edges X", autoCreate = true, description = "Edges in the X direction")
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Edges Y", autoCreate = true, description = "Edges in the Y direction")
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Edges Z", autoCreate = true, description = "Edges in the Z direction")
-@JIPipeCitation("https://mcib3d.frama.io/3d-suite-imagej/plugins/Filters/3D-Edge-and-Symmetry-Filter/")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Features")
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Edges", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Edges X", create = true, description = "Edges in the X direction")
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Edges Y", create = true, description = "Edges in the Y direction")
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Edges Z", create = true, description = "Edges in the Z direction")
+@AddJIPipeCitation("https://mcib3d.frama.io/3d-suite-imagej/plugins/Filters/3D-Edge-and-Symmetry-Filter/")
 public class EdgeFilter3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private double alpha = 0.5;
@@ -76,7 +76,7 @@ public class EdgeFilter3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData("Edges Z", new ImagePlusGreyscaleData(edgeZ), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Alpha", description = "The smoothing in canny edge detection, the smaller the value, the smoother the edges.")
+    @SetJIPipeDocumentation(name = "Alpha", description = "The smoothing in canny edge detection, the smaller the value, the smoother the edges.")
     @JIPipeParameter("alpha")
     public double getAlpha() {
         return alpha;

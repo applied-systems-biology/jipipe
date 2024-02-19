@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.ui.quickrun;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
@@ -44,7 +44,7 @@ public class QuickRunSettings extends AbstractJIPipeParameterCollection {
         outputPath = RuntimeSettings.generateTempDirectory("QuickRun");
     }
 
-    @JIPipeDocumentation(name = "Output path", description = "The path where the results are stored. " +
+    @SetJIPipeDocumentation(name = "Output path", description = "The path where the results are stored. " +
             "By default, this is a temporary directory. But for some cases, the result data might be too large for a temporary directory. " +
             "In this case, please select a directory that can hold the data.")
     @JIPipeParameter(value = "output-path", uiOrder = -999)
@@ -58,7 +58,7 @@ public class QuickRunSettings extends AbstractJIPipeParameterCollection {
         this.outputPath = outputPath;
     }
 
-    @JIPipeDocumentation(name = "Load from cache", description = "If enabled, the results are automatically loaded from a cache if possible.")
+    @SetJIPipeDocumentation(name = "Load from cache", description = "If enabled, the results are automatically loaded from a cache if possible.")
     @JIPipeParameter("load-from-cache")
     public boolean isLoadFromCache() {
         return loadFromCache;
@@ -69,7 +69,7 @@ public class QuickRunSettings extends AbstractJIPipeParameterCollection {
         this.loadFromCache = loadFromCache;
     }
 
-    @JIPipeDocumentation(name = "Save to cache", description = "If enabled, the results and intermediate results are stored into a cache. " +
+    @SetJIPipeDocumentation(name = "Save to cache", description = "If enabled, the results and intermediate results are stored into a cache. " +
             "This cache is limited by the RAM. Will be ignored if the global JIPipe cache settings are disabled.")
     @JIPipeParameter("store-to-cache")
     public boolean isStoreToCache() {
@@ -81,7 +81,7 @@ public class QuickRunSettings extends AbstractJIPipeParameterCollection {
         this.storeToCache = storeToCache;
     }
 
-    @JIPipeDocumentation(name = "Number of threads", description = "Maximum number of threads that are allocated to the tasks. " +
+    @SetJIPipeDocumentation(name = "Number of threads", description = "Maximum number of threads that are allocated to the tasks. " +
             "Please note that the actual allocation depends on the algorithms.")
     @JIPipeParameter("num-threads")
     public int getNumThreads() {
@@ -93,7 +93,7 @@ public class QuickRunSettings extends AbstractJIPipeParameterCollection {
         this.numThreads = numThreads;
     }
 
-    @JIPipeDocumentation(name = "Save to output folder", description = "If enabled, outputs are saved.")
+    @SetJIPipeDocumentation(name = "Save to output folder", description = "If enabled, outputs are saved.")
     @JIPipeParameter("save-outputs")
     public boolean isSaveToDisk() {
         return saveToDisk;
@@ -104,7 +104,7 @@ public class QuickRunSettings extends AbstractJIPipeParameterCollection {
         this.saveToDisk = saveToDisk;
     }
 
-    @JIPipeDocumentation(name = "Exclude selected algorithm", description = "If enabled, only dependency algorithms are executed. " +
+    @SetJIPipeDocumentation(name = "Exclude selected algorithm", description = "If enabled, only dependency algorithms are executed. " +
             "The currently selected algorithm is skipped. This might be useful when debugging the current algorithm.")
     @JIPipeParameter("exclude-selected")
     public boolean isExcludeSelected() {
@@ -116,7 +116,7 @@ public class QuickRunSettings extends AbstractJIPipeParameterCollection {
         this.excludeSelected = excludeSelected;
     }
 
-    @JIPipeDocumentation(name = "Store intermediate results", description = "If enabled, all intermediate results are also saved to disk/cache")
+    @SetJIPipeDocumentation(name = "Store intermediate results", description = "If enabled, all intermediate results are also saved to disk/cache")
     @JIPipeParameter("store-intermediate-results")
     public boolean isStoreIntermediateResults() {
         return storeIntermediateResults;

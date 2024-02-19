@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
@@ -35,14 +35,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Bio-Formats exporter", description = "Writes the OME images into an *.ome.tif file.")
-@JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
-@JIPipeInputSlot(value = OMEImageData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = FileData.class, slotName = "Output", autoCreate = true)
-@JIPipeCitation("Melissa Linkert, Curtis T. Rueden, Chris Allan, Jean-Marie Burel, Will Moore, Andrew Patterson, Brian Loranger, Josh Moore, " +
+@SetJIPipeDocumentation(name = "Bio-Formats exporter", description = "Writes the OME images into an *.ome.tif file.")
+@DefineJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
+@AddJIPipeInputSlot(value = OMEImageData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = FileData.class, slotName = "Output", create = true)
+@AddJIPipeCitation("Melissa Linkert, Curtis T. Rueden, Chris Allan, Jean-Marie Burel, Will Moore, Andrew Patterson, Brian Loranger, Josh Moore, " +
         "Carlos Neves, Donald MacDonald, Aleksandra Tarkowska, Caitlin Sticco, Emma Hill, Mike Rossner, Kevin W. Eliceiri, " +
         "and Jason R. Swedlow (2010) Metadata matters: access to image data in the real world. The Journal of Cell Biology 189(5), 777-782")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nBio-Formats", aliasName = "Bio-Formats Exporter")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nBio-Formats", aliasName = "Bio-Formats Exporter")
 public class BioFormatsExporter2 extends JIPipeSimpleIteratingAlgorithm {
     private OMEExporterSettings exporterSettings = new OMEExporterSettings();
     private DataExportExpressionParameter filePath = new DataExportExpressionParameter();
@@ -85,13 +85,13 @@ public class BioFormatsExporter2 extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new FileData(outputPath), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Exporter settings", description = "The following settings control how files are exported:")
+    @SetJIPipeDocumentation(name = "Exporter settings", description = "The following settings control how files are exported:")
     @JIPipeParameter("ome-exporter-settings")
     public OMEExporterSettings getExporterSettings() {
         return exporterSettings;
     }
 
-    @JIPipeDocumentation(name = "File path", description = "Expression that generates the output file path")
+    @SetJIPipeDocumentation(name = "File path", description = "Expression that generates the output file path")
     @JIPipeParameter("file-path")
     public DataExportExpressionParameter getFilePath() {
         return filePath;

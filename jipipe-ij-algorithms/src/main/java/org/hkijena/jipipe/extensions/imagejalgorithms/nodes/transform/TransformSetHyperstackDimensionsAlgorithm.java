@@ -1,8 +1,8 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.transform;
 
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -19,12 +19,12 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImagePlusPropertiesExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.BooleanParameterSettings;
 
-@JIPipeDocumentation(name = "Set hyperstack dimensions", description = "Sets the exact hyperstack dimensions of the incoming images. If you provide " +
+@SetJIPipeDocumentation(name = "Set hyperstack dimensions", description = "Sets the exact hyperstack dimensions of the incoming images. If you provide " +
         "a lower size, planes will be removed. If you provide a larger dimension, planes are either set to black or copied from the slices with the highest index.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Transform")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nHyperstacks")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Transform")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nHyperstacks")
 public class TransformSetHyperstackDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter zAxis = new JIPipeExpressionParameter("num_z");
@@ -59,7 +59,7 @@ public class TransformSetHyperstackDimensionsAlgorithm extends JIPipeSimpleItera
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(outputImage), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Z axis", description = "Expression that returns the size of the Z axis")
+    @SetJIPipeDocumentation(name = "Z axis", description = "Expression that returns the size of the Z axis")
     @JIPipeParameter(value = "z-axis", uiOrder = -50)
     @JIPipeExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getzAxis() {
@@ -71,7 +71,7 @@ public class TransformSetHyperstackDimensionsAlgorithm extends JIPipeSimpleItera
         this.zAxis = zAxis;
     }
 
-    @JIPipeDocumentation(name = "C axis", description = "Expression that returns the size of the channel axis")
+    @SetJIPipeDocumentation(name = "C axis", description = "Expression that returns the size of the channel axis")
     @JIPipeParameter(value = "c-axis", uiOrder = -49)
     @JIPipeExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getcAxis() {
@@ -83,7 +83,7 @@ public class TransformSetHyperstackDimensionsAlgorithm extends JIPipeSimpleItera
         this.cAxis = cAxis;
     }
 
-    @JIPipeDocumentation(name = "T axis", description = "Expression that returns the size of the time axis")
+    @SetJIPipeDocumentation(name = "T axis", description = "Expression that returns the size of the time axis")
     @JIPipeParameter(value = "t-axis", uiOrder = -48)
     @JIPipeExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter gettAxis() {
@@ -95,7 +95,7 @@ public class TransformSetHyperstackDimensionsAlgorithm extends JIPipeSimpleItera
         this.tAxis = tAxis;
     }
 
-    @JIPipeDocumentation(name = "Newly generated slices", description = "Determines how new slices are generated, if needed. You can either repeat the last available slice or make new slices zero/black.")
+    @SetJIPipeDocumentation(name = "Newly generated slices", description = "Determines how new slices are generated, if needed. You can either repeat the last available slice or make new slices zero/black.")
     @BooleanParameterSettings(comboBoxStyle = true, trueLabel = "Repeat last available", falseLabel = "Create empty slice")
     @JIPipeParameter("copy-slices")
     public boolean isCopySlices() {

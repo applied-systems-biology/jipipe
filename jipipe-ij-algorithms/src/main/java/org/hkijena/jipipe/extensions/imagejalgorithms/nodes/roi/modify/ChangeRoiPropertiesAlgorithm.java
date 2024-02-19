@@ -15,8 +15,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.modify;
 
 import ij.gui.Roi;
 import ij.plugin.RoiScaler;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -33,10 +33,10 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@JIPipeDocumentation(name = "Change ROI properties", description = "Sets properties of all Roi to a user-defined value.")
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Change ROI properties", description = "Sets properties of all Roi to a user-defined value.")
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalStringParameter roiName = new OptionalStringParameter();
@@ -130,7 +130,7 @@ public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm
         iterationStep.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Location (X)", description = "The X location")
+    @SetJIPipeDocumentation(name = "Location (X)", description = "The X location")
     @JIPipeParameter("position-x")
     public OptionalDoubleParameter getPositionX() {
         return positionX;
@@ -141,7 +141,7 @@ public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.positionX = positionX;
     }
 
-    @JIPipeDocumentation(name = "Location (Y)", description = "The Y location")
+    @SetJIPipeDocumentation(name = "Location (Y)", description = "The Y location")
     @JIPipeParameter("position-y")
     public OptionalDoubleParameter getPositionY() {
         return positionY;
@@ -152,7 +152,7 @@ public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.positionY = positionY;
     }
 
-    @JIPipeDocumentation(name = "Slice position (Z)", description = "Allows to relocate the ROI to a different Z-position. " +
+    @SetJIPipeDocumentation(name = "Slice position (Z)", description = "Allows to relocate the ROI to a different Z-position. " +
             "The first index is 1. If set to zero, the ROI is located on all slices.")
     @JIPipeParameter("position-z")
     public OptionalIntegerParameter getPositionZ() {
@@ -164,7 +164,7 @@ public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.positionZ = positionZ;
     }
 
-    @JIPipeDocumentation(name = "Slice position (Channel)", description = "Allows to relocate the ROI to a different channel-position. Please note " +
+    @SetJIPipeDocumentation(name = "Slice position (Channel)", description = "Allows to relocate the ROI to a different channel-position. Please note " +
             "that 'Channel' refers to an image slice and not to a pixel channel. " +
             "The first index is 1. If set to zero, the ROI is located on all channels.")
     @JIPipeParameter("position-c")
@@ -177,7 +177,7 @@ public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.positionC = positionC;
     }
 
-    @JIPipeDocumentation(name = "Slice position (Frame)", description = "Allows to relocate the ROI to a different frame/time-position. " +
+    @SetJIPipeDocumentation(name = "Slice position (Frame)", description = "Allows to relocate the ROI to a different frame/time-position. " +
             "The first index is 1. If set to zero, the ROI is located on all frames.")
     @JIPipeParameter("position-t")
     public OptionalIntegerParameter getPositionT() {
@@ -189,7 +189,7 @@ public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.positionT = positionT;
     }
 
-    @JIPipeDocumentation(name = "Fill color", description = "Allows to change the fill color when rendered as RGB and within ImageJ")
+    @SetJIPipeDocumentation(name = "Fill color", description = "Allows to change the fill color when rendered as RGB and within ImageJ")
     @JIPipeParameter("fill-color")
     public OptionalColorParameter getFillColor() {
         return fillColor;
@@ -200,7 +200,7 @@ public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.fillColor = fillColor;
     }
 
-    @JIPipeDocumentation(name = "Line color", description = "Allows to change the line color when rendered as RGB and within ImageJ")
+    @SetJIPipeDocumentation(name = "Line color", description = "Allows to change the line color when rendered as RGB and within ImageJ")
     @JIPipeParameter("line-color")
     public OptionalColorParameter getLineColor() {
         return lineColor;
@@ -211,7 +211,7 @@ public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.lineColor = lineColor;
     }
 
-    @JIPipeDocumentation(name = "Line width", description = "Allows to change the line width when rendered as RGB and within ImageJ")
+    @SetJIPipeDocumentation(name = "Line width", description = "Allows to change the line width when rendered as RGB and within ImageJ")
     @JIPipeParameter("line-width")
     public OptionalDoubleParameter getLineWidth() {
         return lineWidth;
@@ -222,7 +222,7 @@ public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.lineWidth = lineWidth;
     }
 
-    @JIPipeDocumentation(name = "ROI name", description = "Allows to change the ROI name")
+    @SetJIPipeDocumentation(name = "ROI name", description = "Allows to change the ROI name")
     @JIPipeParameter("roi-name")
     public OptionalStringParameter getRoiName() {
         return roiName;
@@ -233,7 +233,7 @@ public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.roiName = roiName;
     }
 
-    @JIPipeDocumentation(name = "Scale X", description = "Scales the ROI. Please note that the scale will not be saved inside the ROI. Must be a number.")
+    @SetJIPipeDocumentation(name = "Scale X", description = "Scales the ROI. Please note that the scale will not be saved inside the ROI. Must be a number.")
     @JIPipeParameter("scale-x")
     public OptionalDoubleParameter getScaleX() {
         return scaleX;
@@ -244,7 +244,7 @@ public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.scaleX = scaleX;
     }
 
-    @JIPipeDocumentation(name = "Scale Y", description = "Scales the ROI. Please note that the scale will not be saved inside the ROI. Must be a number.")
+    @SetJIPipeDocumentation(name = "Scale Y", description = "Scales the ROI. Please note that the scale will not be saved inside the ROI. Must be a number.")
     @JIPipeParameter("scale-y")
     public OptionalDoubleParameter getScaleY() {
         return scaleY;
@@ -255,7 +255,7 @@ public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.scaleY = scaleY;
     }
 
-    @JIPipeDocumentation(name = "Center scale", description = "If true, each ROI is scaled relative to its center.")
+    @SetJIPipeDocumentation(name = "Center scale", description = "If true, each ROI is scaled relative to its center.")
     @JIPipeParameter("center-scale")
     public boolean getCenterScale() {
         return centerScale;

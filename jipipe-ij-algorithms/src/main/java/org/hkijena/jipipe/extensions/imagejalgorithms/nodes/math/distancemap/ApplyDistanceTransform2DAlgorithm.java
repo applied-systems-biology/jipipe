@@ -15,8 +15,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.math.distancemap;
 
 import ij.ImagePlus;
 import ij.plugin.filter.EDM;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -33,12 +33,12 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 /**
  * Wrapper around {@link EDM}
  */
-@JIPipeDocumentation(name = "Euclidean distance transform 2D", description = "Applies a euclidean distance transform on binary images." +
+@SetJIPipeDocumentation(name = "Euclidean distance transform 2D", description = "Applies a euclidean distance transform on binary images." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeNode(menuPath = "Math\nDistance map", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nBinary", aliasName = "Distance Map")
+@DefineJIPipeNode(menuPath = "Math\nDistance map", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nBinary", aliasName = "Distance Map")
 public class ApplyDistanceTransform2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private int backgroundValue = 0;
@@ -70,7 +70,7 @@ public class ApplyDistanceTransform2DAlgorithm extends JIPipeSimpleIteratingAlgo
         return true;
     }
 
-    @JIPipeDocumentation(name = "Background value", description = "Pixels in the input with this value are interpreted as background.")
+    @SetJIPipeDocumentation(name = "Background value", description = "Pixels in the input with this value are interpreted as background.")
     @JIPipeParameter("background-value")
     public int getBackgroundValue() {
         return backgroundValue;
@@ -81,7 +81,7 @@ public class ApplyDistanceTransform2DAlgorithm extends JIPipeSimpleIteratingAlgo
         this.backgroundValue = backgroundValue;
     }
 
-    @JIPipeDocumentation(name = "Edges are background", description = "Whether out-of-image pixels are considered background")
+    @SetJIPipeDocumentation(name = "Edges are background", description = "Whether out-of-image pixels are considered background")
     @JIPipeParameter("edges-are-background")
     public boolean isEdgesAreBackground() {
         return edgesAreBackground;

@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.forms.utils;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -23,7 +23,7 @@ public class SingleAnnotationIOSettings extends AbstractJIPipeParameterCollectio
         this.annotationMergeStrategy = other.annotationMergeStrategy;
     }
 
-    @JIPipeDocumentation(name = "Output annotation", description = "Determines into which annotation the user input is written.")
+    @SetJIPipeDocumentation(name = "Output annotation", description = "Determines into which annotation the user input is written.")
     @JIPipeParameter("output-annotation")
     public OptionalAnnotationNameParameter getOutputAnnotation() {
         return outputAnnotation;
@@ -34,7 +34,7 @@ public class SingleAnnotationIOSettings extends AbstractJIPipeParameterCollectio
         this.outputAnnotation = outputAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Input annotation", description = "The annotation used to override the initial value. If the annotation does not exist, " +
+    @SetJIPipeDocumentation(name = "Input annotation", description = "The annotation used to override the initial value. If the annotation does not exist, " +
             "the standard initial value is used.")
     @JIPipeParameter("input-annotation")
     public OptionalAnnotationNameParameter getInputAnnotation() {
@@ -46,7 +46,7 @@ public class SingleAnnotationIOSettings extends AbstractJIPipeParameterCollectio
         this.inputAnnotation = inputAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Merge output annotation", description = "Determines how the output annotation is merged with existing values.")
+    @SetJIPipeDocumentation(name = "Merge output annotation", description = "Determines how the output annotation is merged with existing values.")
     @JIPipeParameter("merge-strategy")
     public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {
         return annotationMergeStrategy;

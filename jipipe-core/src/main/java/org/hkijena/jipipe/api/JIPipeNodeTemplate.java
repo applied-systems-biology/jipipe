@@ -75,7 +75,7 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
         return SOURCE_EXTENSION.equals(source);
     }
 
-    @JIPipeDocumentation(name = "Name", description = "Name of the template")
+    @SetJIPipeDocumentation(name = "Name", description = "Name of the template")
     @JIPipeParameter(value = "name", uiOrder = -100)
     @JsonGetter("name")
     public String getName() {
@@ -88,7 +88,7 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
         this.name = name;
     }
 
-    @JIPipeDocumentation(name = "Description", description = "A custom description")
+    @SetJIPipeDocumentation(name = "Description", description = "A custom description")
     @JIPipeParameter(value = "description", uiOrder = -90)
     @JsonGetter("description")
     public HTMLText getDescription() {
@@ -101,7 +101,7 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
         this.description = description;
     }
 
-    @JIPipeDocumentation(name = "Menu path", description = "The path inside the 'Templates' menu")
+    @SetJIPipeDocumentation(name = "Menu path", description = "The path inside the 'Templates' menu")
     @JIPipeParameter(value = "menu-path", uiOrder = -70)
     @JsonGetter("menu-path")
     public StringList getMenuPath() {
@@ -114,7 +114,7 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
         this.menuPath = menuPath;
     }
 
-    @JIPipeDocumentation(name = "Icon", description = "The icon assigned to the menu entry")
+    @SetJIPipeDocumentation(name = "Icon", description = "The icon assigned to the menu entry")
     @JIPipeParameter(value = "icon", uiOrder = -80)
     @JsonGetter("icon")
     public IconRef getIcon() {
@@ -127,7 +127,7 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
         this.icon = icon;
     }
 
-    @JIPipeDocumentation(name = "Fill color", description = "The fill color of the icon shown inside the template list")
+    @SetJIPipeDocumentation(name = "Fill color", description = "The fill color of the icon shown inside the template list")
     @JIPipeParameter(value = "fill-color", uiOrder = -50)
     @JsonGetter("fill-color")
     public Color getFillColor() {
@@ -140,7 +140,7 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
         this.fillColor = fillColor;
     }
 
-    @JIPipeDocumentation(name = "Border color", description = "The border color of the icon shown inside the template list")
+    @SetJIPipeDocumentation(name = "Border color", description = "The border color of the icon shown inside the template list")
     @JIPipeParameter(value = "border-color", uiOrder = -40)
     @JsonGetter("border-color")
     public Color getBorderColor() {
@@ -153,7 +153,7 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
         this.borderColor = borderColor;
     }
 
-    @JIPipeDocumentation(name = "Data", description = "The data contained inside the node template. Must be JSON representation of a graph.")
+    @SetJIPipeDocumentation(name = "Data", description = "The data contained inside the node template. Must be JSON representation of a graph.")
     @JsonGetter("data")
     @JIPipeParameter(value = "data", uiOrder = 999)
     @StringParameterSettings(monospace = true, multiline = true, visible = false)
@@ -168,7 +168,7 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
         this.data = data;
     }
 
-    @JIPipeDocumentation(name = "Source", description = "Used for assigning the node templates to a source (e.g., remote repository). You can leave this parameter alone.")
+    @SetJIPipeDocumentation(name = "Source", description = "Used for assigning the node templates to a source (e.g., remote repository). You can leave this parameter alone.")
     @JIPipeParameter(value = "source")
     @StringParameterSettings(monospace = true)
     public String getSource() {

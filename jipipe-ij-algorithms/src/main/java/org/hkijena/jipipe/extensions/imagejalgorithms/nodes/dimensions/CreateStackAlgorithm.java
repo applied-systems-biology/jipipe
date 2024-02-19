@@ -15,8 +15,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.dimensions;
 
 import ij.ImagePlus;
 import ij.ImageStack;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
@@ -38,13 +38,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-@JIPipeDocumentation(name = "Create 3D stack", description = "Merges 2D image planes into a 3D stack. Data annotations are used to put " +
+@SetJIPipeDocumentation(name = "Create 3D stack", description = "Merges 2D image planes into a 3D stack. Data annotations are used to put " +
         "images into groups. All images in a group are then merged into a 3D stack. The order of the stack slices is determined by the 'Slice index annotation' " +
         "that is ignored while defining the groups.")
-@JIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlus3DData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Images to Stack")
+@DefineJIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlus3DData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Images to Stack")
 public class CreateStackAlgorithm extends JIPipeMergingAlgorithm {
 
     private String counterAnnotation = "Slice";
@@ -116,7 +116,7 @@ public class CreateStackAlgorithm extends JIPipeMergingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Slice index annotation",
+    @SetJIPipeDocumentation(name = "Slice index annotation",
             description = "Data annotation that is used as reference for ordering the slices. Annotation values are lexicographically sorted.")
     @JIPipeParameter("counter-annotation-type")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
@@ -129,7 +129,7 @@ public class CreateStackAlgorithm extends JIPipeMergingAlgorithm {
         this.counterAnnotation = counterAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Output dimension", description = "Determines in which dimension the stack grows. You can choose between Z (default), channel, and time")
+    @SetJIPipeDocumentation(name = "Output dimension", description = "Determines in which dimension the stack grows. You can choose between Z (default), channel, and time")
     @JIPipeParameter("output-dimension")
     public HyperstackDimension getOutputDimension() {
         return outputDimension;

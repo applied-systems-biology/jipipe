@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.api.grouping;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceAccessGroupList;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
@@ -118,7 +118,7 @@ public class JsonAlgorithm extends GraphWrapperAlgorithm implements JIPipeCustom
         return result;
     }
 
-    @JIPipeDocumentation(name = "Input management", description = "Only used if the graph iteration mode is not set to 'Pass data through'. " +
+    @SetJIPipeDocumentation(name = "Input management", description = "Only used if the graph iteration mode is not set to 'Pass data through'. " +
             "This algorithm can have multiple inputs. This means that JIPipe has to match incoming data into batches via metadata annotations. " +
             "The following settings allow you to control which columns are used as reference to organize data.")
     @JIPipeParameter(value = "jipipe:data-batch-generation", collapsed = true)
@@ -134,7 +134,7 @@ public class JsonAlgorithm extends GraphWrapperAlgorithm implements JIPipeCustom
         return super.isParameterUIVisible(tree, subParameter);
     }
 
-    @JIPipeDocumentation(name = "Graph iteration mode", description = "Determines how the wrapped graph is iterated:" +
+    @SetJIPipeDocumentation(name = "Graph iteration mode", description = "Determines how the wrapped graph is iterated:" +
             "<ul>" +
             "<li>The data can be passed through. This means that the wrapped graph receives all data as-is and will be executed once.</li>" +
             "<li>The wrapped graph can be executed per data batch. Here you can choose between an iterative data batch (one item per slot) " +

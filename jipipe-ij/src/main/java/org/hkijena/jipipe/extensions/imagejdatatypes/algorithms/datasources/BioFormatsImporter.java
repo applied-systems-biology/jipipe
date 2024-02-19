@@ -23,9 +23,9 @@ import loci.plugins.in.ImporterOptions;
 import loci.plugins.util.WindowTools;
 import ome.xml.meta.OMEXMLMetadata;
 import ome.xml.model.enums.DimensionOrder;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -58,14 +58,14 @@ import java.util.List;
 /**
  * BioFormats importer wrapper
  */
-@JIPipeDocumentation(name = "Bio-Formats importer", description = "Imports images via the Bio-Formats plugin")
-@JIPipeInputSlot(value = FileData.class, slotName = "Input", description = "The image file(s)", autoCreate = true)
-@JIPipeOutputSlot(value = OMEImageData.class, slotName = "Output", description = "The imported data", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeCitation("Melissa Linkert, Curtis T. Rueden, Chris Allan, Jean-Marie Burel, Will Moore, Andrew Patterson, Brian Loranger, Josh Moore, " +
+@SetJIPipeDocumentation(name = "Bio-Formats importer", description = "Imports images via the Bio-Formats plugin")
+@AddJIPipeInputSlot(value = FileData.class, slotName = "Input", description = "The image file(s)", create = true)
+@AddJIPipeOutputSlot(value = OMEImageData.class, slotName = "Output", description = "The imported data", create = true)
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeCitation("Melissa Linkert, Curtis T. Rueden, Chris Allan, Jean-Marie Burel, Will Moore, Andrew Patterson, Brian Loranger, Josh Moore, " +
         "Carlos Neves, Donald MacDonald, Aleksandra Tarkowska, Caitlin Sticco, Emma Hill, Mike Rossner, Kevin W. Eliceiri, " +
         "and Jason R. Swedlow (2010) Metadata matters: access to image data in the real world. The Journal of Cell Biology 189(5), 777-782")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nBio-Formats", aliasName = "Bio-Formats Importer")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nBio-Formats", aliasName = "Bio-Formats Importer")
 public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
 
     private OMEColorMode colorMode = OMEColorMode.Default;
@@ -197,7 +197,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Auto scale", description = "Stretches the channel histograms to each channel's global minimum and maximum value throughout the stack. " +
+    @SetJIPipeDocumentation(name = "Auto scale", description = "Stretches the channel histograms to each channel's global minimum and maximum value throughout the stack. " +
             "Does not alter underlying values in the image.  " +
             "If unselected, all channel histograms are scaled to the image's digitization bit depth. " +
             "Note that this range may be narrower than the bit depth of the file. " +
@@ -215,7 +215,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
         this.autoScale = autoScale;
     }
 
-    @JIPipeDocumentation(name = "Color mode", description = "Color mode - Visualizes channels according to the specified scheme.  Possible choices are:\n" +
+    @SetJIPipeDocumentation(name = "Color mode", description = "Color mode - Visualizes channels according to the specified scheme.  Possible choices are:\n" +
             "Default - Display channels as closely as possible to how they are stored in the file.\n" +
             "Composite - Open as a merged composite image. Channels are colorized according to metadata present in the dataset (if any), or in the following default order: 1=red, 2=green, 3=blue, 4=gray, 5=cyan, 6=magenta, 7=yellow.\n" +
             "Colorized - Open with each channel in a separate plane, colorized according to metadata present in the dataset (if any), or in the default order (see Composite above).\n" +
@@ -232,7 +232,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
         this.colorMode = colorMode;
     }
 
-    @JIPipeDocumentation(name = "Crop regions")
+    @SetJIPipeDocumentation(name = "Crop regions")
     @JIPipeParameter("crop-regions")
     public RectangleList getCropRegions() {
         return cropRegions;
@@ -243,7 +243,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
         this.cropRegions = cropRegions;
     }
 
-    @JIPipeDocumentation(name = "Stack order")
+    @SetJIPipeDocumentation(name = "Stack order")
     @JIPipeParameter("stack-order")
     public DimensionOrder getStackOrder() {
         return stackOrder;
@@ -255,7 +255,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Split channels", description = "Each channel is opened as a separate stack.  " +
+    @SetJIPipeDocumentation(name = "Split channels", description = "Each channel is opened as a separate stack.  " +
             "This option is especially useful if you want to merge the channels into a specific order, " +
             "rather than automatically assign channels to the order of RGB. The bit depth is preserved.")
     @JIPipeParameter("split-channels")
@@ -269,7 +269,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Split focal planes", description = "Each focal plane is opened as a separate stack.")
+    @SetJIPipeDocumentation(name = "Split focal planes", description = "Each focal plane is opened as a separate stack.")
     @JIPipeParameter("split-focal-planes")
     public boolean isSplitFocalPlanes() {
         return splitFocalPlanes;
@@ -281,7 +281,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Split time points", description = "Timelapse data will be opened as a separate stack for each timepoint.")
+    @SetJIPipeDocumentation(name = "Split time points", description = "Timelapse data will be opened as a separate stack for each timepoint.")
     @JIPipeParameter("split-time-points")
     public boolean isSplitTimePoints() {
         return splitTimePoints;
@@ -293,7 +293,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Swap dimensions", description = "Allows reassignment of dimensional axes (e.g., channel, Z and time).  " +
+    @SetJIPipeDocumentation(name = "Swap dimensions", description = "Allows reassignment of dimensional axes (e.g., channel, Z and time).  " +
             "Bio-Formats is supposed to be smart about handling multidimensional image data, but in some cases gets things wrong. " +
             "For example, when stitching together a dataset from multiple files using the Group files with similar names option, " +
             "Bio-Formats may not know which dimensional axis the file numbering is supposed to represent. " +
@@ -309,7 +309,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Concatenate compatible series", description = "Allows multiple image series to be joined end to end.  " +
+    @SetJIPipeDocumentation(name = "Concatenate compatible series", description = "Allows multiple image series to be joined end to end.  " +
             "Example: You want to join two sequential timelapse series.")
     @JIPipeParameter("concatenate")
     public boolean isConcatenate() {
@@ -322,7 +322,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Crop images", description = "Image planes may be cropped during import to conserve memory. Use the 'Crop regions' parameter " +
+    @SetJIPipeDocumentation(name = "Crop images", description = "Image planes may be cropped during import to conserve memory. Use the 'Crop regions' parameter " +
             "to define which regions should be cropped.")
     @JIPipeParameter("crop")
     public boolean isCrop() {
@@ -335,7 +335,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Stitch tiles", description = "Stitch tiles - Performs very simple stitching of tiles. " +
+    @SetJIPipeDocumentation(name = "Stitch tiles", description = "Stitch tiles - Performs very simple stitching of tiles. " +
             " The overlap is assumed to be 0%, and the stage coordinates are used to determine the proper placement of the tiles. " +
             "This is useful for seeing a quick preview of what the stitched image might look like, " +
             "but is not a substitute for proper stitching plugins such as the 2D/3D Stitching plugin.")
@@ -350,7 +350,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Annotate with title", description = "Optional annotation type where the image title is written.")
+    @SetJIPipeDocumentation(name = "Annotate with title", description = "Optional annotation type where the image title is written.")
     @JIPipeParameter("title-annotation")
     public OptionalAnnotationNameParameter getTitleAnnotation() {
         return titleAnnotation;
@@ -361,7 +361,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
         this.titleAnnotation = titleAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Extract ROIs", description = "If enabled, ROIs are extracted from OME data.")
+    @SetJIPipeDocumentation(name = "Extract ROIs", description = "If enabled, ROIs are extracted from OME data.")
     @JIPipeParameter("extract-rois")
     public boolean isExtractRois() {
         return extractRois;
@@ -372,7 +372,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
         this.extractRois = extractRois;
     }
 
-    @JIPipeDocumentation(name = "Open all series", description = "If enabled, all series of a multi-series file are imported. This will override the series filter.")
+    @SetJIPipeDocumentation(name = "Open all series", description = "If enabled, all series of a multi-series file are imported. This will override the series filter.")
     @JIPipeParameter("open-all-series")
     public boolean isOpenAllSeries() {
         return openAllSeries;
@@ -383,7 +383,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
         this.openAllSeries = openAllSeries;
     }
 
-    @JIPipeDocumentation(name = "Series to import", description = "Some images can contain multiple sub-images (series) that do not necessarily have the same size and other properties. " +
+    @SetJIPipeDocumentation(name = "Series to import", description = "Some images can contain multiple sub-images (series) that do not necessarily have the same size and other properties. " +
             "Use this list to control which series should be imported. Overridden by 'Open all series'. The first index is zero.")
     @JIPipeParameter("series-to-import")
     public IntegerList getSeriesToImport() {
@@ -395,7 +395,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
         this.seriesToImport = seriesToImport;
     }
 
-    @JIPipeDocumentation(name = "Annotate with series", description = "If enabled, attempt to extract the series number (starting with 1) from the last part of the image title. " +
+    @SetJIPipeDocumentation(name = "Annotate with series", description = "If enabled, attempt to extract the series number (starting with 1) from the last part of the image title. " +
             "The algorithm will take a look at the end of the title and expects a string '#[series]'. If none could be found, 1 will be returned.")
     @JIPipeParameter("series-annotation")
     public OptionalAnnotationNameParameter getSeriesAnnotation() {
@@ -407,7 +407,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
         this.seriesAnnotation = seriesAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Configure Bio-Formats", description = "Opens the Bio-Formats configuration window that allows to set format-specific settings. Please note that these settings are global and not managed by JIPipe.")
+    @SetJIPipeDocumentation(name = "Configure Bio-Formats", description = "Opens the Bio-Formats configuration window that allows to set format-specific settings. Please note that these settings are global and not managed by JIPipe.")
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/bioformats.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/bioformats.png")
     public void setToExample(JIPipeWorkbench parent) {
         ConfigWindow cw = new ConfigWindow();

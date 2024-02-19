@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
@@ -34,7 +34,7 @@ import java.nio.file.Paths;
  * A form data object is a {@link JIPipeParameterCollection} and is (de)serialized via the parameter system.
  * Its standard display function shows the user interface with placeholder values
  */
-@JIPipeDocumentation(name = "Form", description = "Data that describes a user input element.")
+@SetJIPipeDocumentation(name = "Form", description = "Data that describes a user input element.")
 @JsonSerialize(using = FormData.Serializer.class)
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a file forms.json that stores all metadata of the current form type in JSON format.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/form-data.schema.json")
@@ -164,7 +164,7 @@ public abstract class FormData extends AbstractJIPipeParameterCollection impleme
 
     }
 
-    @JIPipeDocumentation(name = "Form element tab", description = "Form elements can be displayed in different tabs for ease of use. " +
+    @SetJIPipeDocumentation(name = "Form element tab", description = "Form elements can be displayed in different tabs for ease of use. " +
             "Change following settings to determine where this element is placed.")
     @JIPipeParameter("form:tabs")
     public TabSettings getTabSettings() {
@@ -192,7 +192,7 @@ public abstract class FormData extends AbstractJIPipeParameterCollection impleme
             this.tabAnnotation = new OptionalAnnotationNameParameter(other.tabAnnotation);
         }
 
-        @JIPipeDocumentation(name = "Tab", description = "The tab where this form data will appear in.")
+        @SetJIPipeDocumentation(name = "Tab", description = "The tab where this form data will appear in.")
         @JIPipeParameter("form:tab")
         public String getTab() {
             return tab;
@@ -203,7 +203,7 @@ public abstract class FormData extends AbstractJIPipeParameterCollection impleme
             this.tab = tab;
         }
 
-        @JIPipeDocumentation(name = "Tab annotation", description = "The annotation that contains the tab name.")
+        @SetJIPipeDocumentation(name = "Tab annotation", description = "The annotation that contains the tab name.")
         @JIPipeParameter("form:tab-annotation")
         public OptionalAnnotationNameParameter getTabAnnotation() {
             return tabAnnotation;

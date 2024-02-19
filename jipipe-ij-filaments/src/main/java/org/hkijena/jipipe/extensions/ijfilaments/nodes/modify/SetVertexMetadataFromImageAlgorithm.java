@@ -2,8 +2,8 @@ package org.hkijena.jipipe.extensions.ijfilaments.nodes.modify;
 
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -16,11 +16,11 @@ import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
-@JIPipeDocumentation(name = "Set filament vertex metadata from image", description = "Sets the vertex metadata of each vertex from the given input image. Please note that if the Z/C/T coordinates are set to zero, the value is extracted from the 0/0/0 slice.")
-@JIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
-@JIPipeInputSlot(value = Filaments3DData.class, slotName = "Filaments", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Value", description = "The value is sourced from the pixels in this image", autoCreate = true)
-@JIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Set filament vertex metadata from image", description = "Sets the vertex metadata of each vertex from the given input image. Please note that if the Z/C/T coordinates are set to zero, the value is extracted from the 0/0/0 slice.")
+@DefineJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
+@AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Filaments", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Value", description = "The value is sourced from the pixels in this image", create = true)
+@AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
 public class SetVertexMetadataFromImageAlgorithm extends JIPipeIteratingAlgorithm {
 
     private String metadataKey = "key";
@@ -34,7 +34,7 @@ public class SetVertexMetadataFromImageAlgorithm extends JIPipeIteratingAlgorith
         this.metadataKey = other.metadataKey;
     }
 
-    @JIPipeDocumentation(name = "Metadata key", description = "The key/name of the metadata")
+    @SetJIPipeDocumentation(name = "Metadata key", description = "The key/name of the metadata")
     @JIPipeParameter(value = "metadata-key", important = true)
     public String getMetadataKey() {
         return metadataKey;

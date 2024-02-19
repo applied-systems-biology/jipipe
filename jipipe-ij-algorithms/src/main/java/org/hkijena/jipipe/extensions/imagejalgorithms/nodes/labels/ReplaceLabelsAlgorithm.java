@@ -16,9 +16,9 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.labels;
 import com.google.common.primitives.Ints;
 import ij.ImagePlus;
 import inra.ijpb.label.LabelImages;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -33,13 +33,13 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.IntRangeAndIntegerPairParameter;
 
-@JIPipeDocumentation(name = "Replace label values", description = "Replaces label values by the specified value.")
-@JIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)
-@JIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
+@SetJIPipeDocumentation(name = "Replace label values", description = "Replaces label values by the specified value.")
+@DefineJIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
+@AddJIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
         "Bioinformatics (Oxford Univ Press) 32(22): 3532-3534, PMID 27412086, doi:10.1093/bioinformatics/btw413")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nLabel Images", aliasName = "Replace/Remove Label(s)")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nLabel Images", aliasName = "Replace/Remove Label(s)")
 public class ReplaceLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private IntRangeAndIntegerPairParameter.List replacements = new IntRangeAndIntegerPairParameter.List();
@@ -53,7 +53,7 @@ public class ReplaceLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.replacements = new IntRangeAndIntegerPairParameter.List(other.replacements);
     }
 
-    @JIPipeDocumentation(name = "Replacements", description = "A list of replacement values. You can match multiple labels per rule.")
+    @SetJIPipeDocumentation(name = "Replacements", description = "A list of replacement values. You can match multiple labels per rule.")
     @PairParameterSettings(keyLabel = "Current label", valueLabel = "New label")
     @JIPipeParameter(value = "replacements", important = true)
     public IntRangeAndIntegerPairParameter.List getReplacements() {

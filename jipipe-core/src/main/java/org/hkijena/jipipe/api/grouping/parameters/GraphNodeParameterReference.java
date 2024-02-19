@@ -16,7 +16,7 @@ package org.hkijena.jipipe.api.grouping.parameters;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -165,7 +165,7 @@ public class GraphNodeParameterReference extends AbstractJIPipeParameterCollecti
         }
     }
 
-    @JIPipeDocumentation(name = "Custom name", description = "A custom name for the parameter reference. If left empty, the name of the referenced parameter is utilized.")
+    @SetJIPipeDocumentation(name = "Custom name", description = "A custom name for the parameter reference. If left empty, the name of the referenced parameter is utilized.")
     @JIPipeParameter(value = "custom-name", uiOrder = -100)
     @JsonGetter("custom-name")
     public String getCustomName() {
@@ -178,7 +178,7 @@ public class GraphNodeParameterReference extends AbstractJIPipeParameterCollecti
         this.customName = customName;
     }
 
-    @JIPipeDocumentation(name = "Custom description", description = "A custom description for the referenced parameter.")
+    @SetJIPipeDocumentation(name = "Custom description", description = "A custom description for the referenced parameter.")
     @JIPipeParameter(value = "custom-description", uiOrder = -90)
     @JsonGetter("custom-description")
     public HTMLText getCustomDescription() {
@@ -191,7 +191,7 @@ public class GraphNodeParameterReference extends AbstractJIPipeParameterCollecti
         this.customDescription = customDescription;
     }
 
-    @JIPipeDocumentation(name = "Path", description = "The path to the referenced parameter. <strong>If you do not know which values are valid, leave this setting alone</strong>")
+    @SetJIPipeDocumentation(name = "Path", description = "The path to the referenced parameter. <strong>If you do not know which values are valid, leave this setting alone</strong>")
     @JIPipeParameter(value = "path", uiOrder = 100)
     @JsonGetter("path")
     @StringParameterSettings(monospace = true)

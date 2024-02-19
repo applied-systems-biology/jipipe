@@ -13,12 +13,12 @@
 
 package org.hkijena.jipipe.extensions.expressions.operators;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.*;
 
-@JIPipeDocumentation(name = "Addition", description = "Adds two numbers together, concatenates two strings, or concatenates two arrays.")
+@SetJIPipeDocumentation(name = "Addition", description = "Adds two numbers together, concatenates two strings, or concatenates two arrays.")
 public class AdditionFunctionOperator extends GenericOperator {
     public AdditionFunctionOperator(int precedence) {
         super("+", precedence);

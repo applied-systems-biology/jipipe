@@ -2,8 +2,8 @@ package org.hkijena.jipipe.extensions.ij3d.nodes.binary;
 
 import ij.ImagePlus;
 import mcib3d.image3d.distanceMap3d.EDT;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -15,11 +15,11 @@ import org.hkijena.jipipe.extensions.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 
-@JIPipeDocumentation(name = "Euclidean Distance Map 3D", description = "Calculates the Euclidean distance map of a 3D image. " +
+@SetJIPipeDocumentation(name = "Euclidean Distance Map 3D", description = "Calculates the Euclidean distance map of a 3D image. " +
         "The calculated distances will be in the calibrated unit.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Math\nDistance map")
-@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Math\nDistance map")
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
 public class DistanceMap3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private int threshold = 0;
@@ -36,7 +36,7 @@ public class DistanceMap3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.inverse = other.inverse;
     }
 
-    @JIPipeDocumentation(name = "Threshold", description = "Threshold value for the mask")
+    @SetJIPipeDocumentation(name = "Threshold", description = "Threshold value for the mask")
     @JIPipeParameter("threshold")
     public int getThreshold() {
         return threshold;
@@ -47,7 +47,7 @@ public class DistanceMap3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.threshold = threshold;
     }
 
-    @JIPipeDocumentation(name = "Inverse", description = "If enabled, the threshold is applied on the inverse iamge")
+    @SetJIPipeDocumentation(name = "Inverse", description = "If enabled, the threshold is applied on the inverse iamge")
     @JIPipeParameter("inverse")
     public boolean isInverse() {
         return inverse;

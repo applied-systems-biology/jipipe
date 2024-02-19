@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.api.nodes.algorithm;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
@@ -39,7 +39,7 @@ public class JIPipeParameterSlotAlgorithmSettings extends AbstractJIPipeParamete
         this.parameterAnnotationsPrefix = other.parameterAnnotationsPrefix;
     }
 
-    @JIPipeDocumentation(name = "Multiple parameters", description = "If enabled, there will be an additional slot that consumes " +
+    @SetJIPipeDocumentation(name = "Multiple parameters", description = "If enabled, there will be an additional slot that consumes " +
             "parameter data sets. The algorithm then will be applied for each of this parameter sets.")
     @JIPipeParameter(value = "has-parameter-slot")
     public boolean isHasParameterSlot() {
@@ -51,7 +51,7 @@ public class JIPipeParameterSlotAlgorithmSettings extends AbstractJIPipeParamete
         this.hasParameterSlot = hasParameterSlot;
     }
 
-    @JIPipeDocumentation(name = "Attach parameter annotations", description = "If multiple parameters are allowed, attach the parameter values as annotations.")
+    @SetJIPipeDocumentation(name = "Attach parameter annotations", description = "If multiple parameters are allowed, attach the parameter values as annotations.")
     @JIPipeParameter(value = "attach-parameter-annotations")
     public boolean isAttachParameterAnnotations() {
         return attachParameterAnnotations;
@@ -62,7 +62,7 @@ public class JIPipeParameterSlotAlgorithmSettings extends AbstractJIPipeParamete
         this.attachParameterAnnotations = attachParameterAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Attach only non-default parameter annotations", description = "If multiple parameters are allowed, " +
+    @SetJIPipeDocumentation(name = "Attach only non-default parameter annotations", description = "If multiple parameters are allowed, " +
             "attach only parameter annotations that have different values from the current settings. Requires 'Attach parameter annotations' to be enabled.")
     @JIPipeParameter(value = "attach-only-non-default-parameter-annotations")
     public boolean isAttachOnlyNonDefaultParameterAnnotations() {
@@ -74,7 +74,7 @@ public class JIPipeParameterSlotAlgorithmSettings extends AbstractJIPipeParamete
         this.attachOnlyNonDefaultParameterAnnotations = attachOnlyNonDefaultParameterAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Parameter annotations use internal names", description = "Generated parameter annotations use their internal unique names.")
+    @SetJIPipeDocumentation(name = "Parameter annotations use internal names", description = "Generated parameter annotations use their internal unique names.")
     @JIPipeParameter(value = "parameter-annotations-use-internal-names")
     public boolean isParameterAnnotationsUseInternalNames() {
         return parameterAnnotationsUseInternalNames;
@@ -85,7 +85,7 @@ public class JIPipeParameterSlotAlgorithmSettings extends AbstractJIPipeParamete
         this.parameterAnnotationsUseInternalNames = parameterAnnotationsUseInternalNames;
     }
 
-    @JIPipeDocumentation(name = "Parameter annotation prefix", description = "Text prefixed to generated parameter annotations.")
+    @SetJIPipeDocumentation(name = "Parameter annotation prefix", description = "Text prefixed to generated parameter annotations.")
     @JIPipeParameter(value = "parameter-annotations-prefix")
     @StringParameterSettings(monospace = true)
     public String getParameterAnnotationsPrefix() {

@@ -5,7 +5,7 @@ import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.plugin.filter.ThresholdToSelection;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -187,7 +187,7 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D implements Mas
         private ImageStatisticsSetParameter statistics = new ImageStatisticsSetParameter();
         private boolean measureInPhysicalUnits = true;
 
-        @JIPipeDocumentation(name = "Statistics", description = "The statistics to measure")
+        @SetJIPipeDocumentation(name = "Statistics", description = "The statistics to measure")
         @JIPipeParameter("statistics")
         public ImageStatisticsSetParameter getStatistics() {
             return statistics;
@@ -198,7 +198,7 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D implements Mas
             this.statistics = statistics;
         }
 
-        @JIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
+        @SetJIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
         @JIPipeParameter("measure-in-physical-units")
         public boolean isMeasureInPhysicalUnits() {
             return measureInPhysicalUnits;

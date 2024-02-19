@@ -15,7 +15,7 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.settings;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiDrawer;
@@ -33,7 +33,7 @@ public class ImageViewerUIROI2DDisplaySettings extends AbstractJIPipeParameterCo
         return JIPipe.getSettings().getSettings(ID, ImageViewerUIROI2DDisplaySettings.class);
     }
 
-    @JIPipeDocumentation(name = "ROI visualization")
+    @SetJIPipeDocumentation(name = "ROI visualization")
     @JIPipeParameter("roi-drawer")
     public RoiDrawer getRoiDrawer() {
         return roiDrawer;
@@ -43,7 +43,7 @@ public class ImageViewerUIROI2DDisplaySettings extends AbstractJIPipeParameterCo
         this.roiDrawer = roiDrawer;
     }
 
-    @JIPipeDocumentation(name = "Show ROI", description = "If enabled, ROI are visible")
+    @SetJIPipeDocumentation(name = "Show ROI", description = "If enabled, ROI are visible")
     @JIPipeParameter("show-roi")
     public boolean isShowROI() {
         return showROI;
@@ -54,7 +54,7 @@ public class ImageViewerUIROI2DDisplaySettings extends AbstractJIPipeParameterCo
         this.showROI = showROI;
     }
 
-    @JIPipeDocumentation(name = "Render ROI as overlay", description = "If enabled, ROI are rendered as overlay.")
+    @SetJIPipeDocumentation(name = "Render ROI as overlay", description = "If enabled, ROI are rendered as overlay.")
     @JIPipeParameter("render-roi-as-overlay")
     public boolean isRenderROIAsOverlay() {
         return renderROIAsOverlay;

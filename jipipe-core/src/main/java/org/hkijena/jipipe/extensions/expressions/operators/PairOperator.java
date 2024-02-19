@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.operators;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionOperator;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 
@@ -11,7 +11,7 @@ import java.util.Iterator;
  * Operator that is used to make different statements
  * The return value is the right statement
  */
-@JIPipeDocumentation(name = "Pair", description = "Creates an array of the left and the right operand (equivalent to PAIR(x, y))")
+@SetJIPipeDocumentation(name = "Pair", description = "Creates an array of the left and the right operand (equivalent to PAIR(x, y))")
 public class PairOperator extends ExpressionOperator {
     public PairOperator(int precedence) {
         super(":", 2, Associativity.LEFT, precedence);

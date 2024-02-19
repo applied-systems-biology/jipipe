@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.ijtrackmate.parameters;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
@@ -38,7 +38,7 @@ public class SpotFeaturePenaltyParameter extends AbstractJIPipeParameterCollecti
         this.penalty = other.penalty;
     }
 
-    @JIPipeDocumentation(name = "Feature")
+    @SetJIPipeDocumentation(name = "Feature")
     @JsonGetter("feature")
     @JIPipeParameter("feature")
     public SpotFeature getFeature() {
@@ -51,7 +51,7 @@ public class SpotFeaturePenaltyParameter extends AbstractJIPipeParameterCollecti
         this.feature = feature;
     }
 
-    @JIPipeDocumentation(name = "Penalty")
+    @SetJIPipeDocumentation(name = "Penalty")
     @JsonGetter("penalty")
     @JIPipeParameter("penalty")
     public double getPenalty() {

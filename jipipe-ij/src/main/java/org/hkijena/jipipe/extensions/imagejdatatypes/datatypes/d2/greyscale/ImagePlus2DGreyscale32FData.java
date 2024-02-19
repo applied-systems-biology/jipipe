@@ -16,9 +16,9 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.FloatProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHeavyData;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
@@ -31,9 +31,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 /**
  * 32 bit float greyscale 2D image
  */
-@JIPipeDocumentation(name = "2D image (float)", description = "A 32-bit greyscale image")
-@JIPipeNode(menuPath = "Images\n2D\nGreyscale")
-@JIPipeHeavyData
+@SetJIPipeDocumentation(name = "2D image (float)", description = "A 32-bit greyscale image")
+@DefineJIPipeNode(menuPath = "Images\n2D\nGreyscale")
+@LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = FloatProcessor.class, colorSpace = GreyscaleColorSpace.class, pixelType = Float.class, bitDepth = 32, numDimensions = 2)
 public class ImagePlus2DGreyscale32FData extends ImagePlus2DGreyscaleData {
 

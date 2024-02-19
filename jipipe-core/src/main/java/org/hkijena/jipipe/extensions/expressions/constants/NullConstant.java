@@ -13,10 +13,10 @@
 
 package org.hkijena.jipipe.extensions.expressions.constants;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionConstant;
 
-@JIPipeDocumentation(name = "NULL", description = "An empty value")
+@SetJIPipeDocumentation(name = "NULL", description = "An empty value")
 public class NullConstant extends ExpressionConstant {
     public NullConstant() {
         super("null", null);

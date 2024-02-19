@@ -14,8 +14,8 @@
 
 package org.hkijena.jipipe.extensions.tables.nodes.columns;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -32,10 +32,10 @@ import java.util.Comparator;
 /**
  * Algorithm that integrates columns
  */
-@JIPipeDocumentation(name = "Sort table columns", description = "Sorts the table columns")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Sort table columns", description = "Sorts the table columns")
+@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class SortTableColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean useNaturalSortOrder = true;
@@ -81,7 +81,7 @@ public class SortTableColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), output, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Sort strings by natural order", description = "If enabled, strings are sorted by natural order (e.g. 1, 2, 15 100, ...). If disabled, " +
+    @SetJIPipeDocumentation(name = "Sort strings by natural order", description = "If enabled, strings are sorted by natural order (e.g. 1, 2, 15 100, ...). If disabled, " +
             "strings are sorted lexicographically (e.g. 1, 15, 100, 2)")
     @JIPipeParameter("use-natural-sort-order")
     public boolean isUseNaturalSortOrder() {
@@ -93,7 +93,7 @@ public class SortTableColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.useNaturalSortOrder = useNaturalSortOrder;
     }
 
-    @JIPipeDocumentation(name = "Reverse sort order", description = "If enabled, the sort order is reversed.")
+    @SetJIPipeDocumentation(name = "Reverse sort order", description = "If enabled, the sort order is reversed.")
     @JIPipeParameter("reverse-sort-order")
     public boolean isReverseSortOrder() {
         return reverseSortOrder;

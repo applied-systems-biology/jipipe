@@ -15,7 +15,7 @@
 package org.hkijena.jipipe.extensions.python.installers;
 
 import org.apache.commons.lang3.SystemUtils;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.EasyInstallExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
@@ -33,7 +33,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Install Python 3 (EasyInstaller)", description = "Downloads a pre-packaged version of Python 3")
+@SetJIPipeDocumentation(name = "Install Python 3 (EasyInstaller)", description = "Downloads a pre-packaged version of Python 3")
 public class PythonEasyInstaller extends EasyInstallExternalEnvironmentInstaller<PythonEnvironment> {
     /**
      * @param workbench       the workbench

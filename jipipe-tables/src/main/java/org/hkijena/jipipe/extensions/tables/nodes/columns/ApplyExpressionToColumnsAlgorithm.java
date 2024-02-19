@@ -15,8 +15,8 @@
 package org.hkijena.jipipe.extensions.tables.nodes.columns;
 
 import com.google.common.primitives.Doubles;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -42,11 +42,11 @@ import java.util.*;
 /**
  * Algorithm that integrates columns
  */
-@JIPipeDocumentation(name = "Apply expression to columns", description = "Applies an expression function to all column values. " +
+@SetJIPipeDocumentation(name = "Apply expression to columns", description = "Applies an expression function to all column values. " +
         "The result of the operation is stored in the same or a new column.")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class ApplyExpressionToColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private ExpressionTableColumnProcessorParameterList processorParameters = new ExpressionTableColumnProcessorParameterList();
@@ -151,7 +151,7 @@ public class ApplyExpressionToColumnsAlgorithm extends JIPipeSimpleIteratingAlgo
         report.report(new ParameterValidationReportContext(reportContext, this, "Processors", "processors"), processorParameters);
     }
 
-    @JIPipeDocumentation(name = "Processors", description = "Defines which columns are processed")
+    @SetJIPipeDocumentation(name = "Processors", description = "Defines which columns are processed")
     @JIPipeParameter("processors")
     @JIPipeExpressionParameterSettings(variableSource = TableColumnValuesExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
@@ -169,7 +169,7 @@ public class ApplyExpressionToColumnsAlgorithm extends JIPipeSimpleIteratingAlgo
         return true;
     }
 
-    @JIPipeDocumentation(name = "Append to existing table", description = "If enabled, the converted columns are appended to the existing table. Existing columns are overwritten.")
+    @SetJIPipeDocumentation(name = "Append to existing table", description = "If enabled, the converted columns are appended to the existing table. Existing columns are overwritten.")
     @JIPipeParameter("append")
     public boolean isAppend() {
         return append;

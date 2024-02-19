@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
+import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.extensions.expressions.AbstractExpressionParameter;
@@ -12,7 +12,7 @@ import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotations
 
 import java.util.Collection;
 
-@JIPipeDocumentationDescription(description = "The expression result will be converted to a string. All existing annotations are available " +
+@AddJIPipeDocumentationDescription(description = "The expression result will be converted to a string. All existing annotations are available " +
         "as variables that can be accessed directly, or if they contain special characters or spaces via the $ operator.")
 @JIPipeExpressionParameterVariable(name = "Annotations map", description = "Map of all annotations (key to value)", key = "all.annotations")
 @JIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)

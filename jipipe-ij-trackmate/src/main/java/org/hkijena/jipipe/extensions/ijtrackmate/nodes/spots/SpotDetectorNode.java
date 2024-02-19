@@ -4,8 +4,8 @@ import fiji.plugin.trackmate.Model;
 import fiji.plugin.trackmate.Settings;
 import fiji.plugin.trackmate.TrackMate;
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -21,11 +21,11 @@ import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.JIPipeLogger;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
-@JIPipeDocumentation(name = "Detect spots", description = "Detect spots using TrackMate")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", description = "The image where the spots should be detected", autoCreate = true)
-@JIPipeInputSlot(value = SpotDetectorData.class, slotName = "Spot detector", description = "The algorithm that detects the spots", autoCreate = true)
-@JIPipeOutputSlot(value = SpotsCollectionData.class, slotName = "Spots", description = "The detected spots", autoCreate = true)
+@SetJIPipeDocumentation(name = "Detect spots", description = "Detect spots using TrackMate")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", description = "The image where the spots should be detected", create = true)
+@AddJIPipeInputSlot(value = SpotDetectorData.class, slotName = "Spot detector", description = "The algorithm that detects the spots", create = true)
+@AddJIPipeOutputSlot(value = SpotsCollectionData.class, slotName = "Spots", description = "The detected spots", create = true)
 public class SpotDetectorNode extends JIPipeIteratingAlgorithm {
 
     private int numThreads = 1;

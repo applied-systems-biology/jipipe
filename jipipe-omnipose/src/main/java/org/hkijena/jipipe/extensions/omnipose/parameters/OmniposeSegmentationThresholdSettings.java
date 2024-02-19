@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.omnipose.parameters;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
@@ -24,7 +24,7 @@ public class OmniposeSegmentationThresholdSettings extends AbstractJIPipeParamet
         this.diamThreshold = other.diamThreshold;
     }
 
-    @JIPipeDocumentation(name = "Exclude masks on edges", description = "Discard masks which touch edges of image")
+    @SetJIPipeDocumentation(name = "Exclude masks on edges", description = "Discard masks which touch edges of image")
     @JIPipeParameter("exclude-on-edges")
     public boolean isExcludeOnEdges() {
         return excludeOnEdges;
@@ -35,7 +35,7 @@ public class OmniposeSegmentationThresholdSettings extends AbstractJIPipeParamet
         this.excludeOnEdges = excludeOnEdges;
     }
 
-    @JIPipeDocumentation(name = "Flow threshold (2D)", description = "Flow error threshold, 0 turns off this optional QC step. Default: 0.4")
+    @SetJIPipeDocumentation(name = "Flow threshold (2D)", description = "Flow error threshold, 0 turns off this optional QC step. Default: 0.4")
     @JIPipeParameter("flow-threshold")
     public double getFlowThreshold() {
         return flowThreshold;
@@ -46,7 +46,7 @@ public class OmniposeSegmentationThresholdSettings extends AbstractJIPipeParamet
         this.flowThreshold = flowThreshold;
     }
 
-    @JIPipeDocumentation(name = "Mask threshold", description = "Mask threshold, default is 0, decrease to find more and larger masks")
+    @SetJIPipeDocumentation(name = "Mask threshold", description = "Mask threshold, default is 0, decrease to find more and larger masks")
     @JIPipeParameter("mask-threshold")
     public double getMaskThreshold() {
         return maskThreshold;
@@ -57,7 +57,7 @@ public class OmniposeSegmentationThresholdSettings extends AbstractJIPipeParamet
         this.maskThreshold = maskThreshold;
     }
 
-    @JIPipeDocumentation(name = "Cell diameter threshold", description = "Cell diameter threshold for upscaling before mask reconstruction, default 12.")
+    @SetJIPipeDocumentation(name = "Cell diameter threshold", description = "Cell diameter threshold for upscaling before mask reconstruction, default 12.")
     @JIPipeParameter("diam-threshold")
     public double getDiamThreshold() {
         return diamThreshold;
@@ -68,7 +68,7 @@ public class OmniposeSegmentationThresholdSettings extends AbstractJIPipeParamet
         this.diamThreshold = diamThreshold;
     }
 
-    @JIPipeDocumentation(name = "Stitch threshold", description = "Compute masks in 2D then stitch together masks with IoU>0.9 across planes")
+    @SetJIPipeDocumentation(name = "Stitch threshold", description = "Compute masks in 2D then stitch together masks with IoU>0.9 across planes")
     @JIPipeParameter("stitch-threshold")
     public OptionalDoubleParameter getStitchThreshold() {
         return stitchThreshold;

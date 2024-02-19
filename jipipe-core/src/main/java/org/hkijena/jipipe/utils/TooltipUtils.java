@@ -97,7 +97,7 @@ public class TooltipUtils {
 
         // Write algorithm slot info
         builder.append("<table style=\"margin-top: 10px;\">");
-        for (JIPipeInputSlot slot : info.getInputSlots()) {
+        for (AddJIPipeInputSlot slot : info.getInputSlots()) {
             builder.append("<tr>");
             builder.append("<td><p style=\"background-color:#27ae60; color:white;border:3px solid #27ae60;border-radius:5px;text-align:center;\">Input</p></td>");
             builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.value())).append("\"/></td>");
@@ -105,7 +105,7 @@ public class TooltipUtils {
             builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.value()).getName())).append(")</i></td>");
             builder.append("</tr>");
         }
-        for (JIPipeOutputSlot slot : info.getOutputSlots()) {
+        for (AddJIPipeOutputSlot slot : info.getOutputSlots()) {
             builder.append("<tr>");
             builder.append("<td><p style=\"background-color:#da4453; color:white;border:3px solid #da4453;border-radius:5px;text-align:center;\">Output</p></td>");
             builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.value())).append("\"/></td>");
@@ -261,7 +261,7 @@ public class TooltipUtils {
 
         // Write algorithm slot info
         builder.append("<table style=\"margin-top: 10px;\">");
-        for (JIPipeInputSlot slot : info.getInputSlots()) {
+        for (AddJIPipeInputSlot slot : info.getInputSlots()) {
             builder.append("<tr>");
             builder.append("<td><p style=\"background-color:#27ae60; color:white;border:3px solid #27ae60;border-radius:5px;text-align:center;\">Input</p></td>");
             builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.value())).append("\"/></td>");
@@ -272,7 +272,7 @@ public class TooltipUtils {
             }
             builder.append("</td></tr>");
         }
-        for (JIPipeOutputSlot slot : info.getOutputSlots()) {
+        for (AddJIPipeOutputSlot slot : info.getOutputSlots()) {
             builder.append("<tr>");
             builder.append("<td><p style=\"background-color:#da4453; color:white;border:3px solid #da4453;border-radius:5px;text-align:center;\">Output</p></td>");
             builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.value())).append("\"/></td>");

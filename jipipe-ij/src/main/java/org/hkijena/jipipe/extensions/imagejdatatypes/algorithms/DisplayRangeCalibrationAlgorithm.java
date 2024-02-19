@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.algorithms;
 
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -32,12 +32,12 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 
-@JIPipeDocumentation(name = "Adjust displayed contrast", description = "Re-calibrates the incoming image, so its color range is displayed differently by ImageJ. " +
+@SetJIPipeDocumentation(name = "Adjust displayed contrast", description = "Re-calibrates the incoming image, so its color range is displayed differently by ImageJ. " +
         "This does not change the pixel data.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Contrast")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust", aliasName = "Brightness/Contrast...")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Contrast")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust", aliasName = "Brightness/Contrast...")
 public class DisplayRangeCalibrationAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private ImageJCalibrationMode calibrationMode = ImageJCalibrationMode.AutomaticImageJ;
     private double customMin = 0;
@@ -61,7 +61,7 @@ public class DisplayRangeCalibrationAlgorithm extends JIPipeSimpleIteratingAlgor
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(image), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Calibration method", description = "The method to apply for calibration.")
+    @SetJIPipeDocumentation(name = "Calibration method", description = "The method to apply for calibration.")
     @JIPipeParameter("calibration-mode")
     public ImageJCalibrationMode getCalibrationMode() {
         return calibrationMode;
@@ -72,7 +72,7 @@ public class DisplayRangeCalibrationAlgorithm extends JIPipeSimpleIteratingAlgor
         this.calibrationMode = calibrationMode;
     }
 
-    @JIPipeDocumentation(name = "Custom min", description = "Used if 'Calibration' method is set to 'Custom'. Sets custom minimum value.")
+    @SetJIPipeDocumentation(name = "Custom min", description = "Used if 'Calibration' method is set to 'Custom'. Sets custom minimum value.")
     @JIPipeParameter(value = "custom-min", uiOrder = -99)
     public double getCustomMin() {
         return customMin;
@@ -83,7 +83,7 @@ public class DisplayRangeCalibrationAlgorithm extends JIPipeSimpleIteratingAlgor
         this.customMin = customMin;
     }
 
-    @JIPipeDocumentation(name = "Custom max", description = "Used if 'Calibration' method is set to 'Custom'. Sets custom maximum value.")
+    @SetJIPipeDocumentation(name = "Custom max", description = "Used if 'Calibration' method is set to 'Custom'. Sets custom maximum value.")
     @JIPipeParameter(value = "custom-max", uiOrder = -80)
     public double getCustomMax() {
         return customMax;

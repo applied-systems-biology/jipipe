@@ -3,8 +3,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.dimensions;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -25,11 +25,11 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.Intege
 import java.util.ArrayList;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Reduce & split hyperstack", description = "Slices a hyperstack via a range of indices.")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks")
+@SetJIPipeDocumentation(name = "Reduce & split hyperstack", description = "Slices a hyperstack via a range of indices.")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks")
 public class HyperstackSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private IntegerRange indicesZ = new IntegerRange("0");
@@ -119,7 +119,7 @@ public class HyperstackSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         indices.getT().addAll(indicesT.getIntegers(0, maxT, new JIPipeExpressionVariablesMap()));
     }
 
-    @JIPipeDocumentation(name = "Indices (Z)", description = "Array of Z indices to be included in the final image. All indices begin with zero. Indices outside the available range are automatically wrapped. Return an empty array to skip a slice.")
+    @SetJIPipeDocumentation(name = "Indices (Z)", description = "Array of Z indices to be included in the final image. All indices begin with zero. Indices outside the available range are automatically wrapped. Return an empty array to skip a slice.")
     @JIPipeParameter("indices-z")
     public IntegerRange getIndicesZ() {
         return indicesZ;
@@ -130,7 +130,7 @@ public class HyperstackSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.indicesZ = indicesZ;
     }
 
-    @JIPipeDocumentation(name = "Indices (Channel)", description = "Array of channel/C indices to be included in the final image.. All indices begin with zero. Indices outside the available range are automatically wrapped. Return an empty array to skip a slice.")
+    @SetJIPipeDocumentation(name = "Indices (Channel)", description = "Array of channel/C indices to be included in the final image.. All indices begin with zero. Indices outside the available range are automatically wrapped. Return an empty array to skip a slice.")
     @JIPipeParameter("indices-c")
     public IntegerRange getIndicesC() {
         return indicesC;
@@ -141,7 +141,7 @@ public class HyperstackSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.indicesC = indicesC;
     }
 
-    @JIPipeDocumentation(name = "Indices (Frames)", description = "Array of frame/T indices to be included in the final image.. All indices begin with zero. Indices outside the available range are automatically wrapped. Return an empty array to skip a slice.")
+    @SetJIPipeDocumentation(name = "Indices (Frames)", description = "Array of frame/T indices to be included in the final image.. All indices begin with zero. Indices outside the available range are automatically wrapped. Return an empty array to skip a slice.")
     @JIPipeParameter("indices-t")
     public IntegerRange getIndicesT() {
         return indicesT;
@@ -152,7 +152,7 @@ public class HyperstackSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.indicesT = indicesT;
     }
 
-    @JIPipeDocumentation(name = "Annotate with Z indices", description = "If enabled, the output is annotated with the source Z slices (zero-based)")
+    @SetJIPipeDocumentation(name = "Annotate with Z indices", description = "If enabled, the output is annotated with the source Z slices (zero-based)")
     @JIPipeParameter("annotate-z")
     public OptionalAnnotationNameParameter getAnnotateZ() {
         return annotateZ;
@@ -163,7 +163,7 @@ public class HyperstackSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.annotateZ = annotateZ;
     }
 
-    @JIPipeDocumentation(name = "Annotate with C indices", description = "If enabled, the output is annotated with the source channel slices (zero-based)")
+    @SetJIPipeDocumentation(name = "Annotate with C indices", description = "If enabled, the output is annotated with the source channel slices (zero-based)")
     @JIPipeParameter("annotate-c")
     public OptionalAnnotationNameParameter getAnnotateC() {
         return annotateC;
@@ -174,7 +174,7 @@ public class HyperstackSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.annotateC = annotateC;
     }
 
-    @JIPipeDocumentation(name = "Annotate with T indices", description = "If enabled, the output is annotated with the source frame slices (zero-based)")
+    @SetJIPipeDocumentation(name = "Annotate with T indices", description = "If enabled, the output is annotated with the source frame slices (zero-based)")
     @JIPipeParameter("annotate-t")
     public OptionalAnnotationNameParameter getAnnotateT() {
         return annotateT;

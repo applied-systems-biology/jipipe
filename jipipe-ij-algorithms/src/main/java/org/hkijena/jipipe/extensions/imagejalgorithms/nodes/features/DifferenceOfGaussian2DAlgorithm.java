@@ -18,8 +18,8 @@ import ij.plugin.filter.GaussianBlur;
 import ij.process.ByteProcessor;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -34,11 +34,11 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 /**
  * Wrapper around {@link GaussianBlur}
  */
-@JIPipeDocumentation(name = "Difference of Gaussian 2D", description = "Applies Gaussian blur to the input image twice with different sigma values resulting in two images which are then subtracted from each other. " +
+@SetJIPipeDocumentation(name = "Difference of Gaussian 2D", description = "Applies Gaussian blur to the input image twice with different sigma values resulting in two images which are then subtracted from each other. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeNode(menuPath = "Features", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(menuPath = "Features", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", create = true)
 public class DifferenceOfGaussian2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private double sigma0X = 2;
@@ -89,7 +89,7 @@ public class DifferenceOfGaussian2DAlgorithm extends JIPipeSimpleIteratingAlgori
         return true;
     }
 
-    @JIPipeDocumentation(name = "First Sigma (X)", description = "Standard deviation of the Gaussian (pixels) in X direction. ")
+    @SetJIPipeDocumentation(name = "First Sigma (X)", description = "Standard deviation of the Gaussian (pixels) in X direction. ")
     @JIPipeParameter(value = "sigma0-x", uiOrder = -20)
     public double getSigma0X() {
         return sigma0X;
@@ -101,7 +101,7 @@ public class DifferenceOfGaussian2DAlgorithm extends JIPipeSimpleIteratingAlgori
 
     }
 
-    @JIPipeDocumentation(name = "First Sigma (Y)", description = "Standard deviation of the Gaussian (pixels) in Y direction." +
+    @SetJIPipeDocumentation(name = "First Sigma (Y)", description = "Standard deviation of the Gaussian (pixels) in Y direction." +
             " If zero or less, sigma in X direction is automatically used instead.")
     @JIPipeParameter(value = "sigma0-y", uiOrder = -19)
     public double getSigma0Y() {
@@ -114,7 +114,7 @@ public class DifferenceOfGaussian2DAlgorithm extends JIPipeSimpleIteratingAlgori
 
     }
 
-    @JIPipeDocumentation(name = "Second Sigma (X)", description = "Standard deviation of the Gaussian (pixels) in X direction. ")
+    @SetJIPipeDocumentation(name = "Second Sigma (X)", description = "Standard deviation of the Gaussian (pixels) in X direction. ")
     @JIPipeParameter(value = "sigma1-x", uiOrder = -18)
     public double getSigma1X() {
         return sigma1X;
@@ -126,7 +126,7 @@ public class DifferenceOfGaussian2DAlgorithm extends JIPipeSimpleIteratingAlgori
 
     }
 
-    @JIPipeDocumentation(name = "Second Sigma (Y)", description = "Standard deviation of the Gaussian (pixels) in Y direction." +
+    @SetJIPipeDocumentation(name = "Second Sigma (Y)", description = "Standard deviation of the Gaussian (pixels) in Y direction." +
             " If zero or less, sigma in X direction is automatically used instead.")
     @JIPipeParameter(value = "sigma1-y", uiOrder = -17)
     public double getSigma1Y() {

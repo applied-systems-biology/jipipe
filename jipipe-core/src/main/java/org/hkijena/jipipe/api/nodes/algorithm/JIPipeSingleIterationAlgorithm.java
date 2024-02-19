@@ -15,8 +15,8 @@ package org.hkijena.jipipe.api.nodes.algorithm;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -42,7 +42,7 @@ import java.util.*;
 /**
  * An {@link JIPipeAlgorithm} that applies a single iteration with a data batch containing all data.
  */
-@JIPipeDocumentationDescription(description = "This algorithm merges all annotations and data annotations. " +
+@AddJIPipeDocumentationDescription(description = "This algorithm merges all annotations and data annotations. " +
         "Use the data batch settings to determine how annotations and data annotations are merged")
 public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlotAlgorithm implements JIPipeParallelizedAlgorithm, JIPipeIterationStepAlgorithm, JIPipeAdaptiveParametersAlgorithm {
 
@@ -263,7 +263,7 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
         return 1;
     }
 
-    @JIPipeDocumentation(name = "Enable parallelization", description = "If enabled, the workload can be calculated across multiple threads to for speedup. " +
+    @SetJIPipeDocumentation(name = "Enable parallelization", description = "If enabled, the workload can be calculated across multiple threads to for speedup. " +
             "Please note that the actual usage of multiple threads depend on the runtime settings and the algorithm implementation. " +
             "We recommend to use the runtime parameters to control parallelization in most cases.")
     @JIPipeParameter(value = "jipipe:parallelization:enabled", pinned = true)
@@ -294,7 +294,7 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
         return super.isParameterUIVisible(tree, access);
     }
 
-    @JIPipeDocumentation(name = "Input management", description = "This algorithm can have multiple inputs. " +
+    @SetJIPipeDocumentation(name = "Input management", description = "This algorithm can have multiple inputs. " +
             "This node merges all data of all inputs into one batch. Here you can determine how annotations and data annotations are copied to the output.")
     @JIPipeParameter(value = "jipipe:data-batch-generation", collapsed = true,
             iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/package.png",
@@ -303,7 +303,7 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
         return iterationStepGenerationSettings;
     }
 
-    @JIPipeDocumentation(name = "Adaptive parameters", description = "You can use the following settings to generate parameter values for each data batch based on annotations.")
+    @SetJIPipeDocumentation(name = "Adaptive parameters", description = "You can use the following settings to generate parameter values for each data batch based on annotations.")
     @JIPipeParameter(value = "jipipe:adaptive-parameters", hidden = true,
             iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-function.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-function.png")

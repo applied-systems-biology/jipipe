@@ -19,15 +19,15 @@ import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 import inra.ijpb.morphology.Morphology;
 import inra.ijpb.morphology.Strel3D;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -37,10 +37,10 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.Imag
 /**
  * Wrapper around {@link ImageProcessor}
  */
-@JIPipeDocumentation(name = "Generate structure element (3D)", description = "Generates a structure element that is consistent with the ones used by the 3D morphological operation.")
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class, dataSourceMenuLocation = ImagePlusData.class)
-@JIPipeOutputSlot(value = ImagePlus3DGreyscaleMaskData.class, slotName = "Kernel", autoCreate = true)
-@JIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
+@SetJIPipeDocumentation(name = "Generate structure element (3D)", description = "Generates a structure element that is consistent with the ones used by the 3D morphological operation.")
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class, dataSourceMenuLocation = ImagePlusData.class)
+@AddJIPipeOutputSlot(value = ImagePlus3DGreyscaleMaskData.class, slotName = "Kernel", create = true)
+@AddJIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
         "Bioinformatics (Oxford Univ Press) 32(22): 3532-3534, PMID 27412086, doi:10.1093/bioinformatics/btw413")
 public class GenerateStructureElement3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
@@ -97,7 +97,7 @@ public class GenerateStructureElement3DAlgorithm extends JIPipeSimpleIteratingAl
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlus3DGreyscaleMaskData(strelDisplay), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Radius", description = "Radius of the filter kernel in pixels.")
+    @SetJIPipeDocumentation(name = "Radius", description = "Radius of the filter kernel in pixels.")
     @JIPipeParameter("radius")
     public int getRadius() {
         return radius;
@@ -108,7 +108,7 @@ public class GenerateStructureElement3DAlgorithm extends JIPipeSimpleIteratingAl
         this.radius = radius;
     }
 
-    @JIPipeDocumentation(name = "Kernel", description = "The filter kernel.")
+    @SetJIPipeDocumentation(name = "Kernel", description = "The filter kernel.")
     @JIPipeParameter("element")
     public Strel3D.Shape getElement() {
         return element;

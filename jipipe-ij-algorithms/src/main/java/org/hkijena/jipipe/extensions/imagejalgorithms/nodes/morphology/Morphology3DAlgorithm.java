@@ -18,9 +18,9 @@ import ij.ImageStack;
 import ij.process.ImageProcessor;
 import inra.ijpb.morphology.Morphology;
 import inra.ijpb.morphology.Strel3D;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -35,16 +35,16 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 /**
  * Wrapper around {@link ImageProcessor}
  */
-@JIPipeDocumentation(name = "Morphological operation 3D", description = "Applies a morphological operation to greyscale images. " +
+@SetJIPipeDocumentation(name = "Morphological operation 3D", description = "Applies a morphological operation to greyscale images. " +
         "Following operations are included: Erosion, Dilation, Opening, Closing, White Top Hat, Black Top Hat, Gradient, Laplacian, Internal Gradient, and External Gradient. " +
         "More information (including examples) can be found at https://imagej.net/MorphoLibJ.html\n" +
         "If a multi-channel image is provided, the operation is applied to each channel.")
-@JIPipeNode(menuPath = "Morphology", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
+@DefineJIPipeNode(menuPath = "Morphology", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
         "Bioinformatics (Oxford Univ Press) 32(22): 3532-3534, PMID 27412086, doi:10.1093/bioinformatics/btw413")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nFiltering", aliasName = "Morphological Filters (3D)")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nFiltering", aliasName = "Morphological Filters (3D)")
 public class Morphology3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Morphology.Operation operation = Morphology.Operation.DILATION;
@@ -107,7 +107,7 @@ public class Morphology3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         return resultPlus;
     }
 
-    @JIPipeDocumentation(name = "Operation", description = "The morphological operation. Following operations are supported: " +
+    @SetJIPipeDocumentation(name = "Operation", description = "The morphological operation. Following operations are supported: " +
             "<ul>" +
             "<li><b>Erosion: </b>A local minimum filter</li>" +
             "<li><b>Dilation: </b>A local maximum filter</li>" +
@@ -131,7 +131,7 @@ public class Morphology3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Radius", description = "Radius of the filter kernel in pixels.")
+    @SetJIPipeDocumentation(name = "Radius", description = "Radius of the filter kernel in pixels.")
     @JIPipeParameter("radius")
     public int getRadius() {
         return radius;
@@ -142,7 +142,7 @@ public class Morphology3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.radius = radius;
     }
 
-    @JIPipeDocumentation(name = "Structure element", description = "The structure element.")
+    @SetJIPipeDocumentation(name = "Structure element", description = "The structure element.")
     @JIPipeParameter("element")
     public Strel3D.Shape getElement() {
         return element;

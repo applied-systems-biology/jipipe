@@ -13,14 +13,14 @@
 
 package org.hkijena.jipipe.extensions.expressions.functions.string;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "Last index of substring", description = "Finds the last index of a substring in the string. " +
+@SetJIPipeDocumentation(name = "Last index of substring", description = "Finds the last index of a substring in the string. " +
         "Returns -1 if the substring is not contained in the string.")
 public class StringLastIndexOfFunction extends ExpressionFunction {
 

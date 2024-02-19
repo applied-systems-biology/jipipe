@@ -5,9 +5,9 @@ import mcib3d.image3d.ImageFloat;
 import mcib3d.image3d.ImageHandler;
 import mcib3d.image3d.ImageInt;
 import mcib3d.image3d.distanceMap3d.EDT;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -20,13 +20,13 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
-@JIPipeDocumentation(name = "Eroded Volume Fraction 3D", description = "The EVF (Eroded Volume Fraction) can be regarded as a normalized EDT (Euclidean Distance Map). " +
+@SetJIPipeDocumentation(name = "Eroded Volume Fraction 3D", description = "The EVF (Eroded Volume Fraction) can be regarded as a normalized EDT (Euclidean Distance Map). " +
         "The calculated distances will be in the calibrated unit.")
-@JIPipeCitation("Read about EVF: https://onlinelibrary.wiley.com/doi/full/10.1002/jcb.21823")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Math\nDistance map")
-@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", description = "Mask for the EVF", optional = true, autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)
+@AddJIPipeCitation("Read about EVF: https://onlinelibrary.wiley.com/doi/full/10.1002/jcb.21823")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Math\nDistance map")
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", description = "Mask for the EVF", optional = true, create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
 public class ErodedVolumeFraction3DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private int threshold = 0;
@@ -43,7 +43,7 @@ public class ErodedVolumeFraction3DAlgorithm extends JIPipeIteratingAlgorithm {
         this.inverse = other.inverse;
     }
 
-    @JIPipeDocumentation(name = "Threshold", description = "Threshold value for the mask")
+    @SetJIPipeDocumentation(name = "Threshold", description = "Threshold value for the mask")
     @JIPipeParameter("threshold")
     public int getThreshold() {
         return threshold;
@@ -54,7 +54,7 @@ public class ErodedVolumeFraction3DAlgorithm extends JIPipeIteratingAlgorithm {
         this.threshold = threshold;
     }
 
-    @JIPipeDocumentation(name = "Inverse", description = "If enabled, the threshold is applied on the inverse iamge")
+    @SetJIPipeDocumentation(name = "Inverse", description = "If enabled, the threshold is applied on the inverse iamge")
     @JIPipeParameter("inverse")
     public boolean isInverse() {
         return inverse;

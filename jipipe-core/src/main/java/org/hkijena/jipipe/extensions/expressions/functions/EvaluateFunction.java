@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.expressions.functions;
 
 import com.google.common.collect.ImmutableList;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
@@ -16,7 +16,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Evaluate", description = "Evaluates a string as expression. The first parameter is the expression, while all other " +
+@SetJIPipeDocumentation(name = "Evaluate", description = "Evaluates a string as expression. The first parameter is the expression, while all other " +
         "parameters assign variables.")
 public class EvaluateFunction extends ExpressionFunction {
     public EvaluateFunction() {

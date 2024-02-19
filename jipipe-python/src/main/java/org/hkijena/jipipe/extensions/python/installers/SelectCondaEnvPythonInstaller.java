@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.python.installers;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -26,7 +26,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@JIPipeDocumentation(name = "Select existing Conda environment ...", description = "Chooses an existing Conda environment")
+@SetJIPipeDocumentation(name = "Select existing Conda environment ...", description = "Chooses an existing Conda environment")
 public class SelectCondaEnvPythonInstaller extends ExternalEnvironmentInstaller {
 
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
@@ -127,7 +127,7 @@ public class SelectCondaEnvPythonInstaller extends ExternalEnvironmentInstaller 
         private OptionalPathParameter overrideEnvironment = new OptionalPathParameter();
         private String name = "Conda";
 
-        @JIPipeDocumentation(name = "Conda executable", description = "The conda executable. Located in the Miniconda/Anaconda folder. On Windows it is inside the Scripts directory.")
+        @SetJIPipeDocumentation(name = "Conda executable", description = "The conda executable. Located in the Miniconda/Anaconda folder. On Windows it is inside the Scripts directory.")
         @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.FilesOnly, key = FileChooserSettings.LastDirectoryKey.External)
         @JIPipeParameter("conda-executable")
         public Path getCondaExecutable() {
@@ -139,7 +139,7 @@ public class SelectCondaEnvPythonInstaller extends ExternalEnvironmentInstaller 
             this.condaExecutable = condaExecutable;
         }
 
-        @JIPipeDocumentation(name = "Environment name", description = "The name of the selected Conda environment")
+        @SetJIPipeDocumentation(name = "Environment name", description = "The name of the selected Conda environment")
         @JIPipeParameter("environment-name")
         @StringParameterSettings(monospace = true)
         public String getEnvironmentName() {
@@ -151,7 +151,7 @@ public class SelectCondaEnvPythonInstaller extends ExternalEnvironmentInstaller 
             this.environmentName = environmentName;
         }
 
-        @JIPipeDocumentation(name = "Override environment path", description = "Alternative to using an environment name. You can provide " +
+        @SetJIPipeDocumentation(name = "Override environment path", description = "Alternative to using an environment name. You can provide " +
                 "the environment directory here.")
         @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.DirectoriesOnly, key = FileChooserSettings.LastDirectoryKey.External)
         @JIPipeParameter("override-environment")
@@ -164,7 +164,7 @@ public class SelectCondaEnvPythonInstaller extends ExternalEnvironmentInstaller 
             this.overrideEnvironment = overrideEnvironment;
         }
 
-        @JIPipeDocumentation(name = "Name", description = "Name of the created environment")
+        @SetJIPipeDocumentation(name = "Name", description = "Name of the created environment")
         @JIPipeParameter("name")
         public String getName() {
             return name;

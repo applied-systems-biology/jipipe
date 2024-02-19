@@ -5,8 +5,8 @@ import gnu.trove.list.array.TFloatArrayList;
 import gnu.trove.map.hash.TDoubleObjectHashMap;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -34,12 +34,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Key/Value statistics 5D (fast averages)", description = "This node consumes two images with the same dimensions that respectively contain the keys and value components of each pixel position. " +
+@SetJIPipeDocumentation(name = "Key/Value statistics 5D (fast averages)", description = "This node consumes two images with the same dimensions that respectively contain the keys and value components of each pixel position. " +
         "Buckets the pixels of the 'Value' image based on the pixel in the 'Key' and calculates the number of values, their sum, and the average value.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Key", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Value", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Key", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Value", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class KeyValueAveragesGenerator extends JIPipeIteratingAlgorithm {
     private ImageROITargetArea sourceArea = ImageROITargetArea.WholeImage;
     private OptionalStringParameter keyColumnName = new OptionalStringParameter("key", true);
@@ -180,7 +180,7 @@ public class KeyValueAveragesGenerator extends JIPipeIteratingAlgorithm {
         return ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(sourceArea, width, height, rois, mask, sliceIndex);
     }
 
-    @JIPipeDocumentation(name = "Extract values from ...", description = "Determines from which image areas the pixel values used for extracting the values")
+    @SetJIPipeDocumentation(name = "Extract values from ...", description = "Determines from which image areas the pixel values used for extracting the values")
     @JIPipeParameter("source-area")
     public ImageROITargetArea getSourceArea() {
         return sourceArea;
@@ -192,7 +192,7 @@ public class KeyValueAveragesGenerator extends JIPipeIteratingAlgorithm {
         ImageJAlgorithmUtils.updateROIOrMaskSlot(sourceArea, getSlotConfiguration());
     }
 
-    @JIPipeDocumentation(name = "Column name: key", description = "Column name for the key")
+    @SetJIPipeDocumentation(name = "Column name: key", description = "Column name for the key")
     @JIPipeParameter("key-column-name")
     public OptionalStringParameter getKeyColumnName() {
         return keyColumnName;
@@ -203,7 +203,7 @@ public class KeyValueAveragesGenerator extends JIPipeIteratingAlgorithm {
         this.keyColumnName = keyColumnName;
     }
 
-    @JIPipeDocumentation(name = "Column name: count", description = "Column name for the count of values")
+    @SetJIPipeDocumentation(name = "Column name: count", description = "Column name for the count of values")
     @JIPipeParameter("count-column-name")
     public OptionalStringParameter getCountColumnName() {
         return countColumnName;
@@ -214,7 +214,7 @@ public class KeyValueAveragesGenerator extends JIPipeIteratingAlgorithm {
         this.countColumnName = countColumnName;
     }
 
-    @JIPipeDocumentation(name = "Column name: sum", description = "Column name for the sum of values")
+    @SetJIPipeDocumentation(name = "Column name: sum", description = "Column name for the sum of values")
     @JIPipeParameter("sum-column-name")
     public OptionalStringParameter getSumColumnName() {
         return sumColumnName;
@@ -225,7 +225,7 @@ public class KeyValueAveragesGenerator extends JIPipeIteratingAlgorithm {
         this.sumColumnName = sumColumnName;
     }
 
-    @JIPipeDocumentation(name = "Column name: mean", description = "Column name for the mean values")
+    @SetJIPipeDocumentation(name = "Column name: mean", description = "Column name for the mean values")
     @JIPipeParameter("mean-column-name")
     public OptionalStringParameter getMeanColumnName() {
         return meanColumnName;

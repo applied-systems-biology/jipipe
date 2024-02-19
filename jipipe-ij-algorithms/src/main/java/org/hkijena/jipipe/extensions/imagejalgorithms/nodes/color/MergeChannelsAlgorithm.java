@@ -21,8 +21,8 @@ import ij.plugin.CompositeConverter;
 import ij.plugin.RGBStackMerge;
 import ij.plugin.ZProjector;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
@@ -50,11 +50,11 @@ import java.util.Set;
 /**
  * Wrapper around {@link ImageProcessor}
  */
-@JIPipeDocumentation(name = "Merge channels", description = "Merges each greyscale image plane into a multi-channel image. ")
-@JIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nColor", aliasName = "Merge Channels...")
+@SetJIPipeDocumentation(name = "Merge channels", description = "Merges each greyscale image plane into a multi-channel image. ")
+@DefineJIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nColor", aliasName = "Merge Channels...")
 public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private static final RGBStackMerge RGB_STACK_MERGE = new RGBStackMerge();
@@ -275,13 +275,13 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Channel colors", description = "Assigns a color to the specified input slot")
+    @SetJIPipeDocumentation(name = "Channel colors", description = "Assigns a color to the specified input slot")
     @JIPipeParameter("channel-color-assignments")
     public InputSlotMapParameterCollection getChannelColorAssignment() {
         return channelColorAssignment;
     }
 
-    @JIPipeDocumentation(name = "Create composite", description = "If true, the generated image is a composite where the color channels are stored as individual greyscale planes. " +
+    @SetJIPipeDocumentation(name = "Create composite", description = "If true, the generated image is a composite where the color channels are stored as individual greyscale planes. " +
             "If false, the result is an RGB image.")
     @JIPipeParameter("create-composite")
     public boolean isCreateComposite() {

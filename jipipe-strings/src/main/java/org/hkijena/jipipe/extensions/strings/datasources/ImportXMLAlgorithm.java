@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.strings.datasources;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
@@ -16,10 +16,10 @@ import org.hkijena.jipipe.utils.xml.XmlUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 
-@JIPipeDocumentation(name = "Import XML", description = "Imports XML data from a file")
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeInputSlot(value = FileData.class, slotName = "File", autoCreate = true)
-@JIPipeOutputSlot(value = XMLData.class, slotName = "XML", autoCreate = true)
+@SetJIPipeDocumentation(name = "Import XML", description = "Imports XML data from a file")
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = FileData.class, slotName = "File", create = true)
+@AddJIPipeOutputSlot(value = XMLData.class, slotName = "XML", create = true)
 public class ImportXMLAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean validateXml = true;
@@ -47,7 +47,7 @@ public class ImportXMLAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Validate XML", description = "If enabled, validate if the imported file contains valid XML")
+    @SetJIPipeDocumentation(name = "Validate XML", description = "If enabled, validate if the imported file contains valid XML")
     @JIPipeParameter("validate-xml")
     public boolean isValidateXml() {
         return validateXml;

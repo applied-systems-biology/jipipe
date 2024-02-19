@@ -17,8 +17,8 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.plugin.filter.MaximumFinder;
 import ij.process.ByteProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -33,12 +33,12 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 /**
  * Wrapper around {@link ij.plugin.filter.MaximumFinder}
  */
-@JIPipeDocumentation(name = "Local maxima 2D", description = "Finds the local maxima of each image. " +
+@SetJIPipeDocumentation(name = "Local maxima 2D", description = "Finds the local maxima of each image. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeNode(menuPath = "Features", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process", aliasName = "Find Maxima...")
+@DefineJIPipeNode(menuPath = "Features", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process", aliasName = "Find Maxima...")
 public class LocalMaxima2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private double heightTolerance = 10;
@@ -102,7 +102,7 @@ public class LocalMaxima2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Height tolerance", description = "Maxima are accepted only if protruding more than this value from the ridge to a higher maximum")
+    @SetJIPipeDocumentation(name = "Height tolerance", description = "Maxima are accepted only if protruding more than this value from the ridge to a higher maximum")
     @JIPipeParameter("height-tolerance")
     public double getHeightTolerance() {
         return heightTolerance;
@@ -113,7 +113,7 @@ public class LocalMaxima2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.heightTolerance = heightTolerance;
     }
 
-    @JIPipeDocumentation(name = "Is strict", description = "When off, the global maximum is accepted even if all other pixel are less than " +
+    @SetJIPipeDocumentation(name = "Is strict", description = "When off, the global maximum is accepted even if all other pixel are less than " +
             "'tolerance' below this level. With 'Exclude on Edges' enabled, 'strict' also " +
             "means that the surrounding of a maximum within 'tolerance' must not include an edge pixel " +
             "(otherwise, it is enough that there is no edge pixel with the maximum value).")
@@ -127,7 +127,7 @@ public class LocalMaxima2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.strict = strict;
     }
 
-    @JIPipeDocumentation(name = "Threshold", description = "Minimum height of a maximum (uncalibrated)")
+    @SetJIPipeDocumentation(name = "Threshold", description = "Minimum height of a maximum (uncalibrated)")
     @JIPipeParameter("threshold")
     public double getThreshold() {
         return threshold;
@@ -138,7 +138,7 @@ public class LocalMaxima2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.threshold = threshold;
     }
 
-    @JIPipeDocumentation(name = "Output type", description = "Available output types: <table>" +
+    @SetJIPipeDocumentation(name = "Output type", description = "Available output types: <table>" +
             "<tr><td>SinglePoints</td><td>Outputs single points</td></tr>" +
             "<tr><td>InTolerance</td><td>Outputs all points around the maximum within the tolerance</td></tr>" +
             "<tr><td>Segmented</td><td>Outputs a watershed-segmented image</td></tr></table>")
@@ -152,7 +152,7 @@ public class LocalMaxima2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.outputType = outputType;
     }
 
-    @JIPipeDocumentation(name = "Exclude on edges", description = "Whether to exclude edge maxima")
+    @SetJIPipeDocumentation(name = "Exclude on edges", description = "Whether to exclude edge maxima")
     @JIPipeParameter("exclude-on-edges")
     public boolean isExcludeOnEdges() {
         return excludeOnEdges;
@@ -163,7 +163,7 @@ public class LocalMaxima2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.excludeOnEdges = excludeOnEdges;
     }
 
-    @JIPipeDocumentation(name = "Input is EDM", description = "Whether the input image is a float Euclidean Distance Map (EDM).")
+    @SetJIPipeDocumentation(name = "Input is EDM", description = "Whether the input image is a float Euclidean Distance Map (EDM).")
     @JIPipeParameter("input-is-edm")
     public boolean isInputIsEDM() {
         return inputIsEDM;

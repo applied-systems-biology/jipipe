@@ -15,8 +15,8 @@
 package org.hkijena.jipipe.extensions.tables.nodes.rows;
 
 import com.google.common.primitives.Doubles;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -34,10 +34,10 @@ import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 
 import java.util.*;
 
-@JIPipeDocumentation(name = "Apply expression per row", description = "Applies an expression for each row. The column values are available as variables.")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Apply expression per row", description = "Applies an expression for each row. The column values are available as variables.")
+@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class ApplyExpressionPerRowAlgorithm2 extends JIPipeSimpleIteratingAlgorithm {
 
     private ParameterCollectionList entries = ParameterCollectionList.containingCollection(Entry.class);
@@ -95,7 +95,7 @@ public class ApplyExpressionPerRowAlgorithm2 extends JIPipeSimpleIteratingAlgori
         iterationStep.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Generated values", description = "List of expressions that describe how new values are generated")
+    @SetJIPipeDocumentation(name = "Generated values", description = "List of expressions that describe how new values are generated")
     @JIPipeParameter("entries")
     @ParameterCollectionListTemplate(Entry.class)
     public ParameterCollectionList getEntries() {
@@ -144,7 +144,7 @@ public class ApplyExpressionPerRowAlgorithm2 extends JIPipeSimpleIteratingAlgori
             this.value = new JIPipeExpressionParameter(other.value);
         }
 
-        @JIPipeDocumentation(name = "Column name", description = "The name of the column where the value will be written")
+        @SetJIPipeDocumentation(name = "Column name", description = "The name of the column where the value will be written")
         @JIPipeParameter("column-name")
         @JIPipeExpressionParameterVariable(fromClass = VariablesInfo.class)
         @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
@@ -158,7 +158,7 @@ public class ApplyExpressionPerRowAlgorithm2 extends JIPipeSimpleIteratingAlgori
             this.columnName = columnName;
         }
 
-        @JIPipeDocumentation(name = "Value", description = "The generated value")
+        @SetJIPipeDocumentation(name = "Value", description = "The generated value")
         @JIPipeParameter("value")
         @JIPipeExpressionParameterVariable(fromClass = VariablesInfo.class)
         @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")

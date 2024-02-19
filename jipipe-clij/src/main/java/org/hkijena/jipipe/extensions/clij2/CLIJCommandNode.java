@@ -6,7 +6,7 @@ import net.haesleinhuepf.clij.macro.CLIJMacroPlugin;
 import net.haesleinhuepf.clij.macro.CLIJOpenCLProcessor;
 import net.haesleinhuepf.clij2.AbstractCLIJ2Plugin;
 import net.haesleinhuepf.clij2.CLIJ2;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -95,7 +95,7 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Avoid allocating GPU memory", description = "If enabled, the node will be reconfigured to only allocate data into the GPU memory if absolutely necessary. Please note that " +
+    @SetJIPipeDocumentation(name = "Avoid allocating GPU memory", description = "If enabled, the node will be reconfigured to only allocate data into the GPU memory if absolutely necessary. Please note that " +
             "the application of multiple GPU-based operations will be slower due to the repeated allocation and de-allocation of the images.")
     @JIPipeParameter("avoid-gpu-memory")
     public boolean isAvoidGPUMemory() {
@@ -108,7 +108,7 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
         updateSlots();
     }
 
-    @JIPipeDocumentation(name = "CLIJ parameters", description = "Following parameters were extracted from the CLIJ2 operation:")
+    @SetJIPipeDocumentation(name = "CLIJ parameters", description = "Following parameters were extracted from the CLIJ2 operation:")
     @JIPipeParameter("clij-parameters")
     public JIPipeDynamicParameterCollection getClijParameters() {
         return clijParameters;

@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
@@ -41,12 +41,12 @@ import java.util.stream.Stream;
 /**
  * Algorithm that lists files in each folder
  */
-@JIPipeDocumentation(name = "List files", description = "Lists all files in the input folder")
-@JIPipeNode(menuPath = "List", nodeTypeCategory = FileSystemNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "List files", description = "Lists all files in the input folder")
+@DefineJIPipeNode(menuPath = "List", nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
 
-@JIPipeInputSlot(value = FolderData.class, slotName = "Folders", autoCreate = true)
-@JIPipeOutputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
+@AddJIPipeInputSlot(value = FolderData.class, slotName = "Folders", create = true)
+@AddJIPipeOutputSlot(value = FileData.class, slotName = "Files", create = true)
 
 
 public class ListFiles extends JIPipeSimpleIteratingAlgorithm {
@@ -112,7 +112,7 @@ public class ListFiles extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Filters", description = "Filter expression that allows to filter the files. " +
+    @SetJIPipeDocumentation(name = "Filters", description = "Filter expression that allows to filter the files. " +
             "Click the [X] button to see all available variables. " +
             "An example for an expression would be '\".tif\" IN name', which would test if there is '.tif' inside the file name. " +
             "Annotations are available as variables.")
@@ -126,7 +126,7 @@ public class ListFiles extends JIPipeSimpleIteratingAlgorithm {
         this.filters = filters;
     }
 
-    @JIPipeDocumentation(name = "Subfolder", description = "Optional. If non-empty, all files are extracted from the provided sub-folder. " +
+    @SetJIPipeDocumentation(name = "Subfolder", description = "Optional. If non-empty, all files are extracted from the provided sub-folder. " +
             "The sub-folder navigation is applied before recursive search (if 'Recursive' is enabled).")
     @JIPipeParameter("subfolder")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/folder-open.png")
@@ -139,7 +139,7 @@ public class ListFiles extends JIPipeSimpleIteratingAlgorithm {
         this.subFolder = subFolder;
     }
 
-    @JIPipeDocumentation(name = "Recursive", description = "If enabled, the search is recursive.")
+    @SetJIPipeDocumentation(name = "Recursive", description = "If enabled, the search is recursive.")
     @JIPipeParameter(value = "recursive", important = true)
     public boolean isRecursive() {
         return recursive;
@@ -150,7 +150,7 @@ public class ListFiles extends JIPipeSimpleIteratingAlgorithm {
         this.recursive = recursive;
     }
 
-    @JIPipeDocumentation(name = "Recursive search follows links", description = "If enabled, a recursive search follows symbolic links. " +
+    @SetJIPipeDocumentation(name = "Recursive search follows links", description = "If enabled, a recursive search follows symbolic links. " +
             "(Only Windows) Please note that Windows does not create symbolic links by default.")
     @JIPipeParameter("recursive-follows-links")
     public boolean isRecursiveFollowsLinks() {

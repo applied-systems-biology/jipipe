@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.graphannotation.nodes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.GraphAnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -15,8 +15,8 @@ import org.hkijena.jipipe.utils.SizeFitMode;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-@JIPipeDocumentation(name = "Image box", description = "An annotation that contains an image")
-@JIPipeNode(nodeTypeCategory = GraphAnnotationsNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "Image box", description = "An annotation that contains an image")
+@DefineJIPipeNode(nodeTypeCategory = GraphAnnotationsNodeTypeCategory.class)
 public class ImageBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphNode {
     private final ImageParameters imageParameters;
 
@@ -32,7 +32,7 @@ public class ImageBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphN
         registerSubParameter(imageParameters);
     }
 
-    @JIPipeDocumentation(name = "Image", description = "The following settings allow to modify the shape/image")
+    @SetJIPipeDocumentation(name = "Image", description = "The following settings allow to modify the shape/image")
     @JIPipeParameter(value = "image-parameters", uiOrder = -10)
     public ImageParameters getImageParameters() {
         return imageParameters;
@@ -140,7 +140,7 @@ public class ImageBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphN
             this.marginBottom = other.marginBottom;
         }
 
-        @JIPipeDocumentation(name = "Image", description = "The image to be displayed")
+        @SetJIPipeDocumentation(name = "Image", description = "The image to be displayed")
         @JIPipeParameter("image")
         public ImageParameter getImage() {
             return image;
@@ -151,7 +151,7 @@ public class ImageBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphN
             this.image = image;
         }
 
-        @JIPipeDocumentation(name = "Fit image", description = "How the image is fit into the node")
+        @SetJIPipeDocumentation(name = "Fit image", description = "How the image is fit into the node")
         @JIPipeParameter("fit-mode")
         public SizeFitMode getFitMode() {
             return fitMode;
@@ -162,7 +162,7 @@ public class ImageBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphN
             this.fitMode = fitMode;
         }
 
-        @JIPipeDocumentation(name = "Background color", description = "The background color of this node")
+        @SetJIPipeDocumentation(name = "Background color", description = "The background color of this node")
         @JIPipeParameter("fill-color")
         public OptionalColorParameter getBackgroundColor() {
             return backgroundColor;
@@ -173,7 +173,7 @@ public class ImageBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphN
             this.backgroundColor = backgroundColor;
         }
 
-        @JIPipeDocumentation(name = "Border color", description = "The border color of this node")
+        @SetJIPipeDocumentation(name = "Border color", description = "The border color of this node")
         @JIPipeParameter("border-color")
         public Color getBorderColor() {
             return borderColor;
@@ -184,7 +184,7 @@ public class ImageBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphN
             this.borderColor = borderColor;
         }
 
-        @JIPipeDocumentation(name = "Border thickness", description = "The thickness of the border")
+        @SetJIPipeDocumentation(name = "Border thickness", description = "The thickness of the border")
         @JIPipeParameter("border-thickness")
         public int getBorderThickness() {
             return borderThickness;
@@ -195,7 +195,7 @@ public class ImageBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphN
             this.borderThickness = borderThickness;
         }
 
-        @JIPipeDocumentation(name = "Anchor", description = "Determines to which anchor location the image is attached to.")
+        @SetJIPipeDocumentation(name = "Anchor", description = "Determines to which anchor location the image is attached to.")
         @JIPipeParameter("anchor")
         public Anchor getAnchor() {
             return anchor;
@@ -206,7 +206,7 @@ public class ImageBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphN
             this.anchor = anchor;
         }
 
-        @JIPipeDocumentation(name = "Scale (X)", description = "Custom image scale in X direction")
+        @SetJIPipeDocumentation(name = "Scale (X)", description = "Custom image scale in X direction")
         @JIPipeParameter("scale-x")
         public double getScaleX() {
             return scaleX;
@@ -217,7 +217,7 @@ public class ImageBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphN
             this.scaleX = scaleX;
         }
 
-        @JIPipeDocumentation(name = "Scale (Y)", description = "Custom image scale in Y direction")
+        @SetJIPipeDocumentation(name = "Scale (Y)", description = "Custom image scale in Y direction")
         @JIPipeParameter("scale-y")
         public double getScaleY() {
             return scaleY;
@@ -228,7 +228,7 @@ public class ImageBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphN
             this.scaleY = scaleY;
         }
 
-        @JIPipeDocumentation(name = "Margin left", description = "The left margin of the available text area relative to the node border")
+        @SetJIPipeDocumentation(name = "Margin left", description = "The left margin of the available text area relative to the node border")
         @JIPipeParameter("margin-left")
         public int getMarginLeft() {
             return marginLeft;
@@ -239,7 +239,7 @@ public class ImageBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphN
             this.marginLeft = marginLeft;
         }
 
-        @JIPipeDocumentation(name = "Margin right", description = "The right margin of the available text area relative to the node border")
+        @SetJIPipeDocumentation(name = "Margin right", description = "The right margin of the available text area relative to the node border")
         @JIPipeParameter("margin-right")
         public int getMarginRight() {
             return marginRight;
@@ -250,7 +250,7 @@ public class ImageBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphN
             this.marginRight = marginRight;
         }
 
-        @JIPipeDocumentation(name = "Margin top", description = "The top margin of the available text area relative to the node border")
+        @SetJIPipeDocumentation(name = "Margin top", description = "The top margin of the available text area relative to the node border")
         @JIPipeParameter("margin-top")
         public int getMarginTop() {
             return marginTop;
@@ -261,7 +261,7 @@ public class ImageBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphN
             this.marginTop = marginTop;
         }
 
-        @JIPipeDocumentation(name = "Margin bottom", description = "The bottom margin of the available text area relative to the node border")
+        @SetJIPipeDocumentation(name = "Margin bottom", description = "The bottom margin of the available text area relative to the node border")
         @JIPipeParameter("margin-bottom")
         public int getMarginBottom() {
             return marginBottom;

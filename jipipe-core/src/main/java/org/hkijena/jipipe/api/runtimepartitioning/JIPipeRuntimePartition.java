@@ -2,7 +2,7 @@ package org.hkijena.jipipe.api.runtimepartitioning;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithmIterationStepGenerationSettings;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithmIterationStepGenerationSettings;
@@ -53,7 +53,7 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
         emitParameterUIChangedEvent();
     }
 
-    @JIPipeDocumentation(name = "Name", description = "Name of the partition")
+    @SetJIPipeDocumentation(name = "Name", description = "Name of the partition")
     @JIPipeParameter(value = "name", pinned = true, uiOrder = -100)
     @JsonGetter("name")
     public String getName() {
@@ -66,7 +66,7 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
         this.name = name;
     }
 
-    @JIPipeDocumentation(name = "Description", description = "Description for this partition")
+    @SetJIPipeDocumentation(name = "Description", description = "Description for this partition")
     @JIPipeParameter("description")
     @JsonGetter("description")
     public HTMLText getDescription() {
@@ -78,7 +78,7 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
         this.description = description;
     }
 
-    @JIPipeDocumentation(name = "Color", description = "If enabled, color nodes in this partition according to the color")
+    @SetJIPipeDocumentation(name = "Color", description = "If enabled, color nodes in this partition according to the color")
     @JIPipeParameter(value = "color", pinned = true, uiOrder = -90)
     @JsonGetter("color")
     public OptionalColorParameter getColor() {
@@ -91,7 +91,7 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
         this.color = color;
     }
 
-    @JIPipeDocumentation(name = "Outputs", description = "Settings related to how generated outputs are exported or further processed")
+    @SetJIPipeDocumentation(name = "Outputs", description = "Settings related to how generated outputs are exported or further processed")
     @JIPipeParameter("output-settings")
     @JsonGetter("output-settings")
     public OutputSettings getOutputSettings() {
@@ -103,7 +103,7 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
         this.outputSettings = outputSettings;
     }
 
-    @JIPipeDocumentation(name = "Iteration mode", description = "If not set to 'Pass-through', the contents of this graph partition are looped based on the annotations of incoming data from other partitions. " +
+    @SetJIPipeDocumentation(name = "Iteration mode", description = "If not set to 'Pass-through', the contents of this graph partition are looped based on the annotations of incoming data from other partitions. " +
             "You will need at least two partitions to make use of looping. Loops cannot be nested.")
     @JIPipeParameter("iteration-mode")
     public GraphWrapperAlgorithm.IterationMode getIterationMode() {
@@ -115,7 +115,7 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
         this.iterationMode = iterationMode;
     }
 
-    @JIPipeDocumentation(name = "Loop iteration (multiple data per slot)", description = "Determine how iteration steps for looping partitions are created. Only applied if the 'Iteration mode' is set to 'Loop (multiple data per slot)'")
+    @SetJIPipeDocumentation(name = "Loop iteration (multiple data per slot)", description = "Determine how iteration steps for looping partitions are created. Only applied if the 'Iteration mode' is set to 'Loop (multiple data per slot)'")
     @JIPipeParameter("loop-iteration-merging-settings")
     @JsonGetter("loop-iteration-merging-settings")
     public JIPipeMergingAlgorithmIterationStepGenerationSettings getLoopIterationMergingSettings() {
@@ -127,7 +127,7 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
         this.loopIterationMergingSettings = loopIterationMergingSettings;
     }
 
-    @JIPipeDocumentation(name = "Loop iteration (single data per slot))", description = "Determine how iteration steps for looping partitions are created. Only applied if the 'Iteration mode' is set to 'Loop (single data per slot)'")
+    @SetJIPipeDocumentation(name = "Loop iteration (single data per slot))", description = "Determine how iteration steps for looping partitions are created. Only applied if the 'Iteration mode' is set to 'Loop (single data per slot)'")
     @JIPipeParameter("loop-iteration-iterating-settings")
     @JsonGetter("loop-iteration-iterating-settings")
     public JIPipeIteratingAlgorithmIterationStepGenerationSettings getLoopIterationIteratingSettings() {
@@ -176,7 +176,7 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
             this.exportHeavyData = other.exportHeavyData;
         }
 
-        @JIPipeDocumentation(name = "Auto-export lightweight data", description = "If enabled, save data that is generally small, e.g., tables, 2D ROI, or text files.")
+        @SetJIPipeDocumentation(name = "Auto-export lightweight data", description = "If enabled, save data that is generally small, e.g., tables, 2D ROI, or text files.")
         @JIPipeParameter("export-lightweight-data")
         @JsonGetter("export-lightweight-data")
         public boolean isExportLightweightData() {
@@ -189,7 +189,7 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
             this.exportLightweightData = exportLightweightData;
         }
 
-        @JIPipeDocumentation(name = "Auto-export heavy data", description = "If enabled, save data that is generally large, e.g., images or 3D ROI.")
+        @SetJIPipeDocumentation(name = "Auto-export heavy data", description = "If enabled, save data that is generally large, e.g., images or 3D ROI.")
         @JIPipeParameter("export-heavy-data")
         @JsonGetter("export-heavy-data")
         public boolean isExportHeavyData() {

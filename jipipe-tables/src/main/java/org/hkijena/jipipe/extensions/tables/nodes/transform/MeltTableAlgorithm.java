@@ -14,8 +14,8 @@
 
 package org.hkijena.jipipe.extensions.tables.nodes.transform;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -34,12 +34,12 @@ import java.util.Set;
 /**
  * Algorithm that integrates columns
  */
-@JIPipeDocumentation(name = "Melt table", description = "Moves values from different columns (value columns) into their own rows, " +
+@SetJIPipeDocumentation(name = "Melt table", description = "Moves values from different columns (value columns) into their own rows, " +
         "while the other columns are copied (category columns). Also known as unpivot operation.")
-@JIPipeNodeAlias(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Transform", aliasName = "Unpivot table")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Transform")
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Transform", aliasName = "Unpivot table")
+@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Transform")
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class MeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private StringQueryExpression valueColumns = new StringQueryExpression();
@@ -127,7 +127,7 @@ public class MeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), output, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Value columns", description = "Allows to select the value columns by their name via a filter expression. ")
+    @SetJIPipeDocumentation(name = "Value columns", description = "Allows to select the value columns by their name via a filter expression. ")
     @JIPipeParameter("value-columns")
     public StringQueryExpression getValueColumns() {
         return valueColumns;
@@ -138,7 +138,7 @@ public class MeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.valueColumns = valueColumns;
     }
 
-    @JIPipeDocumentation(name = "Output value column name", description = "Name of the output value column. If the column already exists as category column," +
+    @SetJIPipeDocumentation(name = "Output value column name", description = "Name of the output value column. If the column already exists as category column," +
             " a unique name is generated based on this one.")
     @JIPipeParameter("output-value-column-name")
     public String getOutputValueColumnName() {
@@ -150,7 +150,7 @@ public class MeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.outputValueColumnName = outputValueColumnName;
     }
 
-    @JIPipeDocumentation(name = "Output category column name", description = "If enabled, the source column name is added into another column. If the column already exists," +
+    @SetJIPipeDocumentation(name = "Output category column name", description = "If enabled, the source column name is added into another column. If the column already exists," +
             " a unique name is generated.")
     @JIPipeParameter("output-category-column-name")
     public OptionalStringParameter getOutputCategoryColumnName() {

@@ -1,14 +1,14 @@
 package org.hkijena.jipipe.extensions.expressions.functions.math;
 
 import ij.IJ;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "Number to string", description = "Rounds a number to a specified number of decimals and outputs the value as string")
+@SetJIPipeDocumentation(name = "Number to string", description = "Rounds a number to a specified number of decimals and outputs the value as string")
 public class DoubleToStringFunction extends ExpressionFunction {
     public DoubleToStringFunction() {
         super("D2S", 2);

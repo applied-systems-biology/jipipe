@@ -8,9 +8,9 @@ import ij.gui.Roi;
 import ij.process.ByteProcessor;
 import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -29,15 +29,15 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 
 import java.awt.*;
 
-@JIPipeDocumentation(name = "Ridge detector", description = "A ridge detector that detects lines and outputs a binary mask where lines are detected.")
-@JIPipeCitation("https://github.com/thorstenwagner/ij-ridgedetection")
-@JIPipeCitation("https://imagej.net/plugins/ridge-detection")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Segment")
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Lines", autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Junctions", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins", aliasName = "Ridge Detection")
+@SetJIPipeDocumentation(name = "Ridge detector", description = "A ridge detector that detects lines and outputs a binary mask where lines are detected.")
+@AddJIPipeCitation("https://github.com/thorstenwagner/ij-ridgedetection")
+@AddJIPipeCitation("https://imagej.net/plugins/ridge-detection")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Segment")
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Lines", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Junctions", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins", aliasName = "Ridge Detection")
 public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     // Mandatory parameters
@@ -211,7 +211,7 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Min line length", description = "Minimum length of a line")
+    @SetJIPipeDocumentation(name = "Min line length", description = "Minimum length of a line")
     @JIPipeParameter("min-length")
     public double getMinLength() {
         return minLength;
@@ -222,7 +222,7 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.minLength = minLength;
     }
 
-    @JIPipeDocumentation(name = "Max line length", description = "Maximum length of a line")
+    @SetJIPipeDocumentation(name = "Max line length", description = "Maximum length of a line")
     @JIPipeParameter("max-length")
     public double getMaxLength() {
         return maxLength;
@@ -233,7 +233,7 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.maxLength = maxLength;
     }
 
-    @JIPipeDocumentation(name = "Correct position", description = "Correct the line position if it has different contrast on each side of it.")
+    @SetJIPipeDocumentation(name = "Correct position", description = "Correct the line position if it has different contrast on each side of it.")
     @JIPipeParameter("correct-position")
     public boolean isDoCorrectPosition() {
         return doCorrectPosition;
@@ -244,7 +244,7 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.doCorrectPosition = doCorrectPosition;
     }
 
-    @JIPipeDocumentation(name = "Estimate width", description = "If this option is selected the width of the line is estimated.")
+    @SetJIPipeDocumentation(name = "Estimate width", description = "If this option is selected the width of the line is estimated.")
     @JIPipeParameter("estimate-width")
     public boolean isDoEstimateWidth() {
         return doEstimateWidth;
@@ -255,7 +255,7 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.doEstimateWidth = doEstimateWidth;
     }
 
-    @JIPipeDocumentation(name = "Extend lines", description = "Extends the detect lines to find more junction points")
+    @SetJIPipeDocumentation(name = "Extend lines", description = "Extends the detect lines to find more junction points")
     @JIPipeParameter("extend-line")
     public boolean isDoExtendLine() {
         return doExtendLine;
@@ -266,7 +266,7 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.doExtendLine = doExtendLine;
     }
 
-    @JIPipeDocumentation(name = "Resolve overlaps", description = "Method for resolving overlaps")
+    @SetJIPipeDocumentation(name = "Resolve overlaps", description = "Method for resolving overlaps")
     @JIPipeParameter("overlap-resolution")
     public OverlapOption getOverlapResolution() {
         return overlapResolution;
@@ -277,7 +277,7 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.overlapResolution = overlapResolution;
     }
 
-    @JIPipeDocumentation(name = "Sigma", description = "Determines the sigma for the derivatives. It depends on the line width.")
+    @SetJIPipeDocumentation(name = "Sigma", description = "Determines the sigma for the derivatives. It depends on the line width.")
     @JIPipeParameter(value = "sigma", important = true, uiOrder = -18)
     public double getSigma() {
         return sigma;
@@ -288,7 +288,7 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.sigma = sigma;
     }
 
-    @JIPipeDocumentation(name = "Lower threshold", description = "Line points with a response smaller as this threshold are rejected")
+    @SetJIPipeDocumentation(name = "Lower threshold", description = "Line points with a response smaller as this threshold are rejected")
     @JIPipeParameter(value = "lower-threshold", important = true, uiOrder = -20)
     public double getLowerThreshold() {
         return lowerThreshold;
@@ -299,7 +299,7 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.lowerThreshold = lowerThreshold;
     }
 
-    @JIPipeDocumentation(name = "Upper threshold", description = "Line points with a response larger as this threshold are accepted")
+    @SetJIPipeDocumentation(name = "Upper threshold", description = "Line points with a response larger as this threshold are accepted")
     @JIPipeParameter(value = "upper-threshold", important = true, uiOrder = -19)
     public double getUpperThreshold() {
         return upperThreshold;
@@ -310,7 +310,7 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.upperThreshold = upperThreshold;
     }
 
-    @JIPipeDocumentation(name = "Dark lines", description = "This parameter determines whether dark or bright lines are extracted")
+    @SetJIPipeDocumentation(name = "Dark lines", description = "This parameter determines whether dark or bright lines are extracted")
     @JIPipeParameter(value = "dark-line", important = true)
     public boolean isDarkLine() {
         return darkLine;
@@ -321,7 +321,7 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.darkLine = darkLine;
     }
 
-    @JIPipeDocumentation(name = "Line width", description = "The line diameter in pixels. It estimates the 'Sigma' parameter.")
+    @SetJIPipeDocumentation(name = "Line width", description = "The line diameter in pixels. It estimates the 'Sigma' parameter.")
     @JIPipeParameter(value = "line-width", important = true)
     public double getLineWidth() {
         return lineWidth;
@@ -333,7 +333,7 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         emitParameterUIChangedEvent();
     }
 
-    @JIPipeDocumentation(name = "High contrast", description = "Highest grayscale value of the line. It estimates the mandatory parameter 'Upper threshold'")
+    @SetJIPipeDocumentation(name = "High contrast", description = "Highest grayscale value of the line. It estimates the mandatory parameter 'Upper threshold'")
     @JIPipeParameter(value = "high-contrast", important = true)
     public double getContrastHigh() {
         return contrastHigh;
@@ -345,7 +345,7 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         emitParameterUIChangedEvent();
     }
 
-    @JIPipeDocumentation(name = "Low contrast", description = "Lowest grayscale value of the line. It estimates the mandatory parameter 'Lower threshold'")
+    @SetJIPipeDocumentation(name = "Low contrast", description = "Lowest grayscale value of the line. It estimates the mandatory parameter 'Lower threshold'")
     @JIPipeParameter(value = "low-contrast", important = true)
     public double getContrastLow() {
         return contrastLow;
@@ -357,7 +357,7 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         emitParameterUIChangedEvent();
     }
 
-    @JIPipeDocumentation(name = "Estimate sigma", description = "If enabled, 'Sigma' will be estimated by the 'Line width' parameter. The formula is SIGMA = LINE_WIDTH / (2 * SQRT(3)) + 0.5")
+    @SetJIPipeDocumentation(name = "Estimate sigma", description = "If enabled, 'Sigma' will be estimated by the 'Line width' parameter. The formula is SIGMA = LINE_WIDTH / (2 * SQRT(3)) + 0.5")
     @JIPipeParameter("estimate-sigma")
     public boolean isEstimateSigma() {
         return estimateSigma;
@@ -369,7 +369,7 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         emitParameterUIChangedEvent();
     }
 
-    @JIPipeDocumentation(name = "Estimate low threshold", description = "If enabled, the lower threshold will be estimated by the contrast parameters. " +
+    @SetJIPipeDocumentation(name = "Estimate low threshold", description = "If enabled, the lower threshold will be estimated by the contrast parameters. " +
             "The formula is FLOOR(ABS(-2 * CONTRAST_LOW * (LINE_WIDTH / 2.0) / (SQRT(2 * PI) * POW(SIGMA, 3)) * EXP(-((LINE_WIDTH / 2.0) * (LINE_WIDTH / 2.0)) / (2 * SIGMA * SIGMA))))")
     @JIPipeParameter("estimate-low-threshold")
     public boolean isEstimateLowThreshold() {
@@ -382,7 +382,7 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         emitParameterUIChangedEvent();
     }
 
-    @JIPipeDocumentation(name = "Estimate high threshold", description = "If enabled, the lower and higher threshold will be estimated by the contrast parameters. " +
+    @SetJIPipeDocumentation(name = "Estimate high threshold", description = "If enabled, the lower and higher threshold will be estimated by the contrast parameters. " +
             "The formula is FLOOR(ABS(-2 * CONTRAST_HIGH * (LINE_WIDTH / 2.0) / (SQRT(2 * PI) * POW(SIGMA, 3)) * EXP(-((LINE_WIDTH / 2.0) * (LINE_WIDTH / 2.0)) / (2 * SIGMA * SIGMA))))")
     @JIPipeParameter("estimate-high-threshold")
     public boolean isEstimateHighThreshold() {

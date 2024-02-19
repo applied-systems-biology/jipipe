@@ -15,8 +15,8 @@ package org.hkijena.jipipe.extensions.utils.algorithms.meta;
 
 import com.google.common.collect.ImmutableList;
 import ij.IJ;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -49,10 +49,10 @@ import java.lang.annotation.Annotation;
 import java.nio.file.Path;
 import java.util.*;
 
-@JIPipeDocumentation(name = "Paths to JIPipe project parameters", description = "Stores the incoming paths into parameters. This node supports path and string parameters.")
-@JIPipeInputSlot(value = PathData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ParametersData.class, slotName = "Parameters")
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Meta run")
+@SetJIPipeDocumentation(name = "Paths to JIPipe project parameters", description = "Stores the incoming paths into parameters. This node supports path and string parameters.")
+@AddJIPipeInputSlot(value = PathData.class, slotName = "Input")
+@AddJIPipeOutputSlot(value = ParametersData.class, slotName = "Parameters")
+@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Meta run")
 public class PathsToJIPipeProjectParametersAlgorithm extends JIPipeIteratingAlgorithm {
 
     private InputSlotMapParameterCollection parameterKeyAssignments;
@@ -88,7 +88,7 @@ public class PathsToJIPipeProjectParametersAlgorithm extends JIPipeIteratingAlgo
         iterationStep.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Parameter assignments", description = "The value from each input slot is stored into a parameter with given unique ID. You can look up this unique ID inside the project parameters or " +
+    @SetJIPipeDocumentation(name = "Parameter assignments", description = "The value from each input slot is stored into a parameter with given unique ID. You can look up this unique ID inside the project parameters or " +
             "set it to [node id]/[parameter key] (see node/parameter documentation to look up those keys)")
     @JIPipeParameter(value = "parameter-key-assignments", uiOrder = -100)
     public InputSlotMapParameterCollection getParameterKeyAssignments() {
@@ -96,7 +96,7 @@ public class PathsToJIPipeProjectParametersAlgorithm extends JIPipeIteratingAlgo
     }
 
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/jipipe.png")
-    @JIPipeDocumentation(name = "Load parameters from project", description = "Loads parameters from a project file")
+    @SetJIPipeDocumentation(name = "Load parameters from project", description = "Loads parameters from a project file")
     public void importParametersFromProject(JIPipeWorkbench workbench) {
         Path projectFile = FileChooserSettings.openFile(workbench.getWindow(), FileChooserSettings.LastDirectoryKey.Projects, "Import JIPipe project", UIUtils.EXTENSION_FILTER_JIP);
         if (projectFile != null) {

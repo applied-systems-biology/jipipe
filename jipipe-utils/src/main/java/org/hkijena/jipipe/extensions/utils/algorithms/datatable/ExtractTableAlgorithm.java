@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.utils.algorithms.datatable;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -9,9 +9,9 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -19,11 +19,11 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import java.util.ArrayList;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Unpack data table", description = "Extracts data stored in the input slot into the output." +
+@SetJIPipeDocumentation(name = "Unpack data table", description = "Extracts data stored in the input slot into the output." +
         " If multiple tables are supplied, the rows are merged.")
-@JIPipeInputSlot(value = JIPipeDataTable.class, slotName = "Table", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Data tables")
+@AddJIPipeInputSlot(value = JIPipeDataTable.class, slotName = "Table", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", create = true)
+@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Data tables")
 public class ExtractTableAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     private boolean mergeAnnotations = true;
@@ -70,7 +70,7 @@ public class ExtractTableAlgorithm extends JIPipeParameterSlotAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Merge outside annotations", description = "If enabled, table annotations are merged into the data.")
+    @SetJIPipeDocumentation(name = "Merge outside annotations", description = "If enabled, table annotations are merged into the data.")
     @JIPipeParameter("merge-annotations")
     public boolean isMergeAnnotations() {
         return mergeAnnotations;
@@ -81,7 +81,7 @@ public class ExtractTableAlgorithm extends JIPipeParameterSlotAlgorithm {
         this.mergeAnnotations = mergeAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Annotation merge strategy", description = "Determines how table annotations are merged into the data.")
+    @SetJIPipeDocumentation(name = "Annotation merge strategy", description = "Determines how table annotations are merged into the data.")
     @JIPipeParameter("merge-strategy")
     public JIPipeTextAnnotationMergeMode getMergeStrategy() {
         return mergeStrategy;

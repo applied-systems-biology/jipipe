@@ -15,7 +15,7 @@ package org.hkijena.jipipe.api.grouping.parameters;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEvent;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEventEmitter;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -55,7 +55,7 @@ public class GraphNodeParameterReferenceGroup extends AbstractJIPipeParameterCol
         }
     }
 
-    @JIPipeDocumentation(name = "Name", description = "The name of the parameter group")
+    @SetJIPipeDocumentation(name = "Name", description = "The name of the parameter group")
     @JIPipeParameter(value = "name", uiOrder = -100)
     @JsonGetter("name")
     public String getName() {
@@ -68,7 +68,7 @@ public class GraphNodeParameterReferenceGroup extends AbstractJIPipeParameterCol
         this.name = name;
     }
 
-    @JIPipeDocumentation(name = "Description", description = "The optional description text of the parameter group")
+    @SetJIPipeDocumentation(name = "Description", description = "The optional description text of the parameter group")
     @JsonGetter("description")
     @JIPipeParameter(value = "description", uiOrder = -90)
     public HTMLText getDescription() {

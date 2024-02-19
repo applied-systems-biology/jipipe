@@ -14,7 +14,7 @@
 
 package org.hkijena.jipipe.extensions.cellpose.installers;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.python.installers.BasicMinicondaEnvPythonInstaller;
@@ -31,7 +31,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
-@JIPipeDocumentation(name = "Miniconda: Download & install Cellpose (CPU) [deprecated]", description = "Creates a new Python environment with Cellpose installed. " +
+@SetJIPipeDocumentation(name = "Miniconda: Download & install Cellpose (CPU) [deprecated]", description = "Creates a new Python environment with Cellpose installed. " +
         "Uses a Miniconda-based installer. ")
 @ExternalEnvironmentInfo(category = "Cellpose")
 public class MinicondaCellposeEnvInstaller extends BasicMinicondaEnvPythonInstaller {

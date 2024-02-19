@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.scene3d.model.geometries;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -50,7 +50,7 @@ public class Scene3DLineGeometry extends AbstractJIPipeParameterCollection imple
         return meshObject;
     }
 
-    @JIPipeDocumentation(name = "Color", description = "The color of the mesh")
+    @SetJIPipeDocumentation(name = "Color", description = "The color of the mesh")
     @JIPipeParameter("color")
     @JsonGetter("color")
     @Override
@@ -66,7 +66,7 @@ public class Scene3DLineGeometry extends AbstractJIPipeParameterCollection imple
     }
 
 
-    @JIPipeDocumentation(name = "Smoothness", description = "The higher the value, the smoother the generated sphere. Should be at least 1.")
+    @SetJIPipeDocumentation(name = "Smoothness", description = "The higher the value, the smoother the generated sphere. Should be at least 1.")
     @JsonGetter("smoothness")
     public int getSmoothness() {
         return smoothness;
@@ -77,7 +77,7 @@ public class Scene3DLineGeometry extends AbstractJIPipeParameterCollection imple
         this.smoothness = smoothness;
     }
 
-    @JIPipeDocumentation(name = "Mesh name", description = "The name of the mesh")
+    @SetJIPipeDocumentation(name = "Mesh name", description = "The name of the mesh")
     @JIPipeParameter("name")
     @Override
     @JsonGetter("name")
@@ -92,7 +92,7 @@ public class Scene3DLineGeometry extends AbstractJIPipeParameterCollection imple
         this.name = name;
     }
 
-    @JIPipeDocumentation(name = "Line point 1", description = "The start point of the line")
+    @SetJIPipeDocumentation(name = "Line point 1", description = "The start point of the line")
     @JIPipeParameter("start")
     @JsonGetter("start")
     public LineEndPoint getStart() {
@@ -104,7 +104,7 @@ public class Scene3DLineGeometry extends AbstractJIPipeParameterCollection imple
         this.start = start;
     }
 
-    @JIPipeDocumentation(name = "Line point 2", description = "The end point of the line")
+    @SetJIPipeDocumentation(name = "Line point 2", description = "The end point of the line")
     @JsonGetter("end")
     @JIPipeParameter("end")
     public LineEndPoint getEnd() {
@@ -132,7 +132,7 @@ public class Scene3DLineGeometry extends AbstractJIPipeParameterCollection imple
             this.radius = other.radius;
         }
 
-        @JIPipeDocumentation(name = "X", description = "The X location")
+        @SetJIPipeDocumentation(name = "X", description = "The X location")
         @JIPipeParameter("x")
         @JsonGetter("x")
         public float getX() {
@@ -145,7 +145,7 @@ public class Scene3DLineGeometry extends AbstractJIPipeParameterCollection imple
             this.x = x;
         }
 
-        @JIPipeDocumentation(name = "Y", description = "The Y location")
+        @SetJIPipeDocumentation(name = "Y", description = "The Y location")
         @JIPipeParameter("y")
         @JsonGetter("y")
         public float getY() {
@@ -158,7 +158,7 @@ public class Scene3DLineGeometry extends AbstractJIPipeParameterCollection imple
             this.y = y;
         }
 
-        @JIPipeDocumentation(name = "Z", description = "The Z location")
+        @SetJIPipeDocumentation(name = "Z", description = "The Z location")
         @JIPipeParameter("z")
         @JsonGetter("z")
         public float getZ() {
@@ -171,7 +171,7 @@ public class Scene3DLineGeometry extends AbstractJIPipeParameterCollection imple
             this.z = z;
         }
 
-        @JIPipeDocumentation(name = "Radius", description = "The radius")
+        @SetJIPipeDocumentation(name = "Radius", description = "The radius")
         @JIPipeParameter("radius")
         @JsonGetter("radius")
         public float getRadius() {

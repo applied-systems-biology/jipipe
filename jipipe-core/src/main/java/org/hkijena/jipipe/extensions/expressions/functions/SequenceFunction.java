@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.functions;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -8,7 +8,7 @@ import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 import java.util.ArrayList;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Generate numeric sequence", description = "Generates an array of numbers. If one parameter is provided, the sequence is generated " +
+@SetJIPipeDocumentation(name = "Generate numeric sequence", description = "Generates an array of numbers. If one parameter is provided, the sequence is generated " +
         "from 0 to the provided number (step 1). If two parameters are provided, the sequence is generated [from, to) (step 1). The third parameter defines the step.")
 public class SequenceFunction extends ExpressionFunction {
     public SequenceFunction() {

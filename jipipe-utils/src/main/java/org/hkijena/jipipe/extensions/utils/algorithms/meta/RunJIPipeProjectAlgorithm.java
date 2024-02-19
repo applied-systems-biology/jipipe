@@ -45,11 +45,11 @@ import java.util.Map;
 /**
  * Runs a JIPipe project
  */
-@JIPipeDocumentation(name = "Run JIPipe project", description = "Runs an existing JIPipe project with given parameter set. Use the 'Define JIPipe project parameters' node to create the necessary parameters. " +
+@SetJIPipeDocumentation(name = "Run JIPipe project", description = "Runs an existing JIPipe project with given parameter set. Use the 'Define JIPipe project parameters' node to create the necessary parameters. " +
         "Parameters can either point to a project parameter (preferred way) or to a parameter within a specific node (prefix with [node id]/). To find out the parameter ids, take a look at the 'Node ID' documentation on selecting a node.")
-@JIPipeInputSlot(value = ParametersData.class, slotName = "Project parameters", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeOutputData.class, slotName = "Output", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Meta run")
+@AddJIPipeInputSlot(value = ParametersData.class, slotName = "Project parameters", create = true)
+@AddJIPipeOutputSlot(value = JIPipeOutputData.class, slotName = "Output", create = true)
+@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Meta run")
 public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Path projectFile = Paths.get("");
@@ -144,7 +144,7 @@ public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         return false;
     }
 
-    @JIPipeDocumentation(name = "Project file", description = "The project file")
+    @SetJIPipeDocumentation(name = "Project file", description = "The project file")
     @PathParameterSettings(pathMode = PathType.FilesOnly, ioMode = PathIOMode.Open, extensions = {"jip"})
     @JIPipeParameter("project-file")
     public Path getProjectFile() {
@@ -156,7 +156,7 @@ public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.projectFile = projectFile;
     }
 
-    @JIPipeDocumentation(name = "Override number of threads", description = "Overrides the number of threads to use. Otherwise the number of threads are taken from the JIPipe settings.")
+    @SetJIPipeDocumentation(name = "Override number of threads", description = "Overrides the number of threads to use. Otherwise the number of threads are taken from the JIPipe settings.")
     @JIPipeParameter("num-threads")
     public OptionalIntegerParameter getThreads() {
         return threads;
@@ -167,7 +167,7 @@ public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.threads = threads;
     }
 
-    @JIPipeDocumentation(name = "Ignore project validation", description = "If disabled, the project is not validated. Otherwise errors are thrown to the current run.")
+    @SetJIPipeDocumentation(name = "Ignore project validation", description = "If disabled, the project is not validated. Otherwise errors are thrown to the current run.")
     @JIPipeParameter("ignore-validation")
     public boolean isIgnoreValidation() {
         return ignoreValidation;

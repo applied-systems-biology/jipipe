@@ -16,8 +16,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.transform;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
@@ -38,13 +38,13 @@ import java.util.Collections;
 /**
  * Wrapper around {@link ImageProcessor}
  */
-@JIPipeDocumentation(name = "Rotate 2D image (free)", description = "Rotates the image by any kind of angle. Expands the canvas if necessary. " +
+@SetJIPipeDocumentation(name = "Rotate 2D image (free)", description = "Rotates the image by any kind of angle. Expands the canvas if necessary. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeNode(menuPath = "Transform", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Content")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nTransform", aliasName = "Rotate (free)")
+@DefineJIPipeNode(menuPath = "Transform", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Content")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nTransform", aliasName = "Rotate (free)")
 public class TransformRotateFree2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private double angle = 0;
@@ -88,7 +88,7 @@ public class TransformRotateFree2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         }
     }
 
-    @JIPipeDocumentation(name = "Angle (in degrees)", description = "Determines by which angle the image is rotated in clock-wise direction. To do counter-clockwise rotation, put in a negative angle.")
+    @SetJIPipeDocumentation(name = "Angle (in degrees)", description = "Determines by which angle the image is rotated in clock-wise direction. To do counter-clockwise rotation, put in a negative angle.")
     @JIPipeParameter("angle")
     public double getAngle() {
         return angle;
@@ -99,7 +99,7 @@ public class TransformRotateFree2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.angle = angle;
     }
 
-    @JIPipeDocumentation(name = "Background color", description = "The background color used if the canvas needs to be expanded.")
+    @SetJIPipeDocumentation(name = "Background color", description = "The background color used if the canvas needs to be expanded.")
     @JIPipeParameter("background-color")
     public Color getBackgroundColor() {
         return backgroundColor;
@@ -110,7 +110,7 @@ public class TransformRotateFree2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.backgroundColor = backgroundColor;
     }
 
-    @JIPipeDocumentation(name = "Anchor", description = "Anchor for the rotation. Please not that with the current implementation, only Center-Center will expand the canvas properly.")
+    @SetJIPipeDocumentation(name = "Anchor", description = "Anchor for the rotation. Please not that with the current implementation, only Center-Center will expand the canvas properly.")
     @JIPipeParameter("anchor")
     public Anchor getAnchor() {
         return anchor;
@@ -121,7 +121,7 @@ public class TransformRotateFree2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.anchor = anchor;
     }
 
-    @JIPipeDocumentation(name = "Output ROI", description = "Also outputs ROI that separate background from the original image.")
+    @SetJIPipeDocumentation(name = "Output ROI", description = "Also outputs ROI that separate background from the original image.")
     @JIPipeParameter("output-roi")
     public boolean isOutputRoi() {
         return outputRoi;
@@ -147,7 +147,7 @@ public class TransformRotateFree2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         }
     }
 
-    @JIPipeDocumentation(name = "Expand canvas", description = "If enabled, the canvas will be expanded, so it fits the rotated results.")
+    @SetJIPipeDocumentation(name = "Expand canvas", description = "If enabled, the canvas will be expanded, so it fits the rotated results.")
     @JIPipeParameter("expand-canvas")
     public boolean isExpandCanvas() {
         return expandCanvas;

@@ -20,8 +20,8 @@ import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.model.DatasetData;
 import omero.gateway.model.ImageData;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.*;
@@ -50,11 +50,11 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.nio.file.Path;
 import java.util.*;
 
-@JIPipeDocumentation(name = "Upload image to OMERO", description = "Uploads an image to OMERO.")
-@JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
-@JIPipeInputSlot(value = OMEImageData.class, slotName = "Images", autoCreate = true, description = "The image(s) to upload")
-@JIPipeInputSlot(value = OMERODatasetReferenceData.class, slotName = "Target dataset", autoCreate = true, description = "The data set where the image(s) will be stored")
-@JIPipeOutputSlot(value = OMEROImageReferenceData.class, slotName = "Images", autoCreate = true, description = "Reference to the uploaded image(s)")
+@SetJIPipeDocumentation(name = "Upload image to OMERO", description = "Uploads an image to OMERO.")
+@DefineJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
+@AddJIPipeInputSlot(value = OMEImageData.class, slotName = "Images", create = true, description = "The image(s) to upload")
+@AddJIPipeInputSlot(value = OMERODatasetReferenceData.class, slotName = "Target dataset", create = true, description = "The data set where the image(s) will be stored")
+@AddJIPipeOutputSlot(value = OMEROImageReferenceData.class, slotName = "Images", create = true, description = "Reference to the uploaded image(s)")
 public class UploadOMEROImageAlgorithm extends JIPipeIteratingAlgorithm {
     private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
     private DataExportExpressionParameter fileNameGenerator = new DataExportExpressionParameter("auto_file_name");
@@ -136,7 +136,7 @@ public class UploadOMEROImageAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Override OMERO credentials", description = "Allows to override the OMERO credentials provided in the JIPipe application settings")
+    @SetJIPipeDocumentation(name = "Override OMERO credentials", description = "Allows to override the OMERO credentials provided in the JIPipe application settings")
     @JIPipeParameter("override-credentials")
     public OptionalOMEROCredentialsEnvironment getOverrideCredentials() {
         return overrideCredentials;
@@ -147,7 +147,7 @@ public class UploadOMEROImageAlgorithm extends JIPipeIteratingAlgorithm {
         this.overrideCredentials = overrideCredentials;
     }
 
-    @JIPipeDocumentation(name = "File name", description = "Expression that generates the file name for the OME TIFF to be uploaded. Please note that the directory will be ignored and 'unnamed' will be assumed if " +
+    @SetJIPipeDocumentation(name = "File name", description = "Expression that generates the file name for the OME TIFF to be uploaded. Please note that the directory will be ignored and 'unnamed' will be assumed if " +
             "no name is provided.")
     @JIPipeParameter("file-name-generator")
     public DataExportExpressionParameter getFileNameGenerator() {
@@ -159,13 +159,13 @@ public class UploadOMEROImageAlgorithm extends JIPipeIteratingAlgorithm {
         this.fileNameGenerator = fileNameGenerator;
     }
 
-    @JIPipeDocumentation(name = "Export annotations as key-value pairs", description = "The following settings allow you to export annotations as key-value pairs")
+    @SetJIPipeDocumentation(name = "Export annotations as key-value pairs", description = "The following settings allow you to export annotations as key-value pairs")
     @JIPipeParameter("key-value-pair-exporter")
     public AnnotationsToOMEROKeyValuePairExporter getKeyValuePairExporter() {
         return keyValuePairExporter;
     }
 
-    @JIPipeDocumentation(name = "Export list annotation as tag", description = "The following settings allow you to export a single list-like annotation as tag list.")
+    @SetJIPipeDocumentation(name = "Export list annotation as tag", description = "The following settings allow you to export a single list-like annotation as tag list.")
     @JIPipeParameter("tag-exporter")
     public AnnotationsToOMEROTagExporter getTagExporter() {
         return tagExporter;

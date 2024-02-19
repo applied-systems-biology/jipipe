@@ -1,13 +1,13 @@
 package org.hkijena.jipipe.extensions.filesystem.datasources;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -17,10 +17,10 @@ import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "Temporary file", description = "Generates a temporary file that will be located within your operating system's temporary directory or " +
+@SetJIPipeDocumentation(name = "Temporary file", description = "Generates a temporary file that will be located within your operating system's temporary directory or " +
         "the directory specified in the JIPipe settings. Please note that there are no guarantees on the actual file name, as the outcome depends on the operating system.")
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeOutputSlot(value = FileData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeOutputSlot(value = FileData.class, slotName = "Output", create = true)
 public class TemporaryFileDataSource extends JIPipeParameterSlotAlgorithm {
 
     private String prefix = "";
@@ -41,7 +41,7 @@ public class TemporaryFileDataSource extends JIPipeParameterSlotAlgorithm {
         getFirstOutputSlot().addData(new FileData(RuntimeSettings.generateTempFile(prefix, suffix)), JIPipeDataContext.create(this), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Prefix", description = "Optional string that is prepended to file name.")
+    @SetJIPipeDocumentation(name = "Prefix", description = "Optional string that is prepended to file name.")
     @JIPipeParameter("prefix")
     @StringParameterSettings(monospace = true)
     public String getPrefix() {
@@ -53,7 +53,7 @@ public class TemporaryFileDataSource extends JIPipeParameterSlotAlgorithm {
         this.prefix = prefix;
     }
 
-    @JIPipeDocumentation(name = "Suffix", description = "Optional string that is appended to file name.")
+    @SetJIPipeDocumentation(name = "Suffix", description = "Optional string that is appended to file name.")
     @JIPipeParameter("suffix")
     @StringParameterSettings(monospace = true)
     public String getSuffix() {

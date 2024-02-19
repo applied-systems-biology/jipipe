@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.expressions.functions.functions;
 
 import com.google.common.collect.ImmutableList;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.expressions.functions.EvaluateFunction;
 
@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Run user function", description = "Evaluates a user function as string. The first parameter must be the function name. Use FUNCTION to define new functions.")
+@SetJIPipeDocumentation(name = "Run user function", description = "Evaluates a user function as string. The first parameter must be the function name. Use FUNCTION to define new functions.")
 public class EvaluateUserFunction extends ExpressionFunction {
     public EvaluateUserFunction() {
         super("RUN_FUNCTION", 1, Integer.MAX_VALUE);

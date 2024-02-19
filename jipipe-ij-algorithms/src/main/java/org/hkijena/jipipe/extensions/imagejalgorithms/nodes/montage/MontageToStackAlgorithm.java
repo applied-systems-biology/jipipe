@@ -16,8 +16,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.montage;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.plugin.StackMaker;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -35,11 +35,11 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DDat
 /**
  * Implementation of {@link ij.plugin.MontageMaker}
  */
-@JIPipeDocumentation(name = "Montage to stack", description = "Slices an image montage into a stack.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Montage")
-@JIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlus3DData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Montage to Stack...")
+@SetJIPipeDocumentation(name = "Montage to stack", description = "Slices an image montage into a stack.")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Montage")
+@AddJIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlus3DData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Montage to Stack...")
 public class MontageToStackAlgorithm extends JIPipeIteratingAlgorithm {
 
     private int rows = 1;
@@ -64,7 +64,7 @@ public class MontageToStackAlgorithm extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Montage to Stack", stack)), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Rows", description = "The number of rows.")
+    @SetJIPipeDocumentation(name = "Rows", description = "The number of rows.")
     @JIPipeParameter(value = "rows", uiOrder = 10)
     public int getRows() {
         return rows;
@@ -75,7 +75,7 @@ public class MontageToStackAlgorithm extends JIPipeIteratingAlgorithm {
         this.rows = rows;
     }
 
-    @JIPipeDocumentation(name = "Columns", description = "The number of columns.")
+    @SetJIPipeDocumentation(name = "Columns", description = "The number of columns.")
     @JIPipeParameter(value = "columns", uiOrder = 11)
     public int getColumns() {
         return columns;
@@ -86,7 +86,7 @@ public class MontageToStackAlgorithm extends JIPipeIteratingAlgorithm {
         this.columns = columns;
     }
 
-    @JIPipeDocumentation(name = "Border width", description = "Distance between each tile")
+    @SetJIPipeDocumentation(name = "Border width", description = "Distance between each tile")
     @JIPipeParameter("border-width")
     public int getBorderWidth() {
         return borderWidth;

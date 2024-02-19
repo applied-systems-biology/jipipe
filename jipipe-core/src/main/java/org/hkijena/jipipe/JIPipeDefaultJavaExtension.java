@@ -596,12 +596,12 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
     }
 
     /**
-     * Registers a function that can be used within expressions. The name and description are taken from {@link org.hkijena.jipipe.api.JIPipeDocumentation} annotations.
+     * Registers a function that can be used within expressions. The name and description are taken from {@link SetJIPipeDocumentation} annotations.
      *
      * @param function the function. its internal name property must be unique
      */
     public void registerExpressionFunction(ExpressionFunction function) {
-        JIPipeDocumentation documentation = function.getClass().getAnnotation(JIPipeDocumentation.class);
+        SetJIPipeDocumentation documentation = function.getClass().getAnnotation(SetJIPipeDocumentation.class);
         registry.getExpressionRegistry().registerExpressionFunction(function, documentation.name(),
                 DocumentationUtils.getDocumentationDescription(documentation));
     }

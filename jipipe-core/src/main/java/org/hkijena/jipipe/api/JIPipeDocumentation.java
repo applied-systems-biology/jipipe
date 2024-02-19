@@ -13,39 +13,54 @@
 
 package org.hkijena.jipipe.api;
 
-import org.hkijena.jipipe.JIPipe;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Annotation;
 
 /**
- * Used within JIPipe to annotate types and methods with documentation
+ * Default implementation of {@link SetJIPipeDocumentation}
  */
-@Retention(RetentionPolicy.RUNTIME)
-public @interface JIPipeDocumentation {
-    /**
-     * @return The name
-     */
-    String name() default "";
+public class JIPipeDocumentation implements SetJIPipeDocumentation {
+    private final String name;
+    private final String description;
+    private final String descriptionResourceURL;
+    private final Class<?> descriptionResourceClass;
 
-    /**
-     * @return The description
-     */
-    String description() default "";
 
-    /**
-     * A resource URL that points to a markdown/html file within a JAR resource.
-     * Use descriptionResourceClass to change this class if needed.
-     * If not empty, this overrides the description setting.
-     *
-     * @return the description resource URL
-     */
-    String descriptionResourceURL() default "";
+    public JIPipeDocumentation(String name, String description) {
+        this.name = name;
+        this.description = description;
+        this.descriptionResourceURL = null;
+        this.descriptionResourceClass = null;
+    }
 
-    /**
-     * The class where descriptionResourceURL loads the description from.
-     *
-     * @return resource class
-     */
-    Class<?> descriptionResourceClass() default JIPipe.class;
+    public JIPipeDocumentation(String name, String descriptionResourceURL, Class<?> descriptionResourceClass) {
+        this.name = name;
+        this.description = null;
+        this.descriptionResourceURL = descriptionResourceURL;
+        this.descriptionResourceClass = descriptionResourceClass;
+    }
+
+    @Override
+    public String name() {
+        return this.name;
+    }
+
+    @Override
+    public String description() {
+        return this.description;
+    }
+
+    @Override
+    public String descriptionResourceURL() {
+        return this.descriptionResourceURL;
+    }
+
+    @Override
+    public Class<?> descriptionResourceClass() {
+        return this.descriptionResourceClass;
+    }
+
+    @Override
+    public Class<? extends Annotation> annotationType() {
+        return SetJIPipeDocumentation.class;
+    }
 }

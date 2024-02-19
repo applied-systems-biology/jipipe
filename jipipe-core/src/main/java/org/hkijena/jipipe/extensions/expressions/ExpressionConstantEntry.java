@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.expressions;
 
 import com.fathzer.soft.javaluator.Constant;
 import com.fathzer.soft.javaluator.Operator;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.utils.DocumentationUtils;
 
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ public class ExpressionConstantEntry {
 
     public ExpressionConstantEntry(Constant constant) {
         this.constant = constant;
-        JIPipeDocumentation documentation = constant.getClass().getAnnotation(JIPipeDocumentation.class);
+        SetJIPipeDocumentation documentation = constant.getClass().getAnnotation(SetJIPipeDocumentation.class);
         if (documentation != null) {
             name = documentation.name();
             description = DocumentationUtils.getDocumentationDescription(documentation);

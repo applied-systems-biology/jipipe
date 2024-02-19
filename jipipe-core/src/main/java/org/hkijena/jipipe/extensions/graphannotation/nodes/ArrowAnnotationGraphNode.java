@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.graphannotation.nodes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.GraphAnnotationsNodeTypeCategory;
@@ -12,8 +12,8 @@ import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import java.awt.*;
 import java.util.Set;
 
-@JIPipeDocumentation(name = "Arrow", description = "An arrow")
-@JIPipeNode(nodeTypeCategory = GraphAnnotationsNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "Arrow", description = "An arrow")
+@DefineJIPipeNode(nodeTypeCategory = GraphAnnotationsNodeTypeCategory.class)
 public class ArrowAnnotationGraphNode extends JIPipeAnnotationGraphNode {
 
     private int angle = 0;
@@ -33,7 +33,7 @@ public class ArrowAnnotationGraphNode extends JIPipeAnnotationGraphNode {
         this.lineThickness = other.lineThickness;
     }
 
-    @JIPipeDocumentation(name = "Angle", description = "The angle of the arrow in degrees")
+    @SetJIPipeDocumentation(name = "Angle", description = "The angle of the arrow in degrees")
     @JIPipeParameter("angle")
     public int getAngle() {
         return angle;
@@ -44,7 +44,7 @@ public class ArrowAnnotationGraphNode extends JIPipeAnnotationGraphNode {
         this.angle = angle;
     }
 
-    @JIPipeDocumentation(name = "Arrow head size", description = "The size of the arrow head")
+    @SetJIPipeDocumentation(name = "Arrow head size", description = "The size of the arrow head")
     @JIPipeParameter("arrow-size")
     public int getArrowSize() {
         return arrowSize;
@@ -55,7 +55,7 @@ public class ArrowAnnotationGraphNode extends JIPipeAnnotationGraphNode {
         this.arrowSize = arrowSize;
     }
 
-    @JIPipeDocumentation(name = "Color", description = "Color of the arrow")
+    @SetJIPipeDocumentation(name = "Color", description = "Color of the arrow")
     @JIPipeParameter("color")
     public Color getColor() {
         return color;
@@ -66,7 +66,7 @@ public class ArrowAnnotationGraphNode extends JIPipeAnnotationGraphNode {
         this.color = color;
     }
 
-    @JIPipeDocumentation(name = "Thickness", description = "The thickness of the arrow")
+    @SetJIPipeDocumentation(name = "Thickness", description = "The thickness of the arrow")
     @JIPipeParameter("thickness")
     public int getLineThickness() {
         return lineThickness;

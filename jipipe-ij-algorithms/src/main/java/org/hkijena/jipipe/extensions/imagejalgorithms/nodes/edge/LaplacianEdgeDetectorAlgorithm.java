@@ -16,8 +16,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.edge;
 import ij.ImagePlus;
 import ij.plugin.filter.Convolver;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -32,11 +32,11 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 /**
  * Wrapper around {@link ImageProcessor}
  */
-@JIPipeDocumentation(name = "Laplacian operator 2D", description = "Applies a Laplacian operator. " +
+@SetJIPipeDocumentation(name = "Laplacian operator 2D", description = "Applies a Laplacian operator. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeNode(menuPath = "Edges", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(menuPath = "Edges", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", create = true)
 public class LaplacianEdgeDetectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public static final float[] KERNEL_4;
@@ -131,7 +131,7 @@ public class LaplacianEdgeDetectorAlgorithm extends JIPipeSimpleIteratingAlgorit
         return true;
     }
 
-    @JIPipeDocumentation(name = "Mode", description = "The filter kernel that should be used. " +
+    @SetJIPipeDocumentation(name = "Mode", description = "The filter kernel that should be used. " +
             "The inverted kernels have a positive center value, while non-inverted kernels have " +
             "a negative value at their center.")
     @JIPipeParameter("mode")
@@ -144,7 +144,7 @@ public class LaplacianEdgeDetectorAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.mode = mode;
     }
 
-    @JIPipeDocumentation(name = "Remove negative values", description = "If enabled, negative values are set to zero")
+    @SetJIPipeDocumentation(name = "Remove negative values", description = "If enabled, negative values are set to zero")
     @JIPipeParameter("remove-negative-values")
     public boolean isRemoveNegativeValues() {
         return removeNegativeValues;

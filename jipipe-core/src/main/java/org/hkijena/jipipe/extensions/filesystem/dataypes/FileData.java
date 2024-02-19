@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.filesystem.dataypes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeFastThumbnail;
@@ -23,7 +23,7 @@ import java.nio.file.Path;
 /**
  * Data containing a file
  */
-@JIPipeDocumentation(name = "File", description = "A path to a file")
+@SetJIPipeDocumentation(name = "File", description = "A path to a file")
 @JIPipeFastThumbnail
 public class FileData extends PathData {
 

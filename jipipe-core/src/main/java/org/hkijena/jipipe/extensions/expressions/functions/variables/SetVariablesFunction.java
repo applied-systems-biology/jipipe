@@ -13,14 +13,14 @@
 
 package org.hkijena.jipipe.extensions.expressions.functions.variables;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "Set variables", description = "Sets multiple variables. Use the pair operator ':' for convenience.")
+@SetJIPipeDocumentation(name = "Set variables", description = "Sets multiple variables. Use the pair operator ':' for convenience.")
 public class SetVariablesFunction extends ExpressionFunction {
 
     public SetVariablesFunction() {

@@ -16,8 +16,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.math;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -41,14 +41,14 @@ import java.util.List;
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@JIPipeDocumentation(name = "Math expression (Vector)", description = "Applies a mathematical operation to each vector in the image. " +
+@SetJIPipeDocumentation(name = "Math expression (Vector)", description = "Applies a mathematical operation to each vector in the image. " +
         "One dimension is defined as the dimension that contains the vector components. For example, you can make the channel " +
         "the vector components. The algorithm then would iterate through all X, Y, Z, and T pixels and provide you with an array of " +
         "all channel pixel values for this position. The output is a scalar image.")
-@JIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nMath", aliasName = "Macro... (per pixel, vector)")
+@DefineJIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nMath", aliasName = "Macro... (per pixel, vector)")
 public class ApplyVectorMathExpression2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter transformation = new JIPipeExpressionParameter("x + y");
@@ -248,7 +248,7 @@ public class ApplyVectorMathExpression2DAlgorithm extends JIPipeSimpleIteratingA
         }
     }
 
-    @JIPipeDocumentation(name = "Output vector size", description = "Determines how many slices in the selected component dimension are generated as output. " +
+    @SetJIPipeDocumentation(name = "Output vector size", description = "Determines how many slices in the selected component dimension are generated as output. " +
             "The expression must generate exactly as many vector components as this number.")
     @JIPipeParameter("output-vector-size")
     public int getOutputVectorSize() {
@@ -260,7 +260,7 @@ public class ApplyVectorMathExpression2DAlgorithm extends JIPipeSimpleIteratingA
         this.outputVectorSize = outputVectorSize;
     }
 
-    @JIPipeDocumentation(name = "Function", description = "The function that is applied to each vector. The expression should return a number.")
+    @SetJIPipeDocumentation(name = "Function", description = "The function that is applied to each vector. The expression should return a number.")
     @JIPipeParameter("transformation-function")
     @JIPipeExpressionParameterSettings(variableSource = VectorPixel5DExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getTransformation() {
@@ -272,7 +272,7 @@ public class ApplyVectorMathExpression2DAlgorithm extends JIPipeSimpleIteratingA
         this.transformation = transformation;
     }
 
-    @JIPipeDocumentation(name = "Vector component dimension", description = "The image dimension that contains the vector components.")
+    @SetJIPipeDocumentation(name = "Vector component dimension", description = "The image dimension that contains the vector components.")
     @JIPipeParameter("component-dimension")
     public HyperstackDimension getComponentDimension() {
         return componentDimension;

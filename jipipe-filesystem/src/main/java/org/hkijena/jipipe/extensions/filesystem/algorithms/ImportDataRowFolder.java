@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -43,10 +43,10 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Import data row folder", description = "Imports one data row from a standardized row folder. Please ensure to define the appropriate data type.")
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeInputSlot(value = FolderData.class, slotName = "Data row folder", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
+@SetJIPipeDocumentation(name = "Import data row folder", description = "Imports one data row from a standardized row folder. Please ensure to define the appropriate data type.")
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = FolderData.class, slotName = "Data row folder", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", create = true)
 public class ImportDataRowFolder extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeDataInfoRef dataType = new JIPipeDataInfoRef();
@@ -74,7 +74,7 @@ public class ImportDataRowFolder extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), data, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Annotations", description = "Use this list to set annotations")
+    @SetJIPipeDocumentation(name = "Annotations", description = "Use this list to set annotations")
     @JIPipeParameter("annotations")
     @StringParameterSettings(monospace = true)
     public StringAndStringPairParameter.List getAnnotations() {
@@ -86,7 +86,7 @@ public class ImportDataRowFolder extends JIPipeSimpleIteratingAlgorithm {
         this.annotations = annotations;
     }
 
-    @JIPipeDocumentation(name = "Data type", description = "The data type that should be imported. ")
+    @SetJIPipeDocumentation(name = "Data type", description = "The data type that should be imported. ")
     @JIPipeParameter("data-type")
     @JIPipeDataParameterSettings(dataClassFilter = NonGenericClassFilter.class)
     public JIPipeDataInfoRef getDataType() {

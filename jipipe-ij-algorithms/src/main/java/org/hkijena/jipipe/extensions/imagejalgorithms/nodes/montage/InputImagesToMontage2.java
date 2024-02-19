@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.montage;
 
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
@@ -32,11 +32,11 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.utils.MontageCreator;
 import java.util.ArrayList;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Create montage", description = "Creates a montage of all input images. Supports 2D and 3D images.")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Montage")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Make Montage...")
+@SetJIPipeDocumentation(name = "Create montage", description = "Creates a montage of all input images. Supports 2D and 3D images.")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Montage")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Make Montage...")
 public class InputImagesToMontage2 extends JIPipeMergingAlgorithm {
 
     private final MontageCreator montageCreator;
@@ -69,7 +69,7 @@ public class InputImagesToMontage2 extends JIPipeMergingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(montage), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Montage", description = "General montage settings")
+    @SetJIPipeDocumentation(name = "Montage", description = "General montage settings")
     @JIPipeParameter(value = "montage-parameters", uiOrder = -100)
     public MontageCreator getMontageCreator() {
         return montageCreator;

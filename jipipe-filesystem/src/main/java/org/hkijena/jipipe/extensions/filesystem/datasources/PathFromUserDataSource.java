@@ -1,13 +1,13 @@
 package org.hkijena.jipipe.extensions.filesystem.datasources;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -25,9 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@JIPipeDocumentation(name = "Select path (interactive)", description = "Asks for a path (file/folder) interactively when the node is run.")
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeOutputSlot(value = PathData.class, slotName = "Path", autoCreate = true)
+@SetJIPipeDocumentation(name = "Select path (interactive)", description = "Asks for a path (file/folder) interactively when the node is run.")
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeOutputSlot(value = PathData.class, slotName = "Path", create = true)
 public class PathFromUserDataSource extends JIPipeSimpleIteratingAlgorithm {
 
     private PathIOMode pathIOMode = PathIOMode.Open;
@@ -45,7 +45,7 @@ public class PathFromUserDataSource extends JIPipeSimpleIteratingAlgorithm {
         this.multiple = other.multiple;
     }
 
-    @JIPipeDocumentation(name = "IO type", description = "Determines if the path is opened or saved.")
+    @SetJIPipeDocumentation(name = "IO type", description = "Determines if the path is opened or saved.")
     @JIPipeParameter("path-io-mode")
     public PathIOMode getPathIOMode() {
         return pathIOMode;
@@ -56,7 +56,7 @@ public class PathFromUserDataSource extends JIPipeSimpleIteratingAlgorithm {
         this.pathIOMode = pathIOMode;
     }
 
-    @JIPipeDocumentation(name = "Path type", description = "The type of the path")
+    @SetJIPipeDocumentation(name = "Path type", description = "The type of the path")
     @JIPipeParameter("path-type")
     public PathType getPathType() {
         return pathType;
@@ -67,7 +67,7 @@ public class PathFromUserDataSource extends JIPipeSimpleIteratingAlgorithm {
         this.pathType = pathType;
     }
 
-    @JIPipeDocumentation(name = "Select multiple paths", description = "If enabled, the user can select multiple paths")
+    @SetJIPipeDocumentation(name = "Select multiple paths", description = "If enabled, the user can select multiple paths")
     @JIPipeParameter("multiple")
     public boolean isMultiple() {
         return multiple;

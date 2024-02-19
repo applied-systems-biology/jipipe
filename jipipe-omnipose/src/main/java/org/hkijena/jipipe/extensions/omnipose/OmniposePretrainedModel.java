@@ -1,8 +1,8 @@
 package org.hkijena.jipipe.extensions.omnipose;
 
-import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
+import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
 
-@JIPipeDocumentationDescription(description = "See https://github.com/kevinjohncutler/omnipose for a description of all models")
+@AddJIPipeDocumentationDescription(description = "See https://github.com/kevinjohncutler/omnipose for a description of all models")
 public enum OmniposePretrainedModel {
     BactOmni("bact_omni"),
     Bact("bact"),

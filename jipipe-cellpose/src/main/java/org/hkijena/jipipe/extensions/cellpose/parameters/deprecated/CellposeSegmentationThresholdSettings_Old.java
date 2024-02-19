@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.cellpose.parameters.deprecated;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
@@ -21,7 +21,7 @@ public class CellposeSegmentationThresholdSettings_Old extends AbstractJIPipePar
         this.stitchThreshold = other.stitchThreshold;
     }
 
-    @JIPipeDocumentation(name = "Flow threshold (2D)", description = "Flow error threshold (all cells with errors below threshold are kept) (not used for 3D)")
+    @SetJIPipeDocumentation(name = "Flow threshold (2D)", description = "Flow error threshold (all cells with errors below threshold are kept) (not used for 3D)")
     @JIPipeParameter("flow-threshold")
     public double getFlowThreshold() {
         return flowThreshold;
@@ -32,7 +32,7 @@ public class CellposeSegmentationThresholdSettings_Old extends AbstractJIPipePar
         this.flowThreshold = flowThreshold;
     }
 
-    @JIPipeDocumentation(name = "Cell probability threshold", description = "Cell probability threshold (all pixels with prob above threshold kept for masks)")
+    @SetJIPipeDocumentation(name = "Cell probability threshold", description = "Cell probability threshold (all pixels with prob above threshold kept for masks)")
     @JIPipeParameter("cell-probability-threshold")
     public double getCellProbabilityThreshold() {
         return cellProbabilityThreshold;
@@ -43,7 +43,7 @@ public class CellposeSegmentationThresholdSettings_Old extends AbstractJIPipePar
         this.cellProbabilityThreshold = cellProbabilityThreshold;
     }
 
-    @JIPipeDocumentation(name = "Minimum size", description = "Minimum number of pixels per mask, can turn off with -1")
+    @SetJIPipeDocumentation(name = "Minimum size", description = "Minimum number of pixels per mask, can turn off with -1")
     @JIPipeParameter("min-size")
     public int getMinSize() {
         return minSize;
@@ -54,7 +54,7 @@ public class CellposeSegmentationThresholdSettings_Old extends AbstractJIPipePar
         this.minSize = minSize;
     }
 
-    @JIPipeDocumentation(name = "Stitch threshold", description = "If stitch_threshold>0.0 and not do_3D and equal image sizes, " +
+    @SetJIPipeDocumentation(name = "Stitch threshold", description = "If stitch_threshold>0.0 and not do_3D and equal image sizes, " +
             "masks are stitched in 3D to return volume segmentation")
     @JIPipeParameter("stitch-threshold")
     public double getStitchThreshold() {

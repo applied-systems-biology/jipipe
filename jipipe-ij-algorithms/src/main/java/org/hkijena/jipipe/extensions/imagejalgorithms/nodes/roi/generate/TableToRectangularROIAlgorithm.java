@@ -16,8 +16,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.generate;
 import ij.gui.OvalRoi;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -38,10 +38,10 @@ import java.awt.*;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@JIPipeDocumentation(name = "Table to rectangular/oval ROIs", description = "Converts data from a table to rectangular or oval ROIs. This node provides more options than the 'Table to circular ROIs' node.")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Convert")
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Table to rectangular/oval ROIs", description = "Converts data from a table to rectangular or oval ROIs. This node provides more options than the 'Table to circular ROIs' node.")
+@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Convert")
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private TableColumnSourceExpressionParameter columnX1 = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"X1\"");
@@ -217,7 +217,7 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
         }
     }
 
-    @JIPipeDocumentation(name = "Column 'X1'", description = "The table column that is used for the X1 coordinate.")
+    @SetJIPipeDocumentation(name = "Column 'X1'", description = "The table column that is used for the X1 coordinate.")
     @JIPipeParameter(value = "column-x1", uiOrder = -100)
     public TableColumnSourceExpressionParameter getColumnX1() {
         return columnX1;
@@ -228,7 +228,7 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.columnX1 = columnX1;
     }
 
-    @JIPipeDocumentation(name = "Column 'Y1'", description = "The table column that is used for the Y1 coordinate.")
+    @SetJIPipeDocumentation(name = "Column 'Y1'", description = "The table column that is used for the Y1 coordinate.")
     @JIPipeParameter(value = "column-y1", uiOrder = -90)
     public TableColumnSourceExpressionParameter getColumnY1() {
         return columnY1;
@@ -239,7 +239,7 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.columnY1 = columnY1;
     }
 
-    @JIPipeDocumentation(name = "Column 'X2'", description = "The table column that is used for the X2 coordinate. " +
+    @SetJIPipeDocumentation(name = "Column 'X2'", description = "The table column that is used for the X2 coordinate. " +
             "The usage of this column depends on the current 'Anchor' setting.")
     @JIPipeParameter(value = "column-x2", uiOrder = -80)
     public TableColumnSourceExpressionParameter getColumnX2() {
@@ -251,7 +251,7 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.columnX2 = columnX2;
     }
 
-    @JIPipeDocumentation(name = "Column 'Y2'", description = "The table column that is used for the Y2 coordinate. " +
+    @SetJIPipeDocumentation(name = "Column 'Y2'", description = "The table column that is used for the Y2 coordinate. " +
             "The usage of this column depends on the current 'Anchor' setting.")
     @JIPipeParameter(value = "column-y2", uiOrder = -70)
     public TableColumnSourceExpressionParameter getColumnY2() {
@@ -263,7 +263,7 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.columnY2 = columnY2;
     }
 
-    @JIPipeDocumentation(name = "Column 'Width'", description = "The table column that is used for the width. " +
+    @SetJIPipeDocumentation(name = "Column 'Width'", description = "The table column that is used for the width. " +
             "The usage of this column depends on the current 'Anchor' setting.")
     @JIPipeParameter(value = "column-width", uiOrder = -60)
     public TableColumnSourceExpressionParameter getColumnWidth() {
@@ -275,7 +275,7 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.columnWidth = columnWidth;
     }
 
-    @JIPipeDocumentation(name = "Column 'Height'", description = "The table column that is used for the height. " +
+    @SetJIPipeDocumentation(name = "Column 'Height'", description = "The table column that is used for the height. " +
             "The usage of this column depends on the current 'Anchor' setting.")
     @JIPipeParameter(value = "column-height", uiOrder = -50)
     public TableColumnSourceExpressionParameter getColumnHeight() {
@@ -292,7 +292,7 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
         return anchor;
     }
 
-    @JIPipeDocumentation(name = "Anchor", description = "Determines how the ROI are generated.\n" +
+    @SetJIPipeDocumentation(name = "Anchor", description = "Determines how the ROI are generated.\n" +
             "'Top left' creates the ROI at the top left X1 and Y1 coordinates with provided width and height. " +
             "'Center' creates centers the ROI at the X1 and Y1 coordinates and also requires that width and height are set. " +
             "'Two points' defines the ROI, so it fits into the rectangle defined by the points (X1, Y1) and (X2, Y2).")
@@ -301,7 +301,7 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.anchor = anchor;
     }
 
-    @JIPipeDocumentation(name = "Created ROI type", description = "Determines which ROI to create. \n" +
+    @SetJIPipeDocumentation(name = "Created ROI type", description = "Determines which ROI to create. \n" +
             "'Rectangle' creates rectangles. 'Oval' creates ovals that fit into the space defined by the rectangle. " +
             "'MinCircle' and 'MaxCircle' creates circles that either fit into the space or encompass it. " +
             "Circles are centered within the rectangle area.")
@@ -315,7 +315,7 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.mode = mode;
     }
 
-    @JIPipeDocumentation(name = "Column 'Z'", description = "Table column that determines the Z location. For one-based positions, 0 indicates that the ROI is present in all Z-slices. For zero-based positions the value is -1 or lower.")
+    @SetJIPipeDocumentation(name = "Column 'Z'", description = "Table column that determines the Z location. For one-based positions, 0 indicates that the ROI is present in all Z-slices. For zero-based positions the value is -1 or lower.")
     @JIPipeParameter(value = "column-z", uiOrder = -40)
     public TableColumnSourceExpressionParameter getColumnZ() {
         return columnZ;
@@ -326,7 +326,7 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.columnZ = columnZ;
     }
 
-    @JIPipeDocumentation(name = "Column 'C'", description = "Table column that determines the channel location. For one-based positions, 0 indicates that the ROI is present in all channel-slices. For zero-based positions the value is -1 or lower.")
+    @SetJIPipeDocumentation(name = "Column 'C'", description = "Table column that determines the channel location. For one-based positions, 0 indicates that the ROI is present in all channel-slices. For zero-based positions the value is -1 or lower.")
     @JIPipeParameter(value = "column-c", uiOrder = -30)
     public TableColumnSourceExpressionParameter getColumnC() {
         return columnC;
@@ -337,7 +337,7 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.columnC = columnC;
     }
 
-    @JIPipeDocumentation(name = "Column 'T'", description = "Table column that determines the frame location. For one-based positions, 0 indicates that the ROI is present in all frame-slices. For zero-based positions the value is -1 or lower.")
+    @SetJIPipeDocumentation(name = "Column 'T'", description = "Table column that determines the frame location. For one-based positions, 0 indicates that the ROI is present in all frame-slices. For zero-based positions the value is -1 or lower.")
     @JIPipeParameter(value = "column-t", uiOrder = -20)
     public TableColumnSourceExpressionParameter getColumnT() {
         return columnT;
@@ -348,7 +348,7 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.columnT = columnT;
     }
 
-    @JIPipeDocumentation(name = "Use one-based positions", description = "If enabled, the first slice is 1. Otherwise, the first slice is zero.")
+    @SetJIPipeDocumentation(name = "Use one-based positions", description = "If enabled, the first slice is 1. Otherwise, the first slice is zero.")
     @JIPipeParameter(value = "one-based-positions", important = true)
     public boolean isOneBasedPositions() {
         return oneBasedPositions;

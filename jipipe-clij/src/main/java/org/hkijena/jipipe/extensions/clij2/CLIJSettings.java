@@ -4,7 +4,7 @@ import net.haesleinhuepf.clij.CLIJ;
 import net.haesleinhuepf.clij.converters.CLIJConverterService;
 import net.haesleinhuepf.clij.macro.CLIJHandler;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
@@ -85,7 +85,7 @@ public class CLIJSettings extends AbstractJIPipeParameterCollection {
         getInstance().initialized = true;
     }
 
-    @JIPipeDocumentation(name = "Graphics card device", description = "Relevant if you have multiple graphics cards available. " +
+    @SetJIPipeDocumentation(name = "Graphics card device", description = "Relevant if you have multiple graphics cards available. " +
             "The first device is zero. " +
             "This determines which graphics card should be used. Changing this setting might require a ImageJ restart to take effect.")
     @JIPipeParameter("device")
@@ -98,7 +98,7 @@ public class CLIJSettings extends AbstractJIPipeParameterCollection {
         this.device = device;
     }
 
-    @JIPipeDocumentation(name = "Auto-calibrate images", description = "Apply auto-calibration after extracting an image from the GPU. " +
+    @SetJIPipeDocumentation(name = "Auto-calibrate images", description = "Apply auto-calibration after extracting an image from the GPU. " +
             "This is helpful if you see only black or white output images. Calibration does not modify the contained data, but only " +
             "how the image is displayed in ImageJ.")
     @JIPipeParameter("auto-calibrate-after-pull")
@@ -111,7 +111,7 @@ public class CLIJSettings extends AbstractJIPipeParameterCollection {
         this.autoCalibrateAfterPulling = autoCalibrateAfterPulling;
     }
 
-    @JIPipeDocumentation(name = "Calibration settings", description = "Following settings will be used if you enable auto-calibration:")
+    @SetJIPipeDocumentation(name = "Calibration settings", description = "Following settings will be used if you enable auto-calibration:")
     @JIPipeParameter(value = "contrast-enhancer")
     public ContrastEnhancerSettings getContrastEnhancerSettings() {
         return contrastEnhancerSettings;
@@ -124,7 +124,7 @@ public class CLIJSettings extends AbstractJIPipeParameterCollection {
         private boolean duplicateImage = true;
         private boolean applyToAllPlanes = true;
 
-        @JIPipeDocumentation(name = "Calibration method", description = "The method to apply for calibration.")
+        @SetJIPipeDocumentation(name = "Calibration method", description = "The method to apply for calibration.")
         @JIPipeParameter("calibration-mode")
         public ImageJCalibrationMode getCalibrationMode() {
             return calibrationMode;
@@ -135,7 +135,7 @@ public class CLIJSettings extends AbstractJIPipeParameterCollection {
             this.calibrationMode = calibrationMode;
         }
 
-        @JIPipeDocumentation(name = "Custom min", description = "Used if 'Calibration' method is set to 'Custom'. Sets custom minimum value.")
+        @SetJIPipeDocumentation(name = "Custom min", description = "Used if 'Calibration' method is set to 'Custom'. Sets custom minimum value.")
         @JIPipeParameter("custom-min")
         public double getCustomMin() {
             return customMin;
@@ -146,7 +146,7 @@ public class CLIJSettings extends AbstractJIPipeParameterCollection {
             this.customMin = customMin;
         }
 
-        @JIPipeDocumentation(name = "Custom max", description = "Used if 'Calibration' method is set to 'Custom'. Sets custom maximum value.")
+        @SetJIPipeDocumentation(name = "Custom max", description = "Used if 'Calibration' method is set to 'Custom'. Sets custom maximum value.")
         @JIPipeParameter("custom-max")
         public double getCustomMax() {
             return customMax;
@@ -157,7 +157,7 @@ public class CLIJSettings extends AbstractJIPipeParameterCollection {
             this.customMax = customMax;
         }
 
-        @JIPipeDocumentation(name = "Duplicate image", description = "As the calibration does not change any image data, you can disable creating a duplicate.")
+        @SetJIPipeDocumentation(name = "Duplicate image", description = "As the calibration does not change any image data, you can disable creating a duplicate.")
         @JIPipeParameter("duplicate-image")
         public boolean isDuplicateImage() {
             return duplicateImage;
@@ -168,7 +168,7 @@ public class CLIJSettings extends AbstractJIPipeParameterCollection {
             this.duplicateImage = duplicateImage;
         }
 
-        @JIPipeDocumentation(name = "Apply to all planes", description = "If enabled, all image planes are recalibrated, not only the one of the current plane.")
+        @SetJIPipeDocumentation(name = "Apply to all planes", description = "If enabled, all image planes are recalibrated, not only the one of the current plane.")
         @JIPipeParameter("apply-to-all-planes")
         public boolean isApplyToAllPlanes() {
             return applyToAllPlanes;

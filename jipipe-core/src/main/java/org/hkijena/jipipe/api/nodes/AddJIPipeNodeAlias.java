@@ -9,28 +9,22 @@
  *
  * The project code is licensed under BSD 2-Clause.
  * See the LICENSE file provided with the code for the full license.
+ *
  */
 
-package org.hkijena.jipipe.api;
+package org.hkijena.jipipe.api.nodes;
 
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeEmptyData;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
- * Annotations used for organizing elements
+ * Annotates a node with an additional menu location
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface JIPipeNode {
+@Repeatable(AddJIPipeNodeAliases.class)
+public @interface AddJIPipeNodeAlias {
     /**
      * A submenu where the entry should be located.
      * This is valid for {@link JIPipeGraphNode} and {@link org.hkijena.jipipe.api.data.JIPipeData}
@@ -51,9 +45,9 @@ public @interface JIPipeNode {
     Class<? extends JIPipeNodeTypeCategory> nodeTypeCategory() default InternalNodeTypeCategory.class;
 
     /**
-     * Only used if the node type category is set to {@link org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory}.
-     * Allows to re-assign the data source node into the menu of another data type
-     * If set to {@link JIPipeEmptyData}, no re-allocation is applied.
+     * An alternative name (optional) that will be given to the menu entry
+     *
+     * @return the alternative name (if empty, the default name shall be used)
      */
-    Class<? extends JIPipeData> dataSourceMenuLocation() default JIPipeEmptyData.class;
+    String aliasName() default "";
 }

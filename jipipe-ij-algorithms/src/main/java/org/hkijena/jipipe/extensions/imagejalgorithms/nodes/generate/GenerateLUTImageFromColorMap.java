@@ -16,14 +16,14 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.generate;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ColorProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -35,9 +35,9 @@ import java.awt.image.BufferedImage;
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@JIPipeDocumentation(name = "Render color map", description = "Creates a new image that renders the contents of a color map as RGB image.")
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Render color map", description = "Creates a new image that renders the contents of a color map as RGB image.")
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 public class GenerateLUTImageFromColorMap extends JIPipeSimpleIteratingAlgorithm {
 
     private int width = 256;
@@ -84,7 +84,7 @@ public class GenerateLUTImageFromColorMap extends JIPipeSimpleIteratingAlgorithm
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Width", description = "The width of the generated image")
+    @SetJIPipeDocumentation(name = "Width", description = "The width of the generated image")
     @JIPipeParameter(value = "width", uiOrder = -20)
     public int getWidth() {
         return width;
@@ -95,7 +95,7 @@ public class GenerateLUTImageFromColorMap extends JIPipeSimpleIteratingAlgorithm
         this.width = width;
     }
 
-    @JIPipeDocumentation(name = "Height", description = "The height of the generated image")
+    @SetJIPipeDocumentation(name = "Height", description = "The height of the generated image")
     @JIPipeParameter(value = "height", uiOrder = -15)
     public int getHeight() {
         return height;
@@ -106,7 +106,7 @@ public class GenerateLUTImageFromColorMap extends JIPipeSimpleIteratingAlgorithm
         this.height = height;
     }
 
-    @JIPipeDocumentation(name = "Color map", description = "The color map that should be rendered")
+    @SetJIPipeDocumentation(name = "Color map", description = "The color map that should be rendered")
     @JIPipeParameter("color-map")
     public ColorMap getColorMap() {
         return colorMap;

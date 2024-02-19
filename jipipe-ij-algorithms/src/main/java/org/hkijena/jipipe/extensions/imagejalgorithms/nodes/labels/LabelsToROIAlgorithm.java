@@ -28,14 +28,14 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import java.util.HashSet;
 import java.util.Set;
 
-@JIPipeDocumentation(name = "Labels to ROI", description = "Converts a label image into a set of ROI. Labels must have a value larger than zero to be detected." +
+@SetJIPipeDocumentation(name = "Labels to ROI", description = "Converts a label image into a set of ROI. Labels must have a value larger than zero to be detected." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice. The Z/C/T coordinates of the source slices are saved inside the ROI.")
-@JIPipeCitation("Based on 'LabelsToROIs'; Waisman, A., Norris, A. ., Elías Costa , . et al. " +
+@AddJIPipeCitation("Based on 'LabelsToROIs'; Waisman, A., Norris, A. ., Elías Costa , . et al. " +
         "Automatic and unbiased segmentation and quantification of myofibers in skeletal muscle. Sci Rep 11, 11793 (2021). doi: https://doi.org/10.1038/s41598-021-91191-6.")
-@JIPipeNode(menuPath = "Labels\nConvert", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels", description = "The labels image", autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", description = "The generated ROI", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nLabel Images", aliasName = "Labels to ROI")
+@DefineJIPipeNode(menuPath = "Labels\nConvert", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels", description = "The labels image", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", description = "The generated ROI", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nLabel Images", aliasName = "Labels to ROI")
 public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter labelNameExpression = new JIPipeExpressionParameter("\"label-\" + TO_INTEGER(index)");
@@ -138,7 +138,7 @@ public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Label name", description = "Expression for the generation of the label name")
+    @SetJIPipeDocumentation(name = "Label name", description = "Expression for the generation of the label name")
     @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class)
     @JIPipeParameter("label-name-expression")
     public JIPipeExpressionParameter getLabelNameExpression() {
@@ -150,7 +150,7 @@ public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.labelNameExpression = labelNameExpression;
     }
 
-    @JIPipeDocumentation(name = "Method", description = "The algorithm responsible for converting labels into ROI")
+    @SetJIPipeDocumentation(name = "Method", description = "The algorithm responsible for converting labels into ROI")
     @JIPipeParameter(value = "method", important = true)
     public Method getMethod() {
         return method;
@@ -162,7 +162,7 @@ public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         emitParameterUIChangedEvent();
     }
 
-    @JIPipeDocumentation(name = "Connectivity", description = "The connectivity for the connected components algorithm")
+    @SetJIPipeDocumentation(name = "Connectivity", description = "The connectivity for the connected components algorithm")
     @JIPipeParameter("connectivity")
     public Neighborhood2D getConnectivity() {
         return connectivity;
@@ -180,7 +180,7 @@ public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         return super.isParameterUIVisible(tree, access);
     }
 
-    @JIPipeDocumentationDescription(description = "<ul>" +
+    @AddJIPipeDocumentationDescription(description = "<ul>" +
             "<li>Floodfill: Original implementation by Waisman et al. that applies flood filling for each pixel and removes all labels within the detected area. This is a fast algorithm " +
             "suitable to detect labels that are not nested.</li>" +
             "<li>Protected floodfill: Modified algorithm that utilizes an additional connected components operation to prevent accidental removals. These can happen if one label is encased within another (e.g., structures within a tissue). " +

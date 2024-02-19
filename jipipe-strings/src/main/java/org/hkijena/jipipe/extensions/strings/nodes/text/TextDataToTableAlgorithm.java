@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.strings.nodes.text;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
@@ -28,10 +28,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Text to table", description = "Extracts a values from the input text data (via an expression) and writes the results into a table.")
-@JIPipeNode(menuPath = "Text", nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
-@JIPipeInputSlot(value = StringData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Text to table", description = "Extracts a values from the input text data (via an expression) and writes the results into a table.")
+@DefineJIPipeNode(menuPath = "Text", nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = StringData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class TextDataToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private ParameterCollectionList entries = ParameterCollectionList.containingCollection(Entry.class);
     private TableColumnNormalization columnNormalization = TableColumnNormalization.ZeroOrEmpty;
@@ -77,7 +77,7 @@ public class TextDataToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), resultsTableData, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Generated columns", description = "The list of generated columns.")
+    @SetJIPipeDocumentation(name = "Generated columns", description = "The list of generated columns.")
     @JIPipeParameter("entries")
     @ParameterCollectionListTemplate(Entry.class)
     public ParameterCollectionList getEntries() {
@@ -89,7 +89,7 @@ public class TextDataToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.entries = entries;
     }
 
-    @JIPipeDocumentation(name = "Column length normalization", description = "Determines how to fill in missing values if multiple columns are created")
+    @SetJIPipeDocumentation(name = "Column length normalization", description = "Determines how to fill in missing values if multiple columns are created")
     @JIPipeParameter("column-normalization")
     public TableColumnNormalization getColumnNormalization() {
         return columnNormalization;
@@ -112,7 +112,7 @@ public class TextDataToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             this.columnName = new JIPipeExpressionParameter(other.columnName);
         }
 
-        @JIPipeDocumentation(name = "Preprocessor", description = "An expression that allows to preprocess the text. You can return an ARRAY to create multiple rows.")
+        @SetJIPipeDocumentation(name = "Preprocessor", description = "An expression that allows to preprocess the text. You can return an ARRAY to create multiple rows.")
         @JIPipeParameter(value = "preprocessor", uiOrder = -100)
         @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
         @JIPipeExpressionParameterVariable(name = "Text", key = "text", description = "The input text")
@@ -125,7 +125,7 @@ public class TextDataToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             this.preprocessor = preprocessor;
         }
 
-        @JIPipeDocumentation(name = "Column name", description = "The name of the output column.")
+        @SetJIPipeDocumentation(name = "Column name", description = "The name of the output column.")
         @JIPipeParameter(value = "column-name", uiOrder = -90)
         @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
         @JIPipeExpressionParameterVariable(name = "Text", key = "text", description = "The input text")

@@ -5,8 +5,8 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -33,13 +33,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-@JIPipeDocumentation(name = "ROI to Labels (by name)", description = "Converts ROI and an optional reference image into a label image. " +
+@SetJIPipeDocumentation(name = "ROI to Labels (by name)", description = "Converts ROI and an optional reference image into a label image. " +
         "The label value is provided by mapping the name to a value. If no name mapping is provided for a ROI, a unique label is generated. If no reference image is provided, " +
         "the dimensions are estimated from the ROI. The background color (where no ROI is located) is zero.")
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", description = "Optional reference image used to calculate the size of the output", autoCreate = true, optional = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Labels", description = "Output label image", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", description = "Optional reference image used to calculate the size of the output", create = true, optional = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Labels", description = "Output label image", create = true)
 public class ROIToLabelsByNameAlgorithm extends JIPipeIteratingAlgorithm {
 
     private ParameterCollectionList labelAssignment = ParameterCollectionList.containingCollection(ROINameToLabelEntry.class);
@@ -159,7 +159,7 @@ public class ROIToLabelsByNameAlgorithm extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale32FData(result), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Draw outline", description = "If enabled, the label value is drawn as outline")
+    @SetJIPipeDocumentation(name = "Draw outline", description = "If enabled, the label value is drawn as outline")
     @JIPipeParameter("draw-outline")
     public boolean isDrawOutline() {
         return drawOutline;
@@ -170,7 +170,7 @@ public class ROIToLabelsByNameAlgorithm extends JIPipeIteratingAlgorithm {
         this.drawOutline = drawOutline;
     }
 
-    @JIPipeDocumentation(name = "Fill outline", description = "If enabled, the ROI is filled with the label value")
+    @SetJIPipeDocumentation(name = "Fill outline", description = "If enabled, the ROI is filled with the label value")
     @JIPipeParameter("fill-outline")
     public boolean isFillOutline() {
         return fillOutline;
@@ -181,7 +181,7 @@ public class ROIToLabelsByNameAlgorithm extends JIPipeIteratingAlgorithm {
         this.fillOutline = fillOutline;
     }
 
-    @JIPipeDocumentation(name = "Label assignment", description = "Add items into the list to assign ROI names to labels.")
+    @SetJIPipeDocumentation(name = "Label assignment", description = "Add items into the list to assign ROI names to labels.")
     @JIPipeParameter("label-assignment")
     @ParameterCollectionListTemplate(ROINameToLabelEntry.class)
     public ParameterCollectionList getLabelAssignment() {
@@ -226,7 +226,7 @@ public class ROIToLabelsByNameAlgorithm extends JIPipeIteratingAlgorithm {
             this.label = other.label;
         }
 
-        @JIPipeDocumentation(name = "ROI name")
+        @SetJIPipeDocumentation(name = "ROI name")
         @JIPipeParameter(value = "name", uiOrder = -100)
         public String getName() {
             return name;
@@ -237,7 +237,7 @@ public class ROIToLabelsByNameAlgorithm extends JIPipeIteratingAlgorithm {
             this.name = name;
         }
 
-        @JIPipeDocumentation(name = "Assign label")
+        @SetJIPipeDocumentation(name = "Assign label")
         @JIPipeParameter(value = "label", uiOrder = -50)
         public int getLabel() {
             return label;

@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.expressions.functions.statistics;
 
 import com.google.common.primitives.Doubles;
 import org.apache.commons.math3.stat.descriptive.rank.Percentile;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -10,7 +10,7 @@ import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 import java.util.Collection;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Percentile", description = "Calculates the Nth percentile (0-100) of the provided numeric array.")
+@SetJIPipeDocumentation(name = "Percentile", description = "Calculates the Nth percentile (0-100) of the provided numeric array.")
 public class PercentileFunction extends ExpressionFunction {
 
     public PercentileFunction() {

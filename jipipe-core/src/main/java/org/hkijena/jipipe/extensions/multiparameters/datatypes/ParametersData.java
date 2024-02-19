@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
@@ -43,7 +43,7 @@ import java.util.Map;
 /**
  * Stores the parameters of an algorithm
  */
-@JIPipeDocumentation(name = "Parameters", description = "Contains algorithm parameters")
+@SetJIPipeDocumentation(name = "Parameters", description = "Contains algorithm parameters")
 @JsonSerialize(using = ParametersData.Serializer.class)
 @JsonDeserialize(using = ParametersData.Deserializer.class)
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.json file that stores the parameters. " +

@@ -15,8 +15,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.generate;
 
 import ij.IJ;
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
@@ -39,13 +39,13 @@ import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@JIPipeDocumentation(name = "Generate missing from math expression", description = "Generates an image if it cannot be matched to a reference " +
+@SetJIPipeDocumentation(name = "Generate missing from math expression", description = "Generates an image if it cannot be matched to a reference " +
         "in a data batch according to the mathematical operation." +
         " Applies a mathematical operation to each pixel. The value is written into the image. ")
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true, optional = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true, optional = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
 public class GenerateMissingImageFromMathExpression2D extends JIPipeMissingDataGeneratorAlgorithm {
 
     private JIPipeExpressionParameter function = new JIPipeExpressionParameter("0");
@@ -143,7 +143,7 @@ public class GenerateMissingImageFromMathExpression2D extends JIPipeMissingDataG
         }
     }
 
-    @JIPipeDocumentation(name = "Generate one per batch", description = "If enabled, only one image per batch is generated. " +
+    @SetJIPipeDocumentation(name = "Generate one per batch", description = "If enabled, only one image per batch is generated. " +
             "The first image is used as reference.")
     @JIPipeParameter("generate-one-per-batch")
     public boolean isGenerateOnePerBatch() {
@@ -155,7 +155,7 @@ public class GenerateMissingImageFromMathExpression2D extends JIPipeMissingDataG
         this.generateOnePerBatch = generateOnePerBatch;
     }
 
-    @JIPipeDocumentation(name = "Overwrite bit depth", description = "If none is selected, the output type is the same as the type " +
+    @SetJIPipeDocumentation(name = "Overwrite bit depth", description = "If none is selected, the output type is the same as the type " +
             "of the input image. Otherwise, the bit depth is set according to the selection.")
     @JIPipeParameter("overwrite-output-bit-depth")
     public OptionalBitDepth getOverwriteOutputBitDepth() {
@@ -167,7 +167,7 @@ public class GenerateMissingImageFromMathExpression2D extends JIPipeMissingDataG
         this.overwriteOutputBitDepth = overwriteOutputBitDepth;
     }
 
-    @JIPipeDocumentation(name = "Function", description = "The function that is applied to each pixel. The expression should return a number.")
+    @SetJIPipeDocumentation(name = "Function", description = "The function that is applied to each pixel. The expression should return a number.")
     @JIPipeParameter("function")
     @JIPipeExpressionParameterSettings(variableSource = PixelCoordinate5DExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getFunction() {
@@ -179,7 +179,7 @@ public class GenerateMissingImageFromMathExpression2D extends JIPipeMissingDataG
         this.function = transformation;
     }
 
-    @JIPipeDocumentation(name = "Overwrite Width", description = "The width of the generated image")
+    @SetJIPipeDocumentation(name = "Overwrite Width", description = "The width of the generated image")
     @JIPipeParameter("width")
     public OptionalIntegerParameter getOverwriteWidth() {
         return overwriteWidth;
@@ -190,7 +190,7 @@ public class GenerateMissingImageFromMathExpression2D extends JIPipeMissingDataG
         this.overwriteWidth = overwriteWidth;
     }
 
-    @JIPipeDocumentation(name = "Overwrite Height", description = "The height of the generated image")
+    @SetJIPipeDocumentation(name = "Overwrite Height", description = "The height of the generated image")
     @JIPipeParameter("height")
     public OptionalIntegerParameter getOverwriteHeight() {
         return overwriteHeight;
@@ -201,7 +201,7 @@ public class GenerateMissingImageFromMathExpression2D extends JIPipeMissingDataG
         this.overwriteHeight = overwriteHeight;
     }
 
-    @JIPipeDocumentation(name = "Overwrite number of slices (Z)", description = "Number of generated Z slices.")
+    @SetJIPipeDocumentation(name = "Overwrite number of slices (Z)", description = "Number of generated Z slices.")
     @JIPipeParameter("size-z")
     public OptionalIntegerParameter getOverwriteSizeZ() {
         return overwriteSizeZ;
@@ -212,7 +212,7 @@ public class GenerateMissingImageFromMathExpression2D extends JIPipeMissingDataG
         this.overwriteSizeZ = overwriteSizeZ;
     }
 
-    @JIPipeDocumentation(name = "Overwrite number of channels (C)", description = "Number of generated channel slices.")
+    @SetJIPipeDocumentation(name = "Overwrite number of channels (C)", description = "Number of generated channel slices.")
     @JIPipeParameter("size-c")
     public OptionalIntegerParameter getOverwriteSizeC() {
         return overwriteSizeC;
@@ -223,7 +223,7 @@ public class GenerateMissingImageFromMathExpression2D extends JIPipeMissingDataG
         this.overwriteSizeC = overwriteSizeC;
     }
 
-    @JIPipeDocumentation(name = "Overwrite number of frames (T)", description = "Number of generated frame slices.")
+    @SetJIPipeDocumentation(name = "Overwrite number of frames (T)", description = "Number of generated frame slices.")
     @JIPipeParameter("size-t")
     public OptionalIntegerParameter getOverwriteSizeT() {
         return overwriteSizeT;

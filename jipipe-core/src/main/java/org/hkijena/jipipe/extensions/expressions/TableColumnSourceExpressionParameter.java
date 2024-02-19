@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.expressions;
 
 import com.google.common.primitives.Doubles;
-import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
+import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
@@ -40,7 +40,7 @@ import java.util.Set;
  */
 @JIPipeExpressionParameterSettings(variableSource = TableColumnSourceExpressionParameter.VariablesInfo.class, hint = "table column/data")
 @PairParameterSettings(keyLabel = "Column source", valueLabel = "Column name/value")
-@JIPipeDocumentationDescription(description = "This parameter can be used to either select an existing column from a table or to generate a new column by providing a value for each row." +
+@AddJIPipeDocumentationDescription(description = "This parameter can be used to either select an existing column from a table or to generate a new column by providing a value for each row." +
         "<ul>" +
         "<li>Selecting columns by exact name: Type in the name of the column into the value field. Quotation marks are optional.</li>" +
         "<li>Selecting columns by filtering: The value expression is called for each existing column and provided as variable 'value'. Return TRUE at any point to select the value. Example: <code>value == \"Mean\"</code></li>" +

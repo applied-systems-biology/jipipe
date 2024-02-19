@@ -3,7 +3,7 @@ package org.hkijena.jipipe.api.registries;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
@@ -113,7 +113,7 @@ public class JIPipeExternalEnvironmentRegistry {
         public InstallerEntry(Class<? extends ExternalEnvironmentInstaller> installerClass, Icon icon) {
             this.installerClass = installerClass;
             this.icon = icon;
-            JIPipeDocumentation documentation = installerClass.getAnnotation(JIPipeDocumentation.class);
+            SetJIPipeDocumentation documentation = installerClass.getAnnotation(SetJIPipeDocumentation.class);
             if (documentation != null) {
                 name = documentation.name();
                 description = DocumentationUtils.getDocumentationDescription(documentation);

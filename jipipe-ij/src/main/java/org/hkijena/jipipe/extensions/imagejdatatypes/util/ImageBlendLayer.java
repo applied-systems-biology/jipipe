@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.util;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
@@ -22,7 +22,7 @@ public class ImageBlendLayer extends AbstractJIPipeParameterCollection {
         this.opacity = other.opacity;
     }
 
-    @JIPipeDocumentation(name = "Priority (lower = earlier)")
+    @SetJIPipeDocumentation(name = "Priority (lower = earlier)")
     @JIPipeParameter("order")
     public int getPriority() {
         return priority;
@@ -33,7 +33,7 @@ public class ImageBlendLayer extends AbstractJIPipeParameterCollection {
         this.priority = priority;
     }
 
-    @JIPipeDocumentation(name = "Blend mode")
+    @SetJIPipeDocumentation(name = "Blend mode")
     @JIPipeParameter("blend-mode")
     public ImageBlendMode getBlendMode() {
         return blendMode;
@@ -44,7 +44,7 @@ public class ImageBlendLayer extends AbstractJIPipeParameterCollection {
         this.blendMode = blendMode;
     }
 
-    @JIPipeDocumentation(name = "Opacity")
+    @SetJIPipeDocumentation(name = "Opacity")
     @JIPipeParameter("opacity")
     @JsonGetter("opacity")
     public double getOpacity() {

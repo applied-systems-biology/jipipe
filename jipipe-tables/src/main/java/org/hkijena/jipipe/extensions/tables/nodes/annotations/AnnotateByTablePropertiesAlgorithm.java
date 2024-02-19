@@ -14,8 +14,8 @@
 
 package org.hkijena.jipipe.extensions.tables.nodes.annotations;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -32,10 +32,10 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Annotate with table properties", description = "Annotates tables with information about the table")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For tables")
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Annotate with table properties", description = "Annotates tables with information about the table")
+@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For tables")
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class AnnotateByTablePropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
@@ -69,7 +69,7 @@ public class AnnotateByTablePropertiesAlgorithm extends JIPipeSimpleIteratingAlg
         iterationStep.addOutputData(getFirstOutputSlot(), data, annotationList, annotationMergeStrategy, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Annotation merge strategy", description = "Determines how the newly generated annotations are merged with existing annotations.")
+    @SetJIPipeDocumentation(name = "Annotation merge strategy", description = "Determines how the newly generated annotations are merged with existing annotations.")
     @JIPipeParameter("annotation-merge-strategy")
     public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {
         return annotationMergeStrategy;
@@ -80,7 +80,7 @@ public class AnnotateByTablePropertiesAlgorithm extends JIPipeSimpleIteratingAlg
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
 
-    @JIPipeDocumentation(name = "Annotate with row count", description = "If enabled, annotate with the row count")
+    @SetJIPipeDocumentation(name = "Annotate with row count", description = "If enabled, annotate with the row count")
     @JIPipeParameter("row-count-annotation")
     public OptionalAnnotationNameParameter getRowCountAnnotation() {
         return rowCountAnnotation;
@@ -91,7 +91,7 @@ public class AnnotateByTablePropertiesAlgorithm extends JIPipeSimpleIteratingAlg
         this.rowCountAnnotation = rowCountAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with column count", description = "If enabled, annotate with the column count")
+    @SetJIPipeDocumentation(name = "Annotate with column count", description = "If enabled, annotate with the column count")
     @JIPipeParameter("column-count-annotation")
     public OptionalAnnotationNameParameter getColumnCountAnnotation() {
         return columnCountAnnotation;
@@ -102,7 +102,7 @@ public class AnnotateByTablePropertiesAlgorithm extends JIPipeSimpleIteratingAlg
         this.columnCountAnnotation = columnCountAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with column names", description = "If enabled, annotate with the column names as JSON string")
+    @SetJIPipeDocumentation(name = "Annotate with column names", description = "If enabled, annotate with the column names as JSON string")
     @JIPipeParameter("column-names-annotation")
     public OptionalAnnotationNameParameter getColumnNamesAnnotation() {
         return columnNamesAnnotation;

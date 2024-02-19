@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.python.installers;
 
 import org.apache.commons.lang3.SystemUtils;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -26,7 +26,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@JIPipeDocumentation(name = "Select existing Python virtual environment ...", description = "Chooses an existing Python virtual environment")
+@SetJIPipeDocumentation(name = "Select existing Python virtual environment ...", description = "Chooses an existing Python virtual environment")
 public class SelectVirtualEnvPythonInstaller extends ExternalEnvironmentInstaller {
 
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
@@ -134,7 +134,7 @@ public class SelectVirtualEnvPythonInstaller extends ExternalEnvironmentInstalle
         private Path virtualEnvDirectory = Paths.get("");
         private String name = "Virtual env";
 
-        @JIPipeDocumentation(name = "Virtual environment directory", description = "The directory of the virtual environment. It usually contains a file pyvenv.cfg.")
+        @SetJIPipeDocumentation(name = "Virtual environment directory", description = "The directory of the virtual environment. It usually contains a file pyvenv.cfg.")
         @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.DirectoriesOnly, key = FileChooserSettings.LastDirectoryKey.External)
         @JIPipeParameter("venv-dir")
         public Path getVirtualEnvDirectory() {
@@ -146,7 +146,7 @@ public class SelectVirtualEnvPythonInstaller extends ExternalEnvironmentInstalle
             this.virtualEnvDirectory = virtualEnvDirectory;
         }
 
-        @JIPipeDocumentation(name = "Name", description = "Name of the created environment")
+        @SetJIPipeDocumentation(name = "Name", description = "Name of the created environment")
         @JIPipeParameter("name")
         public String getName() {
             return name;

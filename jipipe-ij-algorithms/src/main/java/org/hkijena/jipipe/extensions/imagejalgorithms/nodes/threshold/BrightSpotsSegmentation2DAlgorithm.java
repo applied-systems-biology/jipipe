@@ -19,8 +19,8 @@ import ij.plugin.filter.BackgroundSubtracter;
 import ij.plugin.filter.Binary;
 import ij.plugin.filter.GaussianBlur;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -41,7 +41,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 /**
  * Applies Bright spots segmentation
  */
-@JIPipeDocumentation(name = "Bright spots segmentation 2D", description = "Applies thresholding by applying a background subtraction, auto thresholding, and " +
+@SetJIPipeDocumentation(name = "Bright spots segmentation 2D", description = "Applies thresholding by applying a background subtraction, auto thresholding, and " +
         "various morphological operations. If higher-dimensional data is provided, the filter is applied to each 2D slice.<br/>" +
         "If you want to further customize all steps, create a group or set of nodes that apply the following operations:" +
         "<ol>" +
@@ -52,11 +52,11 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
         "<li>Morphological erosion</li>" +
         "<li>Optional: Gaussian blur</li>" +
         "</ol>")
-@JIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@DefineJIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
 
 
-@JIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", create = true)
 public class BrightSpotsSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final AutoThreshold2DAlgorithm autoThresholding;
@@ -159,7 +159,7 @@ public class BrightSpotsSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlg
     }
 
     @JIPipeParameter("rolling-ball-radius")
-    @JIPipeDocumentation(name = "Rolling ball radius")
+    @SetJIPipeDocumentation(name = "Rolling ball radius")
     public int getRollingBallRadius() {
         return rollingBallRadius;
     }
@@ -171,7 +171,7 @@ public class BrightSpotsSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlg
     }
 
     @JIPipeParameter("dilation-erode-steps")
-    @JIPipeDocumentation(name = "Dilation erode steps")
+    @SetJIPipeDocumentation(name = "Dilation erode steps")
     public int getDilationErodeSteps() {
         return dilationErodeSteps;
     }
@@ -183,7 +183,7 @@ public class BrightSpotsSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlg
     }
 
     @JIPipeParameter("gaussian-sigma")
-    @JIPipeDocumentation(name = "Gaussian sigma")
+    @SetJIPipeDocumentation(name = "Gaussian sigma")
     public double getGaussianSigma() {
         return gaussianSigma;
     }
@@ -195,7 +195,7 @@ public class BrightSpotsSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlg
     }
 
     @JIPipeParameter(value = "auto-thresholding")
-    @JIPipeDocumentation(name = "Auto thresholding", description = "Parameters for underlying auto thresholding")
+    @SetJIPipeDocumentation(name = "Auto thresholding", description = "Parameters for underlying auto thresholding")
     public AutoThreshold2DAlgorithm getAutoThresholding() {
         return autoThresholding;
     }

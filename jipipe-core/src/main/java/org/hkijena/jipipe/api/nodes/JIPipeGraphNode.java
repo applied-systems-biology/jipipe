@@ -102,28 +102,28 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
             JIPipeDefaultMutableSlotConfiguration.Builder builder = JIPipeDefaultMutableSlotConfiguration.builder();
 
             boolean created = false;
-            for (JIPipeInputSlot slot : getClass().getAnnotationsByType(JIPipeInputSlot.class)) {
-                if (slot.autoCreate()) {
+            for (AddJIPipeInputSlot slot : getClass().getAnnotationsByType(AddJIPipeInputSlot.class)) {
+                if (slot.create()) {
                     created = true;
                     builder.addInputSlot(slot);
                 }
             }
-            for (JIPipeOutputSlot slot : getClass().getAnnotationsByType(JIPipeOutputSlot.class)) {
-                if (slot.autoCreate()) {
+            for (AddJIPipeOutputSlot slot : getClass().getAnnotationsByType(AddJIPipeOutputSlot.class)) {
+                if (slot.create()) {
                     created = true;
                     builder.addOutputSlot(slot);
                 }
             }
 
             if (!created) {
-                for (JIPipeInputSlot slot : info.getInputSlots()) {
-                    if (slot.autoCreate()) {
+                for (AddJIPipeInputSlot slot : info.getInputSlots()) {
+                    if (slot.create()) {
                         created = true;
                         builder.addInputSlot(slot);
                     }
                 }
-                for (JIPipeOutputSlot slot : info.getOutputSlots()) {
-                    if (slot.autoCreate()) {
+                for (AddJIPipeOutputSlot slot : info.getOutputSlots()) {
+                    if (slot.create()) {
                         created = true;
                         builder.addOutputSlot(slot);
                     }
@@ -287,14 +287,14 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      * @return algorithm name
      */
     @JIPipeParameter(value = "jipipe:node:name", uiOrder = -9999, pinned = true, functional = false)
-    @JIPipeDocumentation(name = "Name", description = "Custom algorithm name.")
+    @SetJIPipeDocumentation(name = "Name", description = "Custom algorithm name.")
     public String getName() {
         if (customName == null || customName.isEmpty())
             return getInfo().getName();
         return customName;
     }
 
-    @JIPipeDocumentation(name = "Lock location/size", description = "If enabled, lock the location and size of this node. Does not affect automated alignment operations. " +
+    @SetJIPipeDocumentation(name = "Lock location/size", description = "If enabled, lock the location and size of this node. Does not affect automated alignment operations. " +
             "Will lock the size if the node supports a resize handle. Will prevent deletion of the node by the user. Slots can still be edited/connected and parameters can still be changed.")
     @JIPipeParameter(value = "jipipe:node:ui-locked", pinned = true, functional = false, hidden = true)
     public boolean isUiLocked() {
@@ -333,7 +333,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         return super.isParameterUIVisible(tree, access);
     }
 
-    @JIPipeDocumentation(name = "Bookmark this node", description = "If enabled, the node is highlighted in the graph editor UI and added into the bookmark list.")
+    @SetJIPipeDocumentation(name = "Bookmark this node", description = "If enabled, the node is highlighted in the graph editor UI and added into the bookmark list.")
     @JIPipeParameter(value = "jipipe:node:bookmarked", pinned = true, functional = false, hidden = true)
     public boolean isBookmarked() {
         return bookmarked;
@@ -839,7 +839,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      *
      * @return Description or null
      */
-    @JIPipeDocumentation(name = "Description", description = "A custom description")
+    @SetJIPipeDocumentation(name = "Description", description = "A custom description")
     @StringParameterSettings(multiline = true)
     @JIPipeParameter(value = "jipipe:node:description", uiOrder = -999, pinned = true, functional = false)
     public HTMLText getCustomDescription() {

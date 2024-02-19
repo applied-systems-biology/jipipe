@@ -16,9 +16,9 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.color;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ColorProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHeavyData;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
@@ -35,9 +35,9 @@ import java.awt.*;
 /**
  * RGB colored 2D image
  */
-@JIPipeDocumentation(name = "2D image (LAB)", description = "A colored image (LAB colors)")
-@JIPipeNode(menuPath = "Images\n2D\nColor")
-@JIPipeHeavyData
+@SetJIPipeDocumentation(name = "2D image (LAB)", description = "A colored image (LAB colors)")
+@DefineJIPipeNode(menuPath = "Images\n2D\nColor")
+@LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ColorProcessor.class, colorSpace = LABColorSpace.class, pixelType = Integer.class, bitDepth = 24, numDimensions = 2)
 public class ImagePlus2DColorLABData extends ImagePlus2DColorData {
 

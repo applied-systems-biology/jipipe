@@ -38,7 +38,7 @@ import java.util.*;
  * Use this class for nested algorithm graph runs (like {@link org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm})
  * Use {@link JIPipeLegacyProjectRun} for full project runs.
  */
-public class JIPipeLegacyGraphRunner implements JIPipeRunnable, JIPipeGraphGCHelper.SlotCompletedEventListener {
+public class JIPipeLegacyGraphRun implements JIPipeRunnable, JIPipeGraphGCHelper.SlotCompletedEventListener {
 
     private final JIPipeGraph algorithmGraph;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
@@ -51,7 +51,7 @@ public class JIPipeLegacyGraphRunner implements JIPipeRunnable, JIPipeGraphGCHel
      *
      * @param algorithmGraph the algorithm graph to run
      */
-    public JIPipeLegacyGraphRunner(JIPipeGraph algorithmGraph) {
+    public JIPipeLegacyGraphRun(JIPipeGraph algorithmGraph) {
         this.algorithmGraph = algorithmGraph;
     }
 

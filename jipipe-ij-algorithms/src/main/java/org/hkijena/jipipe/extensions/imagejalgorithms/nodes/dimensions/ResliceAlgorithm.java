@@ -1,8 +1,8 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.dimensions;
 
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -16,11 +16,11 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.extensions.parameters.library.roi.AnchorParameterSettings;
 
-@JIPipeDocumentation(name = "Reslice", description = "Defines a new Z axis and projects the image so that its Z axis is the newly defined one.")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Reslice Z")
+@SetJIPipeDocumentation(name = "Reslice", description = "Defines a new Z axis and projects the image so that its Z axis is the newly defined one.")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@DefineJIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Reslice Z")
 public class ResliceAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Anchor planeStartLocation = Anchor.TopCenter;
@@ -66,7 +66,7 @@ public class ResliceAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Flip vertically")
+    @SetJIPipeDocumentation(name = "Flip vertically")
     @JIPipeParameter("flip-vertical")
     public boolean isFlipVertical() {
         return flipVertical;
@@ -77,7 +77,7 @@ public class ResliceAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.flipVertical = flipVertical;
     }
 
-    @JIPipeDocumentation(name = "Rotate 90 degrees")
+    @SetJIPipeDocumentation(name = "Rotate 90 degrees")
     @JIPipeParameter("rotate")
     public boolean isRotate() {
         return rotate;
@@ -88,7 +88,7 @@ public class ResliceAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.rotate = rotate;
     }
 
-    @JIPipeDocumentation(name = "Avoid interpolation", description = "If enabled, use 1 pixel spacing if possible.")
+    @SetJIPipeDocumentation(name = "Avoid interpolation", description = "If enabled, use 1 pixel spacing if possible.")
     @JIPipeParameter("no-interpolation")
     public boolean isNoInterpolation() {
         return noInterpolation;
@@ -99,7 +99,7 @@ public class ResliceAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.noInterpolation = noInterpolation;
     }
 
-    @JIPipeDocumentation(name = "Start at", description = "Determines where the reslice will start. For example, if you choose the top location, the reslice plane will wander from north to south.")
+    @SetJIPipeDocumentation(name = "Start at", description = "Determines where the reslice will start. For example, if you choose the top location, the reslice plane will wander from north to south.")
     @JIPipeParameter(value = "plane-start-location", important = true)
     @AnchorParameterSettings(allowTopLeft = false, allowTopRight = false, allowCenterCenter = false, allowBottomLeft = false, allowBottomRight = false)
     public Anchor getPlaneStartLocation() {

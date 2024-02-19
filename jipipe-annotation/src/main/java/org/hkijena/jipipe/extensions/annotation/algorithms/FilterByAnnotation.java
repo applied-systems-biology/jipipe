@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -32,10 +32,10 @@ import java.util.List;
  * Algorithm that splits the input data by a specified annotation
  */
 // Algorithm metadata
-@JIPipeDocumentation(name = "Filter by annotation", description = "Filters data based on the annotation value.")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Filter")
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Filter by annotation", description = "Filters data based on the annotation value.")
+@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Filter")
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
 public class FilterByAnnotation extends JIPipeAlgorithm {
 
     private AnnotationFilterExpression filter = new AnnotationFilterExpression();
@@ -84,7 +84,7 @@ public class FilterByAnnotation extends JIPipeAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Filter", description = "The filter is an expression that should return a boolean value " +
+    @SetJIPipeDocumentation(name = "Filter", description = "The filter is an expression that should return a boolean value " +
             "that indicates whether a data item should be put into the corresponding output." +
             "Annotation values are available as variables. If an annotation has spaces special characters, use $ to access its value. Examples: <pre>" +
             "#Dataset CONTAINS \"Raw\" AND condition EQUALS \"mock\"</pre>" +

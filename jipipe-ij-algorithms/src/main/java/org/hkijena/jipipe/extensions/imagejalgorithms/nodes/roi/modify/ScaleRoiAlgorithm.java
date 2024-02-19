@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.modify;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -27,10 +27,10 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@JIPipeDocumentation(name = "Scale ROI 2D", description = "Scales all ROI in the ROI list. If you want to have more flexibility, use one of the 'Change ROI properties' nodes.")
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Scale ROI 2D", description = "Scales all ROI in the ROI list. If you want to have more flexibility, use one of the 'Change ROI properties' nodes.")
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class ScaleRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private double scaleX = 1.0;
@@ -61,7 +61,7 @@ public class ScaleRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Scale X", description = "Scales the ROI. Please note that the scale will not be saved inside the ROI.")
+    @SetJIPipeDocumentation(name = "Scale X", description = "Scales the ROI. Please note that the scale will not be saved inside the ROI.")
     @JIPipeParameter("scale-x")
     public double getScaleX() {
         return scaleX;
@@ -72,7 +72,7 @@ public class ScaleRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.scaleX = scaleX;
     }
 
-    @JIPipeDocumentation(name = "Scale Y", description = "Scales the ROI. Please note that the scale will not be saved inside the ROI.")
+    @SetJIPipeDocumentation(name = "Scale Y", description = "Scales the ROI. Please note that the scale will not be saved inside the ROI.")
     @JIPipeParameter("scale-y")
     public double getScaleY() {
         return scaleY;
@@ -83,7 +83,7 @@ public class ScaleRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.scaleY = scaleY;
     }
 
-    @JIPipeDocumentation(name = "Center scale", description = "If true, each ROI is scaled relative to its center.")
+    @SetJIPipeDocumentation(name = "Center scale", description = "If true, each ROI is scaled relative to its center.")
     @JIPipeParameter("center-scale")
     public boolean getCenterScale() {
         return centerScale;

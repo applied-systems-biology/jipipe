@@ -16,8 +16,8 @@ package org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots;
 
 import fiji.plugin.trackmate.Spot;
 import fiji.plugin.trackmate.SpotCollection;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -40,10 +40,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Split spots", description = "Creates a list for each individual spot")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nSplit/Merge")
-@JIPipeInputSlot(value = SpotsCollectionData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = SpotsCollectionData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Split spots", description = "Creates a list for each individual spot")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nSplit/Merge")
+@AddJIPipeInputSlot(value = SpotsCollectionData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = SpotsCollectionData.class, slotName = "Output", create = true)
 public class SplitSpotsNode extends JIPipeSimpleIteratingAlgorithm {
     private NamedTextAnnotationGeneratorExpression.List annotationGenerator = new NamedTextAnnotationGeneratorExpression.List();
 
@@ -106,7 +106,7 @@ public class SplitSpotsNode extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Generated annotations", description = "This list contains expressions to generate annotations for each spot")
+    @SetJIPipeDocumentation(name = "Generated annotations", description = "This list contains expressions to generate annotations for each spot")
     @JIPipeParameter("generated-annotations")
     @JIPipeExpressionParameterVariable(fromClass = SpotFeatureVariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)

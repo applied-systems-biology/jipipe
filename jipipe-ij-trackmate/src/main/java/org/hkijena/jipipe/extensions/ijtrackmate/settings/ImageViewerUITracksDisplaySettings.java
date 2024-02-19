@@ -15,7 +15,7 @@
 package org.hkijena.jipipe.extensions.ijtrackmate.settings;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackDrawer;
@@ -32,7 +32,7 @@ public class ImageViewerUITracksDisplaySettings extends AbstractJIPipeParameterC
         return JIPipe.getSettings().getSettings(ID, ImageViewerUITracksDisplaySettings.class);
     }
 
-    @JIPipeDocumentation(name = "Track visualization")
+    @SetJIPipeDocumentation(name = "Track visualization")
     @JIPipeParameter("track-drawer")
     public TrackDrawer getTrackDrawer() {
         return trackDrawer;
@@ -42,7 +42,7 @@ public class ImageViewerUITracksDisplaySettings extends AbstractJIPipeParameterC
         this.trackDrawer = trackDrawer;
     }
 
-    @JIPipeDocumentation(name = "Show tracks", description = "If enabled, tracks are visible")
+    @SetJIPipeDocumentation(name = "Show tracks", description = "If enabled, tracks are visible")
     @JIPipeParameter("show-tracks")
     public boolean isShowTracks() {
         return showTracks;

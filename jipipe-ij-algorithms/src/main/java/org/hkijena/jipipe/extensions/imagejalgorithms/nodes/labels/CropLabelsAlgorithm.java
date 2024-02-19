@@ -16,9 +16,9 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.labels;
 import gnu.trove.set.hash.TIntHashSet;
 import ij.ImagePlus;
 import inra.ijpb.label.LabelImages;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -37,13 +37,13 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
 import java.util.ArrayList;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Crop labels", description = "Crops all or a specific subset of labels from the image.")
-@JIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)
-@JIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
+@SetJIPipeDocumentation(name = "Crop labels", description = "Crops all or a specific subset of labels from the image.")
+@DefineJIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
+@AddJIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
         "Bioinformatics (Oxford Univ Press) 32(22): 3532-3534, PMID 27412086, doi:10.1093/bioinformatics/btw413")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nLabel Images", aliasName = "Crop Label")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nLabel Images", aliasName = "Crop Label")
 public class CropLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalIntegerRange labelIdLimit = new OptionalIntegerRange();
@@ -61,7 +61,7 @@ public class CropLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.labelIdAnnotation = new OptionalAnnotationNameParameter(other.labelIdAnnotation);
     }
 
-    @JIPipeDocumentation(name = "Limit label IDs", description = "Allows to determine which label IDs should be extracted")
+    @SetJIPipeDocumentation(name = "Limit label IDs", description = "Allows to determine which label IDs should be extracted")
     @JIPipeParameter("label-id-limit")
     public OptionalIntegerRange getLabelIdLimit() {
         return labelIdLimit;
@@ -72,7 +72,7 @@ public class CropLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.labelIdLimit = labelIdLimit;
     }
 
-    @JIPipeDocumentation(name = "Border size", description = "Border size in pixels around each extracted label")
+    @SetJIPipeDocumentation(name = "Border size", description = "Border size in pixels around each extracted label")
     @JIPipeParameter("border")
     public int getBorder() {
         return border;
@@ -83,7 +83,7 @@ public class CropLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.border = border;
     }
 
-    @JIPipeDocumentation(name = "Annotate with label ID", description = "If enabled, an annotation with the label ID is created for each output")
+    @SetJIPipeDocumentation(name = "Annotate with label ID", description = "If enabled, an annotation with the label ID is created for each output")
     @JIPipeParameter("label-id-annotation")
     public OptionalAnnotationNameParameter getLabelIdAnnotation() {
         return labelIdAnnotation;

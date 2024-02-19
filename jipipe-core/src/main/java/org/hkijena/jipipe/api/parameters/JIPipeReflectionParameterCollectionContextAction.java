@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.api.parameters;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import java.lang.reflect.InvocationTargetException;
@@ -11,9 +11,9 @@ public class JIPipeReflectionParameterCollectionContextAction implements JIPipeP
     private final Object target;
     private final Method function;
     private final URL iconURL;
-    private final JIPipeDocumentation documentation;
+    private final SetJIPipeDocumentation documentation;
 
-    public JIPipeReflectionParameterCollectionContextAction(Object target, Method function, URL iconURL, JIPipeDocumentation documentation) {
+    public JIPipeReflectionParameterCollectionContextAction(Object target, Method function, URL iconURL, SetJIPipeDocumentation documentation) {
         this.target = target;
         this.function = function;
         this.iconURL = iconURL;
@@ -29,7 +29,7 @@ public class JIPipeReflectionParameterCollectionContextAction implements JIPipeP
     }
 
     @Override
-    public JIPipeDocumentation getDocumentation() {
+    public SetJIPipeDocumentation getDocumentation() {
         return documentation;
     }
 

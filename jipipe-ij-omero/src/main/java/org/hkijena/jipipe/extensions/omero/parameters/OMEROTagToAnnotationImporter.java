@@ -5,7 +5,7 @@ import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.facility.MetadataFacility;
 import omero.gateway.model.DataObject;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -31,7 +31,7 @@ public class OMEROTagToAnnotationImporter extends AbstractJIPipeParameterCollect
         this.tagsToListAnnotation = new OptionalAnnotationNameParameter(other.tagsToListAnnotation);
     }
 
-    @JIPipeDocumentation(name = "Convert tags into single annotation", description = "If enabled, write all tag names into a single annotation (as list). " +
+    @SetJIPipeDocumentation(name = "Convert tags into single annotation", description = "If enabled, write all tag names into a single annotation (as list). " +
             "The name of the annotation is determined by the value of this parameter")
     @JIPipeParameter("tags-to-list-annotation")
     public OptionalAnnotationNameParameter getTagsToListAnnotation() {
@@ -43,7 +43,7 @@ public class OMEROTagToAnnotationImporter extends AbstractJIPipeParameterCollect
         this.tagsToListAnnotation = tagsToListAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Convert tags into single annotation (filter)", description = "Allows to filter out tags that will be included into 'Convert tags into single annotation'")
+    @SetJIPipeDocumentation(name = "Convert tags into single annotation (filter)", description = "Allows to filter out tags that will be included into 'Convert tags into single annotation'")
     @JIPipeParameter("tags-to-list-annotation-filter")
     public StringQueryExpression getTagsToListFilter() {
         return tagsToListFilter;

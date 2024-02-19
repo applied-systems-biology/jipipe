@@ -21,8 +21,8 @@ import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -56,13 +56,13 @@ import java.util.Set;
 /**
  * Thresholding node that thresholds via an auto threshold
  */
-@JIPipeDocumentation(name = "Custom auto threshold 2D (min+max, 32-bit)", description = "Allows to implement a custom thresholding method via expressions. " +
+@SetJIPipeDocumentation(name = "Custom auto threshold 2D (min+max, 32-bit)", description = "Allows to implement a custom thresholding method via expressions. " +
         "This node supports the calculation of both the minimum and maximum thresholds." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust", aliasName = "Auto threshold (custom, min+max, 32-bit)")
+@DefineJIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust", aliasName = "Auto threshold (custom, min+max, 32-bit)")
 public class CustomAutoThreshold2D32Fv2Algorithm extends JIPipeIteratingAlgorithm {
 
     private final ThresholdParameters minThresholdParameters;
@@ -326,19 +326,19 @@ public class CustomAutoThreshold2D32Fv2Algorithm extends JIPipeIteratingAlgorith
         }
     }
 
-    @JIPipeDocumentation(name = "Minimum threshold", description = "The following settings determine how the minimum threshold is determined")
+    @SetJIPipeDocumentation(name = "Minimum threshold", description = "The following settings determine how the minimum threshold is determined")
     @JIPipeParameter("min-threshold")
     public ThresholdParameters getMinThresholdParameters() {
         return minThresholdParameters;
     }
 
-    @JIPipeDocumentation(name = "Maximum threshold", description = "The following settings determine how the maximum threshold is determined")
+    @SetJIPipeDocumentation(name = "Maximum threshold", description = "The following settings determine how the maximum threshold is determined")
     @JIPipeParameter("max-threshold")
     public ThresholdParameters getMaxThresholdParameters() {
         return maxThresholdParameters;
     }
 
-    @JIPipeDocumentation(name = "Threshold annotation strategy", description = "Determines what happens if annotations are already present.")
+    @SetJIPipeDocumentation(name = "Threshold annotation strategy", description = "Determines what happens if annotations are already present.")
     @JIPipeParameter("threshold-annotation-strategy")
     public JIPipeTextAnnotationMergeMode getThresholdAnnotationStrategy() {
         return thresholdAnnotationStrategy;
@@ -349,7 +349,7 @@ public class CustomAutoThreshold2D32Fv2Algorithm extends JIPipeIteratingAlgorith
         this.thresholdAnnotationStrategy = thresholdAnnotationStrategy;
     }
 
-    @JIPipeDocumentation(name = "Multi-slice thresholding", description = "Determines how thresholds are calculated if an image has multiple slices. " +
+    @SetJIPipeDocumentation(name = "Multi-slice thresholding", description = "Determines how thresholds are calculated if an image has multiple slices. " +
             "<ul>" +
             "<li><b>Apply threshold per slice</b> calculates and applies the threshold for each slice.</li>" +
             "<li><b>Combine slice statistics</b> calculates statistics for all pixels in the image.</li>" +
@@ -365,7 +365,7 @@ public class CustomAutoThreshold2D32Fv2Algorithm extends JIPipeIteratingAlgorith
         this.thresholdMode = thresholdMode;
     }
 
-    @JIPipeDocumentation(name = "Calculate threshold based on ...", description = "Determines from which image areas the pixel values used for calculating the " +
+    @SetJIPipeDocumentation(name = "Calculate threshold based on ...", description = "Determines from which image areas the pixel values used for calculating the " +
             "thresholds are extracted from.")
     @JIPipeParameter("source-area")
     public ImageROITargetArea getSourceArea() {
@@ -378,7 +378,7 @@ public class CustomAutoThreshold2D32Fv2Algorithm extends JIPipeIteratingAlgorith
         ImageJAlgorithmUtils.updateROIOrMaskSlot(sourceArea, getSlotConfiguration());
     }
 
-    @JIPipeDocumentation(name = "Pixels are available as variables", description = "If enabled, the list of all pixels that are considered for the statistics are available as variable 'pixels'. " +
+    @SetJIPipeDocumentation(name = "Pixels are available as variables", description = "If enabled, the list of all pixels that are considered for the statistics are available as variable 'pixels'. " +
             "Please note that this will slow down the performance due to necessary conversions.")
     @JIPipeParameter("access-pixels")
     public boolean isAccessPixels() {
@@ -432,7 +432,7 @@ public class CustomAutoThreshold2D32Fv2Algorithm extends JIPipeIteratingAlgorith
             this.thresholdCombinationExpression = new JIPipeExpressionParameter(other.thresholdCombinationExpression);
         }
 
-        @JIPipeDocumentation(name = "Threshold combination function", description = "This expression combines multiple thresholds into one numeric threshold.")
+        @SetJIPipeDocumentation(name = "Threshold combination function", description = "This expression combines multiple thresholds into one numeric threshold.")
         @JIPipeExpressionParameterSettings(variableSource = ThresholdsExpressionParameterVariablesInfo.class)
         @JIPipeParameter("threshold-combine-expression")
         public JIPipeExpressionParameter getThresholdCombinationExpression() {
@@ -444,7 +444,7 @@ public class CustomAutoThreshold2D32Fv2Algorithm extends JIPipeIteratingAlgorith
             this.thresholdCombinationExpression = thresholdCombinationExpression;
         }
 
-        @JIPipeDocumentation(name = "Thresholding function", description = "This expression is executed for each set of slices. " +
+        @SetJIPipeDocumentation(name = "Thresholding function", description = "This expression is executed for each set of slices. " +
                 "The expression should return a number that will be used as threshold. A pixel is set to 255 if its value is larger than " +
                 "this threshold.")
         @JIPipeParameter(value = "thresholding-function", important = true)
@@ -459,7 +459,7 @@ public class CustomAutoThreshold2D32Fv2Algorithm extends JIPipeIteratingAlgorith
             this.thresholdCalculationExpression = thresholdCalculationExpression;
         }
 
-        @JIPipeDocumentation(name = "Threshold annotation", description = "Puts the generated threshold(s) into an annotation.")
+        @SetJIPipeDocumentation(name = "Threshold annotation", description = "Puts the generated threshold(s) into an annotation.")
         @JIPipeParameter("threshold-annotation")
         public OptionalAnnotationNameParameter getThresholdAnnotation() {
             return thresholdAnnotation;

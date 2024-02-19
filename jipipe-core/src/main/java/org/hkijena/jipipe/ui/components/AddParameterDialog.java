@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.components;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -232,7 +232,7 @@ public class AddParameterDialog extends JIPipeWorkbenchPanel {
         private String name;
         private HTMLText description = new HTMLText();
 
-        @JIPipeDocumentation(name = "Unique identifier", description = "The unique identifier of the parameter. Cannot be empty.")
+        @SetJIPipeDocumentation(name = "Unique identifier", description = "The unique identifier of the parameter. Cannot be empty.")
         @JIPipeParameter(value = "id", important = true, uiOrder = -100)
         public String getId() {
             return id;
@@ -243,7 +243,7 @@ public class AddParameterDialog extends JIPipeWorkbenchPanel {
             this.id = id;
         }
 
-        @JIPipeDocumentation(name = "Name", description = "Optional name of the parameter that will be displayed in the GUI.")
+        @SetJIPipeDocumentation(name = "Name", description = "Optional name of the parameter that will be displayed in the GUI.")
         @JIPipeParameter(value = "name", uiOrder = -90)
         public String getName() {
             return name;
@@ -254,7 +254,7 @@ public class AddParameterDialog extends JIPipeWorkbenchPanel {
             this.name = name;
         }
 
-        @JIPipeDocumentation(name = "Description", description = "Optional description of the parameter.")
+        @SetJIPipeDocumentation(name = "Description", description = "Optional description of the parameter.")
         @JIPipeParameter(value = "description", uiOrder = -80)
         public HTMLText getDescription() {
             return description;

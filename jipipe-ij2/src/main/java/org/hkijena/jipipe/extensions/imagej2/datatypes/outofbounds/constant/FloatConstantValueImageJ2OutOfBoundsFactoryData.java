@@ -4,14 +4,14 @@ import net.imglib2.outofbounds.OutOfBoundsConstantValueFactory;
 import net.imglib2.outofbounds.OutOfBoundsFactory;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.FloatType;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagej2.datatypes.outofbounds.ImageJ2OutOfBoundsFactoryData;
 
-@JIPipeDocumentation(name = "IJ2 Constant Float Out Of Bounds factory", description = "Sets the values outside the image border to a constant value.")
+@SetJIPipeDocumentation(name = "IJ2 Constant Float Out Of Bounds factory", description = "Sets the values outside the image border to a constant value.")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single JSON file that stores the status information.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
 public class FloatConstantValueImageJ2OutOfBoundsFactoryData extends ImageJ2OutOfBoundsFactoryData {
@@ -44,7 +44,7 @@ public class FloatConstantValueImageJ2OutOfBoundsFactoryData extends ImageJ2OutO
         return "IJ2 Constant Out Of Bounds Factory (Float " + value + ")";
     }
 
-    @JIPipeDocumentation(name = "Constant value", description = "The value assumed to be outside the image border")
+    @SetJIPipeDocumentation(name = "Constant value", description = "The value assumed to be outside the image border")
     @JIPipeParameter("value")
     public float getValue() {
         return value;

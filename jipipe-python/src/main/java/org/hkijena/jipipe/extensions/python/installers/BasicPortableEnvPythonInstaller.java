@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.python.installers;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.lang3.SystemUtils;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -34,7 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@JIPipeDocumentation(name = "Install Python 3", description = "Installs Python 3")
+@SetJIPipeDocumentation(name = "Install Python 3", description = "Installs Python 3")
 public class BasicPortableEnvPythonInstaller extends ExternalEnvironmentInstaller {
 
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
@@ -307,7 +307,7 @@ public class BasicPortableEnvPythonInstaller extends ExternalEnvironmentInstalle
             installationPath = Paths.get("jipipe").resolve("python");
         }
 
-        @JIPipeDocumentation(name = "Download URL", description = "This URL is used to download Python. If you change it, please ensure that URL " +
+        @SetJIPipeDocumentation(name = "Download URL", description = "This URL is used to download Python. If you change it, please ensure that URL " +
                 "is the correct one for your current operating system. Please find other Python packages here: https://github.com/indygreg/python-build-standalone/releases/ (use the one with install_ony)")
         @JIPipeParameter("python-download-url")
         @StringParameterSettings(monospace = true)
@@ -320,7 +320,7 @@ public class BasicPortableEnvPythonInstaller extends ExternalEnvironmentInstalle
             this.pythonDownloadURL = pythonDownloadURL;
         }
 
-        @JIPipeDocumentation(name = "Installation path", description = "The folder where Miniconda is installed. Please choose an non-existing or empty folder. If the directory is relative, it is relative towards the ImageJ installation path.")
+        @SetJIPipeDocumentation(name = "Installation path", description = "The folder where Miniconda is installed. Please choose an non-existing or empty folder. If the directory is relative, it is relative towards the ImageJ installation path.")
         @JIPipeParameter("installation-path")
         public Path getInstallationPath() {
             return installationPath;
@@ -331,7 +331,7 @@ public class BasicPortableEnvPythonInstaller extends ExternalEnvironmentInstalle
             this.installationPath = installationPath;
         }
 
-        @JIPipeDocumentation(name = "Use pre-downloaded archive", description = "Instead of downloading the archive again, use a pre-downloaded archive.")
+        @SetJIPipeDocumentation(name = "Use pre-downloaded archive", description = "Instead of downloading the archive again, use a pre-downloaded archive.")
         @JIPipeParameter("pre-downloaded-archive-path")
         public OptionalPathParameter getPreDownloadedArchivePath() {
             return preDownloadedArchivePath;
@@ -342,7 +342,7 @@ public class BasicPortableEnvPythonInstaller extends ExternalEnvironmentInstalle
             this.preDownloadedArchivePath = preDownloadedArchivePath;
         }
 
-        @JIPipeDocumentation(name = "Name", description = "Name of the created environment")
+        @SetJIPipeDocumentation(name = "Name", description = "Name of the created environment")
         @JIPipeParameter("name")
         public String getName() {
             return name;

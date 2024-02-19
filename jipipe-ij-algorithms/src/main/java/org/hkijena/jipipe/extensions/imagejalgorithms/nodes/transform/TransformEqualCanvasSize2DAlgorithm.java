@@ -17,8 +17,8 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -33,11 +33,11 @@ import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
 
 import java.awt.*;
 
-@JIPipeDocumentation(name = "Make images equal 2D", description = "Makes all images within a data batch have the same size by padding with the predefined background color according to the largest image dimensions.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Transform")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust", aliasName = "Canvas Size... (multiple images 2D)")
+@SetJIPipeDocumentation(name = "Make images equal 2D", description = "Makes all images within a data batch have the same size by padding with the predefined background color according to the largest image dimensions.")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Transform")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust", aliasName = "Canvas Size... (multiple images 2D)")
 public class TransformEqualCanvasSize2DAlgorithm extends JIPipeMergingAlgorithm {
 
     private NumericFunctionExpression xAxis = new NumericFunctionExpression();
@@ -161,7 +161,7 @@ public class TransformEqualCanvasSize2DAlgorithm extends JIPipeMergingAlgorithm 
         return ipNew;
     }
 
-    @JIPipeDocumentation(name = "X axis", description = "Defines the size of the output canvas")
+    @SetJIPipeDocumentation(name = "X axis", description = "Defines the size of the output canvas")
     @JIPipeParameter("x-axis")
     public NumericFunctionExpression getxAxis() {
         return xAxis;
@@ -172,7 +172,7 @@ public class TransformEqualCanvasSize2DAlgorithm extends JIPipeMergingAlgorithm 
         this.xAxis = xAxis;
     }
 
-    @JIPipeDocumentation(name = "Y axis", description = "Defines the size of the output canvas")
+    @SetJIPipeDocumentation(name = "Y axis", description = "Defines the size of the output canvas")
     @JIPipeParameter("y-axis")
     public NumericFunctionExpression getyAxis() {
         return yAxis;
@@ -183,7 +183,7 @@ public class TransformEqualCanvasSize2DAlgorithm extends JIPipeMergingAlgorithm 
         this.yAxis = yAxis;
     }
 
-    @JIPipeDocumentation(name = "Background color", description = "The color of the outside canvas")
+    @SetJIPipeDocumentation(name = "Background color", description = "The color of the outside canvas")
     @JIPipeParameter("background-color")
     public Color getBackgroundColor() {
         return backgroundColor;
@@ -194,7 +194,7 @@ public class TransformEqualCanvasSize2DAlgorithm extends JIPipeMergingAlgorithm 
         this.backgroundColor = backgroundColor;
     }
 
-    @JIPipeDocumentation(name = "Anchor", description = "From which point to expand the canvas")
+    @SetJIPipeDocumentation(name = "Anchor", description = "From which point to expand the canvas")
     @JIPipeParameter("anchor")
     public Anchor getAnchor() {
         return anchor;

@@ -1,8 +1,8 @@
 package org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.split;
 
 import mcib3d.image3d.ImageHandler;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -34,11 +34,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-@JIPipeDocumentation(name = "Split 3D ROI into connected components", description = "Splits the input 3D ROI list into multiple ROI lists, one per connected component")
-@JIPipeNode(menuPath = "Split", nodeTypeCategory = RoiNodeTypeCategory.class)
-@JIPipeInputSlot(value = ROI3DListData.class, slotName = "Input", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true, optional = true)
-@JIPipeOutputSlot(value = ROI3DListData.class, slotName = "Components", autoCreate = true)
+@SetJIPipeDocumentation(name = "Split 3D ROI into connected components", description = "Splits the input 3D ROI list into multiple ROI lists, one per connected component")
+@DefineJIPipeNode(menuPath = "Split", nodeTypeCategory = RoiNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true, optional = true)
+@AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "Components", create = true)
 public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingAlgorithm {
     private OptionalAnnotationNameParameter componentNameAnnotation = new OptionalAnnotationNameParameter("Component", true);
     private JIPipeExpressionParameter overlapFilter = new JIPipeExpressionParameter("");
@@ -138,7 +138,7 @@ public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingA
         }
     }
 
-    @JIPipeDocumentation(name = "Ignore channel", description = "If enabled, ROI located at different channels are compared")
+    @SetJIPipeDocumentation(name = "Ignore channel", description = "If enabled, ROI located at different channels are compared")
     @JIPipeParameter("ignore-c")
     public boolean isIgnoreC() {
         return ignoreC;
@@ -149,7 +149,7 @@ public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingA
         this.ignoreC = ignoreC;
     }
 
-    @JIPipeDocumentation(name = "Ignore frame", description = "If enabled, ROI located at different frames are compared")
+    @SetJIPipeDocumentation(name = "Ignore frame", description = "If enabled, ROI located at different frames are compared")
     @JIPipeParameter("ignore-t")
     public boolean isIgnoreT() {
         return ignoreT;
@@ -160,7 +160,7 @@ public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingA
         this.ignoreT = ignoreT;
     }
 
-    @JIPipeDocumentation(name = "Annotate with component", description = "If enabled, an annotation with the numeric component index is generated.")
+    @SetJIPipeDocumentation(name = "Annotate with component", description = "If enabled, an annotation with the numeric component index is generated.")
     @JIPipeParameter("component-name-annotation")
     public OptionalAnnotationNameParameter getComponentNameAnnotation() {
         return componentNameAnnotation;
@@ -171,7 +171,7 @@ public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingA
         this.componentNameAnnotation = componentNameAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Overlap filter", description = "Determines if two objects overlap. If left empty, the objects are tested for colocalization of at least one voxel.")
+    @SetJIPipeDocumentation(name = "Overlap filter", description = "Determines if two objects overlap. If left empty, the objects are tested for colocalization of at least one voxel.")
     @JIPipeParameter("overlap-filter")
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = ROI3DRelationMeasurementExpressionParameterVariablesInfo.class)
@@ -185,7 +185,7 @@ public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingA
         this.overlapFilter = overlapFilter;
     }
 
-    @JIPipeDocumentation(name = "Measurements", description = "The measurements that will be generated")
+    @SetJIPipeDocumentation(name = "Measurements", description = "The measurements that will be generated")
     @JIPipeParameter("overlap-filter-measurements")
     public ROI3DRelationMeasurementSetParameter getOverlapFilterMeasurements() {
         return overlapFilterMeasurements;
@@ -201,7 +201,7 @@ public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingA
         return true;
     }
 
-    @JIPipeDocumentation(name = "Only measure if objects co-localize", description = "If enabled, only co-localizing objects are measured")
+    @SetJIPipeDocumentation(name = "Only measure if objects co-localize", description = "If enabled, only co-localizing objects are measured")
     @JIPipeParameter("require-colocalization")
     public boolean isRequireColocalization() {
         return requireColocalization;
@@ -212,7 +212,7 @@ public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingA
         this.requireColocalization = requireColocalization;
     }
 
-    @JIPipeDocumentation(name = "Precise colocalization", description = "If enabled, the object co-localization for the 'Only measure if objects co-localize' setting tests for voxel colocalization (slower)." +
+    @SetJIPipeDocumentation(name = "Precise colocalization", description = "If enabled, the object co-localization for the 'Only measure if objects co-localize' setting tests for voxel colocalization (slower)." +
             " Otherwise, only the bounding boxes are compared (faster).")
     @JIPipeParameter("precise-colocalization")
     public boolean isPreciseColocalization() {
@@ -224,7 +224,7 @@ public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingA
         this.preciseColocalization = preciseColocalization;
     }
 
-    @JIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
+    @SetJIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
     @JIPipeParameter("measure-in-physical-units")
     public boolean isMeasureInPhysicalUnits() {
         return measureInPhysicalUnits;

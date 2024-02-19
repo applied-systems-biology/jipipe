@@ -1,11 +1,11 @@
 package org.hkijena.jipipe.extensions.utils.algorithms.iterationsteps;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
@@ -16,9 +16,9 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 
-@JIPipeDocumentation(name = "Crash on inputs", description = "Cancels the current run if data is processed. Use this node to inform users about unwanted conditions in your pipeline.")
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "Crash on inputs", description = "Cancels the current run if data is processed. Use this node to inform users about unwanted conditions in your pipeline.")
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 public class CrasherAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private String errorTitle = "Data was received in 'Crash on inputs'";
@@ -43,7 +43,7 @@ public class CrasherAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 errorTitle, errorExplanation, errorSolution);
     }
 
-    @JIPipeDocumentation(name = "Error title", description = "The title of the generated error message")
+    @SetJIPipeDocumentation(name = "Error title", description = "The title of the generated error message")
     @JIPipeParameter(value = "error-title", uiOrder = -99)
     public String getErrorTitle() {
         return errorTitle;
@@ -54,7 +54,7 @@ public class CrasherAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.errorTitle = errorTitle;
     }
 
-    @JIPipeDocumentation(name = "Error explanation", description = "Explanation for the user")
+    @SetJIPipeDocumentation(name = "Error explanation", description = "Explanation for the user")
     @JIPipeParameter("error-explanation")
     @StringParameterSettings(multiline = true)
     public String getErrorExplanation() {
@@ -66,7 +66,7 @@ public class CrasherAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.errorExplanation = errorExplanation;
     }
 
-    @JIPipeDocumentation(name = "Error solution", description = "Solution for the user")
+    @SetJIPipeDocumentation(name = "Error solution", description = "Solution for the user")
     @JIPipeParameter("error-solution")
     @StringParameterSettings(multiline = true)
     public String getErrorSolution() {

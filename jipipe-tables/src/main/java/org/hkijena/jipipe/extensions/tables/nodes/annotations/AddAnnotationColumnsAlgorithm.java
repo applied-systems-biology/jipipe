@@ -14,8 +14,8 @@
 
 package org.hkijena.jipipe.extensions.tables.nodes.annotations;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
@@ -32,10 +32,10 @@ import java.util.Map;
 /**
  * Algorithm that integrates columns
  */
-@JIPipeDocumentation(name = "Add annotations as columns", description = "Adds column annotations to the table as new columns.")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Append")
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Add annotations as columns", description = "Adds column annotations to the table as new columns.")
+@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Append")
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class AddAnnotationColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private String annotationPrefix = "";
@@ -75,7 +75,7 @@ public class AddAnnotationColumnsAlgorithm extends JIPipeSimpleIteratingAlgorith
         iterationStep.addOutputData(getFirstOutputSlot(), resultsTableData, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Annotation prefix", description = "Prefix added to columns generated from data annotations.")
+    @SetJIPipeDocumentation(name = "Annotation prefix", description = "Prefix added to columns generated from data annotations.")
     @JIPipeParameter("annotation-prefix")
     public String getAnnotationPrefix() {
         return annotationPrefix;
@@ -86,7 +86,7 @@ public class AddAnnotationColumnsAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.annotationPrefix = annotationPrefix;
     }
 
-    @JIPipeDocumentation(name = "Annotation name filter", description = "Filters the name of the added annotations. ")
+    @SetJIPipeDocumentation(name = "Annotation name filter", description = "Filters the name of the added annotations. ")
     @JIPipeParameter("annotation-name-filter")
     public StringQueryExpression getAnnotationNameFilter() {
         return annotationNameFilter;

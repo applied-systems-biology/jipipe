@@ -30,9 +30,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class JIPipeGraphRun extends AbstractJIPipeRunnable {
-    private static final int DATA_FLOW_WEIGHT_INTERNAL = 0;
-    private static final int DATA_FLOW_WEIGHT_LIGHT = 4;
-    private static final int DATA_FLOW_WEIGHT_HEAVY = 1; // Algorithm should go through heavy data asap
+    public static final int DATA_FLOW_WEIGHT_INTERNAL = 0;
+    public static final int DATA_FLOW_WEIGHT_LIGHT = 4;
+    public static final int DATA_FLOW_WEIGHT_HEAVY = 1; // Algorithm should go through heavy data asap
 
     private final JIPipeProject project;
     private final JIPipeGraph graph;
@@ -220,9 +220,13 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable {
         progressInfo.log("Iterating on graph " + graph + " ...");
         DirectedAcyclicGraph<Set<JIPipeGraphNode>, DefaultEdge> partitionGraph = calculatePartitionGraph(graph);
         progressInfo.log("-> Partition graph has " + partitionGraph.vertexSet().size() + " vertices, " + partitionGraph.edgeSet().size() + " edges");
+
+        DefaultDirectedWeightedGraph<Object, DefaultWeightedEdge> fullDataFlowGraph = buildDataFlowGraph(graph, graph.getGraphNodes());
+        progressInfo.log("-> Full data flow graph has " + fullDataFlowGraph.vertexSet().size() + " vertices, " + fullDataFlowGraph.edgeSet().size() + " edges");
+
         if (partitionGraph.vertexSet().size() == 1) {
             progressInfo.log("--> Single partition. Running graph.");
-            runPartitionNodeSet(graph, progressInfo, partitionGraph.vertexSet().iterator().next());
+            runPartitionNodeSet(graph, partitionGraph.vertexSet().iterator().next(), fullDataFlowGraph, progressInfo);
         } else if (partitionGraph.vertexSet().size() > 1) {
             progressInfo.log("--> Multiple partitions. Executing partitions in topological order.");
             TopologicalOrderIterator<Set<JIPipeGraphNode>, DefaultEdge> orderIterator = new TopologicalOrderIterator<>(partitionGraph);
@@ -231,14 +235,14 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable {
                 Set<JIPipeGraphNode> partitionNodeSet = partitionNodeSets.get(i);
                 if (partitionNodeSet.isEmpty())
                     continue;
-                runPartitionNodeSet(graph, progressInfo, partitionNodeSet);
+                runPartitionNodeSet(graph, partitionNodeSet, fullDataFlowGraph, progressInfo);
             }
         } else {
             progressInfo.log("--> Nothing to do");
         }
     }
 
-    private void runPartitionNodeSet(JIPipeGraph graph, JIPipeProgressInfo progressInfo, Set<JIPipeGraphNode> partitionNodeSet) {
+    private void runPartitionNodeSet(JIPipeGraph graph, Set<JIPipeGraphNode> partitionNodeSet, DefaultDirectedWeightedGraph<Object, DefaultWeightedEdge> fullDataFlowGraph, JIPipeProgressInfo progressInfo) {
         int partitionId = 0;
         for (JIPipeGraphNode graphNode : partitionNodeSet) {
             if(graphNode instanceof JIPipeAlgorithm) {
@@ -249,8 +253,21 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable {
         JIPipeRuntimePartition runtimePartition = runtimePartitions.get(partitionId);
         progressInfo.log("--> Selected runtime partition id=" + partitionId + " name=" + runtimePartition.getName());
 
+        // Find the interfacing outputs (outputs that should not be cleared away by the GC)
+        Set<JIPipeDataSlot> interfacingSlots = new HashSet<>();
+        for (JIPipeGraphEdge graphEdge : graph.getGraph().edgeSet()) {
+            JIPipeDataSlot edgeSource = graph.getGraph().getEdgeSource(graphEdge);
+            JIPipeDataSlot edgeTarget = graph.getGraph().getEdgeTarget(graphEdge);
+            if(edgeSource.getNode() instanceof JIPipeAlgorithm && edgeTarget.getNode() instanceof JIPipeAlgorithm) {
+                if(((JIPipeAlgorithm) edgeSource.getNode()).getRuntimePartition().getIndex() == partitionId && ((JIPipeAlgorithm) edgeTarget.getNode()).getRuntimePartition().getIndex() != partitionId) {
+                    interfacingSlots.add(edgeSource);
+                    progressInfo.log("--> Marked output " + edgeSource.getDisplayName() + " as interfacing");
+                }
+            }
+        }
+
         JIPipeProgressInfo partitionProgress = progressInfo.resolve("Partition " + partitionId);
-        runGraph(graph, partitionNodeSet, partitionProgress);
+        runGraph(graph, partitionNodeSet, fullDataFlowGraph, interfacingSlots, partitionProgress);
     }
 
     private DefaultDirectedWeightedGraph<Object, DefaultWeightedEdge> buildDataFlowGraph(JIPipeGraph graph, Set<JIPipeGraphNode> nodeFilter) {
@@ -299,7 +316,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable {
         return flowGraph;
     }
 
-    private void runGraph(JIPipeGraph graph, Set<JIPipeGraphNode> nodeFilter, JIPipeProgressInfo progressInfo) {
+    private void runGraph(JIPipeGraph graph, Set<JIPipeGraphNode> nodeFilter, DefaultDirectedWeightedGraph<Object, DefaultWeightedEdge> fullDataFlowGraph, Set<JIPipeDataSlot> interfacingSlots, JIPipeProgressInfo progressInfo) {
 
         // A copy of the graph that is destroyed
         DefaultDirectedWeightedGraph<Object, DefaultWeightedEdge> dataFlowGraph = buildDataFlowGraph(graph, nodeFilter);
@@ -359,7 +376,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable {
                 runFlowGraphNode(bestCandidate, progressInfo);
 
                 // Delete
-                cleanupFlowGraphNode(bestCandidate, dataFlowGraph, endpoints, progressInfo);
+                cleanupFlowGraphNode(bestCandidate, dataFlowGraph, fullDataFlowGraph, interfacingSlots, endpoints, progressInfo);
             }
         }
         finally {
@@ -367,7 +384,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable {
         }
     }
 
-    private void cleanupFlowGraphNode(Object flowGraphNode, DefaultDirectedWeightedGraph<Object, DefaultWeightedEdge> dataFlowGraph, Set<Object> endpoints, JIPipeProgressInfo progressInfo) {
+    private void cleanupFlowGraphNode(Object flowGraphNode, DefaultDirectedWeightedGraph<Object, DefaultWeightedEdge> dataFlowGraph, DefaultDirectedWeightedGraph<Object, DefaultWeightedEdge> fullDataFlowGraph, Set<JIPipeDataSlot> interfacingSlots, Set<Object> endpoints, JIPipeProgressInfo progressInfo) {
 
         if(flowGraphNode instanceof JIPipeAlgorithm) {
             // Clear inputs
@@ -375,15 +392,47 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable {
                 progressInfo.resolve("GC").log("Clear input '" + inputSlot.getName() + "' of node '" + inputSlot.getNode().getDisplayName() + "'");
                 inputSlot.clear();
             }
+
+            // Remove from flow graph
+            dataFlowGraph.removeVertex(flowGraphNode);
+            endpoints.remove(flowGraphNode);
+        }
+        else if(flowGraphNode instanceof JIPipeInputDataSlot) {
+            // Remove from flow graph
+            dataFlowGraph.removeVertex(flowGraphNode);
+            endpoints.remove(flowGraphNode);
         }
 
-        // Remove from flow graph
-        dataFlowGraph.removeVertex(flowGraphNode);
-        endpoints.remove(flowGraphNode);
+        // Remove from full flow graph & GC (handling of orphan outputs)
+        if(fullDataFlowGraph != null) {
+            if(flowGraphNode instanceof JIPipeDataSlot && !interfacingSlots.contains(flowGraphNode)) {
+                // Apply GC here
+                runGC(fullDataFlowGraph, interfacingSlots, false, progressInfo);
+            }
+            fullDataFlowGraph.removeVertex(flowGraphNode);
+        }
+        else {
+            // Local GC only
+            runGC(dataFlowGraph, interfacingSlots, true, progressInfo);
+        }
+
+
+    }
+
+    private void runGC(DefaultDirectedWeightedGraph<Object, DefaultWeightedEdge> dataFlowGraph, Set<JIPipeDataSlot> interfacingSlots, boolean discard, JIPipeProgressInfo progressInfo) {
+        for (Object vertex : dataFlowGraph.vertexSet()) {
+            if(vertex instanceof JIPipeOutputDataSlot) {
+                if(dataFlowGraph.degreeOf(vertex) == 0) {
+                    progressInfo.log("Marked as unused: " + ((JIPipeOutputDataSlot) vertex).getDisplayName());
+                }
+            }
+        }
+
     }
 
     private void runFlowGraphNode(Object flowGraphNode, JIPipeProgressInfo progressInfo) {
         if(flowGraphNode instanceof JIPipeInputDataSlot) {
+            // Add data from incoming edges within graph
             JIPipeInputDataSlot inputSlot = (JIPipeInputDataSlot) flowGraphNode;
             for (JIPipeGraphEdge graphEdge : graph.getGraph().incomingEdgesOf(inputSlot)) {
                 JIPipeDataSlot outputSlot = graph.getGraph().getEdgeSource(graphEdge);

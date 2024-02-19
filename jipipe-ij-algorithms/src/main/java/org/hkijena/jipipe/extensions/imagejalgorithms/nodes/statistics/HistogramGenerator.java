@@ -19,8 +19,8 @@ import ij.measure.ResultsTable;
 import ij.process.ColorProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -42,12 +42,12 @@ import java.util.Collections;
 /**
  * Algorithm that generates {@link ResultsTableData} as histogram
  */
-@JIPipeDocumentation(name = "Image to pixel value/count histogram", description = "Generates a histogram of the input image. " +
+@SetJIPipeDocumentation(name = "Image to pixel value/count histogram", description = "Generates a histogram of the input image. " +
         "It generates following output columns: <code>value</code>, <code>count</code>.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Histogram")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Histogram")
 public class HistogramGenerator extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean applyPerSlice = false;
@@ -158,7 +158,7 @@ public class HistogramGenerator extends JIPipeSimpleIteratingAlgorithm {
         return new ResultsTableData(resultsTable);
     }
 
-    @JIPipeDocumentation(name = "Apply per slice", description = "If higher dimensional data is provided, generate a histogram for each slice. If disabled, " +
+    @SetJIPipeDocumentation(name = "Apply per slice", description = "If higher dimensional data is provided, generate a histogram for each slice. If disabled, " +
             "the histogram is generated for the whole image.")
     @JIPipeParameter("apply-per-slice")
     public boolean isApplyPerSlice() {
@@ -170,7 +170,7 @@ public class HistogramGenerator extends JIPipeSimpleIteratingAlgorithm {
         this.applyPerSlice = applyPerSlice;
     }
 
-    @JIPipeDocumentation(name = "Multi-channel mode", description = "Determines how values are calculated if a multi-channel image is provided. " +
+    @SetJIPipeDocumentation(name = "Multi-channel mode", description = "Determines how values are calculated if a multi-channel image is provided. " +
             "Multi-channel images are converted to RGB automatically.")
     @JIPipeParameter("multi-channel-mode")
     public MultiChannelMode getMultiChannelMode() {
@@ -182,7 +182,7 @@ public class HistogramGenerator extends JIPipeSimpleIteratingAlgorithm {
         this.multiChannelMode = multiChannelMode;
     }
 
-    @JIPipeDocumentation(name = "Normalize", description = "If true, the values are divided by the maximum value")
+    @SetJIPipeDocumentation(name = "Normalize", description = "If true, the values are divided by the maximum value")
     @JIPipeParameter("normalize")
     public boolean isNormalize() {
         return normalize;
@@ -207,7 +207,7 @@ public class HistogramGenerator extends JIPipeSimpleIteratingAlgorithm {
         return result;
     }
 
-    @JIPipeDocumentation(name = "Apply per slice annotation", description = "Optional annotation type that generated for each slice output. " +
+    @SetJIPipeDocumentation(name = "Apply per slice annotation", description = "Optional annotation type that generated for each slice output. " +
             "It contains the string 'slice=[Number]'.")
     @JIPipeParameter("slice-annotation")
     public String getSliceAnnotation() {

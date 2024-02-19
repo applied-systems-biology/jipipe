@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.cellpose.parameters;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
@@ -24,7 +24,7 @@ public class CellposeChannelSettings extends AbstractJIPipeParameterCollection {
         this.invert = other.invert;
     }
 
-    @JIPipeDocumentation(name = "Segmented channel", description = "Channel to segment; 0: GRAY, 1: RED, 2: GREEN, 3: BLUE. Default: 0")
+    @SetJIPipeDocumentation(name = "Segmented channel", description = "Channel to segment; 0: GRAY, 1: RED, 2: GREEN, 3: BLUE. Default: 0")
     @JIPipeParameter(value = "segmented-channel", uiOrder = -100)
     public OptionalIntegerParameter getSegmentedChannel() {
         return segmentedChannel;
@@ -35,7 +35,7 @@ public class CellposeChannelSettings extends AbstractJIPipeParameterCollection {
         this.segmentedChannel = segmentedChannel;
     }
 
-    @JIPipeDocumentation(name = "Nuclear channel", description = "Nuclear channel (only used by certain models); 0: NONE, 1: RED, 2: GREEN, 3: BLUE. Default: 0")
+    @SetJIPipeDocumentation(name = "Nuclear channel", description = "Nuclear channel (only used by certain models); 0: NONE, 1: RED, 2: GREEN, 3: BLUE. Default: 0")
     @JIPipeParameter(value = "nuclear-channel", uiOrder = -90)
     public OptionalIntegerParameter getNuclearChannel() {
         return nuclearChannel;
@@ -46,7 +46,7 @@ public class CellposeChannelSettings extends AbstractJIPipeParameterCollection {
         this.nuclearChannel = nuclearChannel;
     }
 
-    @JIPipeDocumentation(name = "Use all channels", description = "Use all channels in image if using own model and images with special channels")
+    @SetJIPipeDocumentation(name = "Use all channels", description = "Use all channels in image if using own model and images with special channels")
     @JIPipeParameter("all-channels")
     public boolean isAllChannels() {
         return allChannels;
@@ -57,7 +57,7 @@ public class CellposeChannelSettings extends AbstractJIPipeParameterCollection {
         this.allChannels = allChannels;
     }
 
-    @JIPipeDocumentation(name = "Invert", description = "Invert grayscale channel")
+    @SetJIPipeDocumentation(name = "Invert", description = "Invert grayscale channel")
     @JIPipeParameter("invert")
     public boolean isInvert() {
         return invert;

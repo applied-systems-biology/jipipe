@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.tables.nodes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -41,10 +41,10 @@ import java.util.List;
 /**
  * Algorithm that integrates columns
  */
-@JIPipeDocumentation(name = "Summarize table", description = "Summarize table columns by applying predefined operations like average, standard deviation, or median.")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Summarize table", description = "Summarize table columns by applying predefined operations like average, standard deviation, or median.")
+@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class IntegrateColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private IntegratingTableColumnProcessorParameterList processorParameters = new IntegratingTableColumnProcessorParameterList();
@@ -97,7 +97,7 @@ public class IntegrateColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         report.report(new ParameterValidationReportContext(reportContext, this, "Processors", "processors"), processorParameters);
     }
 
-    @JIPipeDocumentation(name = "Processors", description = "Defines which columns are processed")
+    @SetJIPipeDocumentation(name = "Processors", description = "Defines which columns are processed")
     @JIPipeParameter("processors")
     public IntegratingTableColumnProcessorParameterList getProcessorParameters() {
         return processorParameters;

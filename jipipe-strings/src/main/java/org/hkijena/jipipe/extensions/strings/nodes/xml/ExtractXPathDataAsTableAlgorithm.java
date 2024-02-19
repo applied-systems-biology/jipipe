@@ -1,9 +1,9 @@
 package org.hkijena.jipipe.extensions.strings.nodes.xml;
 
 
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
@@ -33,12 +33,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Extract XML values as table", description = "Extracts a value from the input text data (via XPath) and writes the results into a table. " +
+@SetJIPipeDocumentation(name = "Extract XML values as table", description = "Extracts a value from the input text data (via XPath) and writes the results into a table. " +
         "Please visit https://www.w3schools.com/xml/xpath_intro.asp to learn about XPath.")
-@JIPipeCitation("XPath: https://www.w3schools.com/xml/xpath_intro.asp")
-@JIPipeNode(menuPath = "XML", nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
-@JIPipeInputSlot(value = XMLData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@AddJIPipeCitation("XPath: https://www.w3schools.com/xml/xpath_intro.asp")
+@DefineJIPipeNode(menuPath = "XML", nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = XMLData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class ExtractXPathDataAsTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private ParameterCollectionList entries = ParameterCollectionList.containingCollection(Entry.class);
     private TableColumnNormalization columnNormalization = TableColumnNormalization.ZeroOrEmpty;
@@ -84,7 +84,7 @@ public class ExtractXPathDataAsTableAlgorithm extends JIPipeSimpleIteratingAlgor
         iterationStep.addOutputData(getFirstOutputSlot(), resultsTableData, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Generated columns", description = "The list of generated columns. Please visit https://www.w3schools.com/xml/xpath_intro.asp to learn more about XPath.")
+    @SetJIPipeDocumentation(name = "Generated columns", description = "The list of generated columns. Please visit https://www.w3schools.com/xml/xpath_intro.asp to learn more about XPath.")
     @JIPipeParameter("entries")
     @ParameterCollectionListTemplate(Entry.class)
     public ParameterCollectionList getEntries() {
@@ -96,7 +96,7 @@ public class ExtractXPathDataAsTableAlgorithm extends JIPipeSimpleIteratingAlgor
         this.entries = entries;
     }
 
-    @JIPipeDocumentation(name = "Column length normalization", description = "Determines how to fill in missing values if multiple columns are created")
+    @SetJIPipeDocumentation(name = "Column length normalization", description = "Determines how to fill in missing values if multiple columns are created")
     @JIPipeParameter("column-normalization")
     public TableColumnNormalization getColumnNormalization() {
         return columnNormalization;
@@ -107,7 +107,7 @@ public class ExtractXPathDataAsTableAlgorithm extends JIPipeSimpleIteratingAlgor
         this.columnNormalization = columnNormalization;
     }
 
-    @JIPipeDocumentation(name = "Namespace map", description = "Allows to map namespaces to shortcuts for more convenient access")
+    @SetJIPipeDocumentation(name = "Namespace map", description = "Allows to map namespaces to shortcuts for more convenient access")
     @JIPipeParameter("namespace-map")
     @PairParameterSettings(keyLabel = "Shortcut", valueLabel = "Namespace")
     public StringAndStringPairParameter.List getNamespaceMap() {
@@ -131,7 +131,7 @@ public class ExtractXPathDataAsTableAlgorithm extends JIPipeSimpleIteratingAlgor
             this.columnName = new JIPipeExpressionParameter(other.columnName);
         }
 
-        @JIPipeDocumentation(name = "XPath", description = "An expression that returns the XPath of the XML entries. Please visit https://www.w3schools.com/xml/xpath_intro.asp to learn more about XPath.")
+        @SetJIPipeDocumentation(name = "XPath", description = "An expression that returns the XPath of the XML entries. Please visit https://www.w3schools.com/xml/xpath_intro.asp to learn more about XPath.")
         @JIPipeParameter(value = "xpath", uiOrder = -100)
         @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
         public JIPipeExpressionParameter getxPath() {
@@ -143,7 +143,7 @@ public class ExtractXPathDataAsTableAlgorithm extends JIPipeSimpleIteratingAlgor
             this.xPath = xPath;
         }
 
-        @JIPipeDocumentation(name = "Column name", description = "The name of the output column.")
+        @SetJIPipeDocumentation(name = "Column name", description = "The name of the output column.")
         @JIPipeParameter(value = "column-name", uiOrder = -90)
         @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
         public JIPipeExpressionParameter getColumnName() {

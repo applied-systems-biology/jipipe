@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.process;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -28,10 +28,10 @@ import org.hkijena.jipipe.extensions.ij3d.utils.ROI3DOutline;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@JIPipeDocumentation(name = "Outline 3D ROI", description = "Converts the ROI into bounding boxes, convex hulls, etc.")
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
-@JIPipeInputSlot(value = ROI3DListData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Outline 3D ROI", description = "Converts the ROI into bounding boxes, convex hulls, etc.")
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", create = true)
 public class OutlineRoi3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private ROI3DOutline outline = ROI3DOutline.BoundingBox;
@@ -64,7 +64,7 @@ public class OutlineRoi3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Outline method", description = "The outlining method that should be applied.")
+    @SetJIPipeDocumentation(name = "Outline method", description = "The outlining method that should be applied.")
     @JIPipeParameter("outline")
     public ROI3DOutline getOutline() {
         return outline;
@@ -75,7 +75,7 @@ public class OutlineRoi3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.outline = outline;
     }
 
-    @JIPipeDocumentation(name = "Ignore errors", description = "If enabled, ignore any errors that occur. Affected objects will be deleted.")
+    @SetJIPipeDocumentation(name = "Ignore errors", description = "If enabled, ignore any errors that occur. Affected objects will be deleted.")
     @JIPipeParameter("ignore-errors")
     public boolean isIgnoreErrors() {
         return ignoreErrors;

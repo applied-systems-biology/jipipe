@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.python.adapter;
 
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -57,7 +57,7 @@ public class PythonAdapterExtensionSettings extends AbstractJIPipeParameterColle
         return false;
     }
 
-    @JIPipeDocumentation(name = "Easy installer repositories", description = "Allows to change the repositories for the EasyInstaller")
+    @SetJIPipeDocumentation(name = "Easy installer repositories", description = "Allows to change the repositories for the EasyInstaller")
     @JIPipeParameter("easy-installer-repositories")
     public StringList getEasyInstallerRepositories() {
         return easyInstallerRepositories;
@@ -68,7 +68,7 @@ public class PythonAdapterExtensionSettings extends AbstractJIPipeParameterColle
         this.easyInstallerRepositories = easyInstallerRepositories;
     }
 
-    @JIPipeDocumentation(name = "Python adapter presets", description = "List of presets stored for JIPipe Python adapters")
+    @SetJIPipeDocumentation(name = "Python adapter presets", description = "List of presets stored for JIPipe Python adapters")
     @JIPipeParameter("python-adapter-presets")
     public JIPipePythonAdapterLibraryEnvironment.List getPythonAdapterPresets() {
         return pythonAdapterPresets;
@@ -79,7 +79,7 @@ public class PythonAdapterExtensionSettings extends AbstractJIPipeParameterColle
         this.pythonAdapterPresets = pythonAdapterPresets;
     }
 
-    @JIPipeDocumentation(name = "JIPipe Python adapter", description = "This environment allows you to setup how the JIPipe Python adapter library is supplied. " +
+    @SetJIPipeDocumentation(name = "JIPipe Python adapter", description = "This environment allows you to setup how the JIPipe Python adapter library is supplied. " +
             "By default, JIPipe will automatically extract the adapter into the ImageJ folder and add code to include it. Alternatively, you can install the Python adapter " +
             "into your Python environment and disable this feature.")
     @JIPipeParameter("python-adapter-library")
@@ -92,7 +92,7 @@ public class PythonAdapterExtensionSettings extends AbstractJIPipeParameterColle
         this.pythonAdapterLibraryEnvironment = pythonAdapterLibraryEnvironment;
     }
 
-    @JIPipeDocumentation(name = "Automatically check for updates", description = "If enabled, automatically check for updates of the adapter library when JIPipe is started")
+    @SetJIPipeDocumentation(name = "Automatically check for updates", description = "If enabled, automatically check for updates of the adapter library when JIPipe is started")
     @JIPipeParameter("check-for-updates")
     public boolean isCheckForUpdates() {
         return checkForUpdates;

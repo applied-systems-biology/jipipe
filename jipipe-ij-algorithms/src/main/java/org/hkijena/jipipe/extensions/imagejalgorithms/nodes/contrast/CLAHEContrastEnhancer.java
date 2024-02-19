@@ -16,8 +16,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.contrast;
 import ij.ImagePlus;
 import ij.ImageStack;
 import mpicbg.ij.clahe.Flat;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -33,12 +33,12 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 /**
  * Applies CLAHE image enhancing
  */
-@JIPipeDocumentation(name = "Enhance local contrast (CLAHE)", description = "Applies 'Contrast Limited Adaptive Histogram Equalization' (CLAHE) to enhance contrast. " +
+@SetJIPipeDocumentation(name = "Enhance local contrast (CLAHE)", description = "Applies 'Contrast Limited Adaptive Histogram Equalization' (CLAHE) to enhance contrast. " +
         "Composite color images are converted into their luminance. If higher-dimensional data is provided, the results are generated for each 2D slice.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Contrast")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process", aliasName = "Enhance Local Contrast (CLAHE)")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Contrast")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process", aliasName = "Enhance Local Contrast (CLAHE)")
 public class CLAHEContrastEnhancer extends JIPipeSimpleIteratingAlgorithm {
 
     private int blockRadius = 127;
@@ -96,7 +96,7 @@ public class CLAHEContrastEnhancer extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("block-radius")
-    @JIPipeDocumentation(name = "Blocks")
+    @SetJIPipeDocumentation(name = "Blocks")
     public int getBlockRadius() {
         return blockRadius;
     }
@@ -108,7 +108,7 @@ public class CLAHEContrastEnhancer extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("bins")
-    @JIPipeDocumentation(name = "Bins")
+    @SetJIPipeDocumentation(name = "Bins")
     public int getBins() {
         return bins;
     }
@@ -120,7 +120,7 @@ public class CLAHEContrastEnhancer extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("max-slope")
-    @JIPipeDocumentation(name = "Max slope")
+    @SetJIPipeDocumentation(name = "Max slope")
     public float getMaxSlope() {
         return maxSlope;
     }
@@ -132,7 +132,7 @@ public class CLAHEContrastEnhancer extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("fast-mode")
-    @JIPipeDocumentation(name = "Fast mode")
+    @SetJIPipeDocumentation(name = "Fast mode")
     public boolean isFastMode() {
         return fastMode;
     }

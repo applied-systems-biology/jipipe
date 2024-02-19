@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.parameters.library.primitives;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.DefaultJIPipeParameterGenerator;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -110,7 +110,7 @@ public class NumberRangeParameterGenerator extends DefaultJIPipeParameterGenerat
         return result;
     }
 
-    @JIPipeDocumentation(name = "Min number", description = "The minimum value in the range (inclusive)")
+    @SetJIPipeDocumentation(name = "Min number", description = "The minimum value in the range (inclusive)")
     @JIPipeParameter(value = "min-number", uiOrder = -50)
     public double getMinNumber() {
         return minNumber;
@@ -121,7 +121,7 @@ public class NumberRangeParameterGenerator extends DefaultJIPipeParameterGenerat
         this.minNumber = minNumber;
     }
 
-    @JIPipeDocumentation(name = "Max number", description = "The maximum value in the range (exclusive)")
+    @SetJIPipeDocumentation(name = "Max number", description = "The maximum value in the range (exclusive)")
     @JIPipeParameter(value = "max-number", uiOrder = -40)
     public double getMaxNumber() {
         return maxNumber;
@@ -132,7 +132,7 @@ public class NumberRangeParameterGenerator extends DefaultJIPipeParameterGenerat
         this.maxNumber = maxNumber;
     }
 
-    @JIPipeDocumentation(name = "Step size", description = "The difference between two following numbers in the range")
+    @SetJIPipeDocumentation(name = "Step size", description = "The difference between two following numbers in the range")
     @JIPipeParameter(value = "step-size", uiOrder = -30)
     public double getStepSize() {
         return stepSize;

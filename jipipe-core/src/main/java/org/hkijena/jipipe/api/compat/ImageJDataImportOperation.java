@@ -16,7 +16,7 @@ package org.hkijena.jipipe.api.compat;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -52,7 +52,7 @@ public class ImageJDataImportOperation extends ImageJImportParameters implements
         return importer;
     }
 
-    @JIPipeDocumentation(name = "Importer ID", description = "The unique ID of the importer")
+    @SetJIPipeDocumentation(name = "Importer ID", description = "The unique ID of the importer")
     @JIPipeParameter(value = "id", hidden = true)
     @StringParameterSettings(monospace = true)
     @JsonGetter("id")

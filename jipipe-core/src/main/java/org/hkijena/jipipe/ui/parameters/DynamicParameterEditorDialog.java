@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.ui.parameters;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
@@ -298,7 +298,7 @@ public class DynamicParameterEditorDialog extends JDialog implements JIPipeWorkb
             this.allowedParameterTypes = allowedParameterTypes;
         }
 
-        @JIPipeDocumentation(name = "Unique key", description = "The unique key of the parameter")
+        @SetJIPipeDocumentation(name = "Unique key", description = "The unique key of the parameter")
         @JIPipeParameter(value = "key", important = true, uiOrder = -100)
         @StringParameterSettings(monospace = true)
         public String getKey() {
@@ -310,7 +310,7 @@ public class DynamicParameterEditorDialog extends JDialog implements JIPipeWorkb
             this.key = key;
         }
 
-        @JIPipeDocumentation(name = "Name", description = "The name of the parameter")
+        @SetJIPipeDocumentation(name = "Name", description = "The name of the parameter")
         @JIPipeParameter(value = "name", uiOrder = -90)
         public String getName() {
             return name;
@@ -321,7 +321,7 @@ public class DynamicParameterEditorDialog extends JDialog implements JIPipeWorkb
             this.name = name;
         }
 
-        @JIPipeDocumentation(name = "Type", description = "The type of the parameter")
+        @SetJIPipeDocumentation(name = "Type", description = "The type of the parameter")
         @JIPipeParameter(value = "type", important = true, uiOrder = -200)
         public JIPipeParameterTypeInfoRef getType() {
             return type;
@@ -333,7 +333,7 @@ public class DynamicParameterEditorDialog extends JDialog implements JIPipeWorkb
             type.setUiAllowedParameterTypes(allowedParameterTypes);
         }
 
-        @JIPipeDocumentation(name = "Description", description = "A custom description")
+        @SetJIPipeDocumentation(name = "Description", description = "A custom description")
         @JIPipeParameter(value = "description", uiOrder = -80)
         public HTMLText getDescription() {
             return description;

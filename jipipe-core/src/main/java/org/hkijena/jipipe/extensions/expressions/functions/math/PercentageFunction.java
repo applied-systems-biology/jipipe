@@ -1,13 +1,13 @@
 package org.hkijena.jipipe.extensions.expressions.functions.math;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "Calculate percentage", description = "Calculates the percentage of a value between a minimum and a maximum. The output is always between zero and one.")
+@SetJIPipeDocumentation(name = "Calculate percentage", description = "Calculates the percentage of a value between a minimum and a maximum. The output is always between zero and one.")
 public class PercentageFunction extends ExpressionFunction {
     public PercentageFunction() {
         super("PERC", 3, 4);

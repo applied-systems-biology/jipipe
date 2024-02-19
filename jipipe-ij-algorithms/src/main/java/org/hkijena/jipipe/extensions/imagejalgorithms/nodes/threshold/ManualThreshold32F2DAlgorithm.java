@@ -17,8 +17,8 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -42,12 +42,12 @@ import java.util.List;
 /**
  * Wrapper around {@link ImageProcessor}
  */
-@JIPipeDocumentation(name = "Manual threshold 2D (32-bit)", description = "Thresholds the image with a manual threshold. " +
+@SetJIPipeDocumentation(name = "Manual threshold 2D (32-bit)", description = "Thresholds the image with a manual threshold. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust")
+@DefineJIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust")
 public class ManualThreshold32F2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private float minThreshold = 0;
@@ -123,7 +123,7 @@ public class ManualThreshold32F2DAlgorithm extends JIPipeSimpleIteratingAlgorith
                 progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Min threshold", description = "All pixel values less or equal to this are set to zero.")
+    @SetJIPipeDocumentation(name = "Min threshold", description = "All pixel values less or equal to this are set to zero.")
     @JIPipeParameter(value = "min-threshold", uiOrder = -50)
     public float getMinThreshold() {
         return minThreshold;
@@ -135,7 +135,7 @@ public class ManualThreshold32F2DAlgorithm extends JIPipeSimpleIteratingAlgorith
 
     }
 
-    @JIPipeDocumentation(name = "Max threshold", description = "All pixel values greater than this are set to zero.")
+    @SetJIPipeDocumentation(name = "Max threshold", description = "All pixel values greater than this are set to zero.")
     @JIPipeParameter(value = "max-threshold", uiOrder = -40)
     public float getMaxThreshold() {
         return maxThreshold;
@@ -146,7 +146,7 @@ public class ManualThreshold32F2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.maxThreshold = maxThreshold;
     }
 
-    @JIPipeDocumentation(name = "Min threshold annotation", description = "Annotation added to the output that contains the min threshold")
+    @SetJIPipeDocumentation(name = "Min threshold annotation", description = "Annotation added to the output that contains the min threshold")
     @JIPipeParameter("min-threshold-annotation")
     public OptionalAnnotationNameParameter getMinThresholdAnnotation() {
         return minThresholdAnnotation;
@@ -157,7 +157,7 @@ public class ManualThreshold32F2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.minThresholdAnnotation = minThresholdAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Max threshold annotation", description = "Annotation added to the output that contains the max threshold")
+    @SetJIPipeDocumentation(name = "Max threshold annotation", description = "Annotation added to the output that contains the max threshold")
     @JIPipeParameter("max-threshold-annotation")
     public OptionalAnnotationNameParameter getMaxThresholdAnnotation() {
         return maxThresholdAnnotation;
@@ -168,7 +168,7 @@ public class ManualThreshold32F2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.maxThresholdAnnotation = maxThresholdAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Threshold annotation strategy", description = "Determines what happens if annotations are already present.")
+    @SetJIPipeDocumentation(name = "Threshold annotation strategy", description = "Determines what happens if annotations are already present.")
     @JIPipeParameter("threshold-annotation-strategy")
     public JIPipeTextAnnotationMergeMode getThresholdAnnotationStrategy() {
         return thresholdAnnotationStrategy;

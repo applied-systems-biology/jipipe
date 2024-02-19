@@ -6,8 +6,8 @@ import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.map.TDoubleDoubleMap;
 import gnu.trove.map.hash.TDoubleDoubleHashMap;
 import gnu.trove.map.hash.TDoubleObjectHashMap;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -27,10 +27,10 @@ import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import java.util.Arrays;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Apply expression per label", description = "Given a table with two numeric columns containing a key and a value, summarize all values assigned to a key into a single value. Allows the generation of normalized and cumulative histograms.")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Transform")
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Apply expression per label", description = "Given a table with two numeric columns containing a key and a value, summarize all values assigned to a key into a single value. Allows the generation of normalized and cumulative histograms.")
+@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Transform")
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class ApplyExpressionPerLabelAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private TableColumnSourceExpressionParameter keyColumn = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"key\"");
@@ -134,7 +134,7 @@ public class ApplyExpressionPerLabelAlgorithm extends JIPipeSimpleIteratingAlgor
         iterationStep.addOutputData(getFirstOutputSlot(), outputTable, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Output column (keys)", description = "The table column where the keys will be written to")
+    @SetJIPipeDocumentation(name = "Output column (keys)", description = "The table column where the keys will be written to")
     @JIPipeParameter(value = "output-key-column", uiOrder = 100)
     @StringParameterSettings(monospace = true)
     public String getOutputKeyColumn() {
@@ -146,7 +146,7 @@ public class ApplyExpressionPerLabelAlgorithm extends JIPipeSimpleIteratingAlgor
         this.outputKeyColumn = outputKeyColumn;
     }
 
-    @JIPipeDocumentation(name = "Output column (integrated values)", description = "The table column where the integrated values will be written to")
+    @SetJIPipeDocumentation(name = "Output column (integrated values)", description = "The table column where the integrated values will be written to")
     @JIPipeParameter(value = "output-value-column", uiOrder = 110)
     @StringParameterSettings(monospace = true)
     public String getOutputValueColumn() {
@@ -158,7 +158,7 @@ public class ApplyExpressionPerLabelAlgorithm extends JIPipeSimpleIteratingAlgor
         this.outputValueColumn = outputValueColumn;
     }
 
-    @JIPipeDocumentation(name = "Key column", description = "The column that contains the key values")
+    @SetJIPipeDocumentation(name = "Key column", description = "The column that contains the key values")
     @JIPipeParameter(value = "key-column", important = true, uiOrder = -100)
     public TableColumnSourceExpressionParameter getKeyColumn() {
         return keyColumn;
@@ -169,7 +169,7 @@ public class ApplyExpressionPerLabelAlgorithm extends JIPipeSimpleIteratingAlgor
         this.keyColumn = keyColumn;
     }
 
-    @JIPipeDocumentation(name = "Value column", description = "The column that contains the values")
+    @SetJIPipeDocumentation(name = "Value column", description = "The column that contains the values")
     @JIPipeParameter(value = "value-column", important = true, uiOrder = -90)
     public TableColumnSourceExpressionParameter getValueColumn() {
         return valueColumn;
@@ -180,7 +180,7 @@ public class ApplyExpressionPerLabelAlgorithm extends JIPipeSimpleIteratingAlgor
         this.valueColumn = valueColumn;
     }
 
-    @JIPipeDocumentation(name = "Summary function", description = "The function that summarizes the values assigned to the same key")
+    @SetJIPipeDocumentation(name = "Summary function", description = "The function that summarizes the values assigned to the same key")
     @JIPipeParameter("integration-function")
     @JIPipeExpressionParameterVariable(key = "values", name = "Values", description = "The values to be integrated")
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
@@ -193,7 +193,7 @@ public class ApplyExpressionPerLabelAlgorithm extends JIPipeSimpleIteratingAlgor
         this.integrationFunction = integrationFunction;
     }
 
-    @JIPipeDocumentation(name = "Cumulative", description = "If enabled, the histogram will be cumulative")
+    @SetJIPipeDocumentation(name = "Cumulative", description = "If enabled, the histogram will be cumulative")
     @JIPipeParameter("cumulative")
     public boolean isCumulative() {
         return cumulative;
@@ -204,7 +204,7 @@ public class ApplyExpressionPerLabelAlgorithm extends JIPipeSimpleIteratingAlgor
         this.cumulative = cumulative;
     }
 
-    @JIPipeDocumentation(name = "Normalize", description = "If enabled, normalizes the values")
+    @SetJIPipeDocumentation(name = "Normalize", description = "If enabled, normalizes the values")
     @JIPipeParameter("normalize")
     public boolean isNormalize() {
         return normalize;
