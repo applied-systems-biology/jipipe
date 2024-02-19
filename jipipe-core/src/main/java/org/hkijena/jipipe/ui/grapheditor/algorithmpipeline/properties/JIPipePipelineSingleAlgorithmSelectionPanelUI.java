@@ -35,7 +35,6 @@ import org.hkijena.jipipe.ui.components.MessagePanel;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
-import org.hkijena.jipipe.ui.components.ribbon.Ribbon;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.documentation.JIPipeAlgorithmCompendiumUI;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
@@ -86,65 +85,65 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
 
     private void initialize() {
         setLayout(new BorderLayout());
-        tabbedPane = new DocumentTabPane(false);
-        tabbedPane.registerSingletonTab("PARAMETERS", "Parameters", UIUtils.getIconFromResources("actions/configure.png"),
+        tabbedPane = new DocumentTabPane(false, DocumentTabPane.TabPlacement.Right);
+        tabbedPane.registerSingletonTab("PARAMETERS", "Parameters", UIUtils.getIcon32FromResources("actions/configure.png"),
                 this::createParametersPanel, DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
 
         if (node.getParentGraph().getAttachment(JIPipeGraphType.class) == JIPipeGraphType.Project) {
 
             JIPipeSlotEditorUI slotEditorUI = new JIPipeSlotEditorUI(graphEditorUI, node);
-            tabbedPane.registerSingletonTab("SLOTS", "Slots", UIUtils.getIconFromResources("actions/plug.png"),
+            tabbedPane.registerSingletonTab("SLOTS", "Slots", UIUtils.getIcon32FromResources("actions/plug.png"),
                     () -> slotEditorUI,
                     DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
             if (node instanceof JIPipeIterationStepAlgorithm) {
                 batchAssistantTabContent = new JPanel(new BorderLayout());
-                tabbedPane.registerSingletonTab("DATA_BATCHES", "Input management", UIUtils.getIconFromResources("actions/package.png"),
+                tabbedPane.registerSingletonTab("DATA_BATCHES", "Input management", UIUtils.getIcon32FromResources("actions/package.png"),
                         () -> batchAssistantTabContent,
                         DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
             }
             if (node instanceof JIPipeAlgorithm && !getProjectWorkbench().getProject().getNodeExamples(node.getInfo().getId()).isEmpty()) {
                 tabbedPane.registerSingletonTab("EXAMPLES",
                         "Examples",
-                        UIUtils.getIconFromResources("actions/graduation-cap.png"),
+                        UIUtils.getIcon32FromResources("actions/graduation-cap.png"),
                         () -> new NodeExamplesUI(getProjectWorkbench(), (JIPipeAlgorithm) node, tabbedPane),
                         DocumentTabPane.CloseMode.withoutCloseButton,
                         DocumentTabPane.SingletonTabMode.Present);
             }
             cacheBrowserTabContent = new JPanel(new BorderLayout());
             if (node instanceof JIPipeAlgorithm) {
-                tabbedPane.registerSingletonTab("CACHE_BROWSER", "Cache browser", UIUtils.getIconFromResources("actions/database.png"),
+                tabbedPane.registerSingletonTab("CACHE_BROWSER", "Cache browser", UIUtils.getIcon32FromResources("actions/database.png"),
                         () -> cacheBrowserTabContent,
                         DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
             }
 
             testBenchTabContent = new JPanel(new BorderLayout());
             if (node.getInfo().isRunnable()) {
-                tabbedPane.registerSingletonTab("QUICK_RUN", "Quick run", UIUtils.getIconFromResources("actions/media-play.png"),
+                tabbedPane.registerSingletonTab("QUICK_RUN", "Quick run", UIUtils.getIcon32FromResources("actions/media-play.png"),
                         () -> testBenchTabContent,
                         DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
             }
 
             if (JIPipeRunnerQueue.getInstance().getCurrentRun() != null) {
                 currentRunTabContent = new JPanel(new BorderLayout());
-                tabbedPane.registerSingletonTab("CURRENT_RUN", "Current process", UIUtils.getIconFromResources("actions/show_log.png"),
+                tabbedPane.registerSingletonTab("CURRENT_RUN", "Current process", UIUtils.getIcon32FromResources("actions/show_log.png"),
                         () -> currentRunTabContent, DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
             }
         } else {
             JIPipeSlotEditorUI slotEditorUI = new JIPipeSlotEditorUI(graphEditorUI, node);
-            tabbedPane.registerSingletonTab("SLOTS", "Slots", UIUtils.getIconFromResources("actions/plug.png"),
+            tabbedPane.registerSingletonTab("SLOTS", "Slots", UIUtils.getIcon32FromResources("actions/plug.png"),
                     () -> slotEditorUI,
                     DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
             if (node instanceof JIPipeAlgorithm && !getProjectWorkbench().getProject().getNodeExamples(node.getInfo().getId()).isEmpty()) {
                 tabbedPane.registerSingletonTab("EXAMPLES",
                         "Examples",
-                        UIUtils.getIconFromResources("actions/graduation-cap.png"),
+                        UIUtils.getIcon32FromResources("actions/graduation-cap.png"),
                         () -> new NodeExamplesUI(getProjectWorkbench(), (JIPipeAlgorithm) node, tabbedPane),
                         DocumentTabPane.CloseMode.withoutCloseButton,
                         DocumentTabPane.SingletonTabMode.Present);
             }
             if (node instanceof JIPipeIterationStepAlgorithm) {
                 tabbedPane.addTab("Input management",
-                        UIUtils.getIconFromResources("actions/package.png"),
+                        UIUtils.getIcon32FromResources("actions/package.png"),
                         new ParameterPanel(getWorkbench(), ((JIPipeIterationStepAlgorithm) node).getGenerationSettingsInterface(), null, ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_SCROLLING),
                         DocumentTabPane.CloseMode.withoutCloseButton);
             }

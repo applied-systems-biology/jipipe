@@ -105,7 +105,7 @@ public class WorkbenchNotificationInboxUI extends JIPipeWorkbenchPanel implement
 
     private void initialize() {
         setLayout(new BorderLayout());
-        DocumentTabPane documentTabPane = new DocumentTabPane(true);
+        DocumentTabPane documentTabPane = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Top);
         documentTabPane.getTabbedPane().setTabPlacement(SwingConstants.BOTTOM);
 
         documentTabPane.addTab("Current notifications",

@@ -375,7 +375,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
         JIPipeGraphEditorMinimap minimap = new JIPipeGraphEditorMinimap(this);
         splitPane.setTopComponent(minimap);
 
-        DocumentTabPane bottomPanel = new DocumentTabPane(false);
+        DocumentTabPane bottomPanel = new DocumentTabPane(false, DocumentTabPane.TabPlacement.Top);
 
         MarkdownReader markdownReader = new MarkdownReader(false);
         markdownReader.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-graph.md", new HashMap<>()));

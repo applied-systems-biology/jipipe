@@ -59,7 +59,7 @@ public class JIPipeMultiCompartmentSelectionPanelUI extends JIPipeProjectWorkben
         add(splitPane, BorderLayout.CENTER);
 
         JPanel actionPanel = new JPanel(new BorderLayout());
-        DocumentTabPane tabPane = new DocumentTabPane(false);
+        DocumentTabPane tabPane = new DocumentTabPane(false, DocumentTabPane.TabPlacement.Top);
 
         tabPane.addTab("Selection", UIUtils.getIconFromResources("actions/edit-select-all.png"),
                 actionPanel, DocumentTabPane.CloseMode.withoutCloseButton);

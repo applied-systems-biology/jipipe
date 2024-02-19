@@ -36,7 +36,7 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
     private final String menuPath;
     private final String name;
     private final JIPipeNodeTypeCategory nodeTypeCategory;
-    private final List<CreateJIPipeInputSlot> inputSlots = new ArrayList<>();
+    private final List<AddJIPipeInputSlot> inputSlots = new ArrayList<>();
     private final List<AddJIPipeOutputSlot> outputSlots = new ArrayList<>();
     private final Map<ModuleItem<?>, ImageJ2ModuleIO> inputModuleIO = new IdentityHashMap<>();
     private final Map<ModuleItem<?>, ImageJ2ModuleIO> outputModuleIO = new IdentityHashMap<>();
@@ -107,7 +107,7 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
 
     public void addInputSlotForModuleItem(ModuleItem<?> item, Class<? extends JIPipeData> dataClass) {
         String name = StringUtils.makeUniqueString(WordUtils.capitalize(StringUtils.makeFilesystemCompatible(item.getName())), " ", inputSlotToModuleItem.keySet());
-        inputSlots.add(new DefaultCreateJIPipeInputSlot(dataClass, name, item.getDescription(), true, true, JIPipeDataSlotRole.Data));
+        inputSlots.add(new DefaultAddJIPipeInputSlot(dataClass, name, item.getDescription(), true, true, JIPipeDataSlotRole.Data));
         inputSlotToModuleItem.put(name, item);
         moduleItemToInputSlot.put(item, name);
     }
@@ -189,7 +189,7 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
     }
 
     @Override
-    public List<CreateJIPipeInputSlot> getInputSlots() {
+    public List<AddJIPipeInputSlot> getInputSlots() {
         return inputSlots;
     }
 

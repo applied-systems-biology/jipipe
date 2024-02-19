@@ -67,7 +67,7 @@ public class ExtensionInfoPanel extends JPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        DocumentTabPane tabPane = new DocumentTabPane(true);
+        DocumentTabPane tabPane = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Top);
 //        tabPane.getTabbedPane().setTabPlacement(SwingConstants.LEFT);
         add(tabPane, BorderLayout.CENTER);
         initializeOverview(tabPane);

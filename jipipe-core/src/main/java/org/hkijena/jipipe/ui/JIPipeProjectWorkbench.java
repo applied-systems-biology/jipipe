@@ -29,7 +29,6 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.extensions.settings.BackupSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
@@ -207,7 +206,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         // Initialize JIPipe logger
         JIPipeLogs.getInstance();
 
-        documentTabPane = new DocumentTabPane(true);
+        documentTabPane = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Top);
         documentTabPane.registerSingletonTab(TAB_INTRODUCTION,
                 "Getting started",
                 UIUtils.getIconFromResources("actions/help-info.png"),

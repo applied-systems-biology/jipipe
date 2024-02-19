@@ -164,7 +164,7 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
                 return;
             }
         }
-        DocumentTabPane documentTabPane = new DocumentTabPane(true);
+        DocumentTabPane documentTabPane = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Top);
         List<ROIEditor> editors = new ArrayList<>();
         for (Roi roi : selected) {
             ROIEditor editor = new ROIEditor(roi);

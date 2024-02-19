@@ -15,11 +15,8 @@ package org.hkijena.jipipe.ui.settings;
 
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
-import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.bookmarks.BookmarkListPanel;
@@ -41,7 +38,6 @@ import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.image.BufferedImage;
-import java.util.Collections;
 import java.util.HashMap;
 
 /**
@@ -189,7 +185,7 @@ public class JIPipeProjectOverviewUI extends JIPipeProjectWorkbenchPanel impleme
         descriptionReaderScrollPane.setBorder(null);
         userParametersPanel.getScrollPane().setBorder(null);
 
-        DocumentTabPane tabPane = new DocumentTabPane(true);
+        DocumentTabPane tabPane = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Top);
         tabPane.addTab("Parameters",
                 UIUtils.getIconFromResources("actions/wrench.png"),
                 userParametersPanel,

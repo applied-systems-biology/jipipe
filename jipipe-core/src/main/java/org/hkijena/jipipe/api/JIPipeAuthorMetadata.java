@@ -96,7 +96,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
      * @return the window
      */
     public static JFrame openAuthorInfoWindow(Component parent, Collection<JIPipeAuthorMetadata> authors, JIPipeAuthorMetadata targetAuthor) {
-        DocumentTabPane tabPane = new DocumentTabPane(true);
+        DocumentTabPane tabPane = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Top);
         for (JIPipeAuthorMetadata author : authors) {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("<h1>").append(HtmlEscapers.htmlEscaper().escape(author.toString())).append("</h1>");

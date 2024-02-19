@@ -149,7 +149,7 @@ public class FormPanel extends JXPanel {
         // Determine the component that will be displayed in the help pane
         Component helpComponent;
         if ((flags & TABBED_DOCUMENTATION) == TABBED_DOCUMENTATION) {
-            documentationTabPane = new DocumentTabPane(false);
+            documentationTabPane = new DocumentTabPane(false, DocumentTabPane.TabPlacement.Top);
             documentationTabPane.addTab("Documentation", UIUtils.getIconFromResources("actions/help.png"), helpPanel, DocumentTabPane.CloseMode.withoutCloseButton);
             helpComponent = documentationTabPane;
         } else {

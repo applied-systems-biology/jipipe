@@ -51,7 +51,7 @@ public class JIPipeJsonAlgorithmExporterSingleSelectionPanelUI extends JIPipeWor
 
     private void initialize() {
         setLayout(new BorderLayout());
-        DocumentTabPane tabbedPane = new DocumentTabPane(false);
+        DocumentTabPane tabbedPane = new DocumentTabPane(false, DocumentTabPane.TabPlacement.Top);
 
         ParameterPanel parametersUI = new ParameterPanel(getWorkbench(),
                 node,

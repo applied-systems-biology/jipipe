@@ -48,7 +48,7 @@ public class JIPipeSingleCompartmentSelectionPanelUI extends JIPipeProjectWorkbe
     private final JIPipeGraphCanvasUI canvas;
     private final JIPipeGraphEditorUI graphEditorUI;
 
-    private final DocumentTabPane tabbedPane = new DocumentTabPane(false);
+    private final DocumentTabPane tabbedPane = new DocumentTabPane(false, DocumentTabPane.TabPlacement.Top);
 
     /**
      * @param graphEditorUI the graph editor

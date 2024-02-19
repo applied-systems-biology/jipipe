@@ -643,27 +643,34 @@ public class CustomTabbedPaneUI extends BasicTabbedPaneUI {
         if (ocean && tabPane.getSelectedIndex() == tabIndex - 1) {
             g.setColor(oceanSelectedBorderColor);
         }
-        g.drawLine(right - 6, 0, right, 6);
+//        g.drawLine(right - 6, 0, right, 6);
 
         // Paint top
-        g.drawLine(0, 0, right - 6, 0);
+//        g.drawLine(0, 0, right - 6, 0);
+        g.drawLine(0, 0, right, 0);
 
         // Paint right
-        if (ocean && isSelected) {
-            g.drawLine(right, 6, right, bottom);
-            if (tabIndex != firstIndex) {
-                g.setColor(darkShadow);
-                g.drawLine(right, 0, right, 5);
-            }
-        } else if (ocean && tabPane.getSelectedIndex() == tabIndex - 1) {
-            g.setColor(oceanSelectedBorderColor);
-            g.drawLine(right, 0, right, 6);
-            g.setColor(darkShadow);
-            g.drawLine(right, 6, right, bottom);
-        } else if (tabIndex != firstIndex) {
-            g.drawLine(right, 0, right, bottom);
-        } else {
-            g.drawLine(right, 6, right, bottom);
+//        if (ocean && isSelected) {
+//            g.drawLine(right, 0, right, bottom);
+////            if (tabIndex != firstIndex) {
+////                g.setColor(darkShadow);
+////                g.drawLine(right, 0, right, 5);
+////            }
+//        } else if (ocean && tabPane.getSelectedIndex() == tabIndex - 1) {
+//            g.setColor(oceanSelectedBorderColor);
+//            g.drawLine(right, 0, right, 6);
+//            g.setColor(darkShadow);
+//            g.drawLine(right, 6, right, bottom);
+//        } else if (tabIndex != firstIndex) {
+//            g.drawLine(right, 0, right, bottom);
+//        } else {
+//            g.drawLine(right, 0, right, bottom);
+//        }
+        g.drawLine(right, 0, right, bottom);
+
+        if(tabPane.getSelectedIndex() == tabIndex) {
+            g.setColor(ModernMetalTheme.PRIMARY5);
+            g.fillRect(right - 1, 1, 2, bottom - 1);
         }
 
         g.translate(-x, -y);

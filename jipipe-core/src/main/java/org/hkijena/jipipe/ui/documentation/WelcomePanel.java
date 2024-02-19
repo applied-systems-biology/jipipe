@@ -280,7 +280,7 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel implements JIPipeP
     }
 
     private void initializeRecentProjectsAndTemplates(AutoResizeSplitPane splitPane) {
-        DocumentTabPane tabPane = new DocumentTabPane(true);
+        DocumentTabPane tabPane = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Top);
 
         // Recent projects list
         initRecentProjects(tabPane);

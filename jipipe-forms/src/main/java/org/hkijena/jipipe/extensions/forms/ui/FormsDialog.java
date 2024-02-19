@@ -37,7 +37,7 @@ public class FormsDialog extends JFrame {
     private final List<JIPipeMultiIterationStep> iterationStepList;
     private final List<JIPipeDataSlot> iterationStepForms = new ArrayList<>();
     private final JIPipeDataSlot originalForms;
-    private final DocumentTabPane tabPane = new DocumentTabPane(true);
+    private final DocumentTabPane tabPane = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Top);
     private final List<DataBatchStatus> iterationStepStatuses = new ArrayList<>();
     private final JLabel unvisitedLabel = new JLabel(new SolidColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorUnvisited()));
     private final JLabel visitedLabel = new JLabel(new SolidColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorVisited()));
