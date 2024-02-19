@@ -31,7 +31,7 @@ Edges represent that data is transferred from an output to an input node.
 <table>
 <tr><td><img src="resource://icons/devices/input-mouse.png"/></td><td>Drag a line between two slots to make an edge.</td></tr>
 <tr><td><img src="resource://icons/actions/edit-delete.png"/></td><td>Delete edges by dragging another line between the slots.</td></tr>
-<tr><td><img src="resource://icons/actions/arrow-down.png"/></td><td>Use the arrow button to create long-range connections and show other options.</td></tr>
+<tr><td><img src="resource://icons/actions/configure.png"/></td><td>Right-click slots to create long-range connections and show other options.</td></tr>
 <tr><td><img src="resource://icons/actions/help-info.png"/></td><td><span style="color: blue">Blue</span> edges indicate that a data type conversion is applied.</td></tr>
 <tr><td><img src="resource://icons/actions/list-add.png"/></td><td>Some nodes will allow you to create custom slots or modify existing ones.</td></tr>
 </table>

@@ -33,7 +33,7 @@ the drawbacks of group nodes and full access to the cache system.
 <table>
 <tr><td><img src="resource://icons/devices/input-mouse.png"/></td><td>Drag a line between two slots to make an edge.</td></tr>
 <tr><td><img src="resource://icons/actions/edit-delete.png"/></td><td>Delete edges by dragging another line between the slots.</td></tr>
-<tr><td><img src="resource://icons/actions/arrow-down.png"/></td><td>Use the arrow button to create long-range connections and show other options.</td></tr>
+<tr><td><img src="resource://icons/actions/configure.png"/></td><td>Right-click slots to create long-range connections and show other options.</td></tr>
 </table>
 
 For more information and tutorials, visit https://www.jipipe.org/
