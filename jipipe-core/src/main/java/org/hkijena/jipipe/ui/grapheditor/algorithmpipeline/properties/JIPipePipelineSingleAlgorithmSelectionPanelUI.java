@@ -15,10 +15,7 @@ package org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.properties;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeGraphType;
-import org.hkijena.jipipe.api.nodes.JIPipeAdaptiveParametersAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -86,6 +83,10 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
     private void initialize() {
         setLayout(new BorderLayout());
         tabbedPane = new DocumentTabPane(false, DocumentTabPane.TabPlacement.Right);
+
+        tabbedPane.registerSingletonTab("OVERVIEW", "Overview", UIUtils.getIcon32FromResources("actions/list-check.png"),
+                this::createOverviewPanel, DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
+
         tabbedPane.registerSingletonTab("PARAMETERS", "Parameters", UIUtils.getIcon32FromResources("actions/configure.png"),
                 this::createParametersPanel, DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
 
@@ -173,7 +174,11 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
         restoreTabState();
         tabbedPane.getTabbedPane().addChangeListener(e -> saveTabState(tabbedPane));
 
-        initializeToolbar();
+//        initializeToolbar();
+    }
+
+    private JPanel createOverviewPanel() {
+        return new JPanel();
     }
 
     private JPanel createParametersPanel() {
@@ -197,7 +202,7 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
                     UIUtils.getIconFromResources("emblems/checkbox-unchecked.png"));
             JPopupMenu popupMenu = UIUtils.addPopupMenuToButton(menuButton);
 
-            JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Repeat per external parameter");
+            JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Enable");
             toggle.setToolTipText("If enabled, the node will include an additional input 'Parameters' that receives parameter sets from an external source. " +
                     "If the parameter data contains multiple items, the node's workload will be repeated for each parameter set.");
             toggle.setSelected(((JIPipeParameterSlotAlgorithm) node).getParameterSlotAlgorithmSettings().isHasParameterSlot());
@@ -232,8 +237,22 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
 
         if (node instanceof JIPipeAdaptiveParametersAlgorithm) {
 
-            JButton menuButton = new JButton("Adaptive", UIUtils.getIconFromResources("emblems/checkbox-checked.png"));
+            JButton menuButton = new JButton("Adaptive",  ((JIPipeAdaptiveParametersAlgorithm) node).getAdaptiveParameterSettings().isEnabled() ?
+                    UIUtils.getIconFromResources("emblems/checkbox-checked.png") :
+                    UIUtils.getIconFromResources("emblems/checkbox-unchecked.png"));
             JPopupMenu popupMenu = UIUtils.addPopupMenuToButton(menuButton);
+
+            JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Enable");
+            toggle.setToolTipText("If enabled, the node will support parameters that are calculated by expressions.");
+            toggle.setSelected(((JIPipeAdaptiveParametersAlgorithm) node).getAdaptiveParameterSettings().isEnabled());
+            toggle.addActionListener(e -> {
+                ((JIPipeAdaptiveParametersAlgorithm) node).getAdaptiveParameterSettings().setParameter("enabled", toggle.isSelected());
+                menuButton.setIcon( toggle.isSelected() ?
+                        UIUtils.getIconFromResources("emblems/checkbox-checked.png") :
+                        UIUtils.getIconFromResources("emblems/checkbox-unchecked.png"));
+            });
+            popupMenu.add(toggle);
+            popupMenu.addSeparator();
 
             popupMenu.add(UIUtils.createMenuItem("Configure", "Configure external parameters", UIUtils.getIconFromResources("actions/configure.png"), () -> {
                 ParameterPanel.showDialog(getWorkbench(),
@@ -326,65 +345,65 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
         }
     }
 
-    private void initializeToolbar() {
-        JToolBar toolBar = new JToolBar();
-        toolBar.setFloatable(false);
-        JLabel nameLabel = new JLabel(node.getName(), new SolidColorIcon(16, 16, UIUtils.getFillColorFor(node.getInfo())), JLabel.LEFT);
-        nameLabel.setToolTipText(TooltipUtils.getAlgorithmTooltip(node.getInfo()));
-        toolBar.add(nameLabel);
+//    private void initializeToolbar() {
+//        JToolBar toolBar = new JToolBar();
+//        toolBar.setFloatable(false);
+//        JLabel nameLabel = new JLabel(node.getName(), new SolidColorIcon(16, 16, UIUtils.getFillColorFor(node.getInfo())), JLabel.LEFT);
+//        nameLabel.setToolTipText(TooltipUtils.getAlgorithmTooltip(node.getInfo()));
+//        toolBar.add(nameLabel);
+//
+//        toolBar.add(Box.createHorizontalGlue());
+//
+//        JIPipeGraphEditorUI.installContextActionsInto(toolBar,
+//                canvas.getNodeUIsFor(Collections.singleton(node)),
+//                canvas.getContextActions(),
+//                canvas);
+//
+//        JButton createTemplateButton = new JButton("Create node template", UIUtils.getIconFromResources("actions/starred.png"));
+//        createTemplateButton.addActionListener(e -> createNodeTemplate());
+//        toolBar.add(createTemplateButton);
+//
+//        loadExampleButton.addActionListener(e -> loadExample());
+//        toolBar.add(loadExampleButton);
+//
+//        if (JIPipe.getNodes().getRegisteredNodeInfos().containsValue(node.getInfo())) {
+//            JButton openCompendiumButton = new JButton(UIUtils.getIconFromResources("actions/help.png"));
+//            UIUtils.makeFlat25x25(openCompendiumButton);
+//            openCompendiumButton.setToolTipText("Open in algorithm compendium");
+//            openCompendiumButton.addActionListener(e -> {
+//                JIPipeAlgorithmCompendiumUI compendiumUI = new JIPipeAlgorithmCompendiumUI();
+//                compendiumUI.selectItem(node.getInfo());
+//                getWorkbench().getDocumentTabPane().addTab("Algorithm compendium",
+//                        UIUtils.getIconFromResources("actions/help.png"),
+//                        compendiumUI,
+//                        DocumentTabPane.CloseMode.withSilentCloseButton,
+//                        true);
+//                getWorkbench().getDocumentTabPane().switchToLastTab();
+//            });
+//            toolBar.add(openCompendiumButton);
+//        }
+//
+//        add(toolBar, BorderLayout.NORTH);
+//
+//    }
 
-        toolBar.add(Box.createHorizontalGlue());
 
-        JIPipeGraphEditorUI.installContextActionsInto(toolBar,
-                canvas.getNodeUIsFor(Collections.singleton(node)),
-                canvas.getContextActions(),
-                canvas);
-
-        JButton createTemplateButton = new JButton("Create node template", UIUtils.getIconFromResources("actions/starred.png"));
-        createTemplateButton.addActionListener(e -> createNodeTemplate());
-        toolBar.add(createTemplateButton);
-
-        loadExampleButton.addActionListener(e -> loadExample());
-        toolBar.add(loadExampleButton);
-
-        if (JIPipe.getNodes().getRegisteredNodeInfos().containsValue(node.getInfo())) {
-            JButton openCompendiumButton = new JButton(UIUtils.getIconFromResources("actions/help.png"));
-            UIUtils.makeFlat25x25(openCompendiumButton);
-            openCompendiumButton.setToolTipText("Open in algorithm compendium");
-            openCompendiumButton.addActionListener(e -> {
-                JIPipeAlgorithmCompendiumUI compendiumUI = new JIPipeAlgorithmCompendiumUI();
-                compendiumUI.selectItem(node.getInfo());
-                getWorkbench().getDocumentTabPane().addTab("Algorithm compendium",
-                        UIUtils.getIconFromResources("actions/help.png"),
-                        compendiumUI,
-                        DocumentTabPane.CloseMode.withSilentCloseButton,
-                        true);
-                getWorkbench().getDocumentTabPane().switchToLastTab();
-            });
-            toolBar.add(openCompendiumButton);
-        }
-
-        add(toolBar, BorderLayout.NORTH);
-
-    }
-
-
-    private void loadExample() {
-        JIPipeNodeExamplePickerDialog pickerDialog = new JIPipeNodeExamplePickerDialog(getWorkbench().getWindow());
-        pickerDialog.setTitle("Load example");
-        List<JIPipeNodeExample> nodeExamples = getProject().getNodeExamples(node.getInfo().getId());
-        pickerDialog.setAvailableItems(nodeExamples);
-        JIPipeNodeExample selection = pickerDialog.showDialog();
-        if (selection != null) {
-            ((JIPipeAlgorithm) node).loadExample(selection);
-            tabbedPane.selectSingletonTab("PARAMETERS");
-        }
-    }
-
-    private void createNodeTemplate() {
-        AddTemplateContextMenuAction action = new AddTemplateContextMenuAction();
-        action.run(canvas, canvas.getNodeUIsFor(Collections.singleton(node)));
-    }
+//    private void loadExample() {
+//        JIPipeNodeExamplePickerDialog pickerDialog = new JIPipeNodeExamplePickerDialog(getWorkbench().getWindow());
+//        pickerDialog.setTitle("Load example");
+//        List<JIPipeNodeExample> nodeExamples = getProject().getNodeExamples(node.getInfo().getId());
+//        pickerDialog.setAvailableItems(nodeExamples);
+//        JIPipeNodeExample selection = pickerDialog.showDialog();
+//        if (selection != null) {
+//            ((JIPipeAlgorithm) node).loadExample(selection);
+//            tabbedPane.selectSingletonTab("PARAMETERS");
+//        }
+//    }
+//
+//    private void createNodeTemplate() {
+//        AddTemplateContextMenuAction action = new AddTemplateContextMenuAction();
+//        action.run(canvas, canvas.getNodeUIsFor(Collections.singleton(node)));
+//    }
 
     /**
      * @return the algorithm

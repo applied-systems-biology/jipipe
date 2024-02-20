@@ -204,7 +204,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
         importItem.addActionListener(e -> importTemplates());
         manageMenu.add(importItem);
 
-        JMenuItem downloadTemplatesItem = new JMenuItem("Download more templates", UIUtils.getIconFromResources("actions/browser-download.png"));
+        JMenuItem downloadTemplatesItem = new JMenuItem("Download more templates", UIUtils.getIconFromResources("actions/download.png"));
         downloadTemplatesItem.addActionListener(e -> downloadTemplates());
         manageMenu.add(downloadTemplatesItem);
 

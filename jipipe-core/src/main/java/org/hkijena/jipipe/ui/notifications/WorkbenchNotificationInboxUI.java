@@ -105,21 +105,20 @@ public class WorkbenchNotificationInboxUI extends JIPipeWorkbenchPanel implement
 
     private void initialize() {
         setLayout(new BorderLayout());
-        DocumentTabPane documentTabPane = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Top);
-        documentTabPane.getTabbedPane().setTabPlacement(SwingConstants.BOTTOM);
+        DocumentTabPane documentTabPane = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Left);
 
-        documentTabPane.addTab("Current notifications",
-                UIUtils.getIconFromResources("actions/bell.png"),
+        documentTabPane.addTab("Current",
+                UIUtils.getIcon32FromResources("actions/bell.png"),
                 notificationsPanel,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
-        documentTabPane.addTab("Dismissed notifications",
-                UIUtils.getIconFromResources("actions/checkmark.png"),
+        documentTabPane.addTab("Dismissed",
+                UIUtils.getIcon32FromResources("actions/checkmark.png"),
                 dismissedNotificationsPanel,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
-        documentTabPane.addTab("Hidden notifications",
-                UIUtils.getIconFromResources("actions/eye-slash.png"),
+        documentTabPane.addTab("Hidden",
+                UIUtils.getIcon32FromResources("actions/eye-slash.png"),
                 hiddenNotificationsPanel,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);

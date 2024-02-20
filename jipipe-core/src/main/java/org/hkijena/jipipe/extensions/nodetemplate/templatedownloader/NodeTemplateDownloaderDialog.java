@@ -140,7 +140,7 @@ public class NodeTemplateDownloaderDialog extends JDialog {
         });
         buttonPanel.add(cancelButton);
 
-        JButton downloadButton = new JButton("Download selected templates", UIUtils.getIconFromResources("actions/browser-download.png"));
+        JButton downloadButton = new JButton("Download selected templates", UIUtils.getIconFromResources("actions/download.png"));
         downloadButton.addActionListener(e -> {
             int response = JOptionPane.showOptionDialog(this,
                     "Where should the templates be stored? You can either save them globally or store them inside the current project.",

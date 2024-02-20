@@ -130,7 +130,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
 
         AutoResizeSplitPane splitPane = new AutoResizeSplitPane(AutoResizeSplitPane.LEFT_RIGHT, new AutoResizeSplitPane.DynamicSidebarRatio(600, false));
         AutoResizeSplitPane splitPane1 = new AutoResizeSplitPane(AutoResizeSplitPane.TOP_BOTTOM, AutoResizeSplitPane.RATIO_1_TO_1);
-        DocumentTabPane tabPane = new DocumentTabPane();
+        DocumentTabPane tabPane = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Left);
         JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.add(tabPane, BorderLayout.CENTER);
 
@@ -152,7 +152,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
 
 
         // General settings tab
-        tabPane.addTab("General", UIUtils.getIconFromResources("actions/configure.png"), new ParameterPanel(getProjectWorkbench(),
+        tabPane.addTab("General", UIUtils.getIcon32FromResources("actions/configure.png"), new ParameterPanel(getProjectWorkbench(),
                 run.getConfiguration(),
                new MarkdownDocument(),
                 ParameterPanel.WITH_SCROLLING), DocumentTabPane.CloseMode.withoutCloseButton);
@@ -182,7 +182,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
 
     private void createWrittenResultsPanel(DocumentTabPane tabPane, Set<JIPipeDataSlot> remainingOutputs) {
         FormPanel infoPanel = new FormPanel(FormPanel.WITH_SCROLLING);
-        tabPane.addTab("Written results", UIUtils.getIconFromResources("actions/save.png"), infoPanel, DocumentTabPane.CloseMode.withoutCloseButton);
+        tabPane.addTab("Exported", UIUtils.getIcon32FromResources("actions/stock_save.png"), infoPanel, DocumentTabPane.CloseMode.withoutCloseButton);
         createOutputsManagerPanel(infoPanel, remainingOutputs);
         infoPanel.addVerticalGlue();
     }
@@ -193,7 +193,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
                 "There are nodes that generate large intermediate results. Please go to the 'Performance optimization' tab if you want to disable writing the outputs to the cache/hard drive.",
                 true,
                 false);
-        tabPane.addTab("Performance optimization", UIUtils.getIconFromResources("actions/speedometer.png"), infoPanel, DocumentTabPane.CloseMode.withoutCloseButton);
+        tabPane.addTab("Performance", UIUtils.getIcon32FromResources("actions/speedometer.png"), infoPanel, DocumentTabPane.CloseMode.withoutCloseButton);
         createOutputsManagerPanel(infoPanel, heavyIntermediateOutputs);
         infoPanel.addVerticalGlue();
     }
@@ -204,7 +204,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
                 "Not all nodes can be executed, which may or may not be intended. Please review the 'Skipped nodes' tab.",
                 true,
                 false);
-        tabPane.addTab("Skipped nodes", UIUtils.getIconFromResources("emblems/warning.png"), infoPanel, DocumentTabPane.CloseMode.withoutCloseButton);
+        tabPane.addTab("Skipped", UIUtils.getIcon32FromResources("emblems/vcs-conflicting.png"), infoPanel, DocumentTabPane.CloseMode.withoutCloseButton);
 
         DefaultTableModel model = new DefaultTableModel();
         model.setColumnIdentifiers(new Object[]{"Compartment", "Node name"});

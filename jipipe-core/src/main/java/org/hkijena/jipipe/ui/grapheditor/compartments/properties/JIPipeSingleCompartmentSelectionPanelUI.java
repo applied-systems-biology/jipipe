@@ -69,6 +69,10 @@ public class JIPipeSingleCompartmentSelectionPanelUI extends JIPipeProjectWorkbe
                 compartment,
                 MarkdownDocument.fromPluginResource("documentation/compartment-graph.md", new HashMap<>()),
                 ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SCROLLING);
+
+        tabbedPane.registerSingletonTab("OVERVIEW", "Overview", UIUtils.getIcon32FromResources("actions/list-check.png"),
+                this::createOverviewPanel, DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
+
         tabbedPane.addTab("Parameters", UIUtils.getIcon32FromResources("actions/configure.png"),
                 parametersUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,
@@ -104,7 +108,11 @@ public class JIPipeSingleCompartmentSelectionPanelUI extends JIPipeProjectWorkbe
 
         add(tabbedPane, BorderLayout.CENTER);
 
-        initializeToolbar();
+//        initializeToolbar();
+    }
+
+    private JPanel createOverviewPanel() {
+        return new JPanel();
     }
 
     private Component createQuickRunPanel() {
@@ -123,26 +131,26 @@ public class JIPipeSingleCompartmentSelectionPanelUI extends JIPipeProjectWorkbe
                 graphEditorUI.getCanvasUI());
     }
 
-    private void initializeToolbar() {
-        JToolBar toolBar = new JToolBar();
-        toolBar.setFloatable(false);
-        JLabel nameLabel = new JLabel(compartment.getName(), new SolidColorIcon(16, 16, UIUtils.getFillColorFor(compartment.getInfo())), JLabel.LEFT);
-        nameLabel.setToolTipText(TooltipUtils.getProjectCompartmentTooltip(compartment, getProject().getGraph()));
-        toolBar.add(nameLabel);
-
-        toolBar.add(Box.createHorizontalGlue());
-
-        JIPipeGraphEditorUI.installContextActionsInto(toolBar,
-                canvas.getNodeUIsFor(Collections.singleton(compartment)),
-                canvas.getContextActions(),
-                canvas);
-
-        JButton openButton = new JButton("Open in editor", UIUtils.getIconFromResources("actions/edit.png"));
-        openButton.addActionListener(e -> openInEditor());
-        toolBar.add(openButton);
-
-        add(toolBar, BorderLayout.NORTH);
-    }
+//    private void initializeToolbar() {
+//        JToolBar toolBar = new JToolBar();
+//        toolBar.setFloatable(false);
+//        JLabel nameLabel = new JLabel(compartment.getName(), new SolidColorIcon(16, 16, UIUtils.getFillColorFor(compartment.getInfo())), JLabel.LEFT);
+//        nameLabel.setToolTipText(TooltipUtils.getProjectCompartmentTooltip(compartment, getProject().getGraph()));
+//        toolBar.add(nameLabel);
+//
+//        toolBar.add(Box.createHorizontalGlue());
+//
+//        JIPipeGraphEditorUI.installContextActionsInto(toolBar,
+//                canvas.getNodeUIsFor(Collections.singleton(compartment)),
+//                canvas.getContextActions(),
+//                canvas);
+//
+//        JButton openButton = new JButton("Open in editor", UIUtils.getIconFromResources("actions/edit.png"));
+//        openButton.addActionListener(e -> openInEditor());
+//        toolBar.add(openButton);
+//
+//        add(toolBar, BorderLayout.NORTH);
+//    }
 
     private void openInEditor() {
         getProjectWorkbench().getOrOpenPipelineEditorTab(compartment, true);

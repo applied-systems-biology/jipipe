@@ -82,7 +82,7 @@ public class IlastikExtension extends JIPipePrepackagedDefaultJavaExtension {
                     "Alternatively, click 'Configure' to visit the settings page with more options, including the selection of an existing Ilastik installation.");
             notification.getActions().add(new JIPipeNotificationAction("Install Ilastik",
                     "Installs Ilastik via the EasyInstaller",
-                    UIUtils.getIconInvertedFromResources("actions/browser-download.png"),
+                    UIUtils.getIconInvertedFromResources("actions/download.png"),
                     JIPipeNotificationAction.Style.Success,
                     IlastikExtension::easyInstallIlastik));
             notification.getActions().add(new JIPipeNotificationAction("Open settings",

@@ -321,7 +321,7 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel implements JIPipeP
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
         toolBar.add(templateSearch);
-        JButton downloadTemplatesButton = new JButton("Get more templates", UIUtils.getIconFromResources("actions/browser-download.png"));
+        JButton downloadTemplatesButton = new JButton("Get more templates", UIUtils.getIconFromResources("actions/download.png"));
         downloadTemplatesButton.addActionListener(e -> downloadTemplates());
         toolBar.add(downloadTemplatesButton);
 

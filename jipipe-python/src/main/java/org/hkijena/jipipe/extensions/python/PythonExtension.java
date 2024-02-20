@@ -131,7 +131,7 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
                     "For more information, please visit https://www.jipipe.org/installation/third-party/python/");
             notification.getActions().add(new JIPipeNotificationAction("Install Python",
                     "Installs a pre-packaged Python distribution",
-                    UIUtils.getIconInvertedFromResources("actions/browser-download.png"),
+                    UIUtils.getIconInvertedFromResources("actions/download.png"),
                     JIPipeNotificationAction.Style.Success,
                     PythonExtension::easyInstallPython));
             notification.getActions().add(new JIPipeNotificationAction("Open settings",
@@ -151,7 +151,7 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
                     "Alternatively, click 'Open settings' to visit the settings page with more options.");
             notification.getActions().add(new JIPipeNotificationAction("Install Python adapter",
                     "Installs a pre-packaged Python distribution",
-                    UIUtils.getIconInvertedFromResources("actions/browser-download.png"),
+                    UIUtils.getIconInvertedFromResources("actions/download.png"),
                     JIPipeNotificationAction.Style.Success,
                     PythonExtension::easyInstallPythonAdapter));
             notification.getActions().add(new JIPipeNotificationAction("Open settings",
@@ -170,7 +170,7 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "Alternatively, click 'Open settings' to visit the settings page with more options.");
         notification.getActions().add(new JIPipeNotificationAction("Update Python adapter",
                 "Installs a pre-packaged Python distribution",
-                UIUtils.getIconInvertedFromResources("actions/browser-download.png"),
+                UIUtils.getIconInvertedFromResources("actions/download.png"),
                 JIPipeNotificationAction.Style.Success,
                 PythonExtension::easyInstallPythonAdapter));
         notification.getActions().add(new JIPipeNotificationAction("Open settings",
@@ -232,7 +232,7 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
                 null);
         registerEnvironmentInstaller(JIPipePythonAdapterLibraryEnvironment.class,
                 JIPipePythonAdapterLibraryEnvironmentInstaller.class,
-                UIUtils.getIconFromResources("actions/browser-download.png"));
+                UIUtils.getIconFromResources("actions/download.png"));
 
         registerEnumParameterType("python-environment-type",
                 PythonEnvironmentType.class,
@@ -253,8 +253,8 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
                 UIUtils.getIconFromResources("actions/plugins.png"),
                 adapterExtensionSettings);
 
-        registerEnvironmentInstaller(PythonEnvironment.class, MinicondaEnvPythonInstaller.class, UIUtils.getIconFromResources("actions/browser-download.png"));
-        registerEnvironmentInstaller(PythonEnvironment.class, PortableEnvPythonInstaller.class, UIUtils.getIconFromResources("actions/browser-download.png"));
+        registerEnvironmentInstaller(PythonEnvironment.class, MinicondaEnvPythonInstaller.class, UIUtils.getIconFromResources("actions/download.png"));
+        registerEnvironmentInstaller(PythonEnvironment.class, PortableEnvPythonInstaller.class, UIUtils.getIconFromResources("actions/download.png"));
         registerEnvironmentInstaller(PythonEnvironment.class, SelectCondaEnvPythonInstaller.class, UIUtils.getIconFromResources("actions/project-open.png"));
         registerEnvironmentInstaller(PythonEnvironment.class, SelectSystemPythonInstaller.class, UIUtils.getIconFromResources("actions/project-open.png"));
         registerEnvironmentInstaller(PythonEnvironment.class, SelectVirtualEnvPythonInstaller.class, UIUtils.getIconFromResources("actions/project-open.png"));
