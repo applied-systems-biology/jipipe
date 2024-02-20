@@ -64,7 +64,6 @@ import java.util.concurrent.Future;
         "Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and " +
         "leave 'Data set matching annotations' empty.")
 public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorithm implements JIPipeParallelizedAlgorithm, JIPipeIterationStepAlgorithm, JIPipeAdaptiveParametersAlgorithm {
-    private boolean parallelizationEnabled = true;
     private JIPipeMergingAlgorithmIterationStepGenerationSettings iterationStepGenerationSettings = new JIPipeMergingAlgorithmIterationStepGenerationSettings();
     private JIPipeAdaptiveParameterSettings adaptiveParameterSettings = new JIPipeAdaptiveParameterSettings();
 
@@ -103,7 +102,6 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         super(other);
         this.iterationStepGenerationSettings = new JIPipeMergingAlgorithmIterationStepGenerationSettings(other.iterationStepGenerationSettings);
         this.adaptiveParameterSettings = new JIPipeAdaptiveParameterSettings(other.adaptiveParameterSettings);
-        this.parallelizationEnabled = other.parallelizationEnabled;
         adaptiveParameterSettings.setNode(this);
         registerSubParameter(iterationStepGenerationSettings);
         registerSubParameter(adaptiveParameterSettings);
@@ -399,21 +397,6 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
     @Override
     public int getParallelizationBatchSize() {
         return 1;
-    }
-
-    @SetJIPipeDocumentation(name = "Enable parallelization", description = "If enabled, the workload can be calculated across multiple threads to for speedup. " +
-            "Please note that the actual usage of multiple threads depend on the runtime settings and the algorithm implementation. " +
-            "We recommend to use the runtime parameters to control parallelization in most cases.")
-    @JIPipeParameter(value = "jipipe:parallelization:enabled", pinned = true)
-    @Override
-    public boolean isParallelizationEnabled() {
-        return parallelizationEnabled;
-    }
-
-    @Override
-    @JIPipeParameter("jipipe:parallelization:enabled")
-    public void setParallelizationEnabled(boolean parallelizationEnabled) {
-        this.parallelizationEnabled = parallelizationEnabled;
     }
 
     @Override

@@ -64,7 +64,6 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
 
     private JIPipeIteratingAlgorithmIterationStepGenerationSettings iterationStepGenerationSettings = new JIPipeIteratingAlgorithmIterationStepGenerationSettings();
     private JIPipeAdaptiveParameterSettings adaptiveParameterSettings = new JIPipeAdaptiveParameterSettings();
-    private boolean parallelizationEnabled = true;
 
     /**
      * Creates a new instance
@@ -100,7 +99,6 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
         super(other);
         this.iterationStepGenerationSettings = new JIPipeIteratingAlgorithmIterationStepGenerationSettings(other.iterationStepGenerationSettings);
         this.adaptiveParameterSettings = new JIPipeAdaptiveParameterSettings(other.adaptiveParameterSettings);
-        this.parallelizationEnabled = other.parallelizationEnabled;
         adaptiveParameterSettings.setNode(this);
         registerSubParameter(iterationStepGenerationSettings);
         registerSubParameter(adaptiveParameterSettings);
@@ -436,21 +434,6 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
     @Override
     public int getParallelizationBatchSize() {
         return 1;
-    }
-
-    @SetJIPipeDocumentation(name = "Enable parallelization", description = "If enabled, the workload can be calculated across multiple threads to for speedup. " +
-            "Please note that the actual usage of multiple threads depend on the runtime settings and the algorithm implementation. " +
-            "We recommend to use the runtime parameters to control parallelization in most cases.")
-    @JIPipeParameter(value = "jipipe:parallelization:enabled", pinned = true)
-    @Override
-    public boolean isParallelizationEnabled() {
-        return parallelizationEnabled;
-    }
-
-    @Override
-    @JIPipeParameter("jipipe:parallelization:enabled")
-    public void setParallelizationEnabled(boolean parallelizationEnabled) {
-        this.parallelizationEnabled = parallelizationEnabled;
     }
 
     @Override

@@ -56,7 +56,6 @@ import java.util.concurrent.Future;
 public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParameterSlotAlgorithm implements JIPipeParallelizedAlgorithm, JIPipeIterationStepAlgorithm {
 
     private JIPipeMissingDataGeneratorIterationStepGenerationSettings iterationStepGenerationSettings = new JIPipeMissingDataGeneratorIterationStepGenerationSettings();
-    private boolean parallelizationEnabled = true;
     private boolean keepOriginalAnnotations = true;
 
     /**
@@ -87,7 +86,6 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
     public JIPipeMissingDataGeneratorAlgorithm(JIPipeMissingDataGeneratorAlgorithm other) {
         super(other);
         this.iterationStepGenerationSettings = new JIPipeMissingDataGeneratorIterationStepGenerationSettings(other.iterationStepGenerationSettings);
-        this.parallelizationEnabled = other.parallelizationEnabled;
         this.keepOriginalAnnotations = other.keepOriginalAnnotations;
         registerSubParameter(iterationStepGenerationSettings);
     }
@@ -225,21 +223,6 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
     @Override
     public int getParallelizationBatchSize() {
         return 1;
-    }
-
-    @SetJIPipeDocumentation(name = "Enable parallelization", description = "If enabled, the workload can be calculated across multiple threads to for speedup. " +
-            "Please note that the actual usage of multiple threads depend on the runtime settings and the algorithm implementation. " +
-            "We recommend to use the runtime parameters to control parallelization in most cases.")
-    @JIPipeParameter(value = "jipipe:parallelization:enabled", pinned = true)
-    @Override
-    public boolean isParallelizationEnabled() {
-        return parallelizationEnabled;
-    }
-
-    @Override
-    @JIPipeParameter("jipipe:parallelization:enabled")
-    public void setParallelizationEnabled(boolean parallelizationEnabled) {
-        this.parallelizationEnabled = parallelizationEnabled;
     }
 
     @SetJIPipeDocumentation(name = "Keep original annotations", description = "If enabled, outputs that were not generated " +

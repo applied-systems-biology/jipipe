@@ -44,8 +44,6 @@ import java.util.concurrent.Future;
  * An error is thrown if there are more than one input slots.
  */
 public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipeAlgorithm implements JIPipeParallelizedAlgorithm, JIPipeIterationStepAlgorithm {
-
-    private boolean parallelizationEnabled = true;
     private IterationStepGenerationSettings iterationStepGenerationSettings = new IterationStepGenerationSettings();
 
     /**
@@ -77,7 +75,6 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
     public JIPipeParameterlessSimpleIteratingAlgorithm(JIPipeParameterlessSimpleIteratingAlgorithm other) {
         super(other);
         this.iterationStepGenerationSettings = new IterationStepGenerationSettings(other.iterationStepGenerationSettings);
-        this.parallelizationEnabled = other.parallelizationEnabled;
         registerSubParameter(iterationStepGenerationSettings);
     }
 
@@ -177,21 +174,6 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
     @Override
     public int getParallelizationBatchSize() {
         return 1;
-    }
-
-    @SetJIPipeDocumentation(name = "Enable parallelization", description = "If enabled, the workload can be calculated across multiple threads to for speedup. " +
-            "Please note that the actual usage of multiple threads depend on the runtime settings and the algorithm implementation. " +
-            "We recommend to use the runtime parameters to control parallelization in most cases.")
-    @JIPipeParameter(value = "jipipe:parallelization:enabled", pinned = true)
-    @Override
-    public boolean isParallelizationEnabled() {
-        return parallelizationEnabled;
-    }
-
-    @Override
-    @JIPipeParameter("jipipe:parallelization:enabled")
-    public void setParallelizationEnabled(boolean parallelizationEnabled) {
-        this.parallelizationEnabled = parallelizationEnabled;
     }
 
     @SetJIPipeDocumentation(name = "Input management", description = "This algorithm has one input and will iterate through each row of its input and apply the workload. " +
