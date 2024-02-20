@@ -80,16 +80,16 @@ public class JIPipeSingleCompartmentSelectionPanelUI extends JIPipeProjectWorkbe
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
 
-        tabbedPane.registerSingletonTab("CACHE_BROWSER", "Cache browser", UIUtils.getIcon32FromResources("actions/database.png"),
-                this::createCacheBrowser,
-                DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
-
-        tabbedPane.registerSingletonTab("QUICK_RUN", "Quick run", UIUtils.getIcon32FromResources("actions/media-play.png"),
+        tabbedPane.registerSingletonTab("QUICK_RUN", "Run", UIUtils.getIcon32FromResources("actions/media-play.png"),
                 this::createQuickRunPanel,
                 DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
 
+        tabbedPane.registerSingletonTab("CACHE_BROWSER", "Results", UIUtils.getIcon32FromResources("actions/database.png"),
+                this::createCacheBrowser,
+                DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
+
         if (JIPipeRunnerQueue.getInstance().getCurrentRun() != null) {
-            tabbedPane.registerSingletonTab("CURRENT_RUN", "Current process", UIUtils.getIcon32FromResources("actions/show_log.png"),
+            tabbedPane.registerSingletonTab("CURRENT_RUN", "Progress", UIUtils.getIcon32FromResources("actions/show_log.png"),
                     this::createCurrentRunInfo, DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
         }
 
@@ -97,7 +97,7 @@ public class JIPipeSingleCompartmentSelectionPanelUI extends JIPipeProjectWorkbe
         tabbedPane.addTab("Bookmarks", UIUtils.getIcon32FromResources("actions/bookmarks.png"),
                 new BookmarkListPanel(getWorkbench(), getProject().getGraph(), graphEditorUI), DocumentTabPane.CloseMode.withoutCloseButton);
 
-        tabbedPane.addTab("Journal",
+        tabbedPane.addTab("History",
                 UIUtils.getIcon32FromResources("actions/edit-undo-history.png"),
                 new HistoryJournalUI(graphEditorUI.getHistoryJournal()),
                 DocumentTabPane.CloseMode.withoutCloseButton);

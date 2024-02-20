@@ -109,23 +109,24 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
                         DocumentTabPane.CloseMode.withoutCloseButton,
                         DocumentTabPane.SingletonTabMode.Present);
             }
-            cacheBrowserTabContent = new JPanel(new BorderLayout());
-            if (node instanceof JIPipeAlgorithm) {
-                tabbedPane.registerSingletonTab("CACHE_BROWSER", "Cache browser", UIUtils.getIcon32FromResources("actions/database.png"),
-                        () -> cacheBrowserTabContent,
-                        DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
-            }
 
             testBenchTabContent = new JPanel(new BorderLayout());
             if (node.getInfo().isRunnable()) {
-                tabbedPane.registerSingletonTab("QUICK_RUN", "Quick run", UIUtils.getIcon32FromResources("actions/media-play.png"),
+                tabbedPane.registerSingletonTab("QUICK_RUN", "Run", UIUtils.getIcon32FromResources("actions/media-play.png"),
                         () -> testBenchTabContent,
+                        DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
+            }
+
+            cacheBrowserTabContent = new JPanel(new BorderLayout());
+            if (node instanceof JIPipeAlgorithm) {
+                tabbedPane.registerSingletonTab("CACHE_BROWSER", "Results", UIUtils.getIcon32FromResources("actions/database.png"),
+                        () -> cacheBrowserTabContent,
                         DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
             }
 
             if (JIPipeRunnerQueue.getInstance().getCurrentRun() != null) {
                 currentRunTabContent = new JPanel(new BorderLayout());
-                tabbedPane.registerSingletonTab("CURRENT_RUN", "Current process", UIUtils.getIcon32FromResources("actions/show_log.png"),
+                tabbedPane.registerSingletonTab("CURRENT_RUN", "Progress", UIUtils.getIcon32FromResources("actions/show_log.png"),
                         () -> currentRunTabContent, DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
             }
         } else {
@@ -142,7 +143,7 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
                         DocumentTabPane.SingletonTabMode.Present);
             }
             if (node instanceof JIPipeIterationStepAlgorithm) {
-                tabbedPane.addTab("Input management",
+                tabbedPane.addTab("Inputs",
                         UIUtils.getIcon32FromResources("actions/package.png"),
                         new ParameterPanel(getWorkbench(), ((JIPipeIterationStepAlgorithm) node).getGenerationSettingsInterface(), null, ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_SCROLLING),
                         DocumentTabPane.CloseMode.withoutCloseButton);
@@ -150,16 +151,16 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
         }
 
         // Additional tabs for the help panel
-        tabbedPane.addTab("Available nodes", UIUtils.getIcon32FromResources("actions/graph-node-add.png"),
+        tabbedPane.addTab("Add nodes", UIUtils.getIcon32FromResources("actions/graph-node-add.png"),
                 new NodeToolBox(getWorkbench(), true), DocumentTabPane.CloseMode.withoutCloseButton);
 
-        tabbedPane.addTab("Node templates", UIUtils.getIcon32FromResources("actions/favorite.png"),
+        tabbedPane.addTab("Templates", UIUtils.getIcon32FromResources("actions/favorite.png"),
                 new NodeTemplateBox(getWorkbench(), true), DocumentTabPane.CloseMode.withoutCloseButton);
 
         tabbedPane.addTab("Bookmarks", UIUtils.getIcon32FromResources("actions/bookmarks.png"),
                 new BookmarkListPanel(getWorkbench(), graphEditorUI.getGraph(), graphEditorUI), DocumentTabPane.CloseMode.withoutCloseButton);
 
-        tabbedPane.addTab("Journal",
+        tabbedPane.addTab("History",
                 UIUtils.getIcon32FromResources("actions/edit-undo-history.png"),
                 new HistoryJournalUI(graphEditorUI.getHistoryJournal()),
                 DocumentTabPane.CloseMode.withoutCloseButton);
@@ -185,50 +186,74 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
                 ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SEARCH_BAR);
         panel.add(parametersUI, BorderLayout.CENTER);
 
-        // Advanced parameters
-        if ((node instanceof JIPipeParameterSlotAlgorithm) || (node instanceof JIPipeAdaptiveParametersAlgorithm)) {
-            MessagePanel messagePanel = new MessagePanel();
-            panel.add(messagePanel, BorderLayout.NORTH);
-            if (node instanceof JIPipeParameterSlotAlgorithm) {
-                JButton configureButton = new JButton("Configure", UIUtils.getIconFromResources("actions/configure.png"));
-                configureButton.addActionListener(e -> {
-                    ParameterPanel.showDialog(getWorkbench(),
-                            ((JIPipeParameterSlotAlgorithm) node).getParameterSlotAlgorithmSettings(),
-                            MarkdownDocument.fromPluginResource("documentation/multi-parameters.md", Collections.emptyMap()),
-                            "Configure external parameters",
-                            ParameterPanel.DEFAULT_DIALOG_FLAGS);
-                });
+//        JToolBar toolBar = new JToolBar();
+//        toolBar.setFloatable(false);
+//        panel.add(toolBar, BorderLayout.NORTH);
 
-                JToggleButton toggleButton = new JToggleButton("Enable", UIUtils.getIconFromResources("data-types/parameters.png"));
-                toggleButton.setToolTipText("If enabled, the node will include an additional input 'Parameters' that receives parameter sets from an external source. " +
-                        "If the parameter data contains multiple items, the node's workload will be repeated for each parameter set.");
-                toggleButton.setSelected(((JIPipeParameterSlotAlgorithm) node).getParameterSlotAlgorithmSettings().isHasParameterSlot());
-                toggleButton.addActionListener(e -> ((JIPipeParameterSlotAlgorithm) node).getParameterSlotAlgorithmSettings().setParameter("has-parameter-slot", toggleButton.isSelected()));
+        if (node instanceof JIPipeParameterSlotAlgorithm) {
 
-                JButton helpButton = new JButton(UIUtils.getIconFromResources("actions/help.png"));
-                helpButton.addActionListener(e -> MarkdownReader.showDialog(MarkdownDocument.fromPluginResource("documentation/multi-parameters.md", Collections.emptyMap()), true, "About external parameters", this, false));
-                UIUtils.makeFlat(helpButton);
+            JButton menuButton = new JButton("External", ((JIPipeParameterSlotAlgorithm) node).getParameterSlotAlgorithmSettings().isHasParameterSlot() ?
+                    UIUtils.getIconFromResources("emblems/checkbox-checked.png") :
+                    UIUtils.getIconFromResources("emblems/checkbox-unchecked.png"));
+            JPopupMenu popupMenu = UIUtils.addPopupMenuToButton(menuButton);
 
-                messagePanel.addMessage(MessagePanel.MessageType.Gray, "External parameters are supported", false, false, configureButton, toggleButton, helpButton);
-            }
-            if (node instanceof JIPipeAdaptiveParametersAlgorithm) {
-                JButton configureButton = new JButton("Configure", UIUtils.getIconFromResources("actions/configure.png"));
-                JButton helpButton = new JButton(UIUtils.getIconFromResources("actions/help.png"));
-                helpButton.addActionListener(e -> MarkdownReader.showDialog(MarkdownDocument.fromPluginResource("documentation/adaptive-parameters.md", Collections.emptyMap()), true, "About external parameters", this, false));
-                UIUtils.makeFlat(helpButton);
+            JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Repeat per external parameter");
+            toggle.setToolTipText("If enabled, the node will include an additional input 'Parameters' that receives parameter sets from an external source. " +
+                    "If the parameter data contains multiple items, the node's workload will be repeated for each parameter set.");
+            toggle.setSelected(((JIPipeParameterSlotAlgorithm) node).getParameterSlotAlgorithmSettings().isHasParameterSlot());
+            toggle.addActionListener(e -> {
+                ((JIPipeParameterSlotAlgorithm) node).getParameterSlotAlgorithmSettings().setParameter("has-parameter-slot", toggle.isSelected());
+                menuButton.setIcon( toggle.isSelected() ?
+                        UIUtils.getIconFromResources("emblems/checkbox-checked.png") :
+                        UIUtils.getIconFromResources("emblems/checkbox-unchecked.png"));
+            });
+            popupMenu.add(toggle);
+            popupMenu.addSeparator();
 
-                configureButton.addActionListener(e -> {
-                    ParameterPanel.showDialog(getWorkbench(),
-                            ((JIPipeAdaptiveParametersAlgorithm) node).getAdaptiveParameterSettings(),
-                            MarkdownDocument.fromPluginResource("documentation/adaptive-parameters.md", Collections.emptyMap()),
-                            "Configure external parameters",
-                            ParameterPanel.DEFAULT_DIALOG_FLAGS);
-                    node.getParameterUIChangedEventEmitter().emit(new JIPipeParameterCollection.ParameterUIChangedEvent(node));
-                });
+            popupMenu.add(UIUtils.createMenuItem("Configure", "Configure external parameters", UIUtils.getIconFromResources("actions/configure.png"), () -> {
+                ParameterPanel.showDialog(getWorkbench(),
+                        ((JIPipeParameterSlotAlgorithm) node).getParameterSlotAlgorithmSettings(),
+                        MarkdownDocument.fromPluginResource("documentation/multi-parameters.md", Collections.emptyMap()),
+                        "Configure external parameters",
+                        ParameterPanel.DEFAULT_DIALOG_FLAGS);
+            }));
 
-                messagePanel.addMessage(MessagePanel.MessageType.Gray, "Adaptive parameters are supported", false, false, configureButton, helpButton);
-            }
+            popupMenu.add(UIUtils.createMenuItem("What is this?", "Shows a help window", UIUtils.getIconFromResources("actions/help.png"), () -> {
+                MarkdownReader.showDialog(MarkdownDocument.fromPluginResource("documentation/multi-parameters.md", Collections.emptyMap()),
+                        true,
+                        "About external parameters",
+                        this,
+                        false);
+            }));
 
+//            toolBar.add(menuButton);
+            parametersUI.getToolBar().add(menuButton);
+        }
+
+        if (node instanceof JIPipeAdaptiveParametersAlgorithm) {
+
+            JButton menuButton = new JButton("Adaptive", UIUtils.getIconFromResources("emblems/checkbox-checked.png"));
+            JPopupMenu popupMenu = UIUtils.addPopupMenuToButton(menuButton);
+
+            popupMenu.add(UIUtils.createMenuItem("Configure", "Configure external parameters", UIUtils.getIconFromResources("actions/configure.png"), () -> {
+                ParameterPanel.showDialog(getWorkbench(),
+                        ((JIPipeAdaptiveParametersAlgorithm) node).getAdaptiveParameterSettings(),
+                        MarkdownDocument.fromPluginResource("documentation/adaptive-parameters.md", Collections.emptyMap()),
+                        "Configure external parameters",
+                        ParameterPanel.DEFAULT_DIALOG_FLAGS);
+                node.getParameterUIChangedEventEmitter().emit(new JIPipeParameterCollection.ParameterUIChangedEvent(node));
+            }));
+
+            popupMenu.add(UIUtils.createMenuItem("What is this?", "Shows a help window", UIUtils.getIconFromResources("actions/help.png"), () -> {
+                MarkdownReader.showDialog(MarkdownDocument.fromPluginResource("documentation/adaptive-parameters.md", Collections.emptyMap()),
+                        true,
+                        "About external parameters",
+                        this,
+                        false);
+            }));
+
+//            toolBar.add(menuButton);
+            parametersUI.getToolBar().add(menuButton);
         }
 
         return panel;
