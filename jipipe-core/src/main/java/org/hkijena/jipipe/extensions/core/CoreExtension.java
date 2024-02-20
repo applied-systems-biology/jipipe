@@ -159,6 +159,9 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
         result.add("Rueden, C., Schindelin, J., Hiner, M. & Eliceiri, K. (2016). SciJava Common [Software]. https://scijava.org/. ");
         result.add("Papirus Icon Theme: https://github.com/PapirusDevelopmentTeam/papirus-icon-theme (Licensed under GPL-3)");
         result.add("Breeze Icons: https://github.com/KDE/breeze-icons (Licensed under LGPL-2.1)");
+        result.add("Font Awesome Free 5.12.1 (desktop): https://fontawesome.com/ (Licensed under Font Awesome Free License)");
+        result.add("Font Awesome Free 6.5.1 (desktop): https://fontawesome.com/ (Licensed under Font Awesome Free License)");
+        result.add("Fluent icon theme: https://github.com/vinceliuice/Fluent-icon-theme (Licensed under GPL-3)");
         return result;
     }
 
