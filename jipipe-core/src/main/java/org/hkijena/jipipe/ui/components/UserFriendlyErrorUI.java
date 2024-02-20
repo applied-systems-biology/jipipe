@@ -159,7 +159,7 @@ public class UserFriendlyErrorUI extends FormPanel implements JIPipeWorkbenchAcc
                 } else {
                     fill = new Color(0xFDCDD1);
                 }
-                icon = UIUtils.getIcon32FromResources("actions/edit-clear-all.png");
+                icon = UIUtils.getIcon32FromResources("actions/circle-xmark.png");
                 border = ColorUtils.scaleHSV(fill, 1, 0.8f, 0.8f);
                 break;
             case Warning:

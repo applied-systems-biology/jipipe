@@ -371,7 +371,7 @@ public class DataBatchAssistantInputPreviewPanelTable extends JPanel {
                     }
                     else {
                         setText("NA");
-                        setIcon(UIUtils.getIconFromResources("actions/edit-clear-all.png"));
+                        setIcon(UIUtils.getIconFromResources("actions/circle-xmark.png"));
                     }
                 }
                 else {
