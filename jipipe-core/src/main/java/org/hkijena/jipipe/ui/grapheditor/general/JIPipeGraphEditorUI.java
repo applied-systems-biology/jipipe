@@ -86,7 +86,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     private NodeDatabaseSearchBox nodeDatabaseSearchBox;
     private final JIPipeHistoryJournal historyJournal;
     private final int flags;
-    private final JMenu graphMenu = new JMenu("Graph");
+    private final JMenu graphMenu = new JMenu("Workflow");
     private final List<JIPipeGraphEditorTool> tools = new ArrayList<>();
     private final Map<Class<? extends JIPipeGraphEditorTool>, JIPipeGraphEditorTool> toolMap = new HashMap<>();
     private final BiMap<JIPipeToggleableGraphEditorTool, JToggleButton> toolToggles = HashBiMap.create();
@@ -405,11 +405,6 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             menuBar.add(redoButton);
         }
 
-        menuBar.add(UIUtils.createVerticalSeparator());
-
-        graphMenu.setIcon(UIUtils.getIconFromResources("actions/configure.png"));
-        menuBar.add(graphMenu);
-
         initializeCenterViewCommand(graphMenu);
         initializeToggleHideEdgesCommand(graphMenu);
         initializeExportMenu(graphMenu);
@@ -419,6 +414,11 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         menuBar.add(UIUtils.createVerticalSeparator());
 
         initializeZoomMenu();
+
+        menuBar.add(UIUtils.createVerticalSeparator());
+
+        graphMenu.setIcon(UIUtils.getIconFromResources("actions/bars.png"));
+        menuBar.add(graphMenu);
     }
 
     private void initializeToggleHideEdgesCommand(JMenu graphMenu) {
