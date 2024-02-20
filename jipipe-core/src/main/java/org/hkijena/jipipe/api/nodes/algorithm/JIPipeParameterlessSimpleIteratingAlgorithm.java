@@ -26,6 +26,7 @@ import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.iterationstep.*;
 import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
@@ -101,8 +102,9 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
             boolean withLimit = iterationStepGenerationSettings.getLimit().isEnabled();
             IntegerRange limit = iterationStepGenerationSettings.getLimit().getContent();
             TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, getFirstInputSlot().getRowCount(), new JIPipeExpressionVariablesMap())) : null;
+            JIPipeRuntimePartition partition = runContext.getGraphRun().getRuntimePartition(getRuntimePartition());
 
-            if (!supportsParallelization() || !isParallelizationEnabled() || runContext.getThreadPool() == null || runContext.getThreadPool().getMaxThreads() <= 1) {
+            if (!supportsParallelization() || !partition.isEnableParallelization() || runContext.getThreadPool() == null || runContext.getThreadPool().getMaxThreads() <= 1) {
                 for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
                     if (withLimit && !allowedIndices.contains(i))
                         continue;

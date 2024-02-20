@@ -29,6 +29,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
@@ -176,7 +177,9 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
         // Execute the workload
         boolean hasAdaptiveParameters = getAdaptiveParameterSettings().isEnabled() && !getAdaptiveParameterSettings().getOverriddenParameters().isEmpty();
         final int numIterationSteps = iterationSteps.size();
-        if (!supportsParallelization() || !isParallelizationEnabled() || runContext.getThreadPool() == null ||
+        JIPipeRuntimePartition partition = runContext.getGraphRun().getRuntimePartition(getRuntimePartition());
+
+        if (!supportsParallelization() || !partition.isEnableParallelization() || runContext.getThreadPool() == null ||
                 runContext.getThreadPool().getMaxThreads() <= 1 || iterationSteps.size() <= 1 || hasAdaptiveParameters) {
             for (int i = 0; i < iterationSteps.size(); i++) {
                 if (progressInfo.isCancelled())

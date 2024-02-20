@@ -30,6 +30,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
@@ -169,7 +170,9 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
         }
 
         final int numIterationSteps = iterationSteps.size();
-        if (!supportsParallelization() || !isParallelizationEnabled() || runContext.getThreadPool() == null || runContext.getThreadPool().getMaxThreads() <= 1) {
+        JIPipeRuntimePartition partition = runContext.getGraphRun().getRuntimePartition(getRuntimePartition());
+
+        if (!supportsParallelization() || !partition.isEnableParallelization() || runContext.getThreadPool() == null || runContext.getThreadPool().getMaxThreads() <= 1) {
             for (int i = 0; i < iterationSteps.size(); i++) {
                 if (progressInfo.isCancelled())
                     return;

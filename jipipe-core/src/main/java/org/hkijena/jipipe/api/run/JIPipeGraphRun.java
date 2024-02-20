@@ -11,6 +11,7 @@ import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
+import org.hkijena.jipipe.api.runtimepartitioning.RuntimePartitionReferenceParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
@@ -249,9 +250,8 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable {
                 partitionId = ((JIPipeAlgorithm) graphNode).getRuntimePartition().getIndex();
             }
         }
-        partitionId = Math.max(0, Math.min(partitionId, runtimePartitions.size() - 1));
-        JIPipeRuntimePartition runtimePartition = runtimePartitions.get(partitionId);
-        progressInfo.log("--> Selected runtime partition id=" + partitionId + " name=" + runtimePartition.getName());
+        JIPipeRuntimePartition runtimePartition = getRuntimePartition(partitionId);
+        progressInfo.log("--> Selected runtime partition id=" + partitionId + " as name=" + runtimePartition.getName());
 
         // Find the interfacing outputs (outputs that should not be cleared away by the GC)
         Set<JIPipeDataSlot> interfacingSlots = new HashSet<>();
@@ -530,5 +530,20 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable {
 
     public JIPipeGraph getGraph() {
         return graph;
+    }
+
+    public JIPipeRuntimePartition getRuntimePartition(RuntimePartitionReferenceParameter reference) {
+        return getRuntimePartition(reference.getIndex());
+    }
+
+    public JIPipeRuntimePartition getRuntimePartition(int index) {
+        if(index >= 0 && index < runtimePartitions.size()) {
+            return runtimePartitions.get(index);
+        }
+        else {
+            JIPipeRuntimePartition dummy = new JIPipeRuntimePartition();
+            dummy.setName("Unnamed " + index + " (fallback)");
+            return dummy;
+        }
     }
 }

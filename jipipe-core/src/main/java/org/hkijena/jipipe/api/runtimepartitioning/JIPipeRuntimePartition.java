@@ -19,7 +19,7 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
     private String name = "Unnamed";
     private HTMLText description = new HTMLText();
     private OptionalColorParameter color = new OptionalColorParameter(Color.RED, true);
-
+    private boolean enableParallelization = false;
     private JIPipeIteratingAlgorithmIterationStepGenerationSettings loopIterationIteratingSettings;
     private JIPipeMergingAlgorithmIterationStepGenerationSettings loopIterationMergingSettings;
     private OutputSettings outputSettings;
@@ -36,6 +36,7 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
         this.name = other.name;
         this.description = new HTMLText(other.description);
         this.color = new OptionalColorParameter(other.color);
+        this.enableParallelization = other.enableParallelization;
         this.outputSettings = new OutputSettings(other.outputSettings);
         this.loopIterationMergingSettings = new JIPipeMergingAlgorithmIterationStepGenerationSettings(other.loopIterationMergingSettings);
         this.loopIterationIteratingSettings = new JIPipeIteratingAlgorithmIterationStepGenerationSettings(other.loopIterationIteratingSettings);
@@ -46,11 +47,24 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
         this.name = other.name;
         this.description = new HTMLText(other.description);
         this.color = new OptionalColorParameter(other.color);
+        this.enableParallelization = other.enableParallelization;
         this.outputSettings = new OutputSettings(other.outputSettings);
         this.loopIterationMergingSettings = new JIPipeMergingAlgorithmIterationStepGenerationSettings(other.loopIterationMergingSettings);
         this.loopIterationIteratingSettings = new JIPipeIteratingAlgorithmIterationStepGenerationSettings(other.loopIterationIteratingSettings);
         registerSubParameters(outputSettings, loopIterationMergingSettings, loopIterationIteratingSettings);
         emitParameterUIChangedEvent();
+    }
+
+    @SetJIPipeDocumentation(name = "Enable parallelization", description = "If enabled, the nodes in this partition will be able to parallelize their workloads using JIPipe's parallelization system. " +
+            "The underlying algorithms may still utilize parallelization even if this setting is disabled.")
+    @JIPipeParameter("enable-parallelization")
+    public boolean isEnableParallelization() {
+        return enableParallelization;
+    }
+
+    @JIPipeParameter("enable-parallelization")
+    public void setEnableParallelization(boolean enableParallelization) {
+        this.enableParallelization = enableParallelization;
     }
 
     @SetJIPipeDocumentation(name = "Name", description = "Name of the partition")

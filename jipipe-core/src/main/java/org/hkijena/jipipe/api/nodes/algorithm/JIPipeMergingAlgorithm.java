@@ -33,6 +33,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
@@ -248,8 +249,9 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
 
         boolean hasAdaptiveParameters = getAdaptiveParameterSettings().isEnabled() && !getAdaptiveParameterSettings().getOverriddenParameters().isEmpty();
         final int numIterationSteps = iterationSteps.size();
+        JIPipeRuntimePartition partition = runContext.getGraphRun().getRuntimePartition(getRuntimePartition());
 
-        if (!supportsParallelization() || !isParallelizationEnabled() ||
+        if (!supportsParallelization() || !partition.isEnableParallelization() ||
                 runContext.getThreadPool() == null || runContext.getThreadPool().getMaxThreads() <= 1 ||
                 iterationSteps.size() <= 1 || hasAdaptiveParameters) {
             for (int i = 0; i < iterationSteps.size(); i++) {
