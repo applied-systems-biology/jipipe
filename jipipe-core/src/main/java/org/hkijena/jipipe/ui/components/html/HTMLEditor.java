@@ -393,7 +393,7 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
         }
 
         // Edit in dialog button
-        editInDialogButton = new JButton(UIUtils.getIconFromResources("actions/link.png"));
+        editInDialogButton = new JButton(UIUtils.getIconFromResources("actions/open-in-new-window.png"));
         UIUtils.makeFlat25x25(editInDialogButton);
         editInDialogButton.setToolTipText("Edit in dedicated window");
         editInDialogButton.addActionListener(e -> {
