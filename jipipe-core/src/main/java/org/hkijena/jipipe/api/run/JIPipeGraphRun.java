@@ -31,9 +31,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class JIPipeGraphRun extends AbstractJIPipeRunnable {
-    public static final int DATA_FLOW_WEIGHT_INTERNAL = 0;
-    public static final int DATA_FLOW_WEIGHT_LIGHT = 4;
-    public static final int DATA_FLOW_WEIGHT_HEAVY = 1; // Algorithm should go through heavy data asap
 
     private final JIPipeProject project;
     private final JIPipeGraph graph;
@@ -272,47 +269,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable {
 
     private DefaultDirectedWeightedGraph<Object, DefaultWeightedEdge> buildDataFlowGraph(JIPipeGraph graph, Set<JIPipeGraphNode> nodeFilter) {
         DefaultDirectedWeightedGraph<Object, DefaultWeightedEdge> flowGraph = new DefaultDirectedWeightedGraph<>(DefaultWeightedEdge.class);
-        for (JIPipeGraphNode graphNode : nodeFilter) {
-            flowGraph.addVertex(graphNode);
-            for (JIPipeInputDataSlot inputSlot : graphNode.getInputSlots()) {
-                flowGraph.addVertex(inputSlot);
-            }
-            for (JIPipeOutputDataSlot outputSlot : graphNode.getOutputSlots()) {
-                flowGraph.addVertex(outputSlot);
-            }
-        }
-        for (JIPipeGraphNode graphNode : nodeFilter) {
-            for (JIPipeInputDataSlot inputSlot : graphNode.getInputSlots()) {
-                // Edge to the node (weight 0)
-                flowGraph.setEdgeWeight(flowGraph.addEdge(inputSlot, graphNode), DATA_FLOW_WEIGHT_INTERNAL);
 
-                // Inputs
-                for (JIPipeGraphEdge graphEdge : graph.getGraph().incomingEdgesOf(inputSlot)) {
-                    int weight;
-                    if(JIPipeDataInfo.getInstance(inputSlot.getAcceptedDataType()).isHeavy()) {
-                        weight = DATA_FLOW_WEIGHT_HEAVY;
-                    }
-                    else {
-                        weight = DATA_FLOW_WEIGHT_LIGHT;
-                    }
-                    JIPipeDataSlot edgeSource = graph.getGraph().getEdgeSource(graphEdge);
-                    if(flowGraph.containsVertex(edgeSource)) {
-                        flowGraph.setEdgeWeight(flowGraph.addEdge(edgeSource, inputSlot), weight);
-                    }
-                }
-            }
-            for (JIPipeOutputDataSlot outputSlot : graphNode.getOutputSlots()) {
-                // Edge from the node (weight by data)
-                int weight;
-                if(JIPipeDataInfo.getInstance(outputSlot.getAcceptedDataType()).isHeavy()) {
-                    weight = DATA_FLOW_WEIGHT_HEAVY;
-                }
-                else {
-                    weight = DATA_FLOW_WEIGHT_LIGHT;
-                }
-                flowGraph.setEdgeWeight(flowGraph.addEdge(graphNode, outputSlot), weight);
-            }
-        }
         return flowGraph;
     }
 
