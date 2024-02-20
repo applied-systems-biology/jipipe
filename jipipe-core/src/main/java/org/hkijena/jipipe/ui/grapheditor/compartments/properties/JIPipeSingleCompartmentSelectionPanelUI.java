@@ -48,7 +48,7 @@ public class JIPipeSingleCompartmentSelectionPanelUI extends JIPipeProjectWorkbe
     private final JIPipeGraphCanvasUI canvas;
     private final JIPipeGraphEditorUI graphEditorUI;
 
-    private final DocumentTabPane tabbedPane = new DocumentTabPane(false, DocumentTabPane.TabPlacement.Top);
+    private final DocumentTabPane tabbedPane = new DocumentTabPane(false, DocumentTabPane.TabPlacement.Right);
 
     /**
      * @param graphEditorUI the graph editor
@@ -68,37 +68,37 @@ public class JIPipeSingleCompartmentSelectionPanelUI extends JIPipeProjectWorkbe
         ParameterPanel parametersUI = new ParameterPanel(getProjectWorkbench(),
                 compartment,
                 MarkdownDocument.fromPluginResource("documentation/compartment-graph.md", new HashMap<>()),
-                ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SCROLLING | ParameterPanel.TABBED_DOCUMENTATION);
-        tabbedPane.addTab("Parameters", UIUtils.getIconFromResources("actions/configure.png"),
+                ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SCROLLING);
+        tabbedPane.addTab("Parameters", UIUtils.getIcon32FromResources("actions/configure.png"),
                 parametersUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
 
         JIPipeSlotEditorUI compartmentSlotEditorUI = new JIPipeSlotEditorUI(graphEditorUI, compartment);
-        tabbedPane.addTab("Connections", UIUtils.getIconFromResources("data-types/graph-compartment.png"),
+        tabbedPane.addTab("Connections", UIUtils.getIcon32FromResources("actions/plug.png"),
                 compartmentSlotEditorUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
 
-        tabbedPane.registerSingletonTab("CACHE_BROWSER", "Cache browser", UIUtils.getIconFromResources("actions/database.png"),
+        tabbedPane.registerSingletonTab("CACHE_BROWSER", "Cache browser", UIUtils.getIcon32FromResources("actions/database.png"),
                 this::createCacheBrowser,
                 DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
 
-        tabbedPane.registerSingletonTab("QUICK_RUN", "Quick run", UIUtils.getIconFromResources("actions/media-play.png"),
+        tabbedPane.registerSingletonTab("QUICK_RUN", "Quick run", UIUtils.getIcon32FromResources("actions/media-play.png"),
                 this::createQuickRunPanel,
                 DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
 
         if (JIPipeRunnerQueue.getInstance().getCurrentRun() != null) {
-            tabbedPane.registerSingletonTab("CURRENT_RUN", "Current process", UIUtils.getIconFromResources("actions/show_log.png"),
+            tabbedPane.registerSingletonTab("CURRENT_RUN", "Current process", UIUtils.getIcon32FromResources("actions/show_log.png"),
                     this::createCurrentRunInfo, DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
         }
 
         // Bottom tabs
-        parametersUI.getDocumentationTabPane().addTab("Bookmarks", UIUtils.getIconFromResources("actions/bookmarks.png"),
+        tabbedPane.addTab("Bookmarks", UIUtils.getIcon32FromResources("actions/bookmarks.png"),
                 new BookmarkListPanel(getWorkbench(), getProject().getGraph(), graphEditorUI), DocumentTabPane.CloseMode.withoutCloseButton);
 
-        parametersUI.getDocumentationTabPane().addTab("Journal",
-                UIUtils.getIconFromResources("actions/edit-undo-history.png"),
+        tabbedPane.addTab("Journal",
+                UIUtils.getIcon32FromResources("actions/edit-undo-history.png"),
                 new HistoryJournalUI(graphEditorUI.getHistoryJournal()),
                 DocumentTabPane.CloseMode.withoutCloseButton);
 

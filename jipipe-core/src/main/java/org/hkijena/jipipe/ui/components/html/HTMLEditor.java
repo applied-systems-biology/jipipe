@@ -374,7 +374,7 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
         });
 
         // Compact mode selection
-        modeButton = new JButton(UIUtils.getIconFromResources("actions/arrow-down.png"));
+        modeButton = new JButton(UIUtils.getIconFromResources("actions/caret-down.png"));
         modeButton.setHorizontalTextPosition(SwingConstants.LEFT);
         UIUtils.makeFlat(modeButton);
         JPopupMenu modeMenu = UIUtils.addPopupMenuToButton(modeButton);

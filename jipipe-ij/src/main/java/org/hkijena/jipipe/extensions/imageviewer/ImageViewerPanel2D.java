@@ -340,7 +340,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.X_AXIS));
         contentPanel.add(rightPanel, BorderLayout.EAST);
 
-        JButton lastFrame = new JButton(UIUtils.getIconFromResources("actions/arrow-left.png"));
+        JButton lastFrame = new JButton(UIUtils.getIconFromResources("actions/caret-left.png"));
         UIUtils.makeFlat25x25(lastFrame);
         lastFrame.setToolTipText("Go one slice back");
         lastFrame.addActionListener(e -> {
@@ -348,7 +348,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         });
         rightPanel.add(lastFrame);
 
-        JButton nextFrame = new JButton(UIUtils.getIconFromResources("actions/arrow-right.png"));
+        JButton nextFrame = new JButton(UIUtils.getIconFromResources("actions/caret-right.png"));
         UIUtils.makeFlat25x25(nextFrame);
         nextFrame.setToolTipText("Go one slice forward");
         nextFrame.addActionListener(e -> {
@@ -387,7 +387,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         fitImageButton.addActionListener(e -> fitImageToScreen());
         toolBar.add(fitImageButton);
 
-        JButton zoomOutButton = new JButton(UIUtils.getIconFromResources("actions/zoom-out.png"));
+        JButton zoomOutButton = new JButton(UIUtils.getIconFromResources("actions/square-minus.png"));
         UIUtils.makeFlat25x25(zoomOutButton);
         zoomOutButton.addActionListener(e -> decreaseZoom());
         toolBar.add(zoomOutButton);
@@ -421,7 +421,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         zoomMenu.add(changeZoomToItem);
         toolBar.add(zoomStatusButton);
 
-        JButton zoomInButton = new JButton(UIUtils.getIconFromResources("actions/zoom-in.png"));
+        JButton zoomInButton = new JButton(UIUtils.getIconFromResources("actions/square-plus.png"));
         UIUtils.makeFlat25x25(zoomInButton);
         zoomInButton.addActionListener(e -> increaseZoom());
         toolBar.add(zoomInButton);

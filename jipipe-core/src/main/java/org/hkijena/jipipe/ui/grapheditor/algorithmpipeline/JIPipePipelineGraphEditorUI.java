@@ -375,23 +375,23 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
         JIPipeGraphEditorMinimap minimap = new JIPipeGraphEditorMinimap(this);
         splitPane.setTopComponent(minimap);
 
-        DocumentTabPane bottomPanel = new DocumentTabPane(false, DocumentTabPane.TabPlacement.Top);
+        DocumentTabPane bottomPanel = new DocumentTabPane(false, DocumentTabPane.TabPlacement.Right);
 
         MarkdownReader markdownReader = new MarkdownReader(false);
         markdownReader.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-graph.md", new HashMap<>()));
-        bottomPanel.addTab("Quick guide", UIUtils.getIconFromResources("actions/help.png"), markdownReader, DocumentTabPane.CloseMode.withoutCloseButton);
+        bottomPanel.addTab("Quick guide", UIUtils.getIcon32FromResources("actions/help.png"), markdownReader, DocumentTabPane.CloseMode.withoutCloseButton);
 
-        bottomPanel.addTab("Available nodes", UIUtils.getIconFromResources("actions/graph-node-add.png"),
+        bottomPanel.addTab("Available nodes", UIUtils.getIcon32FromResources("actions/graph-node-add.png"),
                 new NodeToolBox(getWorkbench(), true), DocumentTabPane.CloseMode.withoutCloseButton);
 
-        bottomPanel.addTab("Node templates", UIUtils.getIconFromResources("actions/favorite.png"),
+        bottomPanel.addTab("Node templates", UIUtils.getIcon32FromResources("actions/favorite.png"),
                 new NodeTemplateBox(getWorkbench(), true), DocumentTabPane.CloseMode.withoutCloseButton);
 
-        bottomPanel.addTab("Bookmarks", UIUtils.getIconFromResources("actions/bookmarks.png"),
+        bottomPanel.addTab("Bookmarks", UIUtils.getIcon32FromResources("actions/bookmarks.png"),
                 new BookmarkListPanel(getWorkbench(), getGraph(), this), DocumentTabPane.CloseMode.withoutCloseButton);
 
         bottomPanel.addTab("Journal",
-                UIUtils.getIconFromResources("actions/edit-undo-history.png"),
+                UIUtils.getIcon32FromResources("actions/edit-undo-history.png"),
                 new HistoryJournalUI(getHistoryJournal()),
                 DocumentTabPane.CloseMode.withoutCloseButton);
 

@@ -25,6 +25,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 import org.jdesktop.swingx.JXTextField;
 
 import javax.swing.*;
@@ -77,7 +78,7 @@ public class NodeDatabaseSearchBox extends JIPipeWorkbenchPanel {
     private void initialize() {
         setLayout(new BorderLayout());
         setBackground(UIManager.getColor("TextField.background"));
-        setBorder(BorderFactory.createEtchedBorder());
+        setBorder(UIManager.getBorder("TextField.border"));
 
         comboBox.setEditable(true);
         comboBox.setEditor(new Editor());

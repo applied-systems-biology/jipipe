@@ -252,6 +252,11 @@ public class CustomTabbedPaneUI extends BasicTabbedPaneUI {
 //            }
 //        }
 
+        if (isSelected) {
+            g.setColor(ModernMetalTheme.PRIMARY5);
+            g.fillRect(0, bottom - 1, w, 2);
+        }
+
         g.translate(-x, -y);
     }
 
@@ -356,13 +361,13 @@ public class CustomTabbedPaneUI extends BasicTabbedPaneUI {
         }
 
         // Paint slant
-        g.drawLine(1, 6, 6, 1);
+//        g.drawLine(1, 6, 6, 1);
 
         // Paint left
-        g.drawLine(1, 6, 1, bottom);
+        g.drawLine(1, 0, 1, bottom);
 
         // Paint top
-        g.drawLine(6, 1, right, 1);
+        g.drawLine(0, 1, right, 1);
 
         if (tabIndex != firstIndex) {
             if (tabPane.getSelectedIndex() == tabIndex - 1) {
@@ -389,10 +394,11 @@ public class CustomTabbedPaneUI extends BasicTabbedPaneUI {
         }
 
         // Paint slant
-        g.drawLine(1, 5, 6, 0);
+//        g.drawLine(1, 0, 1, 0);
 
         // Paint top
-        g.drawLine(6, 0, right, 0);
+        g.drawLine(0, 0, right, 0);
+        g.drawLine(0, 0, 0, bottom);
 
         // Paint bottom
         if (tabIndex == lastIndex) {
@@ -400,28 +406,33 @@ public class CustomTabbedPaneUI extends BasicTabbedPaneUI {
         }
 
         // Paint left
-        if (ocean) {
-            if (tabPane.getSelectedIndex() == tabIndex - 1) {
-                g.drawLine(0, 5, 0, bottom);
-                g.setColor(oceanSelectedBorderColor);
-                g.drawLine(0, 0, 0, 5);
-            } else if (isSelected) {
-                g.drawLine(0, 6, 0, bottom);
-                if (tabIndex != 0) {
-                    g.setColor(darkShadow);
-                    g.drawLine(0, 0, 0, 5);
-                }
-            } else if (tabIndex != firstIndex) {
-                g.drawLine(0, 0, 0, bottom);
-            } else {
-                g.drawLine(0, 6, 0, bottom);
-            }
-        } else { // metal
-            if (tabIndex != firstIndex) {
-                g.drawLine(0, 0, 0, bottom);
-            } else {
-                g.drawLine(0, 6, 0, bottom);
-            }
+//        if (ocean) {
+//            if (tabPane.getSelectedIndex() == tabIndex - 1) {
+//                g.drawLine(0, 5, 0, bottom);
+//                g.setColor(oceanSelectedBorderColor);
+//                g.drawLine(0, 0, 0, 5);
+//            } else if (isSelected) {
+//                g.drawLine(0, 6, 0, bottom);
+//                if (tabIndex != 0) {
+//                    g.setColor(darkShadow);
+//                    g.drawLine(0, 0, 0, 5);
+//                }
+//            } else if (tabIndex != firstIndex) {
+//                g.drawLine(0, 0, 0, bottom);
+//            } else {
+//                g.drawLine(0, 6, 0, bottom);
+//            }
+//        } else { // metal
+//            if (tabIndex != firstIndex) {
+//                g.drawLine(0, 0, 0, bottom);
+//            } else {
+//                g.drawLine(0, 6, 0, bottom);
+//            }
+//        }
+
+        if(tabPane.getSelectedIndex() == tabIndex) {
+            g.setColor(ModernMetalTheme.PRIMARY5);
+            g.fillRect(0, 1, 5, bottom);
         }
 
         g.translate(-x, -y);
@@ -670,7 +681,7 @@ public class CustomTabbedPaneUI extends BasicTabbedPaneUI {
 
         if(tabPane.getSelectedIndex() == tabIndex) {
             g.setColor(ModernMetalTheme.PRIMARY5);
-            g.fillRect(right - 1, 1, 2, bottom - 1);
+            g.fillRect(right - 4, 1, 5, bottom);
         }
 
         g.translate(-x, -y);
@@ -709,10 +720,6 @@ public class CustomTabbedPaneUI extends BasicTabbedPaneUI {
                 case TOP:
                 default:
                     g.fillRect(x, y, w, h);
-                    if (isSelected) {
-                        g.setColor(ModernMetalTheme.PRIMARY5);
-                        g.fillRect(x, h + 1, w, 2);
-                    }
             }
         } else {
             switch (tabPlacement) {

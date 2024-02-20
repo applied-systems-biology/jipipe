@@ -783,9 +783,10 @@ public class DocumentTabPane extends JPanel implements Disposable {
             // Title label
             titleLabel = new JLabel("");
             titleLabel.setIcon(icon);
-            if(documentTabPane.tabPlacement == TabPlacement.Right) {
+            if(documentTabPane.tabPlacement == TabPlacement.Right || documentTabPane.tabPlacement == TabPlacement.Left) {
                 titleLabel.setHorizontalTextPosition(JLabel.CENTER);
                 titleLabel.setVerticalTextPosition(JLabel.BOTTOM);
+                titleLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
             }
             add(titleLabel);
             add(Box.createHorizontalGlue());
@@ -929,7 +930,9 @@ public class DocumentTabPane extends JPanel implements Disposable {
 
     public enum TabPlacement {
         Top(JTabbedPane.TOP),
-        Right(JTabbedPane.RIGHT);
+        Right(JTabbedPane.RIGHT),
+        Left(JTabbedPane.LEFT),
+        Bottom(JTabbedPane.BOTTOM);
 
         private final int nativeValue;
 

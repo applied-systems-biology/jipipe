@@ -70,6 +70,9 @@ public class ModernMetalTheme extends DefaultMetalTheme {
     private static final Border BUTTON_BORDER = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
             BorderFactory.createCompoundBorder(new RoundedLineBorder(MEDIUM_GRAY, 1, 5),
                     BorderFactory.createEmptyBorder(3, 3, 3, 3)));
+
+    private static final Border TEXTFIELD_BORDER = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
+           new RoundedLineBorder(MEDIUM_GRAY, 1, 5));
     private static final Border INVISIBLE_BORDER = BorderFactory.createEmptyBorder(5, 5, 5, 5);
     static ColorUIResource WHITE = new ColorUIResource(255, 255, 255);
 
@@ -169,7 +172,7 @@ public class ModernMetalTheme extends DefaultMetalTheme {
                 "MenuItem.selectionBackground", CONTROL_HIGHLIGHTED,
                 "MenuItem.selectionForeground", CONTROL_TEXT_COLOR,
 
-                "CheckBoxMenuItem.background", LIGHT_GRAY,
+                "CheckBoxMenuItem.background", Color.WHITE,
                 "CheckBoxMenuItem.selectionBackground", CONTROL_HIGHLIGHTED,
                 "CheckBoxMenuItem.selectionForeground", CONTROL_TEXT_COLOR,
 
@@ -254,6 +257,7 @@ public class ModernMetalTheme extends DefaultMetalTheme {
                 "ToggleButton.select", CONTROL_TOGGLED,
 
                 "TextField.inactiveForeground", PRIMARY1,
+                "TextField.border", TEXTFIELD_BORDER,
 
 //                "ToolBar.borderColor", GRAY2,
                 "ToolBar.border", BorderFactory.createMatteBorder(0, 0, 1, 0, GRAY),

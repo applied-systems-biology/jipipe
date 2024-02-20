@@ -149,6 +149,21 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
             }
         }
 
+        // Additional tabs for the help panel
+        tabbedPane.addTab("Available nodes", UIUtils.getIcon32FromResources("actions/graph-node-add.png"),
+                new NodeToolBox(getWorkbench(), true), DocumentTabPane.CloseMode.withoutCloseButton);
+
+        tabbedPane.addTab("Node templates", UIUtils.getIcon32FromResources("actions/favorite.png"),
+                new NodeTemplateBox(getWorkbench(), true), DocumentTabPane.CloseMode.withoutCloseButton);
+
+        tabbedPane.addTab("Bookmarks", UIUtils.getIcon32FromResources("actions/bookmarks.png"),
+                new BookmarkListPanel(getWorkbench(), graphEditorUI.getGraph(), graphEditorUI), DocumentTabPane.CloseMode.withoutCloseButton);
+
+        tabbedPane.addTab("Journal",
+                UIUtils.getIcon32FromResources("actions/edit-undo-history.png"),
+                new HistoryJournalUI(graphEditorUI.getHistoryJournal()),
+                DocumentTabPane.CloseMode.withoutCloseButton);
+
         add(tabbedPane, BorderLayout.CENTER);
 
 
@@ -167,7 +182,7 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
         ParameterPanel parametersUI = new ParameterPanel(getProjectWorkbench(),
                 node,
                 TooltipUtils.getAlgorithmDocumentation(node),
-                ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.TABBED_DOCUMENTATION);
+                ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SEARCH_BAR);
         panel.add(parametersUI, BorderLayout.CENTER);
 
         // Advanced parameters
@@ -215,21 +230,6 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
             }
 
         }
-
-        // Additional tabs for the help panel
-        parametersUI.getDocumentationTabPane().addTab("Available nodes", UIUtils.getIconFromResources("actions/graph-node-add.png"),
-                new NodeToolBox(getWorkbench(), true), DocumentTabPane.CloseMode.withoutCloseButton);
-
-        parametersUI.getDocumentationTabPane().addTab("Node templates", UIUtils.getIconFromResources("actions/favorite.png"),
-                new NodeTemplateBox(getWorkbench(), true), DocumentTabPane.CloseMode.withoutCloseButton);
-
-        parametersUI.getDocumentationTabPane().addTab("Bookmarks", UIUtils.getIconFromResources("actions/bookmarks.png"),
-                new BookmarkListPanel(getWorkbench(), graphEditorUI.getGraph(), graphEditorUI), DocumentTabPane.CloseMode.withoutCloseButton);
-
-        parametersUI.getDocumentationTabPane().addTab("Journal",
-                UIUtils.getIconFromResources("actions/edit-undo-history.png"),
-                new HistoryJournalUI(graphEditorUI.getHistoryJournal()),
-                DocumentTabPane.CloseMode.withoutCloseButton);
 
         return panel;
     }

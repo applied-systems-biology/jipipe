@@ -380,6 +380,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         menuBar.add(nodeDatabaseSearchBox);
         nodeDatabaseSearchBox.setVisible(graphUISettings.getSearchSettings().isEnableSearch());
         menuBar.add(Box.createHorizontalStrut(8));
+        menuBar.add(Box.createVerticalStrut(42));
 
         List<GraphEditorToolBarButtonExtension> graphEditorToolBarButtonExtensions = JIPipe.getCustomMenus().graphEditorToolBarButtonExtensionsFor(this);
         for (GraphEditorToolBarButtonExtension extension : graphEditorToolBarButtonExtensions) {
@@ -430,7 +431,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     }
 
     private void initializeZoomMenu() {
-        JButton zoomOutButton = new JButton(UIUtils.getIconFromResources("actions/zoom-out.png"));
+        JButton zoomOutButton = new JButton(UIUtils.getIconFromResources("actions/square-minus.png"));
         UIUtils.makeFlat25x25(zoomOutButton);
         zoomOutButton.setToolTipText("<html>Zoom out<br><i>Ctrl-NumPad -</i></html>");
         zoomOutButton.addActionListener(e -> canvasUI.zoomOut());
@@ -466,7 +467,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         zoomMenu.add(changeZoomToItem);
         menuBar.add(zoomButton);
 
-        JButton zoomInButton = new JButton(UIUtils.getIconFromResources("actions/zoom-in.png"));
+        JButton zoomInButton = new JButton(UIUtils.getIconFromResources("actions/square-plus.png"));
         UIUtils.makeFlat25x25(zoomInButton);
         zoomInButton.setToolTipText("<html>Zoom in<br><i>Ctrl-NumPad +</i></html>");
         zoomInButton.addActionListener(e -> canvasUI.zoomIn());

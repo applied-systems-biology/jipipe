@@ -59,16 +59,16 @@ public class JIPipeMultiCompartmentSelectionPanelUI extends JIPipeProjectWorkben
         add(splitPane, BorderLayout.CENTER);
 
         JPanel actionPanel = new JPanel(new BorderLayout());
-        DocumentTabPane tabPane = new DocumentTabPane(false, DocumentTabPane.TabPlacement.Top);
+        DocumentTabPane tabPane = new DocumentTabPane(false, DocumentTabPane.TabPlacement.Right);
 
-        tabPane.addTab("Selection", UIUtils.getIconFromResources("actions/edit-select-all.png"),
+        tabPane.addTab("Selection", UIUtils.getIcon32FromResources("actions/edit-select-all.png"),
                 actionPanel, DocumentTabPane.CloseMode.withoutCloseButton);
 
-        tabPane.addTab("Bookmarks", UIUtils.getIconFromResources("actions/bookmarks.png"),
+        tabPane.addTab("Bookmarks", UIUtils.getIcon32FromResources("actions/bookmarks.png"),
                 new BookmarkListPanel(getWorkbench(), canvas.getGraph(), canvas.getGraphEditorUI()), DocumentTabPane.CloseMode.withoutCloseButton);
 
         tabPane.addTab("Journal",
-                UIUtils.getIconFromResources("actions/edit-undo-history.png"),
+                UIUtils.getIcon32FromResources("actions/edit-undo-history.png"),
                 new HistoryJournalUI(canvas.getHistoryJournal()),
                 DocumentTabPane.CloseMode.withoutCloseButton);
 

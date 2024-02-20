@@ -212,7 +212,7 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
             pathButton.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             pathButton.setBorder(BorderFactory.createEmptyBorder(8, 4, 8, 2));
             drillDownToolBar.add(pathButton);
-            JButton nextButton = new JButton(UIUtils.getIconFromResources("actions/arrow-right.png"));
+            JButton nextButton = new JButton(UIUtils.getIconFromResources("actions/caret-right.png"));
             nextButton.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             nextButton.setBorder(BorderFactory.createEmptyBorder(8, 2, 8, 4));
             drillDownToolBar.add(nextButton);
@@ -247,7 +247,7 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
             drillDownToolBar.add(pathButton);
             pathButton.addActionListener(e -> fileChooserComponent.setCurrentDirectory(path.toFile()));
 
-            JButton nextButton = new JButton(UIUtils.getIconFromResources("actions/arrow-right.png"));
+            JButton nextButton = new JButton(UIUtils.getIconFromResources("actions/caret-right.png"));
             nextButton.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             nextButton.setBorder(BorderFactory.createEmptyBorder(8, 2, 8, 4));
             drillDownToolBar.add(nextButton);

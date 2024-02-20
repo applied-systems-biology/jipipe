@@ -402,8 +402,8 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable,
         JCheckBox collapseButton = new JCheckBox("Hide content");
         collapseButton.setToolTipText("Collapse/Show this category");
         collapseButton.setOpaque(false);
-        collapseButton.setIcon(UIUtils.getIconFromResources("actions/arrow-right.png"));
-        collapseButton.setSelectedIcon(UIUtils.getIconFromResources("actions/arrow-down.png"));
+        collapseButton.setIcon(UIUtils.getIconFromResources("actions/caret-right.png"));
+        collapseButton.setSelectedIcon(UIUtils.getIconFromResources("actions/caret-down.png"));
         collapseButton.setSelected(!node.isCollapsed());
         collapseButton.setText(collapseButton.isSelected() ? "Hide content" : "Show content");
         collapseButton.addActionListener(e -> collapseButton.setText(collapseButton.isSelected() ? "Hide content" : "Show content"));

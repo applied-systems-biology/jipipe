@@ -31,7 +31,7 @@ public class ModernSpinnerUI extends BasicSpinnerUI {
 
     @Override
     protected Component createPreviousButton() {
-        JButton button = new JButton(UIUtils.getIconFromResources("actions/arrow-down.png"));
+        JButton button = new JButton(UIUtils.getIconFromResources("actions/caret-down.png"));
         button.setBackground(UIManager.getColor("Spinner.background"));
         button.setPreferredSize(new Dimension(21, 14));
         button.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
@@ -41,7 +41,7 @@ public class ModernSpinnerUI extends BasicSpinnerUI {
 
     @Override
     protected Component createNextButton() {
-        JButton button = new JButton(UIUtils.getIconFromResources("actions/arrow-up.png"));
+        JButton button = new JButton(UIUtils.getIconFromResources("actions/caret-up.png"));
         button.setBackground(UIManager.getColor("Spinner.background"));
         button.setPreferredSize(new Dimension(21, 14));
         button.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));

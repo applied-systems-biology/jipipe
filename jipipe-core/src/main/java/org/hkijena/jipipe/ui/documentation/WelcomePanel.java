@@ -280,7 +280,7 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel implements JIPipeP
     }
 
     private void initializeRecentProjectsAndTemplates(AutoResizeSplitPane splitPane) {
-        DocumentTabPane tabPane = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Top);
+        DocumentTabPane tabPane = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Left);
 
         // Recent projects list
         initRecentProjects(tabPane);
@@ -328,7 +328,7 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel implements JIPipeP
         panel.add(templateListScrollPane, BorderLayout.CENTER);
         panel.add(toolBar, BorderLayout.NORTH);
 
-        tabPane.addTab("Example projects & templates",
+        tabPane.addTab("Examples",
                 UIUtils.getIconFromResources("actions/graduation-cap.png"),
                 panel,
                 DocumentTabPane.CloseMode.withoutCloseButton);
@@ -339,7 +339,7 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel implements JIPipeP
     }
 
     private void initRecentProjects(DocumentTabPane tabPane) {
-        tabPane.addTab("Recent projects",
+        tabPane.addTab("Recent",
                 UIUtils.getIconFromResources("actions/view-calendar-time-spent.png"),
                 new RecentProjectsListPanel(getProjectWorkbench()),
                 DocumentTabPane.CloseMode.withoutCloseButton);

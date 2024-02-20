@@ -57,13 +57,13 @@ public class JIPipePlotSeriesBuilderUI extends JIPipeWorkbenchPanel {
         titlePanel.setBackground(Color.LIGHT_GRAY);
         titlePanel.setOpaque(true);
 
-        moveDownButton = new JButton(UIUtils.getIconFromResources("actions/arrow-down.png"));
+        moveDownButton = new JButton(UIUtils.getIconFromResources("actions/caret-down.png"));
         UIUtils.makeBorderlessWithoutMargin(moveDownButton);
         moveDownButton.setToolTipText("Move down");
         moveDownButton.addActionListener(e -> seriesBuilder.getPlotBuilderUI().moveSeriesDown(seriesBuilder));
         titlePanel.add(moveDownButton);
 
-        moveUpButton = new JButton(UIUtils.getIconFromResources("actions/arrow-up.png"));
+        moveUpButton = new JButton(UIUtils.getIconFromResources("actions/caret-up.png"));
         UIUtils.makeBorderlessWithoutMargin(moveUpButton);
         moveUpButton.setToolTipText("Move up");
         moveUpButton.addActionListener(e -> seriesBuilder.getPlotBuilderUI().moveSeriesUp(seriesBuilder));

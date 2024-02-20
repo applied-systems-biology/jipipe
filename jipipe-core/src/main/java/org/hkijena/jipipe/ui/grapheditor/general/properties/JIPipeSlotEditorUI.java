@@ -112,12 +112,12 @@ public class JIPipeSlotEditorUI extends JPanel implements JIPipeGraphNode.NodeSl
                 toolBar.add(editButton);
             }
 
-            JButton moveUpButton = new JButton(UIUtils.getIconFromResources("actions/arrow-up.png"));
+            JButton moveUpButton = new JButton(UIUtils.getIconFromResources("actions/caret-up.png"));
             moveUpButton.setToolTipText("Move up");
             moveUpButton.addActionListener(e -> moveSlotUp());
             toolBar.add(moveUpButton);
 
-            JButton moveDownButton = new JButton(UIUtils.getIconFromResources("actions/arrow-down.png"));
+            JButton moveDownButton = new JButton(UIUtils.getIconFromResources("actions/caret-down.png"));
             moveDownButton.setToolTipText("Move down");
             moveDownButton.addActionListener(e -> moveSlotDown());
             toolBar.add(moveDownButton);

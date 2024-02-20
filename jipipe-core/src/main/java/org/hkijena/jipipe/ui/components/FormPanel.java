@@ -253,10 +253,10 @@ public class FormPanel extends JXPanel {
         if (StringUtils.orElse(current.getMarkdown(), "").startsWith("#")) {
             String s = current.getMarkdown().split("\n")[0];
             s = s.substring(s.lastIndexOf('#') + 1);
-            parameterHelpDrillDown.setIcon(UIUtils.getIconFromResources("actions/arrow-right.png"));
+            parameterHelpDrillDown.setIcon(UIUtils.getIconFromResources("actions/caret-right.png"));
             parameterHelpDrillDown.setText(s);
         } else {
-            parameterHelpDrillDown.setIcon(UIUtils.getIconFromResources("actions/arrow-right.png"));
+            parameterHelpDrillDown.setIcon(UIUtils.getIconFromResources("actions/caret-right.png"));
             parameterHelpDrillDown.setText("...");
         }
 

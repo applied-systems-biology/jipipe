@@ -134,17 +134,17 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
         JIPipeGraphEditorMinimap minimap = new JIPipeGraphEditorMinimap(this);
         splitPane.setTopComponent(minimap);
 
-        DocumentTabPane bottomPanel = new DocumentTabPane(false, DocumentTabPane.TabPlacement.Top);
+        DocumentTabPane bottomPanel = new DocumentTabPane(false, DocumentTabPane.TabPlacement.Right);
 
         MarkdownReader markdownReader = new MarkdownReader(false);
         markdownReader.setDocument(MarkdownDocument.fromPluginResource("documentation/compartment-graph.md", new HashMap<>()));
-        bottomPanel.addTab("Quick guide", UIUtils.getIconFromResources("actions/help.png"), markdownReader, DocumentTabPane.CloseMode.withoutCloseButton);
+        bottomPanel.addTab("Quick guide", UIUtils.getIcon32FromResources("actions/help.png"), markdownReader, DocumentTabPane.CloseMode.withoutCloseButton);
 
-        bottomPanel.addTab("Bookmarks", UIUtils.getIconFromResources("actions/bookmarks.png"),
+        bottomPanel.addTab("Bookmarks", UIUtils.getIcon32FromResources("actions/bookmarks.png"),
                 new BookmarkListPanel(getWorkbench(), getProject().getGraph(), this), DocumentTabPane.CloseMode.withoutCloseButton);
 
         bottomPanel.addTab("Journal",
-                UIUtils.getIconFromResources("actions/edit-undo-history.png"),
+                UIUtils.getIcon32FromResources("actions/edit-undo-history.png"),
                 new HistoryJournalUI(getHistoryJournal()),
                 DocumentTabPane.CloseMode.withoutCloseButton);
 
@@ -201,27 +201,23 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
         JIPipeNodeInfo info = JIPipe.getNodes().getInfoById("jipipe:project-compartment");
 
         JButton addItem = new JButton("Add new compartment", UIUtils.getIconFromResources("actions/list-add.png"));
-        UIUtils.makeFlat(addItem);
-        addItem.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
         addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(info));
         addItem.addActionListener(e -> addCompartment());
         menuBar.add(addItem);
 
         JButton importItem = new JButton("Import compartment", UIUtils.getIconFromResources("actions/document-open-folder.png"));
-        UIUtils.makeFlat(importItem);
-        importItem.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
         importItem.setToolTipText("Imports a compartment from a *.jipc file");
         importItem.addActionListener(e -> importCompartment());
         menuBar.add(importItem);
 
-        if (JIPipe.getNodes().hasNodeInfoWithId("jipipe:comment")) {
-            JButton addCommentItem = new JButton("Add comment", UIUtils.getIconFromResources("actions/edit-comment.png"));
-            UIUtils.makeFlat(addCommentItem);
-            addCommentItem.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
-            addCommentItem.setToolTipText("Add a comment node");
-            addCommentItem.addActionListener(e -> addComment());
-            menuBar.add(addCommentItem);
-        }
+//        if (JIPipe.getNodes().hasNodeInfoWithId("jipipe:comment")) {
+//            JButton addCommentItem = new JButton("Add comment", UIUtils.getIconFromResources("actions/edit-comment.png"));
+//            UIUtils.makeFlat(addCommentItem);
+//            addCommentItem.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
+//            addCommentItem.setToolTipText("Add a comment node");
+//            addCommentItem.addActionListener(e -> addComment());
+//            menuBar.add(addCommentItem);
+//        }
     }
 
     private void addComment() {
