@@ -48,7 +48,7 @@ public class ImagesNodeTypeCategory implements JIPipeNodeTypeCategory {
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/imgplus.png");
+        return UIUtils.getIconFromResources("actions/tool_imageeffects.png");
     }
 
     @Override

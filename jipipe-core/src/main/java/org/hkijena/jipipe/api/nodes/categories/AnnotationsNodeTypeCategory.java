@@ -48,7 +48,7 @@ public class AnnotationsNodeTypeCategory implements JIPipeNodeTypeCategory {
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/tag.png");
+        return UIUtils.getIconFromResources("actions/folder-tag.png");
     }
 
     @Override

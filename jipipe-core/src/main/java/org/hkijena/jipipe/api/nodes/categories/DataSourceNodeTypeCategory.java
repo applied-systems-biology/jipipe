@@ -48,7 +48,7 @@ public class DataSourceNodeTypeCategory implements JIPipeNodeTypeCategory {
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/database.png");
+        return UIUtils.getIconFromResources("actions/document-import.png");
     }
 
     @Override

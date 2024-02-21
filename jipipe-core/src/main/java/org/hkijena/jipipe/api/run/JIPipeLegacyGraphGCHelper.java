@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.api;
+package org.hkijena.jipipe.api.run;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -20,7 +20,7 @@ import java.util.Set;
 /**
  * Used to track garbage collection for the execution of a {@link JIPipeGraph}
  */
-public class JIPipeGraphGCHelper {
+public class JIPipeLegacyGraphGCHelper {
     private final JIPipeGraph graph;
     private final DefaultDirectedGraph<JIPipeDataSlot, DefaultEdge> gcGraph;
     private final Set<JIPipeDataSlot> completedSlots = new HashSet<>();
@@ -28,7 +28,7 @@ public class JIPipeGraphGCHelper {
 
     private final SlotCompletedEventEmitter slotCompletedEventEmitter = new SlotCompletedEventEmitter();
 
-    public JIPipeGraphGCHelper(JIPipeGraph graph) {
+    public JIPipeLegacyGraphGCHelper(JIPipeGraph graph) {
         this.graph = graph;
         this.gcGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
         initialize();
@@ -176,7 +176,7 @@ public class JIPipeGraphGCHelper {
     public static class SlotCompletedEvent extends AbstractJIPipeEvent {
         private final JIPipeDataSlot slot;
 
-        public SlotCompletedEvent(JIPipeGraphGCHelper source, JIPipeDataSlot slot) {
+        public SlotCompletedEvent(JIPipeLegacyGraphGCHelper source, JIPipeDataSlot slot) {
             super(source);
             this.slot = slot;
         }

@@ -49,7 +49,7 @@ import java.util.*;
 /**
  * Runnable instance of an {@link JIPipeProject}
  */
-public class JIPipeLegacyProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.SlotCompletedEventListener {
+public class JIPipeLegacyProjectRun implements JIPipeRunnable, JIPipeLegacyGraphGCHelper.SlotCompletedEventListener {
     private final JIPipeProject project;
     private final JIPipeLegacyProjectRunSettings configuration;
     JIPipeGraph copiedGraph;
@@ -240,7 +240,7 @@ public class JIPipeLegacyProjectRun implements JIPipeRunnable, JIPipeGraphGCHelp
         List<JIPipeDataSlot> traversedSlots = copiedGraph.traverseSlots();
 
         // Create GC
-        JIPipeGraphGCHelper gc = new JIPipeGraphGCHelper(copiedGraph);
+        JIPipeLegacyGraphGCHelper gc = new JIPipeLegacyGraphGCHelper(copiedGraph);
         progressInfo.resolve("GC").log("GC status: " + gc);
         gc.getSlotCompletedEventEmitter().subscribe(this);
 
@@ -529,7 +529,7 @@ public class JIPipeLegacyProjectRun implements JIPipeRunnable, JIPipeGraphGCHelp
     }
 
     @Override
-    public void onGCSlotCompletedEvent(JIPipeGraphGCHelper.SlotCompletedEvent event) {
+    public void onGCSlotCompletedEvent(JIPipeLegacyGraphGCHelper.SlotCompletedEvent event) {
         JIPipeDataSlot slot = event.getSlot();
         if (slot.isEmpty()) {
             return;

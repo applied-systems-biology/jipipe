@@ -29,7 +29,7 @@ import java.util.function.BiConsumer;
  */
 public class JIPipeProgressInfo implements Cancelable {
 
-    private static final char[] SPINNER_1 = new char[]{'⣾', '⣽', '⣻', '⢿', '⡿', '⣟', '⣯', '⣷'};
+    private static final String[] SPINNER_1 = new String[]{"⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"};
     private final StampedLock stampedLock;
 
     private AtomicBoolean cancelled = new AtomicBoolean();

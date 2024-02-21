@@ -102,7 +102,7 @@ public class AddTemplateContextMenuAction implements NodeUIContextAction {
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/favorite.png");
+        return UIUtils.getIconFromResources("actions/star.png");
     }
 
 }

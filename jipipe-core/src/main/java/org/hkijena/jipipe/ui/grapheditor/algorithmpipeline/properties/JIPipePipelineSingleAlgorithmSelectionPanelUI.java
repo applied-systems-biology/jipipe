@@ -155,7 +155,7 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
         tabbedPane.addTab("Add nodes", UIUtils.getIcon32FromResources("actions/graph-node-add.png"),
                 new NodeToolBox(getWorkbench(), true), DocumentTabPane.CloseMode.withoutCloseButton);
 
-        tabbedPane.addTab("Templates", UIUtils.getIcon32FromResources("actions/favorite.png"),
+        tabbedPane.addTab("Templates", UIUtils.getIcon32FromResources("actions/star.png"),
                 new NodeTemplateBox(getWorkbench(), true), DocumentTabPane.CloseMode.withoutCloseButton);
 
         tabbedPane.addTab("Bookmarks", UIUtils.getIcon32FromResources("actions/bookmarks.png"),

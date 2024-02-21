@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.api.run;
 
 import com.google.common.collect.BiMap;
-import org.hkijena.jipipe.api.JIPipeGraphGCHelper;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -38,7 +37,7 @@ import java.util.*;
  * Use this class for nested algorithm graph runs (like {@link org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm})
  * Use {@link JIPipeLegacyProjectRun} for full project runs.
  */
-public class JIPipeLegacyGraphRun implements JIPipeRunnable, JIPipeGraphGCHelper.SlotCompletedEventListener {
+public class JIPipeLegacyGraphRun implements JIPipeRunnable, JIPipeLegacyGraphGCHelper.SlotCompletedEventListener {
 
     private final JIPipeGraph algorithmGraph;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
@@ -65,7 +64,7 @@ public class JIPipeLegacyGraphRun implements JIPipeRunnable, JIPipeGraphGCHelper
 
     @Override
     public void run() {
-        JIPipeGraphGCHelper gc = new JIPipeGraphGCHelper(algorithmGraph);
+        JIPipeLegacyGraphGCHelper gc = new JIPipeLegacyGraphGCHelper(algorithmGraph);
         progressInfo.resolve("GC").log("GC status: " + gc);
         gc.getSlotCompletedEventEmitter().subscribe(this);
 
@@ -312,7 +311,7 @@ public class JIPipeLegacyGraphRun implements JIPipeRunnable, JIPipeGraphGCHelper
     }
 
     @Override
-    public void onGCSlotCompletedEvent(JIPipeGraphGCHelper.SlotCompletedEvent event) {
+    public void onGCSlotCompletedEvent(JIPipeLegacyGraphGCHelper.SlotCompletedEvent event) {
         JIPipeDataSlot slot = event.getSlot();
         if (slot.isEmpty()) {
             return;

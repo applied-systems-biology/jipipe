@@ -7,15 +7,21 @@ import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.jgrapht.GraphPath;
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultDirectedWeightedGraph;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Graph that contains input slots, nodes, and output slots with weights
  * Contains {@link JIPipeInputDataSlot}, {@link JIPipeOutputDataSlot}, and {@link JIPipeGraphNode}
- * Used for finding the optimal path through the graph
+ * Used for finding the optimal path through the graph.
+ * Unlike the {@link JIPipeGraphRunGCGraph}, this graph works on vertices
  */
 public class JIPipeGraphRunDataFlowGraph extends DefaultDirectedWeightedGraph<Object, DefaultWeightedEdge> {
 
@@ -74,5 +80,46 @@ public class JIPipeGraphRunDataFlowGraph extends DefaultDirectedWeightedGraph<Ob
                 setEdgeWeight(addEdge(graphNode, outputSlot), weight);
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return "[Data Flow] " + vertexSet().size() + " vertices, " + edgeSet().size() + " edges";
+    }
+
+    public Set<Object> getEndpoints() {
+        return vertexSet().stream().filter(vertex -> outDegreeOf(vertex) == 0).collect(Collectors.toSet());
+    }
+
+    public List<Object> getNextVertices() {
+        List<Object> result = new ArrayList<>();
+        for (Object vertex : vertexSet()) {
+            if(inDegreeOf(vertex) == 0) {
+                result.add(vertex);
+            }
+        }
+        return result;
+    }
+
+    public Object getBestNextVertex() {
+        Set<Object> endpoints = getEndpoints();
+        List<Object> candidates = getNextVertices();
+        DijkstraShortestPath<Object, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(this);
+        Object bestCandidate = null;
+        double bestWeight = Double.POSITIVE_INFINITY;
+
+        for (Object candidate : candidates) {
+            for (Object endpoint : endpoints) {
+                GraphPath<Object, DefaultWeightedEdge> path = dijkstraShortestPath.getPath(candidate, endpoint);
+                if(path != null) {
+                    double weight = path.getWeight();
+                    if (weight < bestWeight) {
+                        bestCandidate = candidate;
+                    }
+                }
+            }
+        }
+
+        return bestCandidate;
     }
 }

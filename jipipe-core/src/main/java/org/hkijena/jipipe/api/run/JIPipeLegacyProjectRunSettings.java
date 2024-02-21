@@ -41,7 +41,7 @@ public class JIPipeLegacyProjectRunSettings extends AbstractJIPipeParameterColle
     private Set<UUID> disableSaveToDiskNodes = new HashSet<>();
 
     @JIPipeParameter(value = "output-path", uiOrder = -999)
-    @SetJIPipeDocumentation(name = "Output folder")
+    @SetJIPipeDocumentation(name = "Output directory")
     @PathParameterSettings(ioMode = PathIOMode.Save, pathMode = PathType.DirectoriesOnly)
     public Path getOutputPath() {
         return outputPath;

@@ -185,29 +185,29 @@ public class JIPipeProjectOverviewUI extends JIPipeProjectWorkbenchPanel impleme
         descriptionReaderScrollPane.setBorder(null);
         userParametersPanel.getScrollPane().setBorder(null);
 
-        DocumentTabPane tabPane = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Top);
+        DocumentTabPane tabPane = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Right);
         tabPane.addTab("Parameters",
-                UIUtils.getIconFromResources("actions/wrench.png"),
+                UIUtils.getIcon32FromResources("actions/wrench.png"),
                 userParametersPanel,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
         tabPane.addTab("Directories",
-                UIUtils.getIconFromResources("actions/stock_folder-copy.png"),
+                UIUtils.getIcon32FromResources("actions/stock_folder-copy.png"),
                 userDirectoriesPanel,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
         tabPane.addTab("Partitions",
-                UIUtils.getIconFromResources("actions/runtime-partition.png"),
+                UIUtils.getIcon32FromResources("actions/runtime-partition.png"),
                 runtimePartitionsPanel,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
         tabPane.addTab("Bookmarks",
-                UIUtils.getIconFromResources("actions/bookmark.png"),
+                UIUtils.getIcon32FromResources("actions/bookmark.png"),
                 new BookmarkListPanel(getWorkbench(), getProject().getGraph(), null),
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
         tabPane.addTab("Settings",
-                UIUtils.getIconFromResources("actions/wrench.png"),
+                UIUtils.getIcon32FromResources("actions/wrench.png"),
                 projectSettingsParametersPanel,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
