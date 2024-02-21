@@ -14,7 +14,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 
-@SetJIPipeDocumentation(name = "Loop end", description = "Indicates the end of a loop. All nodes following a loop start are " +
+@SetJIPipeDocumentation(name = "Loop end", description = "Deprecated. Use graph partitions instead. " + "Indicates the end of a loop. All nodes following a loop start are " +
         "executed per data batch of this loop start node")
 @DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Data")

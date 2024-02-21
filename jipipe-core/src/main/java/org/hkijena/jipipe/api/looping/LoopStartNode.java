@@ -22,7 +22,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-@SetJIPipeDocumentation(name = "Loop start", description = "Indicates the start of a loop. All nodes following a loop start are " +
+@SetJIPipeDocumentation(name = "Loop start", description = "Deprecated. Use graph partitions instead. " +
+        "Indicates the start of a loop. All nodes following a loop start are " +
         "executed per data batch of this loop start node, unless its mode is set to pass-through. " +
         "All following nodes are assigned to a loop, unless a node has no output connections, or it is a loop end node. " +
         "Please be aware that intermediate results of this loop are discarded automatically, meaning that only the end points will contain the generated data. " +
