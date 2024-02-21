@@ -40,7 +40,7 @@ public class FancyTextField extends JPanel {
         setLayout(new BorderLayout(4, 0));
         setOpaque(true);
         setBackground(UIManager.getColor("TextField.background"));
-        setBorder(BorderFactory.createEtchedBorder());
+        setBorder(UIUtils.createControlBorder());
 
         textField.setPrompt(prompt);
         textField.setBorder(null);

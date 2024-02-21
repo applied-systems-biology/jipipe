@@ -118,7 +118,7 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
 
         add(toolBar, BorderLayout.NORTH);
 
-        setBorder(BorderFactory.createEtchedBorder());
+        setBorder(UIUtils.createControlBorder());
 
         closeExternalEditorsButton = new JButton("<html><strong>External editors are currently open</strong><br>Click this button to re-enable editing",
                 UIUtils.getIconFromResources("actions/unlock.png"));

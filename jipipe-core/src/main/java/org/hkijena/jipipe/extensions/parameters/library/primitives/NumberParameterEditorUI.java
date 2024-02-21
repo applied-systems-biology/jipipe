@@ -190,7 +190,7 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
     private void initialize() {
         setLayout(new BorderLayout());
         setBackground(UIManager.getColor("TextField.background"));
-        setBorder(BorderFactory.createEtchedBorder());
+        setBorder(UIUtils.createControlBorder());
         numberField = new JTextField();
         numberField.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 0));
         numberField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
@@ -251,12 +251,12 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
     }
 
     private void pushValue(String text) {
-        setBorder(BorderFactory.createEtchedBorder());
+        setBorder(UIUtils.createControlBorder());
         double newValue = createNumber(text);
         double currentValue = getCurrentValue();
         if (newValue != currentValue) {
             if (setCurrentValue(newValue)) {
-                setBorder(BorderFactory.createEtchedBorder());
+                setBorder(UIUtils.createControlBorder());
             } else {
                 setBorder(BorderFactory.createLineBorder(Color.RED, 2));
             }

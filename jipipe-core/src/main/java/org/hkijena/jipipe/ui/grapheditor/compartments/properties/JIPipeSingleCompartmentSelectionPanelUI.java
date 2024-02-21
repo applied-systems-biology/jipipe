@@ -99,7 +99,7 @@ public class JIPipeSingleCompartmentSelectionPanelUI extends JIPipeProjectWorkbe
 
         // Bottom tabs
         tabbedPane.addTab("Bookmarks", UIUtils.getIcon32FromResources("actions/bookmarks.png"),
-                new BookmarkListPanel(getWorkbench(), getProject().getGraph(), graphEditorUI), DocumentTabPane.CloseMode.withoutCloseButton);
+                new BookmarkListPanel(getWorkbench(), getProject().getGraph(), graphEditorUI, Collections.singleton(compartment)), DocumentTabPane.CloseMode.withoutCloseButton);
 
         tabbedPane.addTab("History",
                 UIUtils.getIcon32FromResources("actions/edit-undo-history.png"),

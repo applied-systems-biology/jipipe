@@ -664,7 +664,7 @@ public class FormPanel extends JXPanel {
             this.marginTop = marginTop;
 
             this.backgroundColor = ColorUtils.mix(ModernMetalTheme.PRIMARY5, ColorUtils.scaleHSV(UIManager.getColor("Panel.background"), 1, 1, 0.98f), 0.92);
-            this.borderColor = ColorUtils.scaleHSV(backgroundColor, 1, 1, 0.8f);
+            this.borderColor = backgroundColor;
 
             setBorder(BorderFactory.createEmptyBorder(marginTop, 0, 8, 0));
             setLayout(new GridBagLayout());

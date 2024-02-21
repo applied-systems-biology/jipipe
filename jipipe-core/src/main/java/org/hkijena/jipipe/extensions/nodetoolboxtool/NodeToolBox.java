@@ -84,7 +84,7 @@ public class NodeToolBox extends JIPipeWorkbenchPanel {
         algorithmList = new JList<>();
         algorithmList.setToolTipText("Drag one or multiple entries from the list into the graph to create nodes.");
         algorithmList.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        algorithmList.setBorder(BorderFactory.createEtchedBorder());
+        algorithmList.setBorder(UIUtils.createControlBorder());
         algorithmList.setCellRenderer(new JIPipeNodeDatabaseEntryListCellRenderer());
         algorithmList.setModel(new DefaultListModel<>());
         algorithmList.addListSelectionListener(e -> {

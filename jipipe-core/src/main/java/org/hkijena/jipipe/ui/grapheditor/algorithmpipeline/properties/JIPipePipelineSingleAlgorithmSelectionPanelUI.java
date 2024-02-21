@@ -13,14 +13,11 @@
 
 package org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.properties;
 
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeGraphType;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.nodeexamples.JIPipeNodeExamplePickerDialog;
-import org.hkijena.jipipe.extensions.nodetemplate.AddTemplateContextMenuAction;
 import org.hkijena.jipipe.extensions.nodetemplate.NodeTemplateBox;
 import org.hkijena.jipipe.extensions.nodetoolboxtool.NodeToolBox;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -28,12 +25,9 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.batchassistant.DataBatchAssistantUI;
 import org.hkijena.jipipe.ui.bookmarks.BookmarkListPanel;
 import org.hkijena.jipipe.ui.cache.JIPipeAlgorithmCacheBrowserUI;
-import org.hkijena.jipipe.ui.components.MessagePanel;
-import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
-import org.hkijena.jipipe.ui.documentation.JIPipeAlgorithmCompendiumUI;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.general.properties.JIPipeSlotEditorUI;
@@ -156,10 +150,10 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
                 new NodeToolBox(getWorkbench(), true), DocumentTabPane.CloseMode.withoutCloseButton);
 
         tabbedPane.addTab("Templates", UIUtils.getIcon32FromResources("actions/star.png"),
-                new NodeTemplateBox(getWorkbench(), true), DocumentTabPane.CloseMode.withoutCloseButton);
+                new NodeTemplateBox(getWorkbench(), true, canvas, Collections.singleton(node)), DocumentTabPane.CloseMode.withoutCloseButton);
 
         tabbedPane.addTab("Bookmarks", UIUtils.getIcon32FromResources("actions/bookmarks.png"),
-                new BookmarkListPanel(getWorkbench(), graphEditorUI.getGraph(), graphEditorUI), DocumentTabPane.CloseMode.withoutCloseButton);
+                new BookmarkListPanel(getWorkbench(), graphEditorUI.getGraph(), graphEditorUI, Collections.singleton(node)), DocumentTabPane.CloseMode.withoutCloseButton);
 
         tabbedPane.addTab("History",
                 UIUtils.getIcon32FromResources("actions/edit-undo-history.png"),

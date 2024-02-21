@@ -19,6 +19,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.components.html.HTMLEditor;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -52,7 +53,7 @@ public class HTMLTextParameterEditorUI extends JIPipeParameterEditorUI {
         if (value != null) {
             stringValue = "" + value;
         }
-        editor.setBorder(BorderFactory.createEtchedBorder());
+        editor.setBorder(UIUtils.createControlBorder());
         editor.setText(stringValue);
         add(editor, BorderLayout.CENTER);
 

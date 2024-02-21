@@ -61,19 +61,19 @@ public class JIPipeExpressionParameterEditorUI extends JIPipeParameterEditorUI {
         setLayout(new BorderLayout());
 //        add(availableModes, BorderLayout.WEST);
 
-        JPanel optionPanel = new JPanel();
-        optionPanel.setOpaque(true);
-        optionPanel.setLayout(new BoxLayout(optionPanel, BoxLayout.X_AXIS));
-        optionPanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, UIManager.getColor("Button.borderColor")));
+//        JPanel optionPanel = new JPanel();
+//        optionPanel.setOpaque(true);
+//        optionPanel.setLayout(new BoxLayout(optionPanel, BoxLayout.X_AXIS));
+//        optionPanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, UIManager.getColor("Button.borderColor")));
 
-        JButton functionBuilder = new JButton("Edit", UIUtils.getIconFromResources("actions/insert-math-expression.png"));
-        UIUtils.makeFlat25x25(functionBuilder);
-        functionBuilder.setPreferredSize(new Dimension(80, 25));
-        functionBuilder.setMaximumSize(new Dimension(80, 25));
-        optionPanel.add(functionBuilder);
+        JButton functionBuilder = new JButton("Edit", UIUtils.getIconFromResources("actions/edit.png"));
+//        UIUtils.makeFlat25x25(functionBuilder);
+//        functionBuilder.setPreferredSize(new Dimension(80, 25));
+//        functionBuilder.setMaximumSize(new Dimension(80, 25));
+//        optionPanel.add(functionBuilder);
         functionBuilder.addActionListener(e -> editInFunctionBuilder());
 
-        expressionEditorPanel.add(optionPanel, BorderLayout.EAST);
+        expressionEditorPanel.add(functionBuilder, BorderLayout.EAST);
 
         TokenMakerFactory tokenMakerFactory = new TokenMakerFactory() {
             @Override
@@ -103,7 +103,7 @@ public class JIPipeExpressionParameterEditorUI extends JIPipeParameterEditorUI {
                 }
             }
         });
-        expressionEditorPanel.setBorder(BorderFactory.createEtchedBorder());
+        expressionEditorPanel.setBorder(UIUtils.createControlBorder());
         expressionEditorPanel.setOpaque(true);
         expressionEditorPanel.setBackground(UIManager.getColor("TextArea.background"));
         JPanel borderPanel = new JPanel(new BorderLayout());

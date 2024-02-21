@@ -44,7 +44,7 @@ public class AnchorParameterEditorUI extends JIPipeParameterEditorUI {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        setBorder(BorderFactory.createEtchedBorder());
+        setBorder(UIUtils.createControlBorder());
 
         JPanel content = new JPanel(new BorderLayout());
         initializeAnchorSelection(content);

@@ -203,7 +203,7 @@ public class JIPipeProjectOverviewUI extends JIPipeProjectWorkbenchPanel impleme
                 false);
         tabPane.addTab("Bookmarks",
                 UIUtils.getIcon32FromResources("actions/bookmark.png"),
-                new BookmarkListPanel(getWorkbench(), getProject().getGraph(), null),
+                new BookmarkListPanel(getWorkbench(), getProject().getGraph(), null, null),
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
         tabPane.addTab("Settings",

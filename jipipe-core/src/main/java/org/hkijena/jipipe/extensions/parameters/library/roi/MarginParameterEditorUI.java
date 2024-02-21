@@ -48,7 +48,7 @@ public class MarginParameterEditorUI extends JIPipeParameterEditorUI {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        setBorder(BorderFactory.createEtchedBorder());
+        setBorder(UIUtils.createControlBorder());
 
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);

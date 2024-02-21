@@ -118,7 +118,7 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
             try {
                 JIPipeProject project = JIPipeProject.loadProject(projectFile, new UnspecifiedValidationReportContext(), new JIPipeValidationReport(), new JIPipeNotificationInbox());
                 JIPipeProjectOutputTreePanel panel = new JIPipeProjectOutputTreePanel(project);
-                panel.setBorder(BorderFactory.createEtchedBorder());
+                panel.setBorder(UIUtils.createControlBorder());
                 int result = JOptionPane.showOptionDialog(
                         workbench.getWindow(),
                         new Object[]{panel},

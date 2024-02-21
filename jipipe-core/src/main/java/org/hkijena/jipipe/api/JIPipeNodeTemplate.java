@@ -2,7 +2,11 @@ package org.hkijena.jipipe.api;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -11,10 +15,19 @@ import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.parameters.library.references.IconRef;
+import org.hkijena.jipipe.extensions.parameters.library.references.IconRefParameterEditorUI;
+import org.hkijena.jipipe.extensions.settings.NodeTemplateSettings;
+import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
+import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
+import javax.swing.*;
 import java.awt.*;
+import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Contains the JSON data of a node that can be created by a user for sharing
@@ -52,6 +65,67 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
             group.add(info);
         }
         return result;
+    }
+
+    public static void create(JIPipeGraphCanvasUI canvasUI, Set<JIPipeGraphNode> algorithms) {
+        JIPipeNodeTemplate template = new JIPipeNodeTemplate();
+
+        if (algorithms.size() == 1) {
+            JIPipeGraphNode node = algorithms.iterator().next();
+            template.setName(node.getName());
+            template.setFillColor(node.getInfo().getCategory().getFillColor());
+            template.setBorderColor(node.getInfo().getCategory().getBorderColor());
+            URL url = JIPipe.getNodes().getIconURLFor(node.getInfo());
+            if (node.getInfo().getCategory() instanceof DataSourceNodeTypeCategory) {
+                if (!node.getOutputSlots().isEmpty()) {
+                    url = JIPipe.getDataTypes().getIconURLFor(JIPipeDataInfo.getInstance(node.getOutputSlots().get(0).getAcceptedDataType()));
+                }
+            }
+            if (url != null) {
+                String urlString = url.toString();
+                String iconName = null;
+                for (String icon : IconRefParameterEditorUI.getAvailableIcons()) {
+                    if (urlString.endsWith(icon)) {
+                        iconName = icon;
+                        break;
+                    }
+                }
+                template.getIcon().setIconName(iconName);
+            }
+        }
+
+        JIPipeGraph graph = canvasUI.getGraph();
+        JIPipeGraph subGraph = graph.extract(algorithms, false);
+        template.setData(JsonUtils.toPrettyJsonString(subGraph));
+
+        int result = JOptionPane.YES_OPTION;
+        if (canvasUI.getGraph().getProject() != null) {
+            result = JOptionPane.showOptionDialog(canvasUI.getWorkbench().getWindow(),
+                    "Node templates can be stored globally or inside the project. Where should the template be stored?",
+                    "Create node template",
+                    JOptionPane.YES_NO_CANCEL_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    new Object[]{"Globally", "Inside project", "Cancel"},
+                    "Globally");
+        }
+        if (result == JOptionPane.CANCEL_OPTION)
+            return;
+
+        if (ParameterPanel.showDialog(canvasUI.getWorkbench(), template, new MarkdownDocument("# Node templates\n\nUse this user interface to modify node templates."), "Create template",
+                ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_DOCUMENTATION)) {
+            if (result == JOptionPane.YES_OPTION) {
+                // Store globally
+                NodeTemplateSettings.getInstance().getNodeTemplates().add(template);
+                NodeTemplateSettings.getInstance().emitParameterChangedEvent("node-templates");
+                JIPipe.getSettings().save();
+            } else {
+                // Store locally
+                canvasUI.getGraph().getProject().getMetadata().getNodeTemplates().add(template);
+                canvasUI.getGraph().getProject().getMetadata().emitParameterChangedEvent("node-templates");
+            }
+            NodeTemplateSettings.triggerRefreshedEvent();
+        }
     }
 
     /**

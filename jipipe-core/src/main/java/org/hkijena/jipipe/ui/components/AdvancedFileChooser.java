@@ -735,7 +735,7 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
                 } else if (constraints == BorderLayout.CENTER) {
                     // Add border to the list
                     filePane = (FilePane) component;
-                    ((JComponent) component).setBorder(BorderFactory.createEtchedBorder());
+                    ((JComponent) component).setBorder(UIUtils.createControlBorder());
                 }
             }
         }

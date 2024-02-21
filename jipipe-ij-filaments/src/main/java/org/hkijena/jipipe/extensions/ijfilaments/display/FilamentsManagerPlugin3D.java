@@ -393,7 +393,7 @@ public class FilamentsManagerPlugin3D extends JIPipeImageViewerPlugin3D implemen
         // Setup panel
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.setMinimumSize(new Dimension(100, 300));
-        mainPanel.setBorder(BorderFactory.createEtchedBorder());
+        mainPanel.setBorder(UIUtils.createControlBorder());
 
         mainPanel.add(ribbon, BorderLayout.NORTH);
 

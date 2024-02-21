@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -39,7 +40,7 @@ public class FunctionParameterEditorUI extends JIPipeParameterEditorUI {
     public FunctionParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterTree, parameterAccess);
         setLayout(new BorderLayout());
-        setBorder(BorderFactory.createEtchedBorder());
+        setBorder(UIUtils.createControlBorder());
 //        JToolBar toolBar = new JToolBar();
 //        toolBar.setFloatable(false);
 //        toolBar.add(new JLabel(getParameterAccess().getName()));

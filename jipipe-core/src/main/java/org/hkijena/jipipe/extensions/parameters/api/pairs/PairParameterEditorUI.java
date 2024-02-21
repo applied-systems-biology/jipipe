@@ -92,7 +92,7 @@ public class PairParameterEditorUI extends JIPipeParameterEditorUI {
         } else {
             setLayout(new BorderLayout());
             FormPanel panel = new FormPanel(null, FormPanel.NONE);
-            panel.setBorder(BorderFactory.createEtchedBorder());
+            panel.setBorder(UIUtils.createControlBorder());
             panel.addToForm(keyEditor, new JLabel(keyLabel), null);
             panel.addToForm(valueEditor, new JLabel(valueLabel), null);
             add(panel, BorderLayout.CENTER);

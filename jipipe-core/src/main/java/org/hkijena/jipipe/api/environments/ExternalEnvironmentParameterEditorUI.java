@@ -50,7 +50,7 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
         nameLabel.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 12));
         setOpaque(true);
         setBackground(UIManager.getColor("TextField.background"));
-        setBorder(BorderFactory.createEtchedBorder());
+        setBorder(UIUtils.createControlBorder());
         add(nameLabel, BorderLayout.WEST);
         add(pathLabel, BorderLayout.CENTER);
 

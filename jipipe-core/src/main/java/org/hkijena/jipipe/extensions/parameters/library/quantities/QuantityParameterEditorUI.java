@@ -36,7 +36,7 @@ public class QuantityParameterEditorUI extends JIPipeParameterEditorUI {
     private void initialize() {
         setLayout(new BorderLayout());
         setBackground(UIManager.getColor("TextField.background"));
-        setBorder(BorderFactory.createEtchedBorder());
+        setBorder(UIUtils.createControlBorder());
 
         valueEditor.setPrompt("Value");
         valueEditor.setBorder(null);

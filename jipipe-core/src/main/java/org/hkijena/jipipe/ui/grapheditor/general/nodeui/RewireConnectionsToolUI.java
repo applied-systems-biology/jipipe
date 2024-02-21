@@ -182,7 +182,7 @@ public class RewireConnectionsToolUI extends JDialog {
         listPanel.add(toolBar, BorderLayout.NORTH);
         listPanel.add(scrollPane, BorderLayout.CENTER);
 
-        listPanel.setBorder(BorderFactory.createEtchedBorder());
+        listPanel.setBorder(UIUtils.createControlBorder());
 
         alternativesPanel.addVerticalGlue(listPanel, null);
 

@@ -141,7 +141,7 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
         bottomPanel.addTab("Quick guide", UIUtils.getIcon32FromResources("actions/help.png"), markdownReader, DocumentTabPane.CloseMode.withoutCloseButton);
 
         bottomPanel.addTab("Bookmarks", UIUtils.getIcon32FromResources("actions/bookmarks.png"),
-                new BookmarkListPanel(getWorkbench(), getProject().getGraph(), this), DocumentTabPane.CloseMode.withoutCloseButton);
+                new BookmarkListPanel(getWorkbench(), getProject().getGraph(), this, null), DocumentTabPane.CloseMode.withoutCloseButton);
 
         bottomPanel.addTab("Journal",
                 UIUtils.getIcon32FromResources("actions/edit-undo-history.png"),

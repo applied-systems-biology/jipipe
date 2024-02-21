@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.grapheditor.compartments.properties;
 
 import com.google.common.collect.ImmutableSet;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.bookmarks.BookmarkListPanel;
@@ -31,14 +32,16 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
 
 /**
  * UI when multiple {@link JIPipeProjectCompartment} instances are selected
  */
 public class JIPipeMultiCompartmentSelectionPanelUI extends JIPipeProjectWorkbenchPanel {
     private final JIPipeGraphCanvasUI canvas;
-    private Set<JIPipeProjectCompartment> compartments;
+    private final Set<JIPipeProjectCompartment> compartments;
 
     /**
      * @param workbenchUI  The workbench UI
@@ -65,7 +68,7 @@ public class JIPipeMultiCompartmentSelectionPanelUI extends JIPipeProjectWorkben
                 actionPanel, DocumentTabPane.CloseMode.withoutCloseButton);
 
         tabPane.addTab("Bookmarks", UIUtils.getIcon32FromResources("actions/bookmarks.png"),
-                new BookmarkListPanel(getWorkbench(), canvas.getGraph(), canvas.getGraphEditorUI()), DocumentTabPane.CloseMode.withoutCloseButton);
+                new BookmarkListPanel(getWorkbench(), canvas.getGraph(), canvas.getGraphEditorUI(), new HashSet<>(compartments)), DocumentTabPane.CloseMode.withoutCloseButton);
 
         tabPane.addTab("Journal",
                 UIUtils.getIcon32FromResources("actions/edit-undo-history.png"),

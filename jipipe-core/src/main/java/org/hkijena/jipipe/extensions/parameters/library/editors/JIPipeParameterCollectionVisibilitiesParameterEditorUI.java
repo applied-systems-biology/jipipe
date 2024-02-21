@@ -49,7 +49,7 @@ public class JIPipeParameterCollectionVisibilitiesParameterEditorUI extends JIPi
 
     private void initialize() {
         setLayout(new BorderLayout());
-        setBorder(BorderFactory.createEtchedBorder());
+        setBorder(UIUtils.createControlBorder());
 
         formPanel = new FormPanel(null, FormPanel.NONE);
         add(formPanel, BorderLayout.CENTER);

@@ -43,6 +43,7 @@ import org.hkijena.jipipe.ui.components.window.AlwaysOnTopToggle;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.ui.notifications.GenericNotificationInboxUI;
+import org.hkijena.jipipe.ui.theme.DarkModernMetalTheme;
 import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
 import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -122,6 +123,8 @@ public class UIUtils {
     private static Theme RSYNTAX_THEME_DEFAULT;
     private static Theme RSYNTAX_THEME_DARK;
 
+    private static Border CONTROL_BORDER;
+
     public static JLabel createInfoLabel(String text, String subtext) {
         JLabel label = new JLabel("<html><strong>" + text + "</strong><br/>" + subtext + "</html>",
                 UIUtils.getIcon32FromResources("info.png"), JLabel.LEFT);
@@ -136,6 +139,20 @@ public class UIUtils {
         label.setAlignmentX(0f);
         label.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         return label;
+    }
+
+    public static Border createControlBorder() {
+        if(CONTROL_BORDER == null) {
+            if(!DARK_THEME) {
+                CONTROL_BORDER = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
+                        new RoundedLineBorder(ModernMetalTheme.MEDIUM_GRAY, 1, 5));
+            }
+            else {
+                CONTROL_BORDER = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
+                        new RoundedLineBorder(Color.DARK_GRAY, 1, 5));
+            }
+        }
+        return CONTROL_BORDER;
     }
 
     public static void registerHyperlinkHandler(JTextPane content) {
@@ -800,7 +817,7 @@ public class UIUtils {
         component.setBackground(Color.WHITE);
         component.setOpaque(false);
         Border margin = new EmptyBorder(5, 15, 5, 15);
-//        Border compound = new CompoundBorder(BorderFactory.createEtchedBorder(), margin);
+//        Border compound = new CompoundBorder(UIUtils.createControlBorder(), margin);
         //        Border margin = new EmptyBorder(2, 2, 2, 2);
         Border compound = new CompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
                 new CompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2), margin));
@@ -866,7 +883,7 @@ public class UIUtils {
 //        component.setMinimumSize(new Dimension(25, 25));
 //        component.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
         Border margin = new EmptyBorder(3, 3, 3, 3);
-//        Border compound = new CompoundBorder(BorderFactory.createEtchedBorder(), margin);
+//        Border compound = new CompoundBorder(UIUtils.createControlBorder(), margin);
         component.setBorder(margin);
     }
 
@@ -1531,7 +1548,7 @@ public class UIUtils {
      */
     public static JTextArea makeReadonlyTextArea(String text) {
         JTextArea textArea = new JTextArea();
-        textArea.setBorder(BorderFactory.createEtchedBorder());
+        textArea.setBorder(UIUtils.createControlBorder());
         textArea.setEditable(false);
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
@@ -1547,7 +1564,7 @@ public class UIUtils {
      */
     public static JTextPane makeReadonlyTextPane(String text) {
         JTextPane textPane = new JTextPane();
-        textPane.setBorder(BorderFactory.createEtchedBorder());
+        textPane.setBorder(UIUtils.createControlBorder());
         textPane.setEditable(false);
         textPane.setContentType("text/html");
         textPane.setText(text);
@@ -1596,7 +1613,7 @@ public class UIUtils {
      */
     public static JTextPane makeBorderlessReadonlyTextPane(String text, boolean opaque) {
         JTextPane textPane = new JTextPane();
-        textPane.setBorder(BorderFactory.createEtchedBorder());
+        textPane.setBorder(UIUtils.createControlBorder());
         textPane.setEditable(false);
         textPane.setOpaque(opaque);
         textPane.setContentType("text/html");

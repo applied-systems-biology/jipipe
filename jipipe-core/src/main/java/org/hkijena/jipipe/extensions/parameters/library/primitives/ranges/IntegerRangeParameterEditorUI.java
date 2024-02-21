@@ -126,7 +126,7 @@ public class IntegerRangeParameterEditorUI extends JIPipeParameterEditorUI {
             if (!rangeString.isUseExpression()) {
                 rangeString.getIntegers(0, 0, new JIPipeExpressionVariablesMap());
             }
-            rangeStringEditor.setBorder(BorderFactory.createEtchedBorder());
+            rangeStringEditor.setBorder(UIUtils.createControlBorder());
             rangeStringEditor.setToolTipText("Valid!");
         } catch (Exception e) {
             rangeStringEditor.setBorder(BorderFactory.createLineBorder(Color.RED));

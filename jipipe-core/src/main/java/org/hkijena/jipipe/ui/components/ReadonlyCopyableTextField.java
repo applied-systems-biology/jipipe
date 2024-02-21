@@ -16,7 +16,7 @@ public class ReadonlyCopyableTextField extends JPanel {
         setLayout(new BorderLayout(4, 0));
         setOpaque(true);
         setBackground(UIManager.getColor("TextField.background"));
-        setBorder(BorderFactory.createEtchedBorder());
+        setBorder(UIUtils.createControlBorder());
 
         add(textField, BorderLayout.CENTER);
         textField.setBorder(null);

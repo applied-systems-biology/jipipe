@@ -174,7 +174,7 @@ public class RunSingleAlgorithmWindow extends JFrame implements JIPipeWorkbench 
 
     private void initializeList(JPanel listPanel) {
         algorithmList = new JList<>();
-        algorithmList.setBorder(BorderFactory.createEtchedBorder());
+        algorithmList.setBorder(UIUtils.createControlBorder());
         algorithmList.setCellRenderer(new JIPipeNodeInfoListCellRenderer());
         algorithmList.setModel(new DefaultListModel<>());
         algorithmList.addListSelectionListener(e -> selectNode(algorithmList.getSelectedValue()));
