@@ -187,7 +187,7 @@ public class JIPipeProjectOverviewUI extends JIPipeProjectWorkbenchPanel impleme
 
         DocumentTabPane tabPane = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Right);
         tabPane.addTab("Parameters",
-                UIUtils.getIcon32FromResources("actions/wrench.png"),
+                UIUtils.getIcon32FromResources("actions/configure.png"),
                 userParametersPanel,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
