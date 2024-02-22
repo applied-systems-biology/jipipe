@@ -73,9 +73,11 @@ public class JIPipePipelineSingleAlgorithmSelectionOverviewPanelUI extends JIPip
     }
 
     private void reload() {
+        String currentTask = ribbon.getSelectedTask();
         ribbon.clear();
         initializeRibbon(ribbon);
         ribbon.rebuildRibbon();
+        ribbon.selectTask(currentTask);
 
         formPanel.clear();
         initializeDocumentation(formPanel);

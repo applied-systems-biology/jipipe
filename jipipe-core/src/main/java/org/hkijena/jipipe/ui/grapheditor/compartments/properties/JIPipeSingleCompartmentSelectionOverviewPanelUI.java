@@ -71,9 +71,11 @@ public class JIPipeSingleCompartmentSelectionOverviewPanelUI extends JIPipeProje
     }
 
     private void reload() {
+        String currentTask = ribbon.getSelectedTask();
         ribbon.clear();
         initializeRibbon(ribbon);
         ribbon.rebuildRibbon();
+        ribbon.selectTask(currentTask);
 
         formPanel.clear();
         initializeCompartment(formPanel);
@@ -111,11 +113,7 @@ public class JIPipeSingleCompartmentSelectionOverviewPanelUI extends JIPipeProje
                 (button) -> {
                     compartment.setParameter("jipipe:node:ui-locked", button.isSelected());
                 }));
-        Ribbon.Band deleteBand = editTask.addBand("Delete");
-        if (!compartment.isUiLocked()) {
-            deleteBand.add(new LargeButtonAction("Delete compartment", "Deletes the node", UIUtils.getIcon32FromResources("actions/trash.png"), this::deleteCompartment));
-        }
-//        Ribbon.Band miscBand = editTask.addBand("Misc");
+        generalBand.add(new LargeButtonAction("Delete compartment", "Deletes the node", UIUtils.getIcon32FromResources("actions/trash.png"), this::deleteCompartment));
     }
 
     private void deleteCompartment() {

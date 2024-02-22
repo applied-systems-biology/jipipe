@@ -222,6 +222,16 @@ public class Ribbon extends JPanel {
         }
     }
 
+    public String getSelectedTask() {
+        int selectedIndex = tabPane.getTabbedPane().getSelectedIndex();
+        if(selectedIndex >= 0 && selectedIndex < tasks.size()) {
+            return tasks.get(selectedIndex).id;
+        }
+        else {
+            return null;
+        }
+    }
+
     /**
      * Reorders the tasks according to the list of IDs.
      * If there are tasks outside the ID list, their order will be preserved

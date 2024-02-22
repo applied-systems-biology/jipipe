@@ -625,8 +625,8 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         menu.add(new JIPipeRunnerQueueButton(this));
 
         // "Run" entry
-        JButton runProjectButton = new JButton("Run", UIUtils.getIconFromResources("actions/run-build.png"));
-        runProjectButton.setToolTipText("Opens a new interface to run the analysis.");
+        JButton runProjectButton = new JButton("Run", UIUtils.getIconFromResources("actions/play.png"));
+        runProjectButton.setToolTipText("Runs the whole pipeline");
         UIUtils.setStandardButtonBorder(runProjectButton);
 
         runProjectButton.addActionListener(e -> openRunUI());
