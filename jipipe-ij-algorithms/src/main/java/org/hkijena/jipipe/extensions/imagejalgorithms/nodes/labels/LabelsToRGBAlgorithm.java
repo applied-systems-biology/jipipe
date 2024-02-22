@@ -19,9 +19,9 @@ import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import inra.ijpb.color.ColorMaps;
 import inra.ijpb.label.LabelImages;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -36,13 +36,13 @@ import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterSettings;
 
 import java.awt.*;
 
-@JIPipeDocumentation(name = "Convert labels to RGB", description = "Visualizes a labels image by assigning a color to each label component")
-@JIPipeNode(menuPath = "Labels\nConvert", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output", autoCreate = true)
-@JIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
+@SetJIPipeDocumentation(name = "Convert labels to RGB", description = "Visualizes a labels image by assigning a color to each label component")
+@DefineJIPipeNode(menuPath = "Labels\nConvert", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output", create = true)
+@AddJIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
         "Bioinformatics (Oxford Univ Press) 32(22): 3532-3534, PMID 27412086, doi:10.1093/bioinformatics/btw413")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nLabel Images", aliasName = "Labels to RGB")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nLabel Images", aliasName = "Labels to RGB")
 public class LabelsToRGBAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private ColorMaps.CommonLabelMaps colorMap = ColorMaps.CommonLabelMaps.MAIN_COLORS;
@@ -94,7 +94,7 @@ public class LabelsToRGBAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus inputImage = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         int maxLabel = computeMaxLabel(inputImage);
         byte[][] lut = colorMap.computeLut(maxLabel, shuffleLut);
@@ -103,7 +103,7 @@ public class LabelsToRGBAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusColorRGBData(outputImage), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Color map", description = "The color map that assigns colors to labels")
+    @SetJIPipeDocumentation(name = "Color map", description = "The color map that assigns colors to labels")
     @JIPipeParameter("color-map")
     @EnumParameterSettings(itemInfo = LabelColorMapEnumItemInfo.class)
     public ColorMaps.CommonLabelMaps getColorMap() {
@@ -115,7 +115,7 @@ public class LabelsToRGBAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.colorMap = colorMap;
     }
 
-    @JIPipeDocumentation(name = "Background color", description = "The background color for non-labels (zero values)")
+    @SetJIPipeDocumentation(name = "Background color", description = "The background color for non-labels (zero values)")
     @JIPipeParameter("background-color")
     public Color getBackgroundColor() {
         return backgroundColor;
@@ -126,7 +126,7 @@ public class LabelsToRGBAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.backgroundColor = backgroundColor;
     }
 
-    @JIPipeDocumentation(name = "Shuffle LUT", description = "If enabled, shuffles the LUT randomly")
+    @SetJIPipeDocumentation(name = "Shuffle LUT", description = "If enabled, shuffles the LUT randomly")
     @JIPipeParameter("shuffle-lut")
     public boolean isShuffleLut() {
         return shuffleLut;

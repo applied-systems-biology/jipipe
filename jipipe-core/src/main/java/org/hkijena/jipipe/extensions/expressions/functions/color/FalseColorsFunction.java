@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.functions.color;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -10,7 +10,7 @@ import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 
-@JIPipeDocumentation(name = "False color", description = "Generates an RGB false color for a numeric input. The color is based around a color map. " +
+@SetJIPipeDocumentation(name = "False color", description = "Generates an RGB false color for a numeric input. The color is based around a color map. " +
         "The generated color is an array of size 3 containing the RGB components (0-255 per channel).")
 public class FalseColorsFunction extends ExpressionFunction {
     public FalseColorsFunction() {

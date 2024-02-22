@@ -1,13 +1,13 @@
 package org.hkijena.jipipe.extensions.expressions.functions.control;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "If-Else condition", description = "Returns the second parameter if the first is true, otherwise return the third parameter. Please note that both if_true and if_false are evaluated. Use IF_ELSE_EXPR if you don't want this.")
+@SetJIPipeDocumentation(name = "If-Else condition", description = "Returns the second parameter if the first is true, otherwise return the third parameter. Please note that both if_true and if_false are evaluated. Use IF_ELSE_EXPR if you don't want this.")
 public class IfElseFunction extends ExpressionFunction {
 
     public IfElseFunction() {

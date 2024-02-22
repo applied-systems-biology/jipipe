@@ -1,8 +1,8 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.transform;
 
-import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
+import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
 
-@JIPipeDocumentationDescription(description = "<ul>" +
+@AddJIPipeDocumentationDescription(description = "<ul>" +
         "<li>Constant: Set the border to a constant value (zero/black unless configurable)</li>" +
         "<li>Repeat: Repeat the nearest non-border pixel</li>" +
         "<li>Mirror: Mirror the pixel values across the border</li>" +

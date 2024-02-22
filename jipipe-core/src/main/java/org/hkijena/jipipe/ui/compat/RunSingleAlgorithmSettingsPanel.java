@@ -30,7 +30,7 @@ public class RunSingleAlgorithmSettingsPanel extends JIPipeWorkbenchPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        DocumentTabPane tabPane = new DocumentTabPane(true);
+        DocumentTabPane tabPane = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Top);
         add(tabPane, BorderLayout.CENTER);
 
         JIPipeAlgorithmCompendiumUI algorithmCompendiumUI = new JIPipeAlgorithmCompendiumUI();

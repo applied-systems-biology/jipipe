@@ -40,7 +40,7 @@ public class CreateNewNodeByInfoDatabaseEntry implements JIPipeNodeDatabaseEntry
     }
 
     private void initializeSlots() {
-        for (JIPipeInputSlot inputSlot : nodeInfo.getInputSlots()) {
+        for (AddJIPipeInputSlot inputSlot : nodeInfo.getInputSlots()) {
             if(!StringUtils.isNullOrEmpty(inputSlot.slotName())) {
                 inputSlots.put(inputSlot.slotName(), new JIPipeDataSlotInfo(inputSlot.value(),
                         JIPipeSlotType.Input,
@@ -48,7 +48,7 @@ public class CreateNewNodeByInfoDatabaseEntry implements JIPipeNodeDatabaseEntry
                         inputSlot.description()));
             }
         }
-        for (JIPipeOutputSlot outputSlot : nodeInfo.getOutputSlots()) {
+        for (AddJIPipeOutputSlot outputSlot : nodeInfo.getOutputSlots()) {
             if(!StringUtils.isNullOrEmpty(outputSlot.slotName())) {
                 outputSlots.put(outputSlot.slotName(), new JIPipeDataSlotInfo(outputSlot.value(),
                         JIPipeSlotType.Output,

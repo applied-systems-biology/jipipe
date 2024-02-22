@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.expressions.functions.convert;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Convert to boolean", description = "Converts the input to a boolean value. If the input is a number, all values >= 1 are converted to TRUE. Values < 1 are converted to FALSE. If the value is a string, then 'TRUE', 'T', 'ON', 'YES' and 'Y' are converted to TRUE (case-insensitive). Other values are converted to FALSE. " +
+@SetJIPipeDocumentation(name = "Convert to boolean", description = "Converts the input to a boolean value. If the input is a number, all values >= 1 are converted to TRUE. Values < 1 are converted to FALSE. If the value is a string, then 'TRUE', 'T', 'ON', 'YES' and 'Y' are converted to TRUE (case-insensitive). Other values are converted to FALSE. " +
         "If the parameter is an array, all values are converted to booleans.")
 public class ToBooleanFunction extends ExpressionFunction {
 

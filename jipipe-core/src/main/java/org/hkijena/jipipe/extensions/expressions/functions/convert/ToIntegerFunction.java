@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.expressions.functions.convert;
 
 import org.apache.commons.lang3.math.NumberUtils;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Convert to integer", description = "Converts the input to an integral number. Strings must be formatted correctly. Boolean values are converted to TRUE = 1 and FALSE = 0")
+@SetJIPipeDocumentation(name = "Convert to integer", description = "Converts the input to an integral number. Strings must be formatted correctly. Boolean values are converted to TRUE = 1 and FALSE = 0")
 public class ToIntegerFunction extends ExpressionFunction {
 
     public ToIntegerFunction() {

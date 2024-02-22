@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.omnipose;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -64,7 +64,7 @@ public class OmniposeSettings extends AbstractJIPipeParameterCollection {
         }
     }
 
-    @JIPipeDocumentation(name = "Omnipose Python environment", description = "If enabled, a separate Python environment is used for Omnipose. " +
+    @SetJIPipeDocumentation(name = "Omnipose Python environment", description = "If enabled, a separate Python environment is used for Omnipose. " +
             "Alternatively, the standard Python environment from the Python extension is used. Please ensure that Omnipose is installed. " +
             "You can also install Omnipose via the Select/Install button (CPU and GPU supported).")
     @JIPipeParameter("python-environment")
@@ -78,7 +78,7 @@ public class OmniposeSettings extends AbstractJIPipeParameterCollection {
         this.overridePythonEnvironment = overridePythonEnvironment;
     }
 
-    @JIPipeDocumentation(name = "Easy installer repositories", description = "Allows to change the repositories for the EasyInstaller")
+    @SetJIPipeDocumentation(name = "Easy installer repositories", description = "Allows to change the repositories for the EasyInstaller")
     @JIPipeParameter("easy-installer-repositories")
     public StringList getEasyInstallerRepositories() {
         return easyInstallerRepositories;

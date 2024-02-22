@@ -14,8 +14,9 @@
 package org.hkijena.jipipe.ui.running;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeProjectRun;
-import org.hkijena.jipipe.api.JIPipeRunSettings;
+import org.hkijena.jipipe.api.run.JIPipeGraphRun;
+import org.hkijena.jipipe.api.run.JIPipeGraphRunSettings;
+import org.hkijena.jipipe.api.run.JIPipeLegacyProjectRunSettings;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
@@ -51,11 +52,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Settings UI for {@link org.hkijena.jipipe.api.JIPipeRunSettings}
+ * Settings UI for {@link JIPipeLegacyProjectRunSettings}
  */
 public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
 
-    private JIPipeProjectRun run;
+    private JIPipeGraphRun run;
 
     /**
      * @param workbenchUI workbench UI
@@ -117,9 +118,9 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
     private void initializeSetupGUI() {
 
         try {
-            JIPipeRunSettings settings = new JIPipeRunSettings();
+            JIPipeGraphRunSettings settings = new JIPipeGraphRunSettings();
             settings.setOutputPath(RuntimeSettings.generateTempDirectory(""));
-            run = new JIPipeProjectRun(getProjectWorkbench().getProject(), settings);
+            run = new JIPipeGraphRun(getProjectWorkbench().getProject(), settings);
         } catch (Exception e) {
             openError(e);
             return;
@@ -129,7 +130,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
 
         AutoResizeSplitPane splitPane = new AutoResizeSplitPane(AutoResizeSplitPane.LEFT_RIGHT, new AutoResizeSplitPane.DynamicSidebarRatio(600, false));
         AutoResizeSplitPane splitPane1 = new AutoResizeSplitPane(AutoResizeSplitPane.TOP_BOTTOM, AutoResizeSplitPane.RATIO_1_TO_1);
-        DocumentTabPane tabPane = new DocumentTabPane();
+        DocumentTabPane tabPane = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Left);
         JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.add(tabPane, BorderLayout.CENTER);
 
@@ -151,7 +152,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
 
 
         // General settings tab
-        tabPane.addTab("General", UIUtils.getIconFromResources("actions/configure.png"), new ParameterPanel(getProjectWorkbench(),
+        tabPane.addTab("General", UIUtils.getIcon32FromResources("actions/configure.png"), new ParameterPanel(getProjectWorkbench(),
                 run.getConfiguration(),
                new MarkdownDocument(),
                 ParameterPanel.WITH_SCROLLING), DocumentTabPane.CloseMode.withoutCloseButton);
@@ -181,7 +182,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
 
     private void createWrittenResultsPanel(DocumentTabPane tabPane, Set<JIPipeDataSlot> remainingOutputs) {
         FormPanel infoPanel = new FormPanel(FormPanel.WITH_SCROLLING);
-        tabPane.addTab("Written results", UIUtils.getIconFromResources("actions/save.png"), infoPanel, DocumentTabPane.CloseMode.withoutCloseButton);
+        tabPane.addTab("Exported", UIUtils.getIcon32FromResources("actions/stock_save.png"), infoPanel, DocumentTabPane.CloseMode.withoutCloseButton);
         createOutputsManagerPanel(infoPanel, remainingOutputs);
         infoPanel.addVerticalGlue();
     }
@@ -192,7 +193,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
                 "There are nodes that generate large intermediate results. Please go to the 'Performance optimization' tab if you want to disable writing the outputs to the cache/hard drive.",
                 true,
                 false);
-        tabPane.addTab("Performance optimization", UIUtils.getIconFromResources("actions/speedometer.png"), infoPanel, DocumentTabPane.CloseMode.withoutCloseButton);
+        tabPane.addTab("Performance", UIUtils.getIcon32FromResources("actions/speedometer.png"), infoPanel, DocumentTabPane.CloseMode.withoutCloseButton);
         createOutputsManagerPanel(infoPanel, heavyIntermediateOutputs);
         infoPanel.addVerticalGlue();
     }
@@ -203,7 +204,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
                 "Not all nodes can be executed, which may or may not be intended. Please review the 'Skipped nodes' tab.",
                 true,
                 false);
-        tabPane.addTab("Skipped nodes", UIUtils.getIconFromResources("emblems/warning.png"), infoPanel, DocumentTabPane.CloseMode.withoutCloseButton);
+        tabPane.addTab("Skipped", UIUtils.getIcon32FromResources("emblems/vcs-conflicting.png"), infoPanel, DocumentTabPane.CloseMode.withoutCloseButton);
 
         DefaultTableModel model = new DefaultTableModel();
         model.setColumnIdentifiers(new Object[]{"Compartment", "Node name"});
@@ -240,7 +241,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
                         int row = checkBoxes.size();
                         JCheckBox checkBox = new JCheckBox(outputSlot.getName(), true);
                         checkBox.addActionListener(e -> {
-                            JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentAlgorithm(node);
+                            JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentNode(node);
                             runAlgorithm.getOutputSlot(outputSlot.getName()).getInfo().setSaveOutputs(checkBox.isSelected());
                         });
                         JLabel compartmentLabel = new JLabel(node.getCompartmentDisplayName(),
@@ -291,7 +292,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
                 }
                 for (JIPipeDataSlot slot : outputSlots) {
                     JIPipeGraphNode node = slot.getNode();
-                    JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentAlgorithm(node);
+                    JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentNode(node);
                     runAlgorithm.getOutputSlot(slot.getName()).getInfo().setSaveOutputs(true);
                 }
             });
@@ -304,7 +305,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
                 }
                 for (JIPipeDataSlot slot : outputSlots) {
                     JIPipeGraphNode node = slot.getNode();
-                    JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentAlgorithm(node);
+                    JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentNode(node);
                     runAlgorithm.getOutputSlot(slot.getName()).getInfo().setSaveOutputs(false);
                 }
             });
@@ -312,7 +313,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
 
             panel.add(toolBar, BorderLayout.NORTH);
             panel.add(contentPanel, BorderLayout.CENTER);
-            panel.setBorder(BorderFactory.createLineBorder(UIManager.getColor("Button.borderColor")));
+            panel.setBorder(UIUtils.createControlBorder());
 
             formPanel.addWideToForm(panel, null);
         }

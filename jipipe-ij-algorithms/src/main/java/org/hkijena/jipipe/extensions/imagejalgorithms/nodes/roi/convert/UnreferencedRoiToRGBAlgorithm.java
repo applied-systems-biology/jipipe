@@ -19,8 +19,8 @@ import ij.gui.Roi;
 import ij.plugin.filter.Filler;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -48,11 +48,11 @@ import java.util.Optional;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@JIPipeDocumentation(name = "Convert only ROI to RGB", description = "Converts ROI lists to color images. The line and fill color is stored within the ROI themselves. " +
+@SetJIPipeDocumentation(name = "Convert only ROI to RGB", description = "Converts ROI lists to color images. The line and fill color is stored within the ROI themselves. " +
         "This algorithm does not need a reference image that determines the output size.")
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output", create = true)
 public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Margin imageArea = new Margin();
@@ -103,7 +103,7 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.ignoreT = other.ignoreT;
     }
 
-    @JIPipeDocumentation(name = "Prefer ROI-associated images", description =
+    @SetJIPipeDocumentation(name = "Prefer ROI-associated images", description =
             "ROI can carry a reference to an image (e.g. the thresholding input). With this option enabled, this image is preferred to generating " +
                     "an output based on the pure ROIs.")
     @JIPipeParameter("prefer-associated-image")
@@ -117,20 +117,20 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         if (preferAssociatedImage) {
             for (Map.Entry<Optional<ImagePlus>, ROIListData> referenceEntry : iterationStep.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo).groupByReferenceImage().entrySet()) {
                 ROIListData inputData = (ROIListData) referenceEntry.getValue().duplicate(progressInfo);
-                processROIList(iterationStep, inputData, referenceEntry.getKey().orElse(null), progressInfo);
+                processROIList(iterationStep, inputData, referenceEntry.getKey().orElse(null), runContext, progressInfo);
             }
         } else {
             ROIListData inputData = (ROIListData) iterationStep.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo).duplicate(progressInfo);
-            processROIList(iterationStep, inputData, null, progressInfo);
+            processROIList(iterationStep, inputData, null, runContext, progressInfo);
         }
 
     }
 
-    private void processROIList(JIPipeSingleIterationStep iterationStep, ROIListData inputData, ImagePlus reference, JIPipeProgressInfo progressInfo) {
+    private void processROIList(JIPipeSingleIterationStep iterationStep, ROIListData inputData, ImagePlus reference, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         // Find the bounds and future stack position
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
@@ -158,7 +158,7 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
                     JIPipe.createNode("ij1-roi-statistics");
             statisticsAlgorithm.getMeasurements().setNativeValue(Measurement.Centroid.getNativeValue());
             statisticsAlgorithm.getInputSlot("ROI").addData(inputData, progressInfo);
-            statisticsAlgorithm.run(progressInfo);
+            statisticsAlgorithm.run(runContext, progressInfo);
             ResultsTableData centroids = statisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
             for (int row = 0; row < centroids.getRowCount(); row++) {
                 Point centroid = new Point((int) centroids.getValueAsDouble(row, "X"),
@@ -225,7 +225,7 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Image area", description = "Allows modification of the output image width and height.")
+    @SetJIPipeDocumentation(name = "Image area", description = "Allows modification of the output image width and height.")
     @JIPipeParameter("image-area")
     public Margin getImageArea() {
         return imageArea;
@@ -236,7 +236,7 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.imageArea = imageArea;
     }
 
-    @JIPipeDocumentation(name = "Draw outline", description = "If enabled, draw a white outline of the ROI")
+    @SetJIPipeDocumentation(name = "Draw outline", description = "If enabled, draw a white outline of the ROI")
     @JIPipeParameter("draw-outline-mode")
     public ROIElementDrawingMode getDrawOutlineMode() {
         return drawOutlineMode;
@@ -247,7 +247,7 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.drawOutlineMode = drawOutlineMode;
     }
 
-    @JIPipeDocumentation(name = "Draw filled outline", description = "If enabled, fill the ROI areas")
+    @SetJIPipeDocumentation(name = "Draw filled outline", description = "If enabled, fill the ROI areas")
     @JIPipeParameter("fill-outline-mode")
     public ROIElementDrawingMode getDrawFilledOutlineMode() {
         return drawFilledOutlineMode;
@@ -258,7 +258,7 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.drawFilledOutlineMode = drawFilledOutlineMode;
     }
 
-    @JIPipeDocumentation(name = "Override fill color", description = "If enabled, the fill color will be overridden by this value. " +
+    @SetJIPipeDocumentation(name = "Override fill color", description = "If enabled, the fill color will be overridden by this value. " +
             "If a ROI has no fill color, it will always fall back to this color.")
     @JIPipeParameter("override-fill-color")
     public OptionalColorParameter getOverrideFillColor() {
@@ -270,7 +270,7 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.overrideFillColor = overrideFillColor;
     }
 
-    @JIPipeDocumentation(name = "Override line color", description = "If enabled, the line color will be overridden by this value. " +
+    @SetJIPipeDocumentation(name = "Override line color", description = "If enabled, the line color will be overridden by this value. " +
             "If a ROI has no line color, it will always fall back to this color.")
     @JIPipeParameter("override-line-color")
     public OptionalColorParameter getOverrideLineColor() {
@@ -282,7 +282,7 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.overrideLineColor = overrideLineColor;
     }
 
-    @JIPipeDocumentation(name = "Override line width", description = "If enabled, the line width will be overridden by this value. " +
+    @SetJIPipeDocumentation(name = "Override line width", description = "If enabled, the line width will be overridden by this value. " +
             "If a ROI has a line width equal or less than zero, it will fall back to this value.")
     @JIPipeParameter("override-line-width")
     public OptionalDoubleParameter getOverrideLineWidth() {
@@ -294,7 +294,7 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.overrideLineWidth = overrideLineWidth;
     }
 
-    @JIPipeDocumentation(name = "Draw labels", description = "If enabled, draw the ROI labels")
+    @SetJIPipeDocumentation(name = "Draw labels", description = "If enabled, draw the ROI labels")
     @JIPipeParameter("draw-label")
     public boolean isDrawLabel() {
         return drawLabel;
@@ -305,7 +305,7 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.drawLabel = drawLabel;
     }
 
-    @JIPipeDocumentation(name = "Draw over reference", description = "If enabled, draw the ROI over the reference image.")
+    @SetJIPipeDocumentation(name = "Draw over reference", description = "If enabled, draw the ROI over the reference image.")
     @JIPipeParameter("draw-over")
     public boolean isDrawOver() {
         return drawOver;
@@ -316,7 +316,7 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.drawOver = drawOver;
     }
 
-    @JIPipeDocumentation(name = "Ignore Z", description = "If enabled, ROI will show outside their Z layer")
+    @SetJIPipeDocumentation(name = "Ignore Z", description = "If enabled, ROI will show outside their Z layer")
     @JIPipeParameter("ignore-z")
     public boolean isIgnoreZ() {
         return ignoreZ;
@@ -327,7 +327,7 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.ignoreZ = ignoreZ;
     }
 
-    @JIPipeDocumentation(name = "Ignore channel", description = "If enabled, ROI will show outside their channel (C) layer")
+    @SetJIPipeDocumentation(name = "Ignore channel", description = "If enabled, ROI will show outside their channel (C) layer")
     @JIPipeParameter("ignore-c")
     public boolean isIgnoreC() {
         return ignoreC;
@@ -338,7 +338,7 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.ignoreC = ignoreC;
     }
 
-    @JIPipeDocumentation(name = "Ignore frame", description = "If enabled, ROI will show outside their frame (T) layer")
+    @SetJIPipeDocumentation(name = "Ignore frame", description = "If enabled, ROI will show outside their frame (T) layer")
     @JIPipeParameter("ignore-t")
     public boolean isIgnoreT() {
         return ignoreT;

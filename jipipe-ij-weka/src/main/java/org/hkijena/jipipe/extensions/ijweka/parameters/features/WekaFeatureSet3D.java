@@ -15,7 +15,7 @@
 package org.hkijena.jipipe.extensions.ijweka.parameters.features;
 
 import com.google.common.collect.Sets;
-import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
+import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
 import org.hkijena.jipipe.extensions.parameters.api.enums.DynamicSetParameter;
 
 import java.util.Arrays;
@@ -23,7 +23,7 @@ import java.util.Arrays;
 /**
  * Parameter that allows users to select a set of {@link WekaFeature3D}
  */
-@JIPipeDocumentationDescription(description = "<ul>" +
+@AddJIPipeDocumentationDescription(description = "<ul>" +
         "<li>Gaussian blur: performs \uD835\uDC5B individual 3D convolutions with Gaussian kernels with the normal \uD835\uDC5B variations of \uD835\uDF0E. The larger the radius the more blurred the image becomes until the pixels are homogeneous.</li>" +
         "<li>Hessian: using FeatureJ it computes for each image element (voxel) the eigenvalues of the Hessian, which can be used for example to discriminate locally between plate-like, line-like, and blob-like image structures. More specifically, it calculates the magnitude of the largest, middle and smallest eigenvalue of the Hessian tensor. It requires enabling the ImageScience update site in the updater. It uses smoothing scale \uD835\uDF0E.</li>" +
         "<li>Derivatives: calculates high order derivatives of the input image (4, 6, 8, 10)</li>" +
@@ -33,7 +33,7 @@ import java.util.Arrays;
         "<li>Difference of Gaussian: calculates two Gaussian blur images from the original image and subtracts one from the other. \uD835\uDF0E values are varied as usual, so \uD835\uDC5B(\uD835\uDC5B−1)2 feature images are added to the stack.</li>" +
         "<li>Minimum, Maximum, Mean, Variance, Median: the voxels within a radius of \uD835\uDF0E voxels from the target pixel are subjected to the pertinent operation (mean/min etc.) and the target voxel is set to that value.</li>" +
         "</ul>")
-@JIPipeDocumentationDescription(description = "More information: https://imagej.net/plugins/tws/")
+@AddJIPipeDocumentationDescription(description = "More information: https://imagej.net/plugins/tws/")
 public class WekaFeatureSet3D extends DynamicSetParameter<WekaFeature3D> {
     public WekaFeatureSet3D() {
         setAllowedValues(Arrays.asList(WekaFeature3D.values()));

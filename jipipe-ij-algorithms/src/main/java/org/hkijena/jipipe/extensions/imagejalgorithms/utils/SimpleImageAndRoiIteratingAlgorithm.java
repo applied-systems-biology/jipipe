@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.utils;
 
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
@@ -38,7 +38,7 @@ public abstract class SimpleImageAndRoiIteratingAlgorithm extends JIPipeIteratin
         ImageJAlgorithmUtils.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
     }
 
-    @JIPipeDocumentation(name = "Only apply to ...", description = "Determines where the algorithm is applied to.")
+    @SetJIPipeDocumentation(name = "Only apply to ...", description = "Determines where the algorithm is applied to.")
     @JIPipeParameter("roi:target-area")
     public ImageROITargetArea getTargetArea() {
         return targetArea;

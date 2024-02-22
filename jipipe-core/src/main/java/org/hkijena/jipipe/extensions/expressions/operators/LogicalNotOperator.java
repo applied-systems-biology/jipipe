@@ -13,14 +13,14 @@
 
 package org.hkijena.jipipe.extensions.expressions.operators;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionOperator;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.Iterator;
 
-@JIPipeDocumentation(name = "Logical NOT", description = "Returns TRUE if the input is FALSE and vice versa.")
+@SetJIPipeDocumentation(name = "Logical NOT", description = "Returns TRUE if the input is FALSE and vice versa.")
 public class LogicalNotOperator extends ExpressionOperator {
 
     public LogicalNotOperator(String symbol, int precedence) {

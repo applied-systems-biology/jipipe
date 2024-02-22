@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.cellpose.parameters.deprecated;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
@@ -21,7 +21,7 @@ public class CellposeSegmentationPerformanceSettings_Old extends AbstractJIPipeP
         this.resample = other.resample;
     }
 
-    @JIPipeDocumentation(name = "Batch size", description = "Number of 224x224 patches to run simultaneously on the GPU " +
+    @SetJIPipeDocumentation(name = "Batch size", description = "Number of 224x224 patches to run simultaneously on the GPU " +
             "(can make smaller or bigger depending on GPU memory usage)")
     @JIPipeParameter("batch-size")
     public int getBatchSize() {
@@ -33,7 +33,7 @@ public class CellposeSegmentationPerformanceSettings_Old extends AbstractJIPipeP
         this.batchSize = batchSize;
     }
 
-    @JIPipeDocumentation(name = "Tile images", description = "Tiles image to ensure GPU/CPU memory usage limited (recommended)")
+    @SetJIPipeDocumentation(name = "Tile images", description = "Tiles image to ensure GPU/CPU memory usage limited (recommended)")
     @JIPipeParameter("tile")
     public boolean isTile() {
         return tile;
@@ -44,7 +44,7 @@ public class CellposeSegmentationPerformanceSettings_Old extends AbstractJIPipeP
         this.tile = tile;
     }
 
-    @JIPipeDocumentation(name = "Tile overlap", description = "Fraction of overlap of tiles when computing flows")
+    @SetJIPipeDocumentation(name = "Tile overlap", description = "Fraction of overlap of tiles when computing flows")
     @JIPipeParameter("tile-overlap")
     public double getTileOverlap() {
         return tileOverlap;
@@ -55,7 +55,7 @@ public class CellposeSegmentationPerformanceSettings_Old extends AbstractJIPipeP
         this.tileOverlap = tileOverlap;
     }
 
-    @JIPipeDocumentation(name = "Resample", description = "If enabled, run dynamics at original image size " +
+    @SetJIPipeDocumentation(name = "Resample", description = "If enabled, run dynamics at original image size " +
             "(will be slower but create more accurate boundaries)")
     @JIPipeParameter("resample")
     public boolean isResample() {

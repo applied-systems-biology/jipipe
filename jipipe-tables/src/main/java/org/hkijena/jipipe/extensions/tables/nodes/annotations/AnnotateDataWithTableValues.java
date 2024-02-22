@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.tables.nodes.annotations;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -24,11 +24,11 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import java.util.ArrayList;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Annotate data with table values", description = "Annotates the incoming data with values from the input table")
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", description = "The data that should be annotated", autoCreate = true)
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Table", description = "The table that contains the data", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Annotated data", description = "The annotated data", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
+@SetJIPipeDocumentation(name = "Annotate data with table values", description = "Annotates the incoming data with values from the input table")
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Data", description = "The data that should be annotated", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Table", description = "The table that contains the data", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Annotated data", description = "The annotated data", create = true)
+@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
 public class AnnotateDataWithTableValues extends JIPipeIteratingAlgorithm {
 
     private JIPipeTextAnnotationMergeMode annotationMergeMode = JIPipeTextAnnotationMergeMode.Merge;
@@ -46,7 +46,7 @@ public class AnnotateDataWithTableValues extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         JIPipeData data = iterationStep.getInputData("Data", JIPipeData.class, progressInfo);
         ResultsTableData tableData = iterationStep.getInputData("Table", ResultsTableData.class, progressInfo);
 
@@ -66,7 +66,7 @@ public class AnnotateDataWithTableValues extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), data, annotationList, annotationMergeMode, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Annotation merge mode", description = "Determines how generated annotations are merged with existing annotations")
+    @SetJIPipeDocumentation(name = "Annotation merge mode", description = "Determines how generated annotations are merged with existing annotations")
     @JIPipeParameter("annotation-merge-mode")
     public JIPipeTextAnnotationMergeMode getAnnotationMergeMode() {
         return annotationMergeMode;
@@ -77,7 +77,7 @@ public class AnnotateDataWithTableValues extends JIPipeIteratingAlgorithm {
         this.annotationMergeMode = annotationMergeMode;
     }
 
-    @JIPipeDocumentation(name = "Generated annotations", description = "List of annotations to be created. Each is provided with two expressions: one for generating the name, and one for generating the value.\n\n" +
+    @SetJIPipeDocumentation(name = "Generated annotations", description = "List of annotations to be created. Each is provided with two expressions: one for generating the name, and one for generating the value.\n\n" +
             "Both the name and value expressions have access to annotations and variables that correspond to the table columns of the input table.")
     @JIPipeParameter(value = "generated-annotations", important = true)
     @ParameterCollectionListTemplate(AnnotationSettings.class)
@@ -94,7 +94,7 @@ public class AnnotateDataWithTableValues extends JIPipeIteratingAlgorithm {
         private JIPipeExpressionParameter annotationName = new JIPipeExpressionParameter("\"Annotation\"");
         private JIPipeExpressionParameter annotationValue = new JIPipeExpressionParameter("");
 
-        @JIPipeDocumentation(name = "Name")
+        @SetJIPipeDocumentation(name = "Name")
         @JIPipeParameter("name")
         @JIPipeExpressionParameterVariable(name = "<Column>", description = "All values of the specified column as list", key = "")
         @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
@@ -109,7 +109,7 @@ public class AnnotateDataWithTableValues extends JIPipeIteratingAlgorithm {
             this.annotationName = annotationName;
         }
 
-        @JIPipeDocumentation(name = "Value")
+        @SetJIPipeDocumentation(name = "Value")
         @JIPipeParameter("value")
         @JIPipeExpressionParameterVariable(name = "<Column>", description = "All values of the specified column as list", key = "")
         @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)

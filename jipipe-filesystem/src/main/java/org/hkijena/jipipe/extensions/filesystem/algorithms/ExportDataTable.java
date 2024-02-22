@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -33,11 +33,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-@JIPipeDocumentation(name = "Export data table (path input)", description = "Exports all incoming data as data table directory.")
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", description = "The data to be exported", autoCreate = true)
-@JIPipeInputSlot(value = PathData.class, slotName = "Path", description = "The directory where the data will be stored", autoCreate = true)
-@JIPipeOutputSlot(value = PathData.class, slotName = "Path", description = "The directory where the data was stored", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "Export data table (path input)", description = "Exports all incoming data as data table directory.")
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Data", description = "The data to be exported", create = true)
+@AddJIPipeInputSlot(value = PathData.class, slotName = "Path", description = "The directory where the data will be stored", create = true)
+@AddJIPipeOutputSlot(value = PathData.class, slotName = "Path", description = "The directory where the data was stored", create = true)
+@DefineJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class)
 public class ExportDataTable extends JIPipeMergingAlgorithm {
 
     public ExportDataTable(JIPipeNodeInfo info) {
@@ -49,7 +49,7 @@ public class ExportDataTable extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Path outputDirectory = iterationStep.getInputData("Path", PathData.class, progressInfo).get(0).toPath();
         if (outputDirectory == null || outputDirectory.toString().isEmpty() || !outputDirectory.isAbsolute()) {
             outputDirectory = getFirstOutputSlot().getSlotStoragePath().resolve(StringUtils.nullToEmpty(outputDirectory));

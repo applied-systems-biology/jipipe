@@ -29,15 +29,18 @@ import java.util.function.BiConsumer;
  */
 public class JIPipeProgressInfo implements Cancelable {
 
+    private static final String[] SPINNER_1 = new String[]{"⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"};
     private final StampedLock stampedLock;
+
     private AtomicBoolean cancelled = new AtomicBoolean();
     private AtomicInteger progress = new AtomicInteger(0);
     private AtomicInteger maxProgress = new AtomicInteger(1);
+    private AtomicInteger numLines = new AtomicInteger(0);
+    private AtomicBoolean withSpinner = new AtomicBoolean(false);
     private StringBuilder log = new StringBuilder();
     private String logPrepend = "";
     private AtomicBoolean logToStdOut = new AtomicBoolean(false);
     private boolean detachedProgress = false;
-
     private String cancelReason;
 
     private StatusUpdatedEventEmitter statusUpdatedEventEmitter;
@@ -58,14 +61,15 @@ public class JIPipeProgressInfo implements Cancelable {
         this.logToStdOut = other.logToStdOut;
         this.detachedProgress = other.detachedProgress;
         this.cancelReason = other.cancelReason;
+        this.numLines = other.numLines;
+        this.withSpinner = other.withSpinner;
     }
 
     public void clearLog() {
         long stamp = stampedLock.writeLock();
         try {
             log.setLength(0);
-        }
-        finally {
+        } finally {
             stampedLock.unlock(stamp);
         }
     }
@@ -74,8 +78,7 @@ public class JIPipeProgressInfo implements Cancelable {
         long stamp = stampedLock.writeLock();
         try {
             progress.getAndIncrement();
-        }
-        finally {
+        } finally {
             stampedLock.unlock(stamp);
         }
     }
@@ -139,6 +142,14 @@ public class JIPipeProgressInfo implements Cancelable {
         logToStdOut.set(value);
     }
 
+    public void setWithSpinner(boolean b) {
+        withSpinner.set(b);
+    }
+
+    public boolean isWithSpinner() {
+        return withSpinner.get();
+    }
+
     /**
      * Writes a message into the log
      *
@@ -147,9 +158,17 @@ public class JIPipeProgressInfo implements Cancelable {
     public void log(String message) {
         long stamp = stampedLock.writeLock();
         try {
-            if (detachedProgress)
+            if (detachedProgress) {
                 log.append("SUB ");
-            log.append("<").append(progress).append("/").append(maxProgress).append("> ").append(logPrepend);
+            }
+            log.append("<").append(progress).append("/").append(maxProgress).append("> ");
+
+            if(withSpinner.get()) {
+                log.append(SPINNER_1[numLines.get() % SPINNER_1.length]).append(" ");
+            }
+
+            log.append(logPrepend);
+
             boolean needsSeparator = !StringUtils.isNullOrEmpty(logPrepend) && !StringUtils.isNullOrEmpty(message);
             if (needsSeparator)
                 log.append(" | ");
@@ -159,9 +178,9 @@ public class JIPipeProgressInfo implements Cancelable {
             if (logToStdOut.get()) {
                 System.out.println(event.render());
             }
+            numLines.getAndIncrement();
             statusUpdatedEventEmitter.emit(event);
-        }
-        finally {
+        } finally {
             stampedLock.unlock(stamp);
         }
     }
@@ -188,8 +207,7 @@ public class JIPipeProgressInfo implements Cancelable {
             result.progress = new AtomicInteger(this.progress.get());
             result.maxProgress = new AtomicInteger(this.maxProgress.get());
             return result;
-        }
-        finally {
+        } finally {
             stampedLock.unlock(stamp);
         }
     }
@@ -209,8 +227,7 @@ public class JIPipeProgressInfo implements Cancelable {
             else
                 result.logPrepend = result.logPrepend + " | " + logPrepend;
             return result;
-        }
-        finally {
+        } finally {
             stampedLock.unlock(stamp);
         }
     }

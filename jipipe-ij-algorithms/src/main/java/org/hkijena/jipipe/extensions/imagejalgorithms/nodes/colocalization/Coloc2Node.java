@@ -8,9 +8,9 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.LongType;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -49,20 +49,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Coloc 2", description = "Colocalization analysis via the pixel intensity correlation over space methods of Pearson, Manders, Costes, Li and more, " +
+@SetJIPipeDocumentation(name = "Coloc 2", description = "Colocalization analysis via the pixel intensity correlation over space methods of Pearson, Manders, Costes, Li and more, " +
         "for scatterplots, analysis, automatic thresholding and statistical significance testing. Coloc 2 does NOT perform object based colocalization measurements, where objects are first segmented from the image, then their spatial relationships like overlap etc. are measured. " +
         "This complementary approach is implemented in many ways elsewhere.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Colocalization")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze\nColocalization")
-@JIPipeCitation("See https://imagej.net/plugins/coloc-2")
-@JIPipeCitation("See https://imagej.net/imaging/colocalization-analysis for more information abot colocalization")
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Channel 1", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Channel 2", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", optional = true, description = "Optional mask")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", optional = true, description = "Optional ROI")
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Results", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Plots", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Histograms", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Colocalization")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze\nColocalization")
+@AddJIPipeCitation("See https://imagej.net/plugins/coloc-2")
+@AddJIPipeCitation("See https://imagej.net/imaging/colocalization-analysis for more information abot colocalization")
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Channel 1", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Channel 2", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", optional = true, description = "Optional mask")
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", optional = true, description = "Optional ROI")
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Results", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Plots", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Histograms", create = true)
 
 public class Coloc2Node extends JIPipeIteratingAlgorithm {
 
@@ -99,7 +99,7 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus channel1Img = iterationStep.getInputData("Channel 1", ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
         ImagePlus channel2Img = iterationStep.getInputData("Channel 2", ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
         channel2Img = ImageJUtils.convertToSameTypeIfNeeded(channel2Img, channel1Img, true);
@@ -298,7 +298,7 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
         return resultsTableData;
     }
 
-    @JIPipeDocumentation(name = "Annotate histograms with name", description = "If enabled, generated histograms are annotated by their name.")
+    @SetJIPipeDocumentation(name = "Annotate histograms with name", description = "If enabled, generated histograms are annotated by their name.")
     @JIPipeParameter("histogram-name-annotation")
     public OptionalAnnotationNameParameter getHistogramNameAnnotation() {
         return histogramNameAnnotation;
@@ -309,7 +309,7 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
         this.histogramNameAnnotation = histogramNameAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate plots with name", description = "If enabled, generated plots are annotated by their name.")
+    @SetJIPipeDocumentation(name = "Annotate plots with name", description = "If enabled, generated plots are annotated by their name.")
     @JIPipeParameter("plot-name-annotation")
     public OptionalAnnotationNameParameter getPlotNameAnnotation() {
         return plotNameAnnotation;
@@ -320,7 +320,7 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
         this.plotNameAnnotation = plotNameAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Output warnings", description = "If enabled, Coloc 2 warnings will be generated as text data")
+    @SetJIPipeDocumentation(name = "Output warnings", description = "If enabled, Coloc 2 warnings will be generated as text data")
     @JIPipeParameter("output-warnings")
     public boolean isOutputWarnings() {
         return outputWarnings;
@@ -332,13 +332,13 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
         toggleSlot(SLOT_OUTPUT_WARNINGS, outputWarnings);
     }
 
-    @JIPipeDocumentation(name = "Colocalization settings")
+    @SetJIPipeDocumentation(name = "Colocalization settings")
     @JIPipeParameter("coloc2-settings")
     public Settings getSettings() {
         return settings;
     }
 
-    @JIPipeDocumentation(name = "Restrict to ROI/mask", description = "Allows to change whether to restrict the calculations to a ROI or to a mask")
+    @SetJIPipeDocumentation(name = "Restrict to ROI/mask", description = "Allows to change whether to restrict the calculations to a ROI or to a mask")
     @JIPipeParameter("input-masks")
     @BooleanParameterSettings(comboBoxStyle = true, trueLabel = "Mask", falseLabel = "ROI")
     public boolean isInputMasks() {
@@ -352,7 +352,7 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
         toggleSlot(SLOT_INPUT_ROI, !inputMasks);
     }
 
-    @JIPipeDocumentation(name = "Channel 1 name", description = "The name of the first channel in the results")
+    @SetJIPipeDocumentation(name = "Channel 1 name", description = "The name of the first channel in the results")
     @JIPipeParameter("channel1-name")
     public String getChannel1Name() {
         return channel1Name;
@@ -363,7 +363,7 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
         this.channel1Name = channel1Name;
     }
 
-    @JIPipeDocumentation(name = "Channel 2 name", description = "The name of the second channel in the results")
+    @SetJIPipeDocumentation(name = "Channel 2 name", description = "The name of the second channel in the results")
     @JIPipeParameter("channel2-name")
     public String getChannel2Name() {
         return channel2Name;
@@ -405,7 +405,7 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
             this.costesRandomizations = other.costesRandomizations;
         }
 
-        @JIPipeDocumentation(name = "Threshold regression")
+        @SetJIPipeDocumentation(name = "Threshold regression")
         @JIPipeParameter("threshold-regression")
         public AutoThresholdRegression.Implementation getThresholdRegression() {
             return thresholdRegression;
@@ -416,7 +416,7 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
             this.thresholdRegression = thresholdRegression;
         }
 
-        @JIPipeDocumentation(name = "Li Histogram Channel 1")
+        @SetJIPipeDocumentation(name = "Li Histogram Channel 1")
         @JIPipeParameter(value = "li-histogram-channel-1", uiOrder = -100)
         public boolean isLiHistogramChannel1() {
             return liHistogramChannel1;
@@ -427,7 +427,7 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
             this.liHistogramChannel1 = liHistogramChannel1;
         }
 
-        @JIPipeDocumentation(name = "Li Histogram Channel 2")
+        @SetJIPipeDocumentation(name = "Li Histogram Channel 2")
         @JIPipeParameter(value = "li-histogram-channel-2", uiOrder = -90)
         public boolean isLiHistogramChannel2() {
             return liHistogramChannel2;
@@ -438,7 +438,7 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
             this.liHistogramChannel2 = liHistogramChannel2;
         }
 
-        @JIPipeDocumentation(name = "Li ICQ")
+        @SetJIPipeDocumentation(name = "Li ICQ")
         @JIPipeParameter(value = "li-icq", uiOrder = -80)
         public boolean isLiICQ() {
             return liICQ;
@@ -449,7 +449,7 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
             this.liICQ = liICQ;
         }
 
-        @JIPipeDocumentation(name = "Spearman's Rank Correlation")
+        @SetJIPipeDocumentation(name = "Spearman's Rank Correlation")
         @JIPipeParameter(value = "spearman-rank-correlation", uiOrder = -70)
         public boolean isSpearmanRankCorrelation() {
             return spearmanRankCorrelation;
@@ -460,7 +460,7 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
             this.spearmanRankCorrelation = spearmanRankCorrelation;
         }
 
-        @JIPipeDocumentation(name = "Manders' Correlation")
+        @SetJIPipeDocumentation(name = "Manders' Correlation")
         @JIPipeParameter(value = "manders-correlation", uiOrder = -60)
         public boolean isMandersCorrelation() {
             return mandersCorrelation;
@@ -471,7 +471,7 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
             this.mandersCorrelation = mandersCorrelation;
         }
 
-        @JIPipeDocumentation(name = "Kendall's Tau Rank Correlation")
+        @SetJIPipeDocumentation(name = "Kendall's Tau Rank Correlation")
         @JIPipeParameter(value = "kendall-tau-rank-correlation", uiOrder = -50)
         public boolean isKendallTauRankCorrelation() {
             return kendallTauRankCorrelation;
@@ -482,7 +482,7 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
             this.kendallTauRankCorrelation = kendallTauRankCorrelation;
         }
 
-        @JIPipeDocumentation(name = "2D Intensity Histogram")
+        @SetJIPipeDocumentation(name = "2D Intensity Histogram")
         @JIPipeParameter(value = "2d-intensity-histogram", uiOrder = -40)
         public boolean isIntensityHistogram2D() {
             return intensityHistogram2D;
@@ -493,7 +493,7 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
             this.intensityHistogram2D = intensityHistogram2D;
         }
 
-        @JIPipeDocumentation(name = "Costes' Significance Test")
+        @SetJIPipeDocumentation(name = "Costes' Significance Test")
         @JIPipeParameter(value = "costes-significance-test", uiOrder = -30)
         public boolean isCostesSignificanceTest() {
             return costesSignificanceTest;
@@ -504,7 +504,7 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
             this.costesSignificanceTest = costesSignificanceTest;
         }
 
-        @JIPipeDocumentation(name = "PSF")
+        @SetJIPipeDocumentation(name = "PSF")
         @JIPipeParameter("psf")
         public int getPsf() {
             return psf;
@@ -515,7 +515,7 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
             this.psf = psf;
         }
 
-        @JIPipeDocumentation(name = "Costes randomizations")
+        @SetJIPipeDocumentation(name = "Costes randomizations")
         @JIPipeParameter("costes-randomizations")
         public int getCostesRandomizations() {
             return costesRandomizations;

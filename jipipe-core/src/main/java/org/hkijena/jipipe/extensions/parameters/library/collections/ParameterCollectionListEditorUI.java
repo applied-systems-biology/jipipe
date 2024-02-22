@@ -272,7 +272,7 @@ public class ParameterCollectionListEditorUI extends JIPipeParameterEditorUI {
             }));
 
             ParameterPanel ui = new ParameterPanel(getWorkbench(), parameter.get(i), getParameterTree(), null, ParameterPanel.NO_EMPTY_GROUP_HEADERS);
-            ui.setBorder(BorderFactory.createEtchedBorder());
+            ui.setBorder(UIUtils.createControlBorder());
             ui.setOpaque(false);
 
             JPanel entryPanel = new JPanel(new GridBagLayout());

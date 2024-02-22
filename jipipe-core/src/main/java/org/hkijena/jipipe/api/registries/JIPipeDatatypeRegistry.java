@@ -19,7 +19,7 @@ import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeService;
-import org.hkijena.jipipe.api.JIPipeHidden;
+import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
@@ -239,7 +239,7 @@ public class JIPipeDatatypeRegistry {
 
         registeredDataTypes.put(id, klass);
         registeredDatatypeSources.put(id, source);
-        if (klass.getAnnotationsByType(JIPipeHidden.class).length > 0)
+        if (klass.getAnnotationsByType(LabelAsJIPipeHidden.class).length > 0)
             hiddenDataTypeIds.add(id);
 
         JIPipeDataInfo info = JIPipeDataInfo.getInstance(klass);

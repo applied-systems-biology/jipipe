@@ -37,8 +37,8 @@ public class JIPipeJsonExtensionProjectValidation implements JIPipeValidatable {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        extension.reportValidity(context, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        extension.reportValidity(reportContext, report);
         for (JsonNodeInfo info : extension.getNodeInfos()) {
             if (!StringUtils.isNullOrEmpty(info.getId())) {
                 if (JIPipe.getNodes().hasNodeInfoWithId(info.getId())) {

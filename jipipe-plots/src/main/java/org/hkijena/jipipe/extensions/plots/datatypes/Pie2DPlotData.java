@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.plots.datatypes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -28,7 +28,7 @@ import java.awt.*;
  * Series table columns: Amount (Double), Category (String)
  * Multiple series: No
  */
-@JIPipeDocumentation(name = "2D pie plot", description = "Plot that shows the amount for each category as slice in a pie.")
+@SetJIPipeDocumentation(name = "2D pie plot", description = "Plot that shows the amount for each category as slice in a pie.")
 @PlotMetadata(columns = {@PlotColumn(name = "Amount", description = "The values to be displayed", isNumeric = true),
         @PlotColumn(name = "Category", description = "The categories to be displayed", isNumeric = false)}, maxSeriesCount = 1)
 public class Pie2DPlotData extends PiePlotData {
@@ -65,7 +65,7 @@ public class Pie2DPlotData extends PiePlotData {
         return chart;
     }
 
-    @JIPipeDocumentation(name = "Label font size", description = "Font size of the pie chart labels")
+    @SetJIPipeDocumentation(name = "Label font size", description = "Font size of the pie chart labels")
     @JIPipeParameter("label-font-size")
     public int getLabelFontSize() {
         return labelFontSize;

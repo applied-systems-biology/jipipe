@@ -13,14 +13,14 @@
 
 package org.hkijena.jipipe.extensions.expressions;
 
-import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
+import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameter;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@JIPipeDocumentationDescription(description = "Returns the named strings only if the expression returns TRUE for key value pair. Within the expression, there are two variables available: 'key' and 'value'. Example: <pre>(key CONTAINS \"sample\") AND (value CONTAINS \"aspergillus\")</pre>")
+@AddJIPipeDocumentationDescription(description = "Returns the named strings only if the expression returns TRUE for key value pair. Within the expression, there are two variables available: 'key' and 'value'. Example: <pre>(key CONTAINS \"sample\") AND (value CONTAINS \"aspergillus\")</pre>")
 public class NamedStringQueryExpression extends PairParameter<String, StringQueryExpression> {
 
     public NamedStringQueryExpression() {

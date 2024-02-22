@@ -5,8 +5,8 @@ import ij.plugin.LutLoader;
 import ij.process.ByteProcessor;
 import ij.process.ColorProcessor;
 import ij.process.LUT;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -17,11 +17,11 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.color.ImagePlus2DColorRGBData;
 
-@JIPipeDocumentation(name = "Import LUT as RGB image", description = "Imports an ImageJ *.lut file")
-@JIPipeInputSlot(value = FileData.class, slotName = "Input", description = "A *.lut file", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlus2DColorRGBData.class, slotName = "Output", description = "Description of the LUT as RGB image", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File", aliasName = "Open (LUT)")
+@SetJIPipeDocumentation(name = "Import LUT as RGB image", description = "Imports an ImageJ *.lut file")
+@AddJIPipeInputSlot(value = FileData.class, slotName = "Input", description = "A *.lut file", create = true)
+@AddJIPipeOutputSlot(value = ImagePlus2DColorRGBData.class, slotName = "Output", description = "Description of the LUT as RGB image", create = true)
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File", aliasName = "Open (LUT)")
 public class ImportLUTAsRGBFromFile extends JIPipeSimpleIteratingAlgorithm {
     public ImportLUTAsRGBFromFile(JIPipeNodeInfo info) {
         super(info);
@@ -32,7 +32,7 @@ public class ImportLUTAsRGBFromFile extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         String lutFile = iterationStep.getInputData(getFirstInputSlot(), FileData.class, progressInfo).getPath();
         LUT lut = LutLoader.openLut(lutFile);
         ByteProcessor processor = new ByteProcessor(256, 1);

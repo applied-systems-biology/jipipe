@@ -2,8 +2,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.convert;
 
 import ij.ImagePlus;
 import ij.process.FloatProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -16,10 +16,10 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.Imag
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 
-@JIPipeDocumentation(name = "Table column to image", description = "Converts a selected numeric table column into an image with 1px width and a height based on the number of rows. Opposite operation to 'Image to table column'.")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Convert")
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlus2DGreyscale32FData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Table column to image", description = "Converts a selected numeric table column into an image with 1px width and a height based on the number of rows. Opposite operation to 'Image to table column'.")
+@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Convert")
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlus2DGreyscale32FData.class, slotName = "Output", create = true)
 public class TableColumnToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private TableColumnSourceExpressionParameter selectedColumn = new TableColumnSourceExpressionParameter();
@@ -34,7 +34,7 @@ public class TableColumnToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData tableData = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         TableColumn tableColumn = selectedColumn.pickOrGenerateColumn(tableData);
         FloatProcessor processor = new FloatProcessor(1, tableColumn.getRows());
@@ -45,7 +45,7 @@ public class TableColumnToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlus2DGreyscale32FData(imagePlus), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Column to convert", description = "The column to be converted into an image")
+    @SetJIPipeDocumentation(name = "Column to convert", description = "The column to be converted into an image")
     @JIPipeParameter(value = "selected-column", important = true)
     public TableColumnSourceExpressionParameter getSelectedColumn() {
         return selectedColumn;

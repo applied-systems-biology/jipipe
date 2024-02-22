@@ -19,8 +19,8 @@ import ij.ImagePlus;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -51,10 +51,10 @@ import java.util.stream.Collectors;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@JIPipeDocumentation(name = "Annotate by image statistics (Expression)", description = "Annotates the incoming images by their statistics. The statistics are created via annotations.")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For images")
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Image", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Image", autoCreate = true)
+@SetJIPipeDocumentation(name = "Annotate by image statistics (Expression)", description = "Annotates the incoming images by their statistics. The statistics are created via annotations.")
+@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For images")
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Image", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Image", create = true)
 public class AnnotateByImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm {
 
     private ImageROITargetArea targetArea = ImageROITargetArea.WholeImage;
@@ -85,7 +85,7 @@ public class AnnotateByImageStatisticsExpressionAlgorithm extends JIPipeIteratin
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus img = iterationStep.getInputData("Image", ImagePlusGreyscaleData.class, progressInfo).getImage();
 
         // Get all indices and group them
@@ -169,7 +169,7 @@ public class AnnotateByImageStatisticsExpressionAlgorithm extends JIPipeIteratin
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), outputAnnotations, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Get statistics from ...", description = "Determines where the algorithm is applied to.")
+    @SetJIPipeDocumentation(name = "Get statistics from ...", description = "Determines where the algorithm is applied to.")
     @JIPipeParameter("roi:target-area")
     public ImageROITargetArea getTargetArea() {
         return targetArea;
@@ -181,7 +181,7 @@ public class AnnotateByImageStatisticsExpressionAlgorithm extends JIPipeIteratin
         ImageJAlgorithmUtils.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
     }
 
-    @JIPipeDocumentation(name = "Generated annotations", description = "Use these expressions to generate the annotations. The expressions contain statistics, as well as incoming annotations of the current image.")
+    @SetJIPipeDocumentation(name = "Generated annotations", description = "Use these expressions to generate the annotations. The expressions contain statistics, as well as incoming annotations of the current image.")
     @JIPipeParameter(value = "annotations", uiOrder = -30)
     @JIPipeExpressionParameterSettings(variableSource = ImageStatistics5DExpressionParameterVariablesInfo.class)
     public ExpressionTableColumnGeneratorProcessorParameterList getAnnotations() {

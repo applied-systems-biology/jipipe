@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.functions;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Get length", description = "For arrays, maps, and strings, this function returns their length/size. For numbers and boolean values, this function will throw an error")
+@SetJIPipeDocumentation(name = "Get length", description = "For arrays, maps, and strings, this function returns their length/size. For numbers and boolean values, this function will throw an error")
 public class LengthFunction extends ExpressionFunction {
 
     public LengthFunction() {

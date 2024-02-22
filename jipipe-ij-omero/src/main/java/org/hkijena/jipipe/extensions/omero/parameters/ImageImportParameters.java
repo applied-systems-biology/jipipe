@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.omero.parameters;
 
 import ome.xml.model.enums.DimensionOrder;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEColorMode;
@@ -40,7 +40,7 @@ public class ImageImportParameters extends AbstractJIPipeParameterCollection {
         this.extractRois = other.extractRois;
     }
 
-    @JIPipeDocumentation(name = "Auto scale", description = "Stretches the channel histograms to each channel's global minimum and maximum value throughout the stack. " +
+    @SetJIPipeDocumentation(name = "Auto scale", description = "Stretches the channel histograms to each channel's global minimum and maximum value throughout the stack. " +
             "Does not alter underlying values in the image.  " +
             "If unselected, all channel histograms are scaled to the image's digitization bit depth. " +
             "Note that this range may be narrower than the bit depth of the file. " +
@@ -58,7 +58,7 @@ public class ImageImportParameters extends AbstractJIPipeParameterCollection {
         this.autoScale = autoScale;
     }
 
-    @JIPipeDocumentation(name = "Color mode", description = "Color mode - Visualizes channels according to the specified scheme.  Possible choices are:\n" +
+    @SetJIPipeDocumentation(name = "Color mode", description = "Color mode - Visualizes channels according to the specified scheme.  Possible choices are:\n" +
             "Default - Display channels as closely as possible to how they are stored in the file.\n" +
             "Composite - Open as a merged composite image. Channels are colorized according to metadata present in the dataset (if any), or in the following default order: 1=red, 2=green, 3=blue, 4=gray, 5=cyan, 6=magenta, 7=yellow.\n" +
             "Colorized - Open with each channel in a separate plane, colorized according to metadata present in the dataset (if any), or in the default order (see Composite above).\n" +
@@ -75,7 +75,7 @@ public class ImageImportParameters extends AbstractJIPipeParameterCollection {
         this.colorMode = colorMode;
     }
 
-    @JIPipeDocumentation(name = "Crop regions")
+    @SetJIPipeDocumentation(name = "Crop regions")
     @JIPipeParameter("crop-regions")
     public RectangleList getCropRegions() {
         return cropRegions;
@@ -86,7 +86,7 @@ public class ImageImportParameters extends AbstractJIPipeParameterCollection {
         this.cropRegions = cropRegions;
     }
 
-    @JIPipeDocumentation(name = "Stack order")
+    @SetJIPipeDocumentation(name = "Stack order")
     @JIPipeParameter("stack-order")
     public DimensionOrder getStackOrder() {
         return stackOrder;
@@ -97,7 +97,7 @@ public class ImageImportParameters extends AbstractJIPipeParameterCollection {
         this.stackOrder = stackOrder;
     }
 
-    @JIPipeDocumentation(name = "Split channels", description = "Each channel is opened as a separate stack.  " +
+    @SetJIPipeDocumentation(name = "Split channels", description = "Each channel is opened as a separate stack.  " +
             "This option is especially useful if you want to merge the channels into a specific order, " +
             "rather than automatically assign channels to the order of RGB. The bit depth is preserved.")
     @JIPipeParameter("split-channels")
@@ -110,7 +110,7 @@ public class ImageImportParameters extends AbstractJIPipeParameterCollection {
         this.splitChannels = splitChannels;
     }
 
-    @JIPipeDocumentation(name = "Split focal planes", description = "Each focal plane is opened as a separate stack.")
+    @SetJIPipeDocumentation(name = "Split focal planes", description = "Each focal plane is opened as a separate stack.")
     @JIPipeParameter("split-focal-planes")
     public boolean isSplitFocalPlanes() {
         return splitFocalPlanes;
@@ -121,7 +121,7 @@ public class ImageImportParameters extends AbstractJIPipeParameterCollection {
         this.splitFocalPlanes = splitFocalPlanes;
     }
 
-    @JIPipeDocumentation(name = "Split time points", description = "Timelapse data will be opened as a separate stack for each timepoint.")
+    @SetJIPipeDocumentation(name = "Split time points", description = "Timelapse data will be opened as a separate stack for each timepoint.")
     @JIPipeParameter("split-time-points")
     public boolean isSplitTimePoints() {
         return splitTimePoints;
@@ -132,7 +132,7 @@ public class ImageImportParameters extends AbstractJIPipeParameterCollection {
         this.splitTimePoints = splitTimePoints;
     }
 
-    @JIPipeDocumentation(name = "Swap dimensions", description = "Allows reassignment of dimensional axes (e.g., channel, Z and time).  " +
+    @SetJIPipeDocumentation(name = "Swap dimensions", description = "Allows reassignment of dimensional axes (e.g., channel, Z and time).  " +
             "Bio-Formats is supposed to be smart about handling multidimensional image data, but in some cases gets things wrong. " +
             "For example, when stitching together a dataset from multiple files using the Group files with similar names option, " +
             "Bio-Formats may not know which dimensional axis the file numbering is supposed to represent. " +
@@ -147,7 +147,7 @@ public class ImageImportParameters extends AbstractJIPipeParameterCollection {
         this.swapDimensions = swapDimensions;
     }
 
-    @JIPipeDocumentation(name = "Concatenate compatible series", description = "Allows multiple image series to be joined end to end.  " +
+    @SetJIPipeDocumentation(name = "Concatenate compatible series", description = "Allows multiple image series to be joined end to end.  " +
             "Example: You want to join two sequential timelapse series.")
     @JIPipeParameter("concatenate")
     public boolean isConcatenate() {
@@ -159,7 +159,7 @@ public class ImageImportParameters extends AbstractJIPipeParameterCollection {
         this.concatenate = concatenate;
     }
 
-    @JIPipeDocumentation(name = "Crop images", description = "Image planes may be cropped during import to conserve memory. Use the 'Crop regions' parameter " +
+    @SetJIPipeDocumentation(name = "Crop images", description = "Image planes may be cropped during import to conserve memory. Use the 'Crop regions' parameter " +
             "to define which regions should be cropped.")
     @JIPipeParameter("crop")
     public boolean isCrop() {
@@ -171,7 +171,7 @@ public class ImageImportParameters extends AbstractJIPipeParameterCollection {
         this.crop = crop;
     }
 
-    @JIPipeDocumentation(name = "Stitch tiles", description = "Stitch tiles - Performs very simple stitching of tiles. " +
+    @SetJIPipeDocumentation(name = "Stitch tiles", description = "Stitch tiles - Performs very simple stitching of tiles. " +
             " The overlap is assumed to be 0%, and the stage coordinates are used to determine the proper placement of the tiles. " +
             "This is useful for seeing a quick preview of what the stitched image might look like, " +
             "but is not a substitute for proper stitching plugins such as the 2D/3D Stitching plugin.")
@@ -185,7 +185,7 @@ public class ImageImportParameters extends AbstractJIPipeParameterCollection {
         this.stitchTiles = stitchTiles;
     }
 
-    @JIPipeDocumentation(name = "Extract ROIs", description = "If enabled, ROIs are extracted from OME data.")
+    @SetJIPipeDocumentation(name = "Extract ROIs", description = "If enabled, ROIs are extracted from OME data.")
     @JIPipeParameter("extract-rois")
     public boolean isExtractRois() {
         return extractRois;

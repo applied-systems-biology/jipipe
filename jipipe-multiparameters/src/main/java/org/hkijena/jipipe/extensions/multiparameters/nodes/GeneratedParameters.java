@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.multiparameters.nodes;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -39,7 +39,7 @@ public class GeneratedParameters extends JIPipeDynamicParameterCollection {
         super(other);
     }
 
-    @JIPipeDocumentation(name = "Import", description = "Imports a parameter from another graph node")
+    @SetJIPipeDocumentation(name = "Import", description = "Imports a parameter from another graph node")
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/graph-compartment.png")
     public void uiImportParameterFromGraph(JIPipeWorkbench workbench) {
         if (parent == null)

@@ -15,7 +15,7 @@
 package org.hkijena.jipipe.extensions.cellpose.installers;
 
 import org.apache.commons.lang3.SystemUtils;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Python: Download & install Cellpose (GPU)", description = "Creates a new Python environment with Cellpose installed. " +
+@SetJIPipeDocumentation(name = "Python: Download & install Cellpose (GPU)", description = "Creates a new Python environment with Cellpose installed. " +
         "Requires a graphics card suitable for GPU computing. Uses a portable Python distribution.")
 @ExternalEnvironmentInfo(category = "Cellpose")
 public class PortableCellposeGPUEnvInstaller extends PortableCellposeEnvInstaller {
@@ -65,7 +65,7 @@ public class PortableCellposeGPUEnvInstaller extends PortableCellposeEnvInstalle
             }
         }
 
-        @JIPipeDocumentation(name = "PyTorch pip package", description = "The pip package that is used for installing PyTorch. " +
+        @SetJIPipeDocumentation(name = "PyTorch pip package", description = "The pip package that is used for installing PyTorch. " +
                 "To generate custom settings, visit https://pytorch.org/get-started/locally/ and copy the parts after 'pip3 install' into this field.")
         @JIPipeParameter("pytorch-pip-package")
         @StringParameterSettings(monospace = true)

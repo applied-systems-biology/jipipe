@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.utils.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -23,11 +23,12 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
@@ -43,10 +44,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Import JIPipe slot folder", description = "Extracts a slot output folder from a JIPipe output and imports their data. Use the 'Set output slot' button to select the correct parameters.")
-@JIPipeInputSlot(value = JIPipeOutputData.class, slotName = "JIPipe output", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Meta run")
+@SetJIPipeDocumentation(name = "Import JIPipe slot folder", description = "Extracts a slot output folder from a JIPipe output and imports their data. Use the 'Set output slot' button to select the correct parameters.")
+@AddJIPipeInputSlot(value = JIPipeOutputData.class, slotName = "JIPipe output", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", create = true)
+@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Meta run")
 public class ImportJIPipeSlotFolderAlgorithm extends GetJIPipeSlotFolderAlgorithm {
 
     private boolean ignoreInputTextAnnotations = false;
@@ -71,7 +72,7 @@ public class ImportJIPipeSlotFolderAlgorithm extends GetJIPipeSlotFolderAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         JIPipeOutputData outputData = iterationStep.getInputData(getFirstInputSlot(), JIPipeOutputData.class, progressInfo);
         Path dataFolder = outputData.toPath().resolve(getCompartmentId()).resolve(getNodeId()).resolve(getSlotName());
         if (ignoreInputTextAnnotations)
@@ -100,7 +101,7 @@ public class ImportJIPipeSlotFolderAlgorithm extends GetJIPipeSlotFolderAlgorith
         }
     }
 
-    @JIPipeDocumentation(name = "Ignore input text annotations", description = "If enabled, incoming text annotations from the input folder will not be passed to the output.")
+    @SetJIPipeDocumentation(name = "Ignore input text annotations", description = "If enabled, incoming text annotations from the input folder will not be passed to the output.")
     @JIPipeParameter("ignore-input-text-annotations")
     public boolean isIgnoreInputTextAnnotations() {
         return ignoreInputTextAnnotations;
@@ -111,7 +112,7 @@ public class ImportJIPipeSlotFolderAlgorithm extends GetJIPipeSlotFolderAlgorith
         this.ignoreInputTextAnnotations = ignoreInputTextAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Ignore input data annotations", description = "If enabled, incoming data annotations from the input folder will not be passed to the output.")
+    @SetJIPipeDocumentation(name = "Ignore input data annotations", description = "If enabled, incoming data annotations from the input folder will not be passed to the output.")
     @JIPipeParameter("ignore-input-data-annotations")
     public boolean isIgnoreInputDataAnnotations() {
         return ignoreInputDataAnnotations;
@@ -122,7 +123,7 @@ public class ImportJIPipeSlotFolderAlgorithm extends GetJIPipeSlotFolderAlgorith
         this.ignoreInputDataAnnotations = ignoreInputDataAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Ignore imported text annotations", description = "If enabled, annotations from imported text annotations are ignored.")
+    @SetJIPipeDocumentation(name = "Ignore imported text annotations", description = "If enabled, annotations from imported text annotations are ignored.")
     @JIPipeParameter("ignore-imported-text-annotations")
     public boolean isIgnoreImportedTextAnnotations() {
         return ignoreImportedTextAnnotations;
@@ -133,7 +134,7 @@ public class ImportJIPipeSlotFolderAlgorithm extends GetJIPipeSlotFolderAlgorith
         this.ignoreImportedTextAnnotations = ignoreImportedTextAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Ignore imported data annotations", description = "If enabled, annotations from imported data annotations are ignored.")
+    @SetJIPipeDocumentation(name = "Ignore imported data annotations", description = "If enabled, annotations from imported data annotations are ignored.")
     @JIPipeParameter("ignore-imported-data-annotations")
     public boolean isIgnoreImportedDataAnnotations() {
         return ignoreImportedDataAnnotations;
@@ -144,7 +145,7 @@ public class ImportJIPipeSlotFolderAlgorithm extends GetJIPipeSlotFolderAlgorith
         this.ignoreImportedDataAnnotations = ignoreImportedDataAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Merge imported text annotations", description = "Determines what happens when imported data has the same text annotations as the input folder.")
+    @SetJIPipeDocumentation(name = "Merge imported text annotations", description = "Determines what happens when imported data has the same text annotations as the input folder.")
     @JIPipeParameter("text-annotation-merge-mode")
     public JIPipeTextAnnotationMergeMode getTextAnnotationMergeMode() {
         return textAnnotationMergeMode;
@@ -155,7 +156,7 @@ public class ImportJIPipeSlotFolderAlgorithm extends GetJIPipeSlotFolderAlgorith
         this.textAnnotationMergeMode = textAnnotationMergeMode;
     }
 
-    @JIPipeDocumentation(name = "Merge imported data annotations", description = "Determines what happens when imported data has the same data annotations as the input folder.")
+    @SetJIPipeDocumentation(name = "Merge imported data annotations", description = "Determines what happens when imported data has the same data annotations as the input folder.")
     @JIPipeParameter("data-annotation-merge-mode")
     public JIPipeDataAnnotationMergeMode getDataAnnotationMergeMode() {
         return dataAnnotationMergeMode;

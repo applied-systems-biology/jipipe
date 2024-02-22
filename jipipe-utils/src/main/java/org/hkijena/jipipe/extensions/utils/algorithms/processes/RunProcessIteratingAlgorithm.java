@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.utils.algorithms.processes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -9,6 +9,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
@@ -27,8 +28,8 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Run process (Iterating)", description = "Executes a process.")
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Process")
+@SetJIPipeDocumentation(name = "Run process (Iterating)", description = "Executes a process.")
+@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Process")
 public class RunProcessIteratingAlgorithm extends JIPipeIteratingAlgorithm {
 
     private ProcessEnvironment processEnvironment = new ProcessEnvironment();
@@ -49,7 +50,7 @@ public class RunProcessIteratingAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Path workDirectory = getNewScratch();
         Path inputPath = PathUtils.resolveAndMakeSubDirectory(workDirectory, "inputs");
         Path outputPath = PathUtils.resolveAndMakeSubDirectory(workDirectory, "outputs");
@@ -110,7 +111,7 @@ public class RunProcessIteratingAlgorithm extends JIPipeIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Process", description = "The process that should be executed. Click 'Edit' to setup the process.")
+    @SetJIPipeDocumentation(name = "Process", description = "The process that should be executed. Click 'Edit' to setup the process.")
     @JIPipeParameter(value = "process-environment", important = true)
     public ProcessEnvironment getProcessEnvironment() {
         return processEnvironment;
@@ -121,7 +122,7 @@ public class RunProcessIteratingAlgorithm extends JIPipeIteratingAlgorithm {
         this.processEnvironment = processEnvironment;
     }
 
-    @JIPipeDocumentation(name = "Override arguments", description = "If enabled, override arguments of the environment with the one provided by the expression. " +
+    @SetJIPipeDocumentation(name = "Override arguments", description = "If enabled, override arguments of the environment with the one provided by the expression. " +
             "Please note that this expression has access to annotations.")
     @JIPipeParameter("override-arguments")
     public OptionalJIPipeExpressionParameter getOverrideArguments() {
@@ -133,7 +134,7 @@ public class RunProcessIteratingAlgorithm extends JIPipeIteratingAlgorithm {
         this.overrideArguments = overrideArguments;
     }
 
-    @JIPipeDocumentation(name = "Output output folder", description = "If enabled, the output folder designated to the current data batch is also output into a slot 'Output folder'. Please " +
+    @SetJIPipeDocumentation(name = "Output output folder", description = "If enabled, the output folder designated to the current data batch is also output into a slot 'Output folder'. Please " +
             "note that any existing slot with this name is replaced by a directory output slot. Data will be not be extracted from the process output.")
     @JIPipeParameter("output-output-folder")
     public boolean isOutputOutputFolder() {
@@ -160,7 +161,7 @@ public class RunProcessIteratingAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
+    @SetJIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
             "the processing was finished. Disable this to make it possible to debug your scripts. The directories are accessible via the logs (Tools &gt; Logs).")
     @JIPipeParameter("cleanup-afterwards")
     public boolean isCleanUpAfterwards() {

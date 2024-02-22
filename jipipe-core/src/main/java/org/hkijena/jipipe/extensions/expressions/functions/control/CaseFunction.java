@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.functions.control;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -8,7 +8,7 @@ import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 import java.util.Arrays;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Case", description = "Creates a pair of a a condition and value to be used inside a SWITCH function.")
+@SetJIPipeDocumentation(name = "Case", description = "Creates a pair of a a condition and value to be used inside a SWITCH function.")
 public class CaseFunction extends ExpressionFunction {
 
     public CaseFunction() {

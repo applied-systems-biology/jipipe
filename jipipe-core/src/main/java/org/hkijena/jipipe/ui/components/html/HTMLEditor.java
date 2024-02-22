@@ -374,7 +374,7 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
         });
 
         // Compact mode selection
-        modeButton = new JButton(UIUtils.getIconFromResources("actions/arrow-down.png"));
+        modeButton = new JButton(UIUtils.getIconFromResources("actions/caret-down.png"));
         modeButton.setHorizontalTextPosition(SwingConstants.LEFT);
         UIUtils.makeFlat(modeButton);
         JPopupMenu modeMenu = UIUtils.addPopupMenuToButton(modeButton);
@@ -393,7 +393,7 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
         }
 
         // Edit in dialog button
-        editInDialogButton = new JButton(UIUtils.getIconFromResources("actions/link.png"));
+        editInDialogButton = new JButton(UIUtils.getIconFromResources("actions/open-in-new-window.png"));
         UIUtils.makeFlat25x25(editInDialogButton);
         editInDialogButton.setToolTipText("Edit in dedicated window");
         editInDialogButton.addActionListener(e -> {

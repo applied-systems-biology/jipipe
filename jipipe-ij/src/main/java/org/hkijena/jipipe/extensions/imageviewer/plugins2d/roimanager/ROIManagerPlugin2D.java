@@ -164,7 +164,7 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
                 return;
             }
         }
-        DocumentTabPane documentTabPane = new DocumentTabPane(true);
+        DocumentTabPane documentTabPane = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Top);
         List<ROIEditor> editors = new ArrayList<>();
         for (Roi roi : selected) {
             ROIEditor editor = new ROIEditor(roi);
@@ -578,7 +578,7 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
         // Setup panel
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.setMinimumSize(new Dimension(100, 300));
-        mainPanel.setBorder(BorderFactory.createEtchedBorder());
+        mainPanel.setBorder(UIUtils.createControlBorder());
 
         mainPanel.add(ribbon, BorderLayout.NORTH);
 

@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.expressions.functions.color;
 
 import com.google.common.collect.ImmutableList;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-@JIPipeDocumentation(name = "RGB to HSB colors", description = "Converts an RGB color array into an HSB color array")
+@SetJIPipeDocumentation(name = "RGB to HSB colors", description = "Converts an RGB color array into an HSB color array")
 public class RGBToHSBFunction extends ExpressionFunction {
 
     public RGBToHSBFunction() {

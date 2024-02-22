@@ -19,8 +19,8 @@ import ij.gui.Roi;
 import ij.measure.ResultsTable;
 import ij.plugin.filter.ParticleAnalyzer;
 import ij.plugin.frame.RoiManager;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -50,17 +50,17 @@ import java.util.List;
  * Converts a mask to ROI and ROI measurements
  */
 // Algorithm metadata
-@JIPipeDocumentation(name = "Find particles 2D", description = "Converts mask images into ROI by applying a connected components algorithm and generates measurements. " +
+@SetJIPipeDocumentation(name = "Find particles 2D", description = "Converts mask images into ROI by applying a connected components algorithm and generates measurements. " +
         "Please note that this algorithm will always trace the external object boundaries and convert them into polygonal ROIs. This means that holes will be closed. " +
         "This node requires a thresholded image as input and will extract measurements from the thresholded image. " +
         "If you already have ROI available and want measurements, use 'Extract ROI statistics'." +
         "If higher-dimensional data is provided, the results are generated for each 2D slice.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Analyze")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Analyze")
 
-@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", description = "The mask where particles are extracted from. White pixels are foreground.", autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", description = "The extracted ROI", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", autoCreate = true, description = "The measurements of the ROI")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Analyze Particles...")
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", description = "The mask where particles are extracted from. White pixels are foreground.", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", description = "The extracted ROI", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", create = true, description = "The measurements of the ROI")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Analyze Particles...")
 public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
     private double minParticleSize = 0;
     private double maxParticleSize = Double.POSITIVE_INFINITY;
@@ -108,7 +108,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
         this.statisticsParameters = new ImageStatisticsSetParameter(other.statisticsParameters);
     }
 
-    @JIPipeDocumentation(name = "Composite ROI", description = "If enabled, generate composite ROI that can contain holes. Please note " +
+    @SetJIPipeDocumentation(name = "Composite ROI", description = "If enabled, generate composite ROI that can contain holes. Please note " +
             "that not all operations can appropriately handle composite ROI.")
     @JIPipeParameter("composite-roi")
     public boolean isCompositeROI() {
@@ -120,7 +120,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
         this.compositeROI = compositeROI;
     }
 
-    @JIPipeDocumentation(name = "Extracted measurements", description = "Please select which measurements should be extracted. " +
+    @SetJIPipeDocumentation(name = "Extracted measurements", description = "Please select which measurements should be extracted. " +
             "Each measurement will be assigned to one or multiple output table columns. <br/><br/>" + ImageStatisticsSetParameter.ALL_DESCRIPTIONS)
     @JIPipeParameter(value = "measurements", important = true)
     public ImageStatisticsSetParameter getStatisticsParameters() {
@@ -133,7 +133,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusGreyscaleMaskData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo);
 
         try (IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
@@ -252,7 +252,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
+    @SetJIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
     @JIPipeParameter("measure-in-physical-units")
     public boolean isMeasureInPhysicalUnits() {
         return measureInPhysicalUnits;
@@ -264,7 +264,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter(value = "min-particle-size", uiOrder = -20)
-    @JIPipeDocumentation(name = "Min particle size", description = "The minimum particle size in the specified unit of the input image. " +
+    @SetJIPipeDocumentation(name = "Min particle size", description = "The minimum particle size in the specified unit of the input image. " +
             "If no unit is available, the unit is 'pixels'. If an object is not within the size range, it is removed from the results.")
     public double getMinParticleSize() {
         return minParticleSize;
@@ -277,7 +277,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter(value = "max-particle-size", uiOrder = -19)
-    @JIPipeDocumentation(name = "Max particle size", description = "The maximum particle size in the specified unit of the input image. " +
+    @SetJIPipeDocumentation(name = "Max particle size", description = "The maximum particle size in the specified unit of the input image. " +
             "If no unit is available, the unit is 'pixels'. If an object is not within the size range, it is removed from the results.")
     public double getMaxParticleSize() {
         return maxParticleSize;
@@ -290,7 +290,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter(value = "min-particle-circularity", uiOrder = -18)
-    @JIPipeDocumentation(name = "Min particle circularity", description = "The minimum circularity (circularity = 4pi(area/perimeter^2)). " +
+    @SetJIPipeDocumentation(name = "Min particle circularity", description = "The minimum circularity (circularity = 4pi(area/perimeter^2)). " +
             "The value range is from 0-1. If an object is not within the circularity range, it is removed from the results.")
     public double getMinParticleCircularity() {
         return minParticleCircularity;
@@ -310,7 +310,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter(value = "max-particle-circularity", uiOrder = -17)
-    @JIPipeDocumentation(name = "Max particle circularity", description = "The maximum circularity (circularity = 4pi(area/perimeter^2)). " +
+    @SetJIPipeDocumentation(name = "Max particle circularity", description = "The maximum circularity (circularity = 4pi(area/perimeter^2)). " +
             "The value range is from 0-1. If an object is not within the circularity range, it is removed from the results.")
     public double getMaxParticleCircularity() {
         return maxParticleCircularity;
@@ -330,7 +330,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("exclude-edges")
-    @JIPipeDocumentation(name = "Exclude edges", description = "If enabled, objects that are connected to the image edges are removed.")
+    @SetJIPipeDocumentation(name = "Exclude edges", description = "If enabled, objects that are connected to the image edges are removed.")
     public boolean isExcludeEdges() {
         return excludeEdges;
     }
@@ -341,7 +341,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Split slices", description = "If enabled, results are generated for each 2D slice. Otherwise all results are merged into one table and ROI.")
+    @SetJIPipeDocumentation(name = "Split slices", description = "If enabled, results are generated for each 2D slice. Otherwise all results are merged into one table and ROI.")
     @JIPipeParameter("split-slices")
     public boolean isSplitSlices() {
         return splitSlices;
@@ -353,7 +353,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Split slices annotation", description = "The annotation type generated by 'Split slices'. You can select no annotation type to disable this feature.")
+    @SetJIPipeDocumentation(name = "Split slices annotation", description = "The annotation type generated by 'Split slices'. You can select no annotation type to disable this feature.")
     @JIPipeParameter("annotation-type")
     public OptionalStringParameter getAnnotationType() {
         return annotationType;
@@ -365,7 +365,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Black background", description = "If enabled, the background is assumed to be black. If disabled, black pixels are extracted as ROI.")
+    @SetJIPipeDocumentation(name = "Black background", description = "If enabled, the background is assumed to be black. If disabled, black pixels are extracted as ROI.")
     @JIPipeParameter("black-background")
     public boolean isBlackBackground() {
         return blackBackground;
@@ -376,7 +376,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
         this.blackBackground = blackBackground;
     }
 
-    @JIPipeDocumentation(name = "Fill interior holes (flood-fill)", description = "If enabled, interior holes are filled.")
+    @SetJIPipeDocumentation(name = "Fill interior holes (flood-fill)", description = "If enabled, interior holes are filled.")
     @JIPipeParameter("include-holes")
     public boolean isIncludeHoles() {
         return includeHoles;
@@ -387,7 +387,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
         this.includeHoles = includeHoles;
     }
 
-    @JIPipeDocumentation(name = "Neighborhood", description = "Determines which neighborhood is used to find connected components.")
+    @SetJIPipeDocumentation(name = "Neighborhood", description = "Determines which neighborhood is used to find connected components.")
     @JIPipeParameter("neighborhood")
     public Neighborhood2D getNeighborhood() {
         return neighborhood;

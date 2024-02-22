@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.functions.scripts;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -10,7 +10,7 @@ import org.python.util.PythonInterpreter;
 import java.util.List;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Jython (Python)", description = "Runs embedded Python (via the Jython interpreter)")
+@SetJIPipeDocumentation(name = "Jython (Python)", description = "Runs embedded Python (via the Jython interpreter)")
 public class JythonScriptFunction extends ExpressionFunction {
 
     public JythonScriptFunction() {

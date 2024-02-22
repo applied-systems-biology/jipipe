@@ -45,7 +45,7 @@ public class IJLogToJIPipeProgressInfoPump implements Closeable, AutoCloseable {
         try {
             SwingUtilities.invokeAndWait(() -> {
                 logStart = logTextPanel.getText().length();
-                target.log("IJ.Log() starts at " + logStart);
+//                target.log("IJ.Log() starts at " + logStart);
                 Window windowAncestor = SwingUtilities.getWindowAncestor(logTextPanel);
                 if (windowAncestor != null) {
                     windowAncestor.setVisible(false);
@@ -80,7 +80,7 @@ public class IJLogToJIPipeProgressInfoPump implements Closeable, AutoCloseable {
     public void close() {
         if (timer.isRunning())
             copyLog();
-        target.log("Ending IJ.log() hook");
+//        target.log("Ending IJ.log() hook");
         timer.stop();
 
         try {

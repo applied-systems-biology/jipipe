@@ -15,8 +15,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.lut;
 
 import ij.ImagePlus;
 import ij.process.LUT;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -35,12 +35,12 @@ import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
 
-@JIPipeDocumentation(name = "Set LUT (two colors)", description = "Generates a LUT from the first to the second color. " +
+@SetJIPipeDocumentation(name = "Set LUT (two colors)", description = "Generates a LUT from the first to the second color. " +
         "This does not change the pixel data.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "LUT")
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nLookup Tables")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "LUT")
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nLookup Tables")
 public class SetLUTFromColorsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private boolean duplicateImage = true;
     private Color firstColor = Color.BLACK;
@@ -75,7 +75,7 @@ public class SetLUTFromColorsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData data = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo);
         if (duplicateImage)
             data = (ImagePlusData) data.duplicate(progressInfo);
@@ -92,7 +92,7 @@ public class SetLUTFromColorsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Duplicate image", description = "As the LUT modification does not change any image data, you can disable creating a duplicate.")
+    @SetJIPipeDocumentation(name = "Duplicate image", description = "As the LUT modification does not change any image data, you can disable creating a duplicate.")
     @JIPipeParameter("duplicate-image")
     public boolean isDuplicateImage() {
         return duplicateImage;
@@ -103,7 +103,7 @@ public class SetLUTFromColorsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.duplicateImage = duplicateImage;
     }
 
-    @JIPipeDocumentation(name = "First color", description = "The color assigned to zero values.")
+    @SetJIPipeDocumentation(name = "First color", description = "The color assigned to zero values.")
     @JIPipeParameter(value = "first-color", uiOrder = -100)
     public Color getFirstColor() {
         return firstColor;
@@ -114,7 +114,7 @@ public class SetLUTFromColorsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.firstColor = firstColor;
     }
 
-    @JIPipeDocumentation(name = "Second color", description = "The color assigned to maximum values.")
+    @SetJIPipeDocumentation(name = "Second color", description = "The color assigned to maximum values.")
     @JIPipeParameter(value = "second-color", uiOrder = -99)
     public Color getSecondColor() {
         return secondColor;
@@ -125,7 +125,7 @@ public class SetLUTFromColorsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.secondColor = secondColor;
     }
 
-    @JIPipeDocumentation(name = "Restrict to channels", description = "Allows to restrict setting LUT to specific channels")
+    @SetJIPipeDocumentation(name = "Restrict to channels", description = "Allows to restrict setting LUT to specific channels")
     @JIPipeParameter("restrict-to-channels")
     public OptionalIntegerRange getRestrictToChannels() {
         return restrictToChannels;

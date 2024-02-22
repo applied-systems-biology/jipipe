@@ -1,17 +1,18 @@
 package org.hkijena.jipipe.extensions.forms.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
+import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 
 /**
  * A node base class that adds a new form element into the list of existing forms
  */
-@JIPipeDocumentationDescription(description = "A new form element is added to the list of existing form elements and stored into the combined list. " +
+@AddJIPipeDocumentationDescription(description = "A new form element is added to the list of existing form elements and stored into the combined list. " +
         "The input slot requires no incoming edge.")
 public abstract class FormGeneratorAlgorithm extends JIPipeAlgorithm {
 
@@ -27,7 +28,7 @@ public abstract class FormGeneratorAlgorithm extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
+    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         getFirstOutputSlot().addDataFromSlot(getFirstInputSlot(), progressInfo);
         if (!isPassThrough()) {
             run(getFirstOutputSlot(), progressInfo);

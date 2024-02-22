@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.functions.collections;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -10,7 +10,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Sort array (descending)", description = "Sorts an array in descending order")
+@SetJIPipeDocumentation(name = "Sort array (descending)", description = "Sorts an array in descending order")
 public class SortDescendingArrayFunction extends ExpressionFunction {
 
     public SortDescendingArrayFunction() {

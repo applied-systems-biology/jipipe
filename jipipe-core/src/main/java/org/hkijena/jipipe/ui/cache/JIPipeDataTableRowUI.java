@@ -191,7 +191,7 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
                 this::copyString));
         exportMenu.addSeparator();
 
-        JMenuItem exportToFolderItem = new JMenuItem("Export to folder", UIUtils.getIconFromResources("actions/browser-download.png"));
+        JMenuItem exportToFolderItem = new JMenuItem("Export to folder", UIUtils.getIconFromResources("actions/download.png"));
         exportToFolderItem.setToolTipText("Saves the data to a folder. If multiple files are present, the names will be generated according to the selected name.");
         exportToFolderItem.addActionListener(e -> exportToFolder());
         exportMenu.add(exportToFolderItem);

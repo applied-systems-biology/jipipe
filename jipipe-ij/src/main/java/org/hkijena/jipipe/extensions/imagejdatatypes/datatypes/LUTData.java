@@ -6,7 +6,7 @@ import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import ij.ImagePlus;
 import ij.process.LUT;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-@JIPipeDocumentation(name = "LUT", description = "A function that converts an intensity to a RGB color value")
+@SetJIPipeDocumentation(name = "LUT", description = "A function that converts an intensity to a RGB color value")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains one file in *.json format that describes the LUT gradient stops.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/lut-data.schema.json")
 public class LUTData implements JIPipeData {

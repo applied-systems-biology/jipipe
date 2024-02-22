@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.utils.algorithms.distribute;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -18,11 +18,11 @@ import org.hkijena.jipipe.extensions.parameters.library.graph.OutputSlotMapParam
 
 import java.util.*;
 
-@JIPipeDocumentation(name = "Split data randomly (percentage)", description = "Distributes data across the output slots, so a certain percentage of data is in the specified slot." +
+@SetJIPipeDocumentation(name = "Split data randomly (percentage)", description = "Distributes data across the output slots, so a certain percentage of data is in the specified slot." +
         " Please note that negative weights will be replaced by zero. The output data is unique, meaning that there will be no overlaps between different slots.")
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Split")
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class)
+@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Split")
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class)
 public class DistributeDataRandomlyByPercentageAlgorithm extends JIPipeMergingAlgorithm {
     private final OutputSlotMapParameterCollection weights;
 
@@ -45,7 +45,7 @@ public class DistributeDataRandomlyByPercentageAlgorithm extends JIPipeMergingAl
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         if (getInputSlots().isEmpty())
             return;
         Map<String, Double> weightMap = new HashMap<>();
@@ -90,7 +90,7 @@ public class DistributeDataRandomlyByPercentageAlgorithm extends JIPipeMergingAl
         }
     }
 
-    @JIPipeDocumentation(name = "Weights", description = "Here you can set weights for each slot. They will be automatically converted into percentages.")
+    @SetJIPipeDocumentation(name = "Weights", description = "Here you can set weights for each slot. They will be automatically converted into percentages.")
     @JIPipeParameter("percentages")
     public OutputSlotMapParameterCollection getWeights() {
         return weights;

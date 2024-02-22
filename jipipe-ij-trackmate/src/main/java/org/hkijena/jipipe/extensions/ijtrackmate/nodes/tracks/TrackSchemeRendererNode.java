@@ -20,8 +20,8 @@ import fiji.plugin.trackmate.gui.displaysettings.DisplaySettings;
 import fiji.plugin.trackmate.visualization.trackscheme.TrackScheme;
 import fiji.plugin.trackmate.visualization.trackscheme.TrackSchemeGraphComponent;
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -38,10 +38,10 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.InvocationTargetException;
 
-@JIPipeDocumentation(name = "Render track scheme", description = "Renders the track scheme as image")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nVisualize")
-@JIPipeInputSlot(value = TrackCollectionData.class, slotName = "Tracks", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Track scheme", autoCreate = true)
+@SetJIPipeDocumentation(name = "Render track scheme", description = "Renders the track scheme as image")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nVisualize")
+@AddJIPipeInputSlot(value = TrackCollectionData.class, slotName = "Tracks", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Track scheme", create = true)
 public class TrackSchemeRendererNode extends JIPipeSimpleIteratingAlgorithm {
 
     public TrackSchemeRendererNode(JIPipeNodeInfo info) {
@@ -53,7 +53,7 @@ public class TrackSchemeRendererNode extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         TrackCollectionData trackCollectionData = iterationStep.getInputData(getFirstInputSlot(), TrackCollectionData.class, progressInfo);
         try {
             TrackScheme[] buffer = new TrackScheme[1];

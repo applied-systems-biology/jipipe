@@ -180,7 +180,7 @@ public abstract class JIPipeCompendiumUI<T> extends JPanel {
 
     private void initializeList(JPanel listPanel) {
         itemList = new JList<>();
-        itemList.setBorder(BorderFactory.createEtchedBorder());
+        itemList.setBorder(UIUtils.createControlBorder());
         itemList.setCellRenderer(getItemListRenderer());
         itemList.setModel(new DefaultListModel<>());
         itemList.addListSelectionListener(e -> {

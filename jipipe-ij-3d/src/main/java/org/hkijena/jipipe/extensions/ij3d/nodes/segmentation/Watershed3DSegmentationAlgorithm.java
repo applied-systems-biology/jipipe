@@ -5,8 +5,8 @@ import ij.process.ImageProcessor;
 import mcib3d.image3d.ImageHandler;
 import mcib3d.image3d.processing.FastFilters3D;
 import mcib3d.image3d.regionGrowing.Watershed3D;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -23,15 +23,15 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import java.util.HashMap;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Watershed 3D segmentation", description = "The 3D Watershed operation works with two images, one containing the seeds of the objects, " +
+@SetJIPipeDocumentation(name = "Watershed 3D segmentation", description = "The 3D Watershed operation works with two images, one containing the seeds of the objects, " +
         "that can be obtained from local maxima (see 3D filters), the other image containing signal data. " +
         "A first threshold1 is used for seeds (only seeds with value > threshold1 will be used). " +
         "A second threshold is used to cluster voxels with values > threshold2. In this implementation voxels are clustered to seeds in descending order of voxel values.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Segment")
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Seeds", autoCreate = true, optional = true, description = "Optional seeds")
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Dams", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Segment")
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Seeds", create = true, optional = true, description = "Optional seeds")
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Dams", create = true)
 public class Watershed3DSegmentationAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final SeedSegmentationSettings seedSegmentationSettings;
@@ -53,7 +53,7 @@ public class Watershed3DSegmentationAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus inputImage = iterationStep.getInputData("Input", ImagePlusGreyscaleData.class, progressInfo).getImage();
         ImagePlus seedsImage = ImageJUtils.unwrap(iterationStep.getInputData("Seeds", ImagePlusGreyscaleMaskData.class, progressInfo));
 
@@ -103,14 +103,14 @@ public class Watershed3DSegmentationAlgorithm extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData("Dams", new ImagePlusGreyscaleData(outputDams), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Seed segmentation", description = "The following settings are utilized if no seed image is provided and " +
+    @SetJIPipeDocumentation(name = "Seed segmentation", description = "The following settings are utilized if no seed image is provided and " +
             "an automated algorithm is applied for the seed detection")
     @JIPipeParameter("seed-segmentation-settings")
     public SeedSegmentationSettings getSeedSegmentationSettings() {
         return seedSegmentationSettings;
     }
 
-    @JIPipeDocumentation(name = "Seeds threshold", description = "Determines which seeds will be used")
+    @SetJIPipeDocumentation(name = "Seeds threshold", description = "Determines which seeds will be used")
     @JIPipeParameter("seeds-threshold")
     public int getSeedsThreshold() {
         return seedsThreshold;
@@ -121,7 +121,7 @@ public class Watershed3DSegmentationAlgorithm extends JIPipeIteratingAlgorithm {
         this.seedsThreshold = seedsThreshold;
     }
 
-    @JIPipeDocumentation(name = "Image threshold", description = "Clusters the voxels")
+    @SetJIPipeDocumentation(name = "Image threshold", description = "Clusters the voxels")
     @JIPipeParameter("image-threshold")
     public int getVoxelsThreshold() {
         return voxelsThreshold;

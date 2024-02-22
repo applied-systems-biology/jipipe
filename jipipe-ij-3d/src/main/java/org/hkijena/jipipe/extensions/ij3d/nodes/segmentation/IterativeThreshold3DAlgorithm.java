@@ -10,9 +10,9 @@ import mcib3d.image3d.ImageInt;
 import mcib3d.image3d.ImageLabeller;
 import mcib3d.image3d.IterativeThresholding.TrackThreshold;
 import mcib3d.image3d.processing.FastFilters3D;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -27,14 +27,14 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 import java.util.ArrayList;
 
-@JIPipeDocumentation(name = "3D iterative thresholding", description = "Tests all thresholds and detect objects for all thresholds, it will then try to build a lineage of the objects detected, " +
+@SetJIPipeDocumentation(name = "3D iterative thresholding", description = "Tests all thresholds and detect objects for all thresholds, it will then try to build a lineage of the objects detected, " +
         "linking them from one threshold to the next threshold, taking possible splits into account.")
-@JIPipeCitation("https://mcib3d.frama.io/3d-suite-imagej/plugins/Segmentation/3D-Iterative-Segmentation/")
-@JIPipeCitation("Gul-Mohammed, J., Arganda-Carreras, I., Andrey, P., Galy, V., & Boudier, T. (2014). A generic classification-based method for segmentation of nuclei in 3D images of early embryos. BMC bioinformatics, 15(1), 1-12.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Threshold")
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Markers", optional = true, description = "Optional seeds for the objects", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)
+@AddJIPipeCitation("https://mcib3d.frama.io/3d-suite-imagej/plugins/Segmentation/3D-Iterative-Segmentation/")
+@AddJIPipeCitation("Gul-Mohammed, J., Arganda-Carreras, I., Andrey, P., Galy, V., & Boudier, T. (2014). A generic classification-based method for segmentation of nuclei in 3D images of early embryos. BMC bioinformatics, 15(1), 1-12.")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Threshold")
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Markers", optional = true, description = "Optional seeds for the objects", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
 public class IterativeThreshold3DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private int minVolumePixels = 100;
@@ -74,7 +74,7 @@ public class IterativeThreshold3DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus inputImage = iterationStep.getInputData("Input", ImagePlusGreyscaleData.class, progressInfo).getImage();
         ImagePlus markersImage = ImageJUtils.unwrap(iterationStep.getInputData("Markers", ImagePlusGreyscaleMaskData.class, progressInfo));
         ImagePlus outputImage = IJ3DUtils.forEach3DIn5DGenerate(inputImage, (ih, index, ctProgress) -> {
@@ -145,7 +145,7 @@ public class IterativeThreshold3DAlgorithm extends JIPipeIteratingAlgorithm {
         return point3Ds;
     }
 
-    @JIPipeDocumentation(name = "Min volume (pixels)", description = "The minimum volume of the detected objects")
+    @SetJIPipeDocumentation(name = "Min volume (pixels)", description = "The minimum volume of the detected objects")
     @JIPipeParameter("min-volume-pixels")
     public int getMinVolumePixels() {
         return minVolumePixels;
@@ -156,7 +156,7 @@ public class IterativeThreshold3DAlgorithm extends JIPipeIteratingAlgorithm {
         this.minVolumePixels = minVolumePixels;
     }
 
-    @JIPipeDocumentation(name = "Max volume (pixels)", description = "The maximum volume of the detected objects")
+    @SetJIPipeDocumentation(name = "Max volume (pixels)", description = "The maximum volume of the detected objects")
     @JIPipeParameter("max-volume-pixels")
     public int getMaxVolumePixels() {
         return maxVolumePixels;
@@ -167,7 +167,7 @@ public class IterativeThreshold3DAlgorithm extends JIPipeIteratingAlgorithm {
         this.maxVolumePixels = maxVolumePixels;
     }
 
-    @JIPipeDocumentation(name = "Minimum threshold", description = "The minimum threshold")
+    @SetJIPipeDocumentation(name = "Minimum threshold", description = "The minimum threshold")
     @JIPipeParameter("min-threshold")
     public int getMinThreshold() {
         return minThreshold;
@@ -178,7 +178,7 @@ public class IterativeThreshold3DAlgorithm extends JIPipeIteratingAlgorithm {
         this.minThreshold = minThreshold;
     }
 
-    @JIPipeDocumentation(name = "Minimum contrast (Exp)", description = "Allows to exclude regions from the calculation that have a low contrast")
+    @SetJIPipeDocumentation(name = "Minimum contrast (Exp)", description = "Allows to exclude regions from the calculation that have a low contrast")
     @JIPipeParameter("min-contrast-exp")
     public int getMinContrastExp() {
         return minContrastExp;
@@ -189,7 +189,7 @@ public class IterativeThreshold3DAlgorithm extends JIPipeIteratingAlgorithm {
         this.minContrastExp = minContrastExp;
     }
 
-    @JIPipeDocumentation(name = "Threshold method: value", description = "Value associated to the thresholding method. Please read the documentation of the 'Threshold method' parameter.")
+    @SetJIPipeDocumentation(name = "Threshold method: value", description = "Value associated to the thresholding method. Please read the documentation of the 'Threshold method' parameter.")
     @JIPipeParameter("value-method")
     public int getValueMethod() {
         return valueMethod;
@@ -200,7 +200,7 @@ public class IterativeThreshold3DAlgorithm extends JIPipeIteratingAlgorithm {
         this.valueMethod = valueMethod;
     }
 
-    @JIPipeDocumentation(name = "Start at mean", description = "In order not to test low thresholds you can specify to start with the mean value of the image as the lowest threshold or specify manually the lowest threshold to start with. ")
+    @SetJIPipeDocumentation(name = "Start at mean", description = "In order not to test low thresholds you can specify to start with the mean value of the image as the lowest threshold or specify manually the lowest threshold to start with. ")
     @JIPipeParameter("start-at-mean")
     public boolean isStartsAtMean() {
         return startsAtMean;
@@ -211,7 +211,7 @@ public class IterativeThreshold3DAlgorithm extends JIPipeIteratingAlgorithm {
         this.startsAtMean = startsAtMean;
     }
 
-    @JIPipeDocumentation(name = "Filter before thresholding", description = "Filter the image before thresholding with a 3D median filter with radii proportional to the minimal volume.")
+    @SetJIPipeDocumentation(name = "Filter before thresholding", description = "Filter the image before thresholding with a 3D median filter with radii proportional to the minimal volume.")
     @JIPipeParameter("enable-filtering")
     public boolean isEnableFiltering() {
         return enableFiltering;
@@ -222,7 +222,7 @@ public class IterativeThreshold3DAlgorithm extends JIPipeIteratingAlgorithm {
         this.enableFiltering = enableFiltering;
     }
 
-    @JIPipeDocumentation(name = "Criteria method", description = "<p>criteria to pick the best threshold :</p>\n" +
+    @SetJIPipeDocumentation(name = "Criteria method", description = "<p>criteria to pick the best threshold :</p>\n" +
             "<ul>\n" +
             "<li>Elongation : the threshold leading to the most round object is chosen (minimal elongation).</li>\n" +
             "<li>Volume : the threshold leading to the largest object.</li>\n" +
@@ -239,7 +239,7 @@ public class IterativeThreshold3DAlgorithm extends JIPipeIteratingAlgorithm {
         this.criteriaMethod = criteriaMethod;
     }
 
-    @JIPipeDocumentation(name = "Threshold method", description = "<p>The thresholds tested can be tuned with 3 options with the value parameter :</p>\n" +
+    @SetJIPipeDocumentation(name = "Threshold method", description = "<p>The thresholds tested can be tuned with 3 options with the value parameter :</p>\n" +
             "<ul>\n" +
             "<li>Step : threshold are tested each step value.</li>\n" +
             "<li>Kmeans : histogram is analysed and clustered into value classes using a KMeans algorithm.</li>\n" +
@@ -256,7 +256,7 @@ public class IterativeThreshold3DAlgorithm extends JIPipeIteratingAlgorithm {
         this.thresholdMethod = thresholdMethod;
     }
 
-    @JIPipeDocumentation(name = "Segment results")
+    @SetJIPipeDocumentation(name = "Segment results")
     @JIPipeParameter("segment-results-method")
     public SegmentResultsMethod getSegmentResultsMethod() {
         return segmentResultsMethod;

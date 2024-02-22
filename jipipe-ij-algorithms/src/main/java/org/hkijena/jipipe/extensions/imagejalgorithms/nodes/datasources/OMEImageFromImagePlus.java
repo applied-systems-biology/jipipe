@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.datasources;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
@@ -15,12 +15,12 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEExporterSettings;
 
-@JIPipeDocumentation(name = "Image to OME Image", description = "Converts an image into an OME image. Optionally allows the attachment of ROI that are then stored within the OME image")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true)
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true, optional = true)
-@JIPipeOutputSlot(value = OMEImageData.class, slotName = "OME Image", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nBio-Formats", aliasName = "Bio-Formats Exporter (automated export)")
+@SetJIPipeDocumentation(name = "Image to OME Image", description = "Converts an image into an OME image. Optionally allows the attachment of ROI that are then stored within the OME image")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true, optional = true)
+@AddJIPipeOutputSlot(value = OMEImageData.class, slotName = "OME Image", create = true)
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nBio-Formats", aliasName = "Bio-Formats Exporter (automated export)")
 public class OMEImageFromImagePlus extends JIPipeIteratingAlgorithm {
 
     private OMEExporterSettings exporterSettings = new OMEExporterSettings();
@@ -37,7 +37,7 @@ public class OMEImageFromImagePlus extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData imagePlusData = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo);
         ROIListData rois = iterationStep.getInputRow("ROI") >= 0 ? iterationStep.getInputData("ROI", ROIListData.class, progressInfo) : new ROIListData();
         OMEImageData omeImageData = new OMEImageData(imagePlusData.getImage(), rois, null);
@@ -45,7 +45,7 @@ public class OMEImageFromImagePlus extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), omeImageData, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Exporter settings", description = "The following settings control how files are exported:")
+    @SetJIPipeDocumentation(name = "Exporter settings", description = "The following settings control how files are exported:")
     @JIPipeParameter("ome-exporter-settings")
     public OMEExporterSettings getExporterSettings() {
         return exporterSettings;

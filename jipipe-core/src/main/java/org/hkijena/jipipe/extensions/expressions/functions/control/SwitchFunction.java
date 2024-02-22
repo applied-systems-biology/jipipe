@@ -1,12 +1,12 @@
 package org.hkijena.jipipe.extensions.expressions.functions.control;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "Switch", description = "Multiple IF_ELSE instructions flattened into a function. Pass CASE(condition, value) items into this function. The cases are evaluated in order. " +
+@SetJIPipeDocumentation(name = "Switch", description = "Multiple IF_ELSE instructions flattened into a function. Pass CASE(condition, value) items into this function. The cases are evaluated in order. " +
         "The value of the first case where the condition is true is returned.")
 public class SwitchFunction extends ExpressionFunction {
 

@@ -586,7 +586,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     private JLabel createMessageLabel(String text, String subText, Icon icon) {
         JLabel label = new JLabel("<html><strong>" + text + "</strong><br/>" + subText, icon, JLabel.LEFT);
         label.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4),
-                BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(UIManager.getColor("Button.borderColor"), 1, true),
+                BorderFactory.createCompoundBorder(UIUtils.createControlBorder(),
                         BorderFactory.createEmptyBorder(16, 16, 16, 16))));
         return label;
     }
@@ -850,7 +850,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.X_AXIS));
         contentPanel.add(rightPanel, BorderLayout.EAST);
 
-        JButton lastFrame = new JButton(UIUtils.getIconFromResources("actions/arrow-left.png"));
+        JButton lastFrame = new JButton(UIUtils.getIconFromResources("actions/caret-left.png"));
         UIUtils.makeFlat25x25(lastFrame);
         lastFrame.setToolTipText("Go one slice back");
         lastFrame.addActionListener(e -> {
@@ -858,7 +858,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         });
         rightPanel.add(lastFrame);
 
-        JButton nextFrame = new JButton(UIUtils.getIconFromResources("actions/arrow-right.png"));
+        JButton nextFrame = new JButton(UIUtils.getIconFromResources("actions/caret-right.png"));
         UIUtils.makeFlat25x25(nextFrame);
         nextFrame.setToolTipText("Go one slice forward");
         nextFrame.addActionListener(e -> {

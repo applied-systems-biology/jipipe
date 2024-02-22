@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.cellpose.parameters;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
@@ -27,7 +27,7 @@ public class CellposeSegmentationOutputSettings extends AbstractJIPipeParameterC
         this.outputROI = other.outputROI;
     }
 
-    @JIPipeDocumentation(name = "Output labels", description = "Output an image that contains a unique greyscale value for each detected object.")
+    @SetJIPipeDocumentation(name = "Output labels", description = "Output an image that contains a unique greyscale value for each detected object.")
     @JIPipeParameter("output-labels")
     public boolean isOutputLabels() {
         return outputLabels;
@@ -38,7 +38,7 @@ public class CellposeSegmentationOutputSettings extends AbstractJIPipeParameterC
         this.outputLabels = outputLabels;
     }
 
-    @JIPipeDocumentation(name = "Output flows XY", description = "An RGB image that indicates the x and y flow of each pixel")
+    @SetJIPipeDocumentation(name = "Output flows XY", description = "An RGB image that indicates the x and y flow of each pixel")
     @JIPipeParameter("output-flows-xy")
     public boolean isOutputFlowsXY() {
         return outputFlowsXY;
@@ -49,7 +49,7 @@ public class CellposeSegmentationOutputSettings extends AbstractJIPipeParameterC
         this.outputFlowsXY = outputFlowsXY;
     }
 
-    @JIPipeDocumentation(name = "Output probabilities", description = "An image indicating the cell probabilities for each pixel")
+    @SetJIPipeDocumentation(name = "Output probabilities", description = "An image indicating the cell probabilities for each pixel")
     @JIPipeParameter("output-probabilities")
     public boolean isOutputProbabilities() {
         return outputProbabilities;
@@ -60,7 +60,7 @@ public class CellposeSegmentationOutputSettings extends AbstractJIPipeParameterC
         this.outputProbabilities = outputProbabilities;
     }
 
-    @JIPipeDocumentation(name = "Output ROI", description = "Output a ROI list containing all detected objects")
+    @SetJIPipeDocumentation(name = "Output ROI", description = "Output a ROI list containing all detected objects")
     @JIPipeParameter("output-roi")
     public boolean isOutputROI() {
         return outputROI;
@@ -71,7 +71,7 @@ public class CellposeSegmentationOutputSettings extends AbstractJIPipeParameterC
         this.outputROI = outputROI;
     }
 
-    @JIPipeDocumentation(name = "Output flows Z", description = "Flows in Z direction (black for non-3D images)")
+    @SetJIPipeDocumentation(name = "Output flows Z", description = "Flows in Z direction (black for non-3D images)")
     @JIPipeParameter("output-flows-z")
     public boolean isOutputFlowsZ() {
         return outputFlowsZ;
@@ -82,7 +82,7 @@ public class CellposeSegmentationOutputSettings extends AbstractJIPipeParameterC
         this.outputFlowsZ = outputFlowsZ;
     }
 
-    @JIPipeDocumentation(name = "Output flows d", description = "Multi-channel image that contains the flows [dZ, dY, dX, cell probability] (3D images) / [dY, dX, cell probability] (2D images)")
+    @SetJIPipeDocumentation(name = "Output flows d", description = "Multi-channel image that contains the flows [dZ, dY, dX, cell probability] (3D images) / [dY, dX, cell probability] (2D images)")
     @JIPipeParameter("output-flows-d")
     public boolean isOutputFlowsD() {
         return outputFlowsD;

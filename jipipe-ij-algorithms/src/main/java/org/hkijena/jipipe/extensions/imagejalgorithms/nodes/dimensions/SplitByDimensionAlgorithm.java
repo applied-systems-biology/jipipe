@@ -2,8 +2,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.dimensions;
 
 import ij.ImagePlus;
 import ij.ImageStack;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -27,12 +27,12 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
 import java.util.ArrayList;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Split by dimension", description = "Splits a hyperstack by a selected dimension into a single or multiple output slots. " +
+@SetJIPipeDocumentation(name = "Split by dimension", description = "Splits a hyperstack by a selected dimension into a single or multiple output slots. " +
         "Multiple output slots can be utilized to split specific indices.")
-@JIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nHyperstacks")
+@DefineJIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nHyperstacks")
 public class SplitByDimensionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OutputSlotMapParameterCollection outputIndices;
@@ -62,7 +62,7 @@ public class SplitByDimensionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus img = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         if (targetDimension == HyperstackDimension.Channel) {
             for (int c = 0; c < img.getNChannels(); c++) {
@@ -152,14 +152,14 @@ public class SplitByDimensionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Split into output slots", description = "Following settings allow you to determine which generated data is put in which output slot. " +
+    @SetJIPipeDocumentation(name = "Split into output slots", description = "Following settings allow you to determine which generated data is put in which output slot. " +
             "Enable the range parameter and set the range of indices (zero being the first). Example: 0-10;15-21")
     @JIPipeParameter("output-indices")
     public OutputSlotMapParameterCollection getOutputIndices() {
         return outputIndices;
     }
 
-    @JIPipeDocumentation(name = "Split dimension", description = "Determines by which dimension the incoming stacks are split.")
+    @SetJIPipeDocumentation(name = "Split dimension", description = "Determines by which dimension the incoming stacks are split.")
     @JIPipeParameter("target-dimension")
     public HyperstackDimension getTargetDimension() {
         return targetDimension;
@@ -170,7 +170,7 @@ public class SplitByDimensionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.targetDimension = targetDimension;
     }
 
-    @JIPipeDocumentation(name = "Annotate with split dimension", description = "If enabled, create annotations for the index of the split dimension.")
+    @SetJIPipeDocumentation(name = "Annotate with split dimension", description = "If enabled, create annotations for the index of the split dimension.")
     @JIPipeParameter("target-dimension-annotation")
     public OptionalAnnotationNameParameter getTargetDimensionAnnotation() {
         return targetDimensionAnnotation;
@@ -181,7 +181,7 @@ public class SplitByDimensionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.targetDimensionAnnotation = targetDimensionAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotation merge strategy", description = "Determines how annotations are overwritten.")
+    @SetJIPipeDocumentation(name = "Annotation merge strategy", description = "Determines how annotations are overwritten.")
     @JIPipeParameter("annotation-merge-strategy")
     public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {
         return annotationMergeStrategy;

@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.strings.nodes.text;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -23,10 +23,10 @@ import org.hkijena.jipipe.extensions.strings.StringData;
 import java.util.ArrayList;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Annotate with text values", description = "Extracts a value from the input text data (via an expression) and annotates the data with the result.")
-@JIPipeNode(menuPath = "For text", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
-@JIPipeInputSlot(value = StringData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = StringData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Annotate with text values", description = "Extracts a value from the input text data (via an expression) and annotates the data with the result.")
+@DefineJIPipeNode(menuPath = "For text", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = StringData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = StringData.class, slotName = "Output", create = true)
 public class AnnotateWithTextDataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private ParameterCollectionList entries = ParameterCollectionList.containingCollection(Entry.class);
     private JIPipeTextAnnotationMergeMode annotationMergeMode = JIPipeTextAnnotationMergeMode.Merge;
@@ -43,7 +43,7 @@ public class AnnotateWithTextDataAlgorithm extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         StringData data = iterationStep.getInputData(getFirstInputSlot(), StringData.class, progressInfo);
         List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
 
@@ -60,7 +60,7 @@ public class AnnotateWithTextDataAlgorithm extends JIPipeSimpleIteratingAlgorith
         iterationStep.addOutputData(getFirstOutputSlot(), data, annotationList, annotationMergeMode, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Generated annotations", description = "The list of generated annotations.")
+    @SetJIPipeDocumentation(name = "Generated annotations", description = "The list of generated annotations.")
     @JIPipeParameter("entries")
     @ParameterCollectionListTemplate(Entry.class)
     public ParameterCollectionList getEntries() {
@@ -72,7 +72,7 @@ public class AnnotateWithTextDataAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.entries = entries;
     }
 
-    @JIPipeDocumentation(name = "Annotation merge mode", description = "Determines how newly generated annotations are merged with existing ones")
+    @SetJIPipeDocumentation(name = "Annotation merge mode", description = "Determines how newly generated annotations are merged with existing ones")
     @JIPipeParameter("annotation-merge-mode")
     public JIPipeTextAnnotationMergeMode getAnnotationMergeMode() {
         return annotationMergeMode;
@@ -95,7 +95,7 @@ public class AnnotateWithTextDataAlgorithm extends JIPipeSimpleIteratingAlgorith
             this.annotationName = new JIPipeExpressionParameter(other.annotationName);
         }
 
-        @JIPipeDocumentation(name = "Preprocessor", description = "An expression that allows to preprocess the text.")
+        @SetJIPipeDocumentation(name = "Preprocessor", description = "An expression that allows to preprocess the text.")
         @JIPipeParameter(value = "preprocessor", uiOrder = -100)
         @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
         @JIPipeExpressionParameterVariable(name = "Text", key = "text", description = "The input text")
@@ -108,7 +108,7 @@ public class AnnotateWithTextDataAlgorithm extends JIPipeSimpleIteratingAlgorith
             this.preprocessor = preprocessor;
         }
 
-        @JIPipeDocumentation(name = "Annotation name", description = "The name of the output annotation.")
+        @SetJIPipeDocumentation(name = "Annotation name", description = "The name of the output annotation.")
         @JIPipeParameter(value = "annotation-name", uiOrder = -90)
         @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
         @JIPipeExpressionParameterVariable(name = "Text", key = "text", description = "The input text")

@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.functions;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Apply built-in function to array", description = "Decomposes an array into parameters of a function and applies the built-in function. Please note that user-defined functions are not supported.")
+@SetJIPipeDocumentation(name = "Apply built-in function to array", description = "Decomposes an array into parameters of a function and applies the built-in function. Please note that user-defined functions are not supported.")
 public class RunFunctionFunction extends ExpressionFunction {
     public RunFunctionFunction() {
         super("APPLY_FUNCTION_TO_ARRAY", 2);

@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -38,10 +38,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-@JIPipeDocumentation(name = "Export data table", description = "Exports all incoming data as data table directory.")
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
-@JIPipeOutputSlot(value = PathData.class, slotName = "Path", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "Export data table", description = "Exports all incoming data as data table directory.")
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Data", create = true)
+@AddJIPipeOutputSlot(value = PathData.class, slotName = "Path", create = true)
+@DefineJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class)
 public class ExportDataTableByParameter extends JIPipeMergingAlgorithm {
 
     private Path outputDirectory = Paths.get("exported-data");
@@ -59,7 +59,7 @@ public class ExportDataTableByParameter extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Path outputPath = this.outputDirectory;
         if (!outputPath.isAbsolute()) {
             if (relativeToProjectDir && getProjectDirectory() != null) {
@@ -80,7 +80,7 @@ public class ExportDataTableByParameter extends JIPipeMergingAlgorithm {
         iterationStep.addOutputData("Path", new PathData(outputPath), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Output directory", description = "Can be a relative or absolute directory. All collected files will be put into this directory. " +
+    @SetJIPipeDocumentation(name = "Output directory", description = "Can be a relative or absolute directory. All collected files will be put into this directory. " +
             "If relative, it is relative to the output slot's output directory that is generated based on the current run's output path.")
     @JIPipeParameter("output-directory")
     @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.DirectoriesOnly)
@@ -93,7 +93,7 @@ public class ExportDataTableByParameter extends JIPipeMergingAlgorithm {
         this.outputDirectory = outputDirectory;
     }
 
-    @JIPipeDocumentation(name = "Output relative to project directory", description = "If enabled, outputs will be preferably generated relative to the project directory. " +
+    @SetJIPipeDocumentation(name = "Output relative to project directory", description = "If enabled, outputs will be preferably generated relative to the project directory. " +
             "Otherwise, JIPipe will store the results in an automatically generated directory. " +
             "Has no effect if an absolute path is provided.")
     @JIPipeParameter("relative-to-project-dir")

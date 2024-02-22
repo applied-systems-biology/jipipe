@@ -13,14 +13,14 @@
 
 package org.hkijena.jipipe.extensions.expressions.functions;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "String contains", description = "Tests if a string contains a pattern.")
+@SetJIPipeDocumentation(name = "String contains", description = "Tests if a string contains a pattern.")
 public class ContainsStringPredicateFunction extends ExpressionFunction {
 
     public ContainsStringPredicateFunction() {

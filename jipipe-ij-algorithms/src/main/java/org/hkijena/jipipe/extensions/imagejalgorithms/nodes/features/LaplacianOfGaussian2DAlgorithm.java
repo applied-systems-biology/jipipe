@@ -15,8 +15,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.features;
 
 import ij.ImagePlus;
 import ij.plugin.filter.Convolver;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -32,11 +32,11 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
  * Based on code by Dimiter Prodanov
  * <a href="https://imagej.nih.gov/ij/plugins/mexican-hat/Mexican_Hat_Filter.java">...</a>
  */
-@JIPipeDocumentation(name = "Laplacian of Gaussian 2D", description = "Applies a Laplacian of Gaussian filter. " +
+@SetJIPipeDocumentation(name = "Laplacian of Gaussian 2D", description = "Applies a Laplacian of Gaussian filter. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeNode(menuPath = "Blur", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(menuPath = "Blur", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", create = true)
 public class LaplacianOfGaussian2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private int radius = 2;
@@ -56,7 +56,7 @@ public class LaplacianOfGaussian2DAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscale32FData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         int sz = 2 * radius + 1;
@@ -103,7 +103,7 @@ public class LaplacianOfGaussian2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         return true;
     }
 
-    @JIPipeDocumentation(name = "Radius", description = "Radius of the filter in pixels")
+    @SetJIPipeDocumentation(name = "Radius", description = "Radius of the filter in pixels")
     @JIPipeParameter("radius")
     public int getRadius() {
         return radius;

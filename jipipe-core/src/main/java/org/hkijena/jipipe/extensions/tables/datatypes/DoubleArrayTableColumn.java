@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.tables.datatypes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
@@ -29,7 +29,7 @@ import java.util.Collections;
 /**
  * {@link TableColumn} that contains doubles.
  */
-@JIPipeDocumentation(name = "Numeric table column", description = "A table column that contains numbers (64bit floating point)")
+@SetJIPipeDocumentation(name = "Numeric table column", description = "A table column that contains numbers (64bit floating point)")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.csv file that contains the table data.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/results-table.schema.json")
 public class DoubleArrayTableColumn implements MutableTableColumn {

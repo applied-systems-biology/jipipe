@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.util;
 
 import ij.gui.Roi;
 import ij.plugin.RoiScaler;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
@@ -55,7 +55,7 @@ public class ROIEditor extends AbstractJIPipeParameterCollection {
         this.lineWidth = roi.getStrokeWidth();
     }
 
-    @JIPipeDocumentation(name = "Location (X)", description = "The X location")
+    @SetJIPipeDocumentation(name = "Location (X)", description = "The X location")
     @JIPipeParameter("position-x")
     public double getPositionX() {
         return positionX;
@@ -66,7 +66,7 @@ public class ROIEditor extends AbstractJIPipeParameterCollection {
         this.positionX = positionX;
     }
 
-    @JIPipeDocumentation(name = "Location (Y)", description = "The Y location")
+    @SetJIPipeDocumentation(name = "Location (Y)", description = "The Y location")
     @JIPipeParameter("position-y")
     public double getPositionY() {
         return positionY;
@@ -77,7 +77,7 @@ public class ROIEditor extends AbstractJIPipeParameterCollection {
         this.positionY = positionY;
     }
 
-    @JIPipeDocumentation(name = "Slice position (Z)", description = "Allows to relocate the ROI to a different Z-position. " +
+    @SetJIPipeDocumentation(name = "Slice position (Z)", description = "Allows to relocate the ROI to a different Z-position. " +
             "The first index is 1. If set to zero, the ROI is located on all slices.")
     @JIPipeParameter("position-z")
     public int getPositionZ() {
@@ -89,7 +89,7 @@ public class ROIEditor extends AbstractJIPipeParameterCollection {
         this.positionZ = positionZ;
     }
 
-    @JIPipeDocumentation(name = "Slice position (Channel)", description = "Allows to relocate the ROI to a different channel-position. Please note " +
+    @SetJIPipeDocumentation(name = "Slice position (Channel)", description = "Allows to relocate the ROI to a different channel-position. Please note " +
             "that 'Channel' refers to an image slice and not to a pixel channel. " +
             "The first index is 1. If set to zero, the ROI is located on all channels.")
     @JIPipeParameter("position-c")
@@ -102,7 +102,7 @@ public class ROIEditor extends AbstractJIPipeParameterCollection {
         this.positionC = positionC;
     }
 
-    @JIPipeDocumentation(name = "Slice position (Frame)", description = "Allows to relocate the ROI to a different frame/time-position. " +
+    @SetJIPipeDocumentation(name = "Slice position (Frame)", description = "Allows to relocate the ROI to a different frame/time-position. " +
             "The first index is 1. If set to zero, the ROI is located on all frames.")
     @JIPipeParameter("position-t")
     public int getPositionT() {
@@ -114,7 +114,7 @@ public class ROIEditor extends AbstractJIPipeParameterCollection {
         this.positionT = positionT;
     }
 
-    @JIPipeDocumentation(name = "Fill color", description = "Allows to change the fill color when rendered as RGB and within ImageJ")
+    @SetJIPipeDocumentation(name = "Fill color", description = "Allows to change the fill color when rendered as RGB and within ImageJ")
     @JIPipeParameter("fill-color")
     public Color getFillColor() {
         return fillColor;
@@ -125,7 +125,7 @@ public class ROIEditor extends AbstractJIPipeParameterCollection {
         this.fillColor = fillColor;
     }
 
-    @JIPipeDocumentation(name = "Line color", description = "Allows to change the line color when rendered as RGB and within ImageJ")
+    @SetJIPipeDocumentation(name = "Line color", description = "Allows to change the line color when rendered as RGB and within ImageJ")
     @JIPipeParameter("line-color")
     public Color getLineColor() {
         return lineColor;
@@ -136,7 +136,7 @@ public class ROIEditor extends AbstractJIPipeParameterCollection {
         this.lineColor = lineColor;
     }
 
-    @JIPipeDocumentation(name = "Line width", description = "Allows to change the line width when rendered as RGB and within ImageJ")
+    @SetJIPipeDocumentation(name = "Line width", description = "Allows to change the line width when rendered as RGB and within ImageJ")
     @JIPipeParameter("line-width")
     public double getLineWidth() {
         return lineWidth;
@@ -147,7 +147,7 @@ public class ROIEditor extends AbstractJIPipeParameterCollection {
         this.lineWidth = lineWidth;
     }
 
-    @JIPipeDocumentation(name = "ROI name", description = "Allows to change the ROI name")
+    @SetJIPipeDocumentation(name = "ROI name", description = "Allows to change the ROI name")
     @JIPipeParameter("roi-name")
     public String getRoiName() {
         return roiName;
@@ -158,7 +158,7 @@ public class ROIEditor extends AbstractJIPipeParameterCollection {
         this.roiName = roiName;
     }
 
-    @JIPipeDocumentation(name = "Scale X", description = "Scales the ROI. Please note that the scale will not be saved inside the ROI. Must be a number.")
+    @SetJIPipeDocumentation(name = "Scale X", description = "Scales the ROI. Please note that the scale will not be saved inside the ROI. Must be a number.")
     @JIPipeParameter("scale-x")
     public double getScaleX() {
         return scaleX;
@@ -169,7 +169,7 @@ public class ROIEditor extends AbstractJIPipeParameterCollection {
         this.scaleX = scaleX;
     }
 
-    @JIPipeDocumentation(name = "Scale Y", description = "Scales the ROI. Please note that the scale will not be saved inside the ROI. Must be a number.")
+    @SetJIPipeDocumentation(name = "Scale Y", description = "Scales the ROI. Please note that the scale will not be saved inside the ROI. Must be a number.")
     @JIPipeParameter("scale-y")
     public double getScaleY() {
         return scaleY;
@@ -180,7 +180,7 @@ public class ROIEditor extends AbstractJIPipeParameterCollection {
         this.scaleY = scaleY;
     }
 
-    @JIPipeDocumentation(name = "Center scale", description = "If true, each ROI is scaled relative to its center.")
+    @SetJIPipeDocumentation(name = "Center scale", description = "If true, each ROI is scaled relative to its center.")
     @JIPipeParameter("center-scale")
     public boolean getCenterScale() {
         return centerScale;

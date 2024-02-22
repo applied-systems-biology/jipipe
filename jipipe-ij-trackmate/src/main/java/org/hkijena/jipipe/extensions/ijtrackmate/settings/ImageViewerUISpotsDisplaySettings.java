@@ -15,7 +15,7 @@
 package org.hkijena.jipipe.extensions.ijtrackmate.settings;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.SpotDrawer;
@@ -32,7 +32,7 @@ public class ImageViewerUISpotsDisplaySettings extends AbstractJIPipeParameterCo
         return JIPipe.getSettings().getSettings(ID, ImageViewerUISpotsDisplaySettings.class);
     }
 
-    @JIPipeDocumentation(name = "Spot visualization")
+    @SetJIPipeDocumentation(name = "Spot visualization")
     @JIPipeParameter("spot-drawer")
     public SpotDrawer getSpotDrawer() {
         return spotDrawer;
@@ -42,7 +42,7 @@ public class ImageViewerUISpotsDisplaySettings extends AbstractJIPipeParameterCo
         this.spotDrawer = spotDrawer;
     }
 
-    @JIPipeDocumentation(name = "Show spots", description = "If enabled, spots are visible")
+    @SetJIPipeDocumentation(name = "Show spots", description = "If enabled, spots are visible")
     @JIPipeParameter("show-spots")
     public boolean isShowSpots() {
         return showSpots;

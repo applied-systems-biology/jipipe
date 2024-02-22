@@ -175,5 +175,5 @@ public interface JIPipeDependency extends JIPipeValidatable {
     }
 
     @Override
-    void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report);
+    void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report);
 }

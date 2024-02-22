@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.api.data.utils;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
@@ -15,7 +16,7 @@ import java.nio.file.Path;
 /**
  * A base class for {@link JIPipeData} that is serialized from/to JSON for convenience
  * Ensure that this data type has a copy constructor for the duplicate() function.
- * You also still need to add the proper {@link org.hkijena.jipipe.api.JIPipeDocumentation} annotation and
+ * You also still need to add the proper {@link SetJIPipeDocumentation} annotation and
  * the JIPipeData importData(Path) static function.
  */
 @JIPipeDataStorageDocumentation(humanReadableDescription = "A JSON file that contains the serialized data",

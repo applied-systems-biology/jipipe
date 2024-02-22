@@ -81,7 +81,7 @@ public class OmniposeExtension extends JIPipePrepackagedDefaultJavaExtension {
                     "For more information, please visit https://www.jipipe.org/installation/third-party/omnipose/");
             notification.getActions().add(new JIPipeNotificationAction("Install Omnipose",
                     "Installs Omnipose via the EasyInstaller",
-                    UIUtils.getIconInvertedFromResources("actions/browser-download.png"),
+                    UIUtils.getIconInvertedFromResources("actions/download.png"),
                     JIPipeNotificationAction.Style.Success,
                     OmniposeExtension::easyInstallOmnipose));
             notification.getActions().add(new JIPipeNotificationAction("Open settings",

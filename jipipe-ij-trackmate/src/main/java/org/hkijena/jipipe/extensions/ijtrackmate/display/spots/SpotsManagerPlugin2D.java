@@ -25,6 +25,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.extensions.ijtrackmate.TrackMateExtension;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.MeasureSpotsNode;
@@ -195,7 +196,7 @@ public class SpotsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
         SpotsCollectionData selected = getSelectedSpotsOrAll("Measure spots", "Please select which spots should be measured");
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
         node.getFirstInputSlot().addData(selected, progressInfo);
-        node.run(progressInfo);
+        node.run(new JIPipeGraphNodeRunContext(), progressInfo);
         ResultsTableData measurements = node.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
         TableEditor.openWindow(getViewerPanel().getWorkbench(), measurements, "Measurements");
     }
@@ -374,7 +375,7 @@ public class SpotsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
         // Setup panel
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.setMinimumSize(new Dimension(100, 300));
-        mainPanel.setBorder(BorderFactory.createEtchedBorder());
+        mainPanel.setBorder(UIUtils.createControlBorder());
 
         mainPanel.add(ribbon, BorderLayout.NORTH);
 

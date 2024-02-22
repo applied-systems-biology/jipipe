@@ -18,8 +18,8 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -42,12 +42,12 @@ import java.awt.*;
 /**
  * Wrapper around {@link ImageProcessor}
  */
-@JIPipeDocumentation(name = "Scale 2D image", description = "Scales a 2D image. " +
+@SetJIPipeDocumentation(name = "Scale 2D image", description = "Scales a 2D image. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeNode(menuPath = "Transform", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image", aliasName = "Scale... (2D)")
+@DefineJIPipeNode(menuPath = "Transform", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image", aliasName = "Scale... (2D)")
 public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private InterpolationMethod interpolationMethod = InterpolationMethod.Bilinear;
@@ -122,7 +122,7 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Avoid unnecessary scaling", description = "If enabled, the ImageJ resize method is not called if the image already has the correct size.")
+    @SetJIPipeDocumentation(name = "Avoid unnecessary scaling", description = "If enabled, the ImageJ resize method is not called if the image already has the correct size.")
     @JIPipeParameter("avoid-unnecessary-scaling")
     public boolean isAvoidUnnecessaryScaling() {
         return avoidUnnecessaryScaling;
@@ -139,7 +139,7 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getImage();
 
@@ -191,7 +191,7 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Placement", description = "Used if the scale mode is 'Fit' or 'Cover'. Determines where the image is placed.")
+    @SetJIPipeDocumentation(name = "Placement", description = "Used if the scale mode is 'Fit' or 'Cover'. Determines where the image is placed.")
     @JIPipeParameter("anchor")
     public Anchor getAnchor() {
         return anchor;
@@ -202,7 +202,7 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.anchor = anchor;
     }
 
-    @JIPipeDocumentation(name = "Background", description = "Used if the scale mode is 'Fit' or 'Cover'. Determines the background color of the output")
+    @SetJIPipeDocumentation(name = "Background", description = "Used if the scale mode is 'Fit' or 'Cover'. Determines the background color of the output")
     @JIPipeParameter("background-color")
     public Color getBackground() {
         return background;
@@ -213,7 +213,7 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.background = background;
     }
 
-    @JIPipeDocumentation(name = "Interpolation", description = "The interpolation method")
+    @SetJIPipeDocumentation(name = "Interpolation", description = "The interpolation method")
     @JIPipeParameter("interpolation-method")
     public InterpolationMethod getInterpolationMethod() {
         return interpolationMethod;
@@ -224,7 +224,7 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.interpolationMethod = interpolationMethod;
     }
 
-    @JIPipeDocumentation(name = "X axis", description = "How the X axis should be scaled. If disabled, the aspect ratio is kept.")
+    @SetJIPipeDocumentation(name = "X axis", description = "How the X axis should be scaled. If disabled, the aspect ratio is kept.")
     @JIPipeParameter("x-axis")
     @JIPipeExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariablesInfo.class)
     public OptionalJIPipeExpressionParameter getxAxis() {
@@ -236,7 +236,7 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.xAxis = xAxis;
     }
 
-    @JIPipeDocumentation(name = "Y axis", description = "How the Y axis should be scaled. If disabled, the aspect ratio is kept.")
+    @SetJIPipeDocumentation(name = "Y axis", description = "How the Y axis should be scaled. If disabled, the aspect ratio is kept.")
     @JIPipeParameter("y-axis")
     @JIPipeExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariablesInfo.class)
     public OptionalJIPipeExpressionParameter getyAxis() {
@@ -248,7 +248,7 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.yAxis = yAxis;
     }
 
-    @JIPipeDocumentation(name = "Scale mode", description = "Determines how the image is fit into the output. You can either stretch the image " +
+    @SetJIPipeDocumentation(name = "Scale mode", description = "Determines how the image is fit into the output. You can either stretch the image " +
             "to the new dimensions, fit it inside the boundaries, or cut off parts to cover the whole output")
     @JIPipeParameter("scale-mode")
     public ScaleMode getScaleMode() {

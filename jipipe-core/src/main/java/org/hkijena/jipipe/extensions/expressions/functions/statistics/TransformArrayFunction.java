@@ -1,14 +1,14 @@
 package org.hkijena.jipipe.extensions.expressions.functions.statistics;
 
 import com.google.common.collect.ImmutableList;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Transform array", description = "Applies an expression for each item in the array and returns the result. Equivalent to FOREACH.")
+@SetJIPipeDocumentation(name = "Transform array", description = "Applies an expression for each item in the array and returns the result. Equivalent to FOREACH.")
 public class TransformArrayFunction extends ExpressionFunction {
     public TransformArrayFunction() {
         super("TRANSFORM_ARRAY", 2);

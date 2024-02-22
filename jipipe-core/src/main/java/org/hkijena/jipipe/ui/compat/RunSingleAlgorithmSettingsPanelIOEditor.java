@@ -46,7 +46,7 @@ public class RunSingleAlgorithmSettingsPanelIOEditor extends JIPipeGraphEditorUI
     }
 
     private void initialize() {
-        DocumentTabPane propertyPanel = new DocumentTabPane(true);
+        DocumentTabPane propertyPanel = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Top);
         propertyPanel.addTab("Inputs",
                 UIUtils.getIconFromResources("data-types/slot.png"),
                 inputsPanel,

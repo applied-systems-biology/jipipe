@@ -15,8 +15,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.dimensions;
 
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -39,11 +39,11 @@ import java.util.List;
 /**
  * Wrapper around {@link ImageProcessor}
  */
-@JIPipeDocumentation(name = "Split stack into 2D", description = "Splits high-dimensional image stacks into 2D planes")
-@JIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlus2DData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Stacks to Image")
+@SetJIPipeDocumentation(name = "Split stack into 2D", description = "Splits high-dimensional image stacks into 2D planes")
+@DefineJIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlus2DData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Stacks to Image")
 public class StackTo2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalAnnotationNameParameter annotationIndex = new OptionalAnnotationNameParameter("Index", false);
@@ -79,7 +79,7 @@ public class StackTo2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
@@ -98,7 +98,7 @@ public class StackTo2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Annotate with index", description = "If enabled, annotate the output plane with the index inside the image.")
+    @SetJIPipeDocumentation(name = "Annotate with index", description = "If enabled, annotate the output plane with the index inside the image.")
     @JIPipeParameter("annotation-index")
     public OptionalAnnotationNameParameter getAnnotationIndex() {
         return annotationIndex;
@@ -109,7 +109,7 @@ public class StackTo2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.annotationIndex = annotationIndex;
     }
 
-    @JIPipeDocumentation(name = "Annotate with Z position", description = "If enabled, annotate the output plane with the Z position of the plane (first is zero).")
+    @SetJIPipeDocumentation(name = "Annotate with Z position", description = "If enabled, annotate the output plane with the Z position of the plane (first is zero).")
     @JIPipeParameter("annotation-z")
     public OptionalAnnotationNameParameter getAnnotationZ() {
         return annotationZ;
@@ -120,7 +120,7 @@ public class StackTo2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.annotationZ = annotationZ;
     }
 
-    @JIPipeDocumentation(name = "Annotate with channel", description = "If enabled, annotate the output plane with the channel (C) position of the plane (first is zero).")
+    @SetJIPipeDocumentation(name = "Annotate with channel", description = "If enabled, annotate the output plane with the channel (C) position of the plane (first is zero).")
     @JIPipeParameter("annotation-c")
     public OptionalAnnotationNameParameter getAnnotationC() {
         return annotationC;
@@ -131,7 +131,7 @@ public class StackTo2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.annotationC = annotationC;
     }
 
-    @JIPipeDocumentation(name = "Annotate with frame", description = "If enabled, annotate the output plane with the frame (T) position of the plane (first is zero).")
+    @SetJIPipeDocumentation(name = "Annotate with frame", description = "If enabled, annotate the output plane with the frame (T) position of the plane (first is zero).")
     @JIPipeParameter("annotation-t")
     public OptionalAnnotationNameParameter getAnnotationT() {
         return annotationT;

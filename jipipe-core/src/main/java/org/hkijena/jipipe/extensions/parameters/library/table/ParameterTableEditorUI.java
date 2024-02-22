@@ -48,7 +48,7 @@ public class ParameterTableEditorUI extends JIPipeParameterEditorUI implements P
 
     private void initialize() {
         setLayout(new BorderLayout());
-        setBorder(BorderFactory.createEtchedBorder());
+        setBorder(UIUtils.createControlBorder());
 
         // Create toolbar for adding/removing rows
         JToolBar toolBar = new JToolBar();

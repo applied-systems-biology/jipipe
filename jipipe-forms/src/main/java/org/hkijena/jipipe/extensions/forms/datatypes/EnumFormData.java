@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.forms.datatypes;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -27,7 +27,7 @@ import java.awt.*;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Selection input form", description = "A form element that allows the user to select one of multiple options")
+@SetJIPipeDocumentation(name = "Selection input form", description = "A form element that allows the user to select one of multiple options")
 public class EnumFormData extends ParameterFormData {
 
     private String value = "";
@@ -48,7 +48,7 @@ public class EnumFormData extends ParameterFormData {
         return FormData.importData(storage, EnumFormData.class, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Initial value", description = "The initial value. Should be the annotation value of the item.")
+    @SetJIPipeDocumentation(name = "Initial value", description = "The initial value. Should be the annotation value of the item.")
     @JIPipeParameter("initial-value")
     public String getValue() {
         return value;
@@ -59,14 +59,14 @@ public class EnumFormData extends ParameterFormData {
         this.value = value;
     }
 
-    @JIPipeDocumentation(name = "Form element I/O", description = "Use following settings to determine how to extract initial values " +
+    @SetJIPipeDocumentation(name = "Form element I/O", description = "Use following settings to determine how to extract initial values " +
             "from annotations and where to store the user-defined value.")
     @JIPipeParameter("form:io")
     public SingleAnnotationIOSettings getAnnotationIOSettings() {
         return annotationIOSettings;
     }
 
-    @JIPipeDocumentation(name = "Items", description = "List of available items. For each entry, you " +
+    @SetJIPipeDocumentation(name = "Items", description = "List of available items. For each entry, you " +
             "can define the value written into the annotations and the label visible to the user. Duplicate labels/values are not allowed.")
     @JIPipeParameter("items")
     @PairParameterSettings(singleRow = false, keyLabel = "Annotation value", valueLabel = "Label")
@@ -112,7 +112,7 @@ public class EnumFormData extends ParameterFormData {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
     }
 
     @Override

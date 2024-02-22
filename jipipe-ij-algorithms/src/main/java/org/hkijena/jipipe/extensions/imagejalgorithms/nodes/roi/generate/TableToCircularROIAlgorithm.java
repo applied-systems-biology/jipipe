@@ -15,8 +15,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.generate;
 
 import ij.gui.OvalRoi;
 import ij.gui.Roi;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -38,10 +38,10 @@ import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@JIPipeDocumentation(name = "Table to circular ROIs", description = "Converts data from a table to circular ROIs. The ROIs are created to be centered at the provided locations. If you require more options, utilize 'Table to rectangular/oval ROIs' instead.")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Convert")
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Table to circular ROIs", description = "Converts data from a table to circular ROIs. The ROIs are created to be centered at the provided locations. If you require more options, utilize 'Table to rectangular/oval ROIs' instead.")
+@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Convert")
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private TableColumnSourceExpressionParameter columnX1 = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"X\"");
@@ -82,7 +82,7 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData table = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         ROIListData rois = new ROIListData();
 
@@ -127,7 +127,7 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         }
     }
 
-    @JIPipeDocumentation(name = "Column 'X1'", description = "The table column that is used for the X1 coordinate. ")
+    @SetJIPipeDocumentation(name = "Column 'X1'", description = "The table column that is used for the X1 coordinate. ")
     @JIPipeParameter(value = "column-x1", uiOrder = -100)
     @JIPipeExpressionParameterSettings(variableSource = TableCellExpressionParameterVariablesInfo.class)
     public TableColumnSourceExpressionParameter getColumnX1() {
@@ -139,7 +139,7 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         this.columnX1 = columnX1;
     }
 
-    @JIPipeDocumentation(name = "Column 'Y1'", description = "The table column that is used for the Y1 coordinate. ")
+    @SetJIPipeDocumentation(name = "Column 'Y1'", description = "The table column that is used for the Y1 coordinate. ")
     @JIPipeExpressionParameterSettings(variableSource = TableCellExpressionParameterVariablesInfo.class)
     @JIPipeParameter(value = "column-y1", uiOrder = -90)
     public TableColumnSourceExpressionParameter getColumnY1() {
@@ -151,7 +151,7 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         this.columnY1 = columnY1;
     }
 
-    @JIPipeDocumentation(name = "Column 'Radius'", description = "The table column that is used for the radius. ")
+    @SetJIPipeDocumentation(name = "Column 'Radius'", description = "The table column that is used for the radius. ")
     @JIPipeExpressionParameterSettings(variableSource = TableCellExpressionParameterVariablesInfo.class)
     @JIPipeParameter(value = "column-radius", uiOrder = -80)
     public TableColumnSourceExpressionParameter getColumnRadius() {
@@ -163,7 +163,7 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         this.columnRadius = columnRadius;
     }
 
-    @JIPipeDocumentation(name = "Column 'Z'", description = "Table column that determines the Z location. For one-based positions, 0 indicates that the ROI is present in all Z-slices. For zero-based positions the value is -1 or lower.")
+    @SetJIPipeDocumentation(name = "Column 'Z'", description = "Table column that determines the Z location. For one-based positions, 0 indicates that the ROI is present in all Z-slices. For zero-based positions the value is -1 or lower.")
     @JIPipeParameter(value = "column-z", uiOrder = -70)
     public TableColumnSourceExpressionParameter getColumnZ() {
         return columnZ;
@@ -174,7 +174,7 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         this.columnZ = columnZ;
     }
 
-    @JIPipeDocumentation(name = "Column 'C'", description = "Table column that determines the channel location. For one-based positions, 0 indicates that the ROI is present in all channel-slices. For zero-based positions the value is -1 or lower.")
+    @SetJIPipeDocumentation(name = "Column 'C'", description = "Table column that determines the channel location. For one-based positions, 0 indicates that the ROI is present in all channel-slices. For zero-based positions the value is -1 or lower.")
     @JIPipeParameter(value = "column-c", uiOrder = -60)
     public TableColumnSourceExpressionParameter getColumnC() {
         return columnC;
@@ -185,7 +185,7 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         this.columnC = columnC;
     }
 
-    @JIPipeDocumentation(name = "Column 'T'", description = "Table column that determines the frame location. For one-based positions, 0 indicates that the ROI is present in all frame-slices. For zero-based positions the value is -1 or lower.")
+    @SetJIPipeDocumentation(name = "Column 'T'", description = "Table column that determines the frame location. For one-based positions, 0 indicates that the ROI is present in all frame-slices. For zero-based positions the value is -1 or lower.")
     @JIPipeParameter(value = "column-t", uiOrder = -50)
     public TableColumnSourceExpressionParameter getColumnT() {
         return columnT;
@@ -196,7 +196,7 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         this.columnT = columnT;
     }
 
-    @JIPipeDocumentation(name = "Use one-based positions", description = "If enabled, the first slice is 1. Otherwise, the first slice is zero.")
+    @SetJIPipeDocumentation(name = "Use one-based positions", description = "If enabled, the first slice is 1. Otherwise, the first slice is zero.")
     @JIPipeParameter(value = "one-based-positions", important = true)
     public boolean isOneBasedPositions() {
         return oneBasedPositions;

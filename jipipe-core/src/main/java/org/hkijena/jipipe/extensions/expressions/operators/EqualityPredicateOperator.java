@@ -13,12 +13,12 @@
 
 package org.hkijena.jipipe.extensions.expressions.operators;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.*;
 
-@JIPipeDocumentation(name = "Equality", description = "Returns TRUE if the left and right operands are equal")
+@SetJIPipeDocumentation(name = "Equality", description = "Returns TRUE if the left and right operands are equal")
 public class EqualityPredicateOperator extends GenericPredicateOperator {
     public EqualityPredicateOperator(String symbol, int precedence) {
         super(symbol, precedence);

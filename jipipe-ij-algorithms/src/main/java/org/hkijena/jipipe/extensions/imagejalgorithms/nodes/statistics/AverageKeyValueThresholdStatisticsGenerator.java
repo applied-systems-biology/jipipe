@@ -7,8 +7,8 @@ import gnu.trove.map.hash.TDoubleDoubleHashMap;
 import gnu.trove.map.hash.TDoubleObjectHashMap;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -29,12 +29,12 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.util.Arrays;
 
-@JIPipeDocumentation(name = "Threshold/Value statistics 5D (fast, average)", description = "This node consumes two images with the same dimensions that respectively contain the keys and value components of each pixel position. The values assigned to each key are collected and then integrated for each threshold in the key image. " +
+@SetJIPipeDocumentation(name = "Threshold/Value statistics 5D (fast, average)", description = "This node consumes two images with the same dimensions that respectively contain the keys and value components of each pixel position. The values assigned to each key are collected and then integrated for each threshold in the key image. " +
         "This variant is hardcoded to calculate the average of the pixels per threshold.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Threshold", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Value", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Threshold", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Value", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class AverageKeyValueThresholdStatisticsGenerator extends JIPipeIteratingAlgorithm {
     private String outputThresholdColumn = "threshold";
     private String outputForegroundColumn = "foreground";
@@ -55,7 +55,7 @@ public class AverageKeyValueThresholdStatisticsGenerator extends JIPipeIterating
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus keyImage = iterationStep.getInputData("Threshold", ImagePlusGreyscale32FData.class, progressInfo).getImage();
         ImagePlus valueImage = iterationStep.getInputData("Value", ImagePlusGreyscale32FData.class, progressInfo).getImage();
         TDoubleObjectHashMap<TFloatList> bucketedValues = new TDoubleObjectHashMap<>();
@@ -166,7 +166,7 @@ public class AverageKeyValueThresholdStatisticsGenerator extends JIPipeIterating
         iterationStep.addOutputData(getFirstOutputSlot(), outputTable, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Output column (keys)", description = "The table column where the keys will be written to")
+    @SetJIPipeDocumentation(name = "Output column (keys)", description = "The table column where the keys will be written to")
     @JIPipeParameter(value = "output-key-column", uiOrder = 100)
     @StringParameterSettings(monospace = true)
     public String getOutputThresholdColumn() {
@@ -178,7 +178,7 @@ public class AverageKeyValueThresholdStatisticsGenerator extends JIPipeIterating
         this.outputThresholdColumn = outputThresholdColumn;
     }
 
-    @JIPipeDocumentation(name = "Output column (integrated foreground)", description = "The table column where the integrated foreground values will be written to")
+    @SetJIPipeDocumentation(name = "Output column (integrated foreground)", description = "The table column where the integrated foreground values will be written to")
     @JIPipeParameter(value = "output-foreground-column", uiOrder = 110)
     @StringParameterSettings(monospace = true)
     public String getOutputForegroundColumn() {
@@ -190,7 +190,7 @@ public class AverageKeyValueThresholdStatisticsGenerator extends JIPipeIterating
         this.outputForegroundColumn = outputForegroundColumn;
     }
 
-    @JIPipeDocumentation(name = "Output column (integrated background)", description = "The table column where the integrated background values will be written to")
+    @SetJIPipeDocumentation(name = "Output column (integrated background)", description = "The table column where the integrated background values will be written to")
     @JIPipeParameter(value = "output-background-column", uiOrder = 120)
     @StringParameterSettings(monospace = true)
     public String getOutputBackgroundColumn() {
@@ -202,7 +202,7 @@ public class AverageKeyValueThresholdStatisticsGenerator extends JIPipeIterating
         this.outputBackgroundColumn = outputBackgroundColumn;
     }
 
-    @JIPipeDocumentation(name = "Thresholding mode", description = "Determines how the thresholding behaves.")
+    @SetJIPipeDocumentation(name = "Thresholding mode", description = "Determines how the thresholding behaves.")
     @JIPipeParameter("invert-threshold")
     @BooleanParameterSettings(comboBoxStyle = true, trueLabel = "value > threshold", falseLabel = "value < threshold")
     public boolean isInvertThreshold() {

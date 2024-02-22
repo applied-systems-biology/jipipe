@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -37,10 +37,10 @@ import java.util.Set;
 /**
  * Algorithm that annotates all data with the same annotation
  */
-@JIPipeDocumentation(name = "Set annotation (expression)", description = "Sets a single annotation. The name and the value are determined by expressions")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Modify")
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Set annotation (expression)", description = "Sets a single annotation. The name and the value are determined by expressions")
+@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Modify")
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
 public class SetSingleAnnotation extends JIPipeSimpleIteratingAlgorithm {
 
     private StringQueryExpression annotationValue = new StringQueryExpression("\"Annotation value\"");
@@ -67,7 +67,7 @@ public class SetSingleAnnotation extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
         for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
             variableSet.set(annotation.getName(), annotation.getValue());
@@ -83,7 +83,7 @@ public class SetSingleAnnotation extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), iterationStep.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Annotation value", description = "The value of the generated annotation. ")
+    @SetJIPipeDocumentation(name = "Annotation value", description = "The value of the generated annotation. ")
     @JIPipeParameter("annotation-value")
     @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = JIPipeProjectDirectoriesVariablesInfo.class)
@@ -96,7 +96,7 @@ public class SetSingleAnnotation extends JIPipeSimpleIteratingAlgorithm {
         this.annotationValue = annotationValue;
     }
 
-    @JIPipeDocumentation(name = "Annotation name", description = "The name of the generated annotation. ")
+    @SetJIPipeDocumentation(name = "Annotation name", description = "The name of the generated annotation. ")
     @JIPipeParameter("annotation-name")
     @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class)
     public StringQueryExpression getAnnotationName() {

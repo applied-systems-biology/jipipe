@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
@@ -34,12 +34,12 @@ import java.nio.file.Path;
 /**
  * Filters input files
  */
-@JIPipeDocumentation(name = "Filter paths", description = "Filters the paths (files/folders) by their name or absolute path")
-@JIPipeNode(menuPath = "Filter", nodeTypeCategory = FileSystemNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "Filter paths", description = "Filters the paths (files/folders) by their name or absolute path")
+@DefineJIPipeNode(menuPath = "Filter", nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
 
-@JIPipeInputSlot(value = PathData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)
+@AddJIPipeInputSlot(value = PathData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = PathData.class, slotName = "Output", create = true)
 
 
 public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
@@ -73,7 +73,7 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         // Expression parameters from annotations
         JIPipeExpressionVariablesMap expressionVariables = new JIPipeExpressionVariablesMap();
         for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
@@ -101,7 +101,7 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("filters")
-    @JIPipeDocumentation(name = "Filters", description = "Filter expression that is used to filter the paths. Click [X] to see all available variables. " +
+    @SetJIPipeDocumentation(name = "Filters", description = "Filter expression that is used to filter the paths. Click [X] to see all available variables. " +
             "An example for an expression would be '\".tif\" IN name', which would test if there is '.tif' inside the file name. " +
             "Annotations are available as variables.")
     public PathQueryExpression getFilters() {
@@ -113,7 +113,7 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
         this.filters = filters;
     }
 
-    @JIPipeDocumentation(name = "Output files", description = "If enabled, existing files are put into the output.")
+    @SetJIPipeDocumentation(name = "Output files", description = "If enabled, existing files are put into the output.")
     @JIPipeParameter("output-files")
     public boolean isOutputFiles() {
         return outputFiles;
@@ -124,7 +124,7 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
         this.outputFiles = outputFiles;
     }
 
-    @JIPipeDocumentation(name = "Output folders", description = "If enabled, existing folders are put into the output.")
+    @SetJIPipeDocumentation(name = "Output folders", description = "If enabled, existing folders are put into the output.")
     @JIPipeParameter("output-folders")
     public boolean isOutputFolders() {
         return outputFolders;
@@ -135,7 +135,7 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
         this.outputFolders = outputFolders;
     }
 
-    @JIPipeDocumentation(name = "Output non-existing paths", description = "If enabled, non-existing paths are put into the output.")
+    @SetJIPipeDocumentation(name = "Output non-existing paths", description = "If enabled, non-existing paths are put into the output.")
     @JIPipeParameter("output-non-existing")
     public boolean isOutputNonExisting() {
         return outputNonExisting;

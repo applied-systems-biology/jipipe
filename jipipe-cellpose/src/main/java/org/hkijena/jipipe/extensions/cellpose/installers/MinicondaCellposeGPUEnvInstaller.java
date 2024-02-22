@@ -14,7 +14,7 @@
 
 package org.hkijena.jipipe.extensions.cellpose.installers;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -22,7 +22,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import java.nio.file.Paths;
 
-@JIPipeDocumentation(name = "Miniconda: Download & install Cellpose (GPU) [deprecated]", description = "Creates a new Python environment with Cellpose installed. " +
+@SetJIPipeDocumentation(name = "Miniconda: Download & install Cellpose (GPU) [deprecated]", description = "Creates a new Python environment with Cellpose installed. " +
         "Requires a graphics card suitable for GPU computing. Uses a Miniconda-based installer.")
 @ExternalEnvironmentInfo(category = "Cellpose")
 public class MinicondaCellposeGPUEnvInstaller extends MinicondaCellposeEnvInstaller {
@@ -58,7 +58,7 @@ public class MinicondaCellposeGPUEnvInstaller extends MinicondaCellposeEnvInstal
     public static class Configuration extends MinicondaCellposeEnvInstaller.Configuration {
         private String cudaToolkitVersion = "10.2";
 
-        @JIPipeDocumentation(name = "CUDA Toolkit version", description = "The version of the CUDA toolkit that should be " +
+        @SetJIPipeDocumentation(name = "CUDA Toolkit version", description = "The version of the CUDA toolkit that should be " +
                 "installed. The correct version depends on the operating system. Please see here: https://pytorch.org/get-started/locally/")
         @JIPipeParameter("cuda-toolkit-version")
         public String getCudaToolkitVersion() {

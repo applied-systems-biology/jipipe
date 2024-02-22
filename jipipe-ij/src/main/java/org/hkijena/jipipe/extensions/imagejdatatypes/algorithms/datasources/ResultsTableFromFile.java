@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.datasources;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -40,15 +40,15 @@ import java.util.*;
 /**
  * Imports {@link ResultsTableData} from a file
  */
-@JIPipeDocumentation(name = "Import results table", description = "Imports results tables from a file. Following formats are supported: " +
+@SetJIPipeDocumentation(name = "Import results table", description = "Imports results tables from a file. Following formats are supported: " +
         "<ul>" +
         "<li>CSV</li>" +
         "<li>XLSX</li>" +
         "</ul>")
-@JIPipeInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Results table", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File", aliasName = "Open (CSV/XLSX)")
+@AddJIPipeInputSlot(value = FileData.class, slotName = "Files", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Results table", create = true)
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File", aliasName = "Open (CSV/XLSX)")
 public class ResultsTableFromFile extends JIPipeSimpleIteratingAlgorithm {
 
     private FileFormat fileFormat = FileFormat.Auto;
@@ -73,7 +73,7 @@ public class ResultsTableFromFile extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         FileData fileData = iterationStep.getInputData(getFirstInputSlot(), FileData.class, progressInfo);
         FileFormat format = fileFormat;
         if (format == FileFormat.Auto) {
@@ -126,7 +126,7 @@ public class ResultsTableFromFile extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "File format", description = "Allows to set the file format. If set to 'Auto', the format is detected from the file extension." +
+    @SetJIPipeDocumentation(name = "File format", description = "Allows to set the file format. If set to 'Auto', the format is detected from the file extension." +
             "<ul>" +
             "<li>CSV: Comma separated values</li>" +
             "<li>TSV: Tab separated values (variant of CSV with tabs instead of commas)</li>" +
@@ -142,7 +142,7 @@ public class ResultsTableFromFile extends JIPipeSimpleIteratingAlgorithm {
         this.fileFormat = fileFormat;
     }
 
-    @JIPipeDocumentation(name = "Restrict to sheets", description = "If the file contains multiple tables, specifies which sheets should be imported. <strong>If empty, all sheets are imported</strong>")
+    @SetJIPipeDocumentation(name = "Restrict to sheets", description = "If the file contains multiple tables, specifies which sheets should be imported. <strong>If empty, all sheets are imported</strong>")
     @JIPipeParameter("sheets")
     public StringList getSheets() {
         return sheets;
@@ -153,7 +153,7 @@ public class ResultsTableFromFile extends JIPipeSimpleIteratingAlgorithm {
         this.sheets = sheets;
     }
 
-    @JIPipeDocumentation(name = "Annotate with sheet name", description = "If enabled, the tables are annotated with the sheet names. No annotation is generated for file formats without sheets (e.g., CSV).")
+    @SetJIPipeDocumentation(name = "Annotate with sheet name", description = "If enabled, the tables are annotated with the sheet names. No annotation is generated for file formats without sheets (e.g., CSV).")
     @JIPipeParameter("sheet-name-annotation")
     public OptionalAnnotationNameParameter getSheetNameAnnotation() {
         return sheetNameAnnotation;
@@ -164,7 +164,7 @@ public class ResultsTableFromFile extends JIPipeSimpleIteratingAlgorithm {
         this.sheetNameAnnotation = sheetNameAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Ignore missing sheets", description = "If enabled, missing sheets are ignored. Otherwise an error is raised if a sheet is missing.")
+    @SetJIPipeDocumentation(name = "Ignore missing sheets", description = "If enabled, missing sheets are ignored. Otherwise an error is raised if a sheet is missing.")
     @JIPipeParameter("ignore-missing-sheets")
     public boolean isIgnoreMissingSheets() {
         return ignoreMissingSheets;

@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -26,10 +26,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Annotate with data paths", description = "Annotates data with project-related paths")
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
+@SetJIPipeDocumentation(name = "Annotate with data paths", description = "Annotates data with project-related paths")
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
+@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
 public class AnnotateByProjectPaths extends JIPipeSimpleIteratingAlgorithm {
 
     private ParameterCollectionList generatedAnnotations = ParameterCollectionList.containingCollection(Entry.class);
@@ -47,7 +47,7 @@ public class AnnotateByProjectPaths extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
         JIPipeData data = iterationStep.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo);
         Path scratch = getNewScratch();
@@ -77,7 +77,7 @@ public class AnnotateByProjectPaths extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), data, annotationList, mergeMode, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Generated annotations", description = "The list of annotations that will be generated.")
+    @SetJIPipeDocumentation(name = "Generated annotations", description = "The list of annotations that will be generated.")
     @JIPipeParameter("generated-annotations")
     @ParameterCollectionListTemplate(Entry.class)
     public ParameterCollectionList getGeneratedAnnotations() {
@@ -89,7 +89,7 @@ public class AnnotateByProjectPaths extends JIPipeSimpleIteratingAlgorithm {
         this.generatedAnnotations = generatedAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Annotation merge mode", description = "Determines how generated annotations are merged with existing ones")
+    @SetJIPipeDocumentation(name = "Annotation merge mode", description = "Determines how generated annotations are merged with existing ones")
     @JIPipeParameter("merge-mode")
     public JIPipeTextAnnotationMergeMode getMergeMode() {
         return mergeMode;
@@ -107,7 +107,7 @@ public class AnnotateByProjectPaths extends JIPipeSimpleIteratingAlgorithm {
         public Entry() {
         }
 
-        @JIPipeDocumentation(name = "Annotation name", description = "An expression that generates the annotation name")
+        @SetJIPipeDocumentation(name = "Annotation name", description = "An expression that generates the annotation name")
         @JIPipeParameter("annotation-name")
         public JIPipeExpressionParameter getAnnotationName() {
             return annotationName;
@@ -118,7 +118,7 @@ public class AnnotateByProjectPaths extends JIPipeSimpleIteratingAlgorithm {
             this.annotationName = annotationName;
         }
 
-        @JIPipeDocumentation(name = "Annotation value", description = "An expression that generates the annotation value")
+        @SetJIPipeDocumentation(name = "Annotation value", description = "An expression that generates the annotation value")
         @JIPipeParameter("annotation-value")
         public DataExportExpressionParameter getAnnotationValue() {
             return annotationValue;

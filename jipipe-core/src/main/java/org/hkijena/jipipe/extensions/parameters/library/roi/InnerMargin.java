@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.parameters.library.roi;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.NumericFunctionExpression;
@@ -63,7 +63,7 @@ public class InnerMargin extends AbstractJIPipeParameterCollection {
     }
 
 
-    @JIPipeDocumentation(name = "Left")
+    @SetJIPipeDocumentation(name = "Left")
     @JIPipeParameter(value = "left", uiOrder = 0)
     @JsonGetter("left")
     public NumericFunctionExpression getLeft() {
@@ -76,7 +76,7 @@ public class InnerMargin extends AbstractJIPipeParameterCollection {
         this.left = left;
     }
 
-    @JIPipeDocumentation(name = "Top")
+    @SetJIPipeDocumentation(name = "Top")
     @JIPipeParameter(value = "top", uiOrder = 1)
     @JsonGetter("top")
     public NumericFunctionExpression getTop() {
@@ -89,7 +89,7 @@ public class InnerMargin extends AbstractJIPipeParameterCollection {
         this.top = top;
     }
 
-    @JIPipeDocumentation(name = "Right")
+    @SetJIPipeDocumentation(name = "Right")
     @JIPipeParameter(value = "right", uiOrder = 2)
     @JsonGetter("right")
     public NumericFunctionExpression getRight() {
@@ -102,7 +102,7 @@ public class InnerMargin extends AbstractJIPipeParameterCollection {
         this.right = right;
     }
 
-    @JIPipeDocumentation(name = "Bottom")
+    @SetJIPipeDocumentation(name = "Bottom")
     @JIPipeParameter(value = "bottom", uiOrder = 3)
     @JsonGetter("bottom")
     public NumericFunctionExpression getBottom() {

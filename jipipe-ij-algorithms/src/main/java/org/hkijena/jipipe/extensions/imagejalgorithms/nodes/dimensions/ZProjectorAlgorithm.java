@@ -15,13 +15,10 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.dimensions;
 
 import ij.ImagePlus;
 import ij.plugin.ZProjector;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeAlias;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -34,11 +31,11 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 /**
  * Wrapper around {@link ij.plugin.ZProjector}
  */
-@JIPipeDocumentation(name = "Z-Project (classic)", description = "Performs a Z-Projection. This version of the Z-project algorithm wraps around the native ImageJ function and can only handle 3D images. If you have a hyperstack (4D+), use the other Z-project algorithm.")
-@JIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Z Project...")
+@SetJIPipeDocumentation(name = "Z-Project (classic)", description = "Performs a Z-Projection. This version of the Z-project algorithm wraps around the native ImageJ function and can only handle 3D images. If you have a hyperstack (4D+), use the other Z-project algorithm.")
+@DefineJIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Z Project...")
 public class ZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Method method = Method.MaxIntensity;
@@ -74,7 +71,7 @@ public class ZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
 
@@ -90,7 +87,7 @@ public class ZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Method", description = "The function that is applied to each stack of pixels.")
+    @SetJIPipeDocumentation(name = "Method", description = "The function that is applied to each stack of pixels.")
     @JIPipeParameter("method")
     public Method getMethod() {
         return method;
@@ -103,7 +100,7 @@ public class ZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("start-slice")
-    @JIPipeDocumentation(name = "Start slice", description = "The slice number to start from. The minimum number is zero.")
+    @SetJIPipeDocumentation(name = "Start slice", description = "The slice number to start from. The minimum number is zero.")
     public int getStartSlice() {
         return startSlice;
     }
@@ -120,7 +117,7 @@ public class ZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("stop-slice")
-    @JIPipeDocumentation(name = "Stop slice", description = "Slice index that is included last. This is inclusive. Set to -1 to always include all slices.")
+    @SetJIPipeDocumentation(name = "Stop slice", description = "Slice index that is included last. This is inclusive. Set to -1 to always include all slices.")
     public int getStopSlice() {
         return stopSlice;
     }
@@ -136,7 +133,7 @@ public class ZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         return true;
     }
 
-    @JIPipeDocumentation(name = "Project all hyper stack time points", description = "If true, all time frames are projected")
+    @SetJIPipeDocumentation(name = "Project all hyper stack time points", description = "If true, all time frames are projected")
     @JIPipeParameter("all-hyperstack-timepoints")
     public boolean isProjectAllHyperstackTimePoints() {
         return projectAllHyperstackTimePoints;

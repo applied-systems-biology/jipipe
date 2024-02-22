@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
 import org.hkijena.jipipe.api.nodes.*;
@@ -42,8 +42,8 @@ import java.util.*;
  * Info of a {@link GraphWrapperAlgorithm}
  */
 public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements JIPipeNodeInfo, JIPipeValidatable, JIPipeGraph.GraphChangedEventListener {
-    private final List<JIPipeInputSlot> inputSlots = new ArrayList<>();
-    private final List<JIPipeOutputSlot> outputSlots = new ArrayList<>();
+    private final List<AddJIPipeInputSlot> inputSlots = new ArrayList<>();
+    private final List<AddJIPipeOutputSlot> outputSlots = new ArrayList<>();
     private final Map<JIPipeDataSlot, String> exportedSlotNames = new HashMap<>();
     private String id;
     private String name;
@@ -85,7 +85,7 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
         updateSlots();
     }
 
-    @JIPipeDocumentation(name = "Algorithm ID", description = "An unique identifier for the algorithm. " +
+    @SetJIPipeDocumentation(name = "Algorithm ID", description = "An unique identifier for the algorithm. " +
             "We recommend to make the ID follow a structuring schema that makes it easy to create extensions or alternatives to this algorithm. " +
             "For example filter-blur-gaussian2d")
     @JIPipeParameter(value = "id", uiOrder = -999)
@@ -123,7 +123,7 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
     }
 
     @Override
-    @JIPipeDocumentation(name = "Name", description = "The algorithm name")
+    @SetJIPipeDocumentation(name = "Name", description = "The algorithm name")
     @JIPipeParameter(value = "name", uiOrder = 0)
     @JsonGetter("name")
     public String getName() {
@@ -137,7 +137,7 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
     }
 
     @Override
-    @JIPipeDocumentation(name = "Description", description = "A description for the algorithm. You can use " +
+    @SetJIPipeDocumentation(name = "Description", description = "A description for the algorithm. You can use " +
             "HTML for your descriptions.")
     @JIPipeParameter(value = "description", uiOrder = 10)
     @StringParameterSettings(multiline = true)
@@ -166,7 +166,7 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
         return new MiscellaneousNodeTypeCategory();
     }
 
-    @JIPipeDocumentation(name = "Category", description = "A general category for the algorithm. " +
+    @SetJIPipeDocumentation(name = "Category", description = "A general category for the algorithm. " +
             "This will influence in which menu the algorithm is put.")
     @JIPipeParameter(value = "category", uiOrder = 20)
     @JsonGetter("category")
@@ -189,12 +189,12 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
     }
 
     @Override
-    public List<JIPipeInputSlot> getInputSlots() {
+    public List<AddJIPipeInputSlot> getInputSlots() {
         return inputSlots;
     }
 
     @Override
-    public List<JIPipeOutputSlot> getOutputSlots() {
+    public List<AddJIPipeOutputSlot> getOutputSlots() {
         return outputSlots;
     }
 
@@ -223,7 +223,7 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
         }
     }
 
-    @JIPipeDocumentation(name = "Exported parameters", description = "Allows you to export parameters from the contained nodes into the custom node")
+    @SetJIPipeDocumentation(name = "Exported parameters", description = "Allows you to export parameters from the contained nodes into the custom node")
     @JIPipeParameter("exported-parameters")
     @JsonGetter("exported-parameters")
     public GraphNodeParameterReferenceGroupCollection getExportedParameters() {
@@ -255,7 +255,7 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
         JIPipeMutableSlotConfiguration outputSlotConfiguration = (JIPipeMutableSlotConfiguration) getGroupOutput().getSlotConfiguration();
         for (Map.Entry<String, JIPipeDataSlotInfo> entry : inputSlotConfiguration.getInputSlots().entrySet()) {
             if (entry.getValue().getSlotType() == JIPipeSlotType.Input) {
-                inputSlots.add(new DefaultJIPipeInputSlot(entry.getValue().getDataClass(),
+                inputSlots.add(new DefaultAddJIPipeInputSlot(entry.getValue().getDataClass(),
                         entry.getKey(),
                         "", true, false, JIPipeDataSlotRole.Data));
                 usedSlotNames.add(entry.getKey());
@@ -264,7 +264,7 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
         for (Map.Entry<String, JIPipeDataSlotInfo> entry : outputSlotConfiguration.getOutputSlots().entrySet()) {
             if (entry.getValue().getSlotType() == JIPipeSlotType.Output) {
                 if (!usedSlotNames.contains(entry.getKey())) {
-                    outputSlots.add(new DefaultJIPipeOutputSlot(entry.getValue().getDataClass(),
+                    outputSlots.add(new DefaultAddJIPipeOutputSlot(entry.getValue().getDataClass(),
                             entry.getKey(),
                             "", null,
                             true, JIPipeDataSlotRole.Data));
@@ -339,7 +339,7 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         if (id == null || id.isEmpty()) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     new JsonNodeInfoValidationReportContext(this),
@@ -373,7 +373,7 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
     }
 
     @JIPipeParameter(value = "menu-path", uiOrder = 30)
-    @JIPipeDocumentation(name = "Menu path", description = "Menu path where the algorithm is placed. " +
+    @SetJIPipeDocumentation(name = "Menu path", description = "Menu path where the algorithm is placed. " +
             "If you leave this empty, the menu item will be placed in the category's root menu.")
     @StringParameterSettings(monospace = true)
     public StringList getMenuPathList() {
@@ -388,7 +388,7 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
     }
 
     @JIPipeParameter(value = "hidden", uiOrder = 40)
-    @JIPipeDocumentation(name = "Is hidden", description = "If the algorithm should not appear in the list of available algorithms.")
+    @SetJIPipeDocumentation(name = "Is hidden", description = "If the algorithm should not appear in the list of available algorithms.")
     @Override
     public boolean isHidden() {
         return hidden;
@@ -400,7 +400,7 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
 
     }
 
-    @JIPipeDocumentation(name = "Icon", description = "A custom algorithm icon")
+    @SetJIPipeDocumentation(name = "Icon", description = "A custom algorithm icon")
     @JIPipeParameter(value = "icon", uiOrder = 25)
     @JsonGetter("icon")
     public IconRef getCustomIcon() {
@@ -415,7 +415,7 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
 
     }
 
-    @JIPipeDocumentation(name = "Deprecated", description = "Marks the node as deprecated")
+    @SetJIPipeDocumentation(name = "Deprecated", description = "Marks the node as deprecated")
     @JIPipeParameter("deprecated")
     @JsonGetter("deprecated")
     @Override

@@ -13,14 +13,14 @@
 
 package org.hkijena.jipipe.extensions.expressions.operators;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionOperator;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.Iterator;
 
-@JIPipeDocumentation(name = "Logical AND", description = "Returns true if both operands are TRUE.")
+@SetJIPipeDocumentation(name = "Logical AND", description = "Returns true if both operands are TRUE.")
 public class LogicalAndOperator extends ExpressionOperator {
 
     public LogicalAndOperator(String symbol, int precedence) {

@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.lut;
 
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -32,11 +32,11 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
 import java.util.HashSet;
 import java.util.Set;
 
-@JIPipeDocumentation(name = "Remove LUT", description = "Removes LUT information from the input image.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "LUT")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nLookup Tables", aliasName = "Remove LUT")
+@SetJIPipeDocumentation(name = "Remove LUT", description = "Removes LUT information from the input image.")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "LUT")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nLookup Tables", aliasName = "Remove LUT")
 public class RemoveLUTAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private boolean duplicateImage = true;
     private OptionalIntegerRange restrictToChannels = new OptionalIntegerRange();
@@ -52,7 +52,7 @@ public class RemoveLUTAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData data = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         if (duplicateImage)
             data = (ImagePlusData) data.duplicate(progressInfo);
@@ -68,7 +68,7 @@ public class RemoveLUTAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
 
-    @JIPipeDocumentation(name = "Duplicate image", description = "As the LUT removal does not change any image data, you can disable creating a duplicate.")
+    @SetJIPipeDocumentation(name = "Duplicate image", description = "As the LUT removal does not change any image data, you can disable creating a duplicate.")
     @JIPipeParameter("duplicate-image")
     public boolean isDuplicateImage() {
         return duplicateImage;
@@ -79,7 +79,7 @@ public class RemoveLUTAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.duplicateImage = duplicateImage;
     }
 
-    @JIPipeDocumentation(name = "Restrict to channels", description = "Allows to restrict setting LUT to specific channels")
+    @SetJIPipeDocumentation(name = "Restrict to channels", description = "Allows to restrict setting LUT to specific channels")
     @JIPipeParameter("restrict-to-channels")
     public OptionalIntegerRange getRestrictToChannels() {
         return restrictToChannels;

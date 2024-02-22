@@ -15,7 +15,7 @@
 package org.hkijena.jipipe.extensions.r.installers;
 
 import org.apache.commons.lang3.SystemUtils;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.EasyInstallExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
@@ -32,7 +32,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Install R (EasyInstaller)", description = "Downloads a pre-packaged version of R")
+@SetJIPipeDocumentation(name = "Install R (EasyInstaller)", description = "Downloads a pre-packaged version of R")
 public class REasyInstaller extends EasyInstallExternalEnvironmentInstaller<REnvironment> {
     /**
      * @param workbench       the workbench

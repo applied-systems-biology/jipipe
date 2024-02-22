@@ -14,8 +14,8 @@
 
 package org.hkijena.jipipe.extensions.tables.nodes.transform;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -37,10 +37,10 @@ import java.util.List;
 import java.util.Map;
 
 
-@JIPipeDocumentation(name = "Pivot table", description = "Moves values located in a value column into separate columns according to a set of categorization columns. Also known as dcast in R.")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Transform")
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Pivot table", description = "Moves values located in a value column into separate columns according to a set of categorization columns. Also known as dcast in R.")
+@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Transform")
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class UnMeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private StringQueryExpression valueColumn = new StringQueryExpression();
@@ -71,7 +71,7 @@ public class UnMeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData input = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
 
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
@@ -135,7 +135,7 @@ public class UnMeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), output, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "New column name", description = "The function that creates the new column name. If the returned string is empty or null, then the value will be skipped.")
+    @SetJIPipeDocumentation(name = "New column name", description = "The function that creates the new column name. If the returned string is empty or null, then the value will be skipped.")
     @JIPipeParameter(value = "new-column-name")
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(name = "Category values", key = "category_values", description = "The values of the selected categories")
@@ -150,7 +150,7 @@ public class UnMeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.newColumnName = newColumnName;
     }
 
-    @JIPipeDocumentation(name = "Value column", description = "Determines the column that contains the value")
+    @SetJIPipeDocumentation(name = "Value column", description = "Determines the column that contains the value")
     @JIPipeParameter(value = "value-column", important = true, uiOrder = -100)
     public StringQueryExpression getValueColumn() {
         return valueColumn;
@@ -161,7 +161,7 @@ public class UnMeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.valueColumn = valueColumn;
     }
 
-    @JIPipeDocumentation(name = "Category columns")
+    @SetJIPipeDocumentation(name = "Category columns")
     @JIPipeParameter(value = "category-columns", important = true, uiOrder = -90)
     public StringQueryExpression getCategoryColumns() {
         return categoryColumns;
@@ -172,7 +172,7 @@ public class UnMeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.categoryColumns = categoryColumns;
     }
 
-    @JIPipeDocumentation(name = "Column length normalization", description = "Determines what happens with columns that have fewer values than the number of output table rows")
+    @SetJIPipeDocumentation(name = "Column length normalization", description = "Determines what happens with columns that have fewer values than the number of output table rows")
     @JIPipeParameter("column-normalization")
     public TableColumnNormalization getColumnNormalization() {
         return columnNormalization;

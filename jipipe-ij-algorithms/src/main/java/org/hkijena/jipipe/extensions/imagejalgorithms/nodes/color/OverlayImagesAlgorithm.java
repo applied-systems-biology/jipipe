@@ -19,9 +19,9 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHidden;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -54,13 +54,13 @@ import java.util.Map;
 /**
  * @deprecated Use {@link BlendImagesAlgorithm} instead
  */
-@JIPipeDocumentation(name = "Overlay images", description = "Overlays greyscale or RGB images RGB image. ")
-@JIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nColor", aliasName = "Merge Channels... (overlay)")
+@SetJIPipeDocumentation(name = "Overlay images", description = "Overlays greyscale or RGB images RGB image. ")
+@DefineJIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input")
+@AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nColor", aliasName = "Merge Channels... (overlay)")
 @Deprecated
-@JIPipeHidden
+@LabelAsJIPipeHidden
 public class OverlayImagesAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final InputSlotMapParameterCollection channelColorAssignment;
@@ -110,7 +110,7 @@ public class OverlayImagesAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         List<ImagePlus> inputImages = new ArrayList<>();
         Map<JIPipeDataSlot, Channel> channelMap = new HashMap<>();
         Map<JIPipeDataSlot, ImagePlus> channelInputMap = new HashMap<>();
@@ -206,7 +206,7 @@ public class OverlayImagesAlgorithm extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusColorRGBData(resultImage), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Channels", description = "Modify here how channels are merged. Please note that the color setting has no effect on RGB images.")
+    @SetJIPipeDocumentation(name = "Channels", description = "Modify here how channels are merged. Please note that the color setting has no effect on RGB images.")
     @JIPipeParameter("channel-color-assignments")
     public InputSlotMapParameterCollection getChannelColorAssignment() {
         return channelColorAssignment;
@@ -234,7 +234,7 @@ public class OverlayImagesAlgorithm extends JIPipeIteratingAlgorithm {
             this.opacity = other.opacity;
         }
 
-        @JIPipeDocumentation(name = "Correct for black background")
+        @SetJIPipeDocumentation(name = "Correct for black background")
         @JIPipeParameter("black-to-alpha")
         public boolean isBlackToAlpha() {
             return blackToAlpha;
@@ -245,7 +245,7 @@ public class OverlayImagesAlgorithm extends JIPipeIteratingAlgorithm {
             this.blackToAlpha = blackToAlpha;
         }
 
-        @JIPipeDocumentation(name = "Color")
+        @SetJIPipeDocumentation(name = "Color")
         @JIPipeParameter("color")
         @JsonGetter("color")
         public Color getColor() {
@@ -258,7 +258,7 @@ public class OverlayImagesAlgorithm extends JIPipeIteratingAlgorithm {
             this.color = color;
         }
 
-        @JIPipeDocumentation(name = "Opacity")
+        @SetJIPipeDocumentation(name = "Opacity")
         @JIPipeParameter("opacity")
         @JsonGetter("opacity")
         public double getOpacity() {

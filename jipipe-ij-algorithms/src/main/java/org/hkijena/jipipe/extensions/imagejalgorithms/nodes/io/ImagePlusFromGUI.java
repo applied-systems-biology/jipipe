@@ -15,8 +15,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.io;
 
 import ij.ImagePlus;
 import ij.WindowManager;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
@@ -38,10 +38,10 @@ import java.util.List;
 /**
  * Imports {@link org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData} from the GUI
  */
-@JIPipeDocumentation(name = "Image from ImageJ", description = "Imports one or multiple active ImageJ image windows into JIPipe")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nImport")
+@SetJIPipeDocumentation(name = "Image from ImageJ", description = "Imports one or multiple active ImageJ image windows into JIPipe")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nImport")
 public class ImagePlusFromGUI extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean onlyActiveImage = true;
@@ -60,7 +60,7 @@ public class ImagePlusFromGUI extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         List<ImagePlus> rawImages = new ArrayList<>();
         if (onlyActiveImage) {
             ImagePlus img = WindowManager.getCurrentImage();
@@ -85,7 +85,7 @@ public class ImagePlusFromGUI extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Only extract active image", description = "If enabled, the currently active image is extracted. There is always only one image active. If no active image is present, " +
+    @SetJIPipeDocumentation(name = "Only extract active image", description = "If enabled, the currently active image is extracted. There is always only one image active. If no active image is present, " +
             "the node will generate no outputs.")
     @JIPipeParameter("only-active-image")
     public boolean isOnlyActiveImage() {
@@ -97,7 +97,7 @@ public class ImagePlusFromGUI extends JIPipeSimpleIteratingAlgorithm {
         this.onlyActiveImage = onlyActiveImage;
     }
 
-    @JIPipeDocumentation(name = "Filter images", description = "Expression to filter the image(s). Each image is tested individually and added imported based on the test results. The expression should return a boolean value. Example: <pre>(title CONTAINS \"data\") AND (depth > 3). Defaults to 'TRUE'</pre>")
+    @SetJIPipeDocumentation(name = "Filter images", description = "Expression to filter the image(s). Each image is tested individually and added imported based on the test results. The expression should return a boolean value. Example: <pre>(title CONTAINS \"data\") AND (depth > 3). Defaults to 'TRUE'</pre>")
     @JIPipeParameter("image-filters")
     @JIPipeExpressionParameterSettings(variableSource = ImageQueryExpressionVariablesInfo.class)
     public JIPipeExpressionParameter getImageFilters() {
@@ -109,7 +109,7 @@ public class ImagePlusFromGUI extends JIPipeSimpleIteratingAlgorithm {
         this.imageFilters = imageFilters;
     }
 
-    @JIPipeDocumentation(name = "Filter images operation", description = "Determines how the 'Filter images' operations are connected.")
+    @SetJIPipeDocumentation(name = "Filter images operation", description = "Determines how the 'Filter images' operations are connected.")
     @JIPipeParameter("image-filters-mode")
     public LogicalOperation getImageFiltersOperation() {
         return imageFiltersOperation;

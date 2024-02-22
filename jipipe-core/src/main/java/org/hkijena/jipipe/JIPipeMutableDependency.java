@@ -15,7 +15,7 @@ package org.hkijena.jipipe;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeMetadata;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -69,7 +69,7 @@ public class JIPipeMutableDependency implements JIPipeDependency {
     @Override
     @JsonGetter("metadata")
     @JIPipeParameter("metadata")
-    @JIPipeDocumentation(name = "Metadata")
+    @SetJIPipeDocumentation(name = "Metadata")
     public JIPipeMetadata getMetadata() {
         return metadata;
     }
@@ -87,7 +87,7 @@ public class JIPipeMutableDependency implements JIPipeDependency {
     @Override
     @JsonGetter("id")
     @JIPipeParameter("id")
-    @JIPipeDocumentation(name = "ID", description = "Unique identifier for this extension")
+    @SetJIPipeDocumentation(name = "ID", description = "Unique identifier for this extension")
     public String getDependencyId() {
         return dependencyId;
     }
@@ -106,7 +106,7 @@ public class JIPipeMutableDependency implements JIPipeDependency {
     @Override
     @JsonGetter("version")
     @JIPipeParameter("version")
-    @JIPipeDocumentation(name = "Version", description = "Extension version")
+    @SetJIPipeDocumentation(name = "Version", description = "Extension version")
     public String getDependencyVersion() {
         return dependencyVersion;
     }
@@ -128,7 +128,7 @@ public class JIPipeMutableDependency implements JIPipeDependency {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
 
     }
 

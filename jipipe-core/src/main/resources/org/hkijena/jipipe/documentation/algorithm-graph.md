@@ -10,7 +10,7 @@ Edges represent that data is transferred from an output to an input node.
 <tr><td><img src="resource://icons/actions/edit-select-all.png"/></td><td>You can select multiple nodes by dragging a box around them or clicking while holding Shift.</td></tr>
 <tr><td><img src="resource://icons/actions/grid-rectangular.png"/></td><td>The graph area expands in all directions. Just drag a node to the edge.</td></tr>
 <tr><td><img src="resource://icons/devices/input-mouse.png"/></td><td>Drag the middle mouse button or use the scroll bars to navigate around.</td></tr>
-<tr><td><img src="resource://icons/actions/zoom-in.png"/></td><td>Hold Ctrl and scroll to zoom in and out.</td></tr>
+<tr><td><img src="resource://icons/actions/square-plus.png"/></td><td>Hold Ctrl and scroll to zoom in and out.</td></tr>
 </table>
 <h3>Visual programming</h3>
 <table>
@@ -31,7 +31,7 @@ Edges represent that data is transferred from an output to an input node.
 <table>
 <tr><td><img src="resource://icons/devices/input-mouse.png"/></td><td>Drag a line between two slots to make an edge.</td></tr>
 <tr><td><img src="resource://icons/actions/edit-delete.png"/></td><td>Delete edges by dragging another line between the slots.</td></tr>
-<tr><td><img src="resource://icons/actions/arrow-down.png"/></td><td>Use the arrow button to create long-range connections and show other options.</td></tr>
+<tr><td><img src="resource://icons/actions/configure.png"/></td><td>Right-click slots to create long-range connections and show other options.</td></tr>
 <tr><td><img src="resource://icons/actions/help-info.png"/></td><td><span style="color: blue">Blue</span> edges indicate that a data type conversion is applied.</td></tr>
 <tr><td><img src="resource://icons/actions/list-add.png"/></td><td>Some nodes will allow you to create custom slots or modify existing ones.</td></tr>
 </table>

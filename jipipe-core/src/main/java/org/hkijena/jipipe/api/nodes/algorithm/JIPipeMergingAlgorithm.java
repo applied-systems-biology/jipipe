@@ -18,8 +18,8 @@ import com.google.common.primitives.Ints;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -33,6 +33,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
@@ -60,11 +61,10 @@ import java.util.concurrent.Future;
  * the runIteration() function. This is useful for merging algorithms.
  * Please note that the single-input case will still group the data into multiple groups, or just one group if no grouping could be acquired.
  */
-@JIPipeDocumentationDescription(description = "This algorithm groups the incoming data based on the annotations. " +
+@AddJIPipeDocumentationDescription(description = "This algorithm groups the incoming data based on the annotations. " +
         "Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and " +
         "leave 'Data set matching annotations' empty.")
 public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorithm implements JIPipeParallelizedAlgorithm, JIPipeIterationStepAlgorithm, JIPipeAdaptiveParametersAlgorithm {
-    private boolean parallelizationEnabled = true;
     private JIPipeMergingAlgorithmIterationStepGenerationSettings iterationStepGenerationSettings = new JIPipeMergingAlgorithmIterationStepGenerationSettings();
     private JIPipeAdaptiveParameterSettings adaptiveParameterSettings = new JIPipeAdaptiveParameterSettings();
 
@@ -103,7 +103,6 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         super(other);
         this.iterationStepGenerationSettings = new JIPipeMergingAlgorithmIterationStepGenerationSettings(other.iterationStepGenerationSettings);
         this.adaptiveParameterSettings = new JIPipeAdaptiveParameterSettings(other.adaptiveParameterSettings);
-        this.parallelizationEnabled = other.parallelizationEnabled;
         adaptiveParameterSettings.setNode(this);
         registerSubParameter(iterationStepGenerationSettings);
         registerSubParameter(adaptiveParameterSettings);
@@ -188,7 +187,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
 
         // Adaptive parameter backups
         Map<String, Object> parameterBackups = new HashMap<>();
@@ -212,7 +211,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
             if (isPassThrough()) {
                 runPassThrough(slotProgress, iterationStep);
             } else {
-                runIteration(iterationStep, new JIPipeMutableIterationContext(0, 1), slotProgress);
+                runIteration(iterationStep, new JIPipeMutableIterationContext(0, 1), runContext, slotProgress);
             }
             return;
         }
@@ -250,8 +249,11 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
 
         boolean hasAdaptiveParameters = getAdaptiveParameterSettings().isEnabled() && !getAdaptiveParameterSettings().getOverriddenParameters().isEmpty();
         final int numIterationSteps = iterationSteps.size();
+        JIPipeRuntimePartition partition = runContext.getGraphRun().getRuntimePartition(getRuntimePartition());
 
-        if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1 || iterationSteps.size() <= 1 || hasAdaptiveParameters) {
+        if (!supportsParallelization() || !partition.isEnableParallelization() ||
+                runContext.getThreadPool() == null || runContext.getThreadPool().getMaxThreads() <= 1 ||
+                iterationSteps.size() <= 1 || hasAdaptiveParameters) {
             for (int i = 0; i < iterationSteps.size(); i++) {
                 if (progressInfo.isCancelled())
                     return;
@@ -260,7 +262,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
                 if (isPassThrough()) {
                     runPassThrough(slotProgress, iterationSteps.get(i));
                 } else {
-                    runIteration(iterationSteps.get(i), new JIPipeMutableIterationContext(i, numIterationSteps), slotProgress);
+                    runIteration(iterationSteps.get(i), new JIPipeMutableIterationContext(i, numIterationSteps), runContext, slotProgress);
                 }
             }
         } else {
@@ -277,12 +279,15 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
                     if (isPassThrough()) {
                         runPassThrough(slotProgress, iterationStep);
                     } else {
-                        runIteration(iterationStep, new JIPipeMutableIterationContext(iterationStepIndex, numIterationSteps), slotProgress);
+                        runIteration(iterationStep, new JIPipeMutableIterationContext(iterationStepIndex, numIterationSteps), runContext, slotProgress);
                     }
                 });
             }
-            progressInfo.log(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d", tasks.size(), getParallelizationBatchSize(), getThreadPool().getMaxThreads()));
-            for (Future<Exception> batch : getThreadPool().scheduleBatches(tasks, getParallelizationBatchSize())) {
+            progressInfo.log(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d",
+                    tasks.size(),
+                    getParallelizationBatchSize(),
+                    runContext.getThreadPool().getMaxThreads()));
+            for (Future<Exception> batch : runContext.getThreadPool().scheduleBatches(tasks, getParallelizationBatchSize())) {
                 try {
                     Exception exception = batch.get();
                     if (exception != null)
@@ -381,9 +386,10 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
      *
      * @param iterationStep    The data interface
      * @param iterationContext The iteration context
+     * @param runContext
      * @param progressInfo     the progress from the run
      */
-    protected abstract void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo);
+    protected abstract void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo);
 
     @Override
     public boolean supportsParallelization() {
@@ -393,21 +399,6 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
     @Override
     public int getParallelizationBatchSize() {
         return 1;
-    }
-
-    @JIPipeDocumentation(name = "Enable parallelization", description = "If enabled, the workload can be calculated across multiple threads to for speedup. " +
-            "Please note that the actual usage of multiple threads depend on the runtime settings and the algorithm implementation. " +
-            "We recommend to use the runtime parameters to control parallelization in most cases.")
-    @JIPipeParameter(value = "jipipe:parallelization:enabled", pinned = true)
-    @Override
-    public boolean isParallelizationEnabled() {
-        return parallelizationEnabled;
-    }
-
-    @Override
-    @JIPipeParameter("jipipe:parallelization:enabled")
-    public void setParallelizationEnabled(boolean parallelizationEnabled) {
-        this.parallelizationEnabled = parallelizationEnabled;
     }
 
     @Override
@@ -426,7 +417,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         return super.isParameterUIVisible(tree, access);
     }
 
-    @JIPipeDocumentation(name = "Merging data batch generation", description = "This algorithm can have multiple inputs. " +
+    @SetJIPipeDocumentation(name = "Merging data batch generation", description = "This algorithm can have multiple inputs. " +
             "This means that JIPipe has to match incoming data into batches via metadata annotations. " +
             "The following settings allow you to control which columns are used as reference to organize data.")
     @JIPipeParameter(value = "jipipe:data-batch-generation", collapsed = true,
@@ -436,7 +427,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         return iterationStepGenerationSettings;
     }
 
-    @JIPipeDocumentation(name = "Adaptive parameters", description = "You can use the following settings to generate parameter values for each data batch based on annotations.")
+    @SetJIPipeDocumentation(name = "Adaptive parameters", description = "You can use the following settings to generate parameter values for each data batch based on annotations.")
     @JIPipeParameter(value = "jipipe:adaptive-parameters", hidden = true,
             iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-function.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-function.png")

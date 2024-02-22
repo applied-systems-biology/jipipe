@@ -75,7 +75,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame implements JIPi
         if (dataSource.getDataTable() instanceof JIPipeDataSlot) {
             JIPipeGraphNode node = ((JIPipeDataSlot) dataSource.getDataTable()).getNode();
             if (node != null && node.getParentGraph() != null) {
-                this.algorithm = (JIPipeAlgorithm) project.getGraph().getEquivalentAlgorithm(node);
+                this.algorithm = (JIPipeAlgorithm) project.getGraph().getEquivalentNode(node);
             } else {
                 this.algorithm = null;
             }
@@ -95,11 +95,11 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame implements JIPi
     }
 
     private void initialize() {
-        previousRowButton = new JButton(UIUtils.getIconFromResources("actions/arrow-up.png"));
+        previousRowButton = new JButton(UIUtils.getIconFromResources("actions/caret-up.png"));
         previousRowButton.setToolTipText("<html>Go to previous data row<br/>Ctrl+Up</html>");
         previousRowButton.addActionListener(e -> gotoPreviousRow());
         UIUtils.makeFlat25x25(previousRowButton);
-        nextRowButton = new JButton(UIUtils.getIconFromResources("actions/arrow-down.png"));
+        nextRowButton = new JButton(UIUtils.getIconFromResources("actions/caret-down.png"));
         nextRowButton.setToolTipText("<html>Go to next data row<br/>Ctrl+Down</html>");
         nextRowButton.addActionListener(e -> gotoNextRow());
         UIUtils.makeFlat25x25(nextRowButton);

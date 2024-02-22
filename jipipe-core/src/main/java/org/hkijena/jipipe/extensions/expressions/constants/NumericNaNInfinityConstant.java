@@ -13,10 +13,10 @@
 
 package org.hkijena.jipipe.extensions.expressions.constants;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionConstant;
 
-@JIPipeDocumentation(name = "NaN", description = "Floating point (double) NaN")
+@SetJIPipeDocumentation(name = "NaN", description = "Floating point (double) NaN")
 public class NumericNaNInfinityConstant extends ExpressionConstant {
     public NumericNaNInfinityConstant() {
         super("nan", Double.NaN);

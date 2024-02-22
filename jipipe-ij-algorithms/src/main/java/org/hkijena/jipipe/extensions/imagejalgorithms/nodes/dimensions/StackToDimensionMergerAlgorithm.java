@@ -15,8 +15,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.dimensions;
 
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -44,14 +44,14 @@ import java.util.Map;
 /**
  * Wrapper around {@link ImageProcessor}
  */
-@JIPipeDocumentation(name = "Merge hyperstack C/Z/T (single input)", description = "Merges multiple stacks that miss a dimension into the target dimension. " +
+@SetJIPipeDocumentation(name = "Merge hyperstack C/Z/T (single input)", description = "Merges multiple stacks that miss a dimension into the target dimension. " +
         "Requires that all incoming stacks have the same size and that there is only one slice in the created dimension. " +
         "The type of the output image is determined by consensus bit depth. " +
         "This node has similar functionality to the 'Combine stacks' node.")
-@JIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nHyperstacks")
+@DefineJIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nHyperstacks")
 public class StackToDimensionMergerAlgorithm extends JIPipeMergingAlgorithm {
 
     private HyperstackDimension createdDimension = HyperstackDimension.Channel;
@@ -80,7 +80,7 @@ public class StackToDimensionMergerAlgorithm extends JIPipeMergingAlgorithm {
         return true;
     }
 
-    @JIPipeDocumentation(name = "Created dimension", description = "The dimension that is created by merging the " +
+    @SetJIPipeDocumentation(name = "Created dimension", description = "The dimension that is created by merging the " +
             "incoming stacks.")
     @JIPipeParameter("created-dimension")
     public HyperstackDimension getCreatedDimension() {
@@ -93,7 +93,7 @@ public class StackToDimensionMergerAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
         List<ImagePlus> inputImages = new ArrayList<>();
         for (ImagePlusData data : iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo)) {

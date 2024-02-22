@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.imageviewer.settings;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
@@ -38,7 +38,7 @@ public class ImageViewer2DUISettings extends AbstractJIPipeParameterCollection {
         return JIPipe.getSettings().getSettings(ID, ImageViewer2DUISettings.class);
     }
 
-    @JIPipeDocumentation(name = "Export images/movies as displayed", description = "If enabled, the 'Snapshot' menu will images and movies as displayed (including zoom). Otherwise, " +
+    @SetJIPipeDocumentation(name = "Export images/movies as displayed", description = "If enabled, the 'Snapshot' menu will images and movies as displayed (including zoom). Otherwise, " +
             "the image in its original size is exported.")
     @JIPipeParameter("export-as-displayed")
     public boolean isExportAsDisplayed() {
@@ -50,7 +50,7 @@ public class ImageViewer2DUISettings extends AbstractJIPipeParameterCollection {
         this.exportAsDisplayed = exportAsDisplayed;
     }
 
-    @JIPipeDocumentation(name = "Show side bar", description = "If enabled, show a side bar with additional settings and tools")
+    @SetJIPipeDocumentation(name = "Show side bar", description = "If enabled, show a side bar with additional settings and tools")
     @JIPipeParameter("show-side-bar")
     public boolean isShowSideBar() {
         return showSideBar;
@@ -61,7 +61,7 @@ public class ImageViewer2DUISettings extends AbstractJIPipeParameterCollection {
         this.showSideBar = showSideBar;
     }
 
-    @JIPipeDocumentation(name = "Animation FPS", description = "The default animation FPS")
+    @SetJIPipeDocumentation(name = "Animation FPS", description = "The default animation FPS")
     @JIPipeParameter("default-animation-fps")
     public double getDefaultAnimationFPS() {
         return defaultAnimationFPS;
@@ -72,7 +72,7 @@ public class ImageViewer2DUISettings extends AbstractJIPipeParameterCollection {
         this.defaultAnimationFPS = defaultAnimationFPS;
     }
 
-    @JIPipeDocumentation(name = "Zoom base speed", description = "Determines the base speed of zoom operations. The higher, the faster the zoom. The default is 1.05")
+    @SetJIPipeDocumentation(name = "Zoom base speed", description = "Determines the base speed of zoom operations. The higher, the faster the zoom. The default is 1.05")
     @JIPipeParameter("zoom-base-speed")
     public double getZoomBaseSpeed() {
         return zoomBaseSpeed;
@@ -83,7 +83,7 @@ public class ImageViewer2DUISettings extends AbstractJIPipeParameterCollection {
         this.zoomBaseSpeed = zoomBaseSpeed;
     }
 
-    @JIPipeDocumentation(name = "Zoom dynamic speed", description = "Determines the dynamic speed of zoom operations, which is added to the base speed based on the scroll wheel speed. The higher, the faster the dynamic zoom. The default is 0.1")
+    @SetJIPipeDocumentation(name = "Zoom dynamic speed", description = "Determines the dynamic speed of zoom operations, which is added to the base speed based on the scroll wheel speed. The higher, the faster the dynamic zoom. The default is 0.1")
     @JIPipeParameter("zoom-dynamic-speed")
     public double getZoomDynamicSpeed() {
         return zoomDynamicSpeed;

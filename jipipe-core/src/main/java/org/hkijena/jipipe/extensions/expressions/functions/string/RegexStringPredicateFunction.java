@@ -13,14 +13,14 @@
 
 package org.hkijena.jipipe.extensions.expressions.functions.string;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "String matches (Regex)", description = "Tests if the left operand matches the pattern described within the right operand. " +
+@SetJIPipeDocumentation(name = "String matches (Regex)", description = "Tests if the left operand matches the pattern described within the right operand. " +
         "There can be multiple right operands; in such case, the function returns true if any matches.")
 public class RegexStringPredicateFunction extends ExpressionFunction {
 

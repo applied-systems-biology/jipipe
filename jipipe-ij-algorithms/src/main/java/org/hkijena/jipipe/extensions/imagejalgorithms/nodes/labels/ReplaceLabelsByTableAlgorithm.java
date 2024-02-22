@@ -16,8 +16,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.labels;
 import gnu.trove.map.TFloatFloatMap;
 import gnu.trove.map.hash.TFloatFloatHashMap;
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -35,11 +35,11 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 
-@JIPipeDocumentation(name = "Replace label values by table", description = "Replaces label values by a mapping as specified in a table. The table should contain two columns, one for the old label and a second column defining the replacement value.")
-@JIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Labels", autoCreate = true)
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Mappings", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Labels", autoCreate = true)
+@SetJIPipeDocumentation(name = "Replace label values by table", description = "Replaces label values by a mapping as specified in a table. The table should contain two columns, one for the old label and a second column defining the replacement value.")
+@DefineJIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Labels", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Mappings", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Labels", create = true)
 public class ReplaceLabelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
 
     private TableColumnSourceExpressionParameter oldLabelColumn = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"old\"");
@@ -60,7 +60,7 @@ public class ReplaceLabelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
         this.ignoreZero = other.ignoreZero;
     }
 
-    @JIPipeDocumentation(name = "Old label column", description = "Table column that contains the old label")
+    @SetJIPipeDocumentation(name = "Old label column", description = "Table column that contains the old label")
     @JIPipeParameter("old-label-column")
     public TableColumnSourceExpressionParameter getOldLabelColumn() {
         return oldLabelColumn;
@@ -71,7 +71,7 @@ public class ReplaceLabelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
         this.oldLabelColumn = oldLabelColumn;
     }
 
-    @JIPipeDocumentation(name = "New label column", description = "Table column that contains the new label")
+    @SetJIPipeDocumentation(name = "New label column", description = "Table column that contains the new label")
     @JIPipeParameter("new-label-column")
     public TableColumnSourceExpressionParameter getNewLabelColumn() {
         return newLabelColumn;
@@ -82,7 +82,7 @@ public class ReplaceLabelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
         this.newLabelColumn = newLabelColumn;
     }
 
-    @JIPipeDocumentation(name = "Replace missing mappings", description = "If enabled, replace mappings missing from the table by the value defined by this expression. If disabled, missing mappings are ignored and affected labels are not changed.")
+    @SetJIPipeDocumentation(name = "Replace missing mappings", description = "If enabled, replace mappings missing from the table by the value defined by this expression. If disabled, missing mappings are ignored and affected labels are not changed.")
     @JIPipeParameter("missing-value-replacement")
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public OptionalJIPipeExpressionParameter getMissingValueReplacement() {
@@ -94,7 +94,7 @@ public class ReplaceLabelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
         this.missingValueReplacement = missingValueReplacement;
     }
 
-    @JIPipeDocumentation(name = "Ignore zero label", description = "If enabled, the label value '0' is always ignored, regardless of mapping settings.")
+    @SetJIPipeDocumentation(name = "Ignore zero label", description = "If enabled, the label value '0' is always ignored, regardless of mapping settings.")
     @JIPipeParameter("ignore-zero")
     public boolean isIgnoreZero() {
         return ignoreZero;
@@ -106,7 +106,7 @@ public class ReplaceLabelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus outputImage = iterationStep.getInputData("Labels", ImagePlusGreyscale32FData.class, progressInfo).getDuplicateImage();
         ResultsTableData mappingsTable = iterationStep.getInputData("Mappings", ResultsTableData.class, progressInfo);
 

@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
@@ -31,10 +31,10 @@ import java.nio.file.Paths;
 /**
  * Applies subfolder navigation to each input folder
  */
-@JIPipeDocumentation(name = "Concatenate paths by parameter", description = "Concatenates the input paths by a string.")
-@JIPipeNode(menuPath = "Modify", nodeTypeCategory = FileSystemNodeTypeCategory.class)
-@JIPipeInputSlot(value = PathData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Concatenate paths by parameter", description = "Concatenates the input paths by a string.")
+@DefineJIPipeNode(menuPath = "Modify", nodeTypeCategory = FileSystemNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = PathData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = PathData.class, slotName = "Output", create = true)
 public class ConcatenateByParameter extends JIPipeSimpleIteratingAlgorithm {
 
     private Path subPath = Paths.get("");
@@ -57,7 +57,7 @@ public class ConcatenateByParameter extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         FolderData inputFolder = iterationStep.getInputData(getFirstInputSlot(), FolderData.class, progressInfo);
         iterationStep.addOutputData(getFirstOutputSlot(), new FolderData(inputFolder.toPath().resolve(subPath)), progressInfo);
     }
@@ -66,7 +66,7 @@ public class ConcatenateByParameter extends JIPipeSimpleIteratingAlgorithm {
      * @return The subfolder
      */
     @JIPipeParameter("sub-path")
-    @JIPipeDocumentation(name = "Concatenated path", description = "The path is concatenated by this path.")
+    @SetJIPipeDocumentation(name = "Concatenated path", description = "The path is concatenated by this path.")
     public Path getSubPath() {
         return subPath;
     }

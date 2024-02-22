@@ -1,11 +1,11 @@
 package org.hkijena.jipipe.extensions.python.installers;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
-@JIPipeDocumentation(name = "Install Python 3", description = "Installs Python 3")
+@SetJIPipeDocumentation(name = "Install Python 3", description = "Installs Python 3")
 public class PortableEnvPythonInstaller extends BasicPortableEnvPythonInstaller {
     /**
      * @param workbench       the workbench
@@ -45,7 +45,7 @@ public class PortableEnvPythonInstaller extends BasicPortableEnvPythonInstaller 
         private boolean installTiffFile = true;
         private boolean installPandas = true;
 
-        @JIPipeDocumentation(name = "Install Numpy", description = "Install the numpy library")
+        @SetJIPipeDocumentation(name = "Install Numpy", description = "Install the numpy library")
         @JIPipeParameter("install-numpy")
         public boolean isInstallNumpy() {
             return installNumpy;
@@ -56,7 +56,7 @@ public class PortableEnvPythonInstaller extends BasicPortableEnvPythonInstaller 
             this.installNumpy = installNumpy;
         }
 
-        @JIPipeDocumentation(name = "Install Scikit Image", description = "Install the scikit-image library")
+        @SetJIPipeDocumentation(name = "Install Scikit Image", description = "Install the scikit-image library")
         @JIPipeParameter("install-scikit-image")
         public boolean isInstallScikitImage() {
             return installScikitImage;
@@ -67,7 +67,7 @@ public class PortableEnvPythonInstaller extends BasicPortableEnvPythonInstaller 
             this.installScikitImage = installScikitImage;
         }
 
-        @JIPipeDocumentation(name = "Install Scikit Learn", description = "Install the scikit-learn library")
+        @SetJIPipeDocumentation(name = "Install Scikit Learn", description = "Install the scikit-learn library")
         @JIPipeParameter("install-scikit-learn")
         public boolean isInstallScikitLearn() {
             return installScikitLearn;
@@ -78,7 +78,7 @@ public class PortableEnvPythonInstaller extends BasicPortableEnvPythonInstaller 
             this.installScikitLearn = installScikitLearn;
         }
 
-        @JIPipeDocumentation(name = "Install TIFFFile", description = "Install the tifffile library")
+        @SetJIPipeDocumentation(name = "Install TIFFFile", description = "Install the tifffile library")
         @JIPipeParameter("install-tifffile")
         public boolean isInstallTiffFile() {
             return installTiffFile;
@@ -89,7 +89,7 @@ public class PortableEnvPythonInstaller extends BasicPortableEnvPythonInstaller 
             this.installTiffFile = installTiffFile;
         }
 
-        @JIPipeDocumentation(name = "Install Pandas", description = "Installs the pandas library")
+        @SetJIPipeDocumentation(name = "Install Pandas", description = "Installs the pandas library")
         @JIPipeParameter("install-pandas")
         public boolean isInstallPandas() {
             return installPandas;

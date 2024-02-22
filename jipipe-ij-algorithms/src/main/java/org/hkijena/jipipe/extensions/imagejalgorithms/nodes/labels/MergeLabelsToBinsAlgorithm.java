@@ -8,12 +8,13 @@ import gnu.trove.map.hash.TFloatIntHashMap;
 import gnu.trove.set.TFloatSet;
 import gnu.trove.set.hash.TFloatHashSet;
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -28,11 +29,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Merge labels (bin) 2D", description = "Merges labels into a specified number of of bins. The values are distributed so uniformly unless 'Equalize frequencies' is enabled. The resulting labels are determined by the bin index. " +
+@SetJIPipeDocumentation(name = "Merge labels (bin) 2D", description = "Merges labels into a specified number of of bins. The values are distributed so uniformly unless 'Equalize frequencies' is enabled. The resulting labels are determined by the bin index. " +
         " If the image has multiple slices, the algorithm is applied per slice.")
-@JIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
 public class MergeLabelsToBinsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private int numBins = 10;
@@ -53,7 +54,7 @@ public class MergeLabelsToBinsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus outputImage = iterationStep.getInputData("Input", ImagePlusGreyscale32FData.class, progressInfo).getDuplicateImage();
 
         ImageJUtils.forEachIndexedZCTSlice(outputImage, (ip, index) -> {
@@ -163,7 +164,7 @@ public class MergeLabelsToBinsAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Number of bins", description = "The number of bins")
+    @SetJIPipeDocumentation(name = "Number of bins", description = "The number of bins")
     @JIPipeParameter(value = "num-bins", important = true)
     public int getNumBins() {
         return numBins;
@@ -174,7 +175,7 @@ public class MergeLabelsToBinsAlgorithm extends JIPipeIteratingAlgorithm {
         this.numBins = numBins;
     }
 
-    @JIPipeDocumentation(name = "Exclude zero", description = "If enabled, do not apply the algorithm to the zero label.")
+    @SetJIPipeDocumentation(name = "Exclude zero", description = "If enabled, do not apply the algorithm to the zero label.")
     @JIPipeParameter("exclude-zero")
     public boolean isExcludeZero() {
         return excludeZero;
@@ -185,7 +186,7 @@ public class MergeLabelsToBinsAlgorithm extends JIPipeIteratingAlgorithm {
         this.excludeZero = excludeZero;
     }
 
-    @JIPipeDocumentation(name = "Sort order", description = "Determines from which direction the merging is applied (from lowest/ascending or highest/descending). Only used if 'Equalize frequencies' is enabled.")
+    @SetJIPipeDocumentation(name = "Sort order", description = "Determines from which direction the merging is applied (from lowest/ascending or highest/descending). Only used if 'Equalize frequencies' is enabled.")
     @JIPipeParameter("sort-order")
     public SortOrder getSortOrder() {
         return sortOrder;
@@ -196,7 +197,7 @@ public class MergeLabelsToBinsAlgorithm extends JIPipeIteratingAlgorithm {
         this.sortOrder = sortOrder;
     }
 
-    @JIPipeDocumentation(name = "Equalize frequencies", description = "If enabled, attempt to equalize the bins. Please note that the last bin might be larger, as remaining values are assigned to higher bins.")
+    @SetJIPipeDocumentation(name = "Equalize frequencies", description = "If enabled, attempt to equalize the bins. Please note that the last bin might be larger, as remaining values are assigned to higher bins.")
     @JIPipeParameter("equalize-frequencies")
     public boolean isEqualizeFrequencies() {
         return equalizeFrequencies;

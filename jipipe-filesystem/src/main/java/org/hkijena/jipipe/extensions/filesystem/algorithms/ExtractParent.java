@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
@@ -30,12 +30,12 @@ import java.nio.file.Path;
 /**
  * Applies subfolder navigation to each input folder
  */
-@JIPipeDocumentation(name = "Get parent directory", description = "Extracts the parent folder of each path")
-@JIPipeNode(menuPath = "Extract", nodeTypeCategory = FileSystemNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "Get parent directory", description = "Extracts the parent folder of each path")
+@DefineJIPipeNode(menuPath = "Extract", nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
 
-@JIPipeInputSlot(value = PathData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = FolderData.class, slotName = "Parent", autoCreate = true)
+@AddJIPipeInputSlot(value = PathData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = FolderData.class, slotName = "Parent", create = true)
 
 
 public class ExtractParent extends JIPipeSimpleIteratingAlgorithm {
@@ -59,7 +59,7 @@ public class ExtractParent extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         PathData inputFolder = iterationStep.getInputData(getFirstInputSlot(), PathData.class, progressInfo);
         Path result = inputFolder.toPath();
         for (int i = 0; i < order; i++) {
@@ -68,7 +68,7 @@ public class ExtractParent extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new FolderData(result), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Select N-th parent", description = "Determines which N-th parent is chosen. For example the 2nd parent of /a/b/c is 'a'. " +
+    @SetJIPipeDocumentation(name = "Select N-th parent", description = "Determines which N-th parent is chosen. For example the 2nd parent of /a/b/c is 'a'. " +
             "If N=0, the path is not changed.")
     @JIPipeParameter("order")
     public int getOrder() {

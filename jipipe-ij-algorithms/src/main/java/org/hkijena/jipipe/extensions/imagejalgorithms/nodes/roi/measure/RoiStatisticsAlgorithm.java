@@ -15,8 +15,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.measure;
 
 import ij.ImagePlus;
 import ij.gui.Roi;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -44,13 +44,13 @@ import java.util.Map;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@JIPipeDocumentation(name = "Extract ROI statistics", description = "Generates a results table containing ROI statistics. If a reference image is provided, the statistics are calculated for the reference image. Otherwise, " +
+@SetJIPipeDocumentation(name = "Extract ROI statistics", description = "Generates a results table containing ROI statistics. If a reference image is provided, the statistics are calculated for the reference image. Otherwise, " +
         "an empty reference image is automatically generated.")
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true, optional = true, description = "Optional image that is the basis for the measurements. If not set, an empty image is generated.")
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Measure (ROI)")
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true, optional = true, description = "Optional image that is the basis for the measurements. If not set, an empty image is generated.")
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Measure (ROI)")
 public class RoiStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
@@ -89,7 +89,7 @@ public class RoiStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROIListData roi = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
         ImagePlus reference = getReferenceImage(iterationStep, progressInfo);
         if (roi.isEmpty()) {
@@ -120,7 +120,7 @@ public class RoiStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         return reference;
     }
 
-    @JIPipeDocumentation(name = "Extracted measurements", description = "Please select which measurements should be extracted. " +
+    @SetJIPipeDocumentation(name = "Extracted measurements", description = "Please select which measurements should be extracted. " +
             "Each measurement will be assigned to one or multiple output table columns.<br/><br/>" + ImageStatisticsSetParameter.ALL_DESCRIPTIONS)
     @JIPipeParameter(value = "measurements", important = true)
     public ImageStatisticsSetParameter getMeasurements() {
@@ -132,7 +132,7 @@ public class RoiStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         this.measurements = measurements;
     }
 
-    @JIPipeDocumentation(name = "Generated annotation", description = "Optional. The annotation will contain the image slice position that was " +
+    @SetJIPipeDocumentation(name = "Generated annotation", description = "Optional. The annotation will contain the image slice position that was " +
             "used to generate the statistics.")
     @JIPipeParameter("index-annotation")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
@@ -145,7 +145,7 @@ public class RoiStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         this.indexAnnotation = indexAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Apply per slice", description = "If true, the operation is applied for each Z-slice separately. If false, all Z-slices are put together.")
+    @SetJIPipeDocumentation(name = "Apply per slice", description = "If true, the operation is applied for each Z-slice separately. If false, all Z-slices are put together.")
     @JIPipeParameter("apply-per-slice")
     public boolean isApplyPerSlice() {
         return applyPerSlice;
@@ -156,7 +156,7 @@ public class RoiStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         this.applyPerSlice = applyPerSlice;
     }
 
-    @JIPipeDocumentation(name = "Apply per channel", description = "If true, the operation is applied for each channel-slice separately. If false, all channel-slices are put together. " +
+    @SetJIPipeDocumentation(name = "Apply per channel", description = "If true, the operation is applied for each channel-slice separately. If false, all channel-slices are put together. " +
             "Please note that 'Channel' does not refer to a pixel channel like Red in RGB.")
     @JIPipeParameter("apply-per-channel")
     public boolean isApplyPerChannel() {
@@ -168,7 +168,7 @@ public class RoiStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         this.applyPerChannel = applyPerChannel;
     }
 
-    @JIPipeDocumentation(name = "Apply per frame", description = "If true, the operation is applied for each frame separately. If false, all frames are put together.")
+    @SetJIPipeDocumentation(name = "Apply per frame", description = "If true, the operation is applied for each frame separately. If false, all frames are put together.")
     @JIPipeParameter("apply-per-frame")
     public boolean isApplyPerFrame() {
         return applyPerFrame;
@@ -179,7 +179,7 @@ public class RoiStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         this.applyPerFrame = applyPerFrame;
     }
 
-    @JIPipeDocumentation(name = "Add ROI name as column", description = "If enabled, a column 'Name' containing the ROI name is created. " +
+    @SetJIPipeDocumentation(name = "Add ROI name as column", description = "If enabled, a column 'Name' containing the ROI name is created. " +
             "You can modify this name via the 'Change ROI properties' node.")
     @JIPipeParameter("add-name")
     public boolean isAddNameToTable() {
@@ -191,7 +191,7 @@ public class RoiStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         this.addNameToTable = addNameToTable;
     }
 
-    @JIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
+    @SetJIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
     @JIPipeParameter("measure-in-physical-units")
     public boolean isMeasureInPhysicalUnits() {
         return measureInPhysicalUnits;

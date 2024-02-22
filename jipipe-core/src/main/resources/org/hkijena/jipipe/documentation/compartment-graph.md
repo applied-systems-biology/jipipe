@@ -9,7 +9,7 @@ the drawbacks of group nodes and full access to the cache system.
 <tr><td><img src="resource://icons/actions/edit-select-all.png"/></td><td>You can select multiple compartments by dragging a box around them or clicking while holding Shift.</td></tr>
 <tr><td><img src="resource://icons/actions/grid-rectangular.png"/></td><td>The graph area expands in all directions. Just drag a compartments to the edge.</td></tr>
 <tr><td><img src="resource://icons/devices/input-mouse.png"/></td><td>Drag the middle mouse button or use the scroll bars to navigate around.</td></tr>
-<tr><td><img src="resource://icons/actions/zoom-in.png"/></td><td>Hold Ctrl and scroll to zoom in and out.</td></tr>
+<tr><td><img src="resource://icons/actions/square-plus.png"/></td><td>Hold Ctrl and scroll to zoom in and out.</td></tr>
 </table>
 
 <h3>Organizing analyses</h3>
@@ -33,7 +33,7 @@ the drawbacks of group nodes and full access to the cache system.
 <table>
 <tr><td><img src="resource://icons/devices/input-mouse.png"/></td><td>Drag a line between two slots to make an edge.</td></tr>
 <tr><td><img src="resource://icons/actions/edit-delete.png"/></td><td>Delete edges by dragging another line between the slots.</td></tr>
-<tr><td><img src="resource://icons/actions/arrow-down.png"/></td><td>Use the arrow button to create long-range connections and show other options.</td></tr>
+<tr><td><img src="resource://icons/actions/configure.png"/></td><td>Right-click slots to create long-range connections and show other options.</td></tr>
 </table>
 
 For more information and tutorials, visit https://www.jipipe.org/

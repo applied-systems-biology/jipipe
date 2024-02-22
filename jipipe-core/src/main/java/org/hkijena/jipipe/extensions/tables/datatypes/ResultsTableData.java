@@ -34,8 +34,8 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.hkijena.jipipe.api.JIPipeCommonData;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeCommonData;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
@@ -77,12 +77,12 @@ import static ij.measure.ResultsTable.COLUMN_NOT_FOUND;
 /**
  * Data containing a {@link ResultsTable}
  */
-@JIPipeDocumentation(name = "Results table", description = "An ImageJ table")
+@SetJIPipeDocumentation(name = "Results table", description = "An ImageJ table")
 @JsonSerialize(using = ResultsTableData.Serializer.class)
 @JsonDeserialize(using = ResultsTableData.Deserializer.class)
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.csv file that contains the table data.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/results-table.schema.json")
-@JIPipeCommonData
+@LabelAsJIPipeCommonData
 @JIPipeFastThumbnail
 public class ResultsTableData implements JIPipeData, TableModel {
 

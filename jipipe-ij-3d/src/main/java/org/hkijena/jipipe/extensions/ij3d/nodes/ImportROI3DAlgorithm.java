@@ -14,8 +14,8 @@
 
 package org.hkijena.jipipe.extensions.ij3d.nodes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
@@ -27,10 +27,10 @@ import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
 
 import java.nio.file.Path;
 
-@JIPipeDocumentation(name = "Import 3D ROI", description = "Imports a 3D ROI list from a *.zip file")
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeInputSlot(value = FileData.class, slotName = "Input", autoCreate = true, description = "A *.zip file")
-@JIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Import 3D ROI", description = "Imports a 3D ROI list from a *.zip file")
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = FileData.class, slotName = "Input", create = true, description = "A *.zip file")
+@AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", create = true)
 public class ImportROI3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public ImportROI3DAlgorithm(JIPipeNodeInfo info) {
@@ -42,7 +42,7 @@ public class ImportROI3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Path path = iterationStep.getInputData(getFirstInputSlot(), FileData.class, progressInfo).toPath();
         ROI3DListData roi3D = ROI3DListData.importData(path, progressInfo.resolve("Import ROI3D"));
         iterationStep.addOutputData(getFirstOutputSlot(), roi3D, progressInfo);

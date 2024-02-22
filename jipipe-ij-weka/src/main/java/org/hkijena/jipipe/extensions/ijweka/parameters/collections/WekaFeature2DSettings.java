@@ -14,7 +14,7 @@
 
 package org.hkijena.jipipe.extensions.ijweka.parameters.collections;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ijweka.parameters.features.WekaFeatureSet2D;
@@ -55,7 +55,7 @@ public class WekaFeature2DSettings extends AbstractJIPipeParameterCollection {
         this.maxSigma = other.maxSigma;
     }
 
-    @JIPipeDocumentation(name = "Use neighbors", description = "Set the use of the neighbor features")
+    @SetJIPipeDocumentation(name = "Use neighbors", description = "Set the use of the neighbor features")
     @JIPipeParameter("use-neighbors")
     public boolean isUseNeighbors() {
         return useNeighbors;
@@ -66,7 +66,7 @@ public class WekaFeature2DSettings extends AbstractJIPipeParameterCollection {
         this.useNeighbors = useNeighbors;
     }
 
-    @JIPipeDocumentation(name = "Membrane thickness", description = "Expected value of the membrane thickness, 1 pixel by default." +
+    @SetJIPipeDocumentation(name = "Membrane thickness", description = "Expected value of the membrane thickness, 1 pixel by default." +
             " The more accurate, the more precise the filter will be. ")
     @JIPipeParameter(value = "membrane-size", uiOrder = -70)
     public int getMembraneSize() {
@@ -78,7 +78,7 @@ public class WekaFeature2DSettings extends AbstractJIPipeParameterCollection {
         this.membraneSize = membraneSize;
     }
 
-    @JIPipeDocumentation(name = "Membrane patch size", description = "this represents the size \uD835\uDC5B×\uD835\uDC5B " +
+    @SetJIPipeDocumentation(name = "Membrane patch size", description = "this represents the size \uD835\uDC5B×\uD835\uDC5B " +
             "of the field of view for the membrane projection filters. Only available for 2D features.")
     @JIPipeParameter(value = "membrane-patch-size", uiOrder = -60)
     public int getMembranePatchSize() {
@@ -90,7 +90,7 @@ public class WekaFeature2DSettings extends AbstractJIPipeParameterCollection {
         this.membranePatchSize = membranePatchSize;
     }
 
-    @JIPipeDocumentation(name = "Minimum sigma", description = "Minimum radius of the isotropic filters used to create the features. By default 1 pixel.")
+    @SetJIPipeDocumentation(name = "Minimum sigma", description = "Minimum radius of the isotropic filters used to create the features. By default 1 pixel.")
     @JIPipeParameter(value = "min-sigma", uiOrder = -90)
     public float getMinSigma() {
         return minSigma;
@@ -101,7 +101,7 @@ public class WekaFeature2DSettings extends AbstractJIPipeParameterCollection {
         this.minSigma = minSigma;
     }
 
-    @JIPipeDocumentation(name = "Maximum sigma", description = "Maximum radius of the isotropic filters used to create the features. By default 16 pixels.")
+    @SetJIPipeDocumentation(name = "Maximum sigma", description = "Maximum radius of the isotropic filters used to create the features. By default 16 pixels.")
     @JIPipeParameter(value = "max-sigma", uiOrder = -80)
     public float getMaxSigma() {
         return maxSigma;
@@ -112,7 +112,7 @@ public class WekaFeature2DSettings extends AbstractJIPipeParameterCollection {
         this.maxSigma = maxSigma;
     }
 
-    @JIPipeDocumentation(name = "Training features", description = "Here we can select and deselect the training features, which are the key of the learning procedure. " +
+    @SetJIPipeDocumentation(name = "Training features", description = "Here we can select and deselect the training features, which are the key of the learning procedure. " +
             "The plugin creates a stack of images —one image for each feature. " +
             "For instance, if only Gaussian blur is selected as a feature, the classifier will be trained on the original image and some blurred versions " +
             "to it with different \uD835\uDF0E parameters for the Gaussian. If the input image is grayscale, the features will be calculated using double precision (32-bit images). " +

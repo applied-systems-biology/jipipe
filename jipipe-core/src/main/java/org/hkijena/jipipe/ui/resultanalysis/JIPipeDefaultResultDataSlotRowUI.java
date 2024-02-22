@@ -150,7 +150,7 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
         JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/document-export.png"));
         JPopupMenu exportMenu = UIUtils.addPopupMenuToButton(exportButton);
 
-        JMenuItem exportToFolderItem = new JMenuItem("Export to folder", UIUtils.getIconFromResources("actions/browser-download.png"));
+        JMenuItem exportToFolderItem = new JMenuItem("Export to folder", UIUtils.getIconFromResources("actions/download.png"));
         exportToFolderItem.setToolTipText("Saves the data to a folder. If multiple files are present, the names will be generated according to the selected name.");
         exportToFolderItem.addActionListener(e -> exportToFolder());
         exportMenu.add(exportToFolderItem);

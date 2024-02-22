@@ -14,14 +14,15 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.generate;
 
 import ij.gui.ShapeRoi;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHidden;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -32,11 +33,11 @@ import java.awt.*;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@JIPipeDocumentation(name = "Define rectangular ROI", description = "Manually defines rectangular ROI")
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
+@SetJIPipeDocumentation(name = "Define rectangular ROI", description = "Manually defines rectangular ROI")
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
 @Deprecated
-@JIPipeHidden
+@LabelAsJIPipeHidden
 public class DefineRectangularRoiAlgorithm extends JIPipeAlgorithm {
 
     private RectangleList rectangles = new RectangleList();
@@ -67,7 +68,7 @@ public class DefineRectangularRoiAlgorithm extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
+    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROIListData currentData = new ROIListData();
         for (Rectangle rectangle : rectangles) {
             currentData.add(new ShapeRoi(rectangle));
@@ -81,7 +82,7 @@ public class DefineRectangularRoiAlgorithm extends JIPipeAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Rectangles", description = "List of rectangles")
+    @SetJIPipeDocumentation(name = "Rectangles", description = "List of rectangles")
     @JIPipeParameter("rectangles")
     public RectangleList getRectangles() {
         return rectangles;
@@ -92,7 +93,7 @@ public class DefineRectangularRoiAlgorithm extends JIPipeAlgorithm {
         this.rectangles = rectangles;
     }
 
-    @JIPipeDocumentation(name = "Split output", description = "If enabled, each rectangle is put into its own ROI list")
+    @SetJIPipeDocumentation(name = "Split output", description = "If enabled, each rectangle is put into its own ROI list")
     @JIPipeParameter("split")
     public boolean isSplit() {
         return split;

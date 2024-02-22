@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.functions.string;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -8,7 +8,7 @@ import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 import java.util.Arrays;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Split string", description = "Splits a string by the right parameter into an array. For example you can split a string 'a_b_c' by '_' into 'a', 'b', and 'c'")
+@SetJIPipeDocumentation(name = "Split string", description = "Splits a string by the right parameter into an array. For example you can split a string 'a_b_c' by '_' into 'a', 'b', and 'c'")
 public class StringSplitFunction extends ExpressionFunction {
 
     public StringSplitFunction() {

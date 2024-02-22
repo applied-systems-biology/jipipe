@@ -84,7 +84,7 @@ public class PairParameterEditorUI extends JIPipeParameterEditorUI {
                 add(Box.createHorizontalStrut(4));
             add(keyEditor);
             if (singleRowChevron)
-                add(new JLabel(UIUtils.getIconFromResources("actions/arrow-right.png")));
+                add(new JLabel(UIUtils.getIconFromResources("actions/caret-right.png")));
             add(new JLabel(valueLabel));
             if (!StringUtils.isNullOrEmpty(valueLabel))
                 add(Box.createHorizontalStrut(4));
@@ -92,7 +92,7 @@ public class PairParameterEditorUI extends JIPipeParameterEditorUI {
         } else {
             setLayout(new BorderLayout());
             FormPanel panel = new FormPanel(null, FormPanel.NONE);
-            panel.setBorder(BorderFactory.createEtchedBorder());
+            panel.setBorder(UIUtils.createControlBorder());
             panel.addToForm(keyEditor, new JLabel(keyLabel), null);
             panel.addToForm(valueEditor, new JLabel(valueLabel), null);
             add(panel, BorderLayout.CENTER);

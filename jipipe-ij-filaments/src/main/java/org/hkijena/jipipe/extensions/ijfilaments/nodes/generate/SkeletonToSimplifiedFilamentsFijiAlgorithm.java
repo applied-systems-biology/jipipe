@@ -16,9 +16,9 @@ package org.hkijena.jipipe.extensions.ijfilaments.nodes.generate;
 
 import ij.ImagePlus;
 import ij.gui.Roi;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
@@ -42,16 +42,16 @@ import sc.fiji.analyzeSkeleton.*;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Binary skeleton to simplified filaments (Analyze Skeleton 2D/3D)", description = "Converts a binary skeleton into filaments by utilizing the Analyze Skeleton (2D/3D) plugin from Fiji. " +
+@SetJIPipeDocumentation(name = "Binary skeleton to simplified filaments (Analyze Skeleton 2D/3D)", description = "Converts a binary skeleton into filaments by utilizing the Analyze Skeleton (2D/3D) plugin from Fiji. " +
         "Please note that the generated filaments are were automatically simplified by the method and might not fully represent anymore all structural information contained within the skeleton. " +
         "Use 'Binary skeleton to 2D filaments' or 'Binary skeleton to 3D filaments' to if you are unsure about the functionality of this node.")
-@JIPipeCitation("Arganda-Carreras, I., Fernández-González, R., Muñoz-Barrutia, A., & Ortiz-De-Solorzano, C. (2010). 3D reconstruction of histological sections: Application to mammary gland tissue. Microscopy Research and Technique, 73(11), 1019–1029. doi:10.1002/jemt.20829")
-@JIPipeCitation("G. Polder, H.L.E Hovens and A.J Zweers, Measuring shoot length of submerged aquatic plants using graph analysis (2010), In: Proceedings of the ImageJ User and Developer Conference, Centre de Recherche Public Henri Tudor, Luxembourg, 27-29 October, pp 172-177.")
-@JIPipeNode(menuPath = "Convert", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlus3DGreyscaleMaskData.class, slotName = "Skeleton", autoCreate = true)
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", description = "ROI to exclude on pruning ends")
-@JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Reference", description = "Original grayscale input image (for lowest pixel intensity pruning mode)")
-@JIPipeOutputSlot(value = Filaments3DData.class, slotName = "Filaments", description = "The filaments as extracted by the algorithm", autoCreate = true)
+@AddJIPipeCitation("Arganda-Carreras, I., Fernández-González, R., Muñoz-Barrutia, A., & Ortiz-De-Solorzano, C. (2010). 3D reconstruction of histological sections: Application to mammary gland tissue. Microscopy Research and Technique, 73(11), 1019–1029. doi:10.1002/jemt.20829")
+@AddJIPipeCitation("G. Polder, H.L.E Hovens and A.J Zweers, Measuring shoot length of submerged aquatic plants using graph analysis (2010), In: Proceedings of the ImageJ User and Developer Conference, Centre de Recherche Public Henri Tudor, Luxembourg, 27-29 October, pp 172-177.")
+@DefineJIPipeNode(menuPath = "Convert", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlus3DGreyscaleMaskData.class, slotName = "Skeleton", create = true)
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", description = "ROI to exclude on pruning ends")
+@AddJIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Reference", description = "Original grayscale input image (for lowest pixel intensity pruning mode)")
+@AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Filaments", description = "The filaments as extracted by the algorithm", create = true)
 public class SkeletonToSimplifiedFilamentsFijiAlgorithm extends JIPipeIteratingAlgorithm {
 
     public static final JIPipeDataSlotInfo ROI_INPUT_SLOT = new JIPipeDataSlotInfo(ROIListData.class, JIPipeSlotType.Input, "ROI", "ROI to exclude on pruning ends", true);
@@ -70,7 +70,7 @@ public class SkeletonToSimplifiedFilamentsFijiAlgorithm extends JIPipeIteratingA
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus skeleton = iterationStep.getInputData("Skeleton", ImagePlus3DGreyscaleMaskData.class, progressInfo).getImage();
         Roi excludeRoi = null;
         ImagePlus referenceImage = null;
@@ -137,7 +137,7 @@ public class SkeletonToSimplifiedFilamentsFijiAlgorithm extends JIPipeIteratingA
         iterationStep.addOutputData(getFirstOutputSlot(), filamentsData, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Prune cycles method", description = "Allows the selection of a method to prune possible loops in the skeleton")
+    @SetJIPipeDocumentation(name = "Prune cycles method", description = "Allows the selection of a method to prune possible loops in the skeleton")
     @JIPipeParameter("prune-cycles-method")
     public AnalyzeSkeleton2D3DAlgorithm.CycleRemovalMethod getPruneCyclesMethod() {
         return pruneCyclesMethod;
@@ -149,7 +149,7 @@ public class SkeletonToSimplifiedFilamentsFijiAlgorithm extends JIPipeIteratingA
         toggleSlot(REFERENCE_INPUT_SLOT, pruneCyclesMethod == AnalyzeSkeleton2D3DAlgorithm.CycleRemovalMethod.LowestIntensityBranch || pruneCyclesMethod == AnalyzeSkeleton2D3DAlgorithm.CycleRemovalMethod.LowestIntensityVoxel);
     }
 
-    @JIPipeDocumentation(name = "Prune ends methods", description = "Allows the selection of a method to prune any branch that ends in an end-point")
+    @SetJIPipeDocumentation(name = "Prune ends methods", description = "Allows the selection of a method to prune any branch that ends in an end-point")
     @JIPipeParameter("prune-ends-method")
     public AnalyzeSkeleton2D3DAlgorithm.EndRemovalMethod getPruneEndsMethod() {
         return pruneEndsMethod;

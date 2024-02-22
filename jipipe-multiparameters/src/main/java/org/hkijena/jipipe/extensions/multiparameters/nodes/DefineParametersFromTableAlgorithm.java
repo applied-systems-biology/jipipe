@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.multiparameters.nodes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
 import org.hkijena.jipipe.api.nodes.*;
@@ -26,11 +26,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Convert tables to parameters", description = "Converts a table into a parameter table. Please note that you have to define how each individual column is converted into a parameter. " +
+@SetJIPipeDocumentation(name = "Convert tables to parameters", description = "Converts a table into a parameter table. Please note that you have to define how each individual column is converted into a parameter. " +
         "To do this, add an entry into the 'Table columns' list and provide the parameter key, parameter type, and from which table column the value is sourced.")
-@JIPipeNode(menuPath = "Convert", nodeTypeCategory = TableNodeTypeCategory.class)
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ParametersData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(menuPath = "Convert", nodeTypeCategory = TableNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ParametersData.class, slotName = "Output", create = true)
 public class DefineParametersFromTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private ParameterCollectionList columns;
@@ -46,7 +46,7 @@ public class DefineParametersFromTableAlgorithm extends JIPipeSimpleIteratingAlg
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
         ResultsTableData inputData = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
 
@@ -80,7 +80,7 @@ public class DefineParametersFromTableAlgorithm extends JIPipeSimpleIteratingAlg
         }
     }
 
-    @JIPipeDocumentation(name = "Table columns", description = "For each parameter, add an entry that describes the generated parameter key/type and the source table column.")
+    @SetJIPipeDocumentation(name = "Table columns", description = "For each parameter, add an entry that describes the generated parameter key/type and the source table column.")
     @JIPipeParameter("table-columns")
     public ParameterCollectionList getColumns() {
         return columns;
@@ -143,7 +143,7 @@ public class DefineParametersFromTableAlgorithm extends JIPipeSimpleIteratingAlg
             this.valuesAreJson = other.valuesAreJson;
         }
 
-        @JIPipeDocumentation(name = "Table column", description = "The table column")
+        @SetJIPipeDocumentation(name = "Table column", description = "The table column")
         @JIPipeParameter("table-column")
         @ParameterCollectionListTemplate(Column.class)
         public TableColumnSourceExpressionParameter getTableColumn() {
@@ -155,7 +155,7 @@ public class DefineParametersFromTableAlgorithm extends JIPipeSimpleIteratingAlg
             this.tableColumn = tableColumn;
         }
 
-        @JIPipeDocumentation(name = "Key", description = "The parameter key")
+        @SetJIPipeDocumentation(name = "Key", description = "The parameter key")
         @JIPipeParameter("key")
         @StringParameterSettings(monospace = true)
         public String getKey() {
@@ -167,7 +167,7 @@ public class DefineParametersFromTableAlgorithm extends JIPipeSimpleIteratingAlg
             this.key = key;
         }
 
-        @JIPipeDocumentation(name = "Type", description = "The parameter type")
+        @SetJIPipeDocumentation(name = "Type", description = "The parameter type")
         @JIPipeParameter("type")
         public JIPipeParameterTypeInfoRef getType() {
             return type;
@@ -178,7 +178,7 @@ public class DefineParametersFromTableAlgorithm extends JIPipeSimpleIteratingAlg
             this.type = type;
         }
 
-        @JIPipeDocumentation(name = "Values are JSON", description = "Whether values are JSON")
+        @SetJIPipeDocumentation(name = "Values are JSON", description = "Whether values are JSON")
         @JIPipeParameter("values-are-json")
         public boolean isValuesAreJson() {
             return valuesAreJson;

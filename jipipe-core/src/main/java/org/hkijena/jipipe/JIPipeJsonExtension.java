@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.collect.ImmutableList;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeMetadata;
 import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 import org.hkijena.jipipe.api.grouping.JsonNodeRegistrationTask;
@@ -116,7 +116,7 @@ public class JIPipeJsonExtension extends AbstractJIPipeParameterCollection imple
     @Override
     @JsonGetter("metadata")
     @JIPipeParameter("metadata")
-    @JIPipeDocumentation(name = "Metadata", description = "Additional extension metadata")
+    @SetJIPipeDocumentation(name = "Metadata", description = "Additional extension metadata")
     public JIPipeMetadata getMetadata() {
         return metadata;
     }
@@ -135,7 +135,7 @@ public class JIPipeJsonExtension extends AbstractJIPipeParameterCollection imple
     @JsonGetter("id")
     @JIPipeParameter("id")
     @StringParameterSettings(monospace = true)
-    @JIPipeDocumentation(name = "Unique extension ID", description = "A unique identifier for the extension. It must have following format: " +
+    @SetJIPipeDocumentation(name = "Unique extension ID", description = "A unique identifier for the extension. It must have following format: " +
             "[Author]:[Extension] where [Author] contains information about who developed the extension. An example is <i>org.hkijena:my-extension</i>")
     public String getDependencyId() {
         return id;
@@ -156,7 +156,7 @@ public class JIPipeJsonExtension extends AbstractJIPipeParameterCollection imple
     @JsonGetter("version")
     @JIPipeParameter("version")
     @StringParameterSettings(monospace = true)
-    @JIPipeDocumentation(name = "Version", description = "The version of this extension. A common format is x.y.z or x.y.z.w")
+    @SetJIPipeDocumentation(name = "Version", description = "The version of this extension. A common format is x.y.z or x.y.z.w")
     public String getDependencyVersion() {
         return version;
     }
@@ -202,7 +202,7 @@ public class JIPipeJsonExtension extends AbstractJIPipeParameterCollection imple
         return updateSiteDependenciesParameter;
     }
 
-    @JIPipeDocumentation(name = "ImageJ update site dependencies", description = "ImageJ update sites that should be enabled for the extension to work. " +
+    @SetJIPipeDocumentation(name = "ImageJ update site dependencies", description = "ImageJ update sites that should be enabled for the extension to work. " +
             "Users will get a notification if a site is not activated or found. Both name and URL should be set. The URL is only used if a site with the same name " +
             "does not already exist in the user's repository.")
     @JIPipeParameter(value = "update-site-dependencies", uiOrder = 10)
@@ -309,17 +309,17 @@ public class JIPipeJsonExtension extends AbstractJIPipeParameterCollection imple
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         if (StringUtils.isNullOrEmpty(getDependencyId())) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new ParameterValidationReportContext(context, this, "Extension ID", "dependency-id"),
+                    new ParameterValidationReportContext(reportContext, this, "Extension ID", "dependency-id"),
                     "The ID is empty!",
                     "A JSON extension must be identified with a unique ID to allow JIPipe to find dependencies.",
                     "Please provide a valid ID.",
                     JsonUtils.toPrettyJsonString(this)));
         } else if (!getDependencyId().contains(":")) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new ParameterValidationReportContext(context, this, "Extension ID", "dependency-id"),
+                    new ParameterValidationReportContext(reportContext, this, "Extension ID", "dependency-id"),
                     "Malformed ID!",
                     "The ID should contain some information about the plugin author (organization, ...) to prevent future collisions.",
                     "The ID must have following structure: <Organization>:<Name> e.g. org.hkijena.jipipe:my-plugin",
@@ -327,7 +327,7 @@ public class JIPipeJsonExtension extends AbstractJIPipeParameterCollection imple
         }
         if (StringUtils.isNullOrEmpty(getDependencyVersion())) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new ParameterValidationReportContext(context, this, "Extension version", "version"),
+                    new ParameterValidationReportContext(reportContext, this, "Extension version", "version"),
                     "The version is empty!",
                     "This allows users of your extension to better get help if issues arise.",
                     "Please provide a valid version number. It has usually following format x.y.z.w",
@@ -335,7 +335,7 @@ public class JIPipeJsonExtension extends AbstractJIPipeParameterCollection imple
         }
         if (StringUtils.isNullOrEmpty(getMetadata().getName()) || "New project".equals(getMetadata().getName())) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new ParameterValidationReportContext(context, this, "Name", "name"),
+                    new ParameterValidationReportContext(reportContext, this, "Name", "name"),
                     "Invalid name!",
                     "Your plugin should have a short and meaningful name.",
                     "Please provide a meaningful name for your plugin.",
@@ -344,11 +344,11 @@ public class JIPipeJsonExtension extends AbstractJIPipeParameterCollection imple
         if (nodeInfos == null)
             deserializeNodeInfos();
         for (JsonNodeInfo info : nodeInfos) {
-            report.report(new JsonNodeInfoValidationReportContext(context, info), info);
+            report.report(new JsonNodeInfoValidationReportContext(reportContext, info), info);
         }
         if (nodeInfos.size() != nodeInfos.stream().map(JsonNodeInfo::getId).collect(Collectors.toSet()).size()) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    context,
+                    reportContext,
                     "Duplicate IDs found!",
                     "Algorithm IDs must be unique",
                     "Please make sure that IDs are unique.",

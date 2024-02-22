@@ -3,8 +3,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.math.local;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
@@ -33,12 +33,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Local image calculator 2D (Expression)", description = "Applies a pixel-wise mathematical operation that produces a single output image. Available " +
+@SetJIPipeDocumentation(name = "Local image calculator 2D (Expression)", description = "Applies a pixel-wise mathematical operation that produces a single output image. Available " +
         "are both the current pixel values, as well as the local areas around these pixels.")
-@JIPipeInputSlot(value = ImagePlusGreyscale32FData.class)
-@JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", autoCreate = true)
-@JIPipeNode(menuPath = "Math\nLocal", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nMath", aliasName = "Macro... (local)")
+@AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", create = true)
+@DefineJIPipeNode(menuPath = "Math\nLocal", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nMath", aliasName = "Macro... (local)")
 public class LocalImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
 
     private JIPipeExpressionParameter expression = new JIPipeExpressionParameter("(MEDIAN(Local.I1) + I2) / 2");
@@ -64,7 +64,7 @@ public class LocalImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Map<String, ImagePlus> images = new HashMap<>();
         for (JIPipeDataSlot slot : getDataInputSlots()) {
             images.put(slot.getName(), iterationStep.getInputData(slot, ImagePlusGreyscale32FData.class, progressInfo).getImage());
@@ -147,7 +147,7 @@ public class LocalImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
         return result;
     }
 
-    @JIPipeDocumentation(name = "Expression", description = "The mathematical expression that is applied to each pixel position in the input images. Additionally to the " +
+    @SetJIPipeDocumentation(name = "Expression", description = "The mathematical expression that is applied to each pixel position in the input images. Additionally to the " +
             "positional variables, there are variables available that are named according to the input slots and contain the current pixel value of this slot. Arrays prefixed with " +
             "'Local.' are also available and contain the local image values (Example: Local.L1). The array contains the pixel values in Row-Major form (x0y0, x1y0, x2y0, x1y1, ...)")
     @JIPipeParameter("expression")
@@ -161,7 +161,7 @@ public class LocalImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
         this.expression = expression;
     }
 
-    @JIPipeDocumentation(name = "Local window width", description = "Width of the local window")
+    @SetJIPipeDocumentation(name = "Local window width", description = "Width of the local window")
     @JIPipeParameter("local-window-width")
     public int getLocalWindowWidth() {
         return localWindowWidth;
@@ -172,7 +172,7 @@ public class LocalImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
         this.localWindowWidth = localWindowWidth;
     }
 
-    @JIPipeDocumentation(name = "Local window height", description = "Height of the local window")
+    @SetJIPipeDocumentation(name = "Local window height", description = "Height of the local window")
     @JIPipeParameter("local-window-height")
     public int getLocalWindowHeight() {
         return localWindowHeight;
@@ -183,7 +183,7 @@ public class LocalImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
         this.localWindowHeight = localWindowHeight;
     }
 
-    @JIPipeDocumentation(name = "Border pixel mode", description = "Determines how border pixels are handled. If set to 'Skip' border pixels are still processed by " +
+    @SetJIPipeDocumentation(name = "Border pixel mode", description = "Determines how border pixels are handled. If set to 'Skip' border pixels are still processed by " +
             "the expression, but the local area variable will be missing pixels.")
     @JIPipeParameter("source-wrap-mode")
     public SourceWrapMode getSourceWrapMode() {

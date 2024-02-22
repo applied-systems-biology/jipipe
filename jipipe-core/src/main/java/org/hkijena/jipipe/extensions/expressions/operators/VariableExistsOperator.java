@@ -13,14 +13,14 @@
 
 package org.hkijena.jipipe.extensions.expressions.operators;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionOperator;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.Iterator;
 
-@JIPipeDocumentation(name = "Variable exists", description = "Returns true if the left string operand is a variable that exists.")
+@SetJIPipeDocumentation(name = "Variable exists", description = "Returns true if the left string operand is a variable that exists.")
 public class VariableExistsOperator extends ExpressionOperator {
     public VariableExistsOperator(int precedence) {
         super("EXISTS", 1, Associativity.LEFT, precedence);

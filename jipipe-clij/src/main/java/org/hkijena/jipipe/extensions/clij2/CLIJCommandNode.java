@@ -6,11 +6,12 @@ import net.haesleinhuepf.clij.macro.CLIJMacroPlugin;
 import net.haesleinhuepf.clij.macro.CLIJOpenCLProcessor;
 import net.haesleinhuepf.clij2.AbstractCLIJ2Plugin;
 import net.haesleinhuepf.clij2.CLIJ2;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
@@ -94,7 +95,7 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Avoid allocating GPU memory", description = "If enabled, the node will be reconfigured to only allocate data into the GPU memory if absolutely necessary. Please note that " +
+    @SetJIPipeDocumentation(name = "Avoid allocating GPU memory", description = "If enabled, the node will be reconfigured to only allocate data into the GPU memory if absolutely necessary. Please note that " +
             "the application of multiple GPU-based operations will be slower due to the repeated allocation and de-allocation of the images.")
     @JIPipeParameter("avoid-gpu-memory")
     public boolean isAvoidGPUMemory() {
@@ -107,14 +108,14 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
         updateSlots();
     }
 
-    @JIPipeDocumentation(name = "CLIJ parameters", description = "Following parameters were extracted from the CLIJ2 operation:")
+    @SetJIPipeDocumentation(name = "CLIJ parameters", description = "Following parameters were extracted from the CLIJ2 operation:")
     @JIPipeParameter("clij-parameters")
     public JIPipeDynamicParameterCollection getClijParameters() {
         return clijParameters;
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
+    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         CLIJCommandNodeInfo info = (CLIJCommandNodeInfo) getInfo();
         try {
             this.pluginInstance = info.getPluginInfo().createInstance();
@@ -127,12 +128,12 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
         }
         this.pluginInstance.setClij(clij2.getCLIJ());
 
-        super.run(progressInfo);
+        super.run(runContext, progressInfo);
         this.pluginInstance = null;
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         CLIJCommandNodeInfo info = (CLIJCommandNodeInfo) getInfo();
 
         // Prepare inputs

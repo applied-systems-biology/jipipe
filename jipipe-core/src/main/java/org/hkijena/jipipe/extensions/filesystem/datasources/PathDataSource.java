@@ -14,15 +14,15 @@
 package org.hkijena.jipipe.extensions.filesystem.datasources;
 
 import org.apache.commons.io.FileUtils;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
-import org.hkijena.jipipe.api.data.context.JIPipeMutableDataContext;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -44,9 +44,9 @@ import java.util.Objects;
 /**
  * Provides an input file
  */
-@JIPipeDocumentation(name = "Path", description = "Converts the path parameter into path data.")
-@JIPipeOutputSlot(value = PathData.class, slotName = "Path", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "Path", description = "Converts the path parameter into path data.")
+@AddJIPipeOutputSlot(value = PathData.class, slotName = "Path", create = true)
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class PathDataSource extends JIPipeAlgorithm {
 
     private Path currentWorkingDirectory;
@@ -75,7 +75,7 @@ public class PathDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
+    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         getFirstOutputSlot().addData(new PathData(path), JIPipeDataContext.create(this), progressInfo);
     }
 
@@ -83,7 +83,7 @@ public class PathDataSource extends JIPipeAlgorithm {
      * @return The file name
      */
     @JIPipeParameter("path")
-    @JIPipeDocumentation(name = "Path")
+    @SetJIPipeDocumentation(name = "Path")
     @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.FilesAndDirectories)
     public Path getPath() {
         return path;
@@ -107,7 +107,7 @@ public class PathDataSource extends JIPipeAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Needs to exist", description = "If true, the selected path needs to exist.")
+    @SetJIPipeDocumentation(name = "Needs to exist", description = "If true, the selected path needs to exist.")
     @JIPipeParameter("needs-to-exist")
     public boolean isNeedsToExist() {
         return needsToExist;
@@ -131,10 +131,10 @@ public class PathDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         if (needsToExist && (path == null || !Files.exists(getAbsolutePath()))) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
-                    context,
+                    reportContext,
                     "Input path does not exist!",
                     "The path '" + getAbsolutePath() + "' does not exist.",
                     "Please provide a valid input path."));

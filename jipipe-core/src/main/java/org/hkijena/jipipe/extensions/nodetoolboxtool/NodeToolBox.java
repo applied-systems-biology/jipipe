@@ -4,7 +4,6 @@ import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.database.*;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -15,7 +14,6 @@ import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.ui.components.renderers.JIPipeNodeDatabaseEntryListCellRenderer;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.ui.components.window.AlwaysOnTopToggle;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -86,7 +84,7 @@ public class NodeToolBox extends JIPipeWorkbenchPanel {
         algorithmList = new JList<>();
         algorithmList.setToolTipText("Drag one or multiple entries from the list into the graph to create nodes.");
         algorithmList.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        algorithmList.setBorder(BorderFactory.createEtchedBorder());
+        algorithmList.setBorder(UIUtils.createControlBorder());
         algorithmList.setCellRenderer(new JIPipeNodeDatabaseEntryListCellRenderer());
         algorithmList.setModel(new DefaultListModel<>());
         algorithmList.addListSelectionListener(e -> {
@@ -120,7 +118,7 @@ public class NodeToolBox extends JIPipeWorkbenchPanel {
 
             // Write algorithm slot info
             builder.append("<table style=\"margin-top: 10px;\">");
-            for (JIPipeInputSlot slot : info.getInputSlots()) {
+            for (AddJIPipeInputSlot slot : info.getInputSlots()) {
                 builder.append("<tr>");
                 builder.append("<td><p style=\"background-color:#27ae60; color:white;border:3px solid #27ae60;border-radius:5px;text-align:center;\">Input</p></td>");
                 builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.value())).append("\"/></td>");
@@ -128,7 +126,7 @@ public class NodeToolBox extends JIPipeWorkbenchPanel {
                 builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.value()).getName())).append(")</i></td>");
                 builder.append("</tr>");
             }
-            for (JIPipeOutputSlot slot : info.getOutputSlots()) {
+            for (AddJIPipeOutputSlot slot : info.getOutputSlots()) {
                 builder.append("<tr>");
                 builder.append("<td><p style=\"background-color:#da4453; color:white;border:3px solid #da4453;border-radius:5px;text-align:center;\">Output</p></td>");
                 builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.value())).append("\"/></td>");
@@ -156,7 +154,7 @@ public class NodeToolBox extends JIPipeWorkbenchPanel {
 
             // Write algorithm slot info
             builder.append("<table style=\"margin-top: 10px;\">");
-            for (JIPipeInputSlot slot : info.getInputSlots()) {
+            for (AddJIPipeInputSlot slot : info.getInputSlots()) {
                 builder.append("<tr>");
                 builder.append("<td><p style=\"background-color:#27ae60; color:white;border:3px solid #27ae60;border-radius:5px;text-align:center;\">Input</p></td>");
                 builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.value())).append("\"/></td>");
@@ -164,7 +162,7 @@ public class NodeToolBox extends JIPipeWorkbenchPanel {
                 builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.value()).getName())).append(")</i></td>");
                 builder.append("</tr>");
             }
-            for (JIPipeOutputSlot slot : info.getOutputSlots()) {
+            for (AddJIPipeOutputSlot slot : info.getOutputSlots()) {
                 builder.append("<tr>");
                 builder.append("<td><p style=\"background-color:#da4453; color:white;border:3px solid #da4453;border-radius:5px;text-align:center;\">Output</p></td>");
                 builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.value())).append("\"/></td>");

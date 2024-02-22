@@ -13,10 +13,10 @@
 
 package org.hkijena.jipipe.extensions.expressions.constants;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionConstant;
 
-@JIPipeDocumentation(name = "Euler's number", description = "Evaluates to " + Math.E)
+@SetJIPipeDocumentation(name = "Euler's number", description = "Evaluates to " + Math.E)
 public class NumericEulerConstant extends ExpressionConstant {
     public NumericEulerConstant() {
         super("e", Math.E);

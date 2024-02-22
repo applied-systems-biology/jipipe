@@ -15,7 +15,7 @@
 package org.hkijena.jipipe.extensions.ijfilaments.settings;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentsDrawer;
@@ -32,7 +32,7 @@ public class ImageViewerUIFilamentDisplaySettings extends AbstractJIPipeParamete
         return JIPipe.getSettings().getSettings(ID, ImageViewerUIFilamentDisplaySettings.class);
     }
 
-    @JIPipeDocumentation(name = "Filament visualization")
+    @SetJIPipeDocumentation(name = "Filament visualization")
     @JIPipeParameter("filament-drawer")
     public FilamentsDrawer getFilamentDrawer() {
         return filamentDrawer;
@@ -42,7 +42,7 @@ public class ImageViewerUIFilamentDisplaySettings extends AbstractJIPipeParamete
         this.filamentDrawer = filamentDrawer;
     }
 
-    @JIPipeDocumentation(name = "Show spots", description = "If enabled, filaments are visible")
+    @SetJIPipeDocumentation(name = "Show spots", description = "If enabled, filaments are visible")
     @JIPipeParameter("show-spots")
     public boolean isShowFilaments() {
         return showFilaments;

@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.settings;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
@@ -31,7 +31,7 @@ public class HistoryJournalSettings extends AbstractJIPipeParameterCollection {
         return JIPipe.getSettings().getSettings(ID, HistoryJournalSettings.class);
     }
 
-    @JIPipeDocumentation(name = "Maximum number of entries", description = "Determines how many operations are logged in the " +
+    @SetJIPipeDocumentation(name = "Maximum number of entries", description = "Determines how many operations are logged in the " +
             "journal functionality. Set to a negative value to disable limitations. Set to zero to disable the journal functionality.")
     @JIPipeParameter("max-entries")
     public int getMaxEntries() {

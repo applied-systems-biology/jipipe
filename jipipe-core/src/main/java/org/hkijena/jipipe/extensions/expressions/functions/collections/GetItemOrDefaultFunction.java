@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.functions.collections;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -8,7 +8,7 @@ import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 import java.util.List;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Gets item with index/key or default", description = "Gets the item of an array by index N (first is zero) or the (N+1)th character of a string. If N is negative, the (-N)th last item is returned." +
+@SetJIPipeDocumentation(name = "Gets item with index/key or default", description = "Gets the item of an array by index N (first is zero) or the (N+1)th character of a string. If N is negative, the (-N)th last item is returned." +
         "If the first parameter is a map, the entry with the provided key is returned. If the key does not exist, then the default value is returned")
 public class GetItemOrDefaultFunction extends ExpressionFunction {
 

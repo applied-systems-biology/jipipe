@@ -21,8 +21,8 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import ij.measure.ResultsTable;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeCommonData;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeCommonData;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
@@ -66,7 +66,7 @@ import java.util.stream.Collectors;
 /**
  * Contains all necessary data to generate a plot
  */
-@JIPipeDocumentation(name = "Plot", description = "A plot")
+@SetJIPipeDocumentation(name = "Plot", description = "A plot")
 @JsonSerialize(using = PlotData.Serializer.class)
 @JIPipeDataStorageDocumentation(humanReadableDescription = "The folder contains following files:<br/>" +
         "<ul>" +
@@ -80,7 +80,7 @@ import java.util.stream.Collectors;
         "a string element <code>file-name</code>. The file name must point at the corresponding <code>series[Index].csv</code> file of the series. " +
         "Additional metadata in the root object and series metadata depend on the exact plot type.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/plot-data.schema.json")
-@JIPipeCommonData
+@LabelAsJIPipeCommonData
 public abstract class PlotData extends AbstractJIPipeParameterCollection implements JIPipeData, JIPipeValidatable {
     private final List<PlotDataSeries> series = new ArrayList<>();
     private String title;
@@ -280,7 +280,7 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
     /**
      * @return The plot title
      */
-    @JIPipeDocumentation(name = "Title", description = "The title of this plot.")
+    @SetJIPipeDocumentation(name = "Title", description = "The title of this plot.")
     @JIPipeParameter("title")
     public String getTitle() {
         return title;
@@ -296,7 +296,7 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
         this.title = title;
     }
 
-    @JIPipeDocumentation(name = "Export width", description = "Width of the output image generated via an export")
+    @SetJIPipeDocumentation(name = "Export width", description = "Width of the output image generated via an export")
     @JIPipeParameter("export-width")
     public int getExportWidth() {
         return exportWidth;
@@ -307,7 +307,7 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
         this.exportWidth = exportWidth;
     }
 
-    @JIPipeDocumentation(name = "Export height", description = "Height of the output image generated via an export")
+    @SetJIPipeDocumentation(name = "Export height", description = "Height of the output image generated via an export")
     @JIPipeParameter("export-height")
     public int getExportHeight() {
         return exportHeight;
@@ -318,7 +318,7 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
         this.exportHeight = exportHeight;
     }
 
-    @JIPipeDocumentation(name = "Background color", description = "Background color of the plot area.")
+    @SetJIPipeDocumentation(name = "Background color", description = "Background color of the plot area.")
     @JIPipeParameter("background-color")
     public Color getBackgroundColor() {
         return backgroundColor;
@@ -329,7 +329,7 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
         this.backgroundColor = backgroundColor;
     }
 
-    @JIPipeDocumentation(name = "Grid color", description = "Color of the grid")
+    @SetJIPipeDocumentation(name = "Grid color", description = "Color of the grid")
     @JIPipeParameter("grid-color")
     public Color getGridColor() {
         return gridColor;
@@ -340,7 +340,7 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
         this.gridColor = gridColor;
     }
 
-    @JIPipeDocumentation(name = "Show legend", description = "If enabled, a legend is shown.")
+    @SetJIPipeDocumentation(name = "Show legend", description = "If enabled, a legend is shown.")
     @JIPipeParameter("with-legend")
     public boolean isWithLegend() {
         return withLegend;
@@ -351,7 +351,7 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
         this.withLegend = withLegend;
     }
 
-    @JIPipeDocumentation(name = "Title font size", description = "Font size of the title")
+    @SetJIPipeDocumentation(name = "Title font size", description = "Font size of the title")
     @JIPipeParameter("title-font-size")
     public int getTitleFontSize() {
         return titleFontSize;
@@ -365,7 +365,7 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
         return true;
     }
 
-    @JIPipeDocumentation(name = "Legend font size", description = "The font size of legends")
+    @SetJIPipeDocumentation(name = "Legend font size", description = "The font size of legends")
     @JIPipeParameter("legend-font-size")
     public int getLegendFontSize() {
         return legendFontSize;
@@ -376,7 +376,7 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
         this.legendFontSize = legendFontSize;
     }
 
-    @JIPipeDocumentation(name = "Color map", description = "Determines how elements are colored")
+    @SetJIPipeDocumentation(name = "Color map", description = "Determines how elements are colored")
     @JIPipeParameter("color-map")
     public ColorMap getColorMap() {
         return colorMap;
@@ -387,7 +387,7 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
         this.colorMap = colorMap;
     }
 
-    @JIPipeDocumentation(name = "Use custom color map", description = "If enabled, you can define a custom color map")
+    @SetJIPipeDocumentation(name = "Use custom color map", description = "If enabled, you can define a custom color map")
     @JIPipeParameter("use-custom-color-map")
     public boolean isUseCustomColorMap() {
         return useCustomColorMap;
@@ -399,7 +399,7 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
         emitParameterUIChangedEvent();
     }
 
-    @JIPipeDocumentation(name = "Custom color map", description = "Add colors into this list to define a custom color map")
+    @SetJIPipeDocumentation(name = "Custom color map", description = "Add colors into this list to define a custom color map")
     @JIPipeParameter("custom-color-map")
     public ColorListParameter getCustomColorMap() {
         return customColorMap;
@@ -477,12 +477,12 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         if (exportWidth <= 0) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context, "Export width is too small!", "The export width must be at least 1"));
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext, "Export width is too small!", "The export width must be at least 1"));
         }
         if (exportHeight <= 0) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context, "Export height is too small!", "The export height must be at least 1"));
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext, "Export height is too small!", "The export height must be at least 1"));
         }
     }
 

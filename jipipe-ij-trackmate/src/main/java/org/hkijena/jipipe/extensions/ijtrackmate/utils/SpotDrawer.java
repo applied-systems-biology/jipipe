@@ -20,7 +20,7 @@ import fiji.plugin.trackmate.visualization.hyperstack.SpotOverlay;
 import ij.ImagePlus;
 import ij.gui.ImageCanvas;
 import org.apache.commons.lang3.Range;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
@@ -127,7 +127,7 @@ public class SpotDrawer extends AbstractJIPipeParameterCollection {
         graphics2D.translate(-renderArea.x, -renderArea.y);
     }
 
-    @JIPipeDocumentation(name = "Fill spots", description = "If enabled, the spots are drawn filled")
+    @SetJIPipeDocumentation(name = "Fill spots", description = "If enabled, the spots are drawn filled")
     @JIPipeParameter("fill-spots")
     public boolean isFillSpots() {
         return fillSpots;
@@ -138,7 +138,7 @@ public class SpotDrawer extends AbstractJIPipeParameterCollection {
         this.fillSpots = fillSpots;
     }
 
-    @JIPipeDocumentation(name = "Stroke width", description = "Width of the spot stroke")
+    @SetJIPipeDocumentation(name = "Stroke width", description = "Width of the spot stroke")
     @JIPipeParameter("stroke-width")
     public int getStrokeWidth() {
         return strokeWidth;
@@ -149,7 +149,7 @@ public class SpotDrawer extends AbstractJIPipeParameterCollection {
         this.strokeWidth = strokeWidth;
     }
 
-    @JIPipeDocumentation(name = "Stroke uniform color", description = "The default color of a spot. Has no effect if the color is calculated from a feature.")
+    @SetJIPipeDocumentation(name = "Stroke uniform color", description = "The default color of a spot. Has no effect if the color is calculated from a feature.")
     @JIPipeParameter("stroke-color")
     public Color getStrokeColor() {
         return strokeColor;
@@ -160,7 +160,7 @@ public class SpotDrawer extends AbstractJIPipeParameterCollection {
         this.strokeColor = strokeColor;
     }
 
-    @JIPipeDocumentation(name = "Stroke color", description = "Determines how the stroke is colored")
+    @SetJIPipeDocumentation(name = "Stroke color", description = "Determines how the stroke is colored")
     @JIPipeParameter("uniform-stroke-color")
     @BooleanParameterSettings(comboBoxStyle = true, trueLabel = "Uniform color", falseLabel = "Feature")
     public boolean isUniformStrokeColor() {
@@ -172,7 +172,7 @@ public class SpotDrawer extends AbstractJIPipeParameterCollection {
         this.uniformStrokeColor = uniformStrokeColor;
     }
 
-    @JIPipeDocumentation(name = "Stroke color feature", description = "Determines the feature that is utilized for coloring the stroke. Only takes effect if 'Stroke color' is set to 'Feature'")
+    @SetJIPipeDocumentation(name = "Stroke color feature", description = "Determines the feature that is utilized for coloring the stroke. Only takes effect if 'Stroke color' is set to 'Feature'")
     @JIPipeParameter("stroke-color-feature")
     public SpotFeature getStrokeColorFeature() {
         return strokeColorFeature;
@@ -183,7 +183,7 @@ public class SpotDrawer extends AbstractJIPipeParameterCollection {
         this.strokeColorFeature = strokeColorFeature;
     }
 
-    @JIPipeDocumentation(name = "Draw label", description = "Please use the following settings to modify how labels are drawn")
+    @SetJIPipeDocumentation(name = "Draw label", description = "Please use the following settings to modify how labels are drawn")
     @JIPipeParameter("label-settings")
     public LabelSettings getLabelSettings() {
         return labelSettings;
@@ -203,7 +203,7 @@ public class SpotDrawer extends AbstractJIPipeParameterCollection {
             this.drawnFeature = new SpotFeature(other.drawnFeature);
         }
 
-        @JIPipeDocumentation(name = "Label content", description = "Determines the content of the label")
+        @SetJIPipeDocumentation(name = "Label content", description = "Determines the content of the label")
         @JIPipeParameter("draw-name")
         @BooleanParameterSettings(comboBoxStyle = true, trueLabel = "Spot name", falseLabel = "Spot feature")
         public boolean isDrawName() {
@@ -215,7 +215,7 @@ public class SpotDrawer extends AbstractJIPipeParameterCollection {
             this.drawName = drawName;
         }
 
-        @JIPipeDocumentation(name = "Displayed feature", description = "If 'Label content' is set to 'Spot feature', determines the feature to be displayed in the label")
+        @SetJIPipeDocumentation(name = "Displayed feature", description = "If 'Label content' is set to 'Spot feature', determines the feature to be displayed in the label")
         @JIPipeParameter("drawn-feature")
         public SpotFeature getDrawnFeature() {
             return drawnFeature;

@@ -31,8 +31,8 @@ import ij.plugin.filter.Filler;
 import ij.plugin.frame.RoiManager;
 import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeCommonData;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeCommonData;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
@@ -72,11 +72,11 @@ import java.util.zip.ZipOutputStream;
 /**
  * Contains {@link Roi}
  */
-@JIPipeDocumentation(name = "ROI list", description = "Collection of ROI")
+@SetJIPipeDocumentation(name = "ROI list", description = "Collection of ROI")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains one file in *.roi or *.zip format. " +
         "*.roi is a single ImageJ ROI. *.zip contains multiple ImageJ ROI. Please note that if multiple *.roi/*.zip are present, only " +
         "one will be loaded.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/roi-list-data.schema.json")
-@JIPipeCommonData
+@LabelAsJIPipeCommonData
 public class ROIListData extends ArrayList<Roi> implements JIPipeData {
 
     /**

@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.cellpose.parameters;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
@@ -30,7 +30,7 @@ public class CellposeTrainingTweaksSettings extends AbstractJIPipeParameterColle
         this.generateConnectedComponents = other.generateConnectedComponents;
     }
 
-    @JIPipeDocumentation(name = "Weight decay", description = "The weight decay")
+    @SetJIPipeDocumentation(name = "Weight decay", description = "The weight decay")
     @JIPipeParameter("weight-decay")
     public double getWeightDecay() {
         return weightDecay;
@@ -41,7 +41,7 @@ public class CellposeTrainingTweaksSettings extends AbstractJIPipeParameterColle
         this.weightDecay = weightDecay;
     }
 
-    @JIPipeDocumentation(name = "Generate connected components", description = "If enabled, JIPipe will apply a connected component labeling to the annotated masks. If disabled, Cellpose is provided with " +
+    @SetJIPipeDocumentation(name = "Generate connected components", description = "If enabled, JIPipe will apply a connected component labeling to the annotated masks. If disabled, Cellpose is provided with " +
             "the labels as-is, which might result in issues with the training.")
     @JIPipeParameter("generate-connected-components")
     public boolean isGenerateConnectedComponents() {
@@ -53,7 +53,7 @@ public class CellposeTrainingTweaksSettings extends AbstractJIPipeParameterColle
         this.generateConnectedComponents = generateConnectedComponents;
     }
 
-    @JIPipeDocumentation(name = "Minimum number of labels per image", description = "Minimum number of masks an image must have to use in training set. " +
+    @SetJIPipeDocumentation(name = "Minimum number of labels per image", description = "Minimum number of masks an image must have to use in training set. " +
             "This value is by default 5 in the original Cellpose tool.")
     @JIPipeParameter("min-train-masks")
     public int getMinTrainMasks() {
@@ -65,7 +65,7 @@ public class CellposeTrainingTweaksSettings extends AbstractJIPipeParameterColle
         this.minTrainMasks = minTrainMasks;
     }
 
-    @JIPipeDocumentation(name = "Learning rate")
+    @SetJIPipeDocumentation(name = "Learning rate")
     @JIPipeParameter("learning-rate")
     public double getLearningRate() {
         return learningRate;
@@ -76,7 +76,7 @@ public class CellposeTrainingTweaksSettings extends AbstractJIPipeParameterColle
         this.learningRate = learningRate;
     }
 
-    @JIPipeDocumentation(name = "Batch size")
+    @SetJIPipeDocumentation(name = "Batch size")
     @JIPipeParameter("batch-size")
     public int getBatchSize() {
         return batchSize;
@@ -87,7 +87,7 @@ public class CellposeTrainingTweaksSettings extends AbstractJIPipeParameterColle
         this.batchSize = batchSize;
     }
 
-    @JIPipeDocumentation(name = "Use residual connections")
+    @SetJIPipeDocumentation(name = "Use residual connections")
     @JIPipeParameter("use-residual-connections")
     public boolean isUseResidualConnections() {
         return useResidualConnections;
@@ -98,7 +98,7 @@ public class CellposeTrainingTweaksSettings extends AbstractJIPipeParameterColle
         this.useResidualConnections = useResidualConnections;
     }
 
-    @JIPipeDocumentation(name = "Use style vector")
+    @SetJIPipeDocumentation(name = "Use style vector")
     @JIPipeParameter("use-style-vector")
     public boolean isUseStyleVector() {
         return useStyleVector;
@@ -109,7 +109,7 @@ public class CellposeTrainingTweaksSettings extends AbstractJIPipeParameterColle
         this.useStyleVector = useStyleVector;
     }
 
-    @JIPipeDocumentation(name = "Concatenate downsampled layers",
+    @SetJIPipeDocumentation(name = "Concatenate downsampled layers",
             description = "Concatenate downsampled layers with upsampled layers (off by default which means they are added)")
     @JIPipeParameter("concatenate-downsampled-layers")
     public boolean isConcatenateDownsampledLayers() {

@@ -75,7 +75,7 @@ public abstract class ListParameter<T> extends ArrayList<T> implements JIPipeVal
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         if (JIPipeValidatable.class.isAssignableFrom(contentClass)) {
             for (int i = 0; i < size(); i++) {
                 JIPipeValidatable validatable = (JIPipeValidatable) get(i);

@@ -16,8 +16,7 @@ package org.hkijena.jipipe.api.nodes;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeFunctionallyComparable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -53,7 +52,6 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
     private boolean skipped = false;
     private boolean passThrough = false;
     private RuntimePartitionReferenceParameter runtimePartition = new RuntimePartitionReferenceParameter();
-    private JIPipeFixedThreadPool threadPool;
     private final JIPipeCustomExpressionVariablesParameter customExpressionVariables;
 
     /**
@@ -95,24 +93,25 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
+    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         if (passThrough && canAutoPassThrough()) {
             progressInfo.log("Data passed through to output");
-            runPassThrough(progressInfo);
+            runPassThrough(runContext, progressInfo);
         }
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
 
     }
 
     /**
      * Runs the pass through. Override this for custom implementations if you want
      *
+     * @param runContext the context of the running operation
      * @param progressInfo the progress
      */
-    protected void runPassThrough(JIPipeProgressInfo progressInfo) {
+    protected void runPassThrough(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         if (!canAutoPassThrough()) {
             throw new RuntimeException("Auto pass through not allowed!");
         }
@@ -166,7 +165,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
         this.skipped = skipped;
     }
 
-    @JIPipeDocumentation(name = "Enabled", description = "If disabled, this algorithm will be skipped in a run. " +
+    @SetJIPipeDocumentation(name = "Enabled", description = "If disabled, this algorithm will be skipped in a run. " +
             "Please note that this will also disable all algorithms dependent on this algorithm.")
     @JIPipeParameter(value = "jipipe:algorithm:enabled", pinned = true)
     public boolean isEnabled() {
@@ -178,7 +177,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
         this.enabled = enabled;
     }
 
-    @JIPipeDocumentation(name = "Partition", description = "Allows to move the node into a different runtime partition, which determine how the workload is executed.")
+    @SetJIPipeDocumentation(name = "Partition", description = "Allows to move the node into a different runtime partition, which determine how the workload is executed.")
     @JIPipeParameter(value = "jipipe:algorithm:runtime-partition", pinned = true)
     public RuntimePartitionReferenceParameter getRuntimePartition() {
         return runtimePartition;
@@ -189,7 +188,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
         this.runtimePartition = runtimePartition;
     }
 
-    @JIPipeDocumentation(name = "Pass through", description = "If enabled, the algorithm will pass the input data directly to the output data without any processing. " +
+    @SetJIPipeDocumentation(name = "Pass through", description = "If enabled, the algorithm will pass the input data directly to the output data without any processing. " +
             "This is different from enabling/disabling the algorithm as this will not disable dependent algorithms.\n" +
             "Please note that setting this parameter via adaptive parameters (if available) does not always yield the expected result. " +
             "The reason behind this is that pass-through is not trivial for certain nodes. We recommend to use a split node if node execution should be made adaptive.")
@@ -203,7 +202,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
         this.passThrough = passThrough;
     }
 
-    @JIPipeDocumentation(name = "Custom variables", description = "Here you can add parameters that will be included into the expressions as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(custom, \"[key]\")</code>.")
+    @SetJIPipeDocumentation(name = "Custom variables", description = "Here you can add parameters that will be included into the expressions as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(custom, \"[key]\")</code>.")
     @JIPipeParameter(value = "jipipe:algorithm:custom-expression-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterSerializationMode.Object)
     public JIPipeCustomExpressionVariablesParameter getDefaultCustomExpressionVariables() {
@@ -359,20 +358,6 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
      */
     public boolean isPostprocessor() {
         return false;
-    }
-
-    public JIPipeFixedThreadPool getThreadPool() {
-        return threadPool;
-    }
-
-    /**
-     * Sets the thread pool.
-     * Depending on the implementation, the pool is just ignored.
-     *
-     * @param threadPool can be null (forces single-threaded run)
-     */
-    public void setThreadPool(JIPipeFixedThreadPool threadPool) {
-        this.threadPool = threadPool;
     }
 
     /**

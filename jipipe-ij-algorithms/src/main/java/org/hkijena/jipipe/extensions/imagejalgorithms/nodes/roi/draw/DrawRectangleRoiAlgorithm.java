@@ -2,8 +2,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.draw;
 
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -20,11 +20,11 @@ import org.hkijena.jipipe.extensions.parameters.library.roi.Margin;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 
-@JIPipeDocumentation(name = "Draw rectangular ROI", description = "Draws one or multiple rectangular ROI. Also supports the drawing of rounded rectangles.")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", description = "Optional existing list of ROI. The new ROI will be appended to it.", optional = true, autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", description = "Reference image for the positioning. If not set, the area covered by the existing ROI are used (or width=0, height=0)", optional = true, autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Draw")
+@SetJIPipeDocumentation(name = "Draw rectangular ROI", description = "Draws one or multiple rectangular ROI. Also supports the drawing of rounded rectangles.")
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", description = "Optional existing list of ROI. The new ROI will be appended to it.", optional = true, create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", description = "Reference image for the positioning. If not set, the area covered by the existing ROI are used (or width=0, height=0)", optional = true, create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", create = true)
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Draw")
 public class DrawRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final ROIProperties roiProperties;
@@ -63,7 +63,7 @@ public class DrawRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
         // Generate variables
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
@@ -119,13 +119,13 @@ public class DrawRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), target, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "ROI properties", description = "Use the following settings to customize the generated ROI")
+    @SetJIPipeDocumentation(name = "ROI properties", description = "Use the following settings to customize the generated ROI")
     @JIPipeParameter("roi-properties")
     public ROIProperties getRoiProperties() {
         return roiProperties;
     }
 
-    @JIPipeDocumentation(name = "Rectangles", description = "The rectangular ROI to be drawn")
+    @SetJIPipeDocumentation(name = "Rectangles", description = "The rectangular ROI to be drawn")
     @JIPipeParameter("definitions")
     public Margin.List getRectangles() {
         return rectangles;
@@ -136,7 +136,7 @@ public class DrawRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.rectangles = rectangles;
     }
 
-    @JIPipeDocumentation(name = "Center at location", description = "If enabled, the calculated (x,y) location will be the center of the object")
+    @SetJIPipeDocumentation(name = "Center at location", description = "If enabled, the calculated (x,y) location will be the center of the object")
     @JIPipeParameter("center")
     public boolean isCenter() {
         return center;
@@ -147,7 +147,7 @@ public class DrawRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.center = center;
     }
 
-    @JIPipeDocumentation(name = "Arc width", description = "If set to a value larger than zero, a rounded rectangle is created")
+    @SetJIPipeDocumentation(name = "Arc width", description = "If set to a value larger than zero, a rounded rectangle is created")
     @JIPipeParameter("arc-width")
     public int getArcWidth() {
         return arcWidth;
@@ -158,7 +158,7 @@ public class DrawRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.arcWidth = arcWidth;
     }
 
-    @JIPipeDocumentation(name = "Arc height", description = "If set to a value larger than zero, a rounded rectangle is created")
+    @SetJIPipeDocumentation(name = "Arc height", description = "If set to a value larger than zero, a rounded rectangle is created")
     @JIPipeParameter("arc-height")
     public int getArcHeight() {
         return arcHeight;

@@ -5,7 +5,7 @@ import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.LogOutputStream;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.lang3.SystemUtils;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -30,7 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@JIPipeDocumentation(name = "Install R", description = "Downloads and installs R")
+@SetJIPipeDocumentation(name = "Install R", description = "Downloads and installs R")
 public class REnvInstaller extends ExternalEnvironmentInstaller {
 
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
@@ -208,7 +208,7 @@ public class REnvInstaller extends ExternalEnvironmentInstaller {
             installationPath = Paths.get("jipipe").resolve("r");
         }
 
-        @JIPipeDocumentation(name = "Download URL", description = "This URL is used to download R. If you change it, please ensure that URL " +
+        @SetJIPipeDocumentation(name = "Download URL", description = "This URL is used to download R. If you change it, please ensure that URL " +
                 "is the correct one for your current operating system. You might want to use a newer version. Just replace it " +
                 "with the link from this site: https://cloud.r-project.org/bin/windows/base/")
         @JIPipeParameter("r-download-url")
@@ -222,7 +222,7 @@ public class REnvInstaller extends ExternalEnvironmentInstaller {
             this.RDownloadURL = RDownloadURL;
         }
 
-        @JIPipeDocumentation(name = "Installation path", description = "The folder where R is installed. Please choose an non-existing or empty folder.")
+        @SetJIPipeDocumentation(name = "Installation path", description = "The folder where R is installed. Please choose an non-existing or empty folder.")
         @JIPipeParameter("installation-path")
         public Path getInstallationPath() {
             return installationPath;
@@ -233,7 +233,7 @@ public class REnvInstaller extends ExternalEnvironmentInstaller {
             this.installationPath = installationPath;
         }
 
-        @JIPipeDocumentation(name = "Use custom installer", description = "Instead of downloading R, use a custom installer executable.")
+        @SetJIPipeDocumentation(name = "Use custom installer", description = "Instead of downloading R, use a custom installer executable.")
         @JIPipeParameter("custom-installer-path")
         public OptionalPathParameter getCustomInstallerPath() {
             return customInstallerPath;
@@ -244,7 +244,7 @@ public class REnvInstaller extends ExternalEnvironmentInstaller {
             this.customInstallerPath = customInstallerPath;
         }
 
-        @JIPipeDocumentation(name = "Name", description = "Name of the created environment")
+        @SetJIPipeDocumentation(name = "Name", description = "Name of the created environment")
         @JIPipeParameter("name")
         public String getName() {
             return name;

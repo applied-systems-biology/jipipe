@@ -14,12 +14,11 @@
 package org.hkijena.jipipe.ui.grapheditor.algorithmpipeline;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.history.JIPipeDedicatedGraphHistoryJournal;
@@ -264,9 +263,9 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
                         continue;
                     if (!actionAnnotation.showInContextMenu())
                         continue;
-                    JIPipeDocumentation documentationAnnotation = method.getAnnotation(JIPipeDocumentation.class);
+                    SetJIPipeDocumentation documentationAnnotation = method.getAnnotation(SetJIPipeDocumentation.class);
                     if (documentationAnnotation == null) {
-                        documentationAnnotation = new JIPipeDefaultDocumentation(method.getName(), "");
+                        documentationAnnotation = new JIPipeDocumentation(method.getName(), "");
                     }
                     URL iconURL;
                     if (UIUtils.DARK_THEME && !StringUtils.isNullOrEmpty(actionAnnotation.iconDarkURL())) {
@@ -332,8 +331,8 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
                 new DisablePassThroughNodeUIContextAction(),
                 new EnableSaveOutputsNodeUIContextAction(),
                 new DisableSaveOutputsNodeUIContextAction(),
-                new EnableVirtualOutputsNodeUIContextAction(),
-                new DisableVirtualOutputNodeUIContextAction(),
+//                new EnableVirtualOutputsNodeUIContextAction(),
+//                new DisableVirtualOutputNodeUIContextAction(),
                 new DeleteNodeUIContextAction(),
                 NodeUIContextAction.SEPARATOR,
                 new SendToForegroundUIContextAction(),
@@ -376,23 +375,23 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
         JIPipeGraphEditorMinimap minimap = new JIPipeGraphEditorMinimap(this);
         splitPane.setTopComponent(minimap);
 
-        DocumentTabPane bottomPanel = new DocumentTabPane(false);
+        DocumentTabPane bottomPanel = new DocumentTabPane(false, DocumentTabPane.TabPlacement.Right);
 
         MarkdownReader markdownReader = new MarkdownReader(false);
         markdownReader.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-graph.md", new HashMap<>()));
-        bottomPanel.addTab("Quick guide", UIUtils.getIconFromResources("actions/help.png"), markdownReader, DocumentTabPane.CloseMode.withoutCloseButton);
+        bottomPanel.addTab("Quick guide", UIUtils.getIcon32FromResources("actions/help.png"), markdownReader, DocumentTabPane.CloseMode.withoutCloseButton);
 
-        bottomPanel.addTab("Available nodes", UIUtils.getIconFromResources("actions/graph-node-add.png"),
+        bottomPanel.addTab("Add nodes", UIUtils.getIcon32FromResources("actions/graph-node-add.png"),
                 new NodeToolBox(getWorkbench(), true), DocumentTabPane.CloseMode.withoutCloseButton);
 
-        bottomPanel.addTab("Node templates", UIUtils.getIconFromResources("actions/favorite.png"),
-                new NodeTemplateBox(getWorkbench(), true), DocumentTabPane.CloseMode.withoutCloseButton);
+        bottomPanel.addTab("Templates", UIUtils.getIcon32FromResources("actions/star.png"),
+                new NodeTemplateBox(getWorkbench(), true, null, null), DocumentTabPane.CloseMode.withoutCloseButton);
 
-        bottomPanel.addTab("Bookmarks", UIUtils.getIconFromResources("actions/bookmarks.png"),
-                new BookmarkListPanel(getWorkbench(), getGraph(), this), DocumentTabPane.CloseMode.withoutCloseButton);
+        bottomPanel.addTab("Bookmarks", UIUtils.getIcon32FromResources("actions/bookmarks.png"),
+                new BookmarkListPanel(getWorkbench(), getGraph(), this, null), DocumentTabPane.CloseMode.withoutCloseButton);
 
-        bottomPanel.addTab("Journal",
-                UIUtils.getIconFromResources("actions/edit-undo-history.png"),
+        bottomPanel.addTab("History",
+                UIUtils.getIcon32FromResources("actions/edit-undo-history.png"),
                 new HistoryJournalUI(getHistoryJournal()),
                 DocumentTabPane.CloseMode.withoutCloseButton);
 

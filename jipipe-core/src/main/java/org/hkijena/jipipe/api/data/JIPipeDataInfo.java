@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeCitation;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
@@ -60,7 +60,7 @@ public class JIPipeDataInfo implements Comparable<JIPipeDataInfo> {
         this.storageDocumentation = JIPipeData.getStorageDocumentation(dataClass);
         this.storageSchema = JIPipeData.getStorageSchema(dataClass);
         // Load additional citations
-        for (JIPipeCitation citation : dataClass.getAnnotationsByType(JIPipeCitation.class)) {
+        for (AddJIPipeCitation citation : dataClass.getAnnotationsByType(AddJIPipeCitation.class)) {
             getAdditionalCitations().add(citation.value());
         }
     }

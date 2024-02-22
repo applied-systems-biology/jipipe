@@ -2,8 +2,8 @@ package org.hkijena.jipipe.api.data;
 
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHeavyData;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -41,10 +41,10 @@ import java.util.List;
 import java.util.*;
 import java.util.concurrent.locks.StampedLock;
 
-@JIPipeDocumentation(name = "Data table", description = "A table of data")
+@SetJIPipeDocumentation(name = "Data table", description = "A table of data")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Stores a data table in the standard JIPipe format (data-table.json plus numeric slot folders)",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-data-table.schema.json")
-@JIPipeHeavyData
+@LabelAsJIPipeHeavyData
 public class JIPipeDataTable implements JIPipeData, TableModel {
     private final StampedLock stampedLock = new StampedLock();
     private final List<TableModelListener> listeners = new ArrayList<>();

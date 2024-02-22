@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.metadata;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -19,11 +19,11 @@ import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import java.util.HashMap;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Set 3D ROI metadata from table", description = "Sets the 3D ROI metadata (property map) from a table. The table either has a column that indicates the ROI index or contains one row per ROI (row index is the ROI index)")
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Metadata")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Metadata", description = "Table of ROI metadata, one row per ROI", autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Set 3D ROI metadata from table", description = "Sets the 3D ROI metadata (property map) from a table. The table either has a column that indicates the ROI index or contains one row per ROI (row index is the ROI index)")
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Metadata")
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Metadata", description = "Table of ROI metadata, one row per ROI", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class SetROI3DMetadataFromTableAlgorithm extends JIPipeIteratingAlgorithm {
 
     private TableColumnSourceExpressionParameter roiIndexColumn = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.Generate, "row");
@@ -42,7 +42,7 @@ public class SetROI3DMetadataFromTableAlgorithm extends JIPipeIteratingAlgorithm
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROI3DListData rois = new ROI3DListData(iterationStep.getInputData("ROI", ROI3DListData.class, progressInfo));
         ResultsTableData metadata = iterationStep.getInputData("Metadata", ResultsTableData.class, progressInfo);
         TableColumn indexColumn = roiIndexColumn.pickOrGenerateColumn(metadata);
@@ -67,7 +67,7 @@ public class SetROI3DMetadataFromTableAlgorithm extends JIPipeIteratingAlgorithm
         iterationStep.addOutputData(getFirstOutputSlot(), rois, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Ignore missing ROI indices", description = "If enabled, missing ROI indices are ignored (a log message is written)")
+    @SetJIPipeDocumentation(name = "Ignore missing ROI indices", description = "If enabled, missing ROI indices are ignored (a log message is written)")
     @JIPipeParameter("ignore-missing-roi-indices")
     public boolean isIgnoreMissingRoiIndices() {
         return ignoreMissingRoiIndices;
@@ -78,7 +78,7 @@ public class SetROI3DMetadataFromTableAlgorithm extends JIPipeIteratingAlgorithm
         this.ignoreMissingRoiIndices = ignoreMissingRoiIndices;
     }
 
-    @JIPipeDocumentation(name = "ROI index", description = "Determines how the table column is associated to the index of the ROI (zero-based). Defaults to assuming that the row index is the ROI index.")
+    @SetJIPipeDocumentation(name = "ROI index", description = "Determines how the table column is associated to the index of the ROI (zero-based). Defaults to assuming that the row index is the ROI index.")
     @JIPipeParameter("roi-index-column")
     public TableColumnSourceExpressionParameter getRoiIndexColumn() {
         return roiIndexColumn;
@@ -89,7 +89,7 @@ public class SetROI3DMetadataFromTableAlgorithm extends JIPipeIteratingAlgorithm
         this.roiIndexColumn = roiIndexColumn;
     }
 
-    @JIPipeDocumentation(name = "Clear properties before write", description = "If enabled, all existing ROI properties are deleted before writing the new properties")
+    @SetJIPipeDocumentation(name = "Clear properties before write", description = "If enabled, all existing ROI properties are deleted before writing the new properties")
     @JIPipeParameter("clear-before-write")
     public boolean isClearBeforeWrite() {
         return clearBeforeWrite;

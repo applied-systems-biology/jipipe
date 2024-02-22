@@ -21,7 +21,7 @@ public class JIPipeProjectDirectories extends AbstractJIPipeParameterCollection 
 
     private ParameterCollectionList directories = ParameterCollectionList.containingCollection(DirectoryEntry.class);
 
-    @JIPipeDocumentation(name = "User directories", description = "A list of directories that can be used in various nodes")
+    @SetJIPipeDocumentation(name = "User directories", description = "A list of directories that can be used in various nodes")
     @JIPipeParameter("user-directories")
     @JsonGetter("user-directories")
     @PathParameterSettings(pathMode = PathType.DirectoriesOnly, ioMode = PathIOMode.Open)
@@ -83,7 +83,7 @@ public class JIPipeProjectDirectories extends AbstractJIPipeParameterCollection 
             this.path = other.path;
         }
 
-        @JIPipeDocumentation(name = "Key", description = "The key that will be used to access the directory. Cannot be empty.")
+        @SetJIPipeDocumentation(name = "Key", description = "The key that will be used to access the directory. Cannot be empty.")
         @JIPipeParameter(value = "key", uiOrder = -100)
         public String getKey() {
             return key;
@@ -94,7 +94,7 @@ public class JIPipeProjectDirectories extends AbstractJIPipeParameterCollection 
             this.key = key;
         }
 
-        @JIPipeDocumentation(name = "Path", description = "The path that will be referenced")
+        @SetJIPipeDocumentation(name = "Path", description = "The path that will be referenced")
         @JIPipeParameter(value = "path", uiOrder = -90)
         @PathParameterSettings(pathMode = PathType.DirectoriesOnly, ioMode = PathIOMode.Open)
         public Path getPath() {

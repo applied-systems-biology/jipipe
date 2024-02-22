@@ -53,7 +53,7 @@ public class DataBatchUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void initialize() {
-        setBorder(BorderFactory.createLineBorder(Color.GRAY, 1, true));
+        setBorder(UIUtils.createControlBorder());
         setLayout(new BorderLayout());
         JLabel iterationStepName = new JLabel("Data batch");
         iterationStepName.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));

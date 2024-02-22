@@ -5,8 +5,8 @@ import gnu.trove.list.array.TFloatArrayList;
 import gnu.trove.map.hash.TDoubleObjectHashMap;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -34,13 +34,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Key/Value threshold statistics 5D (fast averages)", description = "This node consumes two images with the same dimensions that respectively contain the keys and value components of each pixel position. " +
+@SetJIPipeDocumentation(name = "Key/Value threshold statistics 5D (fast averages)", description = "This node consumes two images with the same dimensions that respectively contain the keys and value components of each pixel position. " +
         "The set of value pixels is partitioned into two sets based on whether the key is lower, or equal/higher than the currently processed key. " +
         "This is a fast version of 'Key/Value threshold statistics 5D' that only produces the number of pixels in each partition, the sum of values, as well as the average.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Key", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Value", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Key", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Value", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class KeyValueThresholdPartitionAveragesGenerator extends JIPipeIteratingAlgorithm {
     private ImageROITargetArea sourceArea = ImageROITargetArea.WholeImage;
     private OptionalStringParameter keyColumnName = new OptionalStringParameter("key", true);
@@ -70,7 +70,7 @@ public class KeyValueThresholdPartitionAveragesGenerator extends JIPipeIterating
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus keyImage = iterationStep.getInputData("Key", ImagePlusGreyscale32FData.class, progressInfo).getImage();
         ImagePlus valueImage = iterationStep.getInputData("Value", ImagePlusGreyscale32FData.class, progressInfo).getImage();
 
@@ -209,7 +209,7 @@ public class KeyValueThresholdPartitionAveragesGenerator extends JIPipeIterating
         return ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(sourceArea, width, height, rois, mask, sliceIndex);
     }
 
-    @JIPipeDocumentation(name = "Extract values from ...", description = "Determines from which image areas the pixel values used for extracting the values")
+    @SetJIPipeDocumentation(name = "Extract values from ...", description = "Determines from which image areas the pixel values used for extracting the values")
     @JIPipeParameter("source-area")
     public ImageROITargetArea getSourceArea() {
         return sourceArea;
@@ -221,7 +221,7 @@ public class KeyValueThresholdPartitionAveragesGenerator extends JIPipeIterating
         ImageJAlgorithmUtils.updateROIOrMaskSlot(sourceArea, getSlotConfiguration());
     }
 
-    @JIPipeDocumentation(name = "Column name: key", description = "Column name for the key")
+    @SetJIPipeDocumentation(name = "Column name: key", description = "Column name for the key")
     @JIPipeParameter("key-column-name")
     public OptionalStringParameter getKeyColumnName() {
         return keyColumnName;
@@ -232,7 +232,7 @@ public class KeyValueThresholdPartitionAveragesGenerator extends JIPipeIterating
         this.keyColumnName = keyColumnName;
     }
 
-    @JIPipeDocumentation(name = "Column name: class 0 count", description = "Column name for the count of class 0 values")
+    @SetJIPipeDocumentation(name = "Column name: class 0 count", description = "Column name for the count of class 0 values")
     @JIPipeParameter("class0-count-column-name")
     public OptionalStringParameter getClass0CountColumnName() {
         return class0CountColumnName;
@@ -243,7 +243,7 @@ public class KeyValueThresholdPartitionAveragesGenerator extends JIPipeIterating
         this.class0CountColumnName = class0CountColumnName;
     }
 
-    @JIPipeDocumentation(name = "Column name: class 0 sum", description = "Column name for the sum of class 0 values")
+    @SetJIPipeDocumentation(name = "Column name: class 0 sum", description = "Column name for the sum of class 0 values")
     @JIPipeParameter("class0-sum-column-name")
     public OptionalStringParameter getClass0SumColumnName() {
         return class0SumColumnName;
@@ -254,7 +254,7 @@ public class KeyValueThresholdPartitionAveragesGenerator extends JIPipeIterating
         this.class0SumColumnName = class0SumColumnName;
     }
 
-    @JIPipeDocumentation(name = "Column name: class 0 mean", description = "Column name for the mean of class 0 values")
+    @SetJIPipeDocumentation(name = "Column name: class 0 mean", description = "Column name for the mean of class 0 values")
     @JIPipeParameter("class0-mean-column-name")
     public OptionalStringParameter getClass0MeanColumnName() {
         return class0MeanColumnName;
@@ -265,7 +265,7 @@ public class KeyValueThresholdPartitionAveragesGenerator extends JIPipeIterating
         this.class0MeanColumnName = class0MeanColumnName;
     }
 
-    @JIPipeDocumentation(name = "Column name: class 1 count", description = "Column name for the count of class 1 values")
+    @SetJIPipeDocumentation(name = "Column name: class 1 count", description = "Column name for the count of class 1 values")
     @JIPipeParameter("class1-count-column-name")
     public OptionalStringParameter getClass1CountColumnName() {
         return class1CountColumnName;
@@ -276,7 +276,7 @@ public class KeyValueThresholdPartitionAveragesGenerator extends JIPipeIterating
         this.class1CountColumnName = class1CountColumnName;
     }
 
-    @JIPipeDocumentation(name = "Column name: class 1 sum", description = "Column name for the sum of class 1 values")
+    @SetJIPipeDocumentation(name = "Column name: class 1 sum", description = "Column name for the sum of class 1 values")
     @JIPipeParameter("class1-sum-column-name")
     public OptionalStringParameter getClass1SumColumnName() {
         return class1SumColumnName;
@@ -287,7 +287,7 @@ public class KeyValueThresholdPartitionAveragesGenerator extends JIPipeIterating
         this.class1SumColumnName = class1SumColumnName;
     }
 
-    @JIPipeDocumentation(name = "Column name: class 1 mean", description = "Column name for the mean of class 1 values")
+    @SetJIPipeDocumentation(name = "Column name: class 1 mean", description = "Column name for the mean of class 1 values")
     @JIPipeParameter("class1-mean-column-name")
     public OptionalStringParameter getClass1MeanColumnName() {
         return class1MeanColumnName;

@@ -16,7 +16,7 @@ package org.hkijena.jipipe.api.nodes.algorithm;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -26,6 +26,7 @@ import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.iterationstep.*;
 import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
@@ -44,8 +45,6 @@ import java.util.concurrent.Future;
  * An error is thrown if there are more than one input slots.
  */
 public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipeAlgorithm implements JIPipeParallelizedAlgorithm, JIPipeIterationStepAlgorithm {
-
-    private boolean parallelizationEnabled = true;
     private IterationStepGenerationSettings iterationStepGenerationSettings = new IterationStepGenerationSettings();
 
     /**
@@ -77,12 +76,11 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
     public JIPipeParameterlessSimpleIteratingAlgorithm(JIPipeParameterlessSimpleIteratingAlgorithm other) {
         super(other);
         this.iterationStepGenerationSettings = new IterationStepGenerationSettings(other.iterationStepGenerationSettings);
-        this.parallelizationEnabled = other.parallelizationEnabled;
         registerSubParameter(iterationStepGenerationSettings);
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
+    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         if (getDataInputSlots().size() > 1)
             throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new GraphNodeValidationReportContext(this),
                     "Too many input slots for JIPipeSimpleIteratingAlgorithm!",
@@ -90,7 +88,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
                     "Please contact the plugin developers and tell them to let algorithm '" + getInfo().getId() + "' inherit from 'JIPipeIteratingAlgorithm' instead."));
         if (isPassThrough() && canPassThrough()) {
             progressInfo.log("Data passed through to output");
-            runPassThrough(progressInfo);
+            runPassThrough(runContext, progressInfo);
             return;
         }
 
@@ -104,8 +102,9 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
             boolean withLimit = iterationStepGenerationSettings.getLimit().isEnabled();
             IntegerRange limit = iterationStepGenerationSettings.getLimit().getContent();
             TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, getFirstInputSlot().getRowCount(), new JIPipeExpressionVariablesMap())) : null;
+            JIPipeRuntimePartition partition = runContext.getGraphRun().getRuntimePartition(getRuntimePartition());
 
-            if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1) {
+            if (!supportsParallelization() || !partition.isEnableParallelization() || runContext.getThreadPool() == null || runContext.getThreadPool().getMaxThreads() <= 1) {
                 for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
                     if (withLimit && !allowedIndices.contains(i))
                         continue;
@@ -133,8 +132,11 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
                         runIteration(iterationStep, new JIPipeMutableIterationContext(rowIndex, getFirstInputSlot().getRowCount()), slotProgress);
                     });
                 }
-                progressInfo.log(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d", tasks.size(), getParallelizationBatchSize(), getThreadPool().getMaxThreads()));
-                for (Future<Exception> batch : getThreadPool().scheduleBatches(tasks, getParallelizationBatchSize())) {
+                progressInfo.log(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d",
+                        tasks.size(),
+                        getParallelizationBatchSize(),
+                        runContext.getThreadPool().getMaxThreads()));
+                for (Future<Exception> batch : runContext.getThreadPool().scheduleBatches(tasks, getParallelizationBatchSize())) {
                     try {
                         Exception exception = batch.get();
                         if (exception != null)
@@ -148,9 +150,9 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         if (getDataInputSlots().size() > 1) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context,
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext,
                     "Error in source code detected!",
                     "The developer of this algorithm chose the wrong node type. The one that was selected only supports at most one input.",
                     "Please contact the plugin developers and tell them to let algorithm '" + getInfo().getId() + "' inherit from 'JIPipeIteratingAlgorithm' instead."));
@@ -176,22 +178,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
         return 1;
     }
 
-    @JIPipeDocumentation(name = "Enable parallelization", description = "If enabled, the workload can be calculated across multiple threads to for speedup. " +
-            "Please note that the actual usage of multiple threads depend on the runtime settings and the algorithm implementation. " +
-            "We recommend to use the runtime parameters to control parallelization in most cases.")
-    @JIPipeParameter(value = "jipipe:parallelization:enabled", pinned = true)
-    @Override
-    public boolean isParallelizationEnabled() {
-        return parallelizationEnabled;
-    }
-
-    @Override
-    @JIPipeParameter("jipipe:parallelization:enabled")
-    public void setParallelizationEnabled(boolean parallelizationEnabled) {
-        this.parallelizationEnabled = parallelizationEnabled;
-    }
-
-    @JIPipeDocumentation(name = "Input management", description = "This algorithm has one input and will iterate through each row of its input and apply the workload. " +
+    @SetJIPipeDocumentation(name = "Input management", description = "This algorithm has one input and will iterate through each row of its input and apply the workload. " +
             "Use following settings to control which data batches are generated.")
     @JIPipeParameter(value = "jipipe:data-batch-generation", hidden = true)
     public IterationStepGenerationSettings getDataBatchGenerationSettings() {
@@ -253,7 +240,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
             this.limit = new OptionalIntegerRange(other.limit);
         }
 
-        @JIPipeDocumentation(name = "Limit", description = "Limits which data batches are generated. The first index is zero.")
+        @SetJIPipeDocumentation(name = "Limit", description = "Limits which data batches are generated. The first index is zero.")
         @JIPipeParameter("limit")
         public OptionalIntegerRange getLimit() {
             return limit;

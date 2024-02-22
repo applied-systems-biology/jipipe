@@ -13,7 +13,8 @@
 
 package org.hkijena.jipipe.ui.resultanalysis;
 
-import org.hkijena.jipipe.api.JIPipeProjectRun;
+import org.hkijena.jipipe.api.run.JIPipeGraphRun;
+import org.hkijena.jipipe.api.run.JIPipeLegacyProjectRun;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -32,10 +33,10 @@ import java.util.List;
 import java.util.*;
 
 /**
- * UI around an {@link JIPipeProjectRun} result
+ * UI around an {@link JIPipeLegacyProjectRun} result
  */
 public class JIPipeResultUI extends JIPipeProjectWorkbenchPanel {
-    private JIPipeProjectRun run;
+    private JIPipeGraphRun run;
     private JSplitPane splitPane;
     private JIPipeResultAlgorithmTree algorithmTree;
 
@@ -43,7 +44,7 @@ public class JIPipeResultUI extends JIPipeProjectWorkbenchPanel {
      * @param workbenchUI the workbench
      * @param run         the finished run
      */
-    public JIPipeResultUI(JIPipeProjectWorkbench workbenchUI, JIPipeProjectRun run) {
+    public JIPipeResultUI(JIPipeProjectWorkbench workbenchUI, JIPipeGraphRun run) {
         super(workbenchUI);
         this.run = run;
         initialize();
@@ -172,7 +173,7 @@ public class JIPipeResultUI extends JIPipeProjectWorkbenchPanel {
     /**
      * @return The run
      */
-    public JIPipeProjectRun getRun() {
+    public JIPipeGraphRun getRun() {
         return run;
     }
 }

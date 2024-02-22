@@ -361,11 +361,11 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         for (Map.Entry<String, JIPipeMutableParameterAccess> entry : dynamicParameters.entrySet()) {
             Object o = entry.getValue().get(Object.class);
             if (o instanceof JIPipeValidatable) {
-                report.report(new ParameterValidationReportContext(context, this, entry.getValue().getName(), entry.getKey()), (JIPipeValidatable) o);
+                report.report(new ParameterValidationReportContext(reportContext, this, entry.getValue().getName(), entry.getKey()), (JIPipeValidatable) o);
             }
         }
     }

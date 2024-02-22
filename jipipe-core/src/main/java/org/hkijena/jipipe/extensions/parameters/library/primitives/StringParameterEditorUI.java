@@ -71,7 +71,7 @@ public class StringParameterEditorUI extends JIPipeParameterEditorUI {
 
             if (multiline) {
                 JTextArea textArea = new JTextArea(stringValue);
-                textArea.setBorder(BorderFactory.createEtchedBorder());
+                textArea.setBorder(UIUtils.createControlBorder());
                 textComponent = textArea;
                 add(textArea, BorderLayout.CENTER);
             } else {
@@ -123,7 +123,7 @@ public class StringParameterEditorUI extends JIPipeParameterEditorUI {
         JTextComponent textComponent;
         if (multiline) {
             JTextArea textArea = new JTextArea(stringValue);
-            textArea.setBorder(BorderFactory.createEtchedBorder());
+            textArea.setBorder(UIUtils.createControlBorder());
             textComponent = textArea;
         } else {
             JLabel iconLabel = null;

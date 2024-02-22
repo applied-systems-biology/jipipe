@@ -15,7 +15,7 @@
 package org.hkijena.jipipe.extensions.cellpose.installers;
 
 import org.apache.commons.lang3.SystemUtils;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.EasyInstallExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -34,7 +34,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Install Cellpose (EasyInstaller)", description = "Downloads a pre-packaged version of Cellpose")
+@SetJIPipeDocumentation(name = "Install Cellpose (EasyInstaller)", description = "Downloads a pre-packaged version of Cellpose")
 @ExternalEnvironmentInfo(category = "Cellpose")
 public class CellposeEasyInstaller extends EasyInstallExternalEnvironmentInstaller<PythonEnvironment> {
     /**

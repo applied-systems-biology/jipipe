@@ -17,8 +17,8 @@ import ij.ImagePlus;
 import ij.plugin.filter.BackgroundSubtracter;
 import ij.plugin.filter.RankFilters;
 import ij.process.ColorProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -34,12 +34,12 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 /**
  * Wrapper around {@link RankFilters}
  */
-@JIPipeDocumentation(name = "Find or subtract background 2D", description = "Finds or subtracts the background of a 2D slice via a rolling-ball or paraboloid algorithm. " +
+@SetJIPipeDocumentation(name = "Find or subtract background 2D", description = "Finds or subtracts the background of a 2D slice via a rolling-ball or paraboloid algorithm. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeNode(menuPath = "Background", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process", aliasName = "Subtract Background...")
+@DefineJIPipeNode(menuPath = "Background", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process", aliasName = "Subtract Background...")
 public class RollingBallBackgroundEstimator2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private double radius = 50;
@@ -76,7 +76,7 @@ public class RollingBallBackgroundEstimator2DAlgorithm extends JIPipeSimpleItera
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         BackgroundSubtracter backgroundSubtracter = new BackgroundSubtracter();
@@ -102,7 +102,7 @@ public class RollingBallBackgroundEstimator2DAlgorithm extends JIPipeSimpleItera
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Radius", description = "Rolling ball / Rolling paraboloid radius in pixels")
+    @SetJIPipeDocumentation(name = "Radius", description = "Rolling ball / Rolling paraboloid radius in pixels")
     @JIPipeParameter("radius")
     public double getRadius() {
         return radius;
@@ -117,7 +117,7 @@ public class RollingBallBackgroundEstimator2DAlgorithm extends JIPipeSimpleItera
         return true;
     }
 
-    @JIPipeDocumentation(name = "Subtract background", description = "If enabled, the background is subtracted. If disabled, the background is returned as output.")
+    @SetJIPipeDocumentation(name = "Subtract background", description = "If enabled, the background is subtracted. If disabled, the background is returned as output.")
     @JIPipeParameter("subtract")
     public boolean isSubtract() {
         return subtract;
@@ -129,7 +129,7 @@ public class RollingBallBackgroundEstimator2DAlgorithm extends JIPipeSimpleItera
 
     }
 
-    @JIPipeDocumentation(name = "Background type", description = "Determines whether the background is dark or light.")
+    @SetJIPipeDocumentation(name = "Background type", description = "Determines whether the background is dark or light.")
     @JIPipeParameter("background-type")
     public BackgroundType getBackgroundType() {
         return backgroundType;
@@ -141,7 +141,7 @@ public class RollingBallBackgroundEstimator2DAlgorithm extends JIPipeSimpleItera
 
     }
 
-    @JIPipeDocumentation(name = "Method", description = "The method to estimate the background")
+    @SetJIPipeDocumentation(name = "Method", description = "The method to estimate the background")
     @JIPipeParameter("method")
     public Method getMethod() {
         return method;
@@ -152,7 +152,7 @@ public class RollingBallBackgroundEstimator2DAlgorithm extends JIPipeSimpleItera
         this.method = method;
     }
 
-    @JIPipeDocumentation(name = "Apply pre-smoothing", description = "If enabled, a 3x3 box-filter is applied before extracting the background. " +
+    @SetJIPipeDocumentation(name = "Apply pre-smoothing", description = "If enabled, a 3x3 box-filter is applied before extracting the background. " +
             "Please note that this might lead to the background not necessary being lower than the foreground.")
     @JIPipeParameter("apply-pre-smoothing")
     public boolean isPreSmoothing() {
@@ -165,7 +165,7 @@ public class RollingBallBackgroundEstimator2DAlgorithm extends JIPipeSimpleItera
 
     }
 
-    @JIPipeDocumentation(name = "Apply corner-correction", description = "If enabled, the algorithm attempts to avoid recognizing corners as background.")
+    @SetJIPipeDocumentation(name = "Apply corner-correction", description = "If enabled, the algorithm attempts to avoid recognizing corners as background.")
     @JIPipeParameter("apply-corner-correction")
     public boolean isCorrectCorners() {
         return correctCorners;
@@ -177,7 +177,7 @@ public class RollingBallBackgroundEstimator2DAlgorithm extends JIPipeSimpleItera
 
     }
 
-    @JIPipeDocumentation(name = "Separate channels", description = "Only valid for multi-channel images. If enabled, the algorithm is applied to each channel individually. " +
+    @SetJIPipeDocumentation(name = "Separate channels", description = "Only valid for multi-channel images. If enabled, the algorithm is applied to each channel individually. " +
             "If disabled, the background is calculated based on the HSV brightness value. The hue is unaffected.")
     @JIPipeParameter("separate-channels")
     public boolean isSeparateChannels() {

@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.functions.collections;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Summarize annotations map", description = "Generates a string that displays all entries of a map that contains text annotation keys and values")
+@SetJIPipeDocumentation(name = "Summarize annotations map", description = "Generates a string that displays all entries of a map that contains text annotation keys and values")
 public class SummarizeAnnotationsMapFunction extends ExpressionFunction {
 
     public SummarizeAnnotationsMapFunction() {

@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -33,12 +33,12 @@ import java.util.Set;
 /**
  * Removes a specified annotation
  */
-@JIPipeDocumentation(name = "Convert to annotation table", description = "Converts data into an annotation table that contains " +
+@SetJIPipeDocumentation(name = "Convert to annotation table", description = "Converts data into an annotation table that contains " +
         "all annotations of the data row. You can also add a string representation of the data.")
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeNodeAlias(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, aliasName = "Annotations to table")
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = AnnotationTableData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeNodeAlias(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, aliasName = "Annotations to table")
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = AnnotationTableData.class, slotName = "Output", create = true)
 public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {
 
     private boolean removeOutputAnnotations = false;
@@ -64,7 +64,7 @@ public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Set<Integer> inputDataRows = iterationStep.getInputRows(getFirstInputSlot());
 
         AnnotationTableData output = new AnnotationTableData();
@@ -91,7 +91,7 @@ public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Remove output annotations", description = "If enabled, annotations are removed from the output.")
+    @SetJIPipeDocumentation(name = "Remove output annotations", description = "If enabled, annotations are removed from the output.")
     @JIPipeParameter("remove-output-annotations")
     public boolean isRemoveOutputAnnotations() {
         return removeOutputAnnotations;
@@ -102,7 +102,7 @@ public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {
         this.removeOutputAnnotations = removeOutputAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Add data as string", description = "Adds the string representation of data as string")
+    @SetJIPipeDocumentation(name = "Add data as string", description = "Adds the string representation of data as string")
     @JIPipeParameter("add-data-as-string")
     public OptionalAnnotationNameParameter getAddDataToString() {
         return addDataToString;

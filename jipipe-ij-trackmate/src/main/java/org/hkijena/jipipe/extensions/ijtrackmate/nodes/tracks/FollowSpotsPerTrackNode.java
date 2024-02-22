@@ -19,8 +19,8 @@ import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.measure.Calibration;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -41,11 +41,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-@JIPipeDocumentation(name = "Visualize tracked spots", description = "For each track, generates an image that follows the spot over time")
-@JIPipeNode(menuPath = "Tracking\nVisualize", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true)
-@JIPipeInputSlot(value = TrackCollectionData.class, slotName = "Tracks", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Visualize tracked spots", description = "For each track, generates an image that follows the spot over time")
+@DefineJIPipeNode(menuPath = "Tracking\nVisualize", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
+@AddJIPipeInputSlot(value = TrackCollectionData.class, slotName = "Tracks", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 public class FollowSpotsPerTrackNode extends JIPipeIteratingAlgorithm {
 
     private OptionalAnnotationNameParameter trackIDAnnotation = new OptionalAnnotationNameParameter("Track ID", true);
@@ -73,7 +73,7 @@ public class FollowSpotsPerTrackNode extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus sourceImage = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
         TrackCollectionData data = iterationStep.getInputData("Tracks", TrackCollectionData.class, progressInfo);
         Calibration calibration = data.getImage().getCalibration();
@@ -189,7 +189,7 @@ public class FollowSpotsPerTrackNode extends JIPipeIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Annotate with track ID", description = "If enabled, the track ID is annotated to each ROI")
+    @SetJIPipeDocumentation(name = "Annotate with track ID", description = "If enabled, the track ID is annotated to each ROI")
     @JIPipeParameter("track-id-annotation")
     public OptionalAnnotationNameParameter getTrackIDAnnotation() {
         return trackIDAnnotation;
@@ -200,7 +200,7 @@ public class FollowSpotsPerTrackNode extends JIPipeIteratingAlgorithm {
         this.trackIDAnnotation = trackIDAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Minimum spot width", description = "The minimum width of the area around the spot")
+    @SetJIPipeDocumentation(name = "Minimum spot width", description = "The minimum width of the area around the spot")
     @JIPipeParameter("min-spot-width")
     public int getMinWidth() {
         return minWidth;
@@ -211,7 +211,7 @@ public class FollowSpotsPerTrackNode extends JIPipeIteratingAlgorithm {
         this.minWidth = minWidth;
     }
 
-    @JIPipeDocumentation(name = "Minimum spot height", description = "The minimum height of the area around the spot")
+    @SetJIPipeDocumentation(name = "Minimum spot height", description = "The minimum height of the area around the spot")
     @JIPipeParameter("min-spot-height")
     public int getMinHeight() {
         return minHeight;
@@ -222,7 +222,7 @@ public class FollowSpotsPerTrackNode extends JIPipeIteratingAlgorithm {
         this.minHeight = minHeight;
     }
 
-    @JIPipeDocumentation(name = "Crop XY", description = "If enabled, crop the X and Y planes to the areas where the spots are located")
+    @SetJIPipeDocumentation(name = "Crop XY", description = "If enabled, crop the X and Y planes to the areas where the spots are located")
     @JIPipeParameter("crop-xy")
     public boolean isCropXY() {
         return cropXY;
@@ -233,7 +233,7 @@ public class FollowSpotsPerTrackNode extends JIPipeIteratingAlgorithm {
         this.cropXY = cropXY;
     }
 
-    @JIPipeDocumentation(name = "Crop Z", description = "If enabled, crop the depth to the areas where the spots are located")
+    @SetJIPipeDocumentation(name = "Crop Z", description = "If enabled, crop the depth to the areas where the spots are located")
     @JIPipeParameter("crop-z")
     public boolean isCropZ() {
         return cropZ;
@@ -244,7 +244,7 @@ public class FollowSpotsPerTrackNode extends JIPipeIteratingAlgorithm {
         this.cropZ = cropZ;
     }
 
-    @JIPipeDocumentation(name = "Crop frames", description = "If enabled, crop the frames to the areas where the spots are located")
+    @SetJIPipeDocumentation(name = "Crop frames", description = "If enabled, crop the frames to the areas where the spots are located")
     @JIPipeParameter("crop-t")
     public boolean isCropT() {
         return cropT;

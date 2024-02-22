@@ -13,11 +13,12 @@
 
 package org.hkijena.jipipe.api.nodes.algorithm;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -102,7 +103,7 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Multi-parameter settings", description = "This algorithm supports running with multiple parameter sets. Just enable 'Multiple parameters' and " +
+    @SetJIPipeDocumentation(name = "Multi-parameter settings", description = "This algorithm supports running with multiple parameter sets. Just enable 'Multiple parameters' and " +
             "connect parameter data to the newly created slot. The algorithm is then automatically repeated for all parameter sets.")
     @JIPipeParameter(value = "jipipe:parameter-slot-algorithm", hidden = true,
             iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/wrench.png",
@@ -154,17 +155,17 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
+    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         if (isPassThrough() && canPassThrough()) {
             progressInfo.log("Data passed through to output");
-            runPassThrough(progressInfo);
+            runPassThrough(runContext, progressInfo);
             return;
         }
         if (parameterSlotAlgorithmSettings.isHasParameterSlot()) {
             JIPipeDataSlot parameterSlot = getInputSlot(SLOT_PARAMETERS);
             if (parameterSlot.getRowCount() == 0) {
                 progressInfo.log("No parameters were passed with enabled parameter slot. Applying default parameters, only.");
-                runParameterSet(progressInfo, Collections.emptyList());
+                runParameterSet(runContext, progressInfo, Collections.emptyList());
             } else {
                 // Create backups
                 Map<String, Object> parameterBackups = new HashMap<>();
@@ -216,7 +217,7 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
                             annotations.add(new JIPipeTextAnnotation(annotationName, "" + target.get(Object.class)));
                         }
                     }
-                    runParameterSet(progressInfo.resolve("Parameter set", row, parameterSlot.getRowCount()), annotations);
+                    runParameterSet(runContext, progressInfo.resolve("Parameter set", row, parameterSlot.getRowCount()), annotations);
                 }
 
                 // Restore backup
@@ -225,17 +226,18 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
                 }
             }
         } else {
-            runParameterSet(progressInfo, Collections.emptyList());
+            runParameterSet(runContext, progressInfo, Collections.emptyList());
         }
     }
 
     /**
      * Runs a parameter set iteration
      *
+     * @param runContext
      * @param progressInfo         progress info from the run
      * @param parameterAnnotations parameter annotations
      */
-    public abstract void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations);
+    public abstract void runParameterSet(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations);
 
     private void updateParameterSlot() {
         if (getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration) {

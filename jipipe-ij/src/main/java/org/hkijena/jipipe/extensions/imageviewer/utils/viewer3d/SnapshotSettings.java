@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
@@ -8,7 +8,7 @@ public class SnapshotSettings extends AbstractJIPipeParameterCollection {
     private int width = 800;
     private int height = 600;
 
-    @JIPipeDocumentation(name = "Width", description = "The width of the output image")
+    @SetJIPipeDocumentation(name = "Width", description = "The width of the output image")
     @JIPipeParameter(value = "width", uiOrder = -100)
     public int getWidth() {
         return width;
@@ -19,7 +19,7 @@ public class SnapshotSettings extends AbstractJIPipeParameterCollection {
         this.width = width;
     }
 
-    @JIPipeDocumentation(name = "Height", description = "The height of the image")
+    @SetJIPipeDocumentation(name = "Height", description = "The height of the image")
     @JIPipeParameter(value = "height", uiOrder = -90)
     public int getHeight() {
         return height;

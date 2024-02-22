@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.python.installers;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -23,7 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@JIPipeDocumentation(name = "Select existing system Python ...", description = "Chooses an existing system Python (not a virtual environment)")
+@SetJIPipeDocumentation(name = "Select existing system Python ...", description = "Chooses an existing system Python (not a virtual environment)")
 public class SelectSystemPythonInstaller extends ExternalEnvironmentInstaller {
 
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
@@ -114,7 +114,7 @@ public class SelectSystemPythonInstaller extends ExternalEnvironmentInstaller {
         private Path pythonExecutable = Paths.get("");
         private String name = "System";
 
-        @JIPipeDocumentation(name = "Python executable", description = "The executable of the system Python. " +
+        @SetJIPipeDocumentation(name = "Python executable", description = "The executable of the system Python. " +
                 "On Windows this is usually %appdata%\\..\\Local\\Programs\\Python\\PythonXX\\python.exe (XX is the Python version). " +
                 "On Linux, Python is located in /usr/local/bin/python")
         @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.FilesOnly, key = FileChooserSettings.LastDirectoryKey.External)
@@ -128,7 +128,7 @@ public class SelectSystemPythonInstaller extends ExternalEnvironmentInstaller {
             this.pythonExecutable = pythonExecutable;
         }
 
-        @JIPipeDocumentation(name = "Name", description = "Name of the created environment")
+        @SetJIPipeDocumentation(name = "Name", description = "Name of the created environment")
         @JIPipeParameter("name")
         public String getName() {
             return name;

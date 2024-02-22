@@ -5,7 +5,7 @@ import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.LogOutputStream;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.lang3.SystemUtils;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@JIPipeDocumentation(name = "Install Miniconda 3", description = "Installs Miniconda 3")
+@SetJIPipeDocumentation(name = "Install Miniconda 3", description = "Installs Miniconda 3")
 public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstaller {
 
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
@@ -405,7 +405,7 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
             installationPath = Paths.get("jipipe").resolve("miniconda");
         }
 
-        @JIPipeDocumentation(name = "Download URL", description = "This URL is used to download Conda. If you change it, please ensure that URL " +
+        @SetJIPipeDocumentation(name = "Download URL", description = "This URL is used to download Conda. If you change it, please ensure that URL " +
                 "is the correct one for your current operating system. The Python version that is installed can be viewed here: https://docs.conda.io/en/latest/miniconda.html")
         @JIPipeParameter("conda-download-url")
         @StringParameterSettings(monospace = true)
@@ -418,7 +418,7 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
             this.condaDownloadURL = condaDownloadURL;
         }
 
-        @JIPipeDocumentation(name = "Installation path", description = "The folder where Miniconda is installed. Please choose an non-existing or empty folder.")
+        @SetJIPipeDocumentation(name = "Installation path", description = "The folder where Miniconda is installed. Please choose an non-existing or empty folder.")
         @JIPipeParameter("installation-path")
         public Path getInstallationPath() {
             return installationPath;
@@ -429,7 +429,7 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
             this.installationPath = installationPath;
         }
 
-        @JIPipeDocumentation(name = "Use custom installer", description = "Instead of downloading Miniconda, use a custom installer executable.")
+        @SetJIPipeDocumentation(name = "Use custom installer", description = "Instead of downloading Miniconda, use a custom installer executable.")
         @JIPipeParameter("custom-installer-path")
         public OptionalPathParameter getCustomInstallerPath() {
             return customInstallerPath;
@@ -440,7 +440,7 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
             this.customInstallerPath = customInstallerPath;
         }
 
-        @JIPipeDocumentation(name = "Specific Python version", description = "Allows to specify the Python version of the environment")
+        @SetJIPipeDocumentation(name = "Specific Python version", description = "Allows to specify the Python version of the environment")
         @JIPipeParameter("force-python-version")
         public OptionalStringParameter getForcePythonVersion() {
             return forcePythonVersion;
@@ -451,7 +451,7 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
             this.forcePythonVersion = forcePythonVersion;
         }
 
-        @JIPipeDocumentation(name = "Name", description = "Name of the created environment")
+        @SetJIPipeDocumentation(name = "Name", description = "Name of the created environment")
         @JIPipeParameter("name")
         public String getName() {
             return name;

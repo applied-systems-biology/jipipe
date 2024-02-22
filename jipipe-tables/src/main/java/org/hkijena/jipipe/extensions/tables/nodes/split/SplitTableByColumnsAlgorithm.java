@@ -14,8 +14,8 @@
 
 package org.hkijena.jipipe.extensions.tables.nodes.split;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -37,11 +37,11 @@ import java.util.stream.Collectors;
 /**
  * Algorithm that integrates columns
  */
-@JIPipeDocumentation(name = "Split table by columns", description = "Splits a table into multiple tables according to list of selected columns. " +
+@SetJIPipeDocumentation(name = "Split table by columns", description = "Splits a table into multiple tables according to list of selected columns. " +
         "Sub-tables that have the same values in the selected columns are put into the same output table.")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Split")
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Split")
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class SplitTableByColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private StringQueryExpression columns = new StringQueryExpression();
@@ -68,7 +68,7 @@ public class SplitTableByColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData input = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         List<String> interestingColumns = columns.queryAll(input.getColumnNames(), new JIPipeExpressionVariablesMap());
         if (interestingColumns.isEmpty()) {
@@ -97,7 +97,7 @@ public class SplitTableByColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm
         }
     }
 
-    @JIPipeDocumentation(name = "Selected columns", description = "Expression that selects the columns. ")
+    @SetJIPipeDocumentation(name = "Selected columns", description = "Expression that selects the columns. ")
     @JIPipeParameter("columns")
     public StringQueryExpression getColumns() {
         return columns;
@@ -108,7 +108,7 @@ public class SplitTableByColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.columns = columns;
     }
 
-    @JIPipeDocumentation(name = "Add as annotations", description = "If enabled, columns are added as annotation columns")
+    @SetJIPipeDocumentation(name = "Add as annotations", description = "If enabled, columns are added as annotation columns")
     @JIPipeParameter("add-as-annotations")
     public boolean isAddAsAnnotations() {
         return addAsAnnotations;

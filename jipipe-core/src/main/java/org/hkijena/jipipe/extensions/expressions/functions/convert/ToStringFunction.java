@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.expressions.functions.convert;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Convert to string", description = "Converts the input to a string.")
+@SetJIPipeDocumentation(name = "Convert to string", description = "Converts the input to a string.")
 public class ToStringFunction extends ExpressionFunction {
 
     public ToStringFunction() {

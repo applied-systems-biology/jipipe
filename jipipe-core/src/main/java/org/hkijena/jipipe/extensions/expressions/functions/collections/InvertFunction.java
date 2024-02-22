@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.expressions.functions.collections;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Invert", description = "If the parameter is an array, the order is reversed. If a string, the string is reversed. Numbers and booleans are negated.")
+@SetJIPipeDocumentation(name = "Invert", description = "If the parameter is an array, the order is reversed. If a string, the string is reversed. Numbers and booleans are negated.")
 public class InvertFunction extends ExpressionFunction {
 
     public InvertFunction() {

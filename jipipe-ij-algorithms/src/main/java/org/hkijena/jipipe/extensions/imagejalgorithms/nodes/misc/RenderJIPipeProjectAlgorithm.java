@@ -2,8 +2,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.misc;
 
 import ij.ImagePlus;
 import ij.process.ColorProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.nodes.*;
@@ -22,12 +22,12 @@ import org.hkijena.jipipe.extensions.pipelinerender.RenderPipelineRunSettings;
 
 import java.io.IOException;
 
-@JIPipeDocumentation(name = "Render JIPipe project pipeline", description = "Creates a single-image render of a whole JIPipe pipeline project. " +
+@SetJIPipeDocumentation(name = "Render JIPipe project pipeline", description = "Creates a single-image render of a whole JIPipe pipeline project. " +
         "This node is equivalent to <code>Tools &gt; Project &gt; Export whole pipeline as *.png</code>. Please note that the pipelines should be arranged " +
         "in a space-efficient way to reduce the file sizes.")
-@JIPipeNode(menuPath = "Meta run", nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
-@JIPipeInputSlot(value = FileData.class, slotName = "Project file", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlus2DColorRGBData.class, slotName = "Render", autoCreate = true)
+@DefineJIPipeNode(menuPath = "Meta run", nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = FileData.class, slotName = "Project file", create = true)
+@AddJIPipeOutputSlot(value = ImagePlus2DColorRGBData.class, slotName = "Render", create = true)
 public class RenderJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final RenderPipelineRunSettings settings;
@@ -42,14 +42,14 @@ public class RenderJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.settings = new RenderPipelineRunSettings(other.settings);
     }
 
-    @JIPipeDocumentation(name = "Render settings", description = "Settings for the rendering process.")
+    @SetJIPipeDocumentation(name = "Render settings", description = "Settings for the rendering process.")
     @JIPipeParameter("render-settings")
     public RenderPipelineRunSettings getSettings() {
         return settings;
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         try {
             JIPipeProject project = JIPipeProject.loadProject(iterationStep.getInputData(getFirstInputSlot(), FileData.class, progressInfo).toPath(),
                     new UnspecifiedValidationReportContext(),

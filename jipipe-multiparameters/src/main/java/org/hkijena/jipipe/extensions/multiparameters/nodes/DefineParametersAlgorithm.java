@@ -13,13 +13,14 @@
 
 package org.hkijena.jipipe.extensions.multiparameters.nodes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -34,9 +35,9 @@ import java.util.Map;
 /**
  * Generates {@link org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData} objects
  */
-@JIPipeDocumentation(name = "Define parameter", description = "Defines an algorithm parameter that can be consumed by a multi-parameter algorithm")
-@JIPipeOutputSlot(value = ParametersData.class, slotName = "Parameters", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "Define parameter", description = "Defines an algorithm parameter that can be consumed by a multi-parameter algorithm")
+@AddJIPipeOutputSlot(value = ParametersData.class, slotName = "Parameters", create = true)
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class DefineParametersAlgorithm extends JIPipeAlgorithm {
 
     private final GeneratedParameters parameters;
@@ -65,7 +66,7 @@ public class DefineParametersAlgorithm extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
+    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ParametersData result = new ParametersData();
         for (Map.Entry<String, JIPipeParameterAccess> entry : parameters.getParameters().entrySet()) {
             result.getParameterData().put(entry.getKey(), entry.getValue().get(Object.class));
@@ -74,12 +75,12 @@ public class DefineParametersAlgorithm extends JIPipeAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        super.reportValidity(context, report);
-        report.report(new ParameterValidationReportContext(context, this, "Parameters", "parameters"), parameters);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
+        report.report(new ParameterValidationReportContext(reportContext, this, "Parameters", "parameters"), parameters);
     }
 
-    @JIPipeDocumentation(name = "Parameters", description = "Following parameters are generated:")
+    @SetJIPipeDocumentation(name = "Parameters", description = "Following parameters are generated:")
     @JIPipeParameter(value = "parameters", persistence = JIPipeParameterSerializationMode.Object)
     public GeneratedParameters getParameters() {
         return parameters;

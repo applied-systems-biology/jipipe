@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.expressions;
 
-import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
+import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ import java.util.function.Predicate;
  * Expression for querying strings
  */
 @JIPipeExpressionParameterSettings(variableSource = StringQueryExpressionVariablesInfo.class, hint = "\"<specific value>\" / value == \"<specific value>\"")
-@JIPipeDocumentationDescription(description = "This parameter is an expression that has two modes: " +
+@AddJIPipeDocumentationDescription(description = "This parameter is an expression that has two modes: " +
         "(1) Selecting an existing string, and (2) Matching an existing strings by boolean operators<br/>" +
         "<ol><li>Type in the string in double quotes. Example: <pre>\"hello world\"</pre></li>" +
         "<li>The function iterates through all strings. It should return TRUE for one of them. You will have a variable 'value' available within the expression. Example: <pre>value CONTAINS \"hello\"</pre></li></ol>")

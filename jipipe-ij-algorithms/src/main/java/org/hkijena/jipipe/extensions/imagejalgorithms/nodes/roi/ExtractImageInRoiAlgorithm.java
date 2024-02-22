@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi;
 
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
@@ -31,11 +31,11 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
 import java.util.ArrayList;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Extract images inside ROI", description = "Extracts image slices that are marked via ROI and outputs them. The images are annotated with locational information for later reconstruction.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "ROI")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true)
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "ROI images", autoCreate = true)
+@SetJIPipeDocumentation(name = "Extract images inside ROI", description = "Extracts image slices that are marked via ROI and outputs them. The images are annotated with locational information for later reconstruction.")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "ROI")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "ROI images", create = true)
 public class ExtractImageInRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     private boolean ignoreZ = false;
@@ -65,14 +65,14 @@ public class ExtractImageInRoiAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus image = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
         ROIListData rois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
 
         List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
     }
 
-    @JIPipeDocumentation(name = "Ignore ROI Z location", description = "If enabled, the image will be extracted from all Z slices regardless of the ROI location.")
+    @SetJIPipeDocumentation(name = "Ignore ROI Z location", description = "If enabled, the image will be extracted from all Z slices regardless of the ROI location.")
     @JIPipeParameter("ignore-z")
     public boolean isIgnoreZ() {
         return ignoreZ;
@@ -83,7 +83,7 @@ public class ExtractImageInRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.ignoreZ = ignoreZ;
     }
 
-    @JIPipeDocumentation(name = "Ignore ROI C location", description = "If enabled, the image will be extracted from all C slices regardless of the ROI location.")
+    @SetJIPipeDocumentation(name = "Ignore ROI C location", description = "If enabled, the image will be extracted from all C slices regardless of the ROI location.")
     @JIPipeParameter("ignore-c")
     public boolean isIgnoreC() {
         return ignoreC;
@@ -94,7 +94,7 @@ public class ExtractImageInRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.ignoreC = ignoreC;
     }
 
-    @JIPipeDocumentation(name = "Ignore ROI T location", description = "If enabled, the image will be extracted from all T slices regardless of the ROI location.")
+    @SetJIPipeDocumentation(name = "Ignore ROI T location", description = "If enabled, the image will be extracted from all T slices regardless of the ROI location.")
     @JIPipeParameter("ignore-t")
     public boolean isIgnoreT() {
         return ignoreT;
@@ -105,7 +105,7 @@ public class ExtractImageInRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.ignoreT = ignoreT;
     }
 
-    @JIPipeDocumentation(name = "Annotate with X", description = "If enabled, the extracted images are annotated with their source X location.")
+    @SetJIPipeDocumentation(name = "Annotate with X", description = "If enabled, the extracted images are annotated with their source X location.")
     @JIPipeParameter("annotation-x")
     public OptionalAnnotationNameParameter getAnnotationXLocation() {
         return annotationXLocation;
@@ -116,7 +116,7 @@ public class ExtractImageInRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.annotationXLocation = annotationXLocation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with Y", description = "If enabled, the extracted images are annotated with their source Y location.")
+    @SetJIPipeDocumentation(name = "Annotate with Y", description = "If enabled, the extracted images are annotated with their source Y location.")
     @JIPipeParameter("annotation-y")
     public OptionalAnnotationNameParameter getAnnotationYLocation() {
         return annotationYLocation;
@@ -127,7 +127,7 @@ public class ExtractImageInRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.annotationYLocation = annotationYLocation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with Z", description = "If enabled, the extracted images are annotated with their source Z location.")
+    @SetJIPipeDocumentation(name = "Annotate with Z", description = "If enabled, the extracted images are annotated with their source Z location.")
     @JIPipeParameter("annotation-z")
     public OptionalAnnotationNameParameter getAnnotationZLocation() {
         return annotationZLocation;
@@ -138,7 +138,7 @@ public class ExtractImageInRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.annotationZLocation = annotationZLocation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with C", description = "If enabled, the extracted images are annotated with their source C location.")
+    @SetJIPipeDocumentation(name = "Annotate with C", description = "If enabled, the extracted images are annotated with their source C location.")
     @JIPipeParameter("annotation-c")
     public OptionalAnnotationNameParameter getAnnotationCLocation() {
         return annotationCLocation;
@@ -149,7 +149,7 @@ public class ExtractImageInRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.annotationCLocation = annotationCLocation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with T", description = "If enabled, the extracted images are annotated with their source T location.")
+    @SetJIPipeDocumentation(name = "Annotate with T", description = "If enabled, the extracted images are annotated with their source T location.")
     @JIPipeParameter("annotation-t")
     public OptionalAnnotationNameParameter getAnnotationTLocation() {
         return annotationTLocation;

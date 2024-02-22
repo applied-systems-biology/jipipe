@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.ijfilaments.nodes.process;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -14,10 +14,10 @@ import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariab
 import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 
-@JIPipeDocumentation(name = "Smooth filaments", description = "Applies a smoothing operation that is based around downscaling the locations and applying the 'Remove duplicate vertices' operation. The positions are then restored.")
-@JIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Process")
-@JIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Smooth filaments", description = "Applies a smoothing operation that is based around downscaling the locations and applying the 'Remove duplicate vertices' operation. The positions are then restored.")
+@DefineJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Process")
+@AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
 public class SmoothFilamentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private double factorX = 5;
@@ -42,7 +42,7 @@ public class SmoothFilamentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Filaments3DData inputData = iterationStep.getInputData(getFirstInputSlot(), Filaments3DData.class, progressInfo);
         Filaments3DData outputData = new Filaments3DData(inputData);
 
@@ -51,7 +51,7 @@ public class SmoothFilamentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Factor (X)", description = "The smoothing factor in the X coordinate. Set to zero to disable smoothing")
+    @SetJIPipeDocumentation(name = "Factor (X)", description = "The smoothing factor in the X coordinate. Set to zero to disable smoothing")
     @JIPipeParameter("factor-x")
     public double getFactorX() {
         return factorX;
@@ -62,7 +62,7 @@ public class SmoothFilamentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.factorX = factorX;
     }
 
-    @JIPipeDocumentation(name = "Factor (Y)", description = "The smoothing factor in the Y coordinate. Set to zero to disable smoothing")
+    @SetJIPipeDocumentation(name = "Factor (Y)", description = "The smoothing factor in the Y coordinate. Set to zero to disable smoothing")
     @JIPipeParameter("factor-y")
     public double getFactorY() {
         return factorY;
@@ -73,7 +73,7 @@ public class SmoothFilamentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.factorY = factorY;
     }
 
-    @JIPipeDocumentation(name = "Factor (Z)", description = "The smoothing factor in the Z plane. Set to zero to disable smoothing")
+    @SetJIPipeDocumentation(name = "Factor (Z)", description = "The smoothing factor in the Z plane. Set to zero to disable smoothing")
     @JIPipeParameter("factor-z")
     public double getFactorZ() {
         return factorZ;
@@ -84,7 +84,7 @@ public class SmoothFilamentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.factorZ = factorZ;
     }
 
-    @JIPipeDocumentation(name = "Location merging function", description = "A function that determines how multiple coordinates are merged together")
+    @SetJIPipeDocumentation(name = "Location merging function", description = "A function that determines how multiple coordinates are merged together")
     @JIPipeExpressionParameterSettings(hint = "per axis")
     @JIPipeExpressionParameterVariable(key = "values", description = "The list of values", name = "Values")
     @JIPipeParameter("location-merging-function")
@@ -97,7 +97,7 @@ public class SmoothFilamentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.locationMergingFunction = locationMergingFunction;
     }
 
-    @JIPipeDocumentation(name = "Prevent cross-object edges", description = "If enabled, new edges will never be created across two different objects. Disable this option if there are broken filaments in the input graph.")
+    @SetJIPipeDocumentation(name = "Prevent cross-object edges", description = "If enabled, new edges will never be created across two different objects. Disable this option if there are broken filaments in the input graph.")
     @JIPipeParameter("enforce-same-component")
     public boolean isEnforceSameComponent() {
         return enforceSameComponent;

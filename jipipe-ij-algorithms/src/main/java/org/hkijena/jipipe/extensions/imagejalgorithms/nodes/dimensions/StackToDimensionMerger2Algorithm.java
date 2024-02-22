@@ -15,8 +15,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.dimensions;
 
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
@@ -45,14 +45,14 @@ import java.util.*;
 /**
  * Wrapper around {@link ImageProcessor}
  */
-@JIPipeDocumentation(name = "Merge hyperstack C/Z/T", description = "Merges multiple stacks that miss a dimension into the target dimension. " +
+@SetJIPipeDocumentation(name = "Merge hyperstack C/Z/T", description = "Merges multiple stacks that miss a dimension into the target dimension. " +
         "Requires that all incoming stacks have the same size and that there is only one slice in the created dimension. " +
         "The type of the output image is determined by the consensus bit depth. " +
         "This node has similar functionality to the 'Combine stacks' node. " +
         "If no order (ascending) is given for each input, the order of input images is determined by the order in the slot list.")
-@JIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nHyperstacks")
+@DefineJIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nHyperstacks")
 public class StackToDimensionMerger2Algorithm extends JIPipeIteratingAlgorithm {
 
     private final InputSlotMapParameterCollection orderAssignment;
@@ -90,7 +90,7 @@ public class StackToDimensionMerger2Algorithm extends JIPipeIteratingAlgorithm {
         return true;
     }
 
-    @JIPipeDocumentation(name = "Created dimension", description = "The dimension that is created by merging the " +
+    @SetJIPipeDocumentation(name = "Created dimension", description = "The dimension that is created by merging the " +
             "incoming stacks.")
     @JIPipeParameter("created-dimension")
     public HyperstackDimension getCreatedDimension() {
@@ -102,7 +102,7 @@ public class StackToDimensionMerger2Algorithm extends JIPipeIteratingAlgorithm {
         this.createdDimension = createdDimension;
     }
 
-    @JIPipeDocumentation(name = "Input order", description = "The following settings allow you to customize the order of the input images. The inputs are ordered ascending.")
+    @SetJIPipeDocumentation(name = "Input order", description = "The following settings allow you to customize the order of the input images. The inputs are ordered ascending.")
     @JIPipeParameter("order")
     public InputSlotMapParameterCollection getOrderAssignment() {
         return orderAssignment;
@@ -125,7 +125,7 @@ public class StackToDimensionMerger2Algorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
         List<ImagePlus> inputImages = getOrderedInputImages(iterationStep, progressInfo);
         inputImages = ImageJUtils.convertToConsensusBitDepthIfNeeded(inputImages);

@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.settings;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -58,7 +58,7 @@ public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
         return JIPipe.getSettings().getSettings(ID, GraphEditorUISettings.class);
     }
 
-    @JIPipeDocumentation(name = "Show current tool info", description = "If enabled, show a tooltip text to the mouse cursor if a graph editor tool is active")
+    @SetJIPipeDocumentation(name = "Show current tool info", description = "If enabled, show a tooltip text to the mouse cursor if a graph editor tool is active")
     @JIPipeParameter("show-tool-info")
     public boolean isShowToolInfo() {
         return showToolInfo;
@@ -69,7 +69,7 @@ public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
         this.showToolInfo = showToolInfo;
     }
 
-    @JIPipeDocumentation(name = "Tool info distance", description = "The distance of the current tool info to the mouse pointer")
+    @SetJIPipeDocumentation(name = "Tool info distance", description = "The distance of the current tool info to the mouse pointer")
     @JIPipeParameter("tool-info-distance")
     public int getToolInfoDistance() {
         return toolInfoDistance;
@@ -80,7 +80,7 @@ public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
         this.toolInfoDistance = toolInfoDistance;
     }
 
-    @JIPipeDocumentation(name = "Draw input labels on hovering nodes", description = "If enabled, display a label for node inputs if it is hovered by the mouse cursor")
+    @SetJIPipeDocumentation(name = "Draw input labels on hovering nodes", description = "If enabled, display a label for node inputs if it is hovered by the mouse cursor")
     @JIPipeParameter("draw-labels-on-hover")
     public boolean isDrawLabelsOnHover() {
         return drawLabelsOnHover;
@@ -91,7 +91,7 @@ public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
         this.drawLabelsOnHover = drawLabelsOnHover;
     }
 
-    @JIPipeDocumentation(name = "Auto-mute edges", description = "Enabled/disables the automated muting of edges (drawing them as dashed lines)")
+    @SetJIPipeDocumentation(name = "Auto-mute edges", description = "Enabled/disables the automated muting of edges (drawing them as dashed lines)")
     @JIPipeParameter("auto-hide-edges-enabled")
     public boolean isAutoMuteEdgesEnabled() {
         return autoMuteEdgesEnabled;
@@ -102,7 +102,7 @@ public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
         this.autoMuteEdgesEnabled = autoMuteEdgesEnabled;
     }
 
-    @JIPipeDocumentation(name = "Auto-hide edges overlap threshold", description = "Determines how much overlap with an existing edge is considered as condition for hiding the longer connection")
+    @SetJIPipeDocumentation(name = "Auto-hide edges overlap threshold", description = "Determines how much overlap with an existing edge is considered as condition for hiding the longer connection")
     @JIPipeParameter("auto-hide-edge-overlap-threshold")
     public double getAutoHideEdgeOverlapThreshold() {
         return autoHideEdgeOverlapThreshold;
@@ -113,7 +113,7 @@ public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
         this.autoHideEdgeOverlapThreshold = autoHideEdgeOverlapThreshold;
     }
 
-    @JIPipeDocumentation(name = "Auto-hide edges distance threshold", description = "The minimum distance considered as long distance edge for the auto-hiding feature")
+    @SetJIPipeDocumentation(name = "Auto-hide edges distance threshold", description = "The minimum distance considered as long distance edge for the auto-hiding feature")
     @JIPipeParameter("auto-hide-edge-distance-threshold")
     public int getAutoHideEdgeDistanceThreshold() {
         return autoHideEdgeDistanceThreshold;
@@ -124,7 +124,7 @@ public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
         this.autoHideEdgeDistanceThreshold = longDistanceEdgeThreshold;
     }
 
-    @JIPipeDocumentation(name = "Default edge visibility", description = "Determines the default visibility of all newly created edges.")
+    @SetJIPipeDocumentation(name = "Default edge visibility", description = "Determines the default visibility of all newly created edges.")
     @JIPipeParameter("default-edge-visibility")
     public JIPipeGraphEdge.Visibility getDefaultEdgeVisibility() {
         return defaultEdgeVisibility;
@@ -135,19 +135,19 @@ public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
         this.defaultEdgeVisibility = defaultEdgeVisibility;
     }
 
-    @JIPipeDocumentation(name = "Algorithm finder settings", description = "Settings related to the algorithm finder")
+    @SetJIPipeDocumentation(name = "Algorithm finder settings", description = "Settings related to the algorithm finder")
     @JIPipeParameter("algorithm-finder-settings")
     public AlgorithmFinderSettings getAlgorithmFinderSettings() {
         return algorithmFinderSettings;
     }
 
-    @JIPipeDocumentation(name = "Search settings", description = "Settings related to the search bar")
+    @SetJIPipeDocumentation(name = "Search settings", description = "Settings related to the search bar")
     @JIPipeParameter("search-settings")
     public SearchSettings getSearchSettings() {
         return searchSettings;
     }
 
-    @JIPipeDocumentation(name = "Improve edge drawing", description = "If enabled, edges are drawn with outlines to make them easier distinguishable. " +
+    @SetJIPipeDocumentation(name = "Improve edge drawing", description = "If enabled, edges are drawn with outlines to make them easier distinguishable. " +
             "If you have issues with the performance, you should disable this setting.")
     @JIPipeParameter("draw-improved-edges")
     public boolean isDrawImprovedEdges() {
@@ -159,7 +159,7 @@ public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
         this.drawImprovedEdges = drawImprovedEdges;
     }
 
-    @JIPipeDocumentation(name = "Draw node shadows", description = "If enabled, shadows are drawn for nodes as visual guide. " +
+    @SetJIPipeDocumentation(name = "Draw node shadows", description = "If enabled, shadows are drawn for nodes as visual guide. " +
             "If you have issues with the performance, you should disable this setting.")
     @JIPipeParameter("draw-node-shadows")
     public boolean isDrawNodeShadows() {
@@ -171,7 +171,7 @@ public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
         this.drawNodeShadows = drawNodeShadows;
     }
 
-    @JIPipeDocumentation(name = "Draw arrow heads", description = "If enabled, draw arrow heads on connection targets")
+    @SetJIPipeDocumentation(name = "Draw arrow heads", description = "If enabled, draw arrow heads on connection targets")
     @JIPipeParameter("draw-arrow-heads")
     public boolean isDrawArrowHeads() {
         return drawArrowHeads;
@@ -182,7 +182,7 @@ public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
         this.drawArrowHeads = drawArrowHeads;
     }
 
-    @JIPipeDocumentation(name = "Switch panning direction",
+    @SetJIPipeDocumentation(name = "Switch panning direction",
             description = "Changes the direction how panning (middle mouse button) affects the view.")
     @JIPipeParameter("switch-panning-direction")
     public boolean isSwitchPanningDirection() {
@@ -195,7 +195,7 @@ public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
 
     }
 
-    @JIPipeDocumentation(name = "Layout nodes added by 'Find matching algorithm'", description = "Auto-layout nodes added by the 'Find matching algorithm' feature.")
+    @SetJIPipeDocumentation(name = "Layout nodes added by 'Find matching algorithm'", description = "Auto-layout nodes added by the 'Find matching algorithm' feature.")
     @JIPipeParameter("layout-after-algorithm-find")
     public boolean isLayoutAfterAlgorithmFinder() {
         return layoutAfterAlgorithmFinder;
@@ -206,7 +206,7 @@ public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
         this.layoutAfterAlgorithmFinder = layoutAfterAlgorithmFinder;
     }
 
-    @JIPipeDocumentation(name = "Layout after connecting nodes", description = "Auto-layout the source/target node after a connection is created")
+    @SetJIPipeDocumentation(name = "Layout after connecting nodes", description = "Auto-layout the source/target node after a connection is created")
     @JIPipeParameter("layout-after-connect")
     public boolean isLayoutAfterConnect() {
         return layoutAfterConnect;
@@ -217,7 +217,7 @@ public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
         this.layoutAfterConnect = layoutAfterConnect;
     }
 
-    @JIPipeDocumentation(name = "Auto-layout method",
+    @SetJIPipeDocumentation(name = "Auto-layout method",
             description = "Determines which method is used to applly auto-layout.")
     @JIPipeParameter("auto-layout-method")
     public GraphAutoLayout getAutoLayout() {
@@ -229,7 +229,7 @@ public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
         this.autoLayout = autoLayout;
     }
 
-    @JIPipeDocumentation(name = "Ask on deleting algorithms", description = "If enabled, users must confirm when an algorithm node is deleted")
+    @SetJIPipeDocumentation(name = "Ask on deleting algorithms", description = "If enabled, users must confirm when an algorithm node is deleted")
     @JIPipeParameter("ask-on-delete-node")
     public boolean isAskOnDeleteNode() {
         return askOnDeleteNode;
@@ -240,7 +240,7 @@ public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
         this.askOnDeleteNode = askOnDeleteNode;
     }
 
-    @JIPipeDocumentation(name = "Ask on deleting compartments", description = "If enabled, users must confirm when a graph compartment is deleted")
+    @SetJIPipeDocumentation(name = "Ask on deleting compartments", description = "If enabled, users must confirm when a graph compartment is deleted")
     @JIPipeParameter("ask-on-delete-compartment")
     public boolean isAskOnDeleteCompartment() {
         return askOnDeleteCompartment;
@@ -251,7 +251,7 @@ public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
         this.askOnDeleteCompartment = askOnDeleteCompartment;
     }
 
-    @JIPipeDocumentation(name = "Ask on deleting parameters", description = "If enabled, users must confirm when a parameter is deleted")
+    @SetJIPipeDocumentation(name = "Ask on deleting parameters", description = "If enabled, users must confirm when a parameter is deleted")
     @JIPipeParameter("ask-on-delete-parameter")
     public boolean isAskOnDeleteParameter() {
         return askOnDeleteParameter;
@@ -262,7 +262,7 @@ public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
         this.askOnDeleteParameter = askOnDeleteParameter;
     }
 
-    @JIPipeDocumentation(name = "Draw inter-compartment edges", description = "If enabled, compartment outputs draw edges that lead outside of the graph area.")
+    @SetJIPipeDocumentation(name = "Draw inter-compartment edges", description = "If enabled, compartment outputs draw edges that lead outside of the graph area.")
     @JIPipeParameter("draw-outside-edges")
     public boolean isDrawOutsideEdges() {
         return drawOutsideEdges;
@@ -273,7 +273,7 @@ public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
         this.drawOutsideEdges = drawOutsideEdges;
     }
 
-    @JIPipeDocumentation(name = "Notify users about invalid drops", description = "If enabled, a message box will be displayed if invalid data is dropped into a graph.")
+    @SetJIPipeDocumentation(name = "Notify users about invalid drops", description = "If enabled, a message box will be displayed if invalid data is dropped into a graph.")
     @JIPipeParameter("notify-invalid-drag-and-drop")
     public boolean isNotifyInvalidDragAndDrop() {
         return notifyInvalidDragAndDrop;
@@ -284,7 +284,7 @@ public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
         this.notifyInvalidDragAndDrop = notifyInvalidDragAndDrop;
     }
 
-    @JIPipeDocumentation(name = "Color selected node edges", description = "If enabled, node edges are assigned a unique color while a connected node is selected. " +
+    @SetJIPipeDocumentation(name = "Color selected node edges", description = "If enabled, node edges are assigned a unique color while a connected node is selected. " +
             "This is to distinguish them better.")
     @JIPipeParameter("color-selected-node-edges")
     public boolean isColorSelectedNodeEdges() {
@@ -296,7 +296,7 @@ public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
         this.colorSelectedNodeEdges = colorSelectedNodeEdges;
     }
 
-    @JIPipeDocumentation(name = "Auto layout moves other nodes", description = "If enabled, the auto layout function will move other nodes to make " +
+    @SetJIPipeDocumentation(name = "Auto layout moves other nodes", description = "If enabled, the auto layout function will move other nodes to make " +
             "space for newly inserted nodes.")
     @JIPipeParameter("auto-layout-moves-other-nodes")
     public boolean isAutoLayoutMovesOtherNodes() {
@@ -312,7 +312,7 @@ public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
         private boolean searchFindNewNodes = true;
         private boolean searchFindExistingNodes = true;
 
-        @JIPipeDocumentation(name = "Search: Create nodes", description = "If enabled, the search will allow to create new nodes")
+        @SetJIPipeDocumentation(name = "Search: Create nodes", description = "If enabled, the search will allow to create new nodes")
         @JIPipeParameter("search-find-new-nodes")
         public boolean isSearchFindNewNodes() {
             return searchFindNewNodes;
@@ -323,7 +323,7 @@ public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
             this.searchFindNewNodes = searchFindNewNodes;
         }
 
-        @JIPipeDocumentation(name = "Search: Existing nodes", description = "If enabled, the search will allow to find existing nodes")
+        @SetJIPipeDocumentation(name = "Search: Existing nodes", description = "If enabled, the search will allow to find existing nodes")
         @JIPipeParameter("search-find-existing-nodes")
         public boolean isSearchFindExistingNodes() {
             return searchFindExistingNodes;
@@ -340,7 +340,7 @@ public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
         private boolean searchFindNewNodes = true;
         private boolean searchFindExistingNodes = true;
 
-        @JIPipeDocumentation(name = "Enable search", description = "If enabled, a search box is shown in the menu bar. Only applies to newly opened editors.")
+        @SetJIPipeDocumentation(name = "Enable search", description = "If enabled, a search box is shown in the menu bar. Only applies to newly opened editors.")
         @JIPipeParameter("enable-search")
         public boolean isEnableSearch() {
             return enableSearch;
@@ -351,7 +351,7 @@ public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
             this.enableSearch = enableSearch;
         }
 
-        @JIPipeDocumentation(name = "Search: Create nodes", description = "If enabled, the search will allow to create new nodes")
+        @SetJIPipeDocumentation(name = "Search: Create nodes", description = "If enabled, the search will allow to create new nodes")
         @JIPipeParameter("search-find-new-nodes")
         public boolean isSearchFindNewNodes() {
             return searchFindNewNodes;
@@ -362,7 +362,7 @@ public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
             this.searchFindNewNodes = searchFindNewNodes;
         }
 
-        @JIPipeDocumentation(name = "Search: Existing nodes", description = "If enabled, the search will allow to find existing nodes")
+        @SetJIPipeDocumentation(name = "Search: Existing nodes", description = "If enabled, the search will allow to find existing nodes")
         @JIPipeParameter("search-find-existing-nodes")
         public boolean isSearchFindExistingNodes() {
             return searchFindExistingNodes;

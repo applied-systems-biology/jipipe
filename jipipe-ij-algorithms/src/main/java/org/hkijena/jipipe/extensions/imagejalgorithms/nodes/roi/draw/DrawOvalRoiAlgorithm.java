@@ -1,8 +1,8 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.draw;
 
 import ij.gui.OvalRoi;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -18,11 +18,11 @@ import org.hkijena.jipipe.extensions.parameters.library.roi.Margin;
 
 import java.awt.*;
 
-@JIPipeDocumentation(name = "Draw oval ROI", description = "Draws one or multiple oval/ellipse ROI")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", description = "Optional existing list of ROI. The new ROI will be appended to it.", optional = true, autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", description = "Reference image for the positioning. If not set, the area covered by the existing ROI are used (or width=0, height=0)", optional = true, autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Draw")
+@SetJIPipeDocumentation(name = "Draw oval ROI", description = "Draws one or multiple oval/ellipse ROI")
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", description = "Optional existing list of ROI. The new ROI will be appended to it.", optional = true, create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", description = "Reference image for the positioning. If not set, the area covered by the existing ROI are used (or width=0, height=0)", optional = true, create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", create = true)
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Draw")
 public class DrawOvalRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final ROIProperties roiProperties;
@@ -55,7 +55,7 @@ public class DrawOvalRoiAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
         // Generate variables
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
@@ -92,13 +92,13 @@ public class DrawOvalRoiAlgorithm extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), target, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "ROI properties", description = "Use the following settings to customize the generated ROI")
+    @SetJIPipeDocumentation(name = "ROI properties", description = "Use the following settings to customize the generated ROI")
     @JIPipeParameter("roi-properties")
     public ROIProperties getRoiProperties() {
         return roiProperties;
     }
 
-    @JIPipeDocumentation(name = "Ellipses", description = "The oval ROI to be drawn")
+    @SetJIPipeDocumentation(name = "Ellipses", description = "The oval ROI to be drawn")
     @JIPipeParameter("definitions")
     public Margin.List getRectangles() {
         return rectangles;
@@ -109,7 +109,7 @@ public class DrawOvalRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.rectangles = rectangles;
     }
 
-    @JIPipeDocumentation(name = "Center at location", description = "If enabled, the calculated (x,y) location will be the center of the object")
+    @SetJIPipeDocumentation(name = "Center at location", description = "If enabled, the calculated (x,y) location will be the center of the object")
     @JIPipeParameter("center")
     public boolean isCenter() {
         return center;

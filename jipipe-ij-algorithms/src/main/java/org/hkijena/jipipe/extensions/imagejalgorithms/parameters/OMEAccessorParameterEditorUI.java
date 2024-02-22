@@ -35,7 +35,7 @@ public class OMEAccessorParameterEditorUI extends JIPipeParameterEditorUI {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        setBorder(BorderFactory.createEtchedBorder());
+        setBorder(UIUtils.createControlBorder());
         FormPanel formPanel = new FormPanel(FormPanel.NONE);
         add(formPanel, BorderLayout.CENTER);
 

@@ -16,8 +16,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -34,11 +34,11 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Crop to ROI", description = "Crops the incoming images to fit into the boundaries defined by the ROI.")
-@JIPipeNode(menuPath = "Transform", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true)
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Cropped", autoCreate = true)
+@SetJIPipeDocumentation(name = "Crop to ROI", description = "Crops the incoming images to fit into the boundaries defined by the ROI.")
+@DefineJIPipeNode(menuPath = "Transform", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Cropped", create = true)
 public class CropToRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     private boolean cropXY = true;
@@ -59,7 +59,7 @@ public class CropToRoiAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus input = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
         ROIListData rois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
         Rectangle bounds = rois.getBounds();
@@ -149,7 +149,7 @@ public class CropToRoiAlgorithm extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(cropped), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Crop XY plane", description = "If enabled, images are cropped according to the boundaries in the XY plane.")
+    @SetJIPipeDocumentation(name = "Crop XY plane", description = "If enabled, images are cropped according to the boundaries in the XY plane.")
     @JIPipeParameter("crop-xy")
     public boolean isCropXY() {
         return cropXY;
@@ -160,7 +160,7 @@ public class CropToRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.cropXY = cropXY;
     }
 
-    @JIPipeDocumentation(name = "Crop Z plane", description = "If enabled, images are cropped in the Z plane.")
+    @SetJIPipeDocumentation(name = "Crop Z plane", description = "If enabled, images are cropped in the Z plane.")
     @JIPipeParameter("crop-z")
     public boolean isCropZ() {
         return cropZ;
@@ -171,7 +171,7 @@ public class CropToRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.cropZ = cropZ;
     }
 
-    @JIPipeDocumentation(name = "Crop channel plane", description = "If enabled, images are cropped in the channel plane.")
+    @SetJIPipeDocumentation(name = "Crop channel plane", description = "If enabled, images are cropped in the channel plane.")
     @JIPipeParameter("crop-c")
     public boolean isCropC() {
         return cropC;
@@ -182,7 +182,7 @@ public class CropToRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.cropC = cropC;
     }
 
-    @JIPipeDocumentation(name = "Crop frame plane", description = "If enabled, images are cropped in the time plane.")
+    @SetJIPipeDocumentation(name = "Crop frame plane", description = "If enabled, images are cropped in the time plane.")
     @JIPipeParameter("crop-t")
     public boolean isCropT() {
         return cropT;

@@ -21,7 +21,7 @@ import java.util.Map;
 
 public class ParametersDataViewer extends JIPipeWorkbenchPanel {
 
-    private final DocumentTabPane tabPane = new DocumentTabPane(true);
+    private final DocumentTabPane tabPane = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Top);
     private final EditorPane jsonViewer = new EditorPane();
     private final TableEditor tableViewer;
     private final ParameterPanel guiViewer;

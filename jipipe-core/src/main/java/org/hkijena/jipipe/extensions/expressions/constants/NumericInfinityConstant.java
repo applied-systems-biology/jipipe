@@ -13,10 +13,10 @@
 
 package org.hkijena.jipipe.extensions.expressions.constants;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionConstant;
 
-@JIPipeDocumentation(name = "Positive infinity", description = "Evaluates to +∞")
+@SetJIPipeDocumentation(name = "Positive infinity", description = "Evaluates to +∞")
 public class NumericInfinityConstant extends ExpressionConstant {
     public NumericInfinityConstant() {
         super("inf", Double.POSITIVE_INFINITY);

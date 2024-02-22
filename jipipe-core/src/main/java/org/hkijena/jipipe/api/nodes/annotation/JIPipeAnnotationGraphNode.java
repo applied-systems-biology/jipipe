@@ -1,9 +1,10 @@
 package org.hkijena.jipipe.api.nodes.annotation;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -35,7 +36,7 @@ public abstract class JIPipeAnnotationGraphNode extends JIPipeGraphNode {
         this.gridHeight = other.gridHeight;
     }
 
-    @JIPipeDocumentation(name = "Width", description = "Width of this node in grid coordinates")
+    @SetJIPipeDocumentation(name = "Width", description = "Width of this node in grid coordinates")
     @JIPipeParameter(value = "grid-width", uiOrder = 1000)
     public int getGridWidth() {
         return gridWidth;
@@ -46,7 +47,7 @@ public abstract class JIPipeAnnotationGraphNode extends JIPipeGraphNode {
         this.gridWidth = gridWidth;
     }
 
-    @JIPipeDocumentation(name = "Height", description = "Width of this node in grid coordinates")
+    @SetJIPipeDocumentation(name = "Height", description = "Width of this node in grid coordinates")
     @JIPipeParameter(value = "grid-height", uiOrder = 1010)
     public int getGridHeight() {
         return gridHeight;
@@ -57,7 +58,7 @@ public abstract class JIPipeAnnotationGraphNode extends JIPipeGraphNode {
         this.gridHeight = gridHeight;
     }
 
-    @JIPipeDocumentation(name = "Z-Order", description = "Determines the Z order of this annotation. This is an internal value and will be updated automatically.")
+    @SetJIPipeDocumentation(name = "Z-Order", description = "Determines the Z order of this annotation. This is an internal value and will be updated automatically.")
     @JIPipeParameter(value = "z-order", hidden = true)
     public int getzOrder() {
         return zOrder;
@@ -69,12 +70,12 @@ public abstract class JIPipeAnnotationGraphNode extends JIPipeGraphNode {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
 
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
+    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
     }
 

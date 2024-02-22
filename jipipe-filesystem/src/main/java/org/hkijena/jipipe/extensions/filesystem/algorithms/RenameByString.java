@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
@@ -31,12 +31,12 @@ import org.hkijena.jipipe.utils.StringUtils;
 /**
  * Applies subfolder navigation to each input folder
  */
-@JIPipeDocumentation(name = "Rename path", description = "Sets the file or folder name of each path to the specified string.")
-@JIPipeNode(menuPath = "Modify", nodeTypeCategory = FileSystemNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "Rename path", description = "Sets the file or folder name of each path to the specified string.")
+@DefineJIPipeNode(menuPath = "Modify", nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
 
-@JIPipeInputSlot(value = PathData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)
+@AddJIPipeInputSlot(value = PathData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = PathData.class, slotName = "Output", create = true)
 
 
 public class RenameByString extends JIPipeSimpleIteratingAlgorithm {
@@ -61,7 +61,7 @@ public class RenameByString extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         FolderData inputFolder = iterationStep.getInputData(getFirstInputSlot(), FolderData.class, progressInfo);
         if (!StringUtils.isNullOrEmpty(pathName))
             iterationStep.addOutputData(getFirstOutputSlot(), new FolderData(inputFolder.toPath().getParent().resolve(pathName)), progressInfo);
@@ -73,7 +73,7 @@ public class RenameByString extends JIPipeSimpleIteratingAlgorithm {
      * @return The subfolder
      */
     @JIPipeParameter("path-name")
-    @JIPipeDocumentation(name = "Path name", description = "The file or folder name of the output paths. If empty, no renaming is applied.")
+    @SetJIPipeDocumentation(name = "Path name", description = "The file or folder name of the output paths. If empty, no renaming is applied.")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/path.png")
     public String getPathName() {
         return pathName;

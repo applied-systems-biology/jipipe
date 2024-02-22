@@ -14,8 +14,8 @@
 
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -37,10 +37,10 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Import data table (archive)", description = "Imports a data table from a ZIP archive. The ZIP file should contain a data-table.json file in its root")
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeInputSlot(value = FileData.class, slotName = "Archive", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
+@SetJIPipeDocumentation(name = "Import data table (archive)", description = "Imports a data table from a ZIP archive. The ZIP file should contain a data-table.json file in its root")
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = FileData.class, slotName = "Archive", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", create = true)
 public class ImportDataTableArchive extends JIPipeSimpleIteratingAlgorithm {
 
     private String internalPath = "";
@@ -68,7 +68,7 @@ public class ImportDataTableArchive extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Path archiveFile = iterationStep.getInputData("Archive", FileData.class, progressInfo).toPath();
         try (JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo, archiveFile)) {
             JIPipeDataTable dataTable = JIPipeDataTable.importData(storage, progressInfo.resolve("Import"));
@@ -88,7 +88,7 @@ public class ImportDataTableArchive extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Internal path", description = "The path inside the ZIP file that contains the data table directory")
+    @SetJIPipeDocumentation(name = "Internal path", description = "The path inside the ZIP file that contains the data table directory")
     @JIPipeParameter("internal-path")
     public String getInternalPath() {
         return internalPath;
@@ -99,7 +99,7 @@ public class ImportDataTableArchive extends JIPipeSimpleIteratingAlgorithm {
         this.internalPath = internalPath;
     }
 
-    @JIPipeDocumentation(name = "Ignore input text annotations", description = "If enabled, incoming text annotations from the input folder will not be passed to the output.")
+    @SetJIPipeDocumentation(name = "Ignore input text annotations", description = "If enabled, incoming text annotations from the input folder will not be passed to the output.")
     @JIPipeParameter("ignore-input-text-annotations")
     public boolean isIgnoreInputTextAnnotations() {
         return ignoreInputTextAnnotations;
@@ -110,7 +110,7 @@ public class ImportDataTableArchive extends JIPipeSimpleIteratingAlgorithm {
         this.ignoreInputTextAnnotations = ignoreInputTextAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Ignore input data annotations", description = "If enabled, incoming data annotations from the input folder will not be passed to the output.")
+    @SetJIPipeDocumentation(name = "Ignore input data annotations", description = "If enabled, incoming data annotations from the input folder will not be passed to the output.")
     @JIPipeParameter("ignore-input-data-annotations")
     public boolean isIgnoreInputDataAnnotations() {
         return ignoreInputDataAnnotations;
@@ -121,7 +121,7 @@ public class ImportDataTableArchive extends JIPipeSimpleIteratingAlgorithm {
         this.ignoreInputDataAnnotations = ignoreInputDataAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Ignore imported text annotations", description = "If enabled, annotations from imported text annotations are ignored.")
+    @SetJIPipeDocumentation(name = "Ignore imported text annotations", description = "If enabled, annotations from imported text annotations are ignored.")
     @JIPipeParameter("ignore-imported-text-annotations")
     public boolean isIgnoreImportedTextAnnotations() {
         return ignoreImportedTextAnnotations;
@@ -132,7 +132,7 @@ public class ImportDataTableArchive extends JIPipeSimpleIteratingAlgorithm {
         this.ignoreImportedTextAnnotations = ignoreImportedTextAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Ignore imported data annotations", description = "If enabled, annotations from imported data annotations are ignored.")
+    @SetJIPipeDocumentation(name = "Ignore imported data annotations", description = "If enabled, annotations from imported data annotations are ignored.")
     @JIPipeParameter("ignore-imported-data-annotations")
     public boolean isIgnoreImportedDataAnnotations() {
         return ignoreImportedDataAnnotations;
@@ -143,7 +143,7 @@ public class ImportDataTableArchive extends JIPipeSimpleIteratingAlgorithm {
         this.ignoreImportedDataAnnotations = ignoreImportedDataAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Merge imported text annotations", description = "Determines what happens when imported data has the same text annotations as the input folder.")
+    @SetJIPipeDocumentation(name = "Merge imported text annotations", description = "Determines what happens when imported data has the same text annotations as the input folder.")
     @JIPipeParameter("text-annotation-merge-mode")
     public JIPipeTextAnnotationMergeMode getTextAnnotationMergeMode() {
         return textAnnotationMergeMode;
@@ -154,7 +154,7 @@ public class ImportDataTableArchive extends JIPipeSimpleIteratingAlgorithm {
         this.textAnnotationMergeMode = textAnnotationMergeMode;
     }
 
-    @JIPipeDocumentation(name = "Merge imported data annotations", description = "Determines what happens when imported data has the same data annotations as the input folder.")
+    @SetJIPipeDocumentation(name = "Merge imported data annotations", description = "Determines what happens when imported data has the same data annotations as the input folder.")
     @JIPipeParameter("data-annotation-merge-mode")
     public JIPipeDataAnnotationMergeMode getDataAnnotationMergeMode() {
         return dataAnnotationMergeMode;

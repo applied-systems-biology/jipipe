@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.functions.string;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -8,7 +8,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "Format string", description = "Replaces one string in another")
+@SetJIPipeDocumentation(name = "Format string", description = "Replaces one string in another")
 public class StringFormatFunction extends ExpressionFunction {
 
     public StringFormatFunction() {

@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.parameters.library.primitives;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.DefaultJIPipeParameterGenerator;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -40,17 +40,17 @@ public class NumberRangeParameterGenerator extends DefaultJIPipeParameterGenerat
     private double stepSize = 1;
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         if (minNumber <= maxNumber) {
             if (stepSize <= 0) {
-                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context, "Invalid step size!",
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext, "Invalid step size!",
                         "The step size cannot be zero or negative.",
                         "Please ensure that the step size is greater than zero.",
                         JsonUtils.toPrettyJsonString(this)));
             }
         } else {
             if (stepSize >= 0) {
-                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context, "Invalid step size!",
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext, "Invalid step size!",
                         "The step size cannot be zero or negative.",
                         "Please ensure that the step size is greater than zero.",
                         JsonUtils.toPrettyJsonString(this)));
@@ -110,7 +110,7 @@ public class NumberRangeParameterGenerator extends DefaultJIPipeParameterGenerat
         return result;
     }
 
-    @JIPipeDocumentation(name = "Min number", description = "The minimum value in the range (inclusive)")
+    @SetJIPipeDocumentation(name = "Min number", description = "The minimum value in the range (inclusive)")
     @JIPipeParameter(value = "min-number", uiOrder = -50)
     public double getMinNumber() {
         return minNumber;
@@ -121,7 +121,7 @@ public class NumberRangeParameterGenerator extends DefaultJIPipeParameterGenerat
         this.minNumber = minNumber;
     }
 
-    @JIPipeDocumentation(name = "Max number", description = "The maximum value in the range (exclusive)")
+    @SetJIPipeDocumentation(name = "Max number", description = "The maximum value in the range (exclusive)")
     @JIPipeParameter(value = "max-number", uiOrder = -40)
     public double getMaxNumber() {
         return maxNumber;
@@ -132,7 +132,7 @@ public class NumberRangeParameterGenerator extends DefaultJIPipeParameterGenerat
         this.maxNumber = maxNumber;
     }
 
-    @JIPipeDocumentation(name = "Step size", description = "The difference between two following numbers in the range")
+    @SetJIPipeDocumentation(name = "Step size", description = "The difference between two following numbers in the range")
     @JIPipeParameter(value = "step-size", uiOrder = -30)
     public double getStepSize() {
         return stepSize;

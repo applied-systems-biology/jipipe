@@ -1,8 +1,8 @@
 package org.hkijena.jipipe.extensions.ijweka.nodes;
 
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -18,11 +18,11 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
 import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 import trainableSegmentation.WekaSegmentation;
 
-@JIPipeDocumentation(name = "Weka classifier 3D", description = "Classifies a 3D image with a Weka model. To obtain ROI from the generated labels, utilize the 'Labels to ROI' node.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
-@JIPipeInputSlot(value = ImagePlus3DData.class, slotName = "Image", description = "Image on which the classification should be applied", autoCreate = true)
-@JIPipeInputSlot(value = WekaModelData.class, slotName = "Model", description = "The model", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Classified image", description = "The classified image", autoCreate = true)
+@SetJIPipeDocumentation(name = "Weka classifier 3D", description = "Classifies a 3D image with a Weka model. To obtain ROI from the generated labels, utilize the 'Labels to ROI' node.")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
+@AddJIPipeInputSlot(value = ImagePlus3DData.class, slotName = "Image", description = "Image on which the classification should be applied", create = true)
+@AddJIPipeInputSlot(value = WekaModelData.class, slotName = "Model", description = "The model", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Classified image", description = "The classified image", create = true)
 public class WekaClassification3DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private WekaTiling3DSettings tilingSettings = new WekaTiling3DSettings();
@@ -44,7 +44,7 @@ public class WekaClassification3DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData image = iterationStep.getInputData("Image", ImagePlus3DData.class, progressInfo);
         WekaModelData modelData = iterationStep.getInputData("Model", WekaModelData.class, progressInfo);
         WekaSegmentation segmentation = modelData.getSegmentation();
@@ -68,13 +68,13 @@ public class WekaClassification3DAlgorithm extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData("Classified image", new ImagePlusData(classified), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Generate tiles", description = "The following settings allow the generation of tiles to save memory.")
+    @SetJIPipeDocumentation(name = "Generate tiles", description = "The following settings allow the generation of tiles to save memory.")
     @JIPipeParameter("tiling-parameters")
     public WekaTiling3DSettings getTilingParameters() {
         return tilingSettings;
     }
 
-    @JIPipeDocumentation(name = "Override number of threads", description = "If enabled, set the number of threads to be utilized. Set to zero for automated assignment of threads.")
+    @SetJIPipeDocumentation(name = "Override number of threads", description = "If enabled, set the number of threads to be utilized. Set to zero for automated assignment of threads.")
     @JIPipeParameter("num-threads")
     public OptionalIntegerParameter getNumThreads() {
         return numThreads;
@@ -85,7 +85,7 @@ public class WekaClassification3DAlgorithm extends JIPipeIteratingAlgorithm {
         this.numThreads = numThreads;
     }
 
-    @JIPipeDocumentation(name = "Output probability maps", description = "If enabled, output probability maps instead of class labels.")
+    @SetJIPipeDocumentation(name = "Output probability maps", description = "If enabled, output probability maps instead of class labels.")
     @JIPipeParameter("output-probability-maps")
     public boolean isOutputProbabilityMaps() {
         return outputProbabilityMaps;

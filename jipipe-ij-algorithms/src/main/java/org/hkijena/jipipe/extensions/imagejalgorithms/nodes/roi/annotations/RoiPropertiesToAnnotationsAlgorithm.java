@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.annotations;
 
 import ij.gui.Roi;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -33,12 +33,12 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Annotate with ROI properties", description = "Extracts properties of the ROI lists and stores them into annotations. " +
+@SetJIPipeDocumentation(name = "Annotate with ROI properties", description = "Extracts properties of the ROI lists and stores them into annotations. " +
         "This will create a list of annotation values if there are multiple ROI per list, unless you choose the option to only return the first entry. " +
         "By default, one value per ROI is generated. Enable de-duplication to disable this behavior.")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For ROI")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For ROI")
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class RoiPropertiesToAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalAnnotationNameParameter countAnnotation = new OptionalAnnotationNameParameter("Count", true);
@@ -77,7 +77,7 @@ public class RoiPropertiesToAnnotationsAlgorithm extends JIPipeSimpleIteratingAl
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROIListData rois = iterationStep.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo);
         List<JIPipeTextAnnotation> annotations = new ArrayList<>();
         countAnnotation.addAnnotationIfEnabled(annotations, rois.size() + "");
@@ -134,7 +134,7 @@ public class RoiPropertiesToAnnotationsAlgorithm extends JIPipeSimpleIteratingAl
         iterationStep.addOutputData(getFirstOutputSlot(), rois, annotations, annotationMergeStrategy, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Annotate with list size", description = "Adds the size of the ROI list as annotation")
+    @SetJIPipeDocumentation(name = "Annotate with list size", description = "Adds the size of the ROI list as annotation")
     @JIPipeParameter("count-annotation")
     public OptionalAnnotationNameParameter getCountAnnotation() {
         return countAnnotation;
@@ -145,7 +145,7 @@ public class RoiPropertiesToAnnotationsAlgorithm extends JIPipeSimpleIteratingAl
         this.countAnnotation = countAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with names", description = "Adds the ROI names as annotation")
+    @SetJIPipeDocumentation(name = "Annotate with names", description = "Adds the ROI names as annotation")
     @JIPipeParameter("name-annotation")
     public OptionalAnnotationNameParameter getNameAnnotation() {
         return nameAnnotation;
@@ -156,7 +156,7 @@ public class RoiPropertiesToAnnotationsAlgorithm extends JIPipeSimpleIteratingAl
         this.nameAnnotation = nameAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with X locations", description = "Adds the ROI X locations (top left corner) as annotation")
+    @SetJIPipeDocumentation(name = "Annotate with X locations", description = "Adds the ROI X locations (top left corner) as annotation")
     @JIPipeParameter("x-annotation")
     public OptionalAnnotationNameParameter getLocationXAnnotation() {
         return locationXAnnotation;
@@ -167,7 +167,7 @@ public class RoiPropertiesToAnnotationsAlgorithm extends JIPipeSimpleIteratingAl
         this.locationXAnnotation = locationXAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with Y locations", description = "Adds the ROI Y locations (top left corner) as annotation")
+    @SetJIPipeDocumentation(name = "Annotate with Y locations", description = "Adds the ROI Y locations (top left corner) as annotation")
     @JIPipeParameter("y-annotation")
     public OptionalAnnotationNameParameter getLocationYAnnotation() {
         return locationYAnnotation;
@@ -178,7 +178,7 @@ public class RoiPropertiesToAnnotationsAlgorithm extends JIPipeSimpleIteratingAl
         this.locationYAnnotation = locationYAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with Z locations", description = "Adds the ROI Z locations as annotation. The first index is 1. A value of 0 indicates that the ROI is located on all planes.")
+    @SetJIPipeDocumentation(name = "Annotate with Z locations", description = "Adds the ROI Z locations as annotation. The first index is 1. A value of 0 indicates that the ROI is located on all planes.")
     @JIPipeParameter("z-annotation")
     public OptionalAnnotationNameParameter getLocationZAnnotation() {
         return locationZAnnotation;
@@ -189,7 +189,7 @@ public class RoiPropertiesToAnnotationsAlgorithm extends JIPipeSimpleIteratingAl
         this.locationZAnnotation = locationZAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with C locations", description = "Adds the ROI C locations as annotation. The first index is 1. A value of 0 indicates that the ROI is located on all planes.")
+    @SetJIPipeDocumentation(name = "Annotate with C locations", description = "Adds the ROI C locations as annotation. The first index is 1. A value of 0 indicates that the ROI is located on all planes.")
     @JIPipeParameter("c-annotation")
     public OptionalAnnotationNameParameter getLocationCAnnotation() {
         return locationCAnnotation;
@@ -200,7 +200,7 @@ public class RoiPropertiesToAnnotationsAlgorithm extends JIPipeSimpleIteratingAl
         this.locationCAnnotation = locationCAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with T locations", description = "Adds the ROI T locations as annotation. The first index is 1. A value of 0 indicates that the ROI is located on all planes.")
+    @SetJIPipeDocumentation(name = "Annotate with T locations", description = "Adds the ROI T locations as annotation. The first index is 1. A value of 0 indicates that the ROI is located on all planes.")
     @JIPipeParameter("t-annotation")
     public OptionalAnnotationNameParameter getLocationTAnnotation() {
         return locationTAnnotation;
@@ -211,7 +211,7 @@ public class RoiPropertiesToAnnotationsAlgorithm extends JIPipeSimpleIteratingAl
         this.locationTAnnotation = locationTAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with fill colors", description = "Adds the ROI fill colors as annotation. No annotation is generated if the fill color is not explicitly set.")
+    @SetJIPipeDocumentation(name = "Annotate with fill colors", description = "Adds the ROI fill colors as annotation. No annotation is generated if the fill color is not explicitly set.")
     @JIPipeParameter("fill-color-annotation")
     public OptionalAnnotationNameParameter getFillColorAnnotation() {
         return fillColorAnnotation;
@@ -222,7 +222,7 @@ public class RoiPropertiesToAnnotationsAlgorithm extends JIPipeSimpleIteratingAl
         this.fillColorAnnotation = fillColorAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with line colors", description = "Adds the ROI line colors as annotation. No annotation is generated if the fill color is not explicitly set.")
+    @SetJIPipeDocumentation(name = "Annotate with line colors", description = "Adds the ROI line colors as annotation. No annotation is generated if the fill color is not explicitly set.")
     @JIPipeParameter("line-color-annotation")
     public OptionalAnnotationNameParameter getLineColorAnnotation() {
         return lineColorAnnotation;
@@ -233,7 +233,7 @@ public class RoiPropertiesToAnnotationsAlgorithm extends JIPipeSimpleIteratingAl
         this.lineColorAnnotation = lineColorAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with line widths", description = "Adds the ROI line widths as annotation. 0 if not explicity set.")
+    @SetJIPipeDocumentation(name = "Annotate with line widths", description = "Adds the ROI line widths as annotation. 0 if not explicity set.")
     @JIPipeParameter("line-width-annotation")
     public OptionalAnnotationNameParameter getLineWidthAnnotation() {
         return lineWidthAnnotation;
@@ -244,7 +244,7 @@ public class RoiPropertiesToAnnotationsAlgorithm extends JIPipeSimpleIteratingAl
         this.lineWidthAnnotation = lineWidthAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotation merge strategy", description = "Determines how the newly generated annotations are merged with existing annotations.")
+    @SetJIPipeDocumentation(name = "Annotation merge strategy", description = "Determines how the newly generated annotations are merged with existing annotations.")
     @JIPipeParameter("annotation-merge-strategy")
     public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {
         return annotationMergeStrategy;
@@ -255,7 +255,7 @@ public class RoiPropertiesToAnnotationsAlgorithm extends JIPipeSimpleIteratingAl
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
 
-    @JIPipeDocumentation(name = "Deduplicate", description = "If enabled, duplicate values for names, locations, etc are removed.")
+    @SetJIPipeDocumentation(name = "Deduplicate", description = "If enabled, duplicate values for names, locations, etc are removed.")
     @JIPipeParameter("deduplicate")
     public boolean isDeduplicate() {
         return deduplicate;
@@ -266,7 +266,7 @@ public class RoiPropertiesToAnnotationsAlgorithm extends JIPipeSimpleIteratingAl
         this.deduplicate = deduplicate;
     }
 
-    @JIPipeDocumentation(name = "Only first ROI", description = "If enabled, only global properties and the properties of the first ROI are exported.")
+    @SetJIPipeDocumentation(name = "Only first ROI", description = "If enabled, only global properties and the properties of the first ROI are exported.")
     @JIPipeParameter("only-first")
     public boolean isOnlyFirst() {
         return onlyFirst;

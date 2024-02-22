@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.functions.statistics;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Calculate histogram (non-negative integers)", description = "Calculates the histogram of the incoming list of numbers. The calculation will ignore negative integer values." +
+@SetJIPipeDocumentation(name = "Calculate histogram (non-negative integers)", description = "Calculates the histogram of the incoming list of numbers. The calculation will ignore negative integer values." +
         "The result is an array of counts, where the index represents the binned value.")
 public class HistogramFunction extends ExpressionFunction {
 

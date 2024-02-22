@@ -13,10 +13,10 @@
 
 package org.hkijena.jipipe.extensions.expressions.operators;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
-@JIPipeDocumentation(name = "Multiply", description = "Multiplies the left and right operands")
+@SetJIPipeDocumentation(name = "Multiply", description = "Multiplies the left and right operands")
 public class NumericMultiplyFunctionOperator extends NumericFunctionOperator {
     public NumericMultiplyFunctionOperator(int precedence) {
         super("*", precedence);

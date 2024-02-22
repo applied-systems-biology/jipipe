@@ -16,14 +16,15 @@ package org.hkijena.jipipe.extensions.clij2.algorithms;
 import net.haesleinhuepf.clij.clearcl.ClearCLBuffer;
 import net.haesleinhuepf.clij2.CLIJ2;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -52,8 +53,8 @@ import org.python.util.PythonInterpreter;
 import java.nio.file.Path;
 import java.util.*;
 
-@JIPipeDocumentation(name = "CLIJ2 Execute OpenCL kernel (simple iterating)", description = "Executes an OpenCL kernel via CLIJ2 to process images. This node can have only one input.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "CLIJ")
+@SetJIPipeDocumentation(name = "CLIJ2 Execute OpenCL kernel (simple iterating)", description = "Executes an OpenCL kernel via CLIJ2 to process images. This node can have only one input.")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "CLIJ")
 public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgorithm {
 
     private OpenCLKernelScript kernelScript = new OpenCLKernelScript();
@@ -83,12 +84,12 @@ public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgo
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
-        super.runParameterSet(progressInfo, parameterAnnotations);
+    public void runParameterSet(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
+        super.runParameterSet(runContext, progressInfo, parameterAnnotations);
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         PythonInterpreter pythonInterpreter = new PythonInterpreter();
         pythonInterpreter.set("clij2", clij2);
@@ -159,7 +160,7 @@ public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgo
         kernelScript.makeExternalScriptFileRelative(baseDirectory);
     }
 
-    @JIPipeDocumentation(name = "Preprocessing", description = "CLIJ2 requires some information about the output image(s) and the memory that is allocated by the kernel operation. " +
+    @SetJIPipeDocumentation(name = "Preprocessing", description = "CLIJ2 requires some information about the output image(s) and the memory that is allocated by the kernel operation. " +
             "This script is executed to generate those values. There are following variables: 'cl_output_buffers', 'cl_dimensions', 'cl_global_sizes'. 'cl_output_buffers' is a dict that should contain the pre-allocated " +
             "output images for each output slot. 'cl_dimensions' is a list of integers that contains the dimensions of the output image. 'cl_global_sizes' is a list of integers that contains " +
             "the global size where the tasks are executed over (usually the output size). A variable 'clij2' is available that provides access to the CLIJ2 API. " +
@@ -178,13 +179,13 @@ public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgo
         this.preprocessingScript = preprocessingScript;
     }
 
-    @JIPipeDocumentation(name = "Program parameters", description = "Following parameters will be available from within the OpenCL program:")
+    @SetJIPipeDocumentation(name = "Program parameters", description = "Following parameters will be available from within the OpenCL program:")
     @JIPipeParameter(value = "program-parameters", persistence = JIPipeParameterSerializationMode.Object)
     public JIPipeDynamicParameterCollection getScriptParameters() {
         return scriptParameters;
     }
 
-    @JIPipeDocumentation(name = "Kernel", description = "The OpenCL kernel script.")
+    @SetJIPipeDocumentation(name = "Kernel", description = "The OpenCL kernel script.")
     @JIPipeParameter("kernel")
     public OpenCLKernelScript getKernelScript() {
         return kernelScript;
@@ -195,7 +196,7 @@ public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgo
         this.kernelScript = kernelScript;
     }
 
-    @JIPipeDocumentation(name = "Kernel program name", description = "The program that should be executed. Might be overwritten by the preprocessing script.")
+    @SetJIPipeDocumentation(name = "Kernel program name", description = "The program that should be executed. Might be overwritten by the preprocessing script.")
     @JIPipeParameter("kernel-program-name")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png")
     public String getKernelFunction() {
@@ -208,14 +209,14 @@ public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgo
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        super.reportValidity(context, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
         HashSet<String> parameterNames = new HashSet<>(getInputSlotMap().keySet());
         parameterNames.addAll(getOutputSlotMap().keySet());
         parameterNames.addAll(scriptParameters.getParameters().keySet());
         if (parameterNames.size() != (getInputSlotMap().size() + getOutputSlotMap().size() + scriptParameters.getParameters().size())) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new ParameterValidationReportContext(context, this, "Kernel", "kernel"),
+                    new ParameterValidationReportContext(reportContext, this, "Kernel", "kernel"),
                     "All slots and script parameters must have unique names!",
                     "Input and output slots are passed to OpenCL, meaning that you cannot have duplicate input and output parameter and slot names.",
                     "Rename the slots, so they are unique within the whole algorithm. Define new parameters that have a different unique key"));

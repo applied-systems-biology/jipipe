@@ -1,8 +1,8 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.modify;
 
 import ij.gui.Roi;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -16,11 +16,11 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 /**
  * Algorithm that reorders Hyperstack dimensions
  */
-@JIPipeDocumentation(name = "Reorder ROI dimensions", description = "Reorders dimensions of all the ROI contained in the ROI lists. " +
+@SetJIPipeDocumentation(name = "Reorder ROI dimensions", description = "Reorders dimensions of all the ROI contained in the ROI lists. " +
         "Unlike the equivalent method for images, this node allows to have non-unique mappings.")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
 public class ReorderRoiDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private HyperstackDimension targetZ = HyperstackDimension.Depth;
@@ -39,7 +39,7 @@ public class ReorderRoiDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROIListData rois = new ROIListData(iterationStep.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo));
 
         for (Roi roi : rois) {
@@ -81,7 +81,7 @@ public class ReorderRoiDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorith
         iterationStep.addOutputData(getFirstOutputSlot(), rois, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Copy Z to ...", description = "Determines how the Z dimension is re-mapped.")
+    @SetJIPipeDocumentation(name = "Copy Z to ...", description = "Determines how the Z dimension is re-mapped.")
     @JIPipeParameter("target-z")
     public HyperstackDimension getTargetZ() {
         return targetZ;
@@ -92,7 +92,7 @@ public class ReorderRoiDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.targetZ = targetZ;
     }
 
-    @JIPipeDocumentation(name = "Copy C to ...", description = "Determines how the C (channel) dimension is re-mapped.")
+    @SetJIPipeDocumentation(name = "Copy C to ...", description = "Determines how the C (channel) dimension is re-mapped.")
     @JIPipeParameter("target-c")
     public HyperstackDimension getTargetC() {
         return targetC;
@@ -103,7 +103,7 @@ public class ReorderRoiDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.targetC = targetC;
     }
 
-    @JIPipeDocumentation(name = "Copy T to ...", description = "Determines how the T (time) dimension is re-mapped.")
+    @SetJIPipeDocumentation(name = "Copy T to ...", description = "Determines how the T (time) dimension is re-mapped.")
     @JIPipeParameter("target-t")
     public HyperstackDimension getTargetT() {
         return targetT;

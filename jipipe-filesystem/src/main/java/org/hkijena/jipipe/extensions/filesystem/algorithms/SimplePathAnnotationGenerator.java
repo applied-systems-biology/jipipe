@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -35,10 +35,10 @@ import java.nio.file.Files;
 /**
  * Algorithm that generates annotations from folder names
  */
-@JIPipeDocumentation(name = "Add path to annotations", description = "Creates an annotation for each path based on its name or its full path.")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For paths")
-@JIPipeInputSlot(value = PathData.class, slotName = "Paths", autoCreate = true)
-@JIPipeOutputSlot(value = PathData.class, slotName = "Annotated paths", autoCreate = true)
+@SetJIPipeDocumentation(name = "Add path to annotations", description = "Creates an annotation for each path based on its name or its full path.")
+@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For paths")
+@AddJIPipeInputSlot(value = PathData.class, slotName = "Paths", create = true)
+@AddJIPipeOutputSlot(value = PathData.class, slotName = "Annotated paths", create = true)
 public class SimplePathAnnotationGenerator extends JIPipeSimpleIteratingAlgorithm {
 
     private String generatedAnnotation = "#Dataset";
@@ -69,7 +69,7 @@ public class SimplePathAnnotationGenerator extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         if (!StringUtils.isNullOrEmpty(generatedAnnotation)) {
             FolderData inputData = iterationStep.getInputData(getFirstInputSlot(), FolderData.class, progressInfo);
             boolean removeThisExtension = removeExtensions && Files.isRegularFile(inputData.toPath());
@@ -103,7 +103,7 @@ public class SimplePathAnnotationGenerator extends JIPipeSimpleIteratingAlgorith
             return fileName.substring(0, dotIndex);
     }
 
-    @JIPipeDocumentation(name = "Generated annotation", description = "Select which annotation type is generated for each path")
+    @SetJIPipeDocumentation(name = "Generated annotation", description = "Select which annotation type is generated for each path")
     @JIPipeParameter("generated-annotation")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public String getGeneratedAnnotation() {
@@ -115,7 +115,7 @@ public class SimplePathAnnotationGenerator extends JIPipeSimpleIteratingAlgorith
         this.generatedAnnotation = generatedAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with full path", description = "If true, the full path is put into the annotation. Otherwise, only the file or folder name is stored.")
+    @SetJIPipeDocumentation(name = "Annotate with full path", description = "If true, the full path is put into the annotation. Otherwise, only the file or folder name is stored.")
     @JIPipeParameter("full-path")
     public boolean isFullPath() {
         return fullPath;
@@ -126,7 +126,7 @@ public class SimplePathAnnotationGenerator extends JIPipeSimpleIteratingAlgorith
         this.fullPath = fullPath;
     }
 
-    @JIPipeDocumentation(name = "Remove file extensions", description = "If a path is a file, remove its extension. The extension is the substring starting with the last dot. " +
+    @SetJIPipeDocumentation(name = "Remove file extensions", description = "If a path is a file, remove its extension. The extension is the substring starting with the last dot. " +
             "Unix dot-files (that start with a dot) are ignored. Ignores files that have no extension.")
     @JIPipeParameter("remove-extensions")
     public boolean isRemoveExtensions() {
@@ -138,7 +138,7 @@ public class SimplePathAnnotationGenerator extends JIPipeSimpleIteratingAlgorith
         this.removeExtensions = removeExtensions;
     }
 
-    @JIPipeDocumentation(name = "Merge same annotation values", description = "Determines which strategy is applied if an annotation already exists.")
+    @SetJIPipeDocumentation(name = "Merge same annotation values", description = "Determines which strategy is applied if an annotation already exists.")
     @JIPipeParameter("annotation-merge-strategy")
     public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {
         return annotationMergeStrategy;

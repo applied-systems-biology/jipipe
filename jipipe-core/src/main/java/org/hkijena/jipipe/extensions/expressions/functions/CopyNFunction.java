@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.functions;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionEvaluator;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
@@ -9,7 +9,7 @@ import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 import java.util.ArrayList;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Copy N times", description = "Copies the left operand N times, as defined by the right operand. " +
+@SetJIPipeDocumentation(name = "Copy N times", description = "Copies the left operand N times, as defined by the right operand. " +
         "If N == 0, NULL is returned. If N == 1, the left operand is returned. If N > 1, an array of N copies is returned.")
 public class CopyNFunction extends ExpressionFunction {
     public CopyNFunction() {

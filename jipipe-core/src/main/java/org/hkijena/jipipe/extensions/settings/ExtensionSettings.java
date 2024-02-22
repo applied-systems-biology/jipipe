@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.settings;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -70,7 +70,7 @@ public class ExtensionSettings extends AbstractJIPipeParameterCollection {
         return result;
     }
 
-    @JIPipeDocumentation(name = "Validate ImageJ dependencies", description = "If enabled, JIPipe will check if ImageJ dependencies are installed.")
+    @SetJIPipeDocumentation(name = "Validate ImageJ dependencies", description = "If enabled, JIPipe will check if ImageJ dependencies are installed.")
     @JIPipeParameter("validate-imagej-dependencies")
     public boolean isValidateImageJDependencies() {
         return validateImageJDependencies;
@@ -81,7 +81,7 @@ public class ExtensionSettings extends AbstractJIPipeParameterCollection {
         this.validateImageJDependencies = validateImageJDependencies;
     }
 
-    @JIPipeDocumentation(name = "Validate node types", description = "If enabled, JIPipe will test all node types if they can be initialized and only contain known parameter types.")
+    @SetJIPipeDocumentation(name = "Validate node types", description = "If enabled, JIPipe will test all node types if they can be initialized and only contain known parameter types.")
     @JIPipeParameter("validate-node-types")
     public boolean isValidateNodeTypes() {
         return validateNodeTypes;
@@ -92,7 +92,7 @@ public class ExtensionSettings extends AbstractJIPipeParameterCollection {
         this.validateNodeTypes = validateNodeTypes;
     }
 
-    @JIPipeDocumentation(name = "Silent", description = "If enabled, no dialogs are shown")
+    @SetJIPipeDocumentation(name = "Silent", description = "If enabled, no dialogs are shown")
     @JIPipeParameter("silent")
     public boolean isSilent() {
         return silent;
@@ -103,7 +103,7 @@ public class ExtensionSettings extends AbstractJIPipeParameterCollection {
         this.silent = silent;
     }
 
-    @JIPipeDocumentation(name = "Ignore pre-activation checks", description = "If enabled, extensions will be loaded even if pre-activation checks indicated issues")
+    @SetJIPipeDocumentation(name = "Ignore pre-activation checks", description = "If enabled, extensions will be loaded even if pre-activation checks indicated issues")
     @JIPipeParameter("ignore-pre-activation-checks")
     public boolean isIgnorePreActivationChecks() {
         return ignorePreActivationChecks;

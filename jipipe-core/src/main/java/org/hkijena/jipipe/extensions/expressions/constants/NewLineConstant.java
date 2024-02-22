@@ -13,10 +13,10 @@
 
 package org.hkijena.jipipe.extensions.expressions.constants;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionConstant;
 
-@JIPipeDocumentation(name = "NEW_LINE", description = "A new line string")
+@SetJIPipeDocumentation(name = "NEW_LINE", description = "A new line string")
 public class NewLineConstant extends ExpressionConstant {
     public NewLineConstant() {
         super("new_line", "\n");

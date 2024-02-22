@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.functions;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -9,7 +9,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Summarize variables", description = "Generates a string that displays all variables")
+@SetJIPipeDocumentation(name = "Summarize variables", description = "Generates a string that displays all variables")
 public class SummarizeVariablesFunction extends ExpressionFunction {
 
     public SummarizeVariablesFunction() {

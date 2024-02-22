@@ -13,14 +13,14 @@
 
 package org.hkijena.jipipe.extensions.expressions.functions.variables;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "Set variable if", description = "Creates a variable with the first parameter as name and sets its value as the second parameter. " +
+@SetJIPipeDocumentation(name = "Set variable if", description = "Creates a variable with the first parameter as name and sets its value as the second parameter. " +
         "Will only set the variable if the third parameter is true.. " +
         "Returns if the variable was set.")
 public class SetVariableIfFunction extends ExpressionFunction {

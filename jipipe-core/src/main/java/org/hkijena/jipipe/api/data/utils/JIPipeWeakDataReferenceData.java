@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.api.data.utils;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHidden;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
@@ -17,10 +17,10 @@ import java.lang.ref.WeakReference;
 /**
  * A helper data type that weakly references other data
  */
-@JIPipeDocumentation(name = "Weak data reference", description = "References other data (weakly).")
+@SetJIPipeDocumentation(name = "Weak data reference", description = "References other data (weakly).")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Unknown storage schema (generic data)",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-empty-data.schema.json")
-@JIPipeHidden
+@LabelAsJIPipeHidden
 public class JIPipeWeakDataReferenceData implements JIPipeData {
 
     private final WeakReference<JIPipeData> dataReference;

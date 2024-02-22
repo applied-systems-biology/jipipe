@@ -32,8 +32,8 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
     private final String nodeId;
     private final String nodeName;
     private final PluginInfo<CLIJMacroPlugin> pluginInfo;
-    private final List<JIPipeInputSlot> inputSlots = new ArrayList<>();
-    private final List<JIPipeOutputSlot> outputSlots = new ArrayList<>();
+    private final List<AddJIPipeInputSlot> inputSlots = new ArrayList<>();
+    private final List<AddJIPipeOutputSlot> outputSlots = new ArrayList<>();
     private final BiMap<String, Integer> inputSlotToArgIndexMap = HashBiMap.create();
     private final BiMap<String, Integer> outputSlotToArgIndexMap = HashBiMap.create();
     private final BiMap<String, Integer> parameterIdToArgIndexMap = HashBiMap.create();
@@ -117,7 +117,7 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
                         if (!(parameterName.contains("destination") || byRef)) {
                             // Image input
                             String slotName = createSlotName(parameterName);
-                            inputSlots.add(new DefaultJIPipeInputSlot(CLIJImageData.class, slotName, "", true, false, JIPipeDataSlotRole.Data));
+                            inputSlots.add(new DefaultAddJIPipeInputSlot(CLIJImageData.class, slotName, "", true, false, JIPipeDataSlotRole.Data));
                             inputSlotToArgIndexMap.put(slotName, i);
                             if (byRef) {
                                 ioInputSlots.add(slotName);
@@ -125,7 +125,7 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
                         } else {
                             // Image output
                             String slotName = createSlotName(parameterName);
-                            outputSlots.add(new DefaultJIPipeOutputSlot(CLIJImageData.class, slotName, "", null, true, JIPipeDataSlotRole.Data));
+                            outputSlots.add(new DefaultAddJIPipeOutputSlot(CLIJImageData.class, slotName, "", null, true, JIPipeDataSlotRole.Data));
                             outputSlotToArgIndexMap.put(slotName, i);
                         }
                         break;
@@ -185,7 +185,7 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
             }
         }
         if (!outputTableColumnInfos.isEmpty()) {
-            outputSlots.add(new DefaultJIPipeOutputSlot(ResultsTableData.class, "Results table", "", null, true, JIPipeDataSlotRole.Data));
+            outputSlots.add(new DefaultAddJIPipeOutputSlot(ResultsTableData.class, "Results table", "", null, true, JIPipeDataSlotRole.Data));
         }
     }
 
@@ -280,12 +280,12 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
     }
 
     @Override
-    public List<JIPipeInputSlot> getInputSlots() {
+    public List<AddJIPipeInputSlot> getInputSlots() {
         return inputSlots;
     }
 
     @Override
-    public List<JIPipeOutputSlot> getOutputSlots() {
+    public List<AddJIPipeOutputSlot> getOutputSlots() {
         return outputSlots;
     }
 

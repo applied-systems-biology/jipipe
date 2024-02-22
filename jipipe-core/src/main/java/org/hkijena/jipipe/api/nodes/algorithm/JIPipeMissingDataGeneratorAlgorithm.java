@@ -17,8 +17,8 @@ import com.google.common.primitives.Ints;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -29,6 +29,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
@@ -49,14 +50,13 @@ import java.util.concurrent.Future;
  * and otherwise runs a generator function that generates missing data items.
  * Original annotations are preserved.
  */
-@JIPipeDocumentationDescription(description = "This algorithm groups the incoming data based on the annotations. " +
+@AddJIPipeDocumentationDescription(description = "This algorithm groups the incoming data based on the annotations. " +
         "Those groups can consist of one or multiple data item per slot. " +
         "If items are missing, they will be generated according to this node's generator function. " +
         "Otherwise data will be passed through.")
 public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParameterSlotAlgorithm implements JIPipeParallelizedAlgorithm, JIPipeIterationStepAlgorithm {
 
     private JIPipeMissingDataGeneratorIterationStepGenerationSettings iterationStepGenerationSettings = new JIPipeMissingDataGeneratorIterationStepGenerationSettings();
-    private boolean parallelizationEnabled = true;
     private boolean keepOriginalAnnotations = true;
 
     /**
@@ -87,7 +87,6 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
     public JIPipeMissingDataGeneratorAlgorithm(JIPipeMissingDataGeneratorAlgorithm other) {
         super(other);
         this.iterationStepGenerationSettings = new JIPipeMissingDataGeneratorIterationStepGenerationSettings(other.iterationStepGenerationSettings);
-        this.parallelizationEnabled = other.parallelizationEnabled;
         this.keepOriginalAnnotations = other.keepOriginalAnnotations;
         registerSubParameter(iterationStepGenerationSettings);
     }
@@ -131,11 +130,11 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
 
         if (isPassThrough() && canPassThrough()) {
             progressInfo.log("Data passed through to output");
-            runPassThrough(progressInfo);
+            runPassThrough(runContext, progressInfo);
             return;
         }
 
@@ -168,7 +167,9 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
         }
 
         final int numIterationSteps = iterationSteps.size();
-        if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1) {
+        JIPipeRuntimePartition partition = runContext.getGraphRun().getRuntimePartition(getRuntimePartition());
+
+        if (!supportsParallelization() || !partition.isEnableParallelization() || runContext.getThreadPool() == null || runContext.getThreadPool().getMaxThreads() <= 1) {
             for (int i = 0; i < iterationSteps.size(); i++) {
                 if (progressInfo.isCancelled())
                     return;
@@ -186,8 +187,11 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
                     runIteration(iterationSteps.get(rowIndex), new JIPipeMutableIterationContext(rowIndex, numIterationSteps), slotProgress);
                 });
             }
-            progressInfo.log(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d", tasks.size(), getParallelizationBatchSize(), getThreadPool().getMaxThreads()));
-            for (Future<Exception> batch : getThreadPool().scheduleBatches(tasks, getParallelizationBatchSize())) {
+            progressInfo.log(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d",
+                    tasks.size(),
+                    getParallelizationBatchSize(),
+                    runContext.getThreadPool().getMaxThreads()));
+            for (Future<Exception> batch : runContext.getThreadPool().scheduleBatches(tasks, getParallelizationBatchSize())) {
                 try {
                     Exception exception = batch.get();
                     if (exception != null)
@@ -207,7 +211,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
         return super.isParameterUIVisible(tree, access);
     }
 
-    @JIPipeDocumentation(name = "Input management", description = "This algorithm can have multiple inputs. This means that JIPipe has to match incoming data into batches via metadata annotations. " +
+    @SetJIPipeDocumentation(name = "Input management", description = "This algorithm can have multiple inputs. This means that JIPipe has to match incoming data into batches via metadata annotations. " +
             "The following settings allow you to control which columns are used as reference to organize data.")
     @JIPipeParameter(value = "jipipe:data-batch-generation", collapsed = true)
     public JIPipeMissingDataGeneratorIterationStepGenerationSettings getDataBatchGenerationSettings() {
@@ -224,22 +228,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
         return 1;
     }
 
-    @JIPipeDocumentation(name = "Enable parallelization", description = "If enabled, the workload can be calculated across multiple threads to for speedup. " +
-            "Please note that the actual usage of multiple threads depend on the runtime settings and the algorithm implementation. " +
-            "We recommend to use the runtime parameters to control parallelization in most cases.")
-    @JIPipeParameter(value = "jipipe:parallelization:enabled", pinned = true)
-    @Override
-    public boolean isParallelizationEnabled() {
-        return parallelizationEnabled;
-    }
-
-    @Override
-    @JIPipeParameter("jipipe:parallelization:enabled")
-    public void setParallelizationEnabled(boolean parallelizationEnabled) {
-        this.parallelizationEnabled = parallelizationEnabled;
-    }
-
-    @JIPipeDocumentation(name = "Keep original annotations", description = "If enabled, outputs that were not generated " +
+    @SetJIPipeDocumentation(name = "Keep original annotations", description = "If enabled, outputs that were not generated " +
             "keep their original annotations. Otherwise the merged annotations from the data batch are used.")
     @JIPipeParameter(value = "keep-original-annotations", pinned = true)
     public boolean isKeepOriginalAnnotations() {

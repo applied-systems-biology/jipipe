@@ -16,8 +16,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.dimensions;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.plugin.ChannelArranger;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -52,12 +52,12 @@ import java.util.stream.Collectors;
 /**
  * Wrapper around {@link ChannelArranger}
  */
-@JIPipeDocumentation(name = "Reduce & split stacks (slice)", description = "Splits incoming stacks into a customizable amount of stacks based on stack indices. Add more output slots " +
+@SetJIPipeDocumentation(name = "Reduce & split stacks (slice)", description = "Splits incoming stacks into a customizable amount of stacks based on stack indices. Add more output slots " +
         "to create more groups. Please note that this node utilizes slice indices and cannot handle 5D images. Please use 'Reduce & split hyperstack' or 'Reduce & split hyperstack (Expression)' if you want to properly handle 5D images.")
-@JIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks")
+@DefineJIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks")
 public class StackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OutputSlotMapParameterCollection stackAssignments;
@@ -107,7 +107,7 @@ public class StackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus img = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
@@ -155,7 +155,7 @@ public class StackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Ignore missing slices", description = "If enabled, slice indices outside of the image dimensions are ignored.")
+    @SetJIPipeDocumentation(name = "Ignore missing slices", description = "If enabled, slice indices outside of the image dimensions are ignored.")
     @JIPipeParameter("ignore-missing-slices")
     public boolean isIgnoreMissingSlices() {
         return ignoreMissingSlices;
@@ -166,7 +166,7 @@ public class StackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.ignoreMissingSlices = ignoreMissingSlices;
     }
 
-    @JIPipeDocumentation(name = "Stack assignment", description = "Each output slot is assigned to a set of stacks that is determined by the " +
+    @SetJIPipeDocumentation(name = "Stack assignment", description = "Each output slot is assigned to a set of stacks that is determined by the " +
             "selection on the right-hand side. You have to input a valid number range (e.g. 0-10;15;22-23) " +
             "that then will then generated as output of the corresponding data slot. Inverse ordered ranges (e.g. 10-5) are supported. " +
             "The first slice is indexed with 0.")
@@ -176,7 +176,7 @@ public class StackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         return stackAssignments;
     }
 
-    @JIPipeDocumentation(name = "Generated annotation", description = "An optional annotation that is generated for each output to indicate from which slices the data was generated from. " +
+    @SetJIPipeDocumentation(name = "Generated annotation", description = "An optional annotation that is generated for each output to indicate from which slices the data was generated from. " +
             "The format will be slice=[index0],[index1],...")
     @JIPipeParameter("annotation-type")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
@@ -189,7 +189,7 @@ public class StackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.annotationType = annotationType;
     }
 
-    @JIPipeDocumentation(name = "Sort stack indices", description = "If enabled, stack indices are sorted before they are used to create an output.")
+    @SetJIPipeDocumentation(name = "Sort stack indices", description = "If enabled, stack indices are sorted before they are used to create an output.")
     @JIPipeParameter("sorted-stack-ids")
     public boolean isSortedStackIds() {
         return sortedStackIds;
@@ -200,7 +200,7 @@ public class StackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.sortedStackIds = sortedStackIds;
     }
 
-    @JIPipeDocumentation(name = "Unique stack indices", description = "If enabled, duplicate stack indices are removed before they are used to create an output.")
+    @SetJIPipeDocumentation(name = "Unique stack indices", description = "If enabled, duplicate stack indices are removed before they are used to create an output.")
     @JIPipeParameter("sorted-stack-ids")
     public boolean isUniqueStackIds() {
         return uniqueStackIds;

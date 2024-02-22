@@ -65,7 +65,7 @@ public class JIPipeSlotEditorUI extends JPanel implements JIPipeGraphNode.NodeSl
         MarkdownReader helpPanel = new MarkdownReader(false);
         helpPanel.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-slots.md", new HashMap<>()));
         JScrollPane scrollPane = new JScrollPane(slotTree);
-        JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPane, helpPanel, AutoResizeSplitPane.RATIO_1_TO_3);
+        JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPane, helpPanel, AutoResizeSplitPane.RATIO_3_TO_1);
         add(splitPane, BorderLayout.CENTER);
 
         initializeToolbar();
@@ -112,12 +112,12 @@ public class JIPipeSlotEditorUI extends JPanel implements JIPipeGraphNode.NodeSl
                 toolBar.add(editButton);
             }
 
-            JButton moveUpButton = new JButton(UIUtils.getIconFromResources("actions/arrow-up.png"));
+            JButton moveUpButton = new JButton(UIUtils.getIconFromResources("actions/caret-up.png"));
             moveUpButton.setToolTipText("Move up");
             moveUpButton.addActionListener(e -> moveSlotUp());
             toolBar.add(moveUpButton);
 
-            JButton moveDownButton = new JButton(UIUtils.getIconFromResources("actions/arrow-down.png"));
+            JButton moveDownButton = new JButton(UIUtils.getIconFromResources("actions/caret-down.png"));
             moveDownButton.setToolTipText("Move down");
             moveDownButton.addActionListener(e -> moveSlotDown());
             toolBar.add(moveDownButton);

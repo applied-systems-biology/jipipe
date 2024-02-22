@@ -1,16 +1,14 @@
 package org.hkijena.jipipe.extensions.ijfilaments.nodes.modify;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameter;
 import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
@@ -19,14 +17,13 @@ import org.hkijena.jipipe.extensions.ijfilaments.parameters.VertexMaskParameter;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertexVariablesInfo;
 import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
-import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Change filament vertex properties", description = "Allows to override various properties of the filament vertices")
-@JIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
-@JIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Change filament vertex properties", description = "Allows to override various properties of the filament vertices")
+@DefineJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
+@AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
 public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter centroidX = new JIPipeExpressionParameter("default");
@@ -65,7 +62,7 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Filaments3DData inputData = iterationStep.getInputData(getFirstInputSlot(), Filaments3DData.class, progressInfo);
         Filaments3DData outputData = new Filaments3DData(inputData);
 
@@ -124,7 +121,7 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
         iterationStep.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Centroid X", description = "The X location of the centroid")
+    @SetJIPipeDocumentation(name = "Centroid X", description = "The X location of the centroid")
     @JIPipeParameter("centroid-x")
     @JIPipeExpressionParameterVariable(name = "Default value", key = "default", description = "The current value")
     @JIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
@@ -143,7 +140,7 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
     }
 
 
-    @JIPipeDocumentation(name = "Centroid Y", description = "The Y location of the centroid")
+    @SetJIPipeDocumentation(name = "Centroid Y", description = "The Y location of the centroid")
     @JIPipeParameter("centroid-y")
     @JIPipeExpressionParameterVariable(name = "Default value", key = "default", description = "The current value")
     @JIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
@@ -161,7 +158,7 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
         this.centroidY = centroidY;
     }
 
-    @JIPipeDocumentation(name = "Centroid Z", description = "The Z location of the centroid")
+    @SetJIPipeDocumentation(name = "Centroid Z", description = "The Z location of the centroid")
     @JIPipeParameter("centroid-z")
     @JIPipeExpressionParameterVariable(name = "Default value", key = "default", description = "The current value")
     @JIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
@@ -179,7 +176,7 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
         this.centroidZ = centroidZ;
     }
 
-    @JIPipeDocumentation(name = "Centroid channel", description = "The channel/c location of the centroid")
+    @SetJIPipeDocumentation(name = "Centroid channel", description = "The channel/c location of the centroid")
     @JIPipeParameter("centroid-c")
     @JIPipeExpressionParameterVariable(name = "Default value", key = "default", description = "The current value")
     @JIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
@@ -197,7 +194,7 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
         this.centroidC = centroidC;
     }
 
-    @JIPipeDocumentation(name = "Centroid frame", description = "The frame/t location of the centroid")
+    @SetJIPipeDocumentation(name = "Centroid frame", description = "The frame/t location of the centroid")
     @JIPipeParameter("centroid-t")
     @JIPipeExpressionParameterVariable(name = "Default value", key = "default", description = "The current value")
     @JIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
@@ -215,7 +212,7 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
         this.centroidT = centroidT;
     }
 
-    @JIPipeDocumentation(name = "Radius", description = "The radius of the vertex")
+    @SetJIPipeDocumentation(name = "Radius", description = "The radius of the vertex")
     @JIPipeParameter("radius")
     @JIPipeExpressionParameterVariable(name = "Default value", key = "default", description = "The current value")
     @JIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
@@ -233,7 +230,7 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
         this.radius = radius;
     }
 
-    @JIPipeDocumentation(name = "Value", description = "The value of the vertex")
+    @SetJIPipeDocumentation(name = "Value", description = "The value of the vertex")
     @JIPipeParameter("value")
     @JIPipeExpressionParameterVariable(name = "Default value", key = "default", description = "The current value")
     @JIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
@@ -251,7 +248,7 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
         this.value = value;
     }
 
-    @JIPipeDocumentation(name = "Physical voxel size X", description = "The physical size of a voxel (X). Must return a string in the format '[Value] [Unit]'")
+    @SetJIPipeDocumentation(name = "Physical voxel size X", description = "The physical size of a voxel (X). Must return a string in the format '[Value] [Unit]'")
     @JIPipeParameter("physical-size-x")
     @JIPipeExpressionParameterVariable(name = "Default value", key = "default", description = "The current value")
     @JIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
@@ -269,7 +266,7 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
         this.physicalSizeX = physicalSizeX;
     }
 
-    @JIPipeDocumentation(name = "Physical voxel size Y", description = "The physical size of a voxel (Y). Must return a string in the format '[Value] [Unit]'")
+    @SetJIPipeDocumentation(name = "Physical voxel size Y", description = "The physical size of a voxel (Y). Must return a string in the format '[Value] [Unit]'")
     @JIPipeParameter("physical-size-y")
     @JIPipeExpressionParameterVariable(name = "Default value", key = "default", description = "The current value")
     @JIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
@@ -287,7 +284,7 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
         this.physicalSizeY = physicalSizeY;
     }
 
-    @JIPipeDocumentation(name = "Physical voxel size Z", description = "The physical size of a voxel (Y). Must return a string in the format '[Value] [Unit]'")
+    @SetJIPipeDocumentation(name = "Physical voxel size Z", description = "The physical size of a voxel (Y). Must return a string in the format '[Value] [Unit]'")
     @JIPipeParameter("physical-size-z")
     @JIPipeExpressionParameterVariable(name = "Default value", key = "default", description = "The current value")
     @JIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
@@ -305,7 +302,7 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
         this.physicalSizeZ = physicalSizeZ;
     }
 
-    @JIPipeDocumentation(name = "Vertex mask", description = "Allows to only target a specific set of vertices.")
+    @SetJIPipeDocumentation(name = "Vertex mask", description = "Allows to only target a specific set of vertices.")
     @JIPipeParameter("vertex-filter")
     public VertexMaskParameter getVertexMask() {
         return vertexMask;

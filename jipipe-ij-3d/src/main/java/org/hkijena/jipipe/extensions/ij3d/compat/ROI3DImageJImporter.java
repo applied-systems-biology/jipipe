@@ -17,7 +17,7 @@ package org.hkijena.jipipe.extensions.ij3d.compat;
 import ij.WindowManager;
 import mcib3d.geom.Objects3DPopulation;
 import mcib_plugins.tools.RoiManager3D_2;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.ImageJDataImporter;
 import org.hkijena.jipipe.api.compat.ImageJImportParameters;
@@ -31,7 +31,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.Objects;
 
-@JIPipeDocumentation(name = "Import 3D ROI from ImageJ")
+@SetJIPipeDocumentation(name = "Import 3D ROI from ImageJ")
 public class ROI3DImageJImporter implements ImageJDataImporter {
     @Override
     public JIPipeDataTable importData(List<Object> objects, ImageJImportParameters parameters, JIPipeProgressInfo progressInfo) {

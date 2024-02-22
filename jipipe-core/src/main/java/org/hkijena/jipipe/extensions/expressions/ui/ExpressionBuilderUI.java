@@ -59,7 +59,7 @@ public class ExpressionBuilderUI extends JPanel {
     private final List<ExpressionOperatorEntry> operatorEntryList;
     private final List<ExpressionConstantEntry> constantEntryList;
     private RSyntaxTextArea expressionEditor;
-    private final DocumentTabPane tabPane = new DocumentTabPane(true);
+    private final DocumentTabPane tabPane = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Top);
     private ExpressionBuilderInserterUI lastVariableInserter;
 
     public ExpressionBuilderUI(String expression, Set<JIPipeExpressionParameterVariableInfo> variables) {
@@ -185,7 +185,7 @@ public class ExpressionBuilderUI extends JPanel {
         JPanel expressionEditorPanel = new JPanel(new BorderLayout());
         expressionEditorPanel.setPreferredSize(new Dimension(256, 128));
         expressionEditorPanel.setMinimumSize(new Dimension(256, 128));
-        expressionEditorPanel.setBorder(BorderFactory.createEtchedBorder());
+        expressionEditorPanel.setBorder(UIUtils.createControlBorder());
         expressionEditorPanel.add(expressionEditor, BorderLayout.CENTER);
         contentPanel.add(expressionEditorPanel, BorderLayout.SOUTH);
         contentPanel.add(tabPane, BorderLayout.CENTER);

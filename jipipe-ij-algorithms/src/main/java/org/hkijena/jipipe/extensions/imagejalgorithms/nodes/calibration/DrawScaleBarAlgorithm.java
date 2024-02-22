@@ -4,8 +4,8 @@ import ij.ImagePlus;
 import ij.gui.Overlay;
 import ij.gui.Roi;
 import ij.measure.Calibration;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -28,11 +28,11 @@ import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
 
 import java.awt.*;
 
-@JIPipeDocumentation(name = "Draw scale bar", description = "Draws a scale bar onto the image (via an overlay ROI)")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Calibration")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze\nTools", aliasName = "Scale Bar...")
+@SetJIPipeDocumentation(name = "Draw scale bar", description = "Draws a scale bar onto the image (via an overlay ROI)")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Calibration")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze\nTools", aliasName = "Scale Bar...")
 public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final TextSettings textSettings;
@@ -66,7 +66,7 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus imp = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getDuplicateImage();
         ScaleBarGenerator generator = new ScaleBarGenerator(imp);
         Calibration cal = imp.getCalibration();
@@ -126,13 +126,13 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
 
-    @JIPipeDocumentation(name = "Label settings", description = "The following settings allow you to control the text labels")
+    @SetJIPipeDocumentation(name = "Label settings", description = "The following settings allow you to control the text labels")
     @JIPipeParameter("text-settings")
     public TextSettings getTextSettings() {
         return textSettings;
     }
 
-    @JIPipeDocumentation(name = "Bar size (horizontal)", description = "Size of the scale bar. If disabled, a calculated default value is used.")
+    @SetJIPipeDocumentation(name = "Bar size (horizontal)", description = "Size of the scale bar. If disabled, a calculated default value is used.")
     @JIPipeParameter("bar-size-horizontal")
     public OptionalQuantity getHorizontalBarSize() {
         return horizontalBarSize;
@@ -143,7 +143,7 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.horizontalBarSize = horizontalBarSize;
     }
 
-    @JIPipeDocumentation(name = "Bar size (vertical)", description = "Size of the scale bar. If disabled, a calculated default value is used.")
+    @SetJIPipeDocumentation(name = "Bar size (vertical)", description = "Size of the scale bar. If disabled, a calculated default value is used.")
     @JIPipeParameter("bar-size-vertical")
     public OptionalQuantity getVerticalBarSize() {
         return verticalBarSize;
@@ -154,7 +154,7 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.verticalBarSize = verticalBarSize;
     }
 
-    @JIPipeDocumentation(name = "Bar thickness (px)", description = "Thickness of the scale bar in pixels.")
+    @SetJIPipeDocumentation(name = "Bar thickness (px)", description = "Thickness of the scale bar in pixels.")
     @JIPipeParameter("bar-thickness")
     public int getBarThickness() {
         return barThickness;
@@ -165,7 +165,7 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.barThickness = barThickness;
     }
 
-    @JIPipeDocumentation(name = "Bar color", description = "Color of the bar")
+    @SetJIPipeDocumentation(name = "Bar color", description = "Color of the bar")
     @JIPipeParameter("bar-color")
     public Color getBarColor() {
         return barColor;
@@ -177,7 +177,7 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
 
-    @JIPipeDocumentation(name = "Background color", description = "If enabled, the background of the bar")
+    @SetJIPipeDocumentation(name = "Background color", description = "If enabled, the background of the bar")
     @JIPipeParameter("background-color")
     public OptionalColorParameter getBackgroundColor() {
         return backgroundColor;
@@ -189,7 +189,7 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
 
-    @JIPipeDocumentation(name = "Location", description = "Location of the scale bar")
+    @SetJIPipeDocumentation(name = "Location", description = "Location of the scale bar")
     @JIPipeParameter("location")
     public ScaleBarGenerator.ScaleBarPosition getLocation() {
         return location;
@@ -200,7 +200,7 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.location = location;
     }
 
-    @JIPipeDocumentation(name = "Draw horizontal scale bar", description = "If enabled, a horizontal scale bar is drawn")
+    @SetJIPipeDocumentation(name = "Draw horizontal scale bar", description = "If enabled, a horizontal scale bar is drawn")
     @JIPipeParameter("draw-horizontal")
     public boolean isDrawHorizontal() {
         return drawHorizontal;
@@ -211,7 +211,7 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.drawHorizontal = drawHorizontal;
     }
 
-    @JIPipeDocumentation(name = "Draw vertical scale bar", description = "If enabled, a vertical scale bar is drawn")
+    @SetJIPipeDocumentation(name = "Draw vertical scale bar", description = "If enabled, a vertical scale bar is drawn")
     @JIPipeParameter("draw-vertical")
     public boolean isDrawVertical() {
         return drawVertical;
@@ -246,7 +246,7 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             this.hideLabels = other.hideLabels;
         }
 
-        @JIPipeDocumentation(name = "Label (horizontal)", description = "Expression that determines the text to be rendered.")
+        @SetJIPipeDocumentation(name = "Label (horizontal)", description = "Expression that determines the text to be rendered.")
         @JIPipeParameter(value = "label-h", important = true)
         @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
         @JIPipeExpressionParameterVariable(name = "Unit", description = "The unit of the scale bar")
@@ -260,7 +260,7 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             this.horizontalLabel = horizontalLabel;
         }
 
-        @JIPipeDocumentation(name = "Label (vertical)", description = "Expression that determines the text to be rendered.")
+        @SetJIPipeDocumentation(name = "Label (vertical)", description = "Expression that determines the text to be rendered.")
         @JIPipeParameter(value = "label-v", important = true)
         @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
         @JIPipeExpressionParameterVariable(name = "Unit", description = "The unit of the scale bar")
@@ -274,7 +274,7 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             this.verticalLabel = verticalLabel;
         }
 
-        @JIPipeDocumentation(name = "Hide labels", description = "If enabled, all labels will be hidden")
+        @SetJIPipeDocumentation(name = "Hide labels", description = "If enabled, all labels will be hidden")
         @JIPipeParameter("hide-labels")
         public boolean isHideLabels() {
             return hideLabels;
@@ -285,7 +285,7 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             this.hideLabels = hideLabels;
         }
 
-        @JIPipeDocumentation(name = "Text color", description = "The color of the text")
+        @SetJIPipeDocumentation(name = "Text color", description = "The color of the text")
         @JIPipeParameter("text-color")
         public Color getTextColor() {
             return textColor;
@@ -296,7 +296,7 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             this.textColor = textColor;
         }
 
-        @JIPipeDocumentation(name = "Font", description = "Font of the text")
+        @SetJIPipeDocumentation(name = "Font", description = "Font of the text")
         @JIPipeParameter("text-font")
         public FontFamilyParameter getFontFamily() {
             return fontFamily;
@@ -307,7 +307,7 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             this.fontFamily = fontFamily;
         }
 
-        @JIPipeDocumentation(name = "Font size", description = "Size of the text")
+        @SetJIPipeDocumentation(name = "Font size", description = "Size of the text")
         @JIPipeParameter("text-font-size")
         public int getFontSize() {
             return fontSize;
@@ -318,7 +318,7 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             this.fontSize = fontSize;
         }
 
-        @JIPipeDocumentation(name = "Font style", description = "The style of the font")
+        @SetJIPipeDocumentation(name = "Font style", description = "The style of the font")
         @JIPipeParameter("font-style")
         public FontStyleParameter getFontStyle() {
             return fontStyle;

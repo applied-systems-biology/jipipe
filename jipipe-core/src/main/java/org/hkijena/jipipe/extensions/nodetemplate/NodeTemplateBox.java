@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.nodetemplate.templatedownloader.NodeTemplateDownloaderRun;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.NodeTemplateSettings;
@@ -15,6 +16,7 @@ import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.ui.components.window.AlwaysOnTopToggle;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
@@ -44,13 +46,18 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
     private final MarkdownReader documentationReader = new MarkdownReader(false);
     private final JToolBar toolBar = new JToolBar();
     private final boolean isDocked;
+
+    private final JIPipeGraphCanvasUI canvasUI;
+    private final Set<JIPipeGraphNode> nodesToAdd;
     private final JPopupMenu manageMenu = new JPopupMenu();
     private JList<JIPipeNodeTemplate> templateList;
     private SearchTextField searchField;
 
-    public NodeTemplateBox(JIPipeWorkbench workbench, boolean isDocked) {
+    public NodeTemplateBox(JIPipeWorkbench workbench, boolean isDocked, JIPipeGraphCanvasUI canvasUI, Set<JIPipeGraphNode> nodesToAdd) {
         super(workbench);
         this.isDocked = isDocked;
+        this.canvasUI = canvasUI;
+        this.nodesToAdd = nodesToAdd;
         if (workbench instanceof JIPipeProjectWorkbench) {
             this.project = ((JIPipeProjectWorkbench) workbench).getProject();
         } else {
@@ -62,7 +69,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
     }
 
     public static void openNewToolBoxWindow(JIPipeWorkbench workbench) {
-        NodeTemplateBox toolBox = new NodeTemplateBox(workbench, false);
+        NodeTemplateBox toolBox = new NodeTemplateBox(workbench, false, null, null);
         JFrame window = new JFrame();
         toolBox.getToolBar().add(new AlwaysOnTopToggle(window));
         window.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -125,7 +132,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
         templateList = new JList<>();
         templateList.setToolTipText("Drag one or multiple entries from the list into the graph to create nodes.");
         templateList.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        templateList.setBorder(BorderFactory.createEtchedBorder());
+        templateList.setBorder(UIUtils.createControlBorder());
         templateList.setCellRenderer(new JIPipeNodeTemplateListCellRenderer(projectTemplateList));
         templateList.setModel(new DefaultListModel<>());
         templateList.addListSelectionListener(e -> {
@@ -153,6 +160,12 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
         JButton manageButton = new JButton("Manage", UIUtils.getIconFromResources("actions/wrench.png"));
         toolBar.add(manageButton);
 
+        if(nodesToAdd != null && !nodesToAdd.isEmpty() && canvasUI != null) {
+            JButton addButton = new JButton("Create", UIUtils.getIconFromResources("actions/add.png"));
+            addButton.addActionListener(e -> addTemplate());
+            toolBar.add(addButton);
+        }
+
         UIUtils.addPopupMenuToButton(manageButton, manageMenu);
 
         initializeManageMenu();
@@ -163,6 +176,10 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
             openWindowButton.addActionListener(e -> openNewToolBoxWindow(getWorkbench()));
             toolBar.add(openWindowButton);
         }
+    }
+
+    private void addTemplate() {
+        JIPipeNodeTemplate.create(canvasUI, nodesToAdd);
     }
 
     private void downloadTemplates() {
@@ -204,7 +221,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
         importItem.addActionListener(e -> importTemplates());
         manageMenu.add(importItem);
 
-        JMenuItem downloadTemplatesItem = new JMenuItem("Download more templates", UIUtils.getIconFromResources("actions/browser-download.png"));
+        JMenuItem downloadTemplatesItem = new JMenuItem("Download more templates", UIUtils.getIconFromResources("actions/download.png"));
         downloadTemplatesItem.addActionListener(e -> downloadTemplates());
         manageMenu.add(downloadTemplatesItem);
 

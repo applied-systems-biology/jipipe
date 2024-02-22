@@ -15,7 +15,7 @@
 package org.hkijena.jipipe.extensions.ilastik.installers;
 
 import org.apache.commons.lang3.SystemUtils;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.EasyInstallExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -33,7 +33,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Install Ilastik (EasyInstaller)", description = "Downloads a pre-packaged version of Ilastik")
+@SetJIPipeDocumentation(name = "Install Ilastik (EasyInstaller)", description = "Downloads a pre-packaged version of Ilastik")
 @ExternalEnvironmentInfo(category = "Ilastik")
 public class IlastikEasyInstaller extends EasyInstallExternalEnvironmentInstaller<ProcessEnvironment> {
     /**

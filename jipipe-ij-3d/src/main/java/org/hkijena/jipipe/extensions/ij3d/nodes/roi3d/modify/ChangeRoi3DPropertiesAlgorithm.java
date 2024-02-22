@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.modify;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -19,10 +19,10 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
 
-@JIPipeDocumentation(name = "Change 3D ROI properties", description = "Sets the properties of all 3D ROI")
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
-@JIPipeInputSlot(value = ROI3DListData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Change 3D ROI properties", description = "Sets the properties of all 3D ROI")
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
+@AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", create = true)
 public class ChangeRoi3DPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private OptionalStringParameter roiName = new OptionalStringParameter("", false);
     private OptionalStringParameter roiComment = new OptionalStringParameter("", false);
@@ -50,7 +50,7 @@ public class ChangeRoi3DPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROI3DListData outputROI = new ROI3DListData(iterationStep.getInputData("Input", ROI3DListData.class, progressInfo));
 
         for (int row = 0; row < outputROI.size(); row++) {
@@ -92,7 +92,7 @@ public class ChangeRoi3DPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorit
         iterationStep.addOutputData(getFirstOutputSlot(), outputROI, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "ROI name", description = "If true, override the ROI name")
+    @SetJIPipeDocumentation(name = "ROI name", description = "If true, override the ROI name")
     @JIPipeParameter("roi-name")
     public OptionalStringParameter getRoiName() {
         return roiName;
@@ -103,7 +103,7 @@ public class ChangeRoi3DPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.roiName = roiName;
     }
 
-    @JIPipeDocumentation(name = "ROI comment", description = "If true, override the ROI's comment field")
+    @SetJIPipeDocumentation(name = "ROI comment", description = "If true, override the ROI's comment field")
     @JIPipeParameter("roi-comment")
     public OptionalStringParameter getRoiComment() {
         return roiComment;
@@ -114,7 +114,7 @@ public class ChangeRoi3DPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.roiComment = roiComment;
     }
 
-    @JIPipeDocumentation(name = "Center (X)", description = "If true, override the ROI's center X location")
+    @SetJIPipeDocumentation(name = "Center (X)", description = "If true, override the ROI's center X location")
     @JIPipeParameter("center-x")
     public OptionalDoubleParameter getCenterX() {
         return centerX;
@@ -125,7 +125,7 @@ public class ChangeRoi3DPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.centerX = centerX;
     }
 
-    @JIPipeDocumentation(name = "Center (Y)", description = "If true, override the ROI's center Y location")
+    @SetJIPipeDocumentation(name = "Center (Y)", description = "If true, override the ROI's center Y location")
     @JIPipeParameter("center-y")
     public OptionalDoubleParameter getCenterY() {
         return centerY;
@@ -136,7 +136,7 @@ public class ChangeRoi3DPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.centerY = centerY;
     }
 
-    @JIPipeDocumentation(name = "Center (Z)", description = "If true, override the ROI's center Z location")
+    @SetJIPipeDocumentation(name = "Center (Z)", description = "If true, override the ROI's center Z location")
     @JIPipeParameter("center-z")
     public OptionalDoubleParameter getCenterZ() {
         return centerZ;
@@ -147,7 +147,7 @@ public class ChangeRoi3DPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.centerZ = centerZ;
     }
 
-    @JIPipeDocumentation(name = "Channel", description = "If true, override the ROI's channel location (0 = all channels)")
+    @SetJIPipeDocumentation(name = "Channel", description = "If true, override the ROI's channel location (0 = all channels)")
     @JIPipeParameter("channel-location")
     public OptionalIntegerParameter getChannelLocation() {
         return channelLocation;
@@ -158,7 +158,7 @@ public class ChangeRoi3DPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.channelLocation = channelLocation;
     }
 
-    @JIPipeDocumentation(name = "Frame", description = "If true, override the ROI's frame location (0 = all frames)")
+    @SetJIPipeDocumentation(name = "Frame", description = "If true, override the ROI's frame location (0 = all frames)")
     @JIPipeParameter("frame-location")
     public OptionalIntegerParameter getFrameLocation() {
         return frameLocation;
@@ -169,7 +169,7 @@ public class ChangeRoi3DPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.frameLocation = frameLocation;
     }
 
-    @JIPipeDocumentation(name = "Fill color", description = "If true, override the ROI's fill color (you can return a color or a HEX string)")
+    @SetJIPipeDocumentation(name = "Fill color", description = "If true, override the ROI's fill color (you can return a color or a HEX string)")
     @JIPipeParameter("fill-color")
     public OptionalColorParameter getFillColor() {
         return fillColor;

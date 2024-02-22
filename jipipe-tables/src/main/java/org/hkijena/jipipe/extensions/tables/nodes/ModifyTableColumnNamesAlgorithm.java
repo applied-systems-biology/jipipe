@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.tables.nodes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -17,11 +17,11 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.util.HashSet;
 import java.util.Set;
 
-@JIPipeDocumentation(name = "Rename & modify columns (expression)", description = "Uses an expression to modify/rename table column names. If a renaming yields an existing column, " +
+@SetJIPipeDocumentation(name = "Rename & modify columns (expression)", description = "Uses an expression to modify/rename table column names. If a renaming yields an existing column, " +
         "it will be automatically renamed to be unique.")
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
 public class ModifyTableColumnNamesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private StringQueryExpression expression = new StringQueryExpression("value");
@@ -36,7 +36,7 @@ public class ModifyTableColumnNamesAlgorithm extends JIPipeSimpleIteratingAlgori
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData input = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         ResultsTableData output = new ResultsTableData();
         output.addRows(input.getRowCount());
@@ -55,7 +55,7 @@ public class ModifyTableColumnNamesAlgorithm extends JIPipeSimpleIteratingAlgori
         iterationStep.addOutputData(getFirstOutputSlot(), output, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Renaming expression", description = "Determines how each column should be renamed. There is a variable 'value' available " +
+    @SetJIPipeDocumentation(name = "Renaming expression", description = "Determines how each column should be renamed. There is a variable 'value' available " +
             "that contains the current column. If you return an empty string, the column will be deleted.")
     @JIPipeParameter("expression")
     public StringQueryExpression getExpression() {

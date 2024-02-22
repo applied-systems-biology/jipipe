@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.api.data.thumbnails;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHidden;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
@@ -13,10 +13,10 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import javax.swing.*;
 import java.awt.*;
 
-@JIPipeDocumentation(name = "Empty thumbnail", description = "Empty thumbnail data (used internally)")
+@SetJIPipeDocumentation(name = "Empty thumbnail", description = "Empty thumbnail data (used internally)")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Unknown storage schema (generic data)",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-empty-data.schema.json")
-@JIPipeHidden
+@LabelAsJIPipeHidden
 public class JIPipeEmptyThumbnailData implements JIPipeThumbnailData {
 
     public JIPipeEmptyThumbnailData() {

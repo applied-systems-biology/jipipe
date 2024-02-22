@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.forms.datatypes;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -30,7 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 
-@JIPipeDocumentation(name = "Path input form", description = "A form element that allows the user to input a path to a file or folder")
+@SetJIPipeDocumentation(name = "Path input form", description = "A form element that allows the user to input a path to a file or folder")
 public class PathFormData extends ParameterFormData {
 
     private Path value = Paths.get("");
@@ -57,7 +57,7 @@ public class PathFormData extends ParameterFormData {
         return FormData.importData(storage, PathFormData.class, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Initial value", description = "The initial string value")
+    @SetJIPipeDocumentation(name = "Initial value", description = "The initial string value")
     @JIPipeParameter("initial-value")
     @PathParameterSettings(pathMode = PathType.FilesAndDirectories, ioMode = PathIOMode.Open)
     public Path getValue() {
@@ -69,7 +69,7 @@ public class PathFormData extends ParameterFormData {
         this.value = value;
     }
 
-    @JIPipeDocumentation(name = "Validation expression", description = "Expression that is used to validate the user input. There is a variable 'value' available that " +
+    @SetJIPipeDocumentation(name = "Validation expression", description = "Expression that is used to validate the user input. There is a variable 'value' available that " +
             "contains the tested string.")
     @JIPipeParameter("validation-expression")
     public StringQueryExpression getValidationExpression() {
@@ -81,14 +81,14 @@ public class PathFormData extends ParameterFormData {
         this.validationExpression = validationExpression;
     }
 
-    @JIPipeDocumentation(name = "Form element I/O", description = "Use following settings to determine how to extract initial values " +
+    @SetJIPipeDocumentation(name = "Form element I/O", description = "Use following settings to determine how to extract initial values " +
             "from annotations and where to store the user-defined value.")
     @JIPipeParameter("form:io")
     public SingleAnnotationIOSettings getAnnotationIOSettings() {
         return annotationIOSettings;
     }
 
-    @JIPipeDocumentation(name = "Path type", description = "Allows to restrict the path type.")
+    @SetJIPipeDocumentation(name = "Path type", description = "Allows to restrict the path type.")
     @JIPipeParameter("path-type")
     public PathType getPathType() {
         return pathType;
@@ -99,7 +99,7 @@ public class PathFormData extends ParameterFormData {
         this.pathType = pathType;
     }
 
-    @JIPipeDocumentation(name = "Path I/O mode", description = "Decides if the user sees an open or save dialog.")
+    @SetJIPipeDocumentation(name = "Path I/O mode", description = "Decides if the user sees an open or save dialog.")
     @JIPipeParameter("io-mode")
     public PathIOMode getIoMode() {
         return ioMode;
@@ -110,7 +110,7 @@ public class PathFormData extends ParameterFormData {
         this.ioMode = ioMode;
     }
 
-    @JIPipeDocumentation(name = "Extensions", description = "Only for loading/saving files. List of extensions that are loaded/saved. " +
+    @SetJIPipeDocumentation(name = "Extensions", description = "Only for loading/saving files. List of extensions that are loaded/saved. " +
             "The extensions are provided without the leading dot, e.g. <code>jpg</code> or <code>tiff</code>.")
     @JIPipeParameter("extensions")
     public StringList getExtensions() {
@@ -165,9 +165,9 @@ public class PathFormData extends ParameterFormData {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         if (!validationExpression.test(StringUtils.nullToEmpty(value))) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context, "Invalid value!",
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext, "Invalid value!",
                     String.format("The provided value '%s' does not comply to the test '%s'", value, validationExpression.getExpression()),
                     "Please correct your input"));
         }

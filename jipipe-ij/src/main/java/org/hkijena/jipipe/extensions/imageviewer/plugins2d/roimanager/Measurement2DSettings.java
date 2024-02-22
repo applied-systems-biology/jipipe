@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.imageviewer.plugins2d.roimanager;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
@@ -16,7 +16,7 @@ public class Measurement2DSettings extends AbstractJIPipeParameterCollection {
         statistics.setCollapsed(false);
     }
 
-    @JIPipeDocumentation(name = "Statistics", description = "The statistics to measure")
+    @SetJIPipeDocumentation(name = "Statistics", description = "The statistics to measure")
     @JIPipeParameter("statistics")
     public ImageStatisticsSetParameter getStatistics() {
         return statistics;
@@ -27,7 +27,7 @@ public class Measurement2DSettings extends AbstractJIPipeParameterCollection {
         this.statistics = statistics;
     }
 
-    @JIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
+    @SetJIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
     @JIPipeParameter("measure-in-physical-units")
     public boolean isMeasureInPhysicalUnits() {
         return measureInPhysicalUnits;

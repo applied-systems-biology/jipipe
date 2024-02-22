@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.functions.control;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
@@ -17,7 +17,7 @@ import java.util.Map;
 
 import static org.hkijena.jipipe.extensions.expressions.functions.EvaluateFunction.parseVariableAssignment;
 
-@JIPipeDocumentation(name = "Indices where", description = "Finds all indices of the array where the condition applies. Returns an empty array if none match.")
+@SetJIPipeDocumentation(name = "Indices where", description = "Finds all indices of the array where the condition applies. Returns an empty array if none match.")
 public class WhereFunction extends ExpressionFunction {
     public WhereFunction() {
         super("WHERE", 2, Integer.MAX_VALUE);

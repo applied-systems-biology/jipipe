@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.filesystem.dataypes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeFastThumbnail;
@@ -23,7 +23,7 @@ import java.nio.file.Path;
 /**
  * Data that stores a folder
  */
-@JIPipeDocumentation(name = "Folder", description = "A path to a directory")
+@SetJIPipeDocumentation(name = "Folder", description = "A path to a directory")
 @JIPipeFastThumbnail
 public class FolderData extends PathData {
 

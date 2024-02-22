@@ -94,7 +94,7 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
             if (SystemUtils.IS_OS_WINDOWS) {
                 notification.getActions().add(new JIPipeNotificationAction("Install R",
                         "Installs a prepackaged version of R",
-                        UIUtils.getIconInvertedFromResources("actions/browser-download.png"),
+                        UIUtils.getIconInvertedFromResources("actions/download.png"),
                         JIPipeNotificationAction.Style.Success,
                         RExtension::easyInstallR));
             }
@@ -161,7 +161,7 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "Optional R environment",
                 "An optional R environment",
                 null);
-        registerEnvironmentInstaller(REnvironment.class, REnvInstaller.class, UIUtils.getIconFromResources("actions/browser-download.png"));
+        registerEnvironmentInstaller(REnvironment.class, REnvInstaller.class, UIUtils.getIconFromResources("actions/download.png"));
         registerEnvironmentInstaller(REnvironment.class, REasyInstaller.class, UIUtils.getIconFromResources("emblems/vcs-normal.png"));
 
         AbstractTokenMakerFactory atmf = (AbstractTokenMakerFactory) TokenMakerFactory.getDefaultInstance();

@@ -15,8 +15,8 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.algorithms;
 
 import ij.ImagePlus;
 import ij.measure.Calibration;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -35,10 +35,10 @@ import java.util.List;
 /**
  * Adds data annotations that contain the image properties
  */
-@JIPipeDocumentation(name = "Annotate with image properties", description = "Adds data annotations that contain the image properties.")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For images")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Annotated image", autoCreate = true)
+@SetJIPipeDocumentation(name = "Annotate with image properties", description = "Adds data annotations that contain the image properties.")
+@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For images")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Annotated image", create = true)
 public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalAnnotationNameParameter titleAnnotation = new OptionalAnnotationNameParameter();
@@ -106,7 +106,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         List<JIPipeTextAnnotation> annotations = new ArrayList<>();
 
@@ -214,7 +214,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
         iterationStep.addOutputData(getFirstOutputSlot(), inputData, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Annotate with physical dimension (X)", description = "If enabled, the physical size of one pixel (including the unit) is annotated to the image.")
+    @SetJIPipeDocumentation(name = "Annotate with physical dimension (X)", description = "If enabled, the physical size of one pixel (including the unit) is annotated to the image.")
     @JIPipeParameter("physical-dimension-x-annotation")
     public OptionalAnnotationNameParameter getPhysicalDimensionXAnnotation() {
         return physicalDimensionXAnnotation;
@@ -225,7 +225,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
         this.physicalDimensionXAnnotation = physicalDimensionXAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with physical dimension (Y)", description = "If enabled, the physical size of one pixel (including the unit) is annotated to the image.")
+    @SetJIPipeDocumentation(name = "Annotate with physical dimension (Y)", description = "If enabled, the physical size of one pixel (including the unit) is annotated to the image.")
     @JIPipeParameter("physical-dimension-y-annotation")
     public OptionalAnnotationNameParameter getPhysicalDimensionYAnnotation() {
         return physicalDimensionYAnnotation;
@@ -237,7 +237,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
         this.physicalDimensionYAnnotation = physicalDimensionYAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with physical dimension (Z)", description = "If enabled, the physical size of one pixel (including the unit) is annotated to the image.")
+    @SetJIPipeDocumentation(name = "Annotate with physical dimension (Z)", description = "If enabled, the physical size of one pixel (including the unit) is annotated to the image.")
     @JIPipeParameter("physical-dimension-z-annotation")
     public OptionalAnnotationNameParameter getPhysicalDimensionZAnnotation() {
         return physicalDimensionZAnnotation;
@@ -248,7 +248,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
         this.physicalDimensionZAnnotation = physicalDimensionZAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with physical dimension (Time)", description = "If enabled, the time unit for multi-frame images is annotated to the image.")
+    @SetJIPipeDocumentation(name = "Annotate with physical dimension (Time)", description = "If enabled, the time unit for multi-frame images is annotated to the image.")
     @JIPipeParameter("physical-dimension-t-annotation")
     public OptionalAnnotationNameParameter getPhysicalDimensionTAnnotation() {
         return physicalDimensionTAnnotation;
@@ -259,7 +259,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
         this.physicalDimensionTAnnotation = physicalDimensionTAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with physical dimension (Value)", description = "If enabled, the physical size of greyscale pixel values is annotated to the image.")
+    @SetJIPipeDocumentation(name = "Annotate with physical dimension (Value)", description = "If enabled, the physical size of greyscale pixel values is annotated to the image.")
     @JIPipeParameter("physical-dimension-value-annotation")
     public OptionalAnnotationNameParameter getPhysicalDimensionValueAnnotation() {
         return physicalDimensionValueAnnotation;
@@ -270,7 +270,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
         this.physicalDimensionValueAnnotation = physicalDimensionValueAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with title", description = "If enabled, an annotation with provided name is created. The annotation " +
+    @SetJIPipeDocumentation(name = "Annotate with title", description = "If enabled, an annotation with provided name is created. The annotation " +
             "contains the ImageJ image name.")
     @JIPipeParameter("title-annotation")
     public OptionalAnnotationNameParameter getTitleAnnotation() {
@@ -282,7 +282,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
         this.titleAnnotation = titleAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with image width", description = "If enabled, an annotation with provided name is created. The annotation " +
+    @SetJIPipeDocumentation(name = "Annotate with image width", description = "If enabled, an annotation with provided name is created. The annotation " +
             "contains image width.")
     @JIPipeParameter(value = "width-annotation")
     public OptionalAnnotationNameParameter getWidthAnnotation() {
@@ -294,7 +294,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
         this.widthAnnotation = widthAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with image height", description = "If enabled, an annotation with provided name is created. The annotation " +
+    @SetJIPipeDocumentation(name = "Annotate with image height", description = "If enabled, an annotation with provided name is created. The annotation " +
             "contains image height.")
     @JIPipeParameter("height-annotation")
     public OptionalAnnotationNameParameter getHeightAnnotation() {
@@ -306,7 +306,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
         this.heightAnnotation = heightAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with stack size (Z)", description = "If enabled, an annotation with provided name is created. The annotation " +
+    @SetJIPipeDocumentation(name = "Annotate with stack size (Z)", description = "If enabled, an annotation with provided name is created. The annotation " +
             "contains the image stack size (number of Z slices).")
     @JIPipeParameter(value = "stack-size-annotation", uiOrder = 100)
     public OptionalAnnotationNameParameter getStackSizeAnnotation() {
@@ -318,7 +318,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
         this.stackSizeAnnotation = stackSizeAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with channel size (C)", description = "If enabled, an annotation with provided name is created. The annotation " +
+    @SetJIPipeDocumentation(name = "Annotate with channel size (C)", description = "If enabled, an annotation with provided name is created. The annotation " +
             "contains the composite image channel size (number of C slices). Please note that is is different from the pixel channels like RGB.")
     @JIPipeParameter(value = "channel-size-annotation", uiOrder = 101)
     public OptionalAnnotationNameParameter getChannelSizeAnnotation() {
@@ -330,7 +330,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
         this.channelSizeAnnotation = channelSizeAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with number of frames (T)", description = "If enabled, an annotation with provided name is created. The annotation " +
+    @SetJIPipeDocumentation(name = "Annotate with number of frames (T)", description = "If enabled, an annotation with provided name is created. The annotation " +
             "contains the number of frames (number of T slices).")
     @JIPipeParameter(value = "frames-size-annotation", uiOrder = 102)
     public OptionalAnnotationNameParameter getFramesSizeAnnotation() {
@@ -342,7 +342,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
         this.framesSizeAnnotation = framesSizeAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with image type", description = "If enabled, an annotation with provided name is created. The annotation " +
+    @SetJIPipeDocumentation(name = "Annotate with image type", description = "If enabled, an annotation with provided name is created. The annotation " +
             "contains one of the following values: GRAY8, GRAY16, GRAY32, COLOR_256, COLOR_RGB, or UNKNOWN")
     @JIPipeParameter("image-type-annotation")
     public OptionalAnnotationNameParameter getImageTypeAnnotation() {
@@ -354,7 +354,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
         this.imageTypeAnnotation = imageTypeAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with bit depth", description = "If enabled, an annotation with provided name is created. The annotation " +
+    @SetJIPipeDocumentation(name = "Annotate with bit depth", description = "If enabled, an annotation with provided name is created. The annotation " +
             "contains one of the following values: 0, 8, 16, 24 or 32")
     @JIPipeParameter("image-bit-depth-annotation")
     public OptionalAnnotationNameParameter getBitDepthAnnotation() {
@@ -366,7 +366,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
         this.bitDepthAnnotation = bitDepthAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with number of planes", description = "If enabled, an annotation with provided name is created. The annotation " +
+    @SetJIPipeDocumentation(name = "Annotate with number of planes", description = "If enabled, an annotation with provided name is created. The annotation " +
             "contains the number of 2D image planes (also referred as 'Stack size'). Please note that this value might be different from the number " +
             "of Z slices. This number is size(Z) * size(C) * size(T).")
     @JIPipeParameter("image-plane-number-annotation")
@@ -379,7 +379,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
         this.planeNumberAnnotation = planeNumberAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with color space", description = "If enabled, the color space is stored in an annotation. If a greyscale image is " +
+    @SetJIPipeDocumentation(name = "Annotate with color space", description = "If enabled, the color space is stored in an annotation. If a greyscale image is " +
             "provided, the color space will be 'Greyscale'.")
     @JIPipeParameter("color-space-annotation")
     public OptionalAnnotationNameParameter getColorSpaceAnnotation() {

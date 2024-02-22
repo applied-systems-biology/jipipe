@@ -20,8 +20,8 @@ import ij.plugin.filter.Binary;
 import ij.plugin.filter.GaussianBlur;
 import ij.plugin.filter.RankFilters;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -44,7 +44,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 /**
  * Internal gradient segmenter
  */
-@JIPipeDocumentation(name = "Internal gradient segmentation 2D", description = "Segments objects by finding the internal gradients. " +
+@SetJIPipeDocumentation(name = "Internal gradient segmentation 2D", description = "Segments objects by finding the internal gradients. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.<br/>" +
         "If you want to further customize all steps, create a group or set of nodes that apply the following operations:" +
         "<ol>" +
@@ -56,9 +56,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
         "<li>Morphological hole filling</li>" +
         "<li>Morphological erosion</li>" +
         "</ol>")
-@JIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", create = true)
 public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final AutoThreshold2DAlgorithm autoThresholding;
@@ -115,7 +115,7 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
         ImagePlus img = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
@@ -131,7 +131,7 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
             if (applyFirstCLAHE) {
                 contrastEnhancerCopy.clearSlotData();
                 contrastEnhancerCopy.getFirstInputSlot().addData(new ImagePlusGreyscaleData(processedSlice), progressInfo);
-                contrastEnhancerCopy.run(progressInfo);
+                contrastEnhancerCopy.run(runContext, progressInfo);
                 processedSlice = contrastEnhancerCopy.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
             }
 
@@ -144,14 +144,14 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
             if (applySecondCLAHE) {
                 contrastEnhancerCopy.clearSlotData();
                 contrastEnhancerCopy.getFirstInputSlot().addData(new ImagePlusGreyscaleData(processedSlice), progressInfo);
-                contrastEnhancerCopy.run(progressInfo);
+                contrastEnhancerCopy.run(runContext, progressInfo);
                 processedSlice = contrastEnhancerCopy.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
             }
 
             // Convert image to mask and threshold with given auto threshold method
             autoThresholdingCopy.clearSlotData();
             autoThresholdingCopy.getFirstInputSlot().addData(new ImagePlusGreyscaleData(processedSlice), progressInfo);
-            autoThresholdingCopy.run(progressInfo);
+            autoThresholdingCopy.run(runContext, progressInfo);
             processedSlice = autoThresholdingCopy.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
 
             // Apply set of rank filters
@@ -185,7 +185,7 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
     }
 
     @JIPipeParameter("gauss-sigma")
-    @JIPipeDocumentation(name = "Gauss sigma", description = "Standard deviation of the Gaussian (pixels)")
+    @SetJIPipeDocumentation(name = "Gauss sigma", description = "Standard deviation of the Gaussian (pixels)")
     public double getGaussSigma() {
         return gaussSigma;
     }
@@ -197,7 +197,7 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
     }
 
     @JIPipeParameter("internal-gradient-radius")
-    @JIPipeDocumentation(name = "Internal gradient radius", description = "Radius for the internal gradient radius calculation")
+    @SetJIPipeDocumentation(name = "Internal gradient radius", description = "Radius for the internal gradient radius calculation")
     public int getInternalGradientRadius() {
         return internalGradientRadius;
     }
@@ -209,7 +209,7 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
     }
 
     @JIPipeParameter("dilation-iterations")
-    @JIPipeDocumentation(name = "Dilation iterations", description = "Number of dilation iterations after filling holes")
+    @SetJIPipeDocumentation(name = "Dilation iterations", description = "Number of dilation iterations after filling holes")
     public int getDilationIterations() {
         return dilationIterations;
     }
@@ -221,7 +221,7 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
     }
 
     @JIPipeParameter("erosion-iterations")
-    @JIPipeDocumentation(name = "Erosion iterations", description = "Number of erosion iterations after filling holes. If you do not want to change " +
+    @SetJIPipeDocumentation(name = "Erosion iterations", description = "Number of erosion iterations after filling holes. If you do not want to change " +
             "the object sizes, keep this the same as the dilation iterations.")
     public int getErosionIterations() {
         return erosionIterations;
@@ -234,18 +234,18 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
     }
 
     @JIPipeParameter(value = "auto-thresholding")
-    @JIPipeDocumentation(name = "Auto thresholding", description = "Parameters for underlying auto thresholding")
+    @SetJIPipeDocumentation(name = "Auto thresholding", description = "Parameters for underlying auto thresholding")
     public AutoThreshold2DAlgorithm getAutoThresholding() {
         return autoThresholding;
     }
 
     @JIPipeParameter(value = "clahe-enhancing")
-    @JIPipeDocumentation(name = "CLAHE", description = "Parameters for underlying CLAHE Enhancing algorithm")
+    @SetJIPipeDocumentation(name = "CLAHE", description = "Parameters for underlying CLAHE Enhancing algorithm")
     public CLAHEContrastEnhancer getContrastEnhancer() {
         return contrastEnhancer;
     }
 
-    @JIPipeDocumentation(name = "Apply first CLAHE")
+    @SetJIPipeDocumentation(name = "Apply first CLAHE")
     @JIPipeParameter("apply-first-clahe")
     public boolean isApplyFirstCLAHE() {
         return applyFirstCLAHE;
@@ -256,7 +256,7 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
         this.applyFirstCLAHE = applyFirstCLAHE;
     }
 
-    @JIPipeDocumentation(name = "Apply second CLAHE")
+    @SetJIPipeDocumentation(name = "Apply second CLAHE")
     @JIPipeParameter("apply-second-clahe")
     public boolean isApplySecondCLAHE() {
         return applySecondCLAHE;
@@ -267,7 +267,7 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
         this.applySecondCLAHE = applySecondCLAHE;
     }
 
-    @JIPipeDocumentation(name = "Apply Gaussian")
+    @SetJIPipeDocumentation(name = "Apply Gaussian")
     @JIPipeParameter("apply-gaussian")
     public boolean isApplyGaussian() {
         return applyGaussian;
@@ -287,8 +287,8 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        super.reportValidity(context, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
         report.report(new ParameterValidationReportContext(this, "Auto thresholding", "auto-thresholding"), autoThresholding);
         report.report(new ParameterValidationReportContext(this, "CLAHE", "clahe-enhancing"), contrastEnhancer);
     }

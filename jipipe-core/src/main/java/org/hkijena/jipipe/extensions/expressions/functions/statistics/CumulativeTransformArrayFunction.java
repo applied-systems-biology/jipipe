@@ -1,14 +1,14 @@
 package org.hkijena.jipipe.extensions.expressions.functions.statistics;
 
 import com.google.common.collect.ImmutableList;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Transform array (cumulative)", description = "Applies an expression for all cumulative sets of an array and stores the output into the index of the highest index. " +
+@SetJIPipeDocumentation(name = "Transform array (cumulative)", description = "Applies an expression for all cumulative sets of an array and stores the output into the index of the highest index. " +
         "For example, <code>TRANSFORM_ARRAY_CUMULATIVE(ARRAY(1,2,3))</code> will yield an array <code>[1,3,6]</code>")
 public class CumulativeTransformArrayFunction extends ExpressionFunction {
     public CumulativeTransformArrayFunction() {

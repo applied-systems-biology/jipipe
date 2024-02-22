@@ -1,9 +1,9 @@
 package org.hkijena.jipipe.extensions.expressions.functions.statistics;
 
 import ij.process.AutoThresholder;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 
-@JIPipeDocumentation(name = "Histogram threshold (Yen)", description = "Calculates a threshold from a " +
+@SetJIPipeDocumentation(name = "Histogram threshold (Yen)", description = "Calculates a threshold from a " +
         "histogram using the Yen algorithm.")
 public class HistogramThresholdYen extends HistogramThresholdFunction {
     public HistogramThresholdYen() {

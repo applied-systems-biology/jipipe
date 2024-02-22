@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.settings;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.FileChooserBookmarkList;
@@ -602,7 +602,7 @@ public class FileChooserSettings extends AbstractJIPipeParameterCollection {
         return JIPipe.getSettings().getSettings(ID, FileChooserSettings.class);
     }
 
-    @JIPipeDocumentation(name = "Bookmarks", description = "Bookmarks used by the advanced file dialog")
+    @SetJIPipeDocumentation(name = "Bookmarks", description = "Bookmarks used by the advanced file dialog")
     @JIPipeParameter("bookmarks-v2")
     public FileChooserBookmarkList getBookmarks() {
         return bookmarks;
@@ -613,7 +613,7 @@ public class FileChooserSettings extends AbstractJIPipeParameterCollection {
         this.bookmarks = bookmarks;
     }
 
-    @JIPipeDocumentation(name = "File dialog design", description = "Determines which file dialog type is used within JIPipe. " +
+    @SetJIPipeDocumentation(name = "File dialog design", description = "Determines which file dialog type is used within JIPipe. " +
             "<ul>" +
             "<li>Advanced: A dialog that extends Java's standard dialog by modern features.</li>" +
             "<li>Standard: The standard platform-independent file dialog provided by Java.</li>" +
@@ -674,7 +674,7 @@ public class FileChooserSettings extends AbstractJIPipeParameterCollection {
         JIPipe.getSettings().save();
     }
 
-    @JIPipeDocumentation(name = "Last external directory", description = "The file chooser will open in this folder when selecting external utilities.")
+    @SetJIPipeDocumentation(name = "Last external directory", description = "The file chooser will open in this folder when selecting external utilities.")
     @JIPipeParameter("last-external-directory")
     public Path getLastExternalDirectory() {
         if (lastExternalDirectory == null)
@@ -687,7 +687,7 @@ public class FileChooserSettings extends AbstractJIPipeParameterCollection {
         this.lastExternalDirectory = lastExternalDirectory;
     }
 
-    @JIPipeDocumentation(name = "Last projects directory", description = "The file chooser will open in this folder when opening a project.")
+    @SetJIPipeDocumentation(name = "Last projects directory", description = "The file chooser will open in this folder when opening a project.")
     @JIPipeParameter("last-projects-directory")
     public Path getLastProjectsDirectory() {
         if (lastProjectsDirectory == null)
@@ -704,7 +704,7 @@ public class FileChooserSettings extends AbstractJIPipeParameterCollection {
 
     }
 
-    @JIPipeDocumentation(name = "Last directory", description = "The file chooser will open in this folder when changing a parameter.")
+    @SetJIPipeDocumentation(name = "Last directory", description = "The file chooser will open in this folder when changing a parameter.")
     @JIPipeParameter("last-parameters-directory")
     public Path getLastParametersDirectory() {
         if (lastParametersDirectory == null)
@@ -721,7 +721,7 @@ public class FileChooserSettings extends AbstractJIPipeParameterCollection {
 
     }
 
-    @JIPipeDocumentation(name = "Last data directory", description = "The file chooser will open in this folder when asking for data.")
+    @SetJIPipeDocumentation(name = "Last data directory", description = "The file chooser will open in this folder when asking for data.")
     @JIPipeParameter("last-data-directory")
     public Path getLastDataDirectory() {
         if (lastDataDirectory == null)
@@ -738,7 +738,7 @@ public class FileChooserSettings extends AbstractJIPipeParameterCollection {
 
     }
 
-    @JIPipeDocumentation(name = "Automatically add file extensions", description = "If enabled, appropriate file extensions are automatically added (e.g. .json for projects) on saving a file if they are not present.")
+    @SetJIPipeDocumentation(name = "Automatically add file extensions", description = "If enabled, appropriate file extensions are automatically added (e.g. .json for projects) on saving a file if they are not present.")
     @JIPipeParameter("add-file-extension")
     public boolean isAddFileExtension() {
         return addFileExtension;

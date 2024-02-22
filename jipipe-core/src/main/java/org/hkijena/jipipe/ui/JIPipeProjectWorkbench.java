@@ -29,7 +29,6 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.extensions.settings.BackupSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
@@ -207,7 +206,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         // Initialize JIPipe logger
         JIPipeLogs.getInstance();
 
-        documentTabPane = new DocumentTabPane(true);
+        documentTabPane = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Top);
         documentTabPane.registerSingletonTab(TAB_INTRODUCTION,
                 "Getting started",
                 UIUtils.getIconFromResources("actions/help-info.png"),
@@ -626,8 +625,8 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         menu.add(new JIPipeRunnerQueueButton(this));
 
         // "Run" entry
-        JButton runProjectButton = new JButton("Run", UIUtils.getIconFromResources("actions/run-build.png"));
-        runProjectButton.setToolTipText("Opens a new interface to run the analysis.");
+        JButton runProjectButton = new JButton("Run", UIUtils.getIconFromResources("actions/play.png"));
+        runProjectButton.setToolTipText("Runs the whole pipeline");
         UIUtils.setStandardButtonBorder(runProjectButton);
 
         runProjectButton.addActionListener(e -> openRunUI());
@@ -653,9 +652,9 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         projectInfo2.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW));
         helpMenu.add(projectInfo2);
 
-        JMenuItem algorithmCompendiumButton = new JMenuItem("Open algorithm compendium", UIUtils.getIconFromResources("data-types/node.png"));
+        JMenuItem algorithmCompendiumButton = new JMenuItem("Open node documentation", UIUtils.getIconFromResources("data-types/node.png"));
         algorithmCompendiumButton.addActionListener(e -> {
-            getDocumentTabPane().addTab("Algorithm compendium",
+            getDocumentTabPane().addTab("Node documentation",
                     UIUtils.getIconFromResources("actions/help.png"),
                     new JIPipeAlgorithmCompendiumUI(),
                     DocumentTabPane.CloseMode.withSilentCloseButton,
@@ -664,9 +663,9 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         });
         helpMenu.add(algorithmCompendiumButton);
 
-        JMenuItem datatypeCompendiumButton = new JMenuItem("Open data type compendium", UIUtils.getIconFromResources("data-types/data-type.png"));
+        JMenuItem datatypeCompendiumButton = new JMenuItem("Open data type documentation", UIUtils.getIconFromResources("data-types/data-type.png"));
         datatypeCompendiumButton.addActionListener(e -> {
-            getDocumentTabPane().addTab("Data type compendium",
+            getDocumentTabPane().addTab("Data type documentation",
                     UIUtils.getIconFromResources("actions/help.png"),
                     new JIPipeDataTypeCompendiumUI(),
                     DocumentTabPane.CloseMode.withSilentCloseButton,

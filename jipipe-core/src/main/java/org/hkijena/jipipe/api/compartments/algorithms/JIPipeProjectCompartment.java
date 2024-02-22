@@ -13,16 +13,13 @@
 
 package org.hkijena.jipipe.api.compartments.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.datatypes.JIPipeCompartmentOutputData;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceAccessGroupList;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -36,9 +33,9 @@ import java.util.UUID;
  * A project compartment.
  * Its node functionality is structural.
  */
-@JIPipeDocumentation(name = "Graph compartment", description = "A compartment in the analysis graph")
-@JIPipeInputSlot(value = JIPipeCompartmentOutputData.class, slotName = "Input", autoCreate = true, optional = true)
-@JIPipeOutputSlot(value = JIPipeCompartmentOutputData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Graph compartment", description = "A compartment in the analysis graph")
+@AddJIPipeInputSlot(value = JIPipeCompartmentOutputData.class, slotName = "Input", create = true, optional = true)
+@AddJIPipeOutputSlot(value = JIPipeCompartmentOutputData.class, slotName = "Output", create = true)
 public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeCustomParameterCollection {
 
     private JIPipeProject project;
@@ -95,7 +92,7 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
+    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
     }
 
@@ -158,11 +155,11 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
 
     }
 
-    @JIPipeDocumentation(name = "Exported parameters", description = "Allows you to export parameters from the group into the group node")
+    @SetJIPipeDocumentation(name = "Exported parameters", description = "Allows you to export parameters from the group into the group node")
     @JIPipeParameter(value = "exported-parameters", functional = false)
     public GraphNodeParameterReferenceGroupCollection getExportedParameters() {
         return exportedParameters;
@@ -183,7 +180,7 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
         }
     }
 
-    @JIPipeDocumentation(name = "Show limited parameter set", description = "If enabled, only the exported parameters, name, and description are shown as parameters. " +
+    @SetJIPipeDocumentation(name = "Show limited parameter set", description = "If enabled, only the exported parameters, name, and description are shown as parameters. " +
             "The data batch generation will also be hidden. This can be useful for educational pipelines.")
     @JIPipeParameter(value = "show-limited-parameters", functional = false)
     public boolean isShowLimitedParameters() {

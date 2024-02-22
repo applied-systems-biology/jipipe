@@ -110,7 +110,7 @@ public class ExpressionBuilderParameterUI extends JPanel {
             JPanel expressionEditorPanel = new JPanel(new BorderLayout());
             expressionEditorPanel.setBackground(UIManager.getColor("TextArea.background"));
             expressionEditorPanel.add(expressionEditor, BorderLayout.CENTER);
-            expressionEditorPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
+            expressionEditorPanel.setBorder(BorderFactory.createCompoundBorder(UIUtils.createControlBorder(),
                     BorderFactory.createEmptyBorder(5, 4, 0, 4)));
             editorPanel.add(expressionEditorPanel, Mode.Expression.name());
         }
@@ -118,7 +118,7 @@ public class ExpressionBuilderParameterUI extends JPanel {
             JPanel expressionEditorPanel = new JPanel(new BorderLayout());
             expressionEditorPanel.setBackground(UIManager.getColor("TextArea.background"));
             expressionEditorPanel.add(rawExpressionEditor, BorderLayout.CENTER);
-            expressionEditorPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
+            expressionEditorPanel.setBorder(BorderFactory.createCompoundBorder(UIUtils.createControlBorder(),
                     BorderFactory.createEmptyBorder(5, 4, 0, 4)));
             editorPanel.add(expressionEditorPanel, Mode.RawExpression.name());
         }

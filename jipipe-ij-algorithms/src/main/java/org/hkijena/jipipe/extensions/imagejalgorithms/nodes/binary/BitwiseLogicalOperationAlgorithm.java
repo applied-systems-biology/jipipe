@@ -2,8 +2,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.binary;
 
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -20,11 +20,11 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.util.LogicalOperation;
 
-@JIPipeDocumentation(name = "Bitwise operation", description = "Combines two 8-bit images with a bitwise operation. You can use it to, for example combine two masks.")
-@JIPipeNode(menuPath = "Binary", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input 1", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input 2", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Output", autoCreate = true, inheritedSlot = "Input 1")
+@SetJIPipeDocumentation(name = "Bitwise operation", description = "Combines two 8-bit images with a bitwise operation. You can use it to, for example combine two masks.")
+@DefineJIPipeNode(menuPath = "Binary", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input 1", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input 2", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Output", create = true, inheritedSlot = "Input 1")
 public class BitwiseLogicalOperationAlgorithm extends JIPipeIteratingAlgorithm {
 
     private LogicalOperation logicalOperation = LogicalOperation.LogicalOr;
@@ -39,7 +39,7 @@ public class BitwiseLogicalOperationAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus img = iterationStep.getInputData("Input 1", ImagePlusGreyscale8UData.class, progressInfo).getDuplicateImage();
         ImagePlus second = iterationStep.getInputData("Input 2", ImagePlusGreyscale8UData.class, progressInfo).getImage();
         if (!ImageJUtils.imagesHaveSameSize(img, second)) {
@@ -81,7 +81,7 @@ public class BitwiseLogicalOperationAlgorithm extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(img), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Operation", description = "The operation that is applied to each pair of bits.")
+    @SetJIPipeDocumentation(name = "Operation", description = "The operation that is applied to each pair of bits.")
     @JIPipeParameter("operation")
     public LogicalOperation getLogicalOperation() {
         return logicalOperation;

@@ -7,8 +7,8 @@ import net.imagej.DefaultDataset;
 import net.imagej.ImgPlus;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHeavyData;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
@@ -31,8 +31,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Objects;
 
-@JIPipeDocumentation(name = "IJ2 Dataset", description = "An ImageJ2 image")
-@JIPipeHeavyData
+@SetJIPipeDocumentation(name = "IJ2 Dataset", description = "An ImageJ2 image")
+@LabelAsJIPipeHeavyData
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains one image file with one of following extensions: *.tif, *.tiff, *.png, *.jpeg, *.jpg, *.png. " +
         "We recommend the usage of TIFF.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/imageplus-data.schema.json")
 public class ImageJ2DatasetData implements JIPipeData {

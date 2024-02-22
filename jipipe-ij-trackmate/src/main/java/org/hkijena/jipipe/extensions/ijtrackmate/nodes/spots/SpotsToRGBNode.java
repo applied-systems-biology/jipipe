@@ -18,8 +18,8 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -38,11 +38,11 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Collections;
 
-@JIPipeDocumentation(name = "Convert spots to RGB", description = "Visualizes spots")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nVisualize")
-@JIPipeInputSlot(value = SpotsCollectionData.class, slotName = "Spots", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusColorRGBData.class, slotName = "Image", autoCreate = true, optional = true, description = "")
-@JIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Convert spots to RGB", description = "Visualizes spots")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nVisualize")
+@AddJIPipeInputSlot(value = SpotsCollectionData.class, slotName = "Spots", create = true)
+@AddJIPipeInputSlot(value = ImagePlusColorRGBData.class, slotName = "Image", create = true, optional = true, description = "")
+@AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output", create = true)
 public class SpotsToRGBNode extends JIPipeIteratingAlgorithm {
     private SpotDrawer spotDrawer = new SpotDrawer();
 
@@ -59,7 +59,7 @@ public class SpotsToRGBNode extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         SpotsCollectionData spotsCollectionData = iterationStep.getInputData("Spots", SpotsCollectionData.class, progressInfo);
         ImagePlus reference;
         {
@@ -90,7 +90,7 @@ public class SpotsToRGBNode extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Spot visualization", description = "The following settings control how spots are visualized")
+    @SetJIPipeDocumentation(name = "Spot visualization", description = "The following settings control how spots are visualized")
     @JIPipeParameter("spot-visualization")
     public SpotDrawer getSpotDrawer() {
         return spotDrawer;
@@ -100,7 +100,7 @@ public class SpotsToRGBNode extends JIPipeIteratingAlgorithm {
         this.spotDrawer = spotDrawer;
     }
 
-    @JIPipeDocumentation(name = "Magnification", description = "Magnification applied during the rendering")
+    @SetJIPipeDocumentation(name = "Magnification", description = "Magnification applied during the rendering")
     @JIPipeParameter("magnification")
     public double getMagnification() {
         return magnification;

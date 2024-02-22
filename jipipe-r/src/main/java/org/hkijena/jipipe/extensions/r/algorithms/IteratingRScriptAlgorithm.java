@@ -2,8 +2,8 @@ package org.hkijena.jipipe.extensions.r.algorithms;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
@@ -40,7 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "R script (iterating)", description = "Allows to execute a custom R script. " +
+@SetJIPipeDocumentation(name = "R script (iterating)", description = "Allows to execute a custom R script. " +
         "The script is repeated for each data batch. Please note the each data batch only contains one item (row) per slot. " +
         "The script comes with various API functions and variables that allow to communicate with JIPipe: " +
         "<ul>" +
@@ -63,10 +63,10 @@ import java.util.Map;
         "Please note that you must use tiff() or other functions to actually write this file." +
         "Optionally, you can add annotations to the data.</li>" +
         "</ul>")
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "R script")
-@JIPipeInputSlot(ResultsTableData.class)
-@JIPipeOutputSlot(ImagePlusColorRGBData.class)
-@JIPipeOutputSlot(ResultsTableData.class)
+@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "R script")
+@AddJIPipeInputSlot(ResultsTableData.class)
+@AddJIPipeOutputSlot(ImagePlusColorRGBData.class)
+@AddJIPipeOutputSlot(ResultsTableData.class)
 public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
 
     private RScriptParameter script = new RScriptParameter();
@@ -101,7 +101,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
+    @SetJIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
             "the processing was finished. Disable this to make it possible to debug your scripts. The directories are accessible via the logs (Tools &gt; Logs).")
     @JIPipeParameter("cleanup-afterwards")
     public boolean isCleanUpAfterwards() {
@@ -114,21 +114,21 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        super.reportValidity(context, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
         if (!isPassThrough()) {
             if (overrideEnvironment.isEnabled()) {
-                report.report(new ParameterValidationReportContext(context,
+                report.report(new ParameterValidationReportContext(reportContext,
                         this,
                         "Override R environment",
                         "override-environment"), overrideEnvironment.getContent());
             } else {
-                RExtensionSettings.checkRSettings(context, report);
+                RExtensionSettings.checkRSettings(reportContext, report);
             }
         }
     }
 
-    @JIPipeDocumentation(name = "Override R environment", description = "If enabled, a different R environment is used for this Node.")
+    @SetJIPipeDocumentation(name = "Override R environment", description = "If enabled, a different R environment is used for this Node.")
     @JIPipeParameter("override-environment")
     public OptionalREnvironment getOverrideEnvironment() {
         return overrideEnvironment;
@@ -146,7 +146,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         StringBuilder code = new StringBuilder();
 
         // Add user variables
@@ -224,13 +224,13 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @JIPipeParameter(value = "variables", persistence = JIPipeParameterSerializationMode.Object)
-    @JIPipeDocumentation(name = "Script variables", description = "The parameters are passed as variables to the R script. The variables are named according to the " +
+    @SetJIPipeDocumentation(name = "Script variables", description = "The parameters are passed as variables to the R script. The variables are named according to the " +
             "unique name (if valid variable names) and are also stored in a list 'JIPipe.Variables'.")
     public JIPipeDynamicParameterCollection getVariables() {
         return variables;
     }
 
-    @JIPipeDocumentation(name = "Script", description = "The script that contains the R commands. " +
+    @SetJIPipeDocumentation(name = "Script", description = "The script that contains the R commands. " +
             "The script comes with various API functions and variables that allow to communicate with JIPipe: " +
             "<ul>" +
             "<li><code>JIPipe.InputSlotRowCounts</code> contains named row counts for each slot. Is always 1 for each slot.</li>" +
@@ -262,7 +262,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
         this.script = script;
     }
 
-    @JIPipeDocumentation(name = "Annotation merge strategy", description = "Determines how annotations that are added in the R script are " +
+    @SetJIPipeDocumentation(name = "Annotation merge strategy", description = "Determines how annotations that are added in the R script are " +
             "merged into existing annotations.")
     @JIPipeParameter("annotation-merge-strategy")
     public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {

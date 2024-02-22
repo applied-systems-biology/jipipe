@@ -23,6 +23,7 @@ import java.awt.event.MouseEvent;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 import static org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI.RUN_NODE_CONTEXT_MENU_ENTRIES;
 
@@ -33,16 +34,18 @@ public class BookmarkListPanel extends JIPipeWorkbenchPanel implements JIPipeGra
     private final JList<JIPipeGraphNode> nodeJList = new JList<>();
     private final Timer reloadTimer;
     private JButton runButton;
+    private final Set<JIPipeGraphNode> selectedNodes;
 
     /**
      * @param workbench     the workbench
      * @param graph         the graph where bookmarks are tracked
      * @param graphEditorUI the canvas. can be null.
      */
-    public BookmarkListPanel(JIPipeWorkbench workbench, JIPipeGraph graph, JIPipeGraphEditorUI graphEditorUI) {
+    public BookmarkListPanel(JIPipeWorkbench workbench, JIPipeGraph graph, JIPipeGraphEditorUI graphEditorUI, Set<JIPipeGraphNode> selectedNodes) {
         super(workbench);
         this.graph = graph;
         this.graphEditorUI = graphEditorUI;
+        this.selectedNodes = selectedNodes;
 
         reloadTimer = new Timer(1000, e -> reloadList());
         reloadTimer.setRepeats(false);
@@ -61,11 +64,19 @@ public class BookmarkListPanel extends JIPipeWorkbenchPanel implements JIPipeGra
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        JButton removeButton = new JButton("Remove selected", UIUtils.getIconFromResources("actions/bookmark-remove.png"));
-        removeButton.addActionListener(e -> removeSelectedBookmarks());
-        toolBar.add(removeButton);
+        toolBar.add(UIUtils.createButton("Reload", UIUtils.getIconFromResources("actions/reload.png"), this::reloadList));
 
         toolBar.add(Box.createHorizontalGlue());
+
+        if(selectedNodes != null && !selectedNodes.isEmpty()) {
+            JButton removeButton = new JButton("Add", UIUtils.getIconFromResources("actions/bookmark.png"));
+            removeButton.addActionListener(e -> addSelectionAsBookmark());
+            toolBar.add(removeButton);
+        }
+
+        JButton removeButton = new JButton("Remove", UIUtils.getIconFromResources("actions/bookmark-remove.png"));
+        removeButton.addActionListener(e -> removeSelectedBookmarks());
+        toolBar.add(removeButton);
 
         runButton = new JButton("Run", UIUtils.getIconFromResources("actions/run-play.png"));
         JPopupMenu runMenu = UIUtils.addPopupMenuToButton(runButton);
@@ -102,6 +113,13 @@ public class BookmarkListPanel extends JIPipeWorkbenchPanel implements JIPipeGra
         });
         nodeJList.addListSelectionListener(e -> runButton.setVisible(nodeJList.getSelectedValue() instanceof JIPipeAlgorithm));
         add(new JScrollPane(nodeJList), BorderLayout.CENTER);
+    }
+
+    private void addSelectionAsBookmark() {
+        for (JIPipeGraphNode node : selectedNodes) {
+            node.setParameter("jipipe:node:bookmarked", true);
+        }
+        reloadList();
     }
 
     private void runSelectedNode(NodeUIContextAction entry) {

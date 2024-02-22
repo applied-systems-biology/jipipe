@@ -56,7 +56,7 @@ public class StandardSettingsExtension extends JIPipePrepackagedDefaultJavaExten
         registerSettingsSheet(DownloadSettings.ID,
                 "Downloads",
                 "Configure how JIPipe downloads resources from the web",
-                UIUtils.getIconFromResources("actions/browser-download.png"),
+                UIUtils.getIconFromResources("actions/download.png"),
                 null,
                 null,
                 new DownloadSettings());

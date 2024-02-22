@@ -4,19 +4,18 @@ import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import ij.ImagePlus;
 import inra.ijpb.label.LabelImages;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
-import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
@@ -38,11 +37,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Train Weka model from labels (multiple images, 2D)", description = "Trains a Weka model on 2D image data that classified by a label image.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
-@JIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Labeled Images", description = "Images on which the training should be applied. " +
-        "Each image should have a data annotation that contains the label data.", autoCreate = true)
-@JIPipeOutputSlot(value = WekaModelData.class, slotName = "Trained model", description = "The model", autoCreate = true)
+@SetJIPipeDocumentation(name = "Train Weka model from labels (multiple images, 2D)", description = "Trains a Weka model on 2D image data that classified by a label image.")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
+@AddJIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Labeled Images", description = "Images on which the training should be applied. " +
+        "Each image should have a data annotation that contains the label data.", create = true)
+@AddJIPipeOutputSlot(value = WekaModelData.class, slotName = "Trained model", description = "The model", create = true)
 public class WekaTrainingLabels2DAlgorithm2 extends JIPipeMergingAlgorithm {
 
     private WekaFeature2DSettings featureSettings = new WekaFeature2DSettings();
@@ -66,7 +65,7 @@ public class WekaTrainingLabels2DAlgorithm2 extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         // Setup parameters
         ArrayList<String> selectedFeatureNames = featureSettings.getTrainingFeatures().getValues().stream().map(WekaFeature2D::name).collect(Collectors.toCollection(ArrayList::new));
         Classifier classifier = (new WekaClassifierParameter(getClassifierSettings().getClassifier())).getClassifier(); // This will make a copy of the classifier
@@ -130,19 +129,19 @@ public class WekaTrainingLabels2DAlgorithm2 extends JIPipeMergingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Classifier", description = "Settings for the classifier")
+    @SetJIPipeDocumentation(name = "Classifier", description = "Settings for the classifier")
     @JIPipeParameter("classifier-settings")
     public WekaClassifierSettings getClassifierSettings() {
         return classifierSettings;
     }
 
-    @JIPipeDocumentation(name = "Features", description = "Settings regarding the features used for training")
+    @SetJIPipeDocumentation(name = "Features", description = "Settings regarding the features used for training")
     @JIPipeParameter("feature-settings")
     public WekaFeature2DSettings getFeatureSettings() {
         return featureSettings;
     }
 
-    @JIPipeDocumentation(name = "Label data annotation", description = "Determines which data annotation contains the labels. Please ensure that " +
+    @SetJIPipeDocumentation(name = "Label data annotation", description = "Determines which data annotation contains the labels. Please ensure that " +
             "the appropriate label data is annotated to the raw input data.")
     @JIPipeParameter("label-data-annotation")
     public DataAnnotationQueryExpression getLabelDataAnnotation() {

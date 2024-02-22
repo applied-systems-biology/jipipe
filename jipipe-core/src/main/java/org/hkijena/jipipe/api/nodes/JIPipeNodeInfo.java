@@ -148,7 +148,7 @@ public interface JIPipeNodeInfo {
      *
      * @return List of input slots
      */
-    List<JIPipeInputSlot> getInputSlots();
+    List<AddJIPipeInputSlot> getInputSlots();
 
     /**
      * Returns general output data.
@@ -156,7 +156,7 @@ public interface JIPipeNodeInfo {
      *
      * @return List of output slots
      */
-    List<JIPipeOutputSlot> getOutputSlots();
+    List<AddJIPipeOutputSlot> getOutputSlots();
 
     /**
      * If the current node info contains a slot with given name

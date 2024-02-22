@@ -22,9 +22,9 @@ import ij.plugin.ChannelSplitter;
 import ij.plugin.RGBStackMerge;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHidden;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -43,12 +43,12 @@ import java.awt.*;
 /**
  * Implementation of {@link ij.plugin.MontageMaker}
  */
-@JIPipeDocumentation(name = "Stack to montage", description = "Converts an image stack into a montage. Deprecated. Use the algorithm with the same name.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Montage")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlus2DData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Make Montage... (of stacks)")
-@JIPipeHidden
+@SetJIPipeDocumentation(name = "Stack to montage", description = "Converts an image stack into a montage. Deprecated. Use the algorithm with the same name.")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Montage")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlus2DData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Make Montage... (of stacks)")
+@LabelAsJIPipeHidden
 @Deprecated
 public class StackToMontageAlgorithm extends JIPipeIteratingAlgorithm {
 
@@ -84,7 +84,7 @@ public class StackToMontageAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus imp = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         if (!imp.hasImageStack() || imp.getStackSize() <= 1) {
             iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(imp), progressInfo);
@@ -254,7 +254,7 @@ public class StackToMontageAlgorithm extends JIPipeIteratingAlgorithm {
         montage.drawString(label, x, y);
     }
 
-    @JIPipeDocumentation(name = "Rows", description = "The number of rows to generate. If disabled, rows are generated automatically.")
+    @SetJIPipeDocumentation(name = "Rows", description = "The number of rows to generate. If disabled, rows are generated automatically.")
     @JIPipeParameter(value = "rows", uiOrder = 10)
     public OptionalIntegerParameter getRows() {
         return rows;
@@ -265,7 +265,7 @@ public class StackToMontageAlgorithm extends JIPipeIteratingAlgorithm {
         this.rows = rows;
     }
 
-    @JIPipeDocumentation(name = "Columns", description = "The number of columns to generate. If disabled, columns are generated automatically.")
+    @SetJIPipeDocumentation(name = "Columns", description = "The number of columns to generate. If disabled, columns are generated automatically.")
     @JIPipeParameter(value = "columns", uiOrder = 11)
     public OptionalIntegerParameter getColumns() {
         return columns;
@@ -276,7 +276,7 @@ public class StackToMontageAlgorithm extends JIPipeIteratingAlgorithm {
         this.columns = columns;
     }
 
-    @JIPipeDocumentation(name = "Draw labels", description = "If enabled, text labels are generated.")
+    @SetJIPipeDocumentation(name = "Draw labels", description = "If enabled, text labels are generated.")
     @JIPipeParameter("draw-labels")
     public boolean isLabels() {
         return labels;
@@ -287,7 +287,7 @@ public class StackToMontageAlgorithm extends JIPipeIteratingAlgorithm {
         this.labels = labels;
     }
 
-    @JIPipeDocumentation(name = "Scale", description = "Scale to apply to each tile")
+    @SetJIPipeDocumentation(name = "Scale", description = "Scale to apply to each tile")
     @JIPipeParameter("scale")
     public double getScale() {
         return scale;
@@ -298,7 +298,7 @@ public class StackToMontageAlgorithm extends JIPipeIteratingAlgorithm {
         this.scale = scale;
     }
 
-    @JIPipeDocumentation(name = "Border width", description = "Distance between each tile")
+    @SetJIPipeDocumentation(name = "Border width", description = "Distance between each tile")
     @JIPipeParameter("border-width")
     public int getBorderWidth() {
         return borderWidth;
@@ -309,7 +309,7 @@ public class StackToMontageAlgorithm extends JIPipeIteratingAlgorithm {
         this.borderWidth = borderWidth;
     }
 
-    @JIPipeDocumentation(name = "Font size", description = "The size of labels")
+    @SetJIPipeDocumentation(name = "Font size", description = "The size of labels")
     @JIPipeParameter("font-size")
     public int getFontSize() {
         return fontSize;
@@ -320,7 +320,7 @@ public class StackToMontageAlgorithm extends JIPipeIteratingAlgorithm {
         this.fontSize = fontSize;
     }
 
-    @JIPipeDocumentation(name = "First index", description = "Determines the first slice index to put into the montage. The first index is 1. Ignored if the image is a hyperstack.")
+    @SetJIPipeDocumentation(name = "First index", description = "Determines the first slice index to put into the montage. The first index is 1. Ignored if the image is a hyperstack.")
     @JIPipeParameter(value = "first-index", uiOrder = 13)
     public OptionalIntegerParameter getFirstIndex() {
         return firstIndex;
@@ -331,7 +331,7 @@ public class StackToMontageAlgorithm extends JIPipeIteratingAlgorithm {
         this.firstIndex = firstIndex;
     }
 
-    @JIPipeDocumentation(name = "Last index", description = "Determines the last slice index to put into the montage. Starts with 1. Ignored if the image is a hyperstack.")
+    @SetJIPipeDocumentation(name = "Last index", description = "Determines the last slice index to put into the montage. Starts with 1. Ignored if the image is a hyperstack.")
     @JIPipeParameter(value = "last-index", uiOrder = 14)
     public OptionalIntegerParameter getLastIndex() {
         return lastIndex;
@@ -342,7 +342,7 @@ public class StackToMontageAlgorithm extends JIPipeIteratingAlgorithm {
         this.lastIndex = lastIndex;
     }
 
-    @JIPipeDocumentation(name = "Index increment", description = "Allows you to skip image slices. Ignored if the image is a hyperstack.")
+    @SetJIPipeDocumentation(name = "Index increment", description = "Allows you to skip image slices. Ignored if the image is a hyperstack.")
     @JIPipeParameter(value = "index-increment", uiOrder = 15)
     public int getIndexIncrement() {
         return indexIncrement;
@@ -353,7 +353,7 @@ public class StackToMontageAlgorithm extends JIPipeIteratingAlgorithm {
         this.indexIncrement = indexIncrement;
     }
 
-    @JIPipeDocumentation(name = "Foreground color", description = "The color of labels")
+    @SetJIPipeDocumentation(name = "Foreground color", description = "The color of labels")
     @JIPipeParameter("foreground-color")
     public Color getForegroundColor() {
         return foregroundColor;
@@ -364,7 +364,7 @@ public class StackToMontageAlgorithm extends JIPipeIteratingAlgorithm {
         this.foregroundColor = foregroundColor;
     }
 
-    @JIPipeDocumentation(name = "Background color", description = "The color of backgrounds")
+    @SetJIPipeDocumentation(name = "Background color", description = "The color of backgrounds")
     @JIPipeParameter("background-color")
     public Color getBackgroundColor() {
         return backgroundColor;

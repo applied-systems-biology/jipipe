@@ -49,19 +49,19 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-@JIPipeDocumentation(name = "Analyze skeleton 2D/3D", description = "Tags all pixel/voxels in a skeleton image and then counts all its junctions, triple and quadruple points and branches, and measures their average and maximum length.")
-@JIPipeCitation("Arganda-Carreras, I., Fernández-González, R., Muñoz-Barrutia, A., & Ortiz-De-Solorzano, C. (2010). 3D reconstruction of histological sections: Application to mammary gland tissue. Microscopy Research and Technique, 73(11), 1019–1029. doi:10.1002/jemt.20829")
-@JIPipeCitation("G. Polder, H.L.E Hovens and A.J Zweers, Measuring shoot length of submerged aquatic plants using graph analysis (2010), In: Proceedings of the ImageJ User and Developer Conference, Centre de Recherche Public Henri Tudor, Luxembourg, 27-29 October, pp 172-177.")
-@JIPipeNode(menuPath = "Analyze", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlus3DGreyscaleMaskData.class, slotName = "Skeleton", autoCreate = true)
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", description = "ROI to exclude on pruning ends")
-@JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Reference", description = "Original grayscale input image (for lowest pixel intensity pruning mode)")
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Skeletons", description = "Table of all skeletons")
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Branches", description = "Table of all branches")
-@JIPipeOutputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Tagged skeletons", description = "End-point voxels are displayed in blue, slab voxels in orange and junction voxels in purple")
-@JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Labels", description = "Label image of the skeletons")
-@JIPipeOutputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Largest shortest paths", description = "The largest shortest path (in magenta)")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze\nSkeleton", aliasName = "Analyze Skeleton (2D/3D)")
+@SetJIPipeDocumentation(name = "Analyze skeleton 2D/3D", description = "Tags all pixel/voxels in a skeleton image and then counts all its junctions, triple and quadruple points and branches, and measures their average and maximum length.")
+@AddJIPipeCitation("Arganda-Carreras, I., Fernández-González, R., Muñoz-Barrutia, A., & Ortiz-De-Solorzano, C. (2010). 3D reconstruction of histological sections: Application to mammary gland tissue. Microscopy Research and Technique, 73(11), 1019–1029. doi:10.1002/jemt.20829")
+@AddJIPipeCitation("G. Polder, H.L.E Hovens and A.J Zweers, Measuring shoot length of submerged aquatic plants using graph analysis (2010), In: Proceedings of the ImageJ User and Developer Conference, Centre de Recherche Public Henri Tudor, Luxembourg, 27-29 October, pp 172-177.")
+@DefineJIPipeNode(menuPath = "Analyze", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlus3DGreyscaleMaskData.class, slotName = "Skeleton", create = true)
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", description = "ROI to exclude on pruning ends")
+@AddJIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Reference", description = "Original grayscale input image (for lowest pixel intensity pruning mode)")
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Skeletons", description = "Table of all skeletons")
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Branches", description = "Table of all branches")
+@AddJIPipeOutputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Tagged skeletons", description = "End-point voxels are displayed in blue, slab voxels in orange and junction voxels in purple")
+@AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Labels", description = "Label image of the skeletons")
+@AddJIPipeOutputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Largest shortest paths", description = "The largest shortest path (in magenta)")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze\nSkeleton", aliasName = "Analyze Skeleton (2D/3D)")
 public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
 
     public static final JIPipeDataSlotInfo ROI_INPUT_SLOT = new JIPipeDataSlotInfo(ROIListData.class, JIPipeSlotType.Input, "ROI", "ROI to exclude on pruning ends", true);
@@ -97,7 +97,7 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus skeleton = iterationStep.getInputData("Skeleton", ImagePlus3DGreyscaleMaskData.class, progressInfo).getImage();
         Roi excludeRoi = null;
         ImagePlus referenceImage = null;
@@ -164,7 +164,7 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Outputs", description = "Please select the entries to add/remove outputs")
+    @SetJIPipeDocumentation(name = "Outputs", description = "Please select the entries to add/remove outputs")
     @JIPipeParameter("output-parameters")
     public OutputParameters getOutputParameters() {
         return outputParameters;
@@ -304,7 +304,7 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
         return rt.getTable();
     }
 
-    @JIPipeDocumentation(name = "Prune cycles method", description = "Allows the selection of a method to prune possible loops in the skeleton")
+    @SetJIPipeDocumentation(name = "Prune cycles method", description = "Allows the selection of a method to prune possible loops in the skeleton")
     @JIPipeParameter("prune-cycles-method")
     public CycleRemovalMethod getPruneCyclesMethod() {
         return pruneCyclesMethod;
@@ -316,7 +316,7 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
         toggleSlot(REFERENCE_INPUT_SLOT, pruneCyclesMethod == CycleRemovalMethod.LowestIntensityBranch || pruneCyclesMethod == CycleRemovalMethod.LowestIntensityVoxel);
     }
 
-    @JIPipeDocumentation(name = "Prune ends methods", description = "Allows the selection of a method to prune any branch that ends in an end-point")
+    @SetJIPipeDocumentation(name = "Prune ends methods", description = "Allows the selection of a method to prune any branch that ends in an end-point")
     @JIPipeParameter("prune-ends-method")
     public EndRemovalMethod getPruneEndsMethod() {
         return pruneEndsMethod;
@@ -328,7 +328,7 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
         toggleSlot(ROI_INPUT_SLOT, pruneEndsMethod == EndRemovalMethod.ExcludeROI);
     }
 
-    @JIPipeDocumentationDescription(description = "<ul>" +
+    @AddJIPipeDocumentationDescription(description = "<ul>" +
             "<li>None: branches that end in an end point are not removed.</li>" +
             "<li>All:branches that end in an end point are removed.</li>" +
             "<li>Exclude ROI: branches that end in an end point are removed; regions within the ROI are excluded</li>" +
@@ -346,7 +346,7 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentationDescription(description = "<ul>" +
+    @AddJIPipeDocumentationDescription(description = "<ul>" +
             "<li>None: no cycle detection nor pruning is performed.</li>" +
             "<li>Shortest branch: the shortest branch among the loop branches will be cut in its middle point.</li>" +
             "<li>Lowest intensity voxel: the darkest voxel among the loop voxels will be cut (set to 0) in the input image.</li>" +
@@ -414,7 +414,7 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
             this.parent = parent;
         }
 
-        @JIPipeDocumentation(name = "Output skeleton table", description = "If enabled, output a table with all skeletons")
+        @SetJIPipeDocumentation(name = "Output skeleton table", description = "If enabled, output a table with all skeletons")
         @JIPipeParameter("output-skeleton-table")
         public boolean isOutputSkeletonTable() {
             return outputSkeletonTable;
@@ -426,7 +426,7 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
             parent.toggleSlot(SKELETONS_TABLE_OUTPUT_SLOT, outputSkeletonTable);
         }
 
-        @JIPipeDocumentation(name = "Output branch table", description = "If enabled, output a table with all detected branches")
+        @SetJIPipeDocumentation(name = "Output branch table", description = "If enabled, output a table with all detected branches")
         @JIPipeParameter("output-branch-table")
         public boolean isOutputBranchTable() {
             return outputBranchTable;
@@ -438,7 +438,7 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
             parent.toggleSlot(BRANCHES_TABLE_OUTPUT_SLOT, outputBranchTable);
         }
 
-        @JIPipeDocumentation(name = "Output tagged skeletons", description = "If enabled, output an image where end-point voxels are displayed in blue, slab voxels in orange and junction voxels in purple")
+        @SetJIPipeDocumentation(name = "Output tagged skeletons", description = "If enabled, output an image where end-point voxels are displayed in blue, slab voxels in orange and junction voxels in purple")
         @JIPipeParameter("output-tagged-skeletons")
         public boolean isOutputTaggedSkeletons() {
             return outputTaggedSkeletons;
@@ -450,7 +450,7 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
             parent.toggleSlot(TAGGED_SKELETONS_IMAGE_OUTPUT_SLOT, outputTaggedSkeletons);
         }
 
-        @JIPipeDocumentation(name = "Output skeleton labels", description = "If enabled, output a label image of all skeletons")
+        @SetJIPipeDocumentation(name = "Output skeleton labels", description = "If enabled, output a label image of all skeletons")
         @JIPipeParameter("output-skeleton-labels")
         public boolean isOutputSkeletonLabels() {
             return outputSkeletonLabels;
@@ -462,7 +462,7 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
             parent.toggleSlot(LABELS_IMAGE_OUTPUT_SLOT, outputSkeletonLabels);
         }
 
-        @JIPipeDocumentation(name = "Output largest shortest paths", description = "If enabled, output an image that highlights the largest shortest paths")
+        @SetJIPipeDocumentation(name = "Output largest shortest paths", description = "If enabled, output an image that highlights the largest shortest paths")
         @JIPipeParameter("output-largest-shortest-paths")
         public boolean isOutputLargestShortestPaths() {
             return outputLargestShortestPaths;

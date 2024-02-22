@@ -40,31 +40,39 @@ public class ModernMetalTheme extends DefaultMetalTheme {
     public static final ColorUIResource SECONDARY2 =
             new ColorUIResource(0xd5d5d5);
     public static final ColorUIResource SECONDARY3 =
-            new ColorUIResource(0xf2f2f2);
+            new ColorUIResource(0xF7F8FA);
     public static final ColorUIResource PRIMARY4 =
-            new ColorUIResource(0xf2f2f2);
+            new ColorUIResource(0xF7F8FA);
     public static final ColorUIResource PRIMARY5 =
             new ColorUIResource(0x65a4e3);
+    public static final ColorUIResource CONTROL_TOGGLED =
+            new ColorUIResource(0xDEE0E4);
+    public static final ColorUIResource CONTROL_HIGHLIGHTED =
+            new ColorUIResource(0xE0EDFA);
+
     public static final ColorUIResource PRIMARY6 =
             new ColorUIResource(0xaa87de);
     public static final Color DARK_GRAY = new ColorUIResource(Color.DARK_GRAY);
-    public static final Color MEDIUM_GRAY = new ColorUIResource(0xb8babf);
+    public static final Color MEDIUM_GRAY = new ColorUIResource(0xDEE0E4);
     public static final Color GRAY = new ColorUIResource(0xe6e6e6);
-    public static final Color LIGHT_GRAY = new ColorUIResource(0xf2f2f2);
+    public static final Color LIGHT_GRAY = new ColorUIResource(0xF7F8FA);
     public static final ColorUIResource CONTROL_TEXT_COLOR =
-            new ColorUIResource(0x333333);
+            new ColorUIResource(0x1d1d1d);
     public static final ColorUIResource INACTIVE_CONTROL_TEXT_COLOR =
             new ColorUIResource(0x999999);
     public static final ColorUIResource MENU_DISABLED_FOREGROUND =
             new ColorUIResource(0x999999);
     public static final ColorUIResource OCEAN_BLACK =
-            new ColorUIResource(0x333333);
+            new ColorUIResource(0x1d1d1d);
     public static final ColorUIResource OCEAN_DROP =
             new ColorUIResource(0xD2E9FF);
     private static final Border NO_BORDER = BorderFactory.createEmptyBorder();
     private static final Border BUTTON_BORDER = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
-            BorderFactory.createCompoundBorder(new RoundedLineBorder(MEDIUM_GRAY, 1, 2),
+            BorderFactory.createCompoundBorder(new RoundedLineBorder(MEDIUM_GRAY, 1, 5),
                     BorderFactory.createEmptyBorder(3, 3, 3, 3)));
+
+    private static final Border TEXTFIELD_BORDER = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
+           new RoundedLineBorder(MEDIUM_GRAY, 1, 5));
     private static final Border INVISIBLE_BORDER = BorderFactory.createEmptyBorder(5, 5, 5, 5);
     static ColorUIResource WHITE = new ColorUIResource(255, 255, 255);
 
@@ -108,7 +116,7 @@ public class ModernMetalTheme extends DefaultMetalTheme {
                 "Button.rolloverIconType", "ocean",
                 "Button.border", BUTTON_BORDER,
                 "Button.borderColor", MEDIUM_GRAY,
-                "Button.focus", PRIMARY1,
+                "Button.focus", CONTROL_TOGGLED,
                 "ScrollPane.border", NO_BORDER,
 
                 "Separator.foreground", GRAY,
@@ -145,23 +153,33 @@ public class ModernMetalTheme extends DefaultMetalTheme {
                 "Label.disabledForeground", getInactiveControlTextColor(),
 
                 "Menu.opaque", Boolean.FALSE,
+                "Menu.background", Color.WHITE,
                 "MenuItem.acceleratorForeground", DARK_GRAY,
 
-                "PopupMenu.border", BorderFactory.createLineBorder(MEDIUM_GRAY, 1, false),
+                "PopupMenu.border", new RoundedLineBorder(MEDIUM_GRAY, 1, 5),
+                "PopupMenu.background", Color.WHITE,
+                "MenuItem.background", Color.WHITE,
+
+                "Menu.border", BorderFactory.createEmptyBorder(5,5,5,5),
+                "MenuItem.border", BorderFactory.createEmptyBorder(5,5,5,5),
+                "CheckBoxMenuItem.border", BorderFactory.createEmptyBorder(5,5,5,5),
+                "MenuItem.borderPainted", false,
+                "CheckBoxMenuItem.borderPainted", false,
+                "Menu.borderPainted", false,
 
                 "MenuBar.background", LIGHT_GRAY,
                 "MenuBar.borderColor", GRAY,
-                "MenuItem.selectionBackground", PRIMARY5,
-                "MenuItem.selectionForeground", WHITE,
-                "MenuItem.borderPainted", false,
-                "CheckBoxMenuItem.background", LIGHT_GRAY,
-                "CheckBoxMenuItem.selectionBackground", PRIMARY5,
-                "CheckBoxMenuItem.selectionForeground", WHITE,
-                "CheckBoxMenuItem.borderPainted", false,
+                "MenuItem.selectionBackground", CONTROL_HIGHLIGHTED,
+                "MenuItem.selectionForeground", CONTROL_TEXT_COLOR,
+
+                "CheckBoxMenuItem.background", Color.WHITE,
+                "CheckBoxMenuItem.selectionBackground", CONTROL_HIGHLIGHTED,
+                "CheckBoxMenuItem.selectionForeground", CONTROL_TEXT_COLOR,
+
                 "CheckBoxMenuItem.checkIcon", new CheckBoxMenuItemIcon(WHITE),
-                "Menu.selectionBackground", PRIMARY5,
-                "Menu.selectionForeground", WHITE,
-                "Menu.borderPainted", false,
+                "Menu.selectionBackground", CONTROL_HIGHLIGHTED,
+                "Menu.selectionForeground", CONTROL_TEXT_COLOR,
+
 
                 "InternalFrame.activeTitleBackground", LIGHT_GRAY,
                 // close2
@@ -236,9 +254,10 @@ public class ModernMetalTheme extends DefaultMetalTheme {
 
                 "ToggleButton.background", LIGHT_GRAY,
                 "ToggleButton.border", BUTTON_BORDER,
-                "ToggleButton.select", PRIMARY1,
+                "ToggleButton.select", CONTROL_TOGGLED,
 
                 "TextField.inactiveForeground", PRIMARY1,
+                "TextField.border", TEXTFIELD_BORDER,
 
 //                "ToolBar.borderColor", GRAY2,
                 "ToolBar.border", BorderFactory.createMatteBorder(0, 0, 1, 0, GRAY),

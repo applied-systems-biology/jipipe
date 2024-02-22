@@ -1,9 +1,9 @@
 package org.hkijena.jipipe.extensions.expressions.functions.statistics;
 
 import ij.process.AutoThresholder;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 
-@JIPipeDocumentation(name = "Histogram threshold (Otsu)", description = "Calculates a threshold from a " +
+@SetJIPipeDocumentation(name = "Histogram threshold (Otsu)", description = "Calculates a threshold from a " +
         "histogram using the Otsu algorithm.")
 public class HistogramThresholdOtsu extends HistogramThresholdFunction {
     public HistogramThresholdOtsu() {

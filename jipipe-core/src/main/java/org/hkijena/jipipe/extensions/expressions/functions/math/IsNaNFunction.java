@@ -1,13 +1,13 @@
 package org.hkijena.jipipe.extensions.expressions.functions.math;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "Number is NaN", description = "Returns true if the parameter is NaN")
+@SetJIPipeDocumentation(name = "Number is NaN", description = "Returns true if the parameter is NaN")
 public class IsNaNFunction extends ExpressionFunction {
     public IsNaNFunction() {
         super("IS_NAN", 1);

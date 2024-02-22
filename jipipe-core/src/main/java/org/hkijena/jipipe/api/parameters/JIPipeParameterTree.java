@@ -15,8 +15,8 @@ package org.hkijena.jipipe.api.parameters;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -254,9 +254,9 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
                 continue;
             if (!actionAnnotation.showInParameters())
                 continue;
-            JIPipeDocumentation documentationAnnotation = method.getAnnotation(JIPipeDocumentation.class);
+            SetJIPipeDocumentation documentationAnnotation = method.getAnnotation(SetJIPipeDocumentation.class);
             if (documentationAnnotation == null) {
-                documentationAnnotation = new JIPipeDefaultDocumentation(method.getName(), "");
+                documentationAnnotation = new JIPipeDocumentation(method.getName(), "");
             }
             URL iconURL = null;
             if (UIUtils.DARK_THEME && !StringUtils.isNullOrEmpty(actionAnnotation.iconDarkURL())) {
@@ -508,13 +508,13 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
      * @param source source
      * @return source documentation
      */
-    public JIPipeDocumentation getSourceDocumentation(JIPipeParameterCollection source) {
+    public SetJIPipeDocumentation getSourceDocumentation(JIPipeParameterCollection source) {
         Node node = nodeMap.get(source);
         String name = getSourceDocumentationName(source);
         HTMLText description = node.getDescription();
         if (description == null)
             description = new HTMLText();
-        return new JIPipeDefaultDocumentation(name, description.getBody());
+        return new JIPipeDocumentation(name, description.getBody());
     }
 
     /**
@@ -523,7 +523,7 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
      * @param source        source
      * @param documentation documentation
      */
-    public void setSourceDocumentation(JIPipeParameterCollection source, JIPipeDefaultDocumentation documentation) {
+    public void setSourceDocumentation(JIPipeParameterCollection source, JIPipeDocumentation documentation) {
         Node node = nodeMap.get(source);
         node.setName(documentation.name());
         node.setDescription(new HTMLText(DocumentationUtils.getDocumentationDescription(documentation)));
@@ -656,13 +656,13 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
             return getterAnnotation.uiOrder() != 0 ? getterAnnotation.uiOrder() : setterAnnotation.uiOrder();
         }
 
-        public JIPipeDocumentation getDocumentation() {
-            JIPipeDocumentation[] documentations = getter.getAnnotationsByType(JIPipeDocumentation.class);
+        public SetJIPipeDocumentation getDocumentation() {
+            SetJIPipeDocumentation[] documentations = getter.getAnnotationsByType(SetJIPipeDocumentation.class);
             if (documentations.length > 0)
                 return documentations[0];
             if (setter == null)
                 return null;
-            documentations = setter.getAnnotationsByType(JIPipeDocumentation.class);
+            documentations = setter.getAnnotationsByType(SetJIPipeDocumentation.class);
             return documentations.length > 0 ? documentations[0] : null;
         }
 

@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.ij3d.compat;
 
 import ij.Prefs;
 import mcib_plugins.tools.RoiManager3D_2;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.ImageJDataExporter;
 import org.hkijena.jipipe.api.compat.ImageJExportParameters;
@@ -29,7 +29,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Export 3D ROI to ImageJ")
+@SetJIPipeDocumentation(name = "Export 3D ROI to ImageJ")
 public class ROI3DImageJExporter implements ImageJDataExporter {
     @Override
     public List<Object> exportData(JIPipeDataTable dataTable, ImageJExportParameters parameters, JIPipeProgressInfo progressInfo) {

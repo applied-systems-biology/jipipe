@@ -14,9 +14,9 @@
 package org.hkijena.jipipe.extensions.plots.nodes;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHidden;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
@@ -50,14 +50,14 @@ import java.util.*;
  *
  * @deprecated Instead, the new dynamically generated plotting should be utilized
  */
-@JIPipeDocumentation(name = "Plot tables", description = "Plots incoming tables. First, set the plot type via a parameter. This " +
+@SetJIPipeDocumentation(name = "Plot tables", description = "Plots incoming tables. First, set the plot type via a parameter. This " +
         "will then show the available settings for this plot type, and a list of input columns for the plot. " +
         "Please ensure to correctly setup these input columns.")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
-@JIPipeInputSlot(ResultsTableData.class)
-@JIPipeOutputSlot(PlotData.class)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Plot (JFreeChart)")
-@JIPipeHidden
+@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
+@AddJIPipeInputSlot(ResultsTableData.class)
+@AddJIPipeOutputSlot(PlotData.class)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Plot (JFreeChart)")
+@LabelAsJIPipeHidden
 @Deprecated
 public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
 
@@ -94,7 +94,7 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         PlotMetadata plotMetadata = plotType.getInfo().getDataClass().getAnnotation(PlotMetadata.class);
         Map<String, PlotColumn> plotColumns = new HashMap<>();
         for (PlotColumn column : plotMetadata.columns()) {
@@ -140,19 +140,19 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         if (getPlotType().getInfo() == null) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new ParameterValidationReportContext(context, this, "Plot type", "plot-type"),
+                    new ParameterValidationReportContext(reportContext, this, "Plot type", "plot-type"),
                     "Plot type not set!",
                     "Please choose a plot type"));
         }
         if (plotTypeParameters != null) {
-            report.report(new ParameterValidationReportContext(context, this, "Plot parameters", "plot-parameters"), plotTypeParameters);
+            report.report(new ParameterValidationReportContext(reportContext, this, "Plot parameters", "plot-parameters"), plotTypeParameters);
         }
     }
 
-    @JIPipeDocumentation(name = "Plot type", description = "The type of plot to be generated.")
+    @SetJIPipeDocumentation(name = "Plot type", description = "The type of plot to be generated.")
     @JIPipeParameter(value = "plot-type", priority = Priority.HIGH, important = true)
     @JIPipeDataParameterSettings(dataBaseClass = PlotData.class, dataClassFilter = PlotDataClassFilter.class)
     public JIPipeDataInfoRef getPlotType() {
@@ -213,20 +213,20 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
         emitNodeSlotsChangedEvent();
     }
 
-    @JIPipeDocumentation(name = "Plot parameters")
+    @SetJIPipeDocumentation(name = "Plot parameters")
     @JIPipeParameter("plot-parameters")
     public PlotData getPlotTypeParameters() {
         return plotTypeParameters;
     }
 
-    @JIPipeDocumentation(name = "Input columns", description = "Please define which input table columns are copied into the plot. " +
+    @SetJIPipeDocumentation(name = "Input columns", description = "Please define which input table columns are copied into the plot. " +
             "To find out which columns are available, run the quick run on input data. You can also generate missing columns.")
     @JIPipeParameter(value = "input-columns", persistence = JIPipeParameterSerializationMode.Object)
     public JIPipeDynamicParameterCollection getInputColumns() {
         return inputColumns;
     }
 
-    @JIPipeDocumentation(name = "Series name", description = "Expression that is used to generate the series name")
+    @SetJIPipeDocumentation(name = "Series name", description = "Expression that is used to generate the series name")
     @JIPipeParameter("series-name")
     @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class)
     public StringQueryExpression getSeriesName() {

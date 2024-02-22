@@ -4,8 +4,8 @@ import ij.ImagePlus;
 import ij.gui.Overlay;
 import ij.gui.Roi;
 import ij.measure.Calibration;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -30,12 +30,12 @@ import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
 
 import java.awt.*;
 
-@JIPipeDocumentation(name = "Draw scale bar ROI", description = "Draws a scale bar ROI. Compared to 'Draw scale bar', this node allows better control over overlay.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Calibration")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", description = "Optional existing list of ROI. The new ROI will be appended to it.", optional = true, autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", description = "Reference image for the positioning. If not set, the area covered by the existing ROI are used (or width=0, height=0)", autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze\nTools", aliasName = "Scale Bar... (as ROI)")
+@SetJIPipeDocumentation(name = "Draw scale bar ROI", description = "Draws a scale bar ROI. Compared to 'Draw scale bar', this node allows better control over overlay.")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Calibration")
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", description = "Optional existing list of ROI. The new ROI will be appended to it.", optional = true, create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", description = "Reference image for the positioning. If not set, the area covered by the existing ROI are used (or width=0, height=0)", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze\nTools", aliasName = "Scale Bar... (as ROI)")
 public class DrawScaleBarRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final TextSettings textSettings;
@@ -69,7 +69,7 @@ public class DrawScaleBarRoiAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
         // Collect target and reference
         ROIListData target = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
@@ -128,13 +128,13 @@ public class DrawScaleBarRoiAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
 
-    @JIPipeDocumentation(name = "Label settings", description = "The following settings allow you to control the text labels")
+    @SetJIPipeDocumentation(name = "Label settings", description = "The following settings allow you to control the text labels")
     @JIPipeParameter("text-settings")
     public TextSettings getTextSettings() {
         return textSettings;
     }
 
-    @JIPipeDocumentation(name = "Bar size (horizontal)", description = "Size of the scale bar. If disabled, a calculated default value is used.")
+    @SetJIPipeDocumentation(name = "Bar size (horizontal)", description = "Size of the scale bar. If disabled, a calculated default value is used.")
     @JIPipeParameter("bar-size-horizontal")
     public OptionalQuantity getHorizontalBarSize() {
         return horizontalBarSize;
@@ -145,7 +145,7 @@ public class DrawScaleBarRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.horizontalBarSize = horizontalBarSize;
     }
 
-    @JIPipeDocumentation(name = "Bar size (vertical)", description = "Size of the scale bar. If disabled, a calculated default value is used.")
+    @SetJIPipeDocumentation(name = "Bar size (vertical)", description = "Size of the scale bar. If disabled, a calculated default value is used.")
     @JIPipeParameter("bar-size-vertical")
     public OptionalQuantity getVerticalBarSize() {
         return verticalBarSize;
@@ -156,7 +156,7 @@ public class DrawScaleBarRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.verticalBarSize = verticalBarSize;
     }
 
-    @JIPipeDocumentation(name = "Bar thickness (px)", description = "Thickness of the scale bar in pixels.")
+    @SetJIPipeDocumentation(name = "Bar thickness (px)", description = "Thickness of the scale bar in pixels.")
     @JIPipeParameter("bar-thickness")
     public int getBarThickness() {
         return barThickness;
@@ -167,7 +167,7 @@ public class DrawScaleBarRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.barThickness = barThickness;
     }
 
-    @JIPipeDocumentation(name = "Bar color", description = "Color of the bar")
+    @SetJIPipeDocumentation(name = "Bar color", description = "Color of the bar")
     @JIPipeParameter("bar-color")
     public Color getBarColor() {
         return barColor;
@@ -179,7 +179,7 @@ public class DrawScaleBarRoiAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
 
-    @JIPipeDocumentation(name = "Background color", description = "If enabled, the background of the bar")
+    @SetJIPipeDocumentation(name = "Background color", description = "If enabled, the background of the bar")
     @JIPipeParameter("background-color")
     public OptionalColorParameter getBackgroundColor() {
         return backgroundColor;
@@ -191,7 +191,7 @@ public class DrawScaleBarRoiAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
 
-    @JIPipeDocumentation(name = "Location", description = "Location of the scale bar")
+    @SetJIPipeDocumentation(name = "Location", description = "Location of the scale bar")
     @JIPipeParameter("location")
     public ScaleBarGenerator.ScaleBarPosition getLocation() {
         return location;
@@ -202,7 +202,7 @@ public class DrawScaleBarRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.location = location;
     }
 
-    @JIPipeDocumentation(name = "Draw horizontal scale bar", description = "If enabled, a horizontal scale bar is drawn")
+    @SetJIPipeDocumentation(name = "Draw horizontal scale bar", description = "If enabled, a horizontal scale bar is drawn")
     @JIPipeParameter("draw-horizontal")
     public boolean isDrawHorizontal() {
         return drawHorizontal;
@@ -213,7 +213,7 @@ public class DrawScaleBarRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.drawHorizontal = drawHorizontal;
     }
 
-    @JIPipeDocumentation(name = "Draw vertical scale bar", description = "If enabled, a vertical scale bar is drawn")
+    @SetJIPipeDocumentation(name = "Draw vertical scale bar", description = "If enabled, a vertical scale bar is drawn")
     @JIPipeParameter("draw-vertical")
     public boolean isDrawVertical() {
         return drawVertical;
@@ -248,7 +248,7 @@ public class DrawScaleBarRoiAlgorithm extends JIPipeIteratingAlgorithm {
             this.hideLabels = other.hideLabels;
         }
 
-        @JIPipeDocumentation(name = "Label (horizontal)", description = "Expression that determines the text to be rendered.")
+        @SetJIPipeDocumentation(name = "Label (horizontal)", description = "Expression that determines the text to be rendered.")
         @JIPipeParameter(value = "label-h", important = true)
         @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
         @JIPipeExpressionParameterVariable(name = "Unit", description = "The unit of the scale bar")
@@ -262,7 +262,7 @@ public class DrawScaleBarRoiAlgorithm extends JIPipeIteratingAlgorithm {
             this.horizontalLabel = horizontalLabel;
         }
 
-        @JIPipeDocumentation(name = "Label (vertical)", description = "Expression that determines the text to be rendered.")
+        @SetJIPipeDocumentation(name = "Label (vertical)", description = "Expression that determines the text to be rendered.")
         @JIPipeParameter(value = "label-v", important = true)
         @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
         @JIPipeExpressionParameterVariable(name = "Unit", description = "The unit of the scale bar")
@@ -276,7 +276,7 @@ public class DrawScaleBarRoiAlgorithm extends JIPipeIteratingAlgorithm {
             this.verticalLabel = verticalLabel;
         }
 
-        @JIPipeDocumentation(name = "Hide labels", description = "If enabled, all labels will be hidden")
+        @SetJIPipeDocumentation(name = "Hide labels", description = "If enabled, all labels will be hidden")
         @JIPipeParameter("hide-labels")
         public boolean isHideLabels() {
             return hideLabels;
@@ -287,7 +287,7 @@ public class DrawScaleBarRoiAlgorithm extends JIPipeIteratingAlgorithm {
             this.hideLabels = hideLabels;
         }
 
-        @JIPipeDocumentation(name = "Text color", description = "The color of the text")
+        @SetJIPipeDocumentation(name = "Text color", description = "The color of the text")
         @JIPipeParameter("text-color")
         public Color getTextColor() {
             return textColor;
@@ -298,7 +298,7 @@ public class DrawScaleBarRoiAlgorithm extends JIPipeIteratingAlgorithm {
             this.textColor = textColor;
         }
 
-        @JIPipeDocumentation(name = "Font", description = "Font of the text")
+        @SetJIPipeDocumentation(name = "Font", description = "Font of the text")
         @JIPipeParameter("text-font")
         public FontFamilyParameter getFontFamily() {
             return fontFamily;
@@ -309,7 +309,7 @@ public class DrawScaleBarRoiAlgorithm extends JIPipeIteratingAlgorithm {
             this.fontFamily = fontFamily;
         }
 
-        @JIPipeDocumentation(name = "Font size", description = "Size of the text")
+        @SetJIPipeDocumentation(name = "Font size", description = "Size of the text")
         @JIPipeParameter("text-font-size")
         public int getFontSize() {
             return fontSize;
@@ -320,7 +320,7 @@ public class DrawScaleBarRoiAlgorithm extends JIPipeIteratingAlgorithm {
             this.fontSize = fontSize;
         }
 
-        @JIPipeDocumentation(name = "Font style", description = "The style of the font")
+        @SetJIPipeDocumentation(name = "Font style", description = "The style of the font")
         @JIPipeParameter("font-style")
         public FontStyleParameter getFontStyle() {
             return fontStyle;

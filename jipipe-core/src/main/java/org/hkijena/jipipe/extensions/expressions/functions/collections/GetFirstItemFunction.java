@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.functions.collections;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -8,7 +8,7 @@ import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 import java.util.Collection;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Gets first item", description = "Gets the first item of an array or the first character of a string")
+@SetJIPipeDocumentation(name = "Gets first item", description = "Gets the first item of an array or the first character of a string")
 public class GetFirstItemFunction extends ExpressionFunction {
 
     public GetFirstItemFunction() {

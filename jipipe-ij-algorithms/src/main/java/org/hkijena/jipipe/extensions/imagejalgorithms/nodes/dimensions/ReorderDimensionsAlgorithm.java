@@ -3,8 +3,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.dimensions;
 import com.google.common.collect.Sets;
 import ij.ImagePlus;
 import ij.ImageStack;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -25,13 +25,13 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 /**
  * Algorithm that reorders Hyperstack dimensions
  */
-@JIPipeDocumentation(name = "Reorder dimensions", description = "Reorders dimensions of hyperstacks. This for example allows you to " +
+@SetJIPipeDocumentation(name = "Reorder dimensions", description = "Reorders dimensions of hyperstacks. This for example allows you to " +
         "switch the depth and time axis. If a stack is provided, it is interpreted as hyperstack with depth and with one frame and one channel. " +
         "2D images are ignored and passed to the output without processing.")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nHyperstacks", aliasName = "Re-order Hyperstack...")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nHyperstacks", aliasName = "Re-order Hyperstack...")
 public class ReorderDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private HyperstackDimension targetZ = HyperstackDimension.Depth;
@@ -50,7 +50,7 @@ public class ReorderDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus image = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
 
         if (!image.hasImageStack()) {
@@ -160,18 +160,18 @@ public class ReorderDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        super.reportValidity(context, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
         if (Sets.newHashSet(targetC, targetT, targetZ).size() != 3) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    context,
+                    reportContext,
                     "Duplicate target dimensions!",
                     "You cannot have duplicate target dimensions.",
                     "Check that all targe dimensions are only used once."));
         }
     }
 
-    @JIPipeDocumentation(name = "Move Z to ...", description = "Determines how the Z dimension is re-mapped.")
+    @SetJIPipeDocumentation(name = "Move Z to ...", description = "Determines how the Z dimension is re-mapped.")
     @JIPipeParameter("target-z")
     public HyperstackDimension getTargetZ() {
         return targetZ;
@@ -182,7 +182,7 @@ public class ReorderDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.targetZ = targetZ;
     }
 
-    @JIPipeDocumentation(name = "Move C to ...", description = "Determines how the C (channel) dimension is re-mapped.")
+    @SetJIPipeDocumentation(name = "Move C to ...", description = "Determines how the C (channel) dimension is re-mapped.")
     @JIPipeParameter("target-c")
     public HyperstackDimension getTargetC() {
         return targetC;
@@ -193,7 +193,7 @@ public class ReorderDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.targetC = targetC;
     }
 
-    @JIPipeDocumentation(name = "Move T to ...", description = "Determines how the T (time) dimension is re-mapped.")
+    @SetJIPipeDocumentation(name = "Move T to ...", description = "Determines how the T (time) dimension is re-mapped.")
     @JIPipeParameter("target-t")
     public HyperstackDimension getTargetT() {
         return targetT;

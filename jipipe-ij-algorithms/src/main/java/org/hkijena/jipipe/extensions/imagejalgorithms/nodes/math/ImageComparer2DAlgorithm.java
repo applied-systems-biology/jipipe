@@ -16,8 +16,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.math;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.nodes.*;
@@ -43,12 +43,12 @@ import java.util.Set;
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@JIPipeDocumentation(name = "Compare pixels 2D (where)", description = "Compares each pixel position and returns a 255 where the condition applies and 0 where the condition does not apply." +
+@SetJIPipeDocumentation(name = "Compare pixels 2D (where)", description = "Compares each pixel position and returns a 255 where the condition applies and 0 where the condition does not apply." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input 1", autoCreate = true, description = "The first operand")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input 2", autoCreate = true, description = "The second operand")
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true, description = "The calculation result")
+@DefineJIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input 1", create = true, description = "The first operand")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input 2", create = true, description = "The second operand")
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", create = true, description = "The calculation result")
 public class ImageComparer2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private Operation operation = Operation.Equals;
@@ -98,7 +98,7 @@ public class ImageComparer2DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus leftOperand = null;
         ImagePlus rightOperand = null;
         for (Map.Entry<String, JIPipeParameterAccess> entry : operands.getParameters().entrySet()) {
@@ -169,21 +169,21 @@ public class ImageComparer2DAlgorithm extends JIPipeIteratingAlgorithm {
 
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        super.reportValidity(context, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
         Set<Operand> existing = new HashSet<>();
         for (Map.Entry<String, JIPipeParameterAccess> entry : operands.getParameters().entrySet()) {
             Operand operand = entry.getValue().get(Operand.class);
             if (operand == null) {
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                        new ParameterValidationReportContext(context, this, "Operands", "operands"),
+                        new ParameterValidationReportContext(reportContext, this, "Operands", "operands"),
                         "Operand not selected!",
                         "Please ensure that all operands are selected"));
             }
             if (operand != null) {
                 if (existing.contains(operand)) {
                     report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                            new ParameterValidationReportContext(context, this, "Operands", "operands"),
+                            new ParameterValidationReportContext(reportContext, this, "Operands", "operands"),
                             "Duplicate operand assignment!",
                             "Operand '" + operand + "' is already assigned.",
                             "Please assign the other operand."));
@@ -193,7 +193,7 @@ public class ImageComparer2DAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Invert results", description = "If enabled, the results are inverted")
+    @SetJIPipeDocumentation(name = "Invert results", description = "If enabled, the results are inverted")
     @JIPipeParameter("invert")
     public boolean isInvert() {
         return invert;
@@ -204,7 +204,7 @@ public class ImageComparer2DAlgorithm extends JIPipeIteratingAlgorithm {
         this.invert = invert;
     }
 
-    @JIPipeDocumentation(name = "Function", description = "The function is applied to each pixel pair.")
+    @SetJIPipeDocumentation(name = "Function", description = "The function is applied to each pixel pair.")
     @JIPipeParameter("operation")
     public Operation getOperation() {
         return operation;
@@ -216,7 +216,7 @@ public class ImageComparer2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Operands", description = "Determines which input image is which operand.")
+    @SetJIPipeDocumentation(name = "Operands", description = "Determines which input image is which operand.")
     @JIPipeParameter("operand")
     public InputSlotMapParameterCollection getOperands() {
         return operands;

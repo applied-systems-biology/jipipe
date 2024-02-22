@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.processes;
 
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -36,7 +36,7 @@ public class ProcessesExtensionSettings extends AbstractJIPipeParameterCollectio
         return JIPipe.getSettings().getSettings(ID, ProcessesExtensionSettings.class);
     }
 
-    @JIPipeDocumentation(name = "Presets", description = "List of presets stored for process environments.")
+    @SetJIPipeDocumentation(name = "Presets", description = "List of presets stored for process environments.")
     @JIPipeParameter("presets")
     public ProcessEnvironment.List getPresets() {
         return presets;

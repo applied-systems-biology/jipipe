@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
@@ -26,14 +26,14 @@ import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 /**
  * Applies subfolder navigation to each input folder
  */
-@JIPipeDocumentation(name = "Relativize paths", description = "Converts the child path into a path relative to the parent path. This also works for children that " +
+@SetJIPipeDocumentation(name = "Relativize paths", description = "Converts the child path into a path relative to the parent path. This also works for children that " +
         "are located in a parent folder.")
-@JIPipeNode(menuPath = "Modify", nodeTypeCategory = FileSystemNodeTypeCategory.class)
+@DefineJIPipeNode(menuPath = "Modify", nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
 
-@JIPipeInputSlot(value = PathData.class, slotName = "Parent", autoCreate = true)
-@JIPipeInputSlot(value = PathData.class, slotName = "Child", autoCreate = true)
-@JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)
+@AddJIPipeInputSlot(value = PathData.class, slotName = "Parent", create = true)
+@AddJIPipeInputSlot(value = PathData.class, slotName = "Child", create = true)
+@AddJIPipeOutputSlot(value = PathData.class, slotName = "Output", create = true)
 
 
 public class RelativizePaths extends JIPipeIteratingAlgorithm {
@@ -55,7 +55,7 @@ public class RelativizePaths extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         PathData parent = iterationStep.getInputData("Parent", PathData.class, progressInfo);
         PathData child = iterationStep.getInputData("Child", PathData.class, progressInfo);
 

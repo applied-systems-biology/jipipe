@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.expressions;
 
-import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
+import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
@@ -30,7 +30,7 @@ import java.util.Set;
  * Expression for selecting rows inside a data table
  */
 @JIPipeExpressionParameterSettings(variableSource = DataRowQueryExpression.VariablesInfo.class)
-@JIPipeDocumentationDescription(description = "This parameter allows you to select a subset of data via annotations. If you leave the " +
+@AddJIPipeDocumentationDescription(description = "This parameter allows you to select a subset of data via annotations. If you leave the " +
         "expression empty, all data will match. Otherwise, you can utilize variables that are named after the annotation columns. To test " +
         "for the existence of an annotation (i.e.., NA values), you can use the EXISTS operator.")
 public class DataRowQueryExpression extends JIPipeExpressionParameter {

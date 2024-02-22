@@ -17,9 +17,9 @@ import ij.ImagePlus;
 import ij.measure.ResultsTable;
 import inra.ijpb.label.LabelImages;
 import inra.ijpb.measure.ResultsBuilder;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -33,7 +33,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.OverlapStatisti
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
-@JIPipeDocumentation(name = "Measure label overlap", description = "Compares two label or binary images and calculates " +
+@SetJIPipeDocumentation(name = "Measure label overlap", description = "Compares two label or binary images and calculates " +
         "measurements of their overlap error or agreement. Measurements include: " +
         "<ul>" +
         "<li>Overlap</li>" +
@@ -43,15 +43,15 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
         "<li>False Negative Error</li>" +
         "<li>False Positive Error</li>" +
         "</ul>")
-@JIPipeCitation("See https://imagej.net/plugins/morpholibj#label-overlap-measures for the formulas")
-@JIPipeNode(menuPath = "Labels\nMeasure", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Image 1", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Image 2", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Total", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Per label", autoCreate = true)
-@JIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
+@AddJIPipeCitation("See https://imagej.net/plugins/morpholibj#label-overlap-measures for the formulas")
+@DefineJIPipeNode(menuPath = "Labels\nMeasure", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Image 1", create = true)
+@AddJIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Image 2", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Total", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Per label", create = true)
+@AddJIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
         "Bioinformatics (Oxford Univ Press) 32(22): 3532-3534, PMID 27412086, doi:10.1093/bioinformatics/btw413")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nLabel Images", aliasName = "Label Overlap Measures")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nLabel Images", aliasName = "Label Overlap Measures")
 public class OverlapMeasureLabelsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private OverlapStatisticsSetParameter measurements = new OverlapStatisticsSetParameter();
@@ -65,7 +65,7 @@ public class OverlapMeasureLabelsAlgorithm extends JIPipeIteratingAlgorithm {
         this.measurements = new OverlapStatisticsSetParameter(other.measurements);
     }
 
-    @JIPipeDocumentation(name = "Measurements", description = "The measurements that will be stored in to the output table")
+    @SetJIPipeDocumentation(name = "Measurements", description = "The measurements that will be stored in to the output table")
     @JIPipeParameter(value = "measurements", important = true)
     public OverlapStatisticsSetParameter getMeasurements() {
         return measurements;
@@ -77,7 +77,7 @@ public class OverlapMeasureLabelsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus sourceImage = iterationStep.getInputData("Image 1", ImagePlus3DGreyscaleData.class, progressInfo).getImage();
         ImagePlus targetImage = iterationStep.getInputData("Image 2", ImagePlus3DGreyscaleData.class, progressInfo).getImage();
 

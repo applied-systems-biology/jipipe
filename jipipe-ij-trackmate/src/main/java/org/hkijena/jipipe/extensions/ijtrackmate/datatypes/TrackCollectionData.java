@@ -24,13 +24,12 @@ import ij.gui.EllipseRoi;
 import ij.gui.ImageCanvas;
 import ij.gui.Roi;
 import org.apache.commons.lang3.Range;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
-import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeImageThumbnailData;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.extensions.ijtrackmate.display.tracks.CachedTracksCollectionDataViewerWindow;
@@ -42,17 +41,14 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
-import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-@JIPipeDocumentation(name = "TrackMate tracks", description = "Tracks detected by TrackMate")
+@SetJIPipeDocumentation(name = "TrackMate tracks", description = "Tracks detected by TrackMate")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains an *.xml file that stores the TrackMate model and a *.tif image file that contains the image that is the basis of the model.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/trackmate-model-data.schema.json")
 public class TrackCollectionData extends SpotsCollectionData {
     private final Map<String, Range<Double>> edgeFeatureRanges = new HashMap<>();

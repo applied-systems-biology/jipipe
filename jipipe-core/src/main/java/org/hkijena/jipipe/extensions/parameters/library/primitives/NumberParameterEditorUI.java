@@ -190,7 +190,7 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
     private void initialize() {
         setLayout(new BorderLayout());
         setBackground(UIManager.getColor("TextField.background"));
-        setBorder(BorderFactory.createEtchedBorder());
+        setBorder(UIUtils.createControlBorder());
         numberField = new JTextField();
         numberField.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 0));
         numberField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
@@ -202,7 +202,7 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
                 if (isValidNumber(text)) {
                     pushValue(text);
                 } else {
-                    setBorder(BorderFactory.createLineBorder(Color.RED, 2));
+                    setBorder(UIUtils.createControlErrorBorder());
                 }
             }
         });
@@ -220,14 +220,14 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
 
         JPanel buttonPanel = new JPanel(new BorderLayout());
         buttonPanel.setBackground(UIManager.getColor("TextField.background"));
-        JButton buttonUp = new JButton(UIUtils.getIconFromResources("actions/arrow-up.png"));
+        JButton buttonUp = new JButton(UIUtils.getIconFromResources("actions/caret-up.png"));
         buttonUp.setBackground(UIManager.getColor("TextField.background"));
         buttonUp.setPreferredSize(new Dimension(21, 14));
         buttonUp.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
         buttonUp.addActionListener(e -> increase());
         buttonPanel.add(buttonUp, BorderLayout.NORTH);
 
-        JButton buttonDown = new JButton(UIUtils.getIconFromResources("actions/arrow-down.png"));
+        JButton buttonDown = new JButton(UIUtils.getIconFromResources("actions/caret-down.png"));
         buttonDown.setBackground(UIManager.getColor("TextField.background"));
         buttonDown.setPreferredSize(new Dimension(21, 14));
         buttonDown.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
@@ -251,14 +251,14 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
     }
 
     private void pushValue(String text) {
-        setBorder(BorderFactory.createEtchedBorder());
+        setBorder(UIUtils.createControlBorder());
         double newValue = createNumber(text);
         double currentValue = getCurrentValue();
         if (newValue != currentValue) {
             if (setCurrentValue(newValue)) {
-                setBorder(BorderFactory.createEtchedBorder());
+                setBorder(UIUtils.createControlBorder());
             } else {
-                setBorder(BorderFactory.createLineBorder(Color.RED, 2));
+                setBorder(UIUtils.createControlErrorBorder());
             }
         }
     }

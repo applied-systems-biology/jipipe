@@ -2,8 +2,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.transform;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -16,13 +16,13 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.BooleanParameterSettings;
 
-@JIPipeDocumentation(name = "Equalize hyperstack dimensions", description = "Makes the input image have the same dimensions as the reference image. You can choose to make them equal in width/height, and " +
+@SetJIPipeDocumentation(name = "Equalize hyperstack dimensions", description = "Makes the input image have the same dimensions as the reference image. You can choose to make them equal in width/height, and " +
         "hyperstack dimensions (Z, C, T)")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Transform")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust", aliasName = "Canvas Size... (multiple images hyperstack)")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Transform")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust", aliasName = "Canvas Size... (multiple images hyperstack)")
 public class TransformEqualizeDimensionsAlgorithm extends JIPipeIteratingAlgorithm {
 
 
@@ -47,14 +47,14 @@ public class TransformEqualizeDimensionsAlgorithm extends JIPipeIteratingAlgorit
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus image = iterationStep.getInputData("Input", ImagePlusData.class, progressInfo).getImage();
         ImagePlus referenceImage = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo).getImage();
 
         if (equalWidthAndHeight) {
             scale2DAlgorithm.clearSlotData();
             scale2DAlgorithm.getFirstInputSlot().addData(new ImagePlusData(image), progressInfo);
-            scale2DAlgorithm.run(progressInfo.resolve("2D scaling"));
+            scale2DAlgorithm.run(runContext, progressInfo.resolve("2D scaling"));
             image = scale2DAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
             scale2DAlgorithm.clearSlotData();
         }
@@ -65,7 +65,7 @@ public class TransformEqualizeDimensionsAlgorithm extends JIPipeIteratingAlgorit
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(image), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Equalize width and height", description = "If enabled, the width and height are equalized")
+    @SetJIPipeDocumentation(name = "Equalize width and height", description = "If enabled, the width and height are equalized")
     @JIPipeParameter("equal-width-and-height")
     public boolean isEqualWidthAndHeight() {
         return equalWidthAndHeight;
@@ -76,7 +76,7 @@ public class TransformEqualizeDimensionsAlgorithm extends JIPipeIteratingAlgorit
         this.equalWidthAndHeight = equalWidthAndHeight;
     }
 
-    @JIPipeDocumentation(name = "Equalize hyperstack dimensions", description = "If enabled, the hyperstack dimensions are equalized")
+    @SetJIPipeDocumentation(name = "Equalize hyperstack dimensions", description = "If enabled, the hyperstack dimensions are equalized")
     @JIPipeParameter("equal-hyperstack-dimensions")
     public boolean isEqualHyperstackDimensions() {
         return equalHyperstackDimensions;
@@ -87,7 +87,7 @@ public class TransformEqualizeDimensionsAlgorithm extends JIPipeIteratingAlgorit
         this.equalHyperstackDimensions = equalHyperstackDimensions;
     }
 
-    @JIPipeDocumentation(name = "Newly generated slices", description = "Determines how new slices are generated, if needed. You can either repeat the last available slice or make new slices zero/black.")
+    @SetJIPipeDocumentation(name = "Newly generated slices", description = "Determines how new slices are generated, if needed. You can either repeat the last available slice or make new slices zero/black.")
     @BooleanParameterSettings(comboBoxStyle = true, trueLabel = "Repeat last available", falseLabel = "Create empty slice")
     @JIPipeParameter("copy-slices")
     public boolean isCopySlices() {
@@ -99,7 +99,7 @@ public class TransformEqualizeDimensionsAlgorithm extends JIPipeIteratingAlgorit
         this.copySlices = copySlices;
     }
 
-    @JIPipeDocumentation(name = "Scaling", description = "The following settings determine how the image is scaled if it is not perfectly tileable.")
+    @SetJIPipeDocumentation(name = "Scaling", description = "The following settings determine how the image is scaled if it is not perfectly tileable.")
     @JIPipeParameter(value = "scale-algorithm")
     public TransformScale2DAlgorithm getScale2DAlgorithm() {
         return scale2DAlgorithm;

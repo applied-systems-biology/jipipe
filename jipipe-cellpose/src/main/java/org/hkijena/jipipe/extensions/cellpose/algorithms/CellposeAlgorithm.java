@@ -6,8 +6,8 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -53,7 +53,7 @@ import java.util.*;
 /**
  * Improved version of {@link CellposeAlgorithm_Old} that utilizes the Cellpose CLI
  */
-@JIPipeDocumentation(name = "Cellpose prediction (2.x)", description = "Runs Cellpose on the input image. This node supports both segmentation in 3D and executing " +
+@SetJIPipeDocumentation(name = "Cellpose prediction (2.x)", description = "Runs Cellpose on the input image. This node supports both segmentation in 3D and executing " +
         "Cellpose for each 2D image plane. " +
         "This node can generate a multitude of outputs, although only ROI is activated by default. " +
         "Go to the 'Outputs' parameter section to enable the other outputs." +
@@ -66,14 +66,14 @@ import java.util.*;
         "<li><b>ROI:</b> ROI of the segmented areas.</li>" +
         "</ul>" +
         "Please note that you need to setup a valid Python environment with Cellpose installed. You can find the setting in Project &gt; Application settings &gt; Extensions &gt; Cellpose.")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Flows XY")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Flows Z")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Flows d")
-@JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Probabilities")
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Flows XY")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Flows Z")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Flows d")
+@AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Probabilities")
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     public static final JIPipeDataSlotInfo INPUT_PRETRAINED_MODEL = new JIPipeDataSlotInfo(CellposeModelData.class, JIPipeSlotType.Input, "Pretrained Model", "A custom pretrained model");
@@ -153,7 +153,7 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Enable 3D segmentation", description = "If enabled, Cellpose will segment in 3D. Otherwise, " +
+    @SetJIPipeDocumentation(name = "Enable 3D segmentation", description = "If enabled, Cellpose will segment in 3D. Otherwise, " +
             "any 3D image will be processed per-slice. Please note that 3D segmentation requires large amounts of memory.")
     @JIPipeParameter(value = "enable-3d-segmentation", important = true)
     public boolean isEnable3DSegmentation() {
@@ -165,7 +165,7 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.enable3DSegmentation = enable3DSegmentation;
     }
 
-    @JIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node. Otherwise " +
+    @SetJIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node. Otherwise " +
             "the one in the Project > Application settings > Extensions > Cellpose is used.")
     @JIPipeParameter("override-environment")
     public OptionalPythonEnvironment getOverrideEnvironment() {
@@ -193,19 +193,19 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        super.reportValidity(context, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
         if (!isPassThrough()) {
             if (overrideEnvironment.isEnabled()) {
-                report.report(context, overrideEnvironment.getContent());
+                report.report(reportContext, overrideEnvironment.getContent());
             } else {
-                CellposeSettings.checkPythonSettings(context, report);
+                CellposeSettings.checkPythonSettings(reportContext, report);
             }
         }
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Path workDirectory = getNewScratch();
         progressInfo.log("Work directory is " + workDirectory);
 
@@ -576,7 +576,7 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
+    @SetJIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
             "the processing was finished. Disable this to make it possible to debug your scripts. The directories are accessible via the logs (Tools &gt; Logs).")
     @JIPipeParameter("cleanup-afterwards")
     public boolean isCleanUpAfterwards() {
@@ -588,7 +588,7 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.cleanUpAfterwards = cleanUpAfterwards;
     }
 
-    @JIPipeDocumentation(name = "Annotate with diameter", description = "If enabled, the diameter is attached as annotation. " +
+    @SetJIPipeDocumentation(name = "Annotate with diameter", description = "If enabled, the diameter is attached as annotation. " +
             "Useful if you want to let Cellpose estimate the object diameters.")
     @JIPipeParameter("diameter-annotation")
     public OptionalAnnotationNameParameter getDiameterAnnotation() {
@@ -600,7 +600,7 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.diameterAnnotation = diameterAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Average object diameter", description = "If enabled, Cellpose will use the provided average diameter to find objects. " +
+    @SetJIPipeDocumentation(name = "Average object diameter", description = "If enabled, Cellpose will use the provided average diameter to find objects. " +
             "Otherwise, Cellpose will estimate the diameter by itself.")
     @JIPipeParameter(value = "diameter", important = true)
     public OptionalDoubleParameter getDiameter() {
@@ -612,37 +612,37 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.diameter = diameter;
     }
 
-    @JIPipeDocumentation(name = "Cellpose: Channels", description = "Determines which channels are used for the segmentation")
+    @SetJIPipeDocumentation(name = "Cellpose: Channels", description = "Determines which channels are used for the segmentation")
     @JIPipeParameter(value = "channel-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
     public CellposeChannelSettings getChannelSettings() {
         return channelSettings;
     }
 
-    @JIPipeDocumentation(name = "Cellpose: Tweaks", description = "Additional options like augmentation and averaging over multiple networks")
+    @SetJIPipeDocumentation(name = "Cellpose: Tweaks", description = "Additional options like augmentation and averaging over multiple networks")
     @JIPipeParameter(value = "enhancement-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png", collapsed = true)
     public CellposeSegmentationTweaksSettings getEnhancementParameters() {
         return segmentationTweaksSettings;
     }
 
-    @JIPipeDocumentation(name = "Cellpose: Thresholds", description = "Parameters that control which objects are selected.")
+    @SetJIPipeDocumentation(name = "Cellpose: Thresholds", description = "Parameters that control which objects are selected.")
     @JIPipeParameter(value = "threshold-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png", collapsed = true)
     public CellposeSegmentationThresholdSettings getThresholdParameters() {
         return segmentationThresholdSettings;
     }
 
-    @JIPipeDocumentation(name = "Cellpose: Outputs", description = "The following settings allow you to select which outputs are generated.")
+    @SetJIPipeDocumentation(name = "Cellpose: Outputs", description = "The following settings allow you to select which outputs are generated.")
     @JIPipeParameter(value = "output-parameters", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
     public CellposeSegmentationOutputSettings getSegmentationOutputSettings() {
         return segmentationOutputSettings;
     }
 
-    @JIPipeDocumentation(name = "Cellpose: GPU", description = "Controls how the graphics card is utilized.")
+    @SetJIPipeDocumentation(name = "Cellpose: GPU", description = "Controls how the graphics card is utilized.")
     @JIPipeParameter(value = "gpu-parameters", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
     public CellposeGPUSettings getGpuSettings() {
         return gpuSettings;
     }
 
-    @JIPipeDocumentation(name = "Model", description = "The model type that should be used.")
+    @SetJIPipeDocumentation(name = "Model", description = "The model type that should be used.")
     @JIPipeParameter("model")
     public CellposeModel getModel() {
         return model;

@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.parameters.library.references;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.compat.ImageJDataImporter;
 import org.hkijena.jipipe.api.compat.ImageJImportParameters;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -66,7 +66,7 @@ public class ImageJDataImportOperationRef extends AbstractJIPipeParameterCollect
         this.id = id;
     }
 
-    @JIPipeDocumentation(name = "Override name", description = "If enabled, override the default name")
+    @SetJIPipeDocumentation(name = "Override name", description = "If enabled, override the default name")
     @JIPipeParameter("name")
     @JsonGetter("name")
     public OptionalStringParameter getName() {
@@ -81,7 +81,7 @@ public class ImageJDataImportOperationRef extends AbstractJIPipeParameterCollect
 
     @JIPipeParameter("duplicate")
     @JsonGetter("duplicate")
-    @JIPipeDocumentation(name = "Override duplication", description = "If enabled, override the default duplication parameter")
+    @SetJIPipeDocumentation(name = "Override duplication", description = "If enabled, override the default duplication parameter")
     public OptionalBooleanParameter getDuplicate() {
         return duplicate;
     }
@@ -93,10 +93,10 @@ public class ImageJDataImportOperationRef extends AbstractJIPipeParameterCollect
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         if (id == null) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    context,
+                    reportContext,
                     "No operation is selected!",
                     "You have to select an operation.",
                     "Please select an operation."));

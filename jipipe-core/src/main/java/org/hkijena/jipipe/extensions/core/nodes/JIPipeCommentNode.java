@@ -1,13 +1,10 @@
 package org.hkijena.jipipe.extensions.core.nodes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -16,11 +13,11 @@ import org.hkijena.jipipe.extensions.parameters.library.references.IconRef;
 
 import java.awt.*;
 
-@JIPipeDocumentation(name = "Comment", description = "Allows you to comment an input or output slot. You can customize the color and icon of this node. " +
+@SetJIPipeDocumentation(name = "Comment", description = "Allows you to comment an input or output slot. You can customize the color and icon of this node. " +
         "This nodes has no workload attached to it and will connect to any data type. It requires no input and produces no output.")
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Comment", autoCreate = true, optional = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Comment", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Comment", create = true, optional = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Comment", create = true)
+@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 public class JIPipeCommentNode extends JIPipeGraphNode {
 
     private Color backgroundColor = new Color(255, 255, 204);
@@ -39,16 +36,16 @@ public class JIPipeCommentNode extends JIPipeGraphNode {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
 
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
+    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
     }
 
-    @JIPipeDocumentation(name = "Background color", description = "Defines the background color of this comment node.")
+    @SetJIPipeDocumentation(name = "Background color", description = "Defines the background color of this comment node.")
     @JIPipeParameter("background-color")
     public Color getBackgroundColor() {
         return backgroundColor;
@@ -59,7 +56,7 @@ public class JIPipeCommentNode extends JIPipeGraphNode {
         this.backgroundColor = backgroundColor;
     }
 
-    @JIPipeDocumentation(name = "Text color", description = "Defines the text color of this comment node.")
+    @SetJIPipeDocumentation(name = "Text color", description = "Defines the text color of this comment node.")
     @JIPipeParameter("text-color")
     public Color getTextColor() {
         return textColor;
@@ -70,7 +67,7 @@ public class JIPipeCommentNode extends JIPipeGraphNode {
         this.textColor = textColor;
     }
 
-    @JIPipeDocumentation(name = "Icon", description = "Defines the icon of this comment node.")
+    @SetJIPipeDocumentation(name = "Icon", description = "Defines the icon of this comment node.")
     @JIPipeParameter("icon")
     public IconRef getIcon() {
         if (icon == null) {

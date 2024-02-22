@@ -43,7 +43,7 @@ public class DataTrackerNodeOutputUI extends JIPipeProjectWorkbenchPanel impleme
                 true,
                 true,
                 true,
-                true), BorderFactory.createLineBorder(Color.LIGHT_GRAY)));
+                true),UIUtils.createControlBorder()));
 
         JIPipeGraphNode node = getProjectWorkbench().getProject().getGraph().getNodeByUUID(UUID.fromString(nodeUUID));
         JIPipeOutputDataSlot outputSlot = node.getOutputSlot(outputSlotName);

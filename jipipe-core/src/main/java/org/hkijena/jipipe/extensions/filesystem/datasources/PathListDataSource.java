@@ -14,15 +14,15 @@
 package org.hkijena.jipipe.extensions.filesystem.datasources;
 
 import org.apache.commons.io.FileUtils;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
-import org.hkijena.jipipe.api.data.context.JIPipeMutableDataContext;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -51,9 +51,9 @@ import java.util.UUID;
 /**
  * Provides an input folder
  */
-@JIPipeDocumentation(name = "Path list", description = "Converts each provided path into path data.")
-@JIPipeOutputSlot(value = PathData.class, slotName = "Paths", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "Path list", description = "Converts each provided path into path data.")
+@AddJIPipeOutputSlot(value = PathData.class, slotName = "Paths", create = true)
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class PathListDataSource extends JIPipeAlgorithm {
 
     private PathList paths = new PathList();
@@ -80,7 +80,7 @@ public class PathListDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
+    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         for (Path folderPath : paths) {
             getFirstOutputSlot().addData(new PathData(folderPath), JIPipeDataContext.create(this), progressInfo);
         }
@@ -90,7 +90,7 @@ public class PathListDataSource extends JIPipeAlgorithm {
      * @return Gets the folder paths
      */
     @JIPipeParameter("paths")
-    @JIPipeDocumentation(name = "Paths")
+    @SetJIPipeDocumentation(name = "Paths")
     @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.FilesAndDirectories)
     @ListParameterSettings(withScrollBar = true)
     public PathList getPaths() {
@@ -203,30 +203,30 @@ public class PathListDataSource extends JIPipeAlgorithm {
         setPaths(newPaths);
     }
 
-    @JIPipeDocumentation(name = "Paths to absolute", description = "Converts the stored paths to absolute paths.")
+    @SetJIPipeDocumentation(name = "Paths to absolute", description = "Converts the stored paths to absolute paths.")
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/path.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/path.png")
     public void convertPathsToAbsolute() {
         setParameter("paths", getAbsolutePaths());
     }
 
-    @JIPipeDocumentation(name = "Paths to relative", description = "Converts the stored paths to paths relative to the project directory (if available).")
+    @SetJIPipeDocumentation(name = "Paths to relative", description = "Converts the stored paths to paths relative to the project directory (if available).")
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/path.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/path.png")
     public void convertPathsToRelative() {
         setParameter("paths", getRelativePaths());
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         for (Path path : getAbsolutePaths()) {
             if (path == null) {
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
-                        context,
+                        reportContext,
                         "Input path not set!",
                         "One of the paths is not set.",
                         "Please provide a valid input path."));
             } else if (!Files.exists(path)) {
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
-                        context,
+                        reportContext,
                         "Input path does not exist!",
                         "The path '" + path + "' does not exist.",
                         "Please provide a valid input path."));

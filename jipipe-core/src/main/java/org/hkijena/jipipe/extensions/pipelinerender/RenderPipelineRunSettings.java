@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.pipelinerender;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
@@ -21,7 +21,7 @@ public class RenderPipelineRunSettings extends AbstractJIPipeParameterCollection
         this.maxEdgeWidth = new OptionalIntegerParameter(other.maxEdgeWidth);
     }
 
-    @JIPipeDocumentation(name = "Draw shadow", description = "If enabled, draw a shadow around each compartment")
+    @SetJIPipeDocumentation(name = "Draw shadow", description = "If enabled, draw a shadow around each compartment")
     @JIPipeParameter("draw-shadow")
     public boolean isRenderShadow() {
         return renderShadow;
@@ -32,7 +32,7 @@ public class RenderPipelineRunSettings extends AbstractJIPipeParameterCollection
         this.renderShadow = renderShadow;
     }
 
-    @JIPipeDocumentation(name = "Maximum edge width", description = "The maximum width of edge strokes. If disabled, the width is calculated based on the scale factor.")
+    @SetJIPipeDocumentation(name = "Maximum edge width", description = "The maximum width of edge strokes. If disabled, the width is calculated based on the scale factor.")
     @JIPipeParameter("max-edge-width")
     public OptionalIntegerParameter getMaxEdgeWidth() {
         return maxEdgeWidth;
@@ -43,7 +43,7 @@ public class RenderPipelineRunSettings extends AbstractJIPipeParameterCollection
         this.maxEdgeWidth = maxEdgeWidth;
     }
 
-    @JIPipeDocumentation(name = "Draw compartment name", description = "If enabled, render the name of the compartment")
+    @SetJIPipeDocumentation(name = "Draw compartment name", description = "If enabled, render the name of the compartment")
     @JIPipeParameter("render-label")
     public boolean isRenderLabel() {
         return renderLabel;
@@ -54,7 +54,7 @@ public class RenderPipelineRunSettings extends AbstractJIPipeParameterCollection
         this.renderLabel = renderLabel;
     }
 
-    @JIPipeDocumentation(name = "Compartment name font size", description = "The font size of the rendered compartment name")
+    @SetJIPipeDocumentation(name = "Compartment name font size", description = "The font size of the rendered compartment name")
     @JIPipeParameter("label-font-size")
     public int getLabelFontSize() {
         return labelFontSize;

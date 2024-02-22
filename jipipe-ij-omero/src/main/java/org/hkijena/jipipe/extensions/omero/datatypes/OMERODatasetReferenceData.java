@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.omero.datatypes;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import omero.gateway.model.DatasetData;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
@@ -36,7 +36,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
 
-@JIPipeDocumentation(name = "OMERO Dataset", description = "An OMERO dataset ID")
+@SetJIPipeDocumentation(name = "OMERO Dataset", description = "An OMERO dataset ID")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.json file that stores the <pre>dataset-id</pre> in a JSON object.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/omero-dataset-reference-data.schema.json")
 public class OMERODatasetReferenceData implements JIPipeData {

@@ -1,13 +1,13 @@
 package org.hkijena.jipipe.extensions.filesystem.datasources;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
-import org.hkijena.jipipe.api.data.context.JIPipeMutableDataContext;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -18,11 +18,11 @@ import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "Temporary folder", description = "Generates a temporary folder that will be located within your operating system's temporary directory or " +
+@SetJIPipeDocumentation(name = "Temporary folder", description = "Generates a temporary folder that will be located within your operating system's temporary directory or " +
         "the directory specified in the JIPipe settings. Please note that there are no guarantees on the actual folder name, as the outcome depends on the operating system. " +
         "The folder is already existing, so a 'Create directories' operation is not needed.")
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeOutputSlot(value = FolderData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeOutputSlot(value = FolderData.class, slotName = "Output", create = true)
 public class TemporaryFolderDataSource extends JIPipeParameterSlotAlgorithm {
 
     private String baseName = "";
@@ -38,11 +38,11 @@ public class TemporaryFolderDataSource extends JIPipeParameterSlotAlgorithm {
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
         getFirstOutputSlot().addData(new FileData(isUseScratchDirectory() ? getNewScratch() : RuntimeSettings.generateTempDirectory(getBaseName())), JIPipeDataContext.create(this), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Base name", description = "Optional string that will be put into the directory name.")
+    @SetJIPipeDocumentation(name = "Base name", description = "Optional string that will be put into the directory name.")
     @JIPipeParameter("base-name")
     @StringParameterSettings(monospace = true)
     public String getBaseName() {
@@ -54,7 +54,7 @@ public class TemporaryFolderDataSource extends JIPipeParameterSlotAlgorithm {
         this.baseName = baseName;
     }
 
-    @JIPipeDocumentation(name = "Use scratch directory", description = "If enabled, the temporary directory will be located inside the current output directory if possible.")
+    @SetJIPipeDocumentation(name = "Use scratch directory", description = "If enabled, the temporary directory will be located inside the current output directory if possible.")
     @JIPipeParameter("use-scratch-dir")
     public boolean isUseScratchDirectory() {
         return useScratchDirectory;

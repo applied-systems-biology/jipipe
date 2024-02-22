@@ -30,8 +30,8 @@ class DnDTabbedPane extends JTabbedPane {
     protected Rectangle rectBackward = new Rectangle();
     protected Rectangle rectForward = new Rectangle();
 
-    protected DnDTabbedPane() {
-        super();
+    protected DnDTabbedPane(int tabPlacement) {
+        super(tabPlacement);
         glassPane.setName("GlassPane");
         new DropTarget(glassPane, DnDConstants.ACTION_COPY_OR_MOVE, new TabDropTargetListener(), true);
         DragSource.getDefaultDragSource().createDefaultDragGestureRecognizer(

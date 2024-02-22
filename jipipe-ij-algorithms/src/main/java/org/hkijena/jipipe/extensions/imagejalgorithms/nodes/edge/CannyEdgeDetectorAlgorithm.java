@@ -17,8 +17,8 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -54,11 +54,11 @@ import java.util.Arrays;
  * @author Tom Gibara
  */
 
-@JIPipeDocumentation(name = "Canny edge detector 2D", description = "Applies a Canny edge detector. " +
+@SetJIPipeDocumentation(name = "Canny edge detector 2D", description = "Applies a Canny edge detector. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeNode(menuPath = "Edges", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(menuPath = "Edges", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Output", create = true)
 
 public class CannyEdgeDetectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
@@ -91,7 +91,7 @@ public class CannyEdgeDetectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.normalizeContrast = other.normalizeContrast;
     }
 
-    @JIPipeDocumentation(name = "Gaussian kernel radius", description = "Sets the radius of the Gaussian convolution kernel used " +
+    @SetJIPipeDocumentation(name = "Gaussian kernel radius", description = "Sets the radius of the Gaussian convolution kernel used " +
             "to smooth the source image prior to gradient calculation. Must exceed 0.1")
     @JIPipeParameter("gaussian-kernel-radius")
     public float getGaussianKernelRadius() {
@@ -103,7 +103,7 @@ public class CannyEdgeDetectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.gaussianKernelRadius = gaussianKernelRadius;
     }
 
-    @JIPipeDocumentation(name = "Max gaussian kernel width", description = "The number of pixels across which the Gaussian kernel is applied. " +
+    @SetJIPipeDocumentation(name = "Max gaussian kernel width", description = "The number of pixels across which the Gaussian kernel is applied. " +
             "This implementation will reduce the radius if the contribution of pixel values is deemed negligable, so this is actually a maximum radius. " +
             "Must be at least 2.")
     @JIPipeParameter("gaussian-kernel-width")
@@ -116,7 +116,7 @@ public class CannyEdgeDetectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.gaussianKernelWidth = gaussianKernelWidth;
     }
 
-    @JIPipeDocumentation(name = "Hysteresis low threshold", description = "Sets the low threshold for hysteresis. Suitable values for this parameter " +
+    @SetJIPipeDocumentation(name = "Hysteresis low threshold", description = "Sets the low threshold for hysteresis. Suitable values for this parameter " +
             "must be determined experimentally for each application. It is nonsensical (though not prohibited) for this value to exceed the high threshold value.")
     @JIPipeParameter("low-threshold")
     public double getLowThreshold() {
@@ -128,7 +128,7 @@ public class CannyEdgeDetectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.lowThreshold = lowThreshold;
     }
 
-    @JIPipeDocumentation(name = "Hysteresis high threshold", description = "Sets the high threshold for hysteresis. Suitable values for this " +
+    @SetJIPipeDocumentation(name = "Hysteresis high threshold", description = "Sets the high threshold for hysteresis. Suitable values for this " +
             "parameter must be determined experimentally for each application. It is " +
             "nonsensical (though not prohibited) for this value to be less than the low threshold value.")
     @JIPipeParameter("high-threshold")
@@ -141,7 +141,7 @@ public class CannyEdgeDetectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.highThreshold = highThreshold;
     }
 
-    @JIPipeDocumentation(name = "Normalize contrast", description = "Sets whether the contrast is normalized")
+    @SetJIPipeDocumentation(name = "Normalize contrast", description = "Sets whether the contrast is normalized")
     @JIPipeParameter("normalize-contrast")
     public boolean isNormalizeContrast() {
         return normalizeContrast;
@@ -153,7 +153,7 @@ public class CannyEdgeDetectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscale32FData.class, progressInfo);
         ImagePlus img = inputData.getImage();
         ImageStack resultStack = new ImageStack(img.getWidth(), img.getHeight(), img.getStackSize());

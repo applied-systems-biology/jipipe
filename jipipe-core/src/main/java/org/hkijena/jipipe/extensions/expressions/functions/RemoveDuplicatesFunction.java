@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.functions;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Remove duplicates", description = "Removes duplicate elements from arrays")
+@SetJIPipeDocumentation(name = "Remove duplicates", description = "Removes duplicate elements from arrays")
 public class RemoveDuplicatesFunction extends ExpressionFunction {
 
     public RemoveDuplicatesFunction() {

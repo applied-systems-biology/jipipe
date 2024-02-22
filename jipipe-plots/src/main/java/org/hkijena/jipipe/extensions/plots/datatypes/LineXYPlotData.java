@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.plots.datatypes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -29,7 +29,7 @@ import java.awt.*;
  * Series table columns: X (Double), Y (Double)
  * Multiple series: Yes
  */
-@JIPipeDocumentation(name = "XY line plot", description = "Plot that displays the Y values against the X values.")
+@SetJIPipeDocumentation(name = "XY line plot", description = "Plot that displays the Y values against the X values.")
 @PlotMetadata(columns = {@PlotColumn(name = "X", description = "The X values", isNumeric = true),
         @PlotColumn(name = "Y", description = "The Y values", isNumeric = true)}, maxSeriesCount = Integer.MAX_VALUE)
 public class LineXYPlotData extends XYPlotData {
@@ -77,7 +77,7 @@ public class LineXYPlotData extends XYPlotData {
         return chart;
     }
 
-    @JIPipeDocumentation(name = "Line thickness", description = "The thickness of the lines")
+    @SetJIPipeDocumentation(name = "Line thickness", description = "The thickness of the lines")
     @JIPipeParameter("line-thickness")
     public int getLineThickness() {
         return lineThickness;

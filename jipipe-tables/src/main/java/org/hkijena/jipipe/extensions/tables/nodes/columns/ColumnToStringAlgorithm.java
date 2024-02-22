@@ -14,8 +14,8 @@
 
 package org.hkijena.jipipe.extensions.tables.nodes.columns;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -30,10 +30,10 @@ import org.hkijena.jipipe.extensions.tables.datatypes.StringArrayTableColumn;
 /**
  * Algorithm that removes columns
  */
-@JIPipeDocumentation(name = "To string column", description = "Converts one or multiple columns into a string column")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "To string column", description = "Converts one or multiple columns into a string column")
+@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class ColumnToStringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private StringQueryExpression filters = new StringQueryExpression();
@@ -58,7 +58,7 @@ public class ColumnToStringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData table = (ResultsTableData) iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo).duplicate(progressInfo);
         int columnCount = table.getColumnCount();
         for (int col = 0; col < columnCount; col++) {
@@ -74,7 +74,7 @@ public class ColumnToStringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), table, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Filters", description = "Filter expression that is used to find columns to be converted. ")
+    @SetJIPipeDocumentation(name = "Filters", description = "Filter expression that is used to find columns to be converted. ")
     @JIPipeParameter("filters")
     public StringQueryExpression getFilters() {
         return filters;

@@ -1,11 +1,12 @@
 package org.hkijena.jipipe.extensions.ijfilaments.nodes.modify;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
@@ -19,20 +20,16 @@ import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotations
 import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.extensions.ijfilaments.parameters.EdgeMaskParameter;
-import org.hkijena.jipipe.extensions.ijfilaments.parameters.VertexMaskParameter;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentEdgeVariablesInfo;
-import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
-import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertexVariablesInfo;
-import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
 import org.hkijena.jipipe.utils.ColorUtils;
 
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Change filament edge properties", description = "Allows to override various properties of the filament edges")
-@JIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
-@JIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Change filament edge properties", description = "Allows to override various properties of the filament edges")
+@DefineJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
+@AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
 public class ChangeFilamentEdgePropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter color = new JIPipeExpressionParameter("default");
@@ -52,7 +49,7 @@ public class ChangeFilamentEdgePropertiesAlgorithm extends JIPipeSimpleIterating
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Filaments3DData inputData = iterationStep.getInputData(getFirstInputSlot(), Filaments3DData.class, progressInfo);
         Filaments3DData outputData = new Filaments3DData(inputData);
 
@@ -75,7 +72,7 @@ public class ChangeFilamentEdgePropertiesAlgorithm extends JIPipeSimpleIterating
         iterationStep.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Color", description = "Expression that determines the edge color")
+    @SetJIPipeDocumentation(name = "Color", description = "Expression that determines the edge color")
     @JIPipeParameter("color")
     @JIPipeExpressionParameterVariable(name = "Default value", key = "default", description = "The current value (hex color string)")
     @JIPipeExpressionParameterVariable(fromClass = FilamentEdgeVariablesInfo.class)
@@ -93,7 +90,7 @@ public class ChangeFilamentEdgePropertiesAlgorithm extends JIPipeSimpleIterating
         this.color = color;
     }
 
-    @JIPipeDocumentation(name = "Edge mask", description = "Allows to only target a specific set of edges.")
+    @SetJIPipeDocumentation(name = "Edge mask", description = "Allows to only target a specific set of edges.")
     @JIPipeParameter("edge-filter")
     public EdgeMaskParameter getEdgeMask() {
         return edgeMask;

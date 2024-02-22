@@ -13,14 +13,14 @@
 
 package org.hkijena.jipipe.extensions.expressions.functions.variables;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "Has variable", description = "Returns if a variable with the specified name exists.")
+@SetJIPipeDocumentation(name = "Has variable", description = "Returns if a variable with the specified name exists.")
 public class HasVariableFunction extends ExpressionFunction {
 
     public HasVariableFunction() {

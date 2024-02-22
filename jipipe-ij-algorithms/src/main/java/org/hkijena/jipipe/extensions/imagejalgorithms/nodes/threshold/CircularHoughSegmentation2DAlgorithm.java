@@ -19,8 +19,8 @@ import ij.ImageStack;
 import ij.WindowManager;
 import ij.measure.ResultsTable;
 import ij.plugin.filter.Analyzer;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -39,14 +39,14 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 /**
  * Segments using a Hough circle transform
  */
-@JIPipeDocumentation(name = "Circular Hough segmentation 2D", description = "Finds circular 2D objects via a Hough transform. " +
+@SetJIPipeDocumentation(name = "Circular Hough segmentation 2D", description = "Finds circular 2D objects via a Hough transform. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@DefineJIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
 
 
-@JIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", autoCreate = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", create = true)
 
 
 public class CircularHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
@@ -146,7 +146,7 @@ public class CircularHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingA
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus img = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
         ResultsTableData measurements = new ResultsTableData();
@@ -193,7 +193,7 @@ public class CircularHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingA
     }
 
     @JIPipeParameter("min-radius")
-    @JIPipeDocumentation(name = "Min radius", description = "Minimum radius to test")
+    @SetJIPipeDocumentation(name = "Min radius", description = "Minimum radius to test")
     public int getMinRadius() {
         return minRadius;
     }
@@ -205,7 +205,7 @@ public class CircularHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingA
     }
 
     @JIPipeParameter("max-radius")
-    @JIPipeDocumentation(name = "Max radius", description = "Maximum radius to test")
+    @SetJIPipeDocumentation(name = "Max radius", description = "Maximum radius to test")
     public int getMaxRadius() {
         return maxRadius;
     }
@@ -217,7 +217,7 @@ public class CircularHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingA
     }
 
     @JIPipeParameter("radius-increment")
-    @JIPipeDocumentation(name = "Radius increment", description = "By which value the radius should be increased")
+    @SetJIPipeDocumentation(name = "Radius increment", description = "By which value the radius should be increased")
     public int getRadiusIncrement() {
         return radiusIncrement;
     }
@@ -229,7 +229,7 @@ public class CircularHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingA
     }
 
     @JIPipeParameter("min-num-circles")
-    @JIPipeDocumentation(name = "Min number of circles", description = "How many circles there should be at least")
+    @SetJIPipeDocumentation(name = "Min number of circles", description = "How many circles there should be at least")
     public int getMinNumCircles() {
         return minNumCircles;
     }
@@ -241,7 +241,7 @@ public class CircularHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingA
     }
 
     @JIPipeParameter("max-num-circles")
-    @JIPipeDocumentation(name = "Max number of circles", description = "How many circles there should be at most")
+    @SetJIPipeDocumentation(name = "Max number of circles", description = "How many circles there should be at most")
     public int getMaxNumCircles() {
         return maxNumCircles;
     }
@@ -253,7 +253,7 @@ public class CircularHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingA
     }
 
     @JIPipeParameter("threshold")
-    @JIPipeDocumentation(name = "Threshold")
+    @SetJIPipeDocumentation(name = "Threshold")
     public double getThreshold() {
         return threshold;
     }
@@ -265,7 +265,7 @@ public class CircularHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingA
     }
 
     @JIPipeParameter("resolution")
-    @JIPipeDocumentation(name = "Resolution")
+    @SetJIPipeDocumentation(name = "Resolution")
     public int getResolution() {
         return resolution;
     }
@@ -277,7 +277,7 @@ public class CircularHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingA
     }
 
     @JIPipeParameter("ratio")
-    @JIPipeDocumentation(name = "Ratio")
+    @SetJIPipeDocumentation(name = "Ratio")
     public double getRatio() {
         return ratio;
     }
@@ -289,7 +289,7 @@ public class CircularHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingA
     }
 
     @JIPipeParameter("bandwidth")
-    @JIPipeDocumentation(name = "Bandwidth")
+    @SetJIPipeDocumentation(name = "Bandwidth")
     public int getBandwidth() {
         return bandwidth;
     }
@@ -301,7 +301,7 @@ public class CircularHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingA
     }
 
     @JIPipeParameter("local-radius")
-    @JIPipeDocumentation(name = "Local radius")
+    @SetJIPipeDocumentation(name = "Local radius")
     public int getLocalRadius() {
         return localRadius;
     }
@@ -312,7 +312,7 @@ public class CircularHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingA
 
     }
 
-    @JIPipeDocumentation(name = "Local mode")
+    @SetJIPipeDocumentation(name = "Local mode")
     @JIPipeParameter("local")
     public boolean isLocal() {
         return local;

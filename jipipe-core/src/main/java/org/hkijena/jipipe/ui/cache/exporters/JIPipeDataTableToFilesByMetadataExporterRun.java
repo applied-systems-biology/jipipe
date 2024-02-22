@@ -15,7 +15,7 @@ package org.hkijena.jipipe.ui.cache.exporters;
 
 import ij.IJ;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
@@ -191,7 +191,7 @@ public class JIPipeDataTableToFilesByMetadataExporterRun extends JIPipeWorkbench
         public Settings() {
         }
 
-        @JIPipeDocumentation(name = "File name generation", description = "Here you can determine how file names are generated.")
+        @SetJIPipeDocumentation(name = "File name generation", description = "Here you can determine how file names are generated.")
         @JIPipeParameter("exporter")
         public JIPipeDataByMetadataExporter getExporter() {
             return exporter;
@@ -201,7 +201,7 @@ public class JIPipeDataTableToFilesByMetadataExporterRun extends JIPipeWorkbench
             this.exporter = exporter;
         }
 
-        @JIPipeDocumentation(name = "Split by output name", description = "If enabled, the exporter will attempt to split data by their output name. Has no effect if the exported data table is not an output of a node.")
+        @SetJIPipeDocumentation(name = "Split by output name", description = "If enabled, the exporter will attempt to split data by their output name. Has no effect if the exported data table is not an output of a node.")
         @JIPipeParameter("split-by-slot-name")
         public boolean isSplitBySlotName() {
             return splitBySlotName;
@@ -212,7 +212,7 @@ public class JIPipeDataTableToFilesByMetadataExporterRun extends JIPipeWorkbench
             this.splitBySlotName = splitBySlotName;
         }
 
-        @JIPipeDocumentation(name = "Remember settings", description = "If enabled, remember the file exporter settings for later")
+        @SetJIPipeDocumentation(name = "Remember settings", description = "If enabled, remember the file exporter settings for later")
         @JIPipeParameter("remember-settings")
         public boolean isRememberSettings() {
             return rememberSettings;

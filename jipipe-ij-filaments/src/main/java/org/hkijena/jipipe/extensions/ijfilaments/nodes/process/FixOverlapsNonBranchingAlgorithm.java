@@ -2,17 +2,15 @@ package org.hkijena.jipipe.extensions.ijfilaments.nodes.process;
 
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameter;
 import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
@@ -23,7 +21,6 @@ import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
-import org.hkijena.jipipe.utils.ResourceUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jgrapht.Graphs;
 import org.jgrapht.alg.connectivity.ConnectivityInspector;
@@ -33,12 +30,12 @@ import java.awt.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Fix overlapping filaments (non-branching)", description = "Algorithm that attempts to fix filaments that are merged together by junctions. " +
+@SetJIPipeDocumentation(name = "Fix overlapping filaments (non-branching)", description = "Algorithm that attempts to fix filaments that are merged together by junctions. " +
         "Please note that this operation assumes that all filaments are non-branching.")
-@JIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Process")
-@JIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", optional = true, autoCreate = true)
-@JIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Process")
+@AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", optional = true, create = true)
+@AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
 public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
 
     private boolean enforceSameComponent = true;
@@ -71,7 +68,7 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
         this.enforceEdgesWithinMask = other.enforceEdgesWithinMask;
     }
 
-    @JIPipeDocumentation(name = "Prevent edges outside mask", description = "If enabled and a mask is available, check if edges crosses outside the mask boundaries and exclude those from being marked as candidate edge")
+    @SetJIPipeDocumentation(name = "Prevent edges outside mask", description = "If enabled and a mask is available, check if edges crosses outside the mask boundaries and exclude those from being marked as candidate edge")
     @JIPipeParameter("enforce-edges-within-mask")
     public boolean isEnforceEdgesWithinMask() {
         return enforceEdgesWithinMask;
@@ -82,7 +79,7 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
         this.enforceEdgesWithinMask = enforceEdgesWithinMask;
     }
 
-    @JIPipeDocumentation(name = "Color new edges", description = "Allows to color newly made edges")
+    @SetJIPipeDocumentation(name = "Color new edges", description = "Allows to color newly made edges")
     @JIPipeParameter("new-edge-color")
     public OptionalColorParameter getNewEdgeColor() {
         return newEdgeColor;
@@ -98,7 +95,7 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
         return true;
     }
 
-    @JIPipeDocumentation(name = "Candidate edge filter", description = "Filter expression that determines if an edge is considered as candidate")
+    @SetJIPipeDocumentation(name = "Candidate edge filter", description = "Filter expression that determines if an edge is considered as candidate")
     @JIPipeParameter("filter-function")
     @JIPipeExpressionParameterSettings(hint = "per candidate edge")
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
@@ -118,7 +115,7 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
         this.filterFunction = filterFunction;
     }
 
-    @JIPipeDocumentation(name = "Candidate edge scoring", description = "Expression that calculates the score of a candidate edge. The higher the score, the more likely the edge is chosen. The default score is the negative of the " +
+    @SetJIPipeDocumentation(name = "Candidate edge scoring", description = "Expression that calculates the score of a candidate edge. The higher the score, the more likely the edge is chosen. The default score is the negative of the " +
             "dot product of the two normalized directions.")
     @JIPipeParameter("scoring-function")
     @JIPipeExpressionParameterSettings(hint = "per candidate edge")
@@ -139,7 +136,7 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
         this.scoringFunction = scoringFunction;
     }
 
-    @JIPipeDocumentation(name = "Exclude existing endpoints", description = "If enabled, existing endpoints are excluded from being new sources or targets.")
+    @SetJIPipeDocumentation(name = "Exclude existing endpoints", description = "If enabled, existing endpoints are excluded from being new sources or targets.")
     @JIPipeParameter("exclude-existing-endpoints")
     public boolean isExcludeExistingEndpoints() {
         return excludeExistingEndpoints;
@@ -150,7 +147,7 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
         this.excludeExistingEndpoints = excludeExistingEndpoints;
     }
 
-    @JIPipeDocumentation(name = "Prevent cross-object edges", description = "If enabled, new edges will never be created across two different objects. Disable this option if there are broken filaments in the input graph.")
+    @SetJIPipeDocumentation(name = "Prevent cross-object edges", description = "If enabled, new edges will never be created across two different objects. Disable this option if there are broken filaments in the input graph.")
     @JIPipeParameter("enforce-same-component")
     public boolean isEnforceSameComponent() {
         return enforceSameComponent;
@@ -161,7 +158,7 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
         this.enforceSameComponent = enforceSameComponent;
     }
 
-    @JIPipeDocumentation(name = "Prevent duplicate paths", description = "If enabled, new edges will only be creates if there is not already an existing path between two end points.")
+    @SetJIPipeDocumentation(name = "Prevent duplicate paths", description = "If enabled, new edges will only be creates if there is not already an existing path between two end points.")
     @JIPipeParameter("ensure-no-path-exists")
     public boolean isEnsureNoPathExists() {
         return ensureNoPathExists;
@@ -172,7 +169,7 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
         this.ensureNoPathExists = ensureNoPathExists;
     }
 
-    @JIPipeDocumentation(name = "Connect across channels", description = "If enabled, the algorithm considers also endpoints between different channel planes.")
+    @SetJIPipeDocumentation(name = "Connect across channels", description = "If enabled, the algorithm considers also endpoints between different channel planes.")
     @JIPipeParameter("connect-across-c")
     public boolean isConnectAcrossC() {
         return connectAcrossC;
@@ -183,7 +180,7 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
         this.connectAcrossC = connectAcrossC;
     }
 
-    @JIPipeDocumentation(name = "Connect across frames", description = "If enabled, the algorithm considers also endpoints between different frame planes.")
+    @SetJIPipeDocumentation(name = "Connect across frames", description = "If enabled, the algorithm considers also endpoints between different frame planes.")
     @JIPipeParameter("connect-across-t")
     public boolean isConnectAcrossT() {
         return connectAcrossT;
@@ -194,7 +191,7 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
         this.connectAcrossT = connectAcrossT;
     }
 
-    @JIPipeDocumentation(name = "Connect in 3D", description = "If enabled, the algorithm will look for endpoints in other Z planes.")
+    @SetJIPipeDocumentation(name = "Connect in 3D", description = "If enabled, the algorithm will look for endpoints in other Z planes.")
     @JIPipeParameter("enable-3d")
     public boolean isEnable3D() {
         return enable3D;
@@ -206,7 +203,7 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Filaments3DData inputData = iterationStep.getInputData("Input", Filaments3DData.class, progressInfo);
         Filaments3DData outputData = new Filaments3DData(inputData);
 

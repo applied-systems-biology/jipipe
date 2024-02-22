@@ -17,19 +17,6 @@ package org.hkijena.jipipe.api.nodes;
  * Algorithm that supports parallelization
  */
 public interface JIPipeParallelizedAlgorithm {
-
-    /**
-     * @return if parallelization is enabled by user
-     */
-    boolean isParallelizationEnabled();
-
-    /**
-     * User-defined parameter to control if parallelization is enabled
-     *
-     * @param parallelizationEnabled if parallelization is enabled
-     */
-    void setParallelizationEnabled(boolean parallelizationEnabled);
-
     /**
      * Indicates to the algorithm base implementation if parallelization is supported.
      * Use this function to indicate to the algorithm to conditionally enable/disable parallelization.

@@ -3,7 +3,7 @@ package org.hkijena.jipipe;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import net.imagej.updater.UpdateSite;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
@@ -52,7 +52,7 @@ public class JIPipeImageJUpdateSiteDependency extends AbstractJIPipeParameterCol
         return new UpdateSite(getName(), getUrl(), "", "", getDescription(), getMaintainer(), 0);
     }
 
-    @JIPipeDocumentation(name = "Name", description = "Unique name of the update site.")
+    @SetJIPipeDocumentation(name = "Name", description = "Unique name of the update site.")
     @JsonGetter("name")
     @JIPipeParameter(value = "name", uiOrder = 0)
     @StringParameterSettings(monospace = true)
@@ -66,7 +66,7 @@ public class JIPipeImageJUpdateSiteDependency extends AbstractJIPipeParameterCol
         this.name = name;
     }
 
-    @JIPipeDocumentation(name = "URL", description = "Update site URL. Please note that JIPipe prefers existing update sites with the same name and therefor might " +
+    @SetJIPipeDocumentation(name = "URL", description = "Update site URL. Please note that JIPipe prefers existing update sites with the same name and therefor might " +
             " ignore this property.")
     @JIPipeParameter(value = "url", uiOrder = 1)
     @JsonGetter("url")
@@ -81,7 +81,7 @@ public class JIPipeImageJUpdateSiteDependency extends AbstractJIPipeParameterCol
         this.url = url;
     }
 
-    @JIPipeDocumentation(name = "Description", description = "Optional description")
+    @SetJIPipeDocumentation(name = "Description", description = "Optional description")
     @JIPipeParameter(value = "description", uiOrder = 2)
     @JsonGetter("description")
     public String getDescription() {
@@ -94,7 +94,7 @@ public class JIPipeImageJUpdateSiteDependency extends AbstractJIPipeParameterCol
         this.description = description;
     }
 
-    @JIPipeDocumentation(name = "Maintainer", description = "Optional maintainer")
+    @SetJIPipeDocumentation(name = "Maintainer", description = "Optional maintainer")
     @JIPipeParameter(value = "maintainer", uiOrder = 3)
     @JsonGetter("maintainer")
     public String getMaintainer() {

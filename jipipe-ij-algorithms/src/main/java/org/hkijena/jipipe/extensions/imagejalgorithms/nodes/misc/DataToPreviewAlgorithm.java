@@ -1,8 +1,8 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.misc;
 
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
@@ -23,10 +23,10 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.InvocationTargetException;
 
-@JIPipeDocumentation(name = "Data to preview", description = "Converts any data into preview image. Does not generate a result if no previews are supported.")
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Convert")
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlus2DColorRGBData.class, slotName = "Preview", autoCreate = true)
+@SetJIPipeDocumentation(name = "Data to preview", description = "Converts any data into preview image. Does not generate a result if no previews are supported.")
+@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Convert")
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Data", create = true)
+@AddJIPipeOutputSlot(value = ImagePlus2DColorRGBData.class, slotName = "Preview", create = true)
 public class DataToPreviewAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private int previewWidth = 64;
@@ -43,7 +43,7 @@ public class DataToPreviewAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         JIPipeData data = iterationStep.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo);
         Component preview = data.createThumbnail(previewWidth, previewHeight, progressInfo).renderToComponent(previewWidth, previewHeight);
         if (preview != null) {
@@ -64,23 +64,23 @@ public class DataToPreviewAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        super.reportValidity(context, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
         if (previewWidth < 1) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new ParameterValidationReportContext(context, this, "Preview width", "preview-width"),
+                    new ParameterValidationReportContext(reportContext, this, "Preview width", "preview-width"),
                     "Preview width too small!",
                     "The preview width must be greater than zero!"));
         }
         if (previewHeight < 1) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new ParameterValidationReportContext(context, this, "Preview height", "preview-height"),
+                    new ParameterValidationReportContext(reportContext, this, "Preview height", "preview-height"),
                     "Preview height too small!",
                     "The preview height must be greater than zero!"));
         }
     }
 
-    @JIPipeDocumentation(name = "Preview width", description = "The width of the generated image.")
+    @SetJIPipeDocumentation(name = "Preview width", description = "The width of the generated image.")
     @JIPipeParameter(value = "preview-width", uiOrder = 10)
     public int getPreviewWidth() {
         return previewWidth;
@@ -91,7 +91,7 @@ public class DataToPreviewAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.previewWidth = previewWidth;
     }
 
-    @JIPipeDocumentation(name = "Preview height", description = "The height of the generated image.")
+    @SetJIPipeDocumentation(name = "Preview height", description = "The height of the generated image.")
     @JIPipeParameter(value = "preview-height", uiOrder = 11)
     public int getPreviewHeight() {
         return previewHeight;

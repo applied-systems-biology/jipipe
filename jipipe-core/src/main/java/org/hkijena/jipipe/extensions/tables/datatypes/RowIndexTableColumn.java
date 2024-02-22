@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.tables.datatypes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
@@ -25,7 +25,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 /**
  * Generates numbers from 0 to row count
  */
-@JIPipeDocumentation(name = "Row index table column", description = "A table column that generates each row based on the current row index")
+@SetJIPipeDocumentation(name = "Row index table column", description = "A table column that generates each row based on the current row index")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "This is a structural data type. The storage folder is empty.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-empty-data.schema.json")
 public class RowIndexTableColumn implements TableColumn {

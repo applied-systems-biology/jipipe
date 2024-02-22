@@ -3,8 +3,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.threshold.color;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -29,11 +29,11 @@ import org.hkijena.jipipe.extensions.parameters.library.ranges.NumberRangeParame
 import java.util.ArrayList;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Manual color threshold (LAB)", description = "Thresholds LAB images.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Threshold\nColor")
-@JIPipeInputSlot(value = ImagePlusColorLABData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust")
+@SetJIPipeDocumentation(name = "Manual color threshold (LAB)", description = "Thresholds LAB images.")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Threshold\nColor")
+@AddJIPipeInputSlot(value = ImagePlusColorLABData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust")
 public class ManualLABThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private IntNumberRangeParameter lightnessThreshold = new IntNumberRangeParameter(0, 256);
@@ -67,7 +67,7 @@ public class ManualLABThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus img = iterationStep.getInputData(getFirstInputSlot(), ImagePlusColorLABData.class, progressInfo).getImage();
         ImagePlus result = IJ.createHyperStack(img.getTitle() + " thresholded",
                 img.getWidth(),
@@ -113,7 +113,7 @@ public class ManualLABThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(result), annotations, thresholdAnnotationStrategy, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "L* threshold", description = "Thresholds the lightness channel (Channel 1)")
+    @SetJIPipeDocumentation(name = "L* threshold", description = "Thresholds the lightness channel (Channel 1)")
     @JIPipeParameter(value = "lab-l-threshold", uiOrder = -10)
     @NumberRangeParameterSettings(min = 0, max = 256, trackBackground = LABLightnessTrackBackground.class, invertedMode = NumberRangeInvertedMode.OutsideMinMax)
     public IntNumberRangeParameter getLightnessThreshold() {
@@ -125,7 +125,7 @@ public class ManualLABThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.lightnessThreshold = lightnessThreshold;
     }
 
-    @JIPipeDocumentation(name = "a* threshold", description = "Thresholds the green-red/a* channel (Channel 2)")
+    @SetJIPipeDocumentation(name = "a* threshold", description = "Thresholds the green-red/a* channel (Channel 2)")
     @JIPipeParameter(value = "lab-a-threshold", uiOrder = -9)
     @NumberRangeParameterSettings(min = 0, max = 256, trackBackground = LABGreenRedTrackBackground.class, invertedMode = NumberRangeInvertedMode.OutsideMinMax)
     public IntNumberRangeParameter getGreenRedThreshold() {
@@ -137,7 +137,7 @@ public class ManualLABThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.greenRedThreshold = greenRedThreshold;
     }
 
-    @JIPipeDocumentation(name = "b* threshold", description = "Thresholds the blue-yellow/b* channel (Channel 3)")
+    @SetJIPipeDocumentation(name = "b* threshold", description = "Thresholds the blue-yellow/b* channel (Channel 3)")
     @JIPipeParameter(value = "lab-b-threshold", uiOrder = -8)
     @NumberRangeParameterSettings(min = 0, max = 256, trackBackground = LABBlueYellowTrackBackground.class, invertedMode = NumberRangeInvertedMode.OutsideMinMax)
     public IntNumberRangeParameter getBlueYellowThreshold() {
@@ -149,7 +149,7 @@ public class ManualLABThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.blueYellowThreshold = blueYellowThreshold;
     }
 
-    @JIPipeDocumentation(name = "Min threshold annotation (R)", description = "If enabled, annotate with the min red threshold")
+    @SetJIPipeDocumentation(name = "Min threshold annotation (R)", description = "If enabled, annotate with the min red threshold")
     @JIPipeParameter("annotate-min-red")
     public OptionalAnnotationNameParameter getMinLightnessThresholdAnnotation() {
         return minLightnessThresholdAnnotation;
@@ -160,7 +160,7 @@ public class ManualLABThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.minLightnessThresholdAnnotation = minLightnessThresholdAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Max threshold annotation (R)", description = "If enabled, annotate with the max red threshold")
+    @SetJIPipeDocumentation(name = "Max threshold annotation (R)", description = "If enabled, annotate with the max red threshold")
     @JIPipeParameter("annotate-max-red")
     public OptionalAnnotationNameParameter getMaxLightnessThresholdAnnotation() {
         return maxLightnessThresholdAnnotation;
@@ -171,7 +171,7 @@ public class ManualLABThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.maxLightnessThresholdAnnotation = maxLightnessThresholdAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Min threshold annotation (G)", description = "If enabled, annotate with the min green threshold")
+    @SetJIPipeDocumentation(name = "Min threshold annotation (G)", description = "If enabled, annotate with the min green threshold")
     @JIPipeParameter("annotate-min-green")
     public OptionalAnnotationNameParameter getMinGreenRedThresholdAnnotation() {
         return minGreenRedThresholdAnnotation;
@@ -182,7 +182,7 @@ public class ManualLABThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.minGreenRedThresholdAnnotation = minGreenRedThresholdAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Max threshold annotation (G)", description = "If enabled, annotate with the max green threshold")
+    @SetJIPipeDocumentation(name = "Max threshold annotation (G)", description = "If enabled, annotate with the max green threshold")
     @JIPipeParameter("annotate-max-green")
     public OptionalAnnotationNameParameter getMaxGreenRedThresholdAnnotation() {
         return maxGreenRedThresholdAnnotation;
@@ -193,7 +193,7 @@ public class ManualLABThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.maxGreenRedThresholdAnnotation = maxGreenRedThresholdAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Min threshold annotation (B)", description = "If enabled, annotate with the min blue threshold")
+    @SetJIPipeDocumentation(name = "Min threshold annotation (B)", description = "If enabled, annotate with the min blue threshold")
     @JIPipeParameter("annotate-min-blue")
     public OptionalAnnotationNameParameter getMinBlueYellowThresholdAnnotation() {
         return minBlueYellowThresholdAnnotation;
@@ -204,7 +204,7 @@ public class ManualLABThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.minBlueYellowThresholdAnnotation = minBlueYellowThresholdAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Max threshold annotation (B)", description = "If enabled, annotate with the max blue threshold")
+    @SetJIPipeDocumentation(name = "Max threshold annotation (B)", description = "If enabled, annotate with the max blue threshold")
     @JIPipeParameter("annotate-max-blue")
     public OptionalAnnotationNameParameter getMaxBlueYellowThresholdAnnotation() {
         return maxBlueYellowThresholdAnnotation;
@@ -215,7 +215,7 @@ public class ManualLABThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.maxBlueYellowThresholdAnnotation = maxBlueYellowThresholdAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Threshold annotation strategy", description = "Determines what happens if annotations are already present.")
+    @SetJIPipeDocumentation(name = "Threshold annotation strategy", description = "Determines what happens if annotations are already present.")
     @JIPipeParameter("threshold-annotation-strategy")
     public JIPipeTextAnnotationMergeMode getThresholdAnnotationStrategy() {
         return thresholdAnnotationStrategy;

@@ -3,9 +3,9 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.segment;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import inra.ijpb.watershed.Watershed;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -20,16 +20,16 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
-@JIPipeDocumentation(name = "Seeded watershed", description = "Performs segmentation via watershed on a 2D or 3D image using flooding simulations. Please note that this node returns labels instead of masks. " +
+@SetJIPipeDocumentation(name = "Seeded watershed", description = "Performs segmentation via watershed on a 2D or 3D image using flooding simulations. Please note that this node returns labels instead of masks. " +
         "The markers need to be labels, so apply a connected components labeling if you only have masks.")
-@JIPipeCitation("\"Determining watersheds in digital pictures via flooding simulations.\" Lausanne-DL tentative. International Society for Optics and Photonics, 1990")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Segment")
-@JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Image", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Markers", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Labels", autoCreate = true)
-@JIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
+@AddJIPipeCitation("\"Determining watersheds in digital pictures via flooding simulations.\" Lausanne-DL tentative. International Society for Optics and Photonics, 1990")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Segment")
+@AddJIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Image", create = true)
+@AddJIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Markers", create = true)
+@AddJIPipeOutputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Labels", create = true)
+@AddJIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
         "Bioinformatics (Oxford Univ Press) 32(22): 3532-3534, PMID 27412086, doi:10.1093/bioinformatics/btw413")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nSegmentation", aliasName = "Marker-controlled Watershed")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nSegmentation", aliasName = "Marker-controlled Watershed")
 public class SeededWatershedSegmentationAlgorithm extends JIPipeIteratingAlgorithm {
 
     private Neighborhood2D3D connectivity = Neighborhood2D3D.NoDiagonals;
@@ -52,7 +52,7 @@ public class SeededWatershedSegmentationAlgorithm extends JIPipeIteratingAlgorit
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus inputImage = iterationStep.getInputData("Image", ImagePlus3DGreyscaleData.class, progressInfo).getImage();
         ImagePlus seedImage = iterationStep.getInputData("Markers", ImagePlus3DGreyscaleData.class, progressInfo).getImage();
         if (applyPerSlice) {
@@ -71,7 +71,7 @@ public class SeededWatershedSegmentationAlgorithm extends JIPipeIteratingAlgorit
         }
     }
 
-    @JIPipeDocumentation(name = "Get dams", description = "If enabled, the dams instead of the wells are returned")
+    @SetJIPipeDocumentation(name = "Get dams", description = "If enabled, the dams instead of the wells are returned")
     @JIPipeParameter("get-dams")
     public boolean isGetDams() {
         return getDams;
@@ -82,7 +82,7 @@ public class SeededWatershedSegmentationAlgorithm extends JIPipeIteratingAlgorit
         this.getDams = getDams;
     }
 
-    @JIPipeDocumentation(name = "Connectivity", description = "Determines the pixel neighborhood for the flood fill algorithm.")
+    @SetJIPipeDocumentation(name = "Connectivity", description = "Determines the pixel neighborhood for the flood fill algorithm.")
     @JIPipeParameter("connectivity")
     public Neighborhood2D3D getConnectivity() {
         return connectivity;
@@ -93,7 +93,7 @@ public class SeededWatershedSegmentationAlgorithm extends JIPipeIteratingAlgorit
         this.connectivity = connectivity;
     }
 
-    @JIPipeDocumentation(name = "Only apply to ...", description = "Determines where the watershed is applied.")
+    @SetJIPipeDocumentation(name = "Only apply to ...", description = "Determines where the watershed is applied.")
     @JIPipeParameter("target-area")
     public ImageROITargetArea getTargetArea() {
         return targetArea;
@@ -105,7 +105,7 @@ public class SeededWatershedSegmentationAlgorithm extends JIPipeIteratingAlgorit
         ImageJAlgorithmUtils.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
     }
 
-    @JIPipeDocumentation(name = "Apply per slice", description = "If enabled, 3D data is split into 2D slices and the watershed algorithm is applied per slice.")
+    @SetJIPipeDocumentation(name = "Apply per slice", description = "If enabled, 3D data is split into 2D slices and the watershed algorithm is applied per slice.")
     @JIPipeParameter("apply-per-slice")
     public boolean isApplyPerSlice() {
         return applyPerSlice;

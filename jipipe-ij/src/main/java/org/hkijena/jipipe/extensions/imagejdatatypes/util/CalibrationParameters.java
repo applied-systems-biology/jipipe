@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.util;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
@@ -19,7 +19,7 @@ public class CalibrationParameters extends AbstractJIPipeParameterCollection {
         this.customMax = other.customMax;
     }
 
-    @JIPipeDocumentation(name = "Calibration method", description = "The method to apply for calibration.")
+    @SetJIPipeDocumentation(name = "Calibration method", description = "The method to apply for calibration.")
     @JIPipeParameter("calibration-mode")
     public ImageJCalibrationMode getCalibrationMode() {
         return calibrationMode;
@@ -30,7 +30,7 @@ public class CalibrationParameters extends AbstractJIPipeParameterCollection {
         this.calibrationMode = calibrationMode;
     }
 
-    @JIPipeDocumentation(name = "Custom min", description = "Used if 'Calibration' method is set to 'Custom'. Sets custom minimum value.")
+    @SetJIPipeDocumentation(name = "Custom min", description = "Used if 'Calibration' method is set to 'Custom'. Sets custom minimum value.")
     @JIPipeParameter("custom-min")
     public double getCustomMin() {
         return customMin;
@@ -41,7 +41,7 @@ public class CalibrationParameters extends AbstractJIPipeParameterCollection {
         this.customMin = customMin;
     }
 
-    @JIPipeDocumentation(name = "Custom max", description = "Used if 'Calibration' method is set to 'Custom'. Sets custom maximum value.")
+    @SetJIPipeDocumentation(name = "Custom max", description = "Used if 'Calibration' method is set to 'Custom'. Sets custom maximum value.")
     @JIPipeParameter("custom-max")
     public double getCustomMax() {
         return customMax;

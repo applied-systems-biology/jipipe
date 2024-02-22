@@ -19,7 +19,7 @@ import fiji.plugin.trackmate.visualization.hyperstack.TrackOverlay;
 import ij.ImagePlus;
 import ij.gui.ImageCanvas;
 import org.apache.commons.lang3.Range;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
@@ -145,7 +145,7 @@ public class TrackDrawer extends AbstractJIPipeParameterCollection {
         graphics2D.translate(-renderArea.x, -renderArea.y);
     }
 
-    @JIPipeDocumentation(name = "Fade track range", description = "If the display mode is set to local track surroundings, sets the fading range")
+    @SetJIPipeDocumentation(name = "Fade track range", description = "If the display mode is set to local track surroundings, sets the fading range")
     @JIPipeParameter("fade-track-range")
     public int getFadeTrackRange() {
         return fadeTrackRange;
@@ -156,7 +156,7 @@ public class TrackDrawer extends AbstractJIPipeParameterCollection {
         this.fadeTrackRange = fadeTrackRange;
     }
 
-    @JIPipeDocumentation(name = "Display mode", description = "Determines how tracks are displayed")
+    @SetJIPipeDocumentation(name = "Display mode", description = "Determines how tracks are displayed")
     @JIPipeParameter("track-display-mode")
     public DisplaySettings.TrackDisplayMode getTrackDisplayMode() {
         return trackDisplayMode;
@@ -167,7 +167,7 @@ public class TrackDrawer extends AbstractJIPipeParameterCollection {
         this.trackDisplayMode = trackDisplayMode;
     }
 
-    @JIPipeDocumentation(name = "Stroke width", description = "Width of the spot stroke")
+    @SetJIPipeDocumentation(name = "Stroke width", description = "Width of the spot stroke")
     @JIPipeParameter("stroke-width")
     public int getStrokeWidth() {
         return strokeWidth;
@@ -178,7 +178,7 @@ public class TrackDrawer extends AbstractJIPipeParameterCollection {
         this.strokeWidth = strokeWidth;
     }
 
-    @JIPipeDocumentation(name = "Stroke uniform color", description = "The default color of a spot. Has no effect if the color is calculated from a feature.")
+    @SetJIPipeDocumentation(name = "Stroke uniform color", description = "The default color of a spot. Has no effect if the color is calculated from a feature.")
     @JIPipeParameter("stroke-color")
     public Color getStrokeColor() {
         return strokeColor;
@@ -189,7 +189,7 @@ public class TrackDrawer extends AbstractJIPipeParameterCollection {
         this.strokeColor = strokeColor;
     }
 
-    @JIPipeDocumentation(name = "Stroke color mode", description = "Determines how the stroke is colored")
+    @SetJIPipeDocumentation(name = "Stroke color mode", description = "Determines how the stroke is colored")
     @JIPipeParameter("stroke-color-mode")
     public StrokeColorMode getStrokeColorMode() {
         return strokeColorMode;
@@ -200,7 +200,7 @@ public class TrackDrawer extends AbstractJIPipeParameterCollection {
         this.strokeColorMode = strokeColorMode;
     }
 
-    @JIPipeDocumentation(name = "Stroke color edge feature", description = "Determines the feature that is utilized for coloring the stroke. Only takes effect if 'Stroke color mode' is set to 'Color per edge'")
+    @SetJIPipeDocumentation(name = "Stroke color edge feature", description = "Determines the feature that is utilized for coloring the stroke. Only takes effect if 'Stroke color mode' is set to 'Color per edge'")
     @JIPipeParameter("stroke-color-edge-feature")
     public EdgeFeature getStrokeColorEdgeFeature() {
         return strokeColorEdgeFeature;
@@ -211,7 +211,7 @@ public class TrackDrawer extends AbstractJIPipeParameterCollection {
         this.strokeColorEdgeFeature = strokeColorEdgeFeature;
     }
 
-    @JIPipeDocumentation(name = "Stroke color track feature", description = "Determines the feature that is utilized for coloring the stroke. Only takes effect if 'Stroke color mode' is set to 'Color per track'")
+    @SetJIPipeDocumentation(name = "Stroke color track feature", description = "Determines the feature that is utilized for coloring the stroke. Only takes effect if 'Stroke color mode' is set to 'Color per track'")
     @JIPipeParameter("stroke-color-track-feature")
     public TrackFeature getStrokeColorTrackFeature() {
         return strokeColorTrackFeature;

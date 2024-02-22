@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.ijfilaments.parameters;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.*;
@@ -25,7 +25,7 @@ public class VertexMaskParameter extends AbstractJIPipeParameterCollection {
         this.filter = new JIPipeExpressionParameter(other.filter);
     }
 
-    @JIPipeDocumentation(name = "Vertex mask", description = "Apply the operation to a specific set of vertices")
+    @SetJIPipeDocumentation(name = "Vertex mask", description = "Apply the operation to a specific set of vertices")
     @JIPipeParameter("mask")
     @JIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)

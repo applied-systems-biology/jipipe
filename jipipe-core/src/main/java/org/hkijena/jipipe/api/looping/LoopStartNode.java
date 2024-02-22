@@ -3,10 +3,7 @@ package org.hkijena.jipipe.api.looping;
 import com.google.common.primitives.Ints;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
@@ -25,14 +22,17 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Loop start", description = "Indicates the start of a loop. All nodes following a loop start are " +
+@SetJIPipeDocumentation(name = "Loop start", description = "Deprecated. Use graph partitions instead. " +
+        "Indicates the start of a loop. All nodes following a loop start are " +
         "executed per data batch of this loop start node, unless its mode is set to pass-through. " +
         "All following nodes are assigned to a loop, unless a node has no output connections, or it is a loop end node. " +
         "Please be aware that intermediate results of this loop are discarded automatically, meaning that only the end points will contain the generated data. " +
         "You can also explicitly insert loop end nodes to collect results.")
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Data")
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data")
+@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Data")
+@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Data")
+@LabelAsJIPipeHidden
+@Deprecated
 public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeIterationStepAlgorithm {
 
     private GraphWrapperAlgorithm.IterationMode iterationMode = GraphWrapperAlgorithm.IterationMode.IteratingDataBatch;
@@ -50,7 +50,7 @@ public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeIterati
         this.batchGenerationSettings = new JIPipeMergingAlgorithmIterationStepGenerationSettings(other.batchGenerationSettings);
     }
 
-    @JIPipeDocumentation(name = "Iteration mode", description = "Determines how the loop is iterated:" +
+    @SetJIPipeDocumentation(name = "Iteration mode", description = "Determines how the loop is iterated:" +
             "<ul>" +
             "<li>Pass through: Disables looping. The node behaves as a regular IO interface.</li>" +
             "<li>The loop can be executed per data batch. Here you can choose between an iterative data batch (one item per slot) " +
@@ -67,7 +67,7 @@ public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeIterati
         this.iterationMode = iterationMode;
     }
 
-    @JIPipeDocumentation(name = "Input management", description = "Only used if the graph iteration mode is not set to 'Pass data through'. " +
+    @SetJIPipeDocumentation(name = "Input management", description = "Only used if the graph iteration mode is not set to 'Pass data through'. " +
             "This algorithm can have multiple inputs. This means that JIPipe has to match incoming data into batches via metadata annotations. " +
             "The following settings allow you to control which columns are used as reference to organize data.")
     @JIPipeParameter(value = "jipipe:data-batch-generation", collapsed = true)

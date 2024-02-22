@@ -13,15 +13,15 @@
 
 package org.hkijena.jipipe.extensions.filesystem.datasources;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
-import org.hkijena.jipipe.api.data.context.JIPipeMutableDataContext;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -50,9 +50,9 @@ import java.util.UUID;
 /**
  * Provides an input file
  */
-@JIPipeDocumentation(name = "File list", description = "Converts each provided path into file data.")
-@JIPipeOutputSlot(value = FileData.class, slotName = "Filenames", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "File list", description = "Converts each provided path into file data.")
+@AddJIPipeOutputSlot(value = FileData.class, slotName = "Filenames", create = true)
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class FileListDataSource extends JIPipeAlgorithm {
 
     private PathList files = new PathList();
@@ -79,7 +79,7 @@ public class FileListDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
+    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         for (Path path : files) {
             getFirstOutputSlot().addData(new FileData(path), JIPipeDataContext.create(this), progressInfo);
         }
@@ -89,7 +89,7 @@ public class FileListDataSource extends JIPipeAlgorithm {
      * @return The file names
      */
     @JIPipeParameter("file-names")
-    @JIPipeDocumentation(name = "Files")
+    @SetJIPipeDocumentation(name = "Files")
     @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.FilesOnly)
     @ListParameterSettings(withScrollBar = true)
     public PathList getFiles() {
@@ -200,17 +200,17 @@ public class FileListDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         for (Path fileName : getAbsoluteFileNames()) {
             if (fileName == null) {
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
-                        context,
+                        reportContext,
                         "Input file not set!",
                         "One of the input paths is not set.",
                         "Please provide a valid input file."));
             } else if (!Files.isRegularFile(fileName)) {
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
-                        context,
+                        reportContext,
                         "Input file does not exist!",
                         "The file '" + fileName + "' does not exist.",
                         "Please provide a valid input file."));
@@ -218,13 +218,13 @@ public class FileListDataSource extends JIPipeAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Paths to absolute", description = "Converts the stored paths to absolute paths.")
+    @SetJIPipeDocumentation(name = "Paths to absolute", description = "Converts the stored paths to absolute paths.")
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/path.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/path.png")
     public void convertPathsToAbsolute() {
         setParameter("file-names", getAbsoluteFileNames());
     }
 
-    @JIPipeDocumentation(name = "Paths to relative", description = "Converts the stored paths to paths relative to the project directory (if available).")
+    @SetJIPipeDocumentation(name = "Paths to relative", description = "Converts the stored paths to paths relative to the project directory (if available).")
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/path.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/path.png")
     public void convertPathsToRelative() {
         setParameter("file-names", getRelativeFileNames());

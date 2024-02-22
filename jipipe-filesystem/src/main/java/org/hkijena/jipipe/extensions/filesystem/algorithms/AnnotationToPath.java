@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -33,11 +33,11 @@ import java.nio.file.Paths;
 /**
  * Filters input files
  */
-@JIPipeDocumentation(name = "Annotation to path", description = "Converts an annotation of to a path. " +
+@SetJIPipeDocumentation(name = "Annotation to path", description = "Converts an annotation of to a path. " +
         "If the specified annotation is not present, an empty path is generated.")
-@JIPipeNode(menuPath = "Convert", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(menuPath = "Convert", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = PathData.class, slotName = "Output", create = true)
 public class AnnotationToPath extends JIPipeSimpleIteratingAlgorithm {
 
     private AnnotationQueryExpression annotationExpression = new AnnotationQueryExpression("key == \"#Dataset\"");
@@ -62,7 +62,7 @@ public class AnnotationToPath extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         JIPipeTextAnnotation matchingAnnotation = annotationExpression.queryFirst(iterationStep.getMergedTextAnnotations().values());
         if (matchingAnnotation == null || StringUtils.isNullOrEmpty(matchingAnnotation.getValue())) {
             iterationStep.addOutputData(getFirstOutputSlot(), new PathData(Paths.get("")), progressInfo);
@@ -71,7 +71,7 @@ public class AnnotationToPath extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new PathData(Paths.get(StringUtils.orElse(matchingAnnotation.getValue(), ""))), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Annotation", description = "An expression that determines which annotation is used. ")
+    @SetJIPipeDocumentation(name = "Annotation", description = "An expression that determines which annotation is used. ")
     @JIPipeParameter("annotation")
     public AnnotationQueryExpression getAnnotationExpression() {
         return annotationExpression;

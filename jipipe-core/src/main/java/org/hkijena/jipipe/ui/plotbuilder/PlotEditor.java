@@ -18,7 +18,7 @@ import com.google.common.collect.HashBiMap;
 import ij.macro.Variable;
 import ij.measure.ResultsTable;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
@@ -64,7 +64,7 @@ import java.util.*;
 public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterCollection, JIPipeValidatable, JIPipeParameterCollection.ParameterChangedEventListener {
     private final BiMap<String, TableColumn> availableData = HashBiMap.create();
     private final List<JIPipePlotSeriesBuilder> seriesBuilders = new ArrayList<>();
-    private final DocumentTabPane sideBar = new DocumentTabPane(false);
+    private final DocumentTabPane sideBar = new DocumentTabPane(false, DocumentTabPane.TabPlacement.Top);
     private final ParameterChangedEventEmitter parameterChangedEventEmitter = new ParameterChangedEventEmitter();
     private final ParameterStructureChangedEventEmitter parameterStructureChangedEventEmitter = new ParameterStructureChangedEventEmitter();
     private final ParameterUIChangedEventEmitter parameterUIChangedEventEmitter = new ParameterUIChangedEventEmitter();
@@ -196,10 +196,10 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         if (getPlotType().getInfo() == null) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    context,
+                    reportContext,
                     "Plot type not selected!",
                     "Please select a plot type!"));
         }
@@ -212,7 +212,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
 
     }
 
-    @JIPipeDocumentation(name = "Plot type", description = "The type of plot to be generated.")
+    @SetJIPipeDocumentation(name = "Plot type", description = "The type of plot to be generated.")
     @JIPipeParameter(value = "plot-type", priority = Priority.HIGH)
     @JIPipeDataParameterSettings(dataBaseClass = PlotData.class, dataClassFilter = PlotDataClassFilter.class)
     public JIPipeDataInfoRef getPlotType() {
@@ -255,7 +255,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
         }
     }
 
-    @JIPipeDocumentation(name = "Plot parameters")
+    @SetJIPipeDocumentation(name = "Plot parameters")
     @JIPipeParameter("plot")
     public PlotData getCurrentPlot() {
         return currentPlot;

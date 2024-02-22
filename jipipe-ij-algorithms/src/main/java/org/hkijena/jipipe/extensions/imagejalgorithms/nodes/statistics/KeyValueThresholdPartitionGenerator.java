@@ -6,8 +6,8 @@ import gnu.trove.list.array.TFloatArrayList;
 import gnu.trove.map.hash.TDoubleObjectHashMap;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -40,13 +40,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Key/Value threshold statistics 5D", description = "This node consumes two images with the same dimensions that respectively contain the keys and value components of each pixel position. " +
+@SetJIPipeDocumentation(name = "Key/Value threshold statistics 5D", description = "This node consumes two images with the same dimensions that respectively contain the keys and value components of each pixel position. " +
         "The set of value pixels is partitioned into two sets based on whether the key is lower, or equal/higher than the currently processed key. " +
         "One or multiple values can be created for each partitioning.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Key", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Value", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Key", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Value", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class KeyValueThresholdPartitionGenerator extends JIPipeIteratingAlgorithm {
     private ImageROITargetArea sourceArea = ImageROITargetArea.WholeImage;
     private ParameterCollectionList generatedColumns = ParameterCollectionList.containingCollection(GeneratedColumn.class);
@@ -65,7 +65,7 @@ public class KeyValueThresholdPartitionGenerator extends JIPipeIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus keyImage = iterationStep.getInputData("Key", ImagePlusGreyscale32FData.class, progressInfo).getImage();
         ImagePlus valueImage = iterationStep.getInputData("Value", ImagePlusGreyscale32FData.class, progressInfo).getImage();
 
@@ -187,7 +187,7 @@ public class KeyValueThresholdPartitionGenerator extends JIPipeIteratingAlgorith
         return ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(sourceArea, width, height, rois, mask, sliceIndex);
     }
 
-    @JIPipeDocumentation(name = "Generated columns", description = "The list of generated columns")
+    @SetJIPipeDocumentation(name = "Generated columns", description = "The list of generated columns")
     @JIPipeParameter("generated-columns")
     @ParameterCollectionListTemplate(GeneratedColumn.class)
     public ParameterCollectionList getGeneratedColumns() {
@@ -199,7 +199,7 @@ public class KeyValueThresholdPartitionGenerator extends JIPipeIteratingAlgorith
         this.generatedColumns = generatedColumns;
     }
 
-    @JIPipeDocumentation(name = "Extract values from ...", description = "Determines from which image areas the pixel values used for extracting the values")
+    @SetJIPipeDocumentation(name = "Extract values from ...", description = "Determines from which image areas the pixel values used for extracting the values")
     @JIPipeParameter("source-area")
     public ImageROITargetArea getSourceArea() {
         return sourceArea;
@@ -231,7 +231,7 @@ public class KeyValueThresholdPartitionGenerator extends JIPipeIteratingAlgorith
             this.skipEmpty = other.skipEmpty;
         }
 
-        @JIPipeDocumentation(name = "Name")
+        @SetJIPipeDocumentation(name = "Name")
         @JIPipeParameter("name")
         public String getName() {
             return name;
@@ -242,7 +242,7 @@ public class KeyValueThresholdPartitionGenerator extends JIPipeIteratingAlgorith
             this.name = name;
         }
 
-        @JIPipeDocumentation(name = "Value")
+        @SetJIPipeDocumentation(name = "Value")
         @JIPipeParameter("value")
         @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
         @JIPipeExpressionParameterVariable(key = "key", name = "Key", description = "The current key/threshold")
@@ -259,7 +259,7 @@ public class KeyValueThresholdPartitionGenerator extends JIPipeIteratingAlgorith
             this.value = value;
         }
 
-        @JIPipeDocumentation(name = "Skip if class0 or class1 are empty")
+        @SetJIPipeDocumentation(name = "Skip if class0 or class1 are empty")
         @JIPipeParameter("skip-empty")
         public boolean isSkipEmpty() {
             return skipEmpty;

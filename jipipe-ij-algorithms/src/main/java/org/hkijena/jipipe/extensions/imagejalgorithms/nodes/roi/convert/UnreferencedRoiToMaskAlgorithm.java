@@ -15,8 +15,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.convert;
 
 import ij.IJ;
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -35,11 +35,11 @@ import java.util.Optional;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@JIPipeDocumentation(name = "Convert only ROI to mask", description = "Converts ROI lists to masks. " +
+@SetJIPipeDocumentation(name = "Convert only ROI to mask", description = "Converts ROI lists to masks. " +
         "This algorithm does not need a reference image that determines the output size.")
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", create = true)
 public class UnreferencedRoiToMaskAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Margin imageArea = new Margin();
@@ -73,7 +73,7 @@ public class UnreferencedRoiToMaskAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.preferAssociatedImage = other.preferAssociatedImage;
     }
 
-    @JIPipeDocumentation(name = "Prefer ROI-associated images", description =
+    @SetJIPipeDocumentation(name = "Prefer ROI-associated images", description =
             "ROI can carry a reference to an image (e.g. the thresholding input). With this option enabled, this image is preferred to generating " +
                     "a mask based on the pure ROIs.")
     @JIPipeParameter("prefer-associated-image")
@@ -87,7 +87,7 @@ public class UnreferencedRoiToMaskAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROIListData inputData = (ROIListData) iterationStep.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo).duplicate(progressInfo);
         if (preferAssociatedImage) {
             for (Map.Entry<Optional<ImagePlus>, ROIListData> entry : inputData.groupByReferenceImage().entrySet()) {
@@ -113,7 +113,7 @@ public class UnreferencedRoiToMaskAlgorithm extends JIPipeSimpleIteratingAlgorit
         }
     }
 
-    @JIPipeDocumentation(name = "Image area", description = "Allows modification of the output image width and height.")
+    @SetJIPipeDocumentation(name = "Image area", description = "Allows modification of the output image width and height.")
     @JIPipeParameter("image-area")
     public Margin getImageArea() {
         return imageArea;
@@ -124,7 +124,7 @@ public class UnreferencedRoiToMaskAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.imageArea = imageArea;
     }
 
-    @JIPipeDocumentation(name = "Draw outline", description = "If enabled, draw a white outline of the ROI")
+    @SetJIPipeDocumentation(name = "Draw outline", description = "If enabled, draw a white outline of the ROI")
     @JIPipeParameter("draw-outline")
     public boolean isDrawOutline() {
         return drawOutline;
@@ -135,7 +135,7 @@ public class UnreferencedRoiToMaskAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.drawOutline = drawOutline;
     }
 
-    @JIPipeDocumentation(name = "Draw filled outline", description = "If enabled, fill the ROI areas")
+    @SetJIPipeDocumentation(name = "Draw filled outline", description = "If enabled, fill the ROI areas")
     @JIPipeParameter("fill-outline")
     public boolean isDrawFilledOutline() {
         return drawFilledOutline;
@@ -146,7 +146,7 @@ public class UnreferencedRoiToMaskAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.drawFilledOutline = drawFilledOutline;
     }
 
-    @JIPipeDocumentation(name = "Line thickness", description = "Only relevant if 'Draw outline' is enabled. Sets the outline thickness.")
+    @SetJIPipeDocumentation(name = "Line thickness", description = "Only relevant if 'Draw outline' is enabled. Sets the outline thickness.")
     @JIPipeParameter("line-thickness")
     public int getLineThickness() {
         return lineThickness;

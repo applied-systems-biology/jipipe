@@ -18,6 +18,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.run.JIPipeGraphRun;
+import org.hkijena.jipipe.api.run.JIPipeGraphRunSettings;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -33,7 +35,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
     private final JIPipeGraphNode targetNode;
     private final QuickRunSettings settings;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-    private JIPipeProjectRun run;
+    private JIPipeGraphRun run;
     private JIPipeGraphNode targetNodeCopy;
 
     /**
@@ -50,12 +52,12 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
     }
 
     private void initialize() {
-        JIPipeRunSettings configuration = new JIPipeRunSettings();
+        JIPipeGraphRunSettings configuration = new JIPipeGraphRunSettings();
         configuration.setOutputPath(settings.getOutputPath());
         configuration.setLoadFromCache(settings.isLoadFromCache());
         configuration.setStoreToCache(settings.isStoreToCache());
         configuration.setNumThreads(settings.getNumThreads());
-        configuration.setSaveToDisk(settings.isSaveToDisk());
+        configuration.setStoreToDisk(settings.isSaveToDisk());
         configuration.setSilent(settings.isSilent());
 
         // This setting is needed to prevent cascading intelligent deactivation of nodes
@@ -63,9 +65,9 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
         // The test bench will handle this!
         configuration.setIgnoreDeactivatedInputs(true);
 
-        run = new JIPipeProjectRun(project, configuration);
+        run = new JIPipeGraphRun(project, configuration);
         run.setProgressInfo(progressInfo);
-        targetNodeCopy = run.getGraph().getEquivalentAlgorithm(targetNode);
+        targetNodeCopy = run.getGraph().getEquivalentNode(targetNode);
         ((JIPipeAlgorithm) targetNodeCopy).setEnabled(true);
 
         // Disable storing intermediate results
@@ -101,7 +103,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
                     handledNodes.add(predecessorNode);
                     if (!predecessorNode.getInfo().isRunnable())
                         continue;
-                    JIPipeGraphNode projectPredecessorNode = project.getGraph().getEquivalentAlgorithm(predecessorNode);
+                    JIPipeGraphNode projectPredecessorNode = project.getGraph().getEquivalentNode(predecessorNode);
                     Map<String, JIPipeDataTable> slotMap = project.getCache().query(projectPredecessorNode, projectPredecessorNode.getUUIDInParentGraph(), progressInfo);
 
                     if (slotMap.isEmpty()) {
@@ -133,7 +135,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
             project.getCache().clearOutdated(getProgressInfo().resolveAndLog("Remove outdated cache"));
         }
 
-        // Disable all algorithms that are not dependencies of the benched algorithm
+        // Disable all algorithms that are not dependencies of the target algorithm
         Set<JIPipeGraphNode> predecessorAlgorithms = findPredecessorsWithoutCache();
         if (!settings.isExcludeSelected())
             predecessorAlgorithms.add(targetNodeCopy);
@@ -207,7 +209,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
      *
      * @return the pipeline run
      */
-    public JIPipeProjectRun getRun() {
+    public JIPipeGraphRun getRun() {
         return run;
     }
 
@@ -221,8 +223,8 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        targetNodeCopy.reportValidity(context, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        targetNodeCopy.reportValidity(reportContext, report);
     }
 
     @Override

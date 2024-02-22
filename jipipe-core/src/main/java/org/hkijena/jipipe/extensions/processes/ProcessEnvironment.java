@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.processes;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.apache.commons.lang3.SystemUtils;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -69,7 +69,7 @@ public class ProcessEnvironment extends JIPipeEnvironment {
         }
     }
 
-    @JIPipeDocumentation(name = "Arguments", description = "Arguments passed to the process.")
+    @SetJIPipeDocumentation(name = "Arguments", description = "Arguments passed to the process.")
     @JIPipeParameter("arguments")
     @JIPipeExpressionParameterVariable(key = "executable", name = "Executable path", description = "The path to the executable")
     @JIPipeExpressionParameterVariable(key = "executable_dir", name = "Executable containing directory", description = "The path to the directory that contains the executable")
@@ -84,7 +84,7 @@ public class ProcessEnvironment extends JIPipeEnvironment {
         this.arguments = arguments;
     }
 
-    @JIPipeDocumentation(name = "Executable path (Windows)", description = "The executable path if executed on Windows.")
+    @SetJIPipeDocumentation(name = "Executable path (Windows)", description = "The executable path if executed on Windows.")
     @JIPipeParameter("executable-path-windows")
     @JsonGetter("executable-path-windows")
     public Path getExecutablePathWindows() {
@@ -97,7 +97,7 @@ public class ProcessEnvironment extends JIPipeEnvironment {
         this.executablePathWindows = executablePathWindows;
     }
 
-    @JIPipeDocumentation(name = "Executable path (Linux)", description = "The executable path if executed on Linux.")
+    @SetJIPipeDocumentation(name = "Executable path (Linux)", description = "The executable path if executed on Linux.")
     @JIPipeParameter("executable-path-linux")
     @JsonGetter("executable-path-linux")
     public Path getExecutablePathLinux() {
@@ -110,7 +110,7 @@ public class ProcessEnvironment extends JIPipeEnvironment {
         this.executablePathLinux = executablePathLinux;
     }
 
-    @JIPipeDocumentation(name = "Executable path (OSX)", description = "The executable path if executed on Mac OSX.")
+    @SetJIPipeDocumentation(name = "Executable path (OSX)", description = "The executable path if executed on Mac OSX.")
     @JIPipeParameter("executable-path-osx")
     @JsonGetter("executable-path-osx")
     public Path getExecutablePathOSX() {
@@ -123,7 +123,7 @@ public class ProcessEnvironment extends JIPipeEnvironment {
         this.executablePathOSX = executablePathOSX;
     }
 
-    @JIPipeDocumentation(name = "Work directory", description = "The work directory of the process")
+    @SetJIPipeDocumentation(name = "Work directory", description = "The work directory of the process")
     @JIPipeParameter("work-directory")
     @JsonGetter("work-directory")
     @JIPipeExpressionParameterVariable(key = "executable", name = "Executable path", description = "The path to the executable")
@@ -159,7 +159,7 @@ public class ProcessEnvironment extends JIPipeEnvironment {
         }
     }
 
-    @JIPipeDocumentation(name = "Environment variables", description = "These variables are provided to the Python executable. Existing environment " +
+    @SetJIPipeDocumentation(name = "Environment variables", description = "These variables are provided to the Python executable. Existing environment " +
             "variables are available as variables")
     @JIPipeParameter("environment-variables")
     @PairParameterSettings(keyLabel = "Value", valueLabel = "Key")
@@ -174,9 +174,9 @@ public class ProcessEnvironment extends JIPipeEnvironment {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         if (StringUtils.isNullOrEmpty(getAbsoluteExecutablePath()) || !Files.isRegularFile(getAbsoluteExecutablePath())) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context,
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext,
                     "Executable does not exist",
                     "You need to provide a Python executable",
                     "Provide an executable"));

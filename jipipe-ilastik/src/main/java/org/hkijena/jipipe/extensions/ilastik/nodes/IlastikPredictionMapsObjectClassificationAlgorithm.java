@@ -6,9 +6,9 @@ import net.imagej.ImgPlus;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import org.apache.commons.io.FilenameUtils;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -55,20 +55,20 @@ import java.util.List;
 
 import static org.hkijena.jipipe.extensions.ilastik.utils.ImgUtils.*;
 
-@JIPipeDocumentation(name = "Ilastik object classification (prediction maps)", description = "The object classification workflow aims to classify full objects, based on object-level features and user annotations. " +
+@SetJIPipeDocumentation(name = "Ilastik object classification (prediction maps)", description = "The object classification workflow aims to classify full objects, based on object-level features and user annotations. " +
         "Supports projects that have the raw data and the prediction maps as input.")
-@JIPipeCitation("Object classification documentation: https://www.ilastik.org/documentation/objects/objects")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Ilastik")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true, description = "The image(s) to classify. Requires a data annotation that contains the segmentation image.")
-@JIPipeInputSlot(value = IlastikModelData.class, slotName = "Project", autoCreate = true, description = "The Ilastik project. Must support pixel classification.")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Object Predictions", description = "A label image of the object class predictions")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Object Probabilities", description = "A multi-channel image volume of object prediction probabilities instead of a label image (one channel for each prediction class)")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Blockwise Object Predictions", description = "A label image of the object class predictions. " +
+@AddJIPipeCitation("Object classification documentation: https://www.ilastik.org/documentation/objects/objects")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Ilastik")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true, description = "The image(s) to classify. Requires a data annotation that contains the segmentation image.")
+@AddJIPipeInputSlot(value = IlastikModelData.class, slotName = "Project", create = true, description = "The Ilastik project. Must support pixel classification.")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Object Predictions", description = "A label image of the object class predictions")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Object Probabilities", description = "A multi-channel image volume of object prediction probabilities instead of a label image (one channel for each prediction class)")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Blockwise Object Predictions", description = "A label image of the object class predictions. " +
         "The image will be processed in independent blocks. To configure the block size and halo, use the Ilastik GUI.")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Blockwise Object Probabilities", description = "A multi-channel image volume of object prediction probabilities instead of a label image (one channel for each prediction class) " +
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Blockwise Object Probabilities", description = "A multi-channel image volume of object prediction probabilities instead of a label image (one channel for each prediction class) " +
         "The image will be processed in independent blocks. To configure the block size and halo, use the Ilastik GUI.")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Pixel Probabilities", description = "Pixel prediction images of the pixel classification part of that workflow")
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Features", description = "Table of the computed object features that were used during classification, indexed by object id")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Pixel Probabilities", description = "Pixel prediction images of the pixel classification part of that workflow")
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Features", description = "Table of the computed object features that were used during classification, indexed by object id")
 public class IlastikPredictionMapsObjectClassificationAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     public static final List<String> PROJECT_TYPES = Collections.singletonList("ObjectClassification");
@@ -128,7 +128,7 @@ public class IlastikPredictionMapsObjectClassificationAlgorithm extends JIPipeSi
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Path workDirectory = getNewScratch();
         progressInfo.log("Work directory is " + workDirectory);
 
@@ -307,18 +307,18 @@ public class IlastikPredictionMapsObjectClassificationAlgorithm extends JIPipeSi
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        super.reportValidity(context, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
         if (!isPassThrough()) {
             if (overrideEnvironment.isEnabled()) {
-                report.report(context, overrideEnvironment.getContent());
+                report.report(reportContext, overrideEnvironment.getContent());
             } else {
-                IlastikSettings.checkIlastikSettings(context, report);
+                IlastikSettings.checkIlastikSettings(reportContext, report);
             }
         }
     }
 
-    @JIPipeDocumentation(name = "Segmentation image data annotation", description = "The name of the data annotation that contains the segmentation image.")
+    @SetJIPipeDocumentation(name = "Segmentation image data annotation", description = "The name of the data annotation that contains the segmentation image.")
     @JIPipeParameter(value = "segmentation-image-data-annotation", important = true)
     public DataAnnotationQueryExpression getPredictionMapsDataAnnotation() {
         return predictionMapsDataAnnotation;
@@ -329,7 +329,7 @@ public class IlastikPredictionMapsObjectClassificationAlgorithm extends JIPipeSi
         this.predictionMapsDataAnnotation = predictionMapsDataAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Validate Ilastik project", description = "Determines how/if the node validates the input projects. This is done to check if the project is supported by this node.")
+    @SetJIPipeDocumentation(name = "Validate Ilastik project", description = "Determines how/if the node validates the input projects. This is done to check if the project is supported by this node.")
     @JIPipeParameter("project-validation-mode")
     public IlastikProjectValidationMode getProjectValidationMode() {
         return projectValidationMode;
@@ -340,14 +340,14 @@ public class IlastikPredictionMapsObjectClassificationAlgorithm extends JIPipeSi
         this.projectValidationMode = projectValidationMode;
     }
 
-    @JIPipeDocumentation(name = "Generated outputs", description = "Select which outputs should be generated. " +
+    @SetJIPipeDocumentation(name = "Generated outputs", description = "Select which outputs should be generated. " +
             "Please note that the number of outputs impacts the performance.")
     @JIPipeParameter("output-parameters")
     public OutputParameters getOutputParameters() {
         return outputParameters;
     }
 
-    @JIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
+    @SetJIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
             "the processing was finished. Disable this to make it possible to debug your scripts. The directories are accessible via the logs (Tools &gt; Logs).")
     @JIPipeParameter("cleanup-afterwards")
     public boolean isCleanUpAfterwards() {
@@ -359,7 +359,7 @@ public class IlastikPredictionMapsObjectClassificationAlgorithm extends JIPipeSi
         this.cleanUpAfterwards = cleanUpAfterwards;
     }
 
-    @JIPipeDocumentation(name = "Override Ilastik environment", description = "If enabled, a different Ilastik environment is used for this node. Otherwise " +
+    @SetJIPipeDocumentation(name = "Override Ilastik environment", description = "If enabled, a different Ilastik environment is used for this node. Otherwise " +
             "the one in the Project > Application settings > Extensions > Ilastik is used.")
     @JIPipeParameter("override-environment")
     public OptionalProcessEnvironment getOverrideEnvironment() {
@@ -408,7 +408,7 @@ public class IlastikPredictionMapsObjectClassificationAlgorithm extends JIPipeSi
             this.outputFeatures = other.outputFeatures;
         }
 
-        @JIPipeDocumentation(name = "Output object predictions", description = "If enabled, output a label image of the object class predictions")
+        @SetJIPipeDocumentation(name = "Output object predictions", description = "If enabled, output a label image of the object class predictions")
         @JIPipeParameter("output-object-predictions")
         public boolean isOutputObjectPredictions() {
             return outputObjectPredictions;
@@ -419,7 +419,7 @@ public class IlastikPredictionMapsObjectClassificationAlgorithm extends JIPipeSi
             this.outputObjectPredictions = outputObjectPredictions;
         }
 
-        @JIPipeDocumentation(name = "Output object probabilities", description = "If enabled, output a multi-channel image volume of object prediction probabilities instead of a label image (one channel for each prediction class)")
+        @SetJIPipeDocumentation(name = "Output object probabilities", description = "If enabled, output a multi-channel image volume of object prediction probabilities instead of a label image (one channel for each prediction class)")
         @JIPipeParameter("output-object-probabilities")
         public boolean isOutputObjectProbabilities() {
             return outputObjectProbabilities;
@@ -430,7 +430,7 @@ public class IlastikPredictionMapsObjectClassificationAlgorithm extends JIPipeSi
             this.outputObjectProbabilities = outputObjectProbabilities;
         }
 
-        @JIPipeDocumentation(name = "Output object predictions (blockwise)", description = "If enabled, output a label image of the object class predictions. " +
+        @SetJIPipeDocumentation(name = "Output object predictions (blockwise)", description = "If enabled, output a label image of the object class predictions. " +
                 "The image will be processed in independent blocks. To configure the block size and halo, use the Ilastik GUI.")
         @JIPipeParameter("output-blockwise-object-predictions")
         public boolean isOutputBlockwiseObjectPredictions() {
@@ -442,7 +442,7 @@ public class IlastikPredictionMapsObjectClassificationAlgorithm extends JIPipeSi
             this.outputBlockwiseObjectPredictions = outputBlockwiseObjectPredictions;
         }
 
-        @JIPipeDocumentation(name = "Output object probabilities (blockwise)", description = "If enabled, output a multi-channel image volume of object prediction probabilities instead of a label image (one channel for each prediction class). " +
+        @SetJIPipeDocumentation(name = "Output object probabilities (blockwise)", description = "If enabled, output a multi-channel image volume of object prediction probabilities instead of a label image (one channel for each prediction class). " +
                 "The image will be processed in independent blocks. To configure the block size and halo, use the Ilastik GUI.")
         @JIPipeParameter("output-blockwise-object-probabilities")
         public boolean isOutputBlockwiseObjectProbabilities() {
@@ -454,7 +454,7 @@ public class IlastikPredictionMapsObjectClassificationAlgorithm extends JIPipeSi
             this.outputBlockwiseObjectProbabilities = outputBlockwiseObjectProbabilities;
         }
 
-        @JIPipeDocumentation(name = "Output pixel probabilities", description = "If enabled, output pixel prediction images of the pixel classification part of that workflow")
+        @SetJIPipeDocumentation(name = "Output pixel probabilities", description = "If enabled, output pixel prediction images of the pixel classification part of that workflow")
         @JIPipeParameter("output-pixel-probabilities")
         public boolean isOutputPixelProbabilities() {
             return outputPixelProbabilities;
@@ -465,7 +465,7 @@ public class IlastikPredictionMapsObjectClassificationAlgorithm extends JIPipeSi
             this.outputPixelProbabilities = outputPixelProbabilities;
         }
 
-        @JIPipeDocumentation(name = "Output features table", description = "If enabled, output a aable of the computed object features that were used during classification, indexed by object id")
+        @SetJIPipeDocumentation(name = "Output features table", description = "If enabled, output a aable of the computed object features that were used during classification, indexed by object id")
         @JIPipeParameter("output-features")
         public boolean isOutputFeatures() {
             return outputFeatures;

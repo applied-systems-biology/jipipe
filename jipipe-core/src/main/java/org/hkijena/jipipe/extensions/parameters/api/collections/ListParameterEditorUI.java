@@ -208,7 +208,7 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
             EntryComponents entryComponents = new EntryComponents();
 
             if (reorderModeButton.isSelected()) {
-                JButton moveUpButton = new JButton(UIUtils.getIconFromResources("actions/draw-triangle3.png"));
+                JButton moveUpButton = new JButton(UIUtils.getIconFromResources("actions/sort-up.png"));
                 moveUpButton.setToolTipText("Move entry up");
                 UIUtils.makeFlat25x25(moveUpButton);
                 moveUpButton.addActionListener(e -> moveEntryUp(entry));
@@ -220,14 +220,14 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
 //                removeButton.addActionListener(e -> removeEntry(entry));
 //                buttonPanel.add(removeButton, BorderLayout.CENTER);
 
-                JButton moveDownButton = new JButton(UIUtils.getIconFromResources("actions/draw-triangle4.png"));
+                JButton moveDownButton = new JButton(UIUtils.getIconFromResources("actions/sort-down.png"));
                 moveDownButton.setToolTipText("Move entry down");
                 UIUtils.makeFlat25x25(moveDownButton);
                 moveDownButton.addActionListener(e -> moveEntryDown(entry));
                 buttonPanel.add(moveDownButton, new GridBagConstraints(0, 2, 1, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
             }
 
-            JButton handleButton = new JButton(UIUtils.getIconInvertedFromResources("actions/x-shape-text.png"));
+            JButton handleButton = new JButton(UIUtils.getIconInvertedFromResources("actions/grip-lines.png"));
             handleButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             handleButton.setOpaque(false);
             UIUtils.makeFlat25x25(handleButton);
@@ -245,10 +245,10 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
                 removeSelectedEntries();
             }));
             handleMenu.addSeparator();
-            handleMenu.add(UIUtils.createMenuItem("Move up", "Moves this item one position up", UIUtils.getIconFromResources("actions/up.png"), () -> {
+            handleMenu.add(UIUtils.createMenuItem("Move up", "Moves this item one position up", UIUtils.getIconFromResources("actions/sort-up.png"), () -> {
                 moveEntryUp(entry);
             }));
-            handleMenu.add(UIUtils.createMenuItem("Move down", "Moves this item one position down", UIUtils.getIconFromResources("actions/down.png"), () -> {
+            handleMenu.add(UIUtils.createMenuItem("Move down", "Moves this item one position down", UIUtils.getIconFromResources("actions/sort-down.png"), () -> {
                 moveEntryUp(entry);
             }));
 

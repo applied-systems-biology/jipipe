@@ -17,8 +17,8 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.plugin.ZProjector;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -42,11 +42,11 @@ import java.util.List;
 /**
  * Wrapper around {@link ZProjector}
  */
-@JIPipeDocumentation(name = "Z-Project", description = "Performs a Z-Projection. Also supports other axes C-Project/T-Project.")
-@JIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Z Project... (alternative)")
+@SetJIPipeDocumentation(name = "Z-Project", description = "Performs a Z-Projection. Also supports other axes C-Project/T-Project.")
+@DefineJIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Z Project... (alternative)")
 public class NewZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private ZProjectorAlgorithm.Method method = ZProjectorAlgorithm.Method.MaxIntensity;
@@ -81,7 +81,7 @@ public class NewZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
 
@@ -242,7 +242,7 @@ public class NewZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         return projected;
     }
 
-    @JIPipeDocumentation(name = "Method", description = "The function that is applied to each stack of pixels.")
+    @SetJIPipeDocumentation(name = "Method", description = "The function that is applied to each stack of pixels.")
     @JIPipeParameter("method")
     public ZProjectorAlgorithm.Method getMethod() {
         return method;
@@ -253,7 +253,7 @@ public class NewZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.method = method;
     }
 
-    @JIPipeDocumentation(name = "Projected axis", description = "The axis that should be projected")
+    @SetJIPipeDocumentation(name = "Projected axis", description = "The axis that should be projected")
     @JIPipeParameter("projected-axis")
     public HyperstackDimension getProjectedAxis() {
         return projectedAxis;
@@ -264,7 +264,7 @@ public class NewZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.projectedAxis = projectedAxis;
     }
 
-    @JIPipeDocumentation(name = "Restrict to indices", description = "If enabled, allows to restrict to specific projected indices")
+    @SetJIPipeDocumentation(name = "Restrict to indices", description = "If enabled, allows to restrict to specific projected indices")
     @JIPipeParameter("restrict-to-indices")
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public OptionalIntegerRange getRestrictToIndices() {

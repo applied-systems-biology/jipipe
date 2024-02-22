@@ -3,8 +3,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.transform;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -21,13 +21,13 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
-@JIPipeDocumentation(name = "Warp 2D", description = "Warps the image by applying a 2-channel vector field of relative coordinates where the pixels should be copied to." +
+@SetJIPipeDocumentation(name = "Warp 2D", description = "Warps the image by applying a 2-channel vector field of relative coordinates where the pixels should be copied to." +
         " The vector field should either have the " +
         "same dimensions as the input, or consist of only one plane, where it will be applied to all input planes.")
-@JIPipeNode(menuPath = "Transform", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Vector field", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(menuPath = "Transform", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Vector field", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 public class Warp2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private HyperstackDimension vectorDimension = HyperstackDimension.Channel;
@@ -51,7 +51,7 @@ public class Warp2DAlgorithm extends JIPipeIteratingAlgorithm {
         this.multiplier = other.multiplier;
     }
 
-    @JIPipeDocumentation(name = "Vector dimension", description = "Determines which dimension stores the vector coordinates. " +
+    @SetJIPipeDocumentation(name = "Vector dimension", description = "Determines which dimension stores the vector coordinates. " +
             "This dimension will have the same vector field across all slices of it. The vector dimension is ignored if the vector field has exactly two " +
             "planes. Here, the same field is applied to all slices.")
     @JIPipeParameter("vector-dimension")
@@ -64,7 +64,7 @@ public class Warp2DAlgorithm extends JIPipeIteratingAlgorithm {
         this.vectorDimension = vectorDimension;
     }
 
-    @JIPipeDocumentation(name = "Invert transform", description = "If enabled, the transform is reversed.")
+    @SetJIPipeDocumentation(name = "Invert transform", description = "If enabled, the transform is reversed.")
     @JIPipeParameter("invert-transform")
     public boolean isInvertTransform() {
         return invertTransform;
@@ -75,7 +75,7 @@ public class Warp2DAlgorithm extends JIPipeIteratingAlgorithm {
         this.invertTransform = invertTransform;
     }
 
-    @JIPipeDocumentation(name = "Use polar coordinates", description = "If enabled, the vector field is assumed to be provided in polar coordinates (r, phi) instead of (x, y).")
+    @SetJIPipeDocumentation(name = "Use polar coordinates", description = "If enabled, the vector field is assumed to be provided in polar coordinates (r, phi) instead of (x, y).")
     @JIPipeParameter("polar-coordinates")
     public boolean isPolarCoordinates() {
         return polarCoordinates;
@@ -86,7 +86,7 @@ public class Warp2DAlgorithm extends JIPipeIteratingAlgorithm {
         this.polarCoordinates = polarCoordinates;
     }
 
-    @JIPipeDocumentation(name = "Absolute coordinates", description = "If enabled, the vector field is assumed to have absolute coordinates. " +
+    @SetJIPipeDocumentation(name = "Absolute coordinates", description = "If enabled, the vector field is assumed to have absolute coordinates. " +
             "For polar coordinates, the origin is assumed to be (0, 0).")
     @JIPipeParameter("absolute-coordinates")
     public boolean isAbsoluteCoordinates() {
@@ -98,7 +98,7 @@ public class Warp2DAlgorithm extends JIPipeIteratingAlgorithm {
         this.absoluteCoordinates = absoluteCoordinates;
     }
 
-    @JIPipeDocumentation(name = "Wrap mode", description = "Determines what to do with source/target pixels that are outside the image. 'None' means that the pixel is skipped.")
+    @SetJIPipeDocumentation(name = "Wrap mode", description = "Determines what to do with source/target pixels that are outside the image. 'None' means that the pixel is skipped.")
     @JIPipeParameter("wrap-mode")
     public WrapMode getWrapMode() {
         return wrapMode;
@@ -109,7 +109,7 @@ public class Warp2DAlgorithm extends JIPipeIteratingAlgorithm {
         this.wrapMode = wrapMode;
     }
 
-    @JIPipeDocumentation(name = "Transform multiplier", description = "Determines the relative amount of the transform. Zero means that no transform is applied. One (default) that " +
+    @SetJIPipeDocumentation(name = "Transform multiplier", description = "Determines the relative amount of the transform. Zero means that no transform is applied. One (default) that " +
             "the transform is applied without any additional changes.")
     @JIPipeParameter("multiplier")
     public double getMultiplier() {
@@ -122,7 +122,7 @@ public class Warp2DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus img = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
         ImagePlus vectorField = iterationStep.getInputData("Vector field", ImagePlusGreyscale32FData.class, progressInfo).getImage();
         ImagePlus result = IJ.createHyperStack(img.getTitle() + " warped",

@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.extensions.utils.algorithms.meta;
 
 import ij.IJ;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -43,10 +43,10 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.nio.file.Path;
 
-@JIPipeDocumentation(name = "Get JIPipe slot folder", description = "Extracts a slot output folder from a JIPipe output. Use the 'Set output slot' button to select the correct parameters.")
-@JIPipeInputSlot(value = JIPipeOutputData.class, slotName = "JIPipe output", autoCreate = true)
-@JIPipeOutputSlot(value = FolderData.class, slotName = "Slot output folder", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Meta run")
+@SetJIPipeDocumentation(name = "Get JIPipe slot folder", description = "Extracts a slot output folder from a JIPipe output. Use the 'Set output slot' button to select the correct parameters.")
+@AddJIPipeInputSlot(value = JIPipeOutputData.class, slotName = "JIPipe output", create = true)
+@AddJIPipeOutputSlot(value = FolderData.class, slotName = "Slot output folder", create = true)
+@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Meta run")
 public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private String nodeId;
@@ -65,13 +65,13 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         JIPipeOutputData outputData = iterationStep.getInputData(getFirstInputSlot(), JIPipeOutputData.class, progressInfo);
         Path slotPath = outputData.toPath().resolve(compartmentId).resolve(nodeId).resolve(slotName);
         iterationStep.addOutputData(getFirstOutputSlot(), new FolderData(slotPath), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Node alias ID", description = "The unique identifier of the node that contains the output. You can either use the 'Set output slot' button to auto-configure this value or look up the node ID in the help of the node. " +
+    @SetJIPipeDocumentation(name = "Node alias ID", description = "The unique identifier of the node that contains the output. You can either use the 'Set output slot' button to auto-configure this value or look up the node ID in the help of the node. " +
             "Please note that this is not the node type ID.")
     @JIPipeParameter(value = "node-id", uiOrder = -100)
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/node.png")
@@ -84,7 +84,7 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.nodeId = nodeId;
     }
 
-    @JIPipeDocumentation(name = "Slot name", description = "The name of the output slot within the targeted node. " +
+    @SetJIPipeDocumentation(name = "Slot name", description = "The name of the output slot within the targeted node. " +
             "You can use the 'Set output slot' button to auto-configure or just type in the name of the output slot.")
     @JIPipeParameter(value = "slot-name", uiOrder = -99)
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/slot.png")
@@ -97,7 +97,7 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.slotName = slotName;
     }
 
-    @JIPipeDocumentation(name = "Compartment alias ID", description = "The ID of the compartment, where the data is located. " +
+    @SetJIPipeDocumentation(name = "Compartment alias ID", description = "The ID of the compartment, where the data is located. " +
             "You can use the 'Set output slot' button to auto-configure or just type in the name of the output slot.")
     @JIPipeParameter("compartment-id")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/graph-compartment.png")
@@ -111,14 +111,14 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
     }
 
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/jipipe.png")
-    @JIPipeDocumentation(name = "Set output slot", description = "Loads parameters from a project file")
+    @SetJIPipeDocumentation(name = "Set output slot", description = "Loads parameters from a project file")
     public void importParametersFromProject(JIPipeWorkbench workbench) {
         Path projectFile = FileChooserSettings.openFile(workbench.getWindow(), FileChooserSettings.LastDirectoryKey.Projects, "Import JIPipe project", UIUtils.EXTENSION_FILTER_JIP);
         if (projectFile != null) {
             try {
                 JIPipeProject project = JIPipeProject.loadProject(projectFile, new UnspecifiedValidationReportContext(), new JIPipeValidationReport(), new JIPipeNotificationInbox());
                 JIPipeProjectOutputTreePanel panel = new JIPipeProjectOutputTreePanel(project);
-                panel.setBorder(BorderFactory.createEtchedBorder());
+                panel.setBorder(UIUtils.createControlBorder());
                 int result = JOptionPane.showOptionDialog(
                         workbench.getWindow(),
                         new Object[]{panel},

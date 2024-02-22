@@ -150,7 +150,7 @@ public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable,
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         if (algorithm == null) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     new APIErrorValidationReportContext(),

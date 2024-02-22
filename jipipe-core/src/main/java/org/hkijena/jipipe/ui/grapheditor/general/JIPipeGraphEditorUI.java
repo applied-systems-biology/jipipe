@@ -86,7 +86,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     private NodeDatabaseSearchBox nodeDatabaseSearchBox;
     private final JIPipeHistoryJournal historyJournal;
     private final int flags;
-    private final JMenu graphMenu = new JMenu("Graph");
+    private final JMenu graphMenu = new JMenu("Workflow");
     private final List<JIPipeGraphEditorTool> tools = new ArrayList<>();
     private final Map<Class<? extends JIPipeGraphEditorTool>, JIPipeGraphEditorTool> toolMap = new HashMap<>();
     private final BiMap<JIPipeToggleableGraphEditorTool, JToggleButton> toolToggles = HashBiMap.create();
@@ -380,6 +380,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         menuBar.add(nodeDatabaseSearchBox);
         nodeDatabaseSearchBox.setVisible(graphUISettings.getSearchSettings().isEnableSearch());
         menuBar.add(Box.createHorizontalStrut(8));
+        menuBar.add(Box.createVerticalStrut(42));
 
         List<GraphEditorToolBarButtonExtension> graphEditorToolBarButtonExtensions = JIPipe.getCustomMenus().graphEditorToolBarButtonExtensionsFor(this);
         for (GraphEditorToolBarButtonExtension extension : graphEditorToolBarButtonExtensions) {
@@ -404,11 +405,6 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             menuBar.add(redoButton);
         }
 
-        menuBar.add(UIUtils.createVerticalSeparator());
-
-        graphMenu.setIcon(UIUtils.getIconFromResources("actions/configure.png"));
-        menuBar.add(graphMenu);
-
         initializeCenterViewCommand(graphMenu);
         initializeToggleHideEdgesCommand(graphMenu);
         initializeExportMenu(graphMenu);
@@ -418,6 +414,11 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         menuBar.add(UIUtils.createVerticalSeparator());
 
         initializeZoomMenu();
+
+        menuBar.add(UIUtils.createVerticalSeparator());
+
+        graphMenu.setIcon(UIUtils.getIconFromResources("actions/bars.png"));
+        menuBar.add(graphMenu);
     }
 
     private void initializeToggleHideEdgesCommand(JMenu graphMenu) {
@@ -430,7 +431,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     }
 
     private void initializeZoomMenu() {
-        JButton zoomOutButton = new JButton(UIUtils.getIconFromResources("actions/zoom-out.png"));
+        JButton zoomOutButton = new JButton(UIUtils.getIconFromResources("actions/square-minus.png"));
         UIUtils.makeFlat25x25(zoomOutButton);
         zoomOutButton.setToolTipText("<html>Zoom out<br><i>Ctrl-NumPad -</i></html>");
         zoomOutButton.addActionListener(e -> canvasUI.zoomOut());
@@ -466,7 +467,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         zoomMenu.add(changeZoomToItem);
         menuBar.add(zoomButton);
 
-        JButton zoomInButton = new JButton(UIUtils.getIconFromResources("actions/zoom-in.png"));
+        JButton zoomInButton = new JButton(UIUtils.getIconFromResources("actions/square-plus.png"));
         UIUtils.makeFlat25x25(zoomInButton);
         zoomInButton.setToolTipText("<html>Zoom in<br><i>Ctrl-NumPad +</i></html>");
         zoomInButton.addActionListener(e -> canvasUI.zoomIn());

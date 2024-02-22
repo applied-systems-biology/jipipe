@@ -15,7 +15,7 @@
 package org.hkijena.jipipe.extensions.ij3d.imageviewer;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
@@ -32,7 +32,7 @@ public class ImageViewerUIROI3DDisplaySettings extends AbstractJIPipeParameterCo
         return JIPipe.getSettings().getSettings(ID, ImageViewerUIROI3DDisplaySettings.class);
     }
 
-    @JIPipeDocumentation(name = "Show ROI", description = "If enabled, ROI are visible")
+    @SetJIPipeDocumentation(name = "Show ROI", description = "If enabled, ROI are visible")
     @JIPipeParameter("show-roi")
     public boolean isShowROI() {
         return showROI;
@@ -43,7 +43,7 @@ public class ImageViewerUIROI3DDisplaySettings extends AbstractJIPipeParameterCo
         this.showROI = showROI;
     }
 
-    @JIPipeDocumentation(name = "Render ROI as volume", description = "If enabled, render ROI as volume")
+    @SetJIPipeDocumentation(name = "Render ROI as volume", description = "If enabled, render ROI as volume")
     @JIPipeParameter("render-roi-as-volume")
     public boolean isRenderROIAsVolume() {
         return renderROIAsVolume;

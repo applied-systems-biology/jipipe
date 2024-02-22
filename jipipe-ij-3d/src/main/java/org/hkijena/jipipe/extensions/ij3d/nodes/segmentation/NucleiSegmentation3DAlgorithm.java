@@ -3,9 +3,9 @@ package org.hkijena.jipipe.extensions.ij3d.nodes.segmentation;
 import ij.ImagePlus;
 import ij.process.AutoThresholder;
 import mcib3d.image3d.segment.Segment3DNuclei;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -17,13 +17,13 @@ import org.hkijena.jipipe.extensions.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
 
-@JIPipeDocumentation(name = "3D nuclei segmentation", description = "This plugin is designed to segment nuclei from cell culture (not from tissues). " +
+@SetJIPipeDocumentation(name = "3D nuclei segmentation", description = "This plugin is designed to segment nuclei from cell culture (not from tissues). " +
         "The method is based on a maximum Z-projection followed by a 2D Segmentation. " +
         "The segmentation for the 2D projection is based on a global thresholding. The nuclei are then segmented and separated using ImageJ watershed. ")
-@JIPipeCitation("https://mcib3d.frama.io/3d-suite-imagej/plugins/Segmentation/Custom/3D-Nuclei-Segmentation/")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Threshold")
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)
+@AddJIPipeCitation("https://mcib3d.frama.io/3d-suite-imagej/plugins/Segmentation/Custom/3D-Nuclei-Segmentation/")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Threshold")
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
 public class NucleiSegmentation3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private AutoThresholder.Method autoThresholdMethod = AutoThresholder.Method.Default;
@@ -44,7 +44,7 @@ public class NucleiSegmentation3DAlgorithm extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus inputImage = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         ImagePlus outputImage = IJ3DUtils.forEach3DIn5DGenerate(inputImage, (ih, index, ctProgress) -> {
             Segment3DNuclei segment3DNuclei = new Segment3DNuclei(ih);
@@ -60,7 +60,7 @@ public class NucleiSegmentation3DAlgorithm extends JIPipeSimpleIteratingAlgorith
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(outputImage), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Auto threshold method", description = "The auto threshold method (if auto thresholding is enabled)")
+    @SetJIPipeDocumentation(name = "Auto threshold method", description = "The auto threshold method (if auto thresholding is enabled)")
     @JIPipeParameter("auto-threshold-method")
     public AutoThresholder.Method getAutoThresholdMethod() {
         return autoThresholdMethod;
@@ -71,7 +71,7 @@ public class NucleiSegmentation3DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.autoThresholdMethod = autoThresholdMethod;
     }
 
-    @JIPipeDocumentation(name = "Set custom threshold", description = "If enabled, auto-thresholding is disabled and a custom threshold is utilized")
+    @SetJIPipeDocumentation(name = "Set custom threshold", description = "If enabled, auto-thresholding is disabled and a custom threshold is utilized")
     @JIPipeParameter("custom-threshold")
     public OptionalIntegerParameter getCustomThreshold() {
         return customThreshold;
@@ -82,7 +82,7 @@ public class NucleiSegmentation3DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.customThreshold = customThreshold;
     }
 
-    @JIPipeDocumentation(name = "Separate nuclei", description = "If enabled, the nuclei are separated using watershed")
+    @SetJIPipeDocumentation(name = "Separate nuclei", description = "If enabled, the nuclei are separated using watershed")
     @JIPipeParameter("separate-nuclei")
     public boolean isSeparateNuclei() {
         return separateNuclei;

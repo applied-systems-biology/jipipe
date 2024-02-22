@@ -63,22 +63,24 @@ public class DocumentTabPane extends JPanel implements Disposable {
 
     private Border tabPanelBorder = BorderFactory.createEmptyBorder(4, 0, 4, 0);
     private boolean scrollable;
+    private final TabPlacement tabPlacement;
 
     public DocumentTabPane() {
-        this(true);
+        this(true, TabPlacement.Top);
     }
 
     /**
      * Creates a new instance
      */
-    public DocumentTabPane(boolean scrollable) {
+    public DocumentTabPane(boolean scrollable, TabPlacement tabPlacement) {
         this.scrollable = scrollable;
+        this.tabPlacement = tabPlacement;
         initialize();
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
-        tabbedPane = new DnDTabbedPane();
+        tabbedPane = new DnDTabbedPane(tabPlacement.nativeValue);
         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
         tabbedPane.addChangeListener(e -> updateTabHistory());
         tabbedPane.addMouseListener(new MouseAdapter() {
@@ -132,24 +134,32 @@ public class DocumentTabPane extends JPanel implements Disposable {
     private void updateCompactTabs() {
         if (scrollable)
             return;
-        Insets tabInsets = UIManager.getInsets("TabbedPane.tabInsets");
-        int sumWidth = 0;
-        for (DocumentTab tab : tabs) {
-            int width = tabInsets.left + tabInsets.right + 3;
-            DocumentTabComponent tabComponent = tab.getTabComponent();
-            width += tabComponent.getPreferredSize().width;
-            if (tabComponent.isCompactMode()) {
-                FontMetrics fontMetrics = tabComponent.getTitleLabel().getFontMetrics(tabComponent.getTitleLabel().getFont());
-                width += fontMetrics.stringWidth(tab.title);
-            }
-            sumWidth += width;
-        }
         boolean changed = false;
-        if (sumWidth > getWidth() - 64) {
+        if (tabbedPane.getTabPlacement() == JTabbedPane.TOP) {
+            Insets tabInsets = UIManager.getInsets("TabbedPane.tabInsets");
+            int sumWidth = 0;
             for (DocumentTab tab : tabs) {
-                if (!tab.getTabComponent().isCompactMode())
-                    changed = true;
-                tab.getTabComponent().setCompactMode(true);
+                int width = tabInsets.left + tabInsets.right + 3;
+                DocumentTabComponent tabComponent = tab.getTabComponent();
+                width += tabComponent.getPreferredSize().width;
+                if (tabComponent.isCompactMode()) {
+                    FontMetrics fontMetrics = tabComponent.getTitleLabel().getFontMetrics(tabComponent.getTitleLabel().getFont());
+                    width += fontMetrics.stringWidth(tab.title);
+                }
+                sumWidth += width;
+            }
+            if (sumWidth > getWidth() - 64) {
+                for (DocumentTab tab : tabs) {
+                    if (!tab.getTabComponent().isCompactMode())
+                        changed = true;
+                    tab.getTabComponent().setCompactMode(true);
+                }
+            } else {
+                for (DocumentTab tab : tabs) {
+                    if (tab.getTabComponent().isCompactMode())
+                        changed = true;
+                    tab.getTabComponent().setCompactMode(false);
+                }
             }
         } else {
             for (DocumentTab tab : tabs) {
@@ -675,6 +685,10 @@ public class DocumentTabPane extends JPanel implements Disposable {
         this.enableTabContextMenu = enableTabContextMenu;
     }
 
+    public TabPlacement getTabPlacement() {
+        return tabPlacement;
+    }
+
     /**
      * Behavior of the tab close button
      */
@@ -746,6 +760,7 @@ public class DocumentTabPane extends JPanel implements Disposable {
 
     public static class DocumentTabComponent extends JPanel implements TabRenamedEventListener {
         private final Border tabPanelBorder;
+        private final DocumentTabPane documentTabPane;
         private final Icon icon;
         private DocumentTab documentTab;
         private JLabel titleLabel;
@@ -754,6 +769,7 @@ public class DocumentTabPane extends JPanel implements Disposable {
 
         public DocumentTabComponent(DocumentTabPane documentTabPane, String title, Icon icon) {
             this.tabPanelBorder = documentTabPane.tabPanelBorder;
+            this.documentTabPane = documentTabPane;
             this.icon = icon;
             this.initialize();
         }
@@ -765,7 +781,13 @@ public class DocumentTabPane extends JPanel implements Disposable {
             setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
             // Title label
-            titleLabel = new JLabel("", icon, JLabel.LEFT);
+            titleLabel = new JLabel("");
+            titleLabel.setIcon(icon);
+            if(documentTabPane.tabPlacement == TabPlacement.Right || documentTabPane.tabPlacement == TabPlacement.Left) {
+                titleLabel.setHorizontalTextPosition(JLabel.CENTER);
+                titleLabel.setVerticalTextPosition(JLabel.BOTTOM);
+                titleLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
+            }
             add(titleLabel);
             add(Box.createHorizontalGlue());
         }
@@ -809,6 +831,10 @@ public class DocumentTabPane extends JPanel implements Disposable {
         @Override
         public void onDocumentTabRenamed(TabRenamedEvent event) {
             updateContents();
+        }
+
+        public DocumentTabPane getDocumentTabPane() {
+            return documentTabPane;
         }
     }
 
@@ -899,6 +925,24 @@ public class DocumentTabPane extends JPanel implements Disposable {
         @Override
         protected void call(TabRenamedEventListener tabRenamedEventListener, TabRenamedEvent event) {
             tabRenamedEventListener.onDocumentTabRenamed(event);
+        }
+    }
+
+    public enum TabPlacement {
+        Top(JTabbedPane.TOP),
+        Right(JTabbedPane.RIGHT),
+        Left(JTabbedPane.LEFT),
+        Bottom(JTabbedPane.BOTTOM);
+
+        private final int nativeValue;
+
+        TabPlacement(int nativeValue) {
+
+            this.nativeValue = nativeValue;
+        }
+
+        public int getNativeValue() {
+            return nativeValue;
         }
     }
 }

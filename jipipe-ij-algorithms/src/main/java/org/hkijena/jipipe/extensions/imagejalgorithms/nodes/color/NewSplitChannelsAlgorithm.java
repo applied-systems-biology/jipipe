@@ -19,8 +19,8 @@ import ij.ImageStack;
 import ij.measure.Calibration;
 import ij.plugin.ChannelSplitter;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -45,12 +45,12 @@ import java.util.List;
 /**
  * Wrapper around {@link ChannelSplitter}
  */
-@JIPipeDocumentation(name = "Split channels", description = "Splits multichannel images into multiple greyscale images. " +
+@SetJIPipeDocumentation(name = "Split channels", description = "Splits multichannel images into multiple greyscale images. " +
         "This operation is applied for each 2D image slice.")
-@JIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nColor", aliasName = "Split Channels")
+@DefineJIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nColor", aliasName = "Split Channels")
 public class NewSplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final OutputSlotMapParameterCollection channelToSlotAssignment;
@@ -98,7 +98,7 @@ public class NewSplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus imp = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         ImagePlus[] split;
         if (!imp.isComposite() && imp.getType() != ImagePlus.COLOR_RGB) {
@@ -143,14 +143,14 @@ public class NewSplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Channel assignment", description = "Please create an output slot for each greyscale channel you " +
+    @SetJIPipeDocumentation(name = "Channel assignment", description = "Please create an output slot for each greyscale channel you " +
             "want to extract. Then assign the source channel index. The first index is zero.")
     @JIPipeParameter("channel-to-slot-assignments")
     public OutputSlotMapParameterCollection getChannelToSlotAssignment() {
         return channelToSlotAssignment;
     }
 
-    @JIPipeDocumentation(name = "Ignore missing channels", description = "If enabled, the algorithm silently skips invalid assignments like extracting the 4th channel of a 2-channel image. " +
+    @SetJIPipeDocumentation(name = "Ignore missing channels", description = "If enabled, the algorithm silently skips invalid assignments like extracting the 4th channel of a 2-channel image. " +
             "If disabled, an error will be thrown if such a condition is detected.")
     @JIPipeParameter("ignore-missing-channels")
     public boolean isIgnoreMissingChannels() {
@@ -162,7 +162,7 @@ public class NewSplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.ignoreMissingChannels = ignoreMissingChannels;
     }
 
-    @JIPipeDocumentation(name = "Annotate with channel index", description = "If enabled, create an annotation that contains the channel index (starting with zero)")
+    @SetJIPipeDocumentation(name = "Annotate with channel index", description = "If enabled, create an annotation that contains the channel index (starting with zero)")
     @JIPipeParameter("channel-index-annotation")
     public OptionalAnnotationNameParameter getChannelIndexAnnotation() {
         return channelIndexAnnotation;
@@ -173,7 +173,7 @@ public class NewSplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.channelIndexAnnotation = channelIndexAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with channel name", description = "If enabled, create an annotation that contains the channel name as defined by the output slot")
+    @SetJIPipeDocumentation(name = "Annotate with channel name", description = "If enabled, create an annotation that contains the channel name as defined by the output slot")
     @JIPipeParameter("channel-name-annotation")
     public OptionalAnnotationNameParameter getChannelNameAnnotation() {
         return channelNameAnnotation;

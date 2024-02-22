@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.operators;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionOperator;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 
@@ -10,7 +10,7 @@ import java.util.Iterator;
  * Operator that is used to make different statements
  * The return value is the right statement
  */
-@JIPipeDocumentation(name = "Statement", description = "Returns the right parameter.")
+@SetJIPipeDocumentation(name = "Statement", description = "Returns the right parameter.")
 public class StatementOperator extends ExpressionOperator {
     public StatementOperator(int precedence) {
         super(";", 2, Associativity.LEFT, precedence);

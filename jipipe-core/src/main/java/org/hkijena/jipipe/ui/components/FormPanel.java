@@ -149,7 +149,7 @@ public class FormPanel extends JXPanel {
         // Determine the component that will be displayed in the help pane
         Component helpComponent;
         if ((flags & TABBED_DOCUMENTATION) == TABBED_DOCUMENTATION) {
-            documentationTabPane = new DocumentTabPane(false);
+            documentationTabPane = new DocumentTabPane(false, DocumentTabPane.TabPlacement.Top);
             documentationTabPane.addTab("Documentation", UIUtils.getIconFromResources("actions/help.png"), helpPanel, DocumentTabPane.CloseMode.withoutCloseButton);
             helpComponent = documentationTabPane;
         } else {
@@ -253,10 +253,10 @@ public class FormPanel extends JXPanel {
         if (StringUtils.orElse(current.getMarkdown(), "").startsWith("#")) {
             String s = current.getMarkdown().split("\n")[0];
             s = s.substring(s.lastIndexOf('#') + 1);
-            parameterHelpDrillDown.setIcon(UIUtils.getIconFromResources("actions/arrow-right.png"));
+            parameterHelpDrillDown.setIcon(UIUtils.getIconFromResources("actions/caret-right.png"));
             parameterHelpDrillDown.setText(s);
         } else {
-            parameterHelpDrillDown.setIcon(UIUtils.getIconFromResources("actions/arrow-right.png"));
+            parameterHelpDrillDown.setIcon(UIUtils.getIconFromResources("actions/caret-right.png"));
             parameterHelpDrillDown.setText("...");
         }
 
@@ -304,6 +304,7 @@ public class FormPanel extends JXPanel {
                     gridwidth = 1;
                     gridy = numRows;
                     insets = UI_PADDING;
+                    fill = GridBagConstraints.HORIZONTAL;
                 }
             };
             contentPanel.add(description, labelPosition);
@@ -448,6 +449,35 @@ public class FormPanel extends JXPanel {
         entries.add(new FormPanelEntry(numRows, null, panel, null, true));
         groupHeaderPanels.add(panel);
         ++numRows;
+        return panel;
+    }
+
+    /**
+     * Adds a group header
+     *
+     * @param text Group text
+     * @param description  Group description
+     * @param icon Group icon
+     * @return the panel that allows adding more components to it
+     */
+    public GroupHeaderPanel addGroupHeader(String text, String description, Icon icon) {
+        GroupHeaderPanel panel = new GroupHeaderPanel(text, icon, getGroupHeaderPanels().isEmpty() ? 8 : 32);
+        GridBagConstraints gridBagConstraints = new GridBagConstraints() {
+            {
+                anchor = GridBagConstraints.WEST;
+                gridx = COLUMN_LABEL_OR_WIDE_CONTENT;
+                gridwidth = 3;
+                gridy = numRows;
+                insets = UI_PADDING;
+                fill = GridBagConstraints.HORIZONTAL;
+                weightx = 1;
+            }
+        };
+        contentPanel.add(panel, gridBagConstraints);
+        entries.add(new FormPanelEntry(numRows, null, panel, null, true));
+        groupHeaderPanels.add(panel);
+        ++numRows;
+        panel.setDescription(description);
         return panel;
     }
 
@@ -664,7 +694,7 @@ public class FormPanel extends JXPanel {
             this.marginTop = marginTop;
 
             this.backgroundColor = ColorUtils.mix(ModernMetalTheme.PRIMARY5, ColorUtils.scaleHSV(UIManager.getColor("Panel.background"), 1, 1, 0.98f), 0.92);
-            this.borderColor = ColorUtils.scaleHSV(backgroundColor, 1, 1, 0.8f);
+            this.borderColor = backgroundColor;
 
             setBorder(BorderFactory.createEmptyBorder(marginTop, 0, 8, 0));
             setLayout(new GridBagLayout());

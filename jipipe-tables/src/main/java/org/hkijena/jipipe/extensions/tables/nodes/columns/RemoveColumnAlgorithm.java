@@ -14,8 +14,8 @@
 
 package org.hkijena.jipipe.extensions.tables.nodes.columns;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -29,10 +29,10 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 /**
  * Algorithm that removes columns
  */
-@JIPipeDocumentation(name = "Remove table column", description = "Removes one or multiple columns by name")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Remove table column", description = "Removes one or multiple columns by name")
+@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class RemoveColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private StringQueryExpression filters = new StringQueryExpression();
@@ -57,7 +57,7 @@ public class RemoveColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData table = (ResultsTableData) iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo).duplicate(progressInfo);
         for (int col = 0; col < table.getColumnCount(); col++) {
             if (filters.test(table.getColumnName(col))) {
@@ -68,7 +68,7 @@ public class RemoveColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), table, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Filters", description = "Filter expression that is used to find columns to be removed. ")
+    @SetJIPipeDocumentation(name = "Filters", description = "Filter expression that is used to find columns to be removed. ")
     @JIPipeParameter("filters")
     public StringQueryExpression getFilters() {
         return filters;

@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
@@ -21,10 +21,10 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-@JIPipeDocumentation(name = "Modify path", description = "Uses an expression to modify a path.")
-@JIPipeInputSlot(value = PathData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)
-@JIPipeNode(menuPath = "Modify", nodeTypeCategory = FileSystemNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "Modify path", description = "Uses an expression to modify a path.")
+@AddJIPipeInputSlot(value = PathData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = PathData.class, slotName = "Output", create = true)
+@DefineJIPipeNode(menuPath = "Modify", nodeTypeCategory = FileSystemNodeTypeCategory.class)
 public class ModifyPath extends JIPipeSimpleIteratingAlgorithm {
 
     private PathQueryExpression expression = new PathQueryExpression("path");
@@ -41,7 +41,7 @@ public class ModifyPath extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         PathData input = iterationStep.getInputData(getFirstInputSlot(), PathData.class, progressInfo);
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         if (accessAnnotations) {
@@ -62,7 +62,7 @@ public class ModifyPath extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Expression", description = "Expression that is used to modify the path. " +
+    @SetJIPipeDocumentation(name = "Expression", description = "Expression that is used to modify the path. " +
             "Available variables include path, absolute_path, name, and parent and are passed as strings. " +
             "Additionally, annotations are available as variables if enabled.\n\nIf the expression returns a non-string value, the path data will be skipped.\n\n" +
             "To improve compatibility between operating systems, we recommend to use '/' as path separator.")
@@ -77,7 +77,7 @@ public class ModifyPath extends JIPipeSimpleIteratingAlgorithm {
         this.expression = expression;
     }
 
-    @JIPipeDocumentation(name = "Annotations are variables", description = "If enabled, the expression has variables that contain " +
+    @SetJIPipeDocumentation(name = "Annotations are variables", description = "If enabled, the expression has variables that contain " +
             "annotation values. Annotations with one of the names path, absolute_path, name, or parent are overridden by the input path properties.")
     @JIPipeParameter("access-annotations")
     public boolean isAccessAnnotations() {

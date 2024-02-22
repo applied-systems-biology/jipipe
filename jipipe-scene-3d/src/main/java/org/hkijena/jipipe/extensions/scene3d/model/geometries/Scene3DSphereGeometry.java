@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.scene3d.model.geometries;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -46,7 +46,7 @@ public class Scene3DSphereGeometry extends AbstractJIPipeParameterCollection imp
     }
 
     @Override
-    @JIPipeDocumentation(name = "Mesh name", description = "The name of the mesh")
+    @SetJIPipeDocumentation(name = "Mesh name", description = "The name of the mesh")
     @JIPipeParameter("name")
     @JsonGetter("name")
     public String getName() {
@@ -60,7 +60,7 @@ public class Scene3DSphereGeometry extends AbstractJIPipeParameterCollection imp
         this.name = name;
     }
 
-    @JIPipeDocumentation(name = "Radius (X)", description = "The radius in the X axis")
+    @SetJIPipeDocumentation(name = "Radius (X)", description = "The radius in the X axis")
     @JIPipeParameter("radius-x")
     @JsonGetter("radius-x")
     public float getRadiusX() {
@@ -73,7 +73,7 @@ public class Scene3DSphereGeometry extends AbstractJIPipeParameterCollection imp
         this.radiusX = radiusX;
     }
 
-    @JIPipeDocumentation(name = "Radius (Y)", description = "The radius in the Y axis")
+    @SetJIPipeDocumentation(name = "Radius (Y)", description = "The radius in the Y axis")
     @JIPipeParameter("radius-y")
     @JsonGetter("radius-y")
     public float getRadiusY() {
@@ -86,7 +86,7 @@ public class Scene3DSphereGeometry extends AbstractJIPipeParameterCollection imp
         this.radiusY = radiusY;
     }
 
-    @JIPipeDocumentation(name = "Radius (Z)", description = "The radius in the Z axis")
+    @SetJIPipeDocumentation(name = "Radius (Z)", description = "The radius in the Z axis")
     @JIPipeParameter("radius-z")
     @JsonGetter("radius-z")
     public float getRadiusZ() {
@@ -99,7 +99,7 @@ public class Scene3DSphereGeometry extends AbstractJIPipeParameterCollection imp
         this.radiusZ = radiusZ;
     }
 
-    @JIPipeDocumentation(name = "Center (X)", description = "The X coordinate of the center")
+    @SetJIPipeDocumentation(name = "Center (X)", description = "The X coordinate of the center")
     @JIPipeParameter("center-x")
     @JsonGetter("center-x")
     public float getCenterX() {
@@ -112,7 +112,7 @@ public class Scene3DSphereGeometry extends AbstractJIPipeParameterCollection imp
         this.centerX = centerX;
     }
 
-    @JIPipeDocumentation(name = "Center (Y)", description = "The Y coordinate of the center")
+    @SetJIPipeDocumentation(name = "Center (Y)", description = "The Y coordinate of the center")
     @JIPipeParameter("center-y")
     @JsonGetter("center-y")
     public float getCenterY() {
@@ -125,7 +125,7 @@ public class Scene3DSphereGeometry extends AbstractJIPipeParameterCollection imp
         this.centerY = centerY;
     }
 
-    @JIPipeDocumentation(name = "Center (Z)", description = "The Z coordinate of the center")
+    @SetJIPipeDocumentation(name = "Center (Z)", description = "The Z coordinate of the center")
     @JIPipeParameter("center-z")
     @JsonGetter("center-z")
     public float getCenterZ() {
@@ -138,7 +138,7 @@ public class Scene3DSphereGeometry extends AbstractJIPipeParameterCollection imp
         this.centerZ = centerZ;
     }
 
-    @JIPipeDocumentation(name = "Color", description = "The color of the mesh")
+    @SetJIPipeDocumentation(name = "Color", description = "The color of the mesh")
     @JIPipeParameter("color")
     @JsonGetter("color")
     @Override
@@ -153,7 +153,7 @@ public class Scene3DSphereGeometry extends AbstractJIPipeParameterCollection imp
         this.color = color;
     }
 
-    @JIPipeDocumentation(name = "Smoothness", description = "The higher the value, the smoother the generated sphere. Should be at least 1.")
+    @SetJIPipeDocumentation(name = "Smoothness", description = "The higher the value, the smoother the generated sphere. Should be at least 1.")
     @JsonGetter("smoothness")
     public int getSmoothness() {
         return smoothness;

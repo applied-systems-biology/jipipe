@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.SingleImageJAlgorithmRunConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
@@ -148,17 +149,14 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
         settings.importInputsFromImageJ(progressInfo);
         IJ.showProgress(2, 3);
         JIPipeFixedThreadPool threadPool = new JIPipeFixedThreadPool(threads);
+        JIPipeGraphNodeRunContext runContext = new JIPipeGraphNodeRunContext();
+        runContext.setThreadPool(threadPool);
         try {
-            if (algorithm instanceof JIPipeAlgorithm)
-                ((JIPipeAlgorithm) algorithm).setThreadPool(threadPool);
-            algorithm.run(progressInfo);
+            algorithm.run(runContext, progressInfo);
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
-            if (algorithm instanceof JIPipeAlgorithm)
-                ((JIPipeAlgorithm) algorithm).setThreadPool(null);
             threadPool.shutdown();
-            threadPool = null;
         }
         IJ.showProgress(3, 3);
         settings.exportOutputToImageJ(progressInfo);

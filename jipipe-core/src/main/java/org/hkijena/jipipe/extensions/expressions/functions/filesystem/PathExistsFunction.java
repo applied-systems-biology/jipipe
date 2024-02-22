@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.functions.filesystem;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -10,7 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Path exists", description = "Returns true if the provided string is a path that exists, otherwise false.")
+@SetJIPipeDocumentation(name = "Path exists", description = "Returns true if the provided string is a path that exists, otherwise false.")
 public class PathExistsFunction extends ExpressionFunction {
     public PathExistsFunction() {
         super("PATH_EXISTS", 1);

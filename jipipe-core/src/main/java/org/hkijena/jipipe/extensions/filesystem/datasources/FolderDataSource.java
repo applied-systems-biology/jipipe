@@ -14,15 +14,15 @@
 package org.hkijena.jipipe.extensions.filesystem.datasources;
 
 import org.apache.commons.io.FileUtils;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
-import org.hkijena.jipipe.api.data.context.JIPipeMutableDataContext;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -44,9 +44,9 @@ import java.util.Objects;
 /**
  * Provides an input folder
  */
-@JIPipeDocumentation(name = "Folder", description = "Converts the path parameter into folder data.")
-@JIPipeOutputSlot(value = FolderData.class, slotName = "Folder path", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "Folder", description = "Converts the path parameter into folder data.")
+@AddJIPipeOutputSlot(value = FolderData.class, slotName = "Folder path", create = true)
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class FolderDataSource extends JIPipeAlgorithm {
 
     private Path folderPath;
@@ -75,7 +75,7 @@ public class FolderDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
+    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         getFirstOutputSlot().addData(new FolderData(folderPath), JIPipeDataContext.create(this), progressInfo);
     }
 
@@ -83,7 +83,7 @@ public class FolderDataSource extends JIPipeAlgorithm {
      * @return The folder path
      */
     @JIPipeParameter("folder-path")
-    @JIPipeDocumentation(name = "Folder path")
+    @SetJIPipeDocumentation(name = "Folder path")
     @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.DirectoriesOnly)
     public Path getFolderPath() {
         return folderPath;
@@ -107,7 +107,7 @@ public class FolderDataSource extends JIPipeAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Needs to exist", description = "If true, the selected file needs to exist.")
+    @SetJIPipeDocumentation(name = "Needs to exist", description = "If true, the selected file needs to exist.")
     @JIPipeParameter("needs-to-exist")
     public boolean isNeedsToExist() {
         return needsToExist;
@@ -166,10 +166,10 @@ public class FolderDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         if (needsToExist && (folderPath == null || !Files.isDirectory(getAbsoluteFolderPath()))) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
-                    context,
+                    reportContext,
                     "Input folder does not exist!",
                     "The folder '" + getAbsoluteFolderPath() + "' does not exist.",
                     "Please provide a valid input folder."));

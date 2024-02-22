@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.ilastik;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -62,7 +62,7 @@ public class IlastikSettings extends AbstractJIPipeParameterCollection {
         }
     }
 
-    @JIPipeDocumentation(name = "Ilastik environment", description = "Contains information about the location of the Ilastik installation.")
+    @SetJIPipeDocumentation(name = "Ilastik environment", description = "Contains information about the location of the Ilastik installation.")
     @JIPipeParameter("environment")
     @ExternalEnvironmentParameterSettings(showCategory = "Ilastik")
     public ProcessEnvironment getEnvironment() {
@@ -74,7 +74,7 @@ public class IlastikSettings extends AbstractJIPipeParameterCollection {
         this.environment = environment;
     }
 
-    @JIPipeDocumentation(name = "Easy installer repositories", description = "Allows to change the repositories for the EasyInstaller")
+    @SetJIPipeDocumentation(name = "Easy installer repositories", description = "Allows to change the repositories for the EasyInstaller")
     @JIPipeParameter("easy-installer-repositories")
     public StringList getEasyInstallerRepositories() {
         return easyInstallerRepositories;
@@ -85,7 +85,7 @@ public class IlastikSettings extends AbstractJIPipeParameterCollection {
         this.easyInstallerRepositories = easyInstallerRepositories;
     }
 
-    @JIPipeDocumentation(name = "Maximum number of threads", description = "The maximum number of threads Ilastik will utilize. Negative or zero values indicate no limitation.")
+    @SetJIPipeDocumentation(name = "Maximum number of threads", description = "The maximum number of threads Ilastik will utilize. Negative or zero values indicate no limitation.")
     @JIPipeParameter("max-threads")
     public int getMaxThreads() {
         return maxThreads;
@@ -96,7 +96,7 @@ public class IlastikSettings extends AbstractJIPipeParameterCollection {
         this.maxThreads = maxThreads;
     }
 
-    @JIPipeDocumentation(name = "Maximum RAM allocation (MB)", description = "The maximum RAM that Ilastik will utilize. Must be at least 256 (values below that limit will be automatically increased)")
+    @SetJIPipeDocumentation(name = "Maximum RAM allocation (MB)", description = "The maximum RAM that Ilastik will utilize. Must be at least 256 (values below that limit will be automatically increased)")
     @JIPipeParameter("max-memory")
     public int getMaxMemory() {
         return maxMemory;

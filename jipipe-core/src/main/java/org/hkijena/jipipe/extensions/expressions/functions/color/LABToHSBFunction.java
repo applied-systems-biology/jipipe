@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.functions.color;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-@JIPipeDocumentation(name = "LAB to HSB colors", description = "Converts an LAB color array into an HSB color array")
+@SetJIPipeDocumentation(name = "LAB to HSB colors", description = "Converts an LAB color array into an HSB color array")
 public class LABToHSBFunction extends ExpressionFunction {
 
     private static final LABToRGBFunction TO_RGB_FUNCTION = new LABToRGBFunction();

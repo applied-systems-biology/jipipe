@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.settings;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
@@ -102,7 +102,7 @@ public class RuntimeSettings extends AbstractJIPipeParameterCollection {
         }
     }
 
-    @JIPipeDocumentation(name = "Automatically skip algorithms without input", description = "If enabled, algorithms and their dependents without " +
+    @SetJIPipeDocumentation(name = "Automatically skip algorithms without input", description = "If enabled, algorithms and their dependents without " +
             "input are silently ignored. If disabled, a project is not considered valid if such conditions happen.")
     @JIPipeParameter("allow-skip-algorithms-without-input")
     public boolean isAllowSkipAlgorithmsWithoutInput() {
@@ -114,7 +114,7 @@ public class RuntimeSettings extends AbstractJIPipeParameterCollection {
         this.allowSkipAlgorithmsWithoutInput = allowSkipAlgorithmsWithoutInput;
     }
 
-    @JIPipeDocumentation(name = "Enable data caching", description = "If enabled, JIPipe can cache generated to prevent repeating previous steps. " +
+    @SetJIPipeDocumentation(name = "Enable data caching", description = "If enabled, JIPipe can cache generated to prevent repeating previous steps. " +
             "Please note that this can fill up the available memory.")
     @JIPipeParameter("allow-cache")
     public boolean isAllowCache() {
@@ -126,7 +126,7 @@ public class RuntimeSettings extends AbstractJIPipeParameterCollection {
         this.allowCache = allowCache;
     }
 
-    @JIPipeDocumentation(name = "Override temporary directory", description = "For various tasks - like the Quick Run feature - data " +
+    @SetJIPipeDocumentation(name = "Override temporary directory", description = "For various tasks - like the Quick Run feature - data " +
             "must be placed into a directory. This defaults to your system's temporary directory. If there are issues with space, " +
             "you can provide an alternative path.")
     @JIPipeParameter("temp-directory")
@@ -140,7 +140,7 @@ public class RuntimeSettings extends AbstractJIPipeParameterCollection {
         this.tempDirectory = tempDirectory;
     }
 
-    @JIPipeDocumentation(name = "Default thread count", description = "Default number of threads for running whole pipelines.")
+    @SetJIPipeDocumentation(name = "Default thread count", description = "Default number of threads for running whole pipelines.")
     @JIPipeParameter("default-run-threads")
     public int getDefaultRunThreads() {
         return defaultRunThreads;
@@ -160,7 +160,7 @@ public class RuntimeSettings extends AbstractJIPipeParameterCollection {
         return true;
     }
 
-    @JIPipeDocumentation(name = "Default thread count (quick run)", description = "Default number of threads for executing quick runs.")
+    @SetJIPipeDocumentation(name = "Default thread count (quick run)", description = "Default number of threads for executing quick runs.")
     @JIPipeParameter("default-test-bench-threads")
     public int getDefaultQuickRunThreads() {
         return defaultQuickRunThreads;
@@ -180,7 +180,7 @@ public class RuntimeSettings extends AbstractJIPipeParameterCollection {
         return true;
     }
 
-    @JIPipeDocumentation(name = "Log limit", description = "Limits how many logs are kept")
+    @SetJIPipeDocumentation(name = "Log limit", description = "Limits how many logs are kept")
     @JIPipeParameter("log-limit")
     public int getLogLimit() {
         return logLimit;

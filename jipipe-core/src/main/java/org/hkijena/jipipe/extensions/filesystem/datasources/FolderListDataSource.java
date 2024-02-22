@@ -14,15 +14,15 @@
 package org.hkijena.jipipe.extensions.filesystem.datasources;
 
 import org.apache.commons.io.FileUtils;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
-import org.hkijena.jipipe.api.data.context.JIPipeMutableDataContext;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -51,9 +51,9 @@ import java.util.UUID;
 /**
  * Provides an input folder
  */
-@JIPipeDocumentation(name = "Folder list", description = "Converts each provided path into folder data.")
-@JIPipeOutputSlot(value = FolderData.class, slotName = "Folder paths", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "Folder list", description = "Converts each provided path into folder data.")
+@AddJIPipeOutputSlot(value = FolderData.class, slotName = "Folder paths", create = true)
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class FolderListDataSource extends JIPipeAlgorithm {
 
     private PathList folderPaths = new PathList();
@@ -80,7 +80,7 @@ public class FolderListDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
+    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         for (Path folderPath : folderPaths) {
             getFirstOutputSlot().addData(new FolderData(folderPath), JIPipeDataContext.create(this), progressInfo);
         }
@@ -90,7 +90,7 @@ public class FolderListDataSource extends JIPipeAlgorithm {
      * @return Gets the folder paths
      */
     @JIPipeParameter("folder-paths")
-    @JIPipeDocumentation(name = "Folder paths")
+    @SetJIPipeDocumentation(name = "Folder paths")
     @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.DirectoriesOnly)
     @ListParameterSettings(withScrollBar = true)
     public PathList getFolderPaths() {
@@ -200,30 +200,30 @@ public class FolderListDataSource extends JIPipeAlgorithm {
         setFolderPaths(newPaths);
     }
 
-    @JIPipeDocumentation(name = "Paths to absolute", description = "Converts the stored paths to absolute paths.")
+    @SetJIPipeDocumentation(name = "Paths to absolute", description = "Converts the stored paths to absolute paths.")
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/path.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/path.png")
     public void convertPathsToAbsolute() {
         setParameter("folder-paths", getAbsoluteFolderPaths());
     }
 
-    @JIPipeDocumentation(name = "Paths to relative", description = "Converts the stored paths to paths relative to the project directory (if available).")
+    @SetJIPipeDocumentation(name = "Paths to relative", description = "Converts the stored paths to paths relative to the project directory (if available).")
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/path.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/path.png")
     public void convertPathsToRelative() {
         setParameter("folder-paths", getRelativeFolderPaths());
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         for (Path folderPath : getAbsoluteFolderPaths()) {
             if (folderPath == null) {
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
-                        context,
+                        reportContext,
                         "Input folder not set!",
                         "One of the folder paths is not set.",
                         "Please provide a valid input folder."));
             } else if (!Files.isDirectory(folderPath)) {
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
-                        context,
+                        reportContext,
                         "Input folder does not exist!",
                         "The folder '" + folderPath + "' does not exist.",
                         "Please provide a valid input folder."));

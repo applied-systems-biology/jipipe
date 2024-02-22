@@ -34,6 +34,7 @@ import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.api.run.JIPipeLegacyProjectRun;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -101,28 +102,28 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
             JIPipeDefaultMutableSlotConfiguration.Builder builder = JIPipeDefaultMutableSlotConfiguration.builder();
 
             boolean created = false;
-            for (JIPipeInputSlot slot : getClass().getAnnotationsByType(JIPipeInputSlot.class)) {
-                if (slot.autoCreate()) {
+            for (AddJIPipeInputSlot slot : getClass().getAnnotationsByType(AddJIPipeInputSlot.class)) {
+                if (slot.create()) {
                     created = true;
                     builder.addInputSlot(slot);
                 }
             }
-            for (JIPipeOutputSlot slot : getClass().getAnnotationsByType(JIPipeOutputSlot.class)) {
-                if (slot.autoCreate()) {
+            for (AddJIPipeOutputSlot slot : getClass().getAnnotationsByType(AddJIPipeOutputSlot.class)) {
+                if (slot.create()) {
                     created = true;
                     builder.addOutputSlot(slot);
                 }
             }
 
             if (!created) {
-                for (JIPipeInputSlot slot : info.getInputSlots()) {
-                    if (slot.autoCreate()) {
+                for (AddJIPipeInputSlot slot : info.getInputSlots()) {
+                    if (slot.create()) {
                         created = true;
                         builder.addInputSlot(slot);
                     }
                 }
-                for (JIPipeOutputSlot slot : info.getOutputSlots()) {
-                    if (slot.autoCreate()) {
+                for (AddJIPipeOutputSlot slot : info.getOutputSlots()) {
+                    if (slot.create()) {
                         created = true;
                         builder.addOutputSlot(slot);
                     }
@@ -275,9 +276,10 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
     /**
      * Runs the workload
      *
+     * @param runContext the context of the run process
      * @param progressInfo progress passed from the runner
      */
-    public abstract void run(JIPipeProgressInfo progressInfo);
+    public abstract void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo);
 
     /**
      * Returns the algorithm name
@@ -285,14 +287,14 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      * @return algorithm name
      */
     @JIPipeParameter(value = "jipipe:node:name", uiOrder = -9999, pinned = true, functional = false)
-    @JIPipeDocumentation(name = "Name", description = "Custom algorithm name.")
+    @SetJIPipeDocumentation(name = "Name", description = "Custom algorithm name.")
     public String getName() {
         if (customName == null || customName.isEmpty())
             return getInfo().getName();
         return customName;
     }
 
-    @JIPipeDocumentation(name = "Lock location/size", description = "If enabled, lock the location and size of this node. Does not affect automated alignment operations. " +
+    @SetJIPipeDocumentation(name = "Lock location/size", description = "If enabled, lock the location and size of this node. Does not affect automated alignment operations. " +
             "Will lock the size if the node supports a resize handle. Will prevent deletion of the node by the user. Slots can still be edited/connected and parameters can still be changed.")
     @JIPipeParameter(value = "jipipe:node:ui-locked", pinned = true, functional = false, hidden = true)
     public boolean isUiLocked() {
@@ -331,7 +333,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         return super.isParameterUIVisible(tree, access);
     }
 
-    @JIPipeDocumentation(name = "Bookmark this node", description = "If enabled, the node is highlighted in the graph editor UI and added into the bookmark list.")
+    @SetJIPipeDocumentation(name = "Bookmark this node", description = "If enabled, the node is highlighted in the graph editor UI and added into the bookmark list.")
     @JIPipeParameter(value = "jipipe:node:bookmarked", pinned = true, functional = false, hidden = true)
     public boolean isBookmarked() {
         return bookmarked;
@@ -610,7 +612,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
     }
 
     /**
-     * The storage path is used in {@link JIPipeProjectRun} to indicate where output data is written
+     * The storage path is used in {@link JIPipeLegacyProjectRun} to indicate where output data is written
      * This is only used internally
      *
      * @return Storage path
@@ -620,7 +622,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
     }
 
     /**
-     * Sets the storage path. Used by {@link JIPipeProjectRun}
+     * Sets the storage path. Used by {@link JIPipeLegacyProjectRun}
      *
      * @param storagePath Storage path
      */
@@ -630,7 +632,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
 
     /**
      * Returns the internal storage path relative to the output folder.
-     * Used internally by {@link JIPipeProjectRun}
+     * Used internally by {@link JIPipeLegacyProjectRun}
      *
      * @return Storage path relative to the output folder
      */
@@ -640,7 +642,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
 
     /**
      * Sets the internal storage path relative to the output folder.
-     * Used internally by {@link JIPipeProjectRun}
+     * Used internally by {@link JIPipeLegacyProjectRun}
      *
      * @param internalStoragePath Path relative to the output folder
      */
@@ -837,7 +839,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      *
      * @return Description or null
      */
-    @JIPipeDocumentation(name = "Description", description = "A custom description")
+    @SetJIPipeDocumentation(name = "Description", description = "A custom description")
     @StringParameterSettings(multiline = true)
     @JIPipeParameter(value = "jipipe:node:description", uiOrder = -999, pinned = true, functional = false)
     public HTMLText getCustomDescription() {

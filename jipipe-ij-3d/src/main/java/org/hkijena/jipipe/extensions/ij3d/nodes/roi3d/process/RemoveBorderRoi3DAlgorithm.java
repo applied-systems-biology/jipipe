@@ -1,8 +1,8 @@
 package org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.process;
 
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -13,11 +13,11 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
-@JIPipeDocumentation(name = "Remove border 3D ROI", description = "Removes 3D ROI at the image borders")
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
-@JIPipeInputSlot(value = ROI3DListData.class, slotName = "Input", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true)
-@JIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Remove border 3D ROI", description = "Removes 3D ROI at the image borders")
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true)
+@AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", create = true)
 public class RemoveBorderRoi3DAlgorithm extends JIPipeIteratingAlgorithm {
     private boolean removeInX = true;
 
@@ -38,7 +38,7 @@ public class RemoveBorderRoi3DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROI3DListData data = iterationStep.getInputData("Input", ROI3DListData.class, progressInfo).shallowCopy();
         ImagePlus reference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo).getImage();
         data.removeIf(roi3D -> {
@@ -77,7 +77,7 @@ public class RemoveBorderRoi3DAlgorithm extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Check X coordinate", description = "If enabled, check if the object's X coordinate")
+    @SetJIPipeDocumentation(name = "Check X coordinate", description = "If enabled, check if the object's X coordinate")
     @JIPipeParameter("remove-in-x")
     public boolean isRemoveInX() {
         return removeInX;
@@ -88,7 +88,7 @@ public class RemoveBorderRoi3DAlgorithm extends JIPipeIteratingAlgorithm {
         this.removeInX = removeInX;
     }
 
-    @JIPipeDocumentation(name = "Check Y coordinate", description = "If enabled, check if the object's Y coordinate")
+    @SetJIPipeDocumentation(name = "Check Y coordinate", description = "If enabled, check if the object's Y coordinate")
     @JIPipeParameter("remove-in-y")
     public boolean isRemoveInY() {
         return removeInY;
@@ -99,7 +99,7 @@ public class RemoveBorderRoi3DAlgorithm extends JIPipeIteratingAlgorithm {
         this.removeInY = removeInY;
     }
 
-    @JIPipeDocumentation(name = "Check Z coordinate", description = "If enabled, check if the object's Z coordinate")
+    @SetJIPipeDocumentation(name = "Check Z coordinate", description = "If enabled, check if the object's Z coordinate")
     @JIPipeParameter("remove-in-z")
     public boolean isRemoveInZ() {
         return removeInZ;
@@ -110,7 +110,7 @@ public class RemoveBorderRoi3DAlgorithm extends JIPipeIteratingAlgorithm {
         this.removeInZ = removeInZ;
     }
 
-    @JIPipeDocumentation(name = "Border distance", description = "The maximum distance to the border (defaults to zero)")
+    @SetJIPipeDocumentation(name = "Border distance", description = "The maximum distance to the border (defaults to zero)")
     @JIPipeParameter("border-distance")
     public double getBorderDistance() {
         return borderDistance;

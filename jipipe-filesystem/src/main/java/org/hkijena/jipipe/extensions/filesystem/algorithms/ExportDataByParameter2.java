@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
@@ -33,10 +33,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Export data", description = "Exports the input data via JIPipe's standard exporter. The output is the directory that contains the generated file(s).")
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
-@JIPipeOutputSlot(value = FolderData.class, slotName = "Output path", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "Export data", description = "Exports the input data via JIPipe's standard exporter. The output is the directory that contains the generated file(s).")
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Data", create = true)
+@AddJIPipeOutputSlot(value = FolderData.class, slotName = "Output path", create = true)
+@DefineJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class)
 public class ExportDataByParameter2 extends JIPipeSimpleIteratingAlgorithm {
 
     private DataExportExpressionParameter filePath = new DataExportExpressionParameter();
@@ -53,7 +53,7 @@ public class ExportDataByParameter2 extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         JIPipeData inputData = iterationStep.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo);
 
         Map<String, Path> projectDataDirs;
@@ -80,7 +80,7 @@ public class ExportDataByParameter2 extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Force name", description = "If enabled, the last component of the file path is used as name. Files will be written into the parent directory. " +
+    @SetJIPipeDocumentation(name = "Force name", description = "If enabled, the last component of the file path is used as name. Files will be written into the parent directory. " +
             "If disabled, the file path is used as directory.")
     @JIPipeParameter("force-name")
     public boolean isForceName() {
@@ -92,7 +92,7 @@ public class ExportDataByParameter2 extends JIPipeSimpleIteratingAlgorithm {
         this.forceName = forceName;
     }
 
-    @JIPipeDocumentation(name = "File path", description = "Expression that generates the output file path")
+    @SetJIPipeDocumentation(name = "File path", description = "Expression that generates the output file path")
     @JIPipeParameter("file-path")
     public DataExportExpressionParameter getFilePath() {
         return filePath;

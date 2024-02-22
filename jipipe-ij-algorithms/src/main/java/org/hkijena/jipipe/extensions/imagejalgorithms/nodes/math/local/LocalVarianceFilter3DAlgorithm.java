@@ -17,8 +17,8 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.plugin.Filters3D;
 import ij.plugin.filter.RankFilters;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -33,13 +33,13 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 /**
  * Wrapper around {@link RankFilters}
  */
-@JIPipeDocumentation(name = "Local variance 3D", description = "Calculates the local variance around each pixel. " +
+@SetJIPipeDocumentation(name = "Local variance 3D", description = "Calculates the local variance around each pixel. " +
         "If a multi-channel image is provided, the operation is applied to each channel. " +
         "If higher-dimensional data is provided, the filter is applied to each 3D slice.")
-@JIPipeNode(menuPath = "Math\nLocal", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nFilters", aliasName = "Variance 3D...")
+@DefineJIPipeNode(menuPath = "Math\nLocal", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nFilters", aliasName = "Variance 3D...")
 public class LocalVarianceFilter3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private float radiusX = 2;
@@ -73,7 +73,7 @@ public class LocalVarianceFilter3DAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         ImageStack filtered = Filters3D.filter(img.getStack(), Filters3D.VAR, radiusX, radiusY <= 0 ? radiusX : radiusY, radiusZ <= 0 ? radiusX : radiusZ);
@@ -82,7 +82,7 @@ public class LocalVarianceFilter3DAlgorithm extends JIPipeSimpleIteratingAlgorit
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Radius (X)", description = "Filter radius (pixels) in X direction. See ImageJ>Process>Filters>Show Circular Masks for a reference.")
+    @SetJIPipeDocumentation(name = "Radius (X)", description = "Filter radius (pixels) in X direction. See ImageJ>Process>Filters>Show Circular Masks for a reference.")
     @JIPipeParameter("radius-x")
     public float getRadiusX() {
         return radiusX;
@@ -94,7 +94,7 @@ public class LocalVarianceFilter3DAlgorithm extends JIPipeSimpleIteratingAlgorit
 
     }
 
-    @JIPipeDocumentation(name = "Radius (Y)", description = "Filter radius (pixels) in Y direction." +
+    @SetJIPipeDocumentation(name = "Radius (Y)", description = "Filter radius (pixels) in Y direction." +
             " If zero or less, radius in X direction is automatically used instead. See ImageJ>Process>Filters>Show Circular Masks for a reference.")
     @JIPipeParameter("radius-y")
     public float getRadiusY() {
@@ -107,7 +107,7 @@ public class LocalVarianceFilter3DAlgorithm extends JIPipeSimpleIteratingAlgorit
 
     }
 
-    @JIPipeDocumentation(name = "Radius (Z)", description = "Filter radius (pixels) in Z direction." +
+    @SetJIPipeDocumentation(name = "Radius (Z)", description = "Filter radius (pixels) in Z direction." +
             " If zero or less, radius in X direction is automatically used instead. See ImageJ>Process>Filters>Show Circular Masks for a reference.")
     @JIPipeParameter("radius-z")
     public float getRadiusZ() {

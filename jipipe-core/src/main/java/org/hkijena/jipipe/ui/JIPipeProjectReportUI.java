@@ -345,7 +345,7 @@ public class JIPipeProjectReportUI extends JIPipeProjectWorkbenchPanel implement
         private boolean addListOfUsedNodes = true;
         private boolean addPipelineTextDescription = true;
 
-        @JIPipeDocumentation(name = "Title",description = "If enabled, add the project name")
+        @SetJIPipeDocumentation(name = "Title",description = "If enabled, add the project name")
         @JIPipeParameter(value = "add-title", uiOrder = -100)
         public boolean isAddTitle() {
             return addTitle;
@@ -356,7 +356,7 @@ public class JIPipeProjectReportUI extends JIPipeProjectWorkbenchPanel implement
             this.addTitle = addTitle;
         }
 
-        @JIPipeDocumentation(name = "Authors",description = "If enabled, add the project authors")
+        @SetJIPipeDocumentation(name = "Authors",description = "If enabled, add the project authors")
         @JIPipeParameter(value = "add-authors", uiOrder = -99)
         public boolean isAddAuthors() {
             return addAuthors;
@@ -367,7 +367,7 @@ public class JIPipeProjectReportUI extends JIPipeProjectWorkbenchPanel implement
             this.addAuthors = addAuthors;
         }
 
-        @JIPipeDocumentation(name = "Description", description = "If enabled, add the project description")
+        @SetJIPipeDocumentation(name = "Description", description = "If enabled, add the project description")
         @JIPipeParameter(value = "add-description", uiOrder = -94)
         public boolean isAddDescription() {
             return addDescription;
@@ -378,7 +378,7 @@ public class JIPipeProjectReportUI extends JIPipeProjectWorkbenchPanel implement
             this.addDescription = addDescription;
         }
 
-        @JIPipeDocumentation(name = "Summary", description = "If enabled, add the project summary")
+        @SetJIPipeDocumentation(name = "Summary", description = "If enabled, add the project summary")
         @JIPipeParameter(value = "add-summary", uiOrder = -95)
         public boolean isAddSummary() {
             return addSummary;
@@ -389,7 +389,7 @@ public class JIPipeProjectReportUI extends JIPipeProjectWorkbenchPanel implement
             this.addSummary = addSummary;
         }
 
-        @JIPipeDocumentation(name = "Website", description = "If enabled, add the website URL")
+        @SetJIPipeDocumentation(name = "Website", description = "If enabled, add the website URL")
         @JIPipeParameter(value = "add-website", uiOrder = -97)
         public boolean isAddWebsite() {
             return addWebsite;
@@ -400,7 +400,7 @@ public class JIPipeProjectReportUI extends JIPipeProjectWorkbenchPanel implement
             this.addWebsite = addWebsite;
         }
 
-        @JIPipeDocumentation(name = "Citation (project)", description = "If enabled, add the project citation field")
+        @SetJIPipeDocumentation(name = "Citation (project)", description = "If enabled, add the project citation field")
         @JIPipeParameter(value = "add-citation", uiOrder = -96)
         public boolean isAddCitation() {
             return addCitation;
@@ -411,7 +411,7 @@ public class JIPipeProjectReportUI extends JIPipeProjectWorkbenchPanel implement
             this.addCitation = addCitation;
         }
 
-        @JIPipeDocumentation(name = "License", description = "If enabled, add the project license")
+        @SetJIPipeDocumentation(name = "License", description = "If enabled, add the project license")
         @JIPipeParameter(value = "add-license", uiOrder = -98)
         public boolean isAddLicence() {
             return addLicence;
@@ -422,7 +422,7 @@ public class JIPipeProjectReportUI extends JIPipeProjectWorkbenchPanel implement
             this.addLicence = addLicence;
         }
 
-        @JIPipeDocumentation(name = "Acknowledgements", description = "If enabled, add the project acknowledgements")
+        @SetJIPipeDocumentation(name = "Acknowledgements", description = "If enabled, add the project acknowledgements")
         @JIPipeParameter(value = "add-acknowledgements", uiOrder = -94)
         public boolean isAddAcknowledgements() {
             return addAcknowledgements;
@@ -433,7 +433,7 @@ public class JIPipeProjectReportUI extends JIPipeProjectWorkbenchPanel implement
             this.addAcknowledgements = addAcknowledgements;
         }
 
-        @JIPipeDocumentation(name = "Dependencies", description = "If enabled, add the project dependencies")
+        @SetJIPipeDocumentation(name = "Dependencies", description = "If enabled, add the project dependencies")
         @JIPipeParameter(value = "add-dependencies", uiOrder = -92)
         public boolean isAddDependencies() {
             return addDependencies;
@@ -444,7 +444,7 @@ public class JIPipeProjectReportUI extends JIPipeProjectWorkbenchPanel implement
             this.addDependencies = addDependencies;
         }
 
-        @JIPipeDocumentation(name = "Citations (dependencies)", description = "If enabled, add citations associated to dependencies")
+        @SetJIPipeDocumentation(name = "Citations (dependencies)", description = "If enabled, add citations associated to dependencies")
         @JIPipeParameter(value = "add-dependency-citations", uiOrder = -91)
         public boolean isAddDependencyCitations() {
             return addDependencyCitations;
@@ -455,7 +455,7 @@ public class JIPipeProjectReportUI extends JIPipeProjectWorkbenchPanel implement
             this.addDependencyCitations = addDependencyCitations;
         }
 
-        @JIPipeDocumentation(name = "List of utilized nodes", description = "If enabled, generate a list of all utilized nodes")
+        @SetJIPipeDocumentation(name = "List of utilized nodes", description = "If enabled, generate a list of all utilized nodes")
         @JIPipeParameter(value = "add-list-of-used-nodes", uiOrder = -93)
         public boolean isAddListOfUsedNodes() {
             return addListOfUsedNodes;
@@ -466,7 +466,7 @@ public class JIPipeProjectReportUI extends JIPipeProjectWorkbenchPanel implement
             this.addListOfUsedNodes = addListOfUsedNodes;
         }
 
-        @JIPipeDocumentation(name = "Text description of the pipeline", description = "If enabled, generate a text description of the pipeline")
+        @SetJIPipeDocumentation(name = "Text description of the pipeline", description = "If enabled, generate a text description of the pipeline")
         @JIPipeParameter(value = "add-pipeline-text-description", uiOrder = -90)
         public boolean isAddPipelineTextDescription() {
             return addPipelineTextDescription;

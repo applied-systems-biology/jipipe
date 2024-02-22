@@ -15,9 +15,9 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.labels;
 
 import ij.ImagePlus;
 import inra.ijpb.label.LabelImages;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -34,7 +34,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
 import java.util.ArrayList;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Annotate with label overlap", description = "Compares two label or binary images and calculates " +
+@SetJIPipeDocumentation(name = "Annotate with label overlap", description = "Compares two label or binary images and calculates " +
         "measurements of their overlap error or agreement. Measurements include: " +
         "<ul>" +
         "<li>Overlap</li>" +
@@ -44,15 +44,15 @@ import java.util.List;
         "<li>False Negative Error</li>" +
         "<li>False Positive Error</li>" +
         "</ul>")
-@JIPipeCitation("See https://imagej.net/plugins/morpholibj#label-overlap-measures for the formulas")
-@JIPipeNode(menuPath = "For images", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Image 1", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Image 2", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Image 1", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Image 2", autoCreate = true)
-@JIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
+@AddJIPipeCitation("See https://imagej.net/plugins/morpholibj#label-overlap-measures for the formulas")
+@DefineJIPipeNode(menuPath = "For images", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Image 1", create = true)
+@AddJIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Image 2", create = true)
+@AddJIPipeOutputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Image 1", create = true)
+@AddJIPipeOutputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Image 2", create = true)
+@AddJIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
         "Bioinformatics (Oxford Univ Press) 32(22): 3532-3534, PMID 27412086, doi:10.1093/bioinformatics/btw413")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nAnalyze", aliasName = "Label Overlap Measures (to annotations)")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nAnalyze", aliasName = "Label Overlap Measures (to annotations)")
 public class AnnotateWithOverlapMeasureLabelsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private OptionalAnnotationNameParameter totalOverlapAnnotation = new OptionalAnnotationNameParameter("Total overlap", false);
@@ -76,7 +76,7 @@ public class AnnotateWithOverlapMeasureLabelsAlgorithm extends JIPipeIteratingAl
         this.falsePositiveErrorAnnotation = new OptionalAnnotationNameParameter(other.falsePositiveErrorAnnotation);
     }
 
-    @JIPipeDocumentation(name = "Calculate total overlap", description = "If enabled, the total overlap will be annotated to the data.")
+    @SetJIPipeDocumentation(name = "Calculate total overlap", description = "If enabled, the total overlap will be annotated to the data.")
     @JIPipeParameter("total-overlap-annotation")
     public OptionalAnnotationNameParameter getTotalOverlapAnnotation() {
         return totalOverlapAnnotation;
@@ -87,7 +87,7 @@ public class AnnotateWithOverlapMeasureLabelsAlgorithm extends JIPipeIteratingAl
         this.totalOverlapAnnotation = totalOverlapAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Calculate Jaccard Index", description = "If enabled, the Jaccard Index will be annotated to the data.")
+    @SetJIPipeDocumentation(name = "Calculate Jaccard Index", description = "If enabled, the Jaccard Index will be annotated to the data.")
     @JIPipeParameter("jaccard-index-annotation")
     public OptionalAnnotationNameParameter getJaccardIndexAnnotation() {
         return jaccardIndexAnnotation;
@@ -98,7 +98,7 @@ public class AnnotateWithOverlapMeasureLabelsAlgorithm extends JIPipeIteratingAl
         this.jaccardIndexAnnotation = jaccardIndexAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Calculate Dice Coefficient", description = "If enabled, the Dice Coefficient will be annotated to the data.")
+    @SetJIPipeDocumentation(name = "Calculate Dice Coefficient", description = "If enabled, the Dice Coefficient will be annotated to the data.")
     @JIPipeParameter("dice-coefficient-annotation")
     public OptionalAnnotationNameParameter getDiceCoefficientAnnotation() {
         return diceCoefficientAnnotation;
@@ -109,7 +109,7 @@ public class AnnotateWithOverlapMeasureLabelsAlgorithm extends JIPipeIteratingAl
         this.diceCoefficientAnnotation = diceCoefficientAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Calculate volume similarity", description = "If enabled, the volume similarity will be annotated to the data.")
+    @SetJIPipeDocumentation(name = "Calculate volume similarity", description = "If enabled, the volume similarity will be annotated to the data.")
     @JIPipeParameter("volume-similarity-annotation")
     public OptionalAnnotationNameParameter getVolumeSimilarityAnnotation() {
         return volumeSimilarityAnnotation;
@@ -120,7 +120,7 @@ public class AnnotateWithOverlapMeasureLabelsAlgorithm extends JIPipeIteratingAl
         this.volumeSimilarityAnnotation = volumeSimilarityAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Calculate false negative error", description = "If enabled, the false negative error will be annotated to the data.")
+    @SetJIPipeDocumentation(name = "Calculate false negative error", description = "If enabled, the false negative error will be annotated to the data.")
     @JIPipeParameter("false-negative-error-annotation")
     public OptionalAnnotationNameParameter getFalseNegativeErrorAnnotation() {
         return falseNegativeErrorAnnotation;
@@ -131,7 +131,7 @@ public class AnnotateWithOverlapMeasureLabelsAlgorithm extends JIPipeIteratingAl
         this.falseNegativeErrorAnnotation = falseNegativeErrorAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Calculate false positive error", description = "If enabled, the false positive error will be annotated to the data.")
+    @SetJIPipeDocumentation(name = "Calculate false positive error", description = "If enabled, the false positive error will be annotated to the data.")
     @JIPipeParameter("false-positive-error-annotation")
     public OptionalAnnotationNameParameter getFalsePositiveErrorAnnotation() {
         return falsePositiveErrorAnnotation;
@@ -143,7 +143,7 @@ public class AnnotateWithOverlapMeasureLabelsAlgorithm extends JIPipeIteratingAl
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus sourceImage = iterationStep.getInputData("Image 1", ImagePlus3DGreyscaleData.class, progressInfo).getImage();
         ImagePlus targetImage = iterationStep.getInputData("Image 2", ImagePlus3DGreyscaleData.class, progressInfo).getImage();
 

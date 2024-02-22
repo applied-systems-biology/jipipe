@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.generate;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
@@ -13,12 +13,12 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMissingDataGeneratorAlgorith
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
-@JIPipeDocumentation(name = "Generate missing tables", description = "Generates placeholder or empty tables for data that are not paired " +
+@SetJIPipeDocumentation(name = "Generate missing tables", description = "Generates placeholder or empty tables for data that are not paired " +
         "with a matching table in the same data batch. ")
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "ROI", autoCreate = true, optional = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "ROI", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Data", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "ROI", create = true, optional = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "ROI", create = true)
 @Deprecated
 public class GenerateMissingTablesAlgorithm extends JIPipeMissingDataGeneratorAlgorithm {
 
@@ -33,7 +33,7 @@ public class GenerateMissingTablesAlgorithm extends JIPipeMissingDataGeneratorAl
         this.placeholderTable = new ResultsTableData(other.placeholderTable);
     }
 
-    @JIPipeDocumentation(name = "Placeholder", description = "Table that is generated for missing values.")
+    @SetJIPipeDocumentation(name = "Placeholder", description = "Table that is generated for missing values.")
     @JIPipeParameter("placeholder")
     public ResultsTableData getPlaceholderTable() {
         return placeholderTable;

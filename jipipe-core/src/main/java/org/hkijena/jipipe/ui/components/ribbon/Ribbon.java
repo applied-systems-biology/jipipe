@@ -17,7 +17,7 @@ import java.util.*;
 public class Ribbon extends JPanel {
 
     public static final Border DEFAULT_BORDER = BorderFactory.createEmptyBorder(2, 2, 2, 2);
-    private final DocumentTabPane tabPane = new DocumentTabPane(true);
+    private final DocumentTabPane tabPane = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Top);
     private int numRows;
     private List<Task> tasks;
 
@@ -219,6 +219,16 @@ public class Ribbon extends JPanel {
                 tabPane.getTabbedPane().setSelectedIndex(i);
                 return;
             }
+        }
+    }
+
+    public String getSelectedTask() {
+        int selectedIndex = tabPane.getTabbedPane().getSelectedIndex();
+        if(selectedIndex >= 0 && selectedIndex < tasks.size()) {
+            return tasks.get(selectedIndex).id;
+        }
+        else {
+            return null;
         }
     }
 

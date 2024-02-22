@@ -14,8 +14,8 @@
 
 package org.hkijena.jipipe.extensions.tables.nodes.merge;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -37,12 +37,12 @@ import java.util.Set;
 /**
  * Algorithm that integrates columns
  */
-@JIPipeDocumentation(name = "Merge table columns (simple)", description = "Merges multiple tables into one table by merging the list of columns. " +
+@SetJIPipeDocumentation(name = "Merge table columns (simple)", description = "Merges multiple tables into one table by merging the list of columns. " +
         "The generated table is sized according to the table with the most rows. In missing columns, the values are filled in. " +
         "The algorithm behind this is not 'smart' and is not capable of supplementing a table with data from another table. ")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Merge")
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Merge")
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class MergeTableColumnsSimpleAlgorithm extends JIPipeMergingAlgorithm {
 
     private TableColumnNormalization rowNormalization = TableColumnNormalization.ZeroOrEmpty;
@@ -69,7 +69,7 @@ public class MergeTableColumnsSimpleAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         List<TableColumn> columnList = new ArrayList<>();
         List<ResultsTableData> inputTables = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         int nRow = 0;
@@ -97,7 +97,7 @@ public class MergeTableColumnsSimpleAlgorithm extends JIPipeMergingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Row normalization", description = "Determines how missing column values are handled if the input tables have different numbers of rows. " +
+    @SetJIPipeDocumentation(name = "Row normalization", description = "Determines how missing column values are handled if the input tables have different numbers of rows. " +
             "You can set it to zero/empty (depending on numeric or string type), to the row number (starting with zero), copy the last value, or cycle.")
     @JIPipeParameter("row-normalization")
     public TableColumnNormalization getRowNormalization() {
@@ -109,7 +109,7 @@ public class MergeTableColumnsSimpleAlgorithm extends JIPipeMergingAlgorithm {
         this.rowNormalization = rowNormalization;
     }
 
-    @JIPipeDocumentation(name = "Column filter", description = "Allows to filter the columns for their name. ")
+    @SetJIPipeDocumentation(name = "Column filter", description = "Allows to filter the columns for their name. ")
     @JIPipeParameter("column-filter")
     public StringQueryExpression getColumnFilter() {
         return columnFilter;

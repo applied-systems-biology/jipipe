@@ -2,8 +2,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.forms;
 
 import ij.IJ;
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -33,13 +33,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@JIPipeDocumentation(name = "Draw/modify ROIs", description = "Allows users to draw or modify ROIs that are drawn over a reference image." +
+@SetJIPipeDocumentation(name = "Draw/modify ROIs", description = "Allows users to draw or modify ROIs that are drawn over a reference image." +
         " You can supply existing masks via the 'ROI' input. If a data batch has no existing mask, a new one is generated according to the " +
         "node parameters.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Forms")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true)
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true, optional = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Forms")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true)
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true, optional = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", create = true)
 public class DrawROIAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgorithm {
 
     private OptionalIntegerParameter overwriteSizeZ = new OptionalIntegerParameter(false, 1);
@@ -58,9 +58,9 @@ public class DrawROIAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgorit
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
         // Generate the output first
-        super.runParameterSet(progressInfo, parameterAnnotations);
+        super.runParameterSet(runContext, progressInfo, parameterAnnotations);
 
         if (isPassThrough())
             return;
@@ -189,7 +189,7 @@ public class DrawROIAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgorit
         iterationStep.addOutputData(outputSlot, new ImagePlusData(img), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Overwrite number of slices (Z)", description = "Number of generated Z slices.")
+    @SetJIPipeDocumentation(name = "Overwrite number of slices (Z)", description = "Number of generated Z slices.")
     @JIPipeParameter("size-z")
     public OptionalIntegerParameter getOverwriteSizeZ() {
         return overwriteSizeZ;
@@ -200,7 +200,7 @@ public class DrawROIAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgorit
         this.overwriteSizeZ = overwriteSizeZ;
     }
 
-    @JIPipeDocumentation(name = "Overwrite number of channels (C)", description = "Number of generated channel slices.")
+    @SetJIPipeDocumentation(name = "Overwrite number of channels (C)", description = "Number of generated channel slices.")
     @JIPipeParameter("size-c")
     public OptionalIntegerParameter getOverwriteSizeC() {
         return overwriteSizeC;
@@ -211,7 +211,7 @@ public class DrawROIAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgorit
         this.overwriteSizeC = overwriteSizeC;
     }
 
-    @JIPipeDocumentation(name = "Overwrite number of frames (T)", description = "Number of generated frame slices.")
+    @SetJIPipeDocumentation(name = "Overwrite number of frames (T)", description = "Number of generated frame slices.")
     @JIPipeParameter("size-t")
     public OptionalIntegerParameter getOverwriteSizeT() {
         return overwriteSizeT;

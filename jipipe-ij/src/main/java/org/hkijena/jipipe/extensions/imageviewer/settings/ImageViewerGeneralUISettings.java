@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.imageviewer.settings;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
@@ -31,7 +31,7 @@ public class ImageViewerGeneralUISettings extends AbstractJIPipeParameterCollect
         return JIPipe.getSettings().getSettings(ID, ImageViewerGeneralUISettings.class);
     }
 
-    @JIPipeDocumentation(name = "Automatically select 2D/3D viewer", description = "If enabled, the viewer automatically switches to the 3D mode if 3D data is opened")
+    @SetJIPipeDocumentation(name = "Automatically select 2D/3D viewer", description = "If enabled, the viewer automatically switches to the 3D mode if 3D data is opened")
     @JIPipeParameter("auto-switch-2d-3d")
     public boolean isAutoSwitch2D3DViewer() {
         return autoSwitch2D3DViewer;

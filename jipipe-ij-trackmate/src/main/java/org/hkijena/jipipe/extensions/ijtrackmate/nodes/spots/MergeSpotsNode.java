@@ -15,8 +15,8 @@
 package org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots;
 
 import fiji.plugin.trackmate.Spot;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -27,10 +27,10 @@ import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "Merge spots", description = "Merges spot lists. Please ensure that the spots are sourced from the same image.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nSplit/Merge")
-@JIPipeInputSlot(value = SpotsCollectionData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = SpotsCollectionData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Merge spots", description = "Merges spot lists. Please ensure that the spots are sourced from the same image.")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nSplit/Merge")
+@AddJIPipeInputSlot(value = SpotsCollectionData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = SpotsCollectionData.class, slotName = "Output", create = true)
 public class MergeSpotsNode extends JIPipeMergingAlgorithm {
 
     public MergeSpotsNode(JIPipeNodeInfo info) {
@@ -42,7 +42,7 @@ public class MergeSpotsNode extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         List<SpotsCollectionData> spotCollections = iterationStep.getInputData(getFirstInputSlot(), SpotsCollectionData.class, progressInfo);
         if (spotCollections.isEmpty())
             return;

@@ -16,9 +16,9 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.greyscale;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ShortProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHeavyData;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
@@ -31,9 +31,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 /**
  * 16-bit greyscale 4D image
  */
-@JIPipeDocumentation(name = "4D image (16 bit)", description = "A 16-bit greyscale image")
-@JIPipeNode(menuPath = "Images\n4D\nGreyscale")
-@JIPipeHeavyData
+@SetJIPipeDocumentation(name = "4D image (16 bit)", description = "A 16-bit greyscale image")
+@DefineJIPipeNode(menuPath = "Images\n4D\nGreyscale")
+@LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ShortProcessor.class, colorSpace = GreyscaleColorSpace.class, pixelType = ShortProcessor.class, bitDepth = 16, numDimensions = 4)
 public class ImagePlus4DGreyscale16UData extends ImagePlus4DGreyscaleData {
 

@@ -13,14 +13,14 @@
 
 package org.hkijena.jipipe.extensions.expressions.functions.variables;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Get all variable names", description = "Returns all variable names as array. The names are ordered.")
+@SetJIPipeDocumentation(name = "Get all variable names", description = "Returns all variable names as array. The names are ordered.")
 public class GetVariableKeysFunction extends ExpressionFunction {
 
     public GetVariableKeysFunction() {

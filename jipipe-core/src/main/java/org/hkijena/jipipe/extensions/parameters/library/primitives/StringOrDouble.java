@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.parameters.library.primitives;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
@@ -45,7 +45,7 @@ public class StringOrDouble extends AbstractJIPipeParameterCollection {
         this.doubleValue = other.doubleValue;
     }
 
-    @JIPipeDocumentation(name = "Mode", description = "Which source is used")
+    @SetJIPipeDocumentation(name = "Mode", description = "Which source is used")
     @JIPipeParameter("mode")
     @JsonGetter("mode")
     public Mode getMode() {
@@ -59,7 +59,7 @@ public class StringOrDouble extends AbstractJIPipeParameterCollection {
 
     }
 
-    @JIPipeDocumentation(name = "String", description = "The string")
+    @SetJIPipeDocumentation(name = "String", description = "The string")
     @JIPipeParameter("string")
     @JsonGetter("string")
     public String getStringValue() {
@@ -73,7 +73,7 @@ public class StringOrDouble extends AbstractJIPipeParameterCollection {
 
     }
 
-    @JIPipeDocumentation(name = "Number", description = "The number")
+    @SetJIPipeDocumentation(name = "Number", description = "The number")
     @JIPipeParameter("number")
     @JsonGetter("number")
     public double getDoubleValue() {

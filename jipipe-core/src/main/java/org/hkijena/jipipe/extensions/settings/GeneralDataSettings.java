@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.settings;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
@@ -30,7 +30,7 @@ public class GeneralDataSettings extends AbstractJIPipeParameterCollection {
         return JIPipe.getSettings().getSettings(ID, GeneralDataSettings.class);
     }
 
-    @JIPipeDocumentation(name = "Remember last results data importer for type",
+    @SetJIPipeDocumentation(name = "Remember last results data importer for type",
             description = "If enabled, JIPipe will remember the last used results data importer as default.")
     @JIPipeParameter("auto-save-last-importer")
     public boolean isAutoSaveLastImporter() {
@@ -42,7 +42,7 @@ public class GeneralDataSettings extends AbstractJIPipeParameterCollection {
         this.autoSaveLastImporter = autoSaveLastImporter;
     }
 
-    @JIPipeDocumentation(name = "Remember last cache display for type",
+    @SetJIPipeDocumentation(name = "Remember last cache display for type",
             description = "If enabled, JIPipe will remember the last used cache display method as default.")
     @JIPipeParameter("auto-save-last-display")
     public boolean isAutoSaveLastDisplay() {
@@ -54,7 +54,7 @@ public class GeneralDataSettings extends AbstractJIPipeParameterCollection {
         this.autoSaveLastDisplay = autoSaveLastDisplay;
     }
 
-    @JIPipeDocumentation(name = "Preview size", description = "The width and height for data previews")
+    @SetJIPipeDocumentation(name = "Preview size", description = "The width and height for data previews")
     @JIPipeParameter("preview-size")
     public int getPreviewSize() {
         return previewSize;
@@ -65,7 +65,7 @@ public class GeneralDataSettings extends AbstractJIPipeParameterCollection {
         this.previewSize = previewSize;
     }
 
-    @JIPipeDocumentation(name = "Generate previews in cache browser", description = "If enabled, cached items are previewed in JIPipe")
+    @SetJIPipeDocumentation(name = "Generate previews in cache browser", description = "If enabled, cached items are previewed in JIPipe")
     @JIPipeParameter("generate-cache-previews")
     public boolean isGenerateCachePreviews() {
         return generateCachePreviews;
@@ -76,7 +76,7 @@ public class GeneralDataSettings extends AbstractJIPipeParameterCollection {
         this.generateCachePreviews = generateCachePreviews;
     }
 
-    @JIPipeDocumentation(name = "Generate previews in results", description = "If enabled, result items are previewed in JIPipe")
+    @SetJIPipeDocumentation(name = "Generate previews in results", description = "If enabled, result items are previewed in JIPipe")
     @JIPipeParameter("generate-result-previews")
     public boolean isGenerateResultPreviews() {
         return generateResultPreviews;
@@ -87,7 +87,7 @@ public class GeneralDataSettings extends AbstractJIPipeParameterCollection {
         this.generateResultPreviews = generateResultPreviews;
     }
 
-    @JIPipeDocumentation(name = "Max table column size", description = "The maximum width of data table columns. Set to -1 for no limit.")
+    @SetJIPipeDocumentation(name = "Max table column size", description = "The maximum width of data table columns. Set to -1 for no limit.")
     @JIPipeParameter("max-table-column-size")
     public int getMaxTableColumnSize() {
         return maxTableColumnSize;
@@ -98,7 +98,7 @@ public class GeneralDataSettings extends AbstractJIPipeParameterCollection {
         this.maxTableColumnSize = maxTableColumnSize;
     }
 
-    @JIPipeDocumentation(name = "Automatically remove outdated cached data", description = "If enabled, outdated cached data will be automatically removed to save memory")
+    @SetJIPipeDocumentation(name = "Automatically remove outdated cached data", description = "If enabled, outdated cached data will be automatically removed to save memory")
     @JIPipeParameter("auto-remove-outdated-cached-data")
     public boolean isAutoRemoveOutdatedCachedData() {
         return autoRemoveOutdatedCachedData;
@@ -109,7 +109,7 @@ public class GeneralDataSettings extends AbstractJIPipeParameterCollection {
         this.autoRemoveOutdatedCachedData = autoRemoveOutdatedCachedData;
     }
 
-    @JIPipeDocumentation(name = "Exported preview sizes", description = "The preview sizes to be exported on exporting data/results")
+    @SetJIPipeDocumentation(name = "Exported preview sizes", description = "The preview sizes to be exported on exporting data/results")
     @JIPipeParameter("exported-preview-sizes")
     @PairParameterSettings(keyLabel = "Width", valueLabel = "Height")
     public IntegerAndIntegerPairParameter.List getExportedPreviewSizes() {

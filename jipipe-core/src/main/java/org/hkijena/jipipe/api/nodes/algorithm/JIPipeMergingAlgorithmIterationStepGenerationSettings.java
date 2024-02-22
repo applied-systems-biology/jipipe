@@ -13,7 +13,9 @@
 
 package org.hkijena.jipipe.api.nodes.algorithm;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
@@ -60,64 +62,74 @@ public class JIPipeMergingAlgorithmIterationStepGenerationSettings extends Abstr
         this.forceNAIsAny = other.forceNAIsAny;
     }
 
-    @JIPipeDocumentation(name = "Force NA is ANY (if available)", description = "If enabled, missing annotations are considered as ANY (and thus merged with other data) even if there is only one input. " +
+    @SetJIPipeDocumentation(name = "Force NA is ANY (if available)", description = "If enabled, missing annotations are considered as ANY (and thus merged with other data) even if there is only one input. " +
             "Currently only works for the dictionary solver.")
     @JIPipeParameter("force-na-is-any")
+    @JsonGetter("force-na-is-any")
     public boolean isForceNAIsAny() {
         return forceNAIsAny;
     }
 
     @JIPipeParameter("force-na-is-any")
+    @JsonSetter("force-na-is-any")
     public void setForceNAIsAny(boolean forceNAIsAny) {
         this.forceNAIsAny = forceNAIsAny;
     }
 
-    @JIPipeDocumentation(name = "Force flow graph solver", description = "If enabled, disable the faster dictionary-based solver. Use this if you experience unexpected behavior.")
+    @SetJIPipeDocumentation(name = "Force flow graph solver", description = "If enabled, disable the faster dictionary-based solver. Use this if you experience unexpected behavior.")
     @JIPipeParameter("force-flow-graph-solver")
+    @JsonGetter("force-flow-graph-solver")
     public boolean isForceFlowGraphSolver() {
         return forceFlowGraphSolver;
     }
 
     @JIPipeParameter("force-flow-graph-solver")
+    @JsonSetter("force-flow-graph-solver")
     public void setForceFlowGraphSolver(boolean forceFlowGraphSolver) {
         this.forceFlowGraphSolver = forceFlowGraphSolver;
     }
 
-    @JIPipeDocumentation(name = "Annotation matching method", description = "Allows to customize when two annotation sets are considered as equal. " +
+    @SetJIPipeDocumentation(name = "Annotation matching method", description = "Allows to customize when two annotation sets are considered as equal. " +
             "By default, non-empty annotation values should match exactly. You can also use a custom expression, instead.")
     @JIPipeParameter(value = "annotation-matching-method", uiOrder = 1999)
+    @JsonGetter("annotation-matching-method")
     public JIPipeTextAnnotationMatchingMethod getAnnotationMatchingMethod() {
         return annotationMatchingMethod;
     }
 
     @JIPipeParameter("annotation-matching-method")
+    @JsonSetter("annotation-matching-method")
     public void setAnnotationMatchingMethod(JIPipeTextAnnotationMatchingMethod annotationMatchingMethod) {
         this.annotationMatchingMethod = annotationMatchingMethod;
         emitParameterUIChangedEvent();
     }
 
-    @JIPipeDocumentation(name = "Custom annotation matching method", description = "Expression used to compare two annotation sets.")
+    @SetJIPipeDocumentation(name = "Custom annotation matching method", description = "Expression used to compare two annotation sets.")
     @JIPipeExpressionParameterSettings(variableSource = JIPipeCustomAnnotationMatchingExpressionVariables.class)
     @JIPipeParameter(value = "custom-annotation-matching", uiOrder = 2100)
+    @JsonGetter("custom-annotation-matching")
     public JIPipeExpressionParameter getCustomAnnotationMatching() {
         return customAnnotationMatching;
     }
 
     @JIPipeParameter("custom-annotation-matching")
+    @JsonSetter("custom-annotation-matching")
     public void setCustomAnnotationMatching(JIPipeExpressionParameter customAnnotationMatching) {
         this.customAnnotationMatching = customAnnotationMatching;
     }
 
-    @JIPipeDocumentation(name = "Grouping method", description = "Algorithms with multiple inputs require to match the incoming data " +
+    @SetJIPipeDocumentation(name = "Grouping method", description = "Algorithms with multiple inputs require to match the incoming data " +
             "to data sets. This allows you to determine how interesting data annotation columns are extracted from the incoming data. " +
             "Union matches using the union of annotation columns. Intersection intersects the sets of available columns. You can also" +
             " customize which columns should be included or excluded.")
     @JIPipeParameter(value = "column-matching", uiOrder = -100, important = true, pinned = true)
+    @JsonGetter("column-matching")
     public JIPipeColumMatching getColumnMatching() {
         return columnMatching;
     }
 
     @JIPipeParameter("column-matching")
+    @JsonSetter("column-matching")
     public void setColumnMatching(JIPipeColumMatching columnMatching) {
         boolean needsTriggerStructureChange = columnMatching == JIPipeColumMatching.Custom || this.columnMatching == JIPipeColumMatching.Custom;
         this.columnMatching = columnMatching;
@@ -138,9 +150,10 @@ public class JIPipeMergingAlgorithmIterationStepGenerationSettings extends Abstr
         return JIPipeIterationStepGenerationSettings.super.isParameterUIVisible(tree, access);
     }
 
-    @JIPipeDocumentation(name = "Custom grouping columns", description = "Only used if 'Grouping method' is set to 'Custom'. " +
+    @SetJIPipeDocumentation(name = "Custom grouping columns", description = "Only used if 'Grouping method' is set to 'Custom'. " +
             "Determines which annotation columns are referred to group data sets. ")
     @JIPipeParameter(value = "custom-matched-columns-expression", uiOrder = 999, pinned = true)
+    @JsonGetter("custom-matched-columns-expression")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public StringQueryExpression getCustomColumns() {
         if (customColumns == null)
@@ -149,53 +162,62 @@ public class JIPipeMergingAlgorithmIterationStepGenerationSettings extends Abstr
     }
 
     @JIPipeParameter(value = "custom-matched-columns-expression")
+    @JsonSetter("custom-matched-columns-expression")
     public void setCustomColumns(StringQueryExpression customColumns) {
         this.customColumns = customColumns;
     }
 
-    @JIPipeDocumentation(name = "Skip incomplete data sets", description = "If enabled, incomplete data sets are silently skipped. " +
+    @SetJIPipeDocumentation(name = "Skip incomplete data sets", description = "If enabled, incomplete data sets are silently skipped. " +
             "Otherwise an error is displayed if such a configuration is detected.")
     @JIPipeParameter(value = "skip-incomplete", pinned = true)
+    @JsonGetter("skip-incomplete")
     public boolean isSkipIncompleteDataSets() {
         return skipIncompleteDataSets;
     }
 
     @JIPipeParameter("skip-incomplete")
+    @JsonSetter("skip-incomplete")
     public void setSkipIncompleteDataSets(boolean skipIncompleteDataSets) {
         this.skipIncompleteDataSets = skipIncompleteDataSets;
 
     }
 
-    @JIPipeDocumentation(name = "Merge same annotation values", description = "Determines which strategy is applied if data sets that " +
+    @SetJIPipeDocumentation(name = "Merge same annotation values", description = "Determines which strategy is applied if data sets that " +
             "define different values for the same annotation columns are encountered.")
     @JIPipeParameter("annotation-merge-strategy")
+    @JsonGetter("annotation-merge-strategy")
     public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {
         return annotationMergeStrategy;
     }
 
     @JIPipeParameter("annotation-merge-strategy")
+    @JsonSetter("annotation-merge-strategy")
     public void setAnnotationMergeStrategy(JIPipeTextAnnotationMergeMode annotationMergeStrategy) {
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
 
-    @JIPipeDocumentation(name = "Merge same data annotation values", description = "Determines which strategy is applied if different values for the same data annotation columns are encountered.")
+    @SetJIPipeDocumentation(name = "Merge same data annotation values", description = "Determines which strategy is applied if different values for the same data annotation columns are encountered.")
     @JIPipeParameter("data-annotation-merge-strategy")
+    @JsonGetter("data-annotation-merge-strategy")
     public JIPipeDataAnnotationMergeMode getDataAnnotationMergeStrategy() {
         return dataAnnotationMergeStrategy;
     }
 
     @JIPipeParameter("data-annotation-merge-strategy")
+    @JsonSetter("data-annotation-merge-strategy")
     public void setDataAnnotationMergeStrategy(JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy) {
         this.dataAnnotationMergeStrategy = dataAnnotationMergeStrategy;
     }
 
-    @JIPipeDocumentation(name = "Limit", description = "Limits which data batches are generated. The first index is zero.")
+    @SetJIPipeDocumentation(name = "Limit", description = "Limits which data batches are generated. The first index is zero.")
     @JIPipeParameter(value = "limit")
+    @JsonGetter("limit")
     public OptionalIntegerRange getLimit() {
         return limit;
     }
 
     @JIPipeParameter("limit")
+    @JsonSetter("limit")
     public void setLimit(OptionalIntegerRange limit) {
         this.limit = limit;
     }

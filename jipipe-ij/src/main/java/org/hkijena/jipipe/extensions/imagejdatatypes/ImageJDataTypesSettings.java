@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMETIFFCompression;
@@ -30,7 +30,7 @@ public class ImageJDataTypesSettings extends AbstractJIPipeParameterCollection {
         return JIPipe.getSettings().getSettings(ID, ImageJDataTypesSettings.class);
     }
 
-    @JIPipeDocumentation(name = "Use Bio-Formats for saving & loading", description = "If enabled, Bio-Formats is used to save and load results. Otherwise the native ImageJ functions are used that " +
+    @SetJIPipeDocumentation(name = "Use Bio-Formats for saving & loading", description = "If enabled, Bio-Formats is used to save and load results. Otherwise the native ImageJ functions are used that " +
             "might have issues with some files.")
     @JIPipeParameter("use-bio-formats")
     public boolean isUseBioFormats() {
@@ -42,7 +42,7 @@ public class ImageJDataTypesSettings extends AbstractJIPipeParameterCollection {
         this.useBioFormats = useBioFormats;
     }
 
-    @JIPipeDocumentation(name = "Bio-Formats compression", description = "Compression algorithm to use when saving via Bio-Formats.")
+    @SetJIPipeDocumentation(name = "Bio-Formats compression", description = "Compression algorithm to use when saving via Bio-Formats.")
     @JIPipeParameter("bio-formats-compression")
     public OMETIFFCompression getBioFormatsCompression() {
         return bioFormatsCompression;
@@ -53,7 +53,7 @@ public class ImageJDataTypesSettings extends AbstractJIPipeParameterCollection {
         this.bioFormatsCompression = bioFormatsCompression;
     }
 
-    @JIPipeDocumentation(name = "Save RGB images with ImageJ", description = "If enabled, RGB images are always saved with ImageJ, even if Bio-Formats is used by default. This can increase performance.")
+    @SetJIPipeDocumentation(name = "Save RGB images with ImageJ", description = "If enabled, RGB images are always saved with ImageJ, even if Bio-Formats is used by default. This can increase performance.")
     @JIPipeParameter("save-rgb-with-imagej")
     public boolean isSaveRGBWithImageJ() {
         return saveRGBWithImageJ;

@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.expressions.operators;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionOperator;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -24,7 +24,7 @@ import java.util.Iterator;
 /**
  * Operator that tests if the left string is contained in the right string
  */
-@JIPipeDocumentation(name = "Contains", description = "Returns true if the left operand is contained in the right operand. " +
+@SetJIPipeDocumentation(name = "Contains", description = "Returns true if the left operand is contained in the right operand. " +
         "The right operand can be a string, where the operator checks if the right string contains the left string. " +
         "If the right operand is an array, the operator checks if the left operand is in the array.")
 public class ContainsOperator extends ExpressionOperator {

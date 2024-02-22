@@ -5,7 +5,7 @@ import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
 import ij.util.Java2;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -358,7 +358,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
 
     }
 
-    @JIPipeDocumentation(name = "Render to RGB", description = "If enabled 'Render to RGB' is used instead of a plain conversion to RGB. " +
+    @SetJIPipeDocumentation(name = "Render to RGB", description = "If enabled 'Render to RGB' is used instead of a plain conversion to RGB. " +
             "Only applicable if images are converted to RGB.")
     @JIPipeParameter("rgb-use-render")
     public boolean isRgbUseRender() {
@@ -370,7 +370,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
         this.rgbUseRender = rgbUseRender;
     }
 
-    @JIPipeDocumentation(name = "Force RGB colors", description = "If enabled, force rendering to RGB colors")
+    @SetJIPipeDocumentation(name = "Force RGB colors", description = "If enabled, force rendering to RGB colors")
     @JIPipeParameter("force-rgb")
     public boolean isForceRGB() {
         return forceRGB;
@@ -381,7 +381,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
         this.forceRGB = forceRGB;
     }
 
-    @JIPipeDocumentation(name = "Label", description = "Expression that generates the labels. Applied per image.")
+    @SetJIPipeDocumentation(name = "Label", description = "Expression that generates the labels. Applied per image.")
     @JIPipeParameter(value = "label-expression", important = true, uiOrder = -100)
     @JIPipeExpressionParameterSettings(hint = "per image slice")
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
@@ -396,7 +396,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
         this.labelExpression = labelExpression;
     }
 
-    @JIPipeDocumentation(name = "Custom sorting label", description = "Optional expression that generates dedicated labels that are only used for sorting. Applied per image.")
+    @SetJIPipeDocumentation(name = "Custom sorting label", description = "Optional expression that generates dedicated labels that are only used for sorting. Applied per image.")
     @JIPipeParameter("sorting-label-expression")
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(key = "default_label", name = "Default label", description = "Default label that summarizes the annotations")
@@ -411,7 +411,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
         this.sortingLabelExpression = sortingLabelExpression;
     }
 
-    @JIPipeDocumentation(name = "Force number of rows", description = "If enabled, forces the number of rows")
+    @SetJIPipeDocumentation(name = "Force number of rows", description = "If enabled, forces the number of rows")
     @JIPipeParameter("force-rows")
     public OptionalIntegerParameter getForceNumRows() {
         return forceNumRows;
@@ -422,7 +422,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
         this.forceNumRows = forceNumRows;
     }
 
-    @JIPipeDocumentation(name = "Force number of columns", description = "If enabled, forces the number of columns")
+    @SetJIPipeDocumentation(name = "Force number of columns", description = "If enabled, forces the number of columns")
     @JIPipeParameter("force-columns")
     public OptionalIntegerParameter getForceNumColumns() {
         return forceNumColumns;
@@ -433,19 +433,19 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
         this.forceNumColumns = forceNumColumns;
     }
 
-    @JIPipeDocumentation(name = "Canvas", description = "Settings related to how images are put into the canvas")
+    @SetJIPipeDocumentation(name = "Canvas", description = "Settings related to how images are put into the canvas")
     @JIPipeParameter("canvas-parameters")
     public CanvasParameters getCanvasParameters() {
         return canvasParameters;
     }
 
-    @JIPipeDocumentation(name = "Labels", description = "Settings related to the display of labels")
+    @SetJIPipeDocumentation(name = "Labels", description = "Settings related to the display of labels")
     @JIPipeParameter("label-parameters")
     public LabelParameters getLabelParameters() {
         return labelParameters;
     }
 
-    @JIPipeDocumentation(name = "Tile width", description = "Expression that determines the width of the tiles")
+    @SetJIPipeDocumentation(name = "Tile width", description = "Expression that determines the width of the tiles")
     @JIPipeParameter("tile-width")
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(key = "max_image_width", name = "Maximum image width", description = "The maximum width of the input images")
@@ -460,7 +460,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
         this.tileWidth = tileWidth;
     }
 
-    @JIPipeDocumentation(name = "Tile height", description = "Expression that determines the height of the tiles")
+    @SetJIPipeDocumentation(name = "Tile height", description = "Expression that determines the height of the tiles")
     @JIPipeParameter("tile-height")
     @JIPipeExpressionParameterVariable(key = "max_image_width", name = "Maximum image width", description = "The maximum width of the input images")
     @JIPipeExpressionParameterVariable(key = "max_image_height", name = "Maximum image height", description = "The maximum height of the input images")
@@ -474,7 +474,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
         this.tileHeight = tileHeight;
     }
 
-    @JIPipeDocumentation(name = "Images", description = "Settings related to the scaling of images")
+    @SetJIPipeDocumentation(name = "Images", description = "Settings related to the scaling of images")
     @JIPipeParameter("image-parameters")
     public ImageParameters getImageParameters() {
         return imageParameters;
@@ -505,7 +505,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
             this.limitWithEllipsis = other.limitWithEllipsis;
         }
 
-        @JIPipeDocumentation(name = "Limit with ellipsis", description = "If enabled, long labels will be limited with an ellipsis. Otherwise, the text is just cut off.")
+        @SetJIPipeDocumentation(name = "Limit with ellipsis", description = "If enabled, long labels will be limited with an ellipsis. Otherwise, the text is just cut off.")
         @JIPipeParameter("limit-with-ellipsis")
         public boolean isLimitWithEllipsis() {
             return limitWithEllipsis;
@@ -516,7 +516,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
             this.limitWithEllipsis = limitWithEllipsis;
         }
 
-        @JIPipeDocumentation(name = "Avoid drawing label on image", description = "If enabled, avoid that that label is drawn on top of the image")
+        @SetJIPipeDocumentation(name = "Avoid drawing label on image", description = "If enabled, avoid that that label is drawn on top of the image")
         @JIPipeParameter("avoid-label-on-image")
         public boolean isAvoidLabelOnImage() {
             return avoidLabelOnImage;
@@ -527,7 +527,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
             this.avoidLabelOnImage = avoidLabelOnImage;
         }
 
-        @JIPipeDocumentation(name = "Label background", description = "If enabled, draw a background behind the label")
+        @SetJIPipeDocumentation(name = "Label background", description = "If enabled, draw a background behind the label")
         @JIPipeParameter("label-background")
         public OptionalColorParameter getLabelBackground() {
             return labelBackground;
@@ -538,7 +538,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
             this.labelBackground = labelBackground;
         }
 
-        @JIPipeDocumentation(name = "Draw label", description = "If enabled, draw a label for each image")
+        @SetJIPipeDocumentation(name = "Draw label", description = "If enabled, draw a label for each image")
         @JIPipeParameter("draw-label")
         public boolean isDrawLabel() {
             return drawLabel;
@@ -549,7 +549,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
             this.drawLabel = drawLabel;
         }
 
-        @JIPipeDocumentation(name = "Label color", description = "The color of the label")
+        @SetJIPipeDocumentation(name = "Label color", description = "The color of the label")
         @JIPipeParameter("label-foreground")
         public Color getLabelForeground() {
             return labelForeground;
@@ -560,7 +560,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
             this.labelForeground = labelForeground;
         }
 
-        @JIPipeDocumentation(name = "Label font family", description = "The font of the label")
+        @SetJIPipeDocumentation(name = "Label font family", description = "The font of the label")
         @JIPipeParameter("label-font-family")
         public FontFamilyParameter getLabelFontFamily() {
             return labelFontFamily;
@@ -571,7 +571,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
             this.labelFontFamily = labelFontFamily;
         }
 
-        @JIPipeDocumentation(name = "Label font size", description = "The font size of the drawn label")
+        @SetJIPipeDocumentation(name = "Label font size", description = "The font size of the drawn label")
         @JIPipeParameter("label-font-size")
         public int getLabelSize() {
             return labelSize;
@@ -582,7 +582,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
             this.labelSize = labelSize;
         }
 
-        @JIPipeDocumentation(name = "Label location", description = "The location of the label")
+        @SetJIPipeDocumentation(name = "Label location", description = "The location of the label")
         @JIPipeParameter("label-location")
         public Anchor getLabelLocation() {
             return labelLocation;
@@ -611,7 +611,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
             this.borderColor = other.borderColor;
         }
 
-        @JIPipeDocumentation(name = "Canvas background color", description = "The background color of the canvas")
+        @SetJIPipeDocumentation(name = "Canvas background color", description = "The background color of the canvas")
         @JIPipeParameter("canvas-background-color")
         public Color getCanvasBackgroundColor() {
             return canvasBackgroundColor;
@@ -622,7 +622,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
             this.canvasBackgroundColor = canvasBackgroundColor;
         }
 
-        @JIPipeDocumentation(name = "Canvas image location", description = "Location of the image inside the canvas")
+        @SetJIPipeDocumentation(name = "Canvas image location", description = "Location of the image inside the canvas")
         @JIPipeParameter("canvas-anchor")
         public Anchor getCanvasAnchor() {
             return canvasAnchor;
@@ -633,7 +633,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
             this.canvasAnchor = canvasAnchor;
         }
 
-        @JIPipeDocumentation(name = "Border size", description = "Size of the border drawn around the image canvas")
+        @SetJIPipeDocumentation(name = "Border size", description = "Size of the border drawn around the image canvas")
         @JIPipeParameter("border-size")
         public int getBorderSize() {
             return borderSize;
@@ -644,7 +644,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
             this.borderSize = borderSize;
         }
 
-        @JIPipeDocumentation(name = "Border color", description = "The color of the border")
+        @SetJIPipeDocumentation(name = "Border color", description = "The color of the border")
         @JIPipeParameter("border-color")
         public Color getBorderColor() {
             return borderColor;
@@ -670,7 +670,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
             this.avoidScaling = other.avoidScaling;
         }
 
-        @JIPipeDocumentation(name = "Interpolation method", description = "The interpolation method if images are scaled")
+        @SetJIPipeDocumentation(name = "Interpolation method", description = "The interpolation method if images are scaled")
         @JIPipeParameter("interpolation-method")
         public InterpolationMethod getInterpolationMethod() {
             return interpolationMethod;
@@ -681,7 +681,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
             this.interpolationMethod = interpolationMethod;
         }
 
-        @JIPipeDocumentation(name = "Scale mode", description = "The way how the image is scaled (if enabled)")
+        @SetJIPipeDocumentation(name = "Scale mode", description = "The way how the image is scaled (if enabled)")
         @JIPipeParameter("scale-mode")
         public ScaleMode getScaleMode() {
             return scaleMode;
@@ -692,7 +692,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
             this.scaleMode = scaleMode;
         }
 
-        @JIPipeDocumentation(name = "Avoid scaling",description = "If enabled, images that are small enough will not be scaled")
+        @SetJIPipeDocumentation(name = "Avoid scaling",description = "If enabled, images that are small enough will not be scaled")
         @JIPipeParameter("avoid-scaling")
         public boolean isAvoidScaling() {
             return avoidScaling;

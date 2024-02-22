@@ -83,7 +83,7 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
     private void initialize(boolean showIntroduction) {
         setLayout(new BorderLayout());
 
-        documentTabPane = new DocumentTabPane(true);
+        documentTabPane = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Top);
         documentTabPane.registerSingletonTab("INTRODUCTION",
                 "Introduction",
                 UIUtils.getIconFromResources("actions/help-info.png"),

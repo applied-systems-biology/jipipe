@@ -3,8 +3,8 @@ package org.hkijena.jipipe.extensions.ilastik.nodes;
 import ij.ImagePlus;
 import net.imagej.ImgPlus;
 import net.imglib2.img.display.imagej.ImageJFunctions;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
@@ -28,10 +28,10 @@ import java.nio.file.Path;
 
 import static org.hkijena.jipipe.extensions.ilastik.utils.ImgUtils.DEFAULT_AXES;
 
-@JIPipeDocumentation(name = "Import Ilastik HDF5 image", description = "Imports an HDF5 image that was generated with Ilastik")
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeInputSlot(value = FileData.class, slotName = "HDF5 File", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true)
+@SetJIPipeDocumentation(name = "Import Ilastik HDF5 image", description = "Imports an HDF5 image that was generated with Ilastik")
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = FileData.class, slotName = "HDF5 File", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
 public class ImportIlastikHDF5ImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private JIPipeExpressionParameter hdf5Path = new JIPipeExpressionParameter("\"exported_data\"");
     private String axes = ImgUtils.toStringAxes(DEFAULT_AXES);
@@ -52,7 +52,7 @@ public class ImportIlastikHDF5ImageAlgorithm extends JIPipeSimpleIteratingAlgori
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Path path = iterationStep.getInputData(getFirstInputSlot(), FileData.class, progressInfo).toPath();
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
@@ -65,7 +65,7 @@ public class ImportIlastikHDF5ImageAlgorithm extends JIPipeSimpleIteratingAlgori
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(imagePlus), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Axes", description = "The order of the axes. Allowed values are X, Y, Z, C, and T")
+    @SetJIPipeDocumentation(name = "Axes", description = "The order of the axes. Allowed values are X, Y, Z, C, and T")
     @JIPipeParameter("axes")
     @StringParameterSettings(monospace = true)
     public String getAxes() {
@@ -77,7 +77,7 @@ public class ImportIlastikHDF5ImageAlgorithm extends JIPipeSimpleIteratingAlgori
         this.axes = axes;
     }
 
-    @JIPipeDocumentation(name = "HDF5 internal path", description = "Path to the HDF5 data set to import")
+    @SetJIPipeDocumentation(name = "HDF5 internal path", description = "Path to the HDF5 data set to import")
     @JIPipeParameter("hdf5-path")
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getHdf5Path() {
@@ -89,7 +89,7 @@ public class ImportIlastikHDF5ImageAlgorithm extends JIPipeSimpleIteratingAlgori
         this.hdf5Path = hdf5Path;
     }
 
-    @JIPipeDocumentation(name = "Display contrast settings", description = "The following settings determine how the display contrast is determined")
+    @SetJIPipeDocumentation(name = "Display contrast settings", description = "The following settings determine how the display contrast is determined")
     @JIPipeParameter("calibration-parameters")
     public CalibrationParameters getCalibrationParameters() {
         return calibrationParameters;

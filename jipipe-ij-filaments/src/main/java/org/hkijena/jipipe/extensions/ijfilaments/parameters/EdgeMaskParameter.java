@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.ijfilaments.parameters;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
@@ -12,8 +12,6 @@ import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotations
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentEdgeVariablesInfo;
-import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
-import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertexVariablesInfo;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -30,7 +28,7 @@ public class EdgeMaskParameter extends AbstractJIPipeParameterCollection {
         this.filter = new JIPipeExpressionParameter(other.filter);
     }
 
-    @JIPipeDocumentation(name = "Edge mask", description = "Apply the operation to a specific set of edges")
+    @SetJIPipeDocumentation(name = "Edge mask", description = "Apply the operation to a specific set of edges")
     @JIPipeParameter("mask")
     @JIPipeExpressionParameterVariable(fromClass = FilamentEdgeVariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)

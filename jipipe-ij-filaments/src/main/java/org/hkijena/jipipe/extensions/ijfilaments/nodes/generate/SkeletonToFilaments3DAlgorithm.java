@@ -17,8 +17,8 @@ package org.hkijena.jipipe.extensions.ijfilaments.nodes.generate;
 import ij.ImagePlus;
 import ij.measure.Calibration;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -37,11 +37,11 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.util.HashMap;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Binary skeleton to 3D filaments", description = "Applies a simple algorithm that converts a binary skeleton into a filament. " +
+@SetJIPipeDocumentation(name = "Binary skeleton to 3D filaments", description = "Applies a simple algorithm that converts a binary skeleton into a filament. " +
         "This algorithm 3D data and will apply the processing per C/T stack.")
-@JIPipeNode(menuPath = "Convert", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Skeleton", autoCreate = true)
-@JIPipeOutputSlot(value = Filaments3DData.class, slotName = "Filaments", description = "The filaments as extracted by the algorithm", autoCreate = true)
+@DefineJIPipeNode(menuPath = "Convert", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Skeleton", create = true)
+@AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Filaments", description = "The filaments as extracted by the algorithm", create = true)
 public class SkeletonToFilaments3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public SkeletonToFilaments3DAlgorithm(JIPipeNodeInfo info) {
@@ -53,7 +53,7 @@ public class SkeletonToFilaments3DAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus skeleton = iterationStep.getInputData("Skeleton", ImagePlusData.class, progressInfo).getImage();
         Filaments3DData filamentsData = new Filaments3DData();
 

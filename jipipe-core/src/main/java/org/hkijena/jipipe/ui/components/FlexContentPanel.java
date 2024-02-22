@@ -46,7 +46,7 @@ public class FlexContentPanel extends JPanel {
             pinToolBar.setFloatable(false);
         }
         if ((flags & WITH_SIDEBAR) == WITH_SIDEBAR) {
-            sideBar = new DocumentTabPane(false);
+            sideBar = new DocumentTabPane(false, DocumentTabPane.TabPlacement.Top);
         }
         initialize();
         rebuildLayout();
@@ -136,14 +136,14 @@ public class FlexContentPanel extends JPanel {
 
     private DocumentTabPane ensureSideBar() {
         if (sideBar == null) {
-            sideBar = new DocumentTabPane(false);
+            sideBar = new DocumentTabPane(false, DocumentTabPane.TabPlacement.Top);
         }
         return sideBar;
     }
 
     public DocumentTabPane getSideBar() {
         if (sideBar == null) {
-            sideBar = new DocumentTabPane(false);
+            sideBar = new DocumentTabPane(false, DocumentTabPane.TabPlacement.Top);
             rebuildLayout();
         }
         return sideBar;

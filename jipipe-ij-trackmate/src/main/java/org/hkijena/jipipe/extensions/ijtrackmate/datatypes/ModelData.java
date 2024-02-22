@@ -20,8 +20,8 @@ import fiji.plugin.trackmate.io.TmXmlReader;
 import fiji.plugin.trackmate.io.TmXmlWriter;
 import ij.IJ;
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHeavyData;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
@@ -36,9 +36,9 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.io.IOException;
 import java.nio.file.Path;
 
-@JIPipeDocumentation(name = "TrackMate model", description = "A TrackMate model")
+@SetJIPipeDocumentation(name = "TrackMate model", description = "A TrackMate model")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains an *.xml file that stores the TrackMate model and a *.tif image file that contains the image that is the basis of the model.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/trackmate-model-data.schema.json")
-@JIPipeHeavyData
+@LabelAsJIPipeHeavyData
 public class ModelData implements JIPipeData {
 
     private final Model model;

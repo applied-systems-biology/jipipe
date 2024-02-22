@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.plots.datatypes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -89,7 +89,7 @@ public abstract class XYPlotData extends PlotData {
         return dataset;
     }
 
-    @JIPipeDocumentation(name = "X axis label", description = "Label of the X-axis")
+    @SetJIPipeDocumentation(name = "X axis label", description = "Label of the X-axis")
     @JIPipeParameter("x-axis-label")
     public String getxAxisLabel() {
         return xAxisLabel;
@@ -101,7 +101,7 @@ public abstract class XYPlotData extends PlotData {
 
     }
 
-    @JIPipeDocumentation(name = "Y axis label", description = "Label of the Y-axis")
+    @SetJIPipeDocumentation(name = "Y axis label", description = "Label of the Y-axis")
     @JIPipeParameter("y-axis-label")
     public String getyAxisLabel() {
         return yAxisLabel;
@@ -113,7 +113,7 @@ public abstract class XYPlotData extends PlotData {
 
     }
 
-    @JIPipeDocumentation(name = "X axis font size", description = "Font size of the X axis")
+    @SetJIPipeDocumentation(name = "X axis font size", description = "Font size of the X axis")
     @JIPipeParameter("x-axis-font-size")
     public int getxAxisFontSize() {
         return xAxisFontSize;
@@ -124,7 +124,7 @@ public abstract class XYPlotData extends PlotData {
         this.xAxisFontSize = xAxisFontSize;
     }
 
-    @JIPipeDocumentation(name = "Y axis font size", description = "Font size of the Y axis")
+    @SetJIPipeDocumentation(name = "Y axis font size", description = "Font size of the Y axis")
     @JIPipeParameter("y-axis-font-size")
     public int getyAxisFontSize() {
         return yAxisFontSize;
@@ -135,7 +135,7 @@ public abstract class XYPlotData extends PlotData {
         this.yAxisFontSize = yAxisFontSize;
     }
 
-    @JIPipeDocumentation(name = "X axis minimum", description = "Minimum of the X axis values. If disabled or infinite, the value is calculated automatically.")
+    @SetJIPipeDocumentation(name = "X axis minimum", description = "Minimum of the X axis values. If disabled or infinite, the value is calculated automatically.")
     @JIPipeParameter("x-axis-minimum")
     public OptionalDoubleParameter getxAxisMinimum() {
         return xAxisMinimum;
@@ -146,7 +146,7 @@ public abstract class XYPlotData extends PlotData {
         this.xAxisMinimum = xAxisMinimum;
     }
 
-    @JIPipeDocumentation(name = "Y axis minimum", description = "Minimum of the Y axis values. If disabled or infinite, the value is calculated automatically.")
+    @SetJIPipeDocumentation(name = "Y axis minimum", description = "Minimum of the Y axis values. If disabled or infinite, the value is calculated automatically.")
     @JIPipeParameter("y-axis-minimum")
     public OptionalDoubleParameter getyAxisMinimum() {
         return yAxisMinimum;
@@ -157,7 +157,7 @@ public abstract class XYPlotData extends PlotData {
         this.yAxisMinimum = yAxisMinimum;
     }
 
-    @JIPipeDocumentation(name = "X axis maximum", description = "Maximum of the X axis values. If disabled or infinite, the value is calculated automatically.")
+    @SetJIPipeDocumentation(name = "X axis maximum", description = "Maximum of the X axis values. If disabled or infinite, the value is calculated automatically.")
     @JIPipeParameter("x-axis-maximum")
     public OptionalDoubleParameter getxAxisMaximum() {
         return xAxisMaximum;
@@ -168,7 +168,7 @@ public abstract class XYPlotData extends PlotData {
         this.xAxisMaximum = xAxisMaximum;
     }
 
-    @JIPipeDocumentation(name = "Y axis maximum", description = "Maximum of the Y axis values. If disabled or infinite, the value is calculated automatically.")
+    @SetJIPipeDocumentation(name = "Y axis maximum", description = "Maximum of the Y axis values. If disabled or infinite, the value is calculated automatically.")
     @JIPipeParameter("y-axis-maximum")
     public OptionalDoubleParameter getyAxisMaximum() {
         return yAxisMaximum;

@@ -345,7 +345,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
                     }
 
                     @Override
-                    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+                    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
 
                     }
                 });

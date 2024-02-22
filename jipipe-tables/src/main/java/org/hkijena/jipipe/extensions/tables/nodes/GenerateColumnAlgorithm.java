@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.tables.nodes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -22,12 +22,10 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameter;
 import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
@@ -35,17 +33,16 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.parameters.collections.ExpressionTableColumnGeneratorProcessorParameterList;
 import org.hkijena.jipipe.extensions.tables.parameters.processors.ExpressionTableColumnGeneratorProcessor;
-import org.hkijena.jipipe.utils.ResourceUtils;
 
 /**
  * Algorithm that adds or replaces a column by a generated value
  */
-@JIPipeDocumentation(name = "Add table column", description = "Adds a new column. By default no changes are applied if the column already exists. " +
+@SetJIPipeDocumentation(name = "Add table column", description = "Adds a new column. By default no changes are applied if the column already exists. " +
         "Can be optionally configured to replace existing columns.")
-@JIPipeNodeAlias(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Append", aliasName = "Add missing columns")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Append", aliasName = "Add missing columns")
+@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private ExpressionTableColumnGeneratorProcessorParameterList columns = new ExpressionTableColumnGeneratorProcessorParameterList();
@@ -75,7 +72,7 @@ public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData table = (ResultsTableData) iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo).duplicate(progressInfo);
         if (ensureMinNumberOfRows.isEnabled()) {
             table.addRows(ensureMinNumberOfRows.getContent() - table.getRowCount());
@@ -112,9 +109,9 @@ public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        super.reportValidity(context, report);
-        report.report(new ParameterValidationReportContext(context, this, "Columns", "columns"), columns);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
+        report.report(new ParameterValidationReportContext(reportContext, this, "Columns", "columns"), columns);
     }
 
     @Override
@@ -122,7 +119,7 @@ public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         return true;
     }
 
-    @JIPipeDocumentation(name = "Replace existing data", description = "If the target column exists, replace its content")
+    @SetJIPipeDocumentation(name = "Replace existing data", description = "If the target column exists, replace its content")
     @JIPipeParameter("replace-existing")
     public boolean isReplaceIfExists() {
         return replaceIfExists;
@@ -133,7 +130,7 @@ public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.replaceIfExists = replaceIfExists;
     }
 
-    @JIPipeDocumentation(name = "Columns", description = "Columns to be generated. The function is applied for each row. " +
+    @SetJIPipeDocumentation(name = "Columns", description = "Columns to be generated. The function is applied for each row. " +
             "You will have the standard set of table location variables available (e.g. the row index), but also access to the other column values within the same row. " +
             "Access them just as any variable. If the column name has special characters or spaces, use the $ operator. Example: " +
             "<pre>$\"%Area\" * 10</pre>")
@@ -151,7 +148,7 @@ public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.columns = columns;
     }
 
-    @JIPipeDocumentation(name = "Ensure minimum number of rows", description = "Ensures that the table has at least the specified number of rows prior to adding columns.")
+    @SetJIPipeDocumentation(name = "Ensure minimum number of rows", description = "Ensures that the table has at least the specified number of rows prior to adding columns.")
     @JIPipeParameter("ensure-min-number-of-rows")
     public OptionalIntegerParameter getEnsureMinNumberOfRows() {
         return ensureMinNumberOfRows;

@@ -16,9 +16,9 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi;
 import com.google.common.collect.ImmutableList;
 import ij.ImagePlus;
 import ij.gui.Roi;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -49,11 +49,11 @@ import org.jgrapht.graph.DefaultUndirectedGraph;
 
 import java.util.*;
 
-@JIPipeDocumentation(name = "Split into connected components", description = "Algorithm that extracts connected components across one or multiple dimensions. The output consists of multiple ROI lists, one for each connected component.")
-@JIPipeNode(menuPath = "Split", nodeTypeCategory = RoiNodeTypeCategory.class)
-@JIPipeInputSlot(value = ROIListData.class, slotName = "Input", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true, optional = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Components", autoCreate = true)
+@SetJIPipeDocumentation(name = "Split into connected components", description = "Algorithm that extracts connected components across one or multiple dimensions. The output consists of multiple ROI lists, one for each connected component.")
+@DefineJIPipeNode(menuPath = "Split", nodeTypeCategory = RoiNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true, optional = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Components", create = true)
 public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorithm {
     private DimensionOperation dimensionZOperation = DimensionOperation.Split;
     private DimensionOperation dimensionCOperation = DimensionOperation.Merge;
@@ -86,7 +86,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROIListData input = (ROIListData) iterationStep.getInputData("Input", ROIListData.class, progressInfo).duplicate(progressInfo);
         DefaultUndirectedGraph<Integer, DefaultEdge> graph = new DefaultUndirectedGraph<>(DefaultEdge.class);
         for (int i = 0; i < input.size(); i++) {
@@ -260,7 +260,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
         }
     }
 
-    @JIPipeDocumentation(name = "Graph postprocessing", description = "Expression that allows to modify the overlap graph (each node represents a ROI, edges represent an overlap)." +
+    @SetJIPipeDocumentation(name = "Graph postprocessing", description = "Expression that allows to modify the overlap graph (each node represents a ROI, edges represent an overlap)." +
             " The connected components of the overlap graph are later converted into their respective connected components." +
             "This is applied after all processing steps. If not empty, this expression is executed for each node in the overlap graph. " +
             "Return one of following variables to determine what should be done with the node:" +
@@ -388,7 +388,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
         return null;
     }
 
-    @JIPipeDocumentation(name = "Dimension Z", description = "Operation for the Z (Slice) dimension. ")
+    @SetJIPipeDocumentation(name = "Dimension Z", description = "Operation for the Z (Slice) dimension. ")
     @JIPipeParameter("operation-dimension-z")
     public DimensionOperation getDimensionZOperation() {
         return dimensionZOperation;
@@ -399,7 +399,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
         this.dimensionZOperation = dimensionZOperation;
     }
 
-    @JIPipeDocumentation(name = "Dimension C", description = "Operation for the C (Channel) dimension. ")
+    @SetJIPipeDocumentation(name = "Dimension C", description = "Operation for the C (Channel) dimension. ")
     @JIPipeParameter("operation-dimension-c")
     public DimensionOperation getDimensionCOperation() {
         return dimensionCOperation;
@@ -410,7 +410,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
         this.dimensionCOperation = dimensionCOperation;
     }
 
-    @JIPipeDocumentation(name = "Dimension T", description = "Operation for the T (Time) dimension. ")
+    @SetJIPipeDocumentation(name = "Dimension T", description = "Operation for the T (Time) dimension. ")
     @JIPipeParameter("operation-dimension-t")
     public DimensionOperation getDimensionTOperation() {
         return dimensionTOperation;
@@ -421,7 +421,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
         this.dimensionTOperation = dimensionTOperation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with component", description = "If enabled, an annotation with the numeric component index is generated.")
+    @SetJIPipeDocumentation(name = "Annotate with component", description = "If enabled, an annotation with the numeric component index is generated.")
     @JIPipeParameter("component-name-annotation")
     public OptionalAnnotationNameParameter getComponentNameAnnotation() {
         return componentNameAnnotation;
@@ -432,7 +432,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
         this.componentNameAnnotation = componentNameAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Overlap filter", description = "This filter is applied to any combination of ROIs that have an overlap. Please open the expression builder to see a list of all available variables. If the filter is empty, " +
+    @SetJIPipeDocumentation(name = "Overlap filter", description = "This filter is applied to any combination of ROIs that have an overlap. Please open the expression builder to see a list of all available variables. If the filter is empty, " +
             "no filtering is applied.")
     @JIPipeParameter("overlap-filter")
     @JIPipeExpressionParameterSettings(variableSource = RoiOverlapStatisticsVariablesInfo.class)
@@ -445,7 +445,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
         this.overlapFilter = overlapFilter;
     }
 
-    @JIPipeDocumentation(name = "Overlap filter measurements", description = "Measurements extracted for the overlap filter.")
+    @SetJIPipeDocumentation(name = "Overlap filter measurements", description = "Measurements extracted for the overlap filter.")
     @JIPipeParameter("overlap-filter-measurements")
     public ImageStatisticsSetParameter getOverlapFilterMeasurements() {
         return overlapFilterMeasurements;
@@ -456,7 +456,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
         this.overlapFilterMeasurements = overlapFilterMeasurements;
     }
 
-    @JIPipeDocumentation(name = "Split at junctions", description = "If enabled, non-unique connections (between multiple objects) are deleted. The algorithm removes all connections to ROI with a higher z/c/t (depending on the mode)." +
+    @SetJIPipeDocumentation(name = "Split at junctions", description = "If enabled, non-unique connections (between multiple objects) are deleted. The algorithm removes all connections to ROI with a higher z/c/t (depending on the mode)." +
             " This solver can be disabled via the 'Try to solve junctions' parameter." +
             "If no solution can be found this way, all connections around the node are removed (making a single component).")
     @JIPipeParameter("split-at-junctions")
@@ -469,7 +469,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
         this.splitAtJunctions = splitAtJunctions;
     }
 
-    @JIPipeDocumentation(name = "Try to solve junctions", description = "If enabled, the 'Split at junctions' function will try to remove connections to ROI with a higher z/c/t (depending on the mode). This is not trivial, as" +
+    @SetJIPipeDocumentation(name = "Try to solve junctions", description = "If enabled, the 'Split at junctions' function will try to remove connections to ROI with a higher z/c/t (depending on the mode). This is not trivial, as" +
             " ROIs can also be present in any dimension and dimensions can be merged.")
     @JIPipeParameter("try-solve-junctions")
     public boolean isTrySolveJunctions() {
@@ -481,7 +481,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
         this.trySolveJunctions = trySolveJunctions;
     }
 
-    @JIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
+    @SetJIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
     @JIPipeParameter("measure-in-physical-units")
     public boolean isMeasureInPhysicalUnits() {
         return measureInPhysicalUnits;
@@ -492,7 +492,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
         this.measureInPhysicalUnits = measureInPhysicalUnits;
     }
 
-    @JIPipeDocumentationDescription(description = "There are three different modes: <ul><li>Followed dimensions will be tracked</li>" +
+    @AddJIPipeDocumentationDescription(description = "There are three different modes: <ul><li>Followed dimensions will be tracked</li>" +
             "<li>ROI can be split across a dimension. The components are then generated per plane in this dimension.</li>" +
             "<li>Merging is the opposite of splitting: If a dimension is merged, it will be collapsed during the calculation, meaning that all associated ROI will be put together</li></ul>")
     public enum DimensionOperation {

@@ -21,8 +21,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -217,7 +217,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
      * @param user if the change was triggered by a user. If false, checks for slot modification, counts, etc. do not apply.
      * @return the slot info
      */
-    public JIPipeDataSlotInfo addSlot(JIPipeInputSlot slot, boolean user) {
+    public JIPipeDataSlotInfo addSlot(AddJIPipeInputSlot slot, boolean user) {
         JIPipeDataSlotInfo info = new JIPipeDataSlotInfo(slot);
         return addSlot(info, user);
     }
@@ -229,7 +229,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
      * @param user if the change was triggered by a user. If false, checks for slot modification, counts, etc. do not apply.
      * @return the slot info
      */
-    public JIPipeDataSlotInfo addSlot(JIPipeOutputSlot slot, boolean user) {
+    public JIPipeDataSlotInfo addSlot(AddJIPipeOutputSlot slot, boolean user) {
         JIPipeDataSlotInfo info = new JIPipeDataSlotInfo(slot);
         return addSlot(info, user);
     }
@@ -790,7 +790,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
          * @param annotation the annotation
          * @return The builder
          */
-        public Builder addInputSlot(JIPipeInputSlot annotation) {
+        public Builder addInputSlot(AddJIPipeInputSlot annotation) {
             JIPipeDataSlotInfo slot = object.addSlot(annotation.slotName(), new JIPipeDataSlotInfo(annotation), false);
             return this;
         }
@@ -883,7 +883,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
          * @param annotation the annotation
          * @return The builder
          */
-        public Builder addOutputSlot(JIPipeOutputSlot annotation) {
+        public Builder addOutputSlot(AddJIPipeOutputSlot annotation) {
             object.addSlot(annotation.slotName(), new JIPipeDataSlotInfo(annotation), false);
             return this;
         }
@@ -1049,13 +1049,13 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
          * @return the builder
          */
         public Builder addFromAnnotations(Class<? extends JIPipeGraphNode> klass) {
-            for (JIPipeInputSlot slot : klass.getAnnotationsByType(JIPipeInputSlot.class)) {
-                if (slot.autoCreate() && !object.inputSlots.containsKey(slot.slotName())) {
+            for (AddJIPipeInputSlot slot : klass.getAnnotationsByType(AddJIPipeInputSlot.class)) {
+                if (slot.create() && !object.inputSlots.containsKey(slot.slotName())) {
                     object.addSlot(slot, false);
                 }
             }
-            for (JIPipeOutputSlot slot : klass.getAnnotationsByType(JIPipeOutputSlot.class)) {
-                if (slot.autoCreate() && !object.outputSlots.containsKey(slot.slotName())) {
+            for (AddJIPipeOutputSlot slot : klass.getAnnotationsByType(AddJIPipeOutputSlot.class)) {
+                if (slot.create() && !object.outputSlots.containsKey(slot.slotName())) {
                     object.addSlot(slot, false);
                 }
             }

@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.functions.color;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -8,7 +8,7 @@ import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 import java.util.Arrays;
 import java.util.List;
 
-@JIPipeDocumentation(name = "RGB Color", description = "Creates an array that represents a RGB color (0-255 per channel)")
+@SetJIPipeDocumentation(name = "RGB Color", description = "Creates an array that represents a RGB color (0-255 per channel)")
 public class CreateRGBColorFunction extends ExpressionFunction {
     public CreateRGBColorFunction() {
         super("RGB_COLOR", 3);

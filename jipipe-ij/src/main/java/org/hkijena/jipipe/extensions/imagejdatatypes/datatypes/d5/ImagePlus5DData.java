@@ -14,9 +14,9 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5;
 
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHeavyData;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
@@ -27,9 +27,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 /**
  * 5D image
  */
-@JIPipeDocumentation(name = "5D image", description = "A 5D image")
-@JIPipeNode(menuPath = "Images\n5D")
-@JIPipeHeavyData
+@SetJIPipeDocumentation(name = "5D image", description = "A 5D image")
+@DefineJIPipeNode(menuPath = "Images\n5D")
+@LabelAsJIPipeHeavyData
 @ImageTypeInfo(numDimensions = 5)
 public class ImagePlus5DData extends ImagePlusData {
 

@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.ijfilaments.nodes.convert;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -19,10 +19,10 @@ import org.hkijena.jipipe.extensions.scene3d.datatypes.Scene3DData;
 import java.awt.*;
 import java.util.Set;
 
-@JIPipeDocumentation(name = "Convert filaments to 3D scene", description = "Converts 3D filaments into a 3D scene.")
-@JIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Convert")
-@JIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = Scene3DData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Convert filaments to 3D scene", description = "Converts 3D filaments into a 3D scene.")
+@DefineJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Convert")
+@AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = Scene3DData.class, slotName = "Output", create = true)
 public class ConvertFilamentsTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private String meshNamePrefix;
@@ -57,7 +57,7 @@ public class ConvertFilamentsTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgo
         this.splitIntoConnectedComponents = other.splitIntoConnectedComponents;
     }
 
-    @JIPipeDocumentation(name = "Override vertex color", description = "Overrides the mesh color of vertices")
+    @SetJIPipeDocumentation(name = "Override vertex color", description = "Overrides the mesh color of vertices")
     @JIPipeParameter("override-vertex-color")
     public OptionalColorParameter getOverrideVertexColor() {
         return overrideVertexColor;
@@ -68,7 +68,7 @@ public class ConvertFilamentsTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgo
         this.overrideVertexColor = overrideVertexColor;
     }
 
-    @JIPipeDocumentation(name = "Override edge color", description = "Overrides the mesh color of edges")
+    @SetJIPipeDocumentation(name = "Override edge color", description = "Overrides the mesh color of edges")
     @JIPipeParameter("override-edge-color")
     public OptionalColorParameter getOverrideEdgeColor() {
         return overrideEdgeColor;
@@ -79,7 +79,7 @@ public class ConvertFilamentsTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgo
         this.overrideEdgeColor = overrideEdgeColor;
     }
 
-    @JIPipeDocumentation(name = "With edges", description = "If enabled, convert edges into 3D meshes")
+    @SetJIPipeDocumentation(name = "With edges", description = "If enabled, convert edges into 3D meshes")
     @JIPipeParameter("with-edges")
     public boolean isWithEdges() {
         return withEdges;
@@ -90,7 +90,7 @@ public class ConvertFilamentsTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgo
         this.withEdges = withEdges;
     }
 
-    @JIPipeDocumentation(name = "With vertices", description = "If enabled, convert vertices into 3D meshes")
+    @SetJIPipeDocumentation(name = "With vertices", description = "If enabled, convert vertices into 3D meshes")
     @JIPipeParameter("with-vertices")
     public boolean isWithVertices() {
         return withVertices;
@@ -101,7 +101,7 @@ public class ConvertFilamentsTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgo
         this.withVertices = withVertices;
     }
 
-    @JIPipeDocumentation(name = "Override edge radius", description = "If enabled, set the radius of edge meshes. Otherwise, the radius will interpolate between the radii of the two vertices")
+    @SetJIPipeDocumentation(name = "Override edge radius", description = "If enabled, set the radius of edge meshes. Otherwise, the radius will interpolate between the radii of the two vertices")
     @JIPipeParameter("override-edge-radius")
     public OptionalFloatParameter getOverrideEdgeRadius() {
         return overrideEdgeRadius;
@@ -112,7 +112,7 @@ public class ConvertFilamentsTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgo
         this.overrideEdgeRadius = overrideEdgeRadius;
     }
 
-    @JIPipeDocumentation(name = "Override vertex radius", description = "If enabled, set the radius of vertices.")
+    @SetJIPipeDocumentation(name = "Override vertex radius", description = "If enabled, set the radius of vertices.")
     @JIPipeParameter("override-vertex-radius")
     public OptionalFloatParameter getOverrideVertexRadius() {
         return overrideVertexRadius;
@@ -123,7 +123,7 @@ public class ConvertFilamentsTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgo
         this.overrideVertexRadius = overrideVertexRadius;
     }
 
-    @JIPipeDocumentation(name = "Mesh length", description = "If 'Force mesh length' and 'Physical dimensions' are enabled, scale the mesh to that 1 unit in its coordinate system is of the specified unit.")
+    @SetJIPipeDocumentation(name = "Mesh length", description = "If 'Force mesh length' and 'Physical dimensions' are enabled, scale the mesh to that 1 unit in its coordinate system is of the specified unit.")
     @JIPipeParameter("mesh-length-unit")
     public Quantity.LengthUnit getMeshLengthUnit() {
         return meshLengthUnit;
@@ -134,7 +134,7 @@ public class ConvertFilamentsTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgo
         this.meshLengthUnit = meshLengthUnit;
     }
 
-    @JIPipeDocumentation(name = "Force mesh length", description = "If this option and 'Physical dimensions' are enabled, scale the mesh to that 1 unit in its coordinate system is of the unit specified in 'Mesh length'.")
+    @SetJIPipeDocumentation(name = "Force mesh length", description = "If this option and 'Physical dimensions' are enabled, scale the mesh to that 1 unit in its coordinate system is of the unit specified in 'Mesh length'.")
     @JIPipeParameter("force-mesh-length-unit")
     public boolean isForceMeshLengthUnit() {
         return forceMeshLengthUnit;
@@ -145,7 +145,7 @@ public class ConvertFilamentsTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgo
         this.forceMeshLengthUnit = forceMeshLengthUnit;
     }
 
-    @JIPipeDocumentation(name = "Physical sizes", description = "If enabled, the physical voxel size is considered during the generation of the mesh")
+    @SetJIPipeDocumentation(name = "Physical sizes", description = "If enabled, the physical voxel size is considered during the generation of the mesh")
     @JIPipeParameter("physical-sizes")
     public boolean isPhysicalSizes() {
         return physicalSizes;
@@ -156,7 +156,7 @@ public class ConvertFilamentsTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgo
         this.physicalSizes = physicalSizes;
     }
 
-    @JIPipeDocumentation(name = "Mesh name", description = "The prefix of the mesh")
+    @SetJIPipeDocumentation(name = "Mesh name", description = "The prefix of the mesh")
     @JIPipeParameter("mesh-name-prefix")
     public String getMeshNamePrefix() {
         return meshNamePrefix;
@@ -167,7 +167,7 @@ public class ConvertFilamentsTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgo
         this.meshNamePrefix = meshNamePrefix;
     }
 
-    @JIPipeDocumentation(name = "Split into connected components", description = "If enabled, one mesh group is created per connected component")
+    @SetJIPipeDocumentation(name = "Split into connected components", description = "If enabled, one mesh group is created per connected component")
     @JIPipeParameter("split-into-connected-components")
     public boolean isSplitIntoConnectedComponents() {
         return splitIntoConnectedComponents;
@@ -179,7 +179,7 @@ public class ConvertFilamentsTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgo
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Filaments3DData inputData = iterationStep.getInputData(getFirstInputSlot(), Filaments3DData.class, progressInfo);
         Scene3DData scene3DData = new Scene3DData();
         if (splitIntoConnectedComponents) {

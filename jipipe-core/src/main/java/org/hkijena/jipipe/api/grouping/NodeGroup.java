@@ -17,8 +17,8 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -49,8 +49,9 @@ import java.util.Map;
 /**
  * A sub-graph algorithm that can be defined by a user
  */
-@JIPipeDocumentation(name = "Group", description = "A sub-graph that contains its own pipeline.")
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "Group", description = "A node that contains a sub-pipeline. Double-click the node to open the contained workflow and add inputs/outputs to the 'Group input'/'Group output' nodes. " +
+        "To expose parameters from within the group to the surrounding group node, go to the 'Parameters' tab and add references via 'Edit parameter references'.")
+@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomParameterCollection, ParameterReferencesChangedEventListener {
 
     private NodeGroupContents contents;
@@ -215,7 +216,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
         contents.setParent(this);
     }
 
-    @JIPipeDocumentation(name = "Wrapped graph", description = "The graph that is wrapped inside this node")
+    @SetJIPipeDocumentation(name = "Wrapped graph", description = "The graph that is wrapped inside this node")
     @JIPipeParameter("contents")
     public NodeGroupContents getContents() {
         return contents;
@@ -229,7 +230,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
         exportedParameters.setGraph(contents.getWrappedGraph());
     }
 
-    @JIPipeDocumentation(name = "Exported parameters", description = "Allows you to export parameters from the group into the group node")
+    @SetJIPipeDocumentation(name = "Exported parameters", description = "Allows you to export parameters from the group into the group node")
     @JIPipeParameter(value = "exported-parameters", functional = false)
     public GraphNodeParameterReferenceGroupCollection getExportedParameters() {
         return exportedParameters;
@@ -244,15 +245,15 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        super.reportValidity(context, report);
-        report.report(new ParameterValidationReportContext(context, this, "Exported parameters", "exported-parameters"), exportedParameters);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
+        report.report(new ParameterValidationReportContext(reportContext, this, "Exported parameters", "exported-parameters"), exportedParameters);
 
         // Only check if the graph creates a valid group output
-        report.report(context, getGroupOutput());
+        report.report(reportContext, getGroupOutput());
     }
 
-    @JIPipeDocumentation(name = "Show limited parameter set", description = "If enabled, only the exported parameters, name, and description are shown as parameters. " +
+    @SetJIPipeDocumentation(name = "Show limited parameter set", description = "If enabled, only the exported parameters, name, and description are shown as parameters. " +
             "The data batch generation will also be hidden. This can be useful for educational pipelines.")
     @JIPipeParameter(value = "show-limited-parameters", functional = false)
     public boolean isShowLimitedParameters() {
@@ -312,7 +313,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
         emitParameterStructureChangedEvent();
     }
 
-    @JIPipeDocumentation(name = "Input management", description = "Only used if the graph iteration mode is not set to 'Pass data through'. " +
+    @SetJIPipeDocumentation(name = "Input management", description = "Only used if the graph iteration mode is not set to 'Pass data through'. " +
             "This algorithm can have multiple inputs. This means that JIPipe has to match incoming data into batches via metadata annotations. " +
             "The following settings allow you to control which columns are used as reference to organize data.")
     @JIPipeParameter(value = "jipipe:data-batch-generation", collapsed = true)
@@ -328,7 +329,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
         return super.isParameterUIVisible(tree, subParameter);
     }
 
-    @JIPipeDocumentation(name = "Graph iteration mode", description = "Determines how the wrapped graph is iterated:" +
+    @SetJIPipeDocumentation(name = "Graph iteration mode", description = "Determines how the wrapped graph is iterated:" +
             "<ul>" +
             "<li>The data can be passed through. This means that the wrapped graph receives all data as-is and will be executed once.</li>" +
             "<li>The wrapped graph can be executed per data batch. Here you can choose between an iterative data batch (one item per slot) " +

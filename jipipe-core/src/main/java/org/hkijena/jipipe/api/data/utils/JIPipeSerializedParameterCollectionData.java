@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
@@ -33,7 +34,7 @@ import java.nio.file.Path;
  * A base class for {@link JIPipeData} that is serialized from/to JSON for convenience
  * Only valid {@link org.hkijena.jipipe.api.parameters.JIPipeParameter} definitions are stored.
  * Ensure that this data type has a copy constructor for the duplicate() function.
- * You also still need to add the proper {@link org.hkijena.jipipe.api.JIPipeDocumentation} annotation and
+ * You also still need to add the proper {@link SetJIPipeDocumentation} annotation and
  * the JIPipeData importData(Path) static function.
  * Unlike {@link JIPipeSerializedJsonObjectData}, this data is serialized in a way to fully restore its data type during deserialization,
  * removing the requirement of storing the data type ID within the JSON.

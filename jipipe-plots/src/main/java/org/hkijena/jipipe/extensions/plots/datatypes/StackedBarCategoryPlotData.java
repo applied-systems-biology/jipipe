@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.plots.datatypes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.jfree.chart.ChartFactory;
@@ -28,7 +28,7 @@ import java.awt.*;
  * Series table columns: Value (Double), Category (String), Group (String)
  * Multiple series: No
  */
-@JIPipeDocumentation(name = "Stacked bar category plot", description = "Bar chart that displays categories in its X axis and colors the bars according to the group." +
+@SetJIPipeDocumentation(name = "Stacked bar category plot", description = "Bar chart that displays categories in its X axis and colors the bars according to the group." +
         " Bars within the same group are stacked.")
 @PlotMetadata(columns = {@PlotColumn(name = "Value", description = "Values displayed in the Y axis", isNumeric = true),
         @PlotColumn(name = "Category", description = "Categories displayed in the X axis. Must correspond to each value.", isNumeric = false),

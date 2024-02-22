@@ -94,7 +94,7 @@ public class CellposeExtension extends JIPipePrepackagedDefaultJavaExtension {
                     "For more information, please visit https://www.jipipe.org/installation/third-party/cellpose/");
             notification.getActions().add(new JIPipeNotificationAction("Install Cellpose",
                     "Installs Cellpose via the EasyInstaller",
-                    UIUtils.getIconInvertedFromResources("actions/browser-download.png"),
+                    UIUtils.getIconInvertedFromResources("actions/download.png"),
                     JIPipeNotificationAction.Style.Success,
                     CellposeExtension::easyInstallCellpose));
             notification.getActions().add(new JIPipeNotificationAction("Open settings",

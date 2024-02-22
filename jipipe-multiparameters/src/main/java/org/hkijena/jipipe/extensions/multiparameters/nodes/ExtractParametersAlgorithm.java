@@ -1,15 +1,14 @@
 package org.hkijena.jipipe.extensions.multiparameters.nodes;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
-import org.hkijena.jipipe.api.data.context.JIPipeMutableDataContext;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -21,10 +20,10 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
 
 import java.util.*;
 
-@JIPipeDocumentation(name = "Extract parameters from node", description = "Extracts parameters from the incoming node(s)")
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Node", autoCreate = true)
-@JIPipeOutputSlot(value = ParametersData.class, slotName = "Parameters", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "Extract parameters from node", description = "Extracts parameters from the incoming node(s)")
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Node", create = true)
+@AddJIPipeOutputSlot(value = ParametersData.class, slotName = "Parameters", create = true)
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class ExtractParametersAlgorithm extends JIPipeAlgorithm {
 
     private OptionalAnnotationNameParameter nodeUUIDAnnotation = new OptionalAnnotationNameParameter("Node UUID", true);
@@ -49,7 +48,7 @@ public class ExtractParametersAlgorithm extends JIPipeAlgorithm {
         return true;
     }
 
-    @JIPipeDocumentation(name = "Annotate with node UUID", description = "If enabled, the output parameters are annotated with the unique node ID")
+    @SetJIPipeDocumentation(name = "Annotate with node UUID", description = "If enabled, the output parameters are annotated with the unique node ID")
     @JIPipeParameter("node-uuid-annotation")
     public OptionalAnnotationNameParameter getNodeUUIDAnnotation() {
         return nodeUUIDAnnotation;
@@ -60,7 +59,7 @@ public class ExtractParametersAlgorithm extends JIPipeAlgorithm {
         this.nodeUUIDAnnotation = nodeUUIDAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with node alias ID", description = "If enabled, the output parameters are annotated with the unique node ID (human-readable)")
+    @SetJIPipeDocumentation(name = "Annotate with node alias ID", description = "If enabled, the output parameters are annotated with the unique node ID (human-readable)")
     @JIPipeParameter("node-alias-id-annotation")
     public OptionalAnnotationNameParameter getNodeAliasIDAnnotation() {
         return nodeAliasIDAnnotation;
@@ -71,7 +70,7 @@ public class ExtractParametersAlgorithm extends JIPipeAlgorithm {
         this.nodeAliasIDAnnotation = nodeAliasIDAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with node name", description = "If enabled, the output parameters are annotated with the node name")
+    @SetJIPipeDocumentation(name = "Annotate with node name", description = "If enabled, the output parameters are annotated with the node name")
     @JIPipeParameter("node-name-annotation")
     public OptionalAnnotationNameParameter getNodeNameAnnotation() {
         return nodeNameAnnotation;
@@ -82,7 +81,7 @@ public class ExtractParametersAlgorithm extends JIPipeAlgorithm {
         this.nodeNameAnnotation = nodeNameAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Parameter key filter", description = "Allows to filter only specific parameter keys. ")
+    @SetJIPipeDocumentation(name = "Parameter key filter", description = "Allows to filter only specific parameter keys. ")
     @JIPipeParameter("parameter-key-filter")
     public StringQueryExpression getParameterKeyFilter() {
         return parameterKeyFilter;
@@ -94,7 +93,7 @@ public class ExtractParametersAlgorithm extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
+    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         if (isPassThrough()) {
             return;
         }

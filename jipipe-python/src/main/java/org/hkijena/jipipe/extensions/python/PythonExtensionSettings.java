@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.python;
 
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -77,7 +77,7 @@ public class PythonExtensionSettings extends AbstractJIPipeParameterCollection i
         return false;
     }
 
-    @JIPipeDocumentation(name = "Easy installer repositories", description = "Allows to change the repositories for the EasyInstaller")
+    @SetJIPipeDocumentation(name = "Easy installer repositories", description = "Allows to change the repositories for the EasyInstaller")
     @JIPipeParameter("easy-installer-repositories")
     public StringList getEasyInstallerRepositories() {
         return easyInstallerRepositories;
@@ -88,7 +88,7 @@ public class PythonExtensionSettings extends AbstractJIPipeParameterCollection i
         this.easyInstallerRepositories = easyInstallerRepositories;
     }
 
-    @JIPipeDocumentation(name = "Presets", description = "List of presets stored for Python environments.")
+    @SetJIPipeDocumentation(name = "Presets", description = "List of presets stored for Python environments.")
     @JIPipeParameter("presets")
     public PythonEnvironment.List getPresets() {
         return presets;
@@ -99,7 +99,7 @@ public class PythonExtensionSettings extends AbstractJIPipeParameterCollection i
         this.presets = presets;
     }
 
-    @JIPipeDocumentation(name = "Python environment", description = "The Python environment that is utilized by the Python nodes. " +
+    @SetJIPipeDocumentation(name = "Python environment", description = "The Python environment that is utilized by the Python nodes. " +
             "Click the 'Select' button to select an existing environment or install a new Python.")
     @JIPipeParameter("python-environment")
     public PythonEnvironment getPythonEnvironment() {

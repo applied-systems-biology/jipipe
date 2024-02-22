@@ -6,9 +6,9 @@ import net.imagej.ImgPlus;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import org.apache.commons.io.FilenameUtils;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -51,28 +51,28 @@ import java.util.List;
 
 import static org.hkijena.jipipe.extensions.ilastik.utils.ImgUtils.*;
 
-@JIPipeDocumentation(name = "Ilastik autocontext", description = "Assigns labels to pixels based on pixel features and user annotations. " +
+@SetJIPipeDocumentation(name = "Ilastik autocontext", description = "Assigns labels to pixels based on pixel features and user annotations. " +
         "Improves the Pixel Classification workflow by running it in multiple stages and showing each pixel the results of the previous stage. " +
         "Please note that results will be generated for each image and each project (pairwise).")
-@JIPipeCitation("Autocontext documentation: https://www.ilastik.org/documentation/autocontext/autocontext")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Ilastik")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true, description = "The image(s) to classify.")
-@JIPipeInputSlot(value = IlastikModelData.class, slotName = "Project", autoCreate = true, description = "The Ilastik project. Must support pixel classification.")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Probabilities Stage 1", description = "Multi-channel image where pixel values represent the probability that that pixel belongs to the class represented by that channel (Stage 1)")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Probabilities Stage 2", description = "Multi-channel image where pixel values represent the probability that that pixel belongs to the class represented by that channel (Stage 2)")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Probabilities All Stages", description = "Contains both \"Probabilities Stage 1\" and \"Probabilities Stage 2\" in a single multi-channel image")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Simple Segmentation Stage 1", description = "A single-channel image where the (integer) pixel values indicate the class to which a pixel belongs. " +
+@AddJIPipeCitation("Autocontext documentation: https://www.ilastik.org/documentation/autocontext/autocontext")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Ilastik")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true, description = "The image(s) to classify.")
+@AddJIPipeInputSlot(value = IlastikModelData.class, slotName = "Project", create = true, description = "The Ilastik project. Must support pixel classification.")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Probabilities Stage 1", description = "Multi-channel image where pixel values represent the probability that that pixel belongs to the class represented by that channel (Stage 1)")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Probabilities Stage 2", description = "Multi-channel image where pixel values represent the probability that that pixel belongs to the class represented by that channel (Stage 2)")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Probabilities All Stages", description = "Contains both \"Probabilities Stage 1\" and \"Probabilities Stage 2\" in a single multi-channel image")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Simple Segmentation Stage 1", description = "A single-channel image where the (integer) pixel values indicate the class to which a pixel belongs. " +
         "For this image, every pixel with the same value should belong to the same class of pixels")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Simple Segmentation Stage 2", description = "A single-channel image where the (integer) pixel values indicate the class to which a pixel belongs. " +
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Simple Segmentation Stage 2", description = "A single-channel image where the (integer) pixel values indicate the class to which a pixel belongs. " +
         "For this image, every pixel with the same value should belong to the same class of pixels")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Uncertainty Stage 1", description = "Image where pixel intensity is proportional to the uncertainty found when trying to classify that pixel")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Uncertainty Stage 2", description = "Image where pixel intensity is proportional to the uncertainty found when trying to classify that pixel")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Features Stage 1", description = "Multi-channel image where each channel represents one of the computed pixel features")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Features Stage 2", description = "Multi-channel image where each channel represents one of the computed pixel features")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Labels Stage 1", description = "Image representing the users’ manually created annotations")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Labels Stage 2", description = "Image representing the users’ manually created annotations")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Input Stage 1", description = "Raw input image that was fed into the first stage of the workflow")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Input Stage 2", description = "Input received by the second Pixel Classification stage in the workflow")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Uncertainty Stage 1", description = "Image where pixel intensity is proportional to the uncertainty found when trying to classify that pixel")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Uncertainty Stage 2", description = "Image where pixel intensity is proportional to the uncertainty found when trying to classify that pixel")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Features Stage 1", description = "Multi-channel image where each channel represents one of the computed pixel features")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Features Stage 2", description = "Multi-channel image where each channel represents one of the computed pixel features")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Labels Stage 1", description = "Image representing the users’ manually created annotations")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Labels Stage 2", description = "Image representing the users’ manually created annotations")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Input Stage 1", description = "Raw input image that was fed into the first stage of the workflow")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Input Stage 2", description = "Input received by the second Pixel Classification stage in the workflow")
 public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     public static final String PROJECT_TYPE = "PixelClassification01";
@@ -156,7 +156,7 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Path workDirectory = getNewScratch();
         progressInfo.log("Work directory is " + workDirectory);
 
@@ -305,18 +305,18 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        super.reportValidity(context, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
         if (!isPassThrough()) {
             if (overrideEnvironment.isEnabled()) {
-                report.report(context, overrideEnvironment.getContent());
+                report.report(reportContext, overrideEnvironment.getContent());
             } else {
-                IlastikSettings.checkIlastikSettings(context, report);
+                IlastikSettings.checkIlastikSettings(reportContext, report);
             }
         }
     }
 
-    @JIPipeDocumentation(name = "Validate Ilastik project", description = "Determines how/if the node validates the input projects. This is done to check if the project is supported by this node.")
+    @SetJIPipeDocumentation(name = "Validate Ilastik project", description = "Determines how/if the node validates the input projects. This is done to check if the project is supported by this node.")
     @JIPipeParameter("project-validation-mode")
     public IlastikProjectValidationMode getProjectValidationMode() {
         return projectValidationMode;
@@ -327,14 +327,14 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
         this.projectValidationMode = projectValidationMode;
     }
 
-    @JIPipeDocumentation(name = "Generated outputs", description = "Select which outputs should be generated. " +
+    @SetJIPipeDocumentation(name = "Generated outputs", description = "Select which outputs should be generated. " +
             "Please note that the number of outputs impacts the performance.")
     @JIPipeParameter("output-parameters")
     public OutputParameters getOutputParameters() {
         return outputParameters;
     }
 
-    @JIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
+    @SetJIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
             "the processing was finished. Disable this to make it possible to debug your scripts. The directories are accessible via the logs (Tools &gt; Logs).")
     @JIPipeParameter("cleanup-afterwards")
     public boolean isCleanUpAfterwards() {
@@ -346,7 +346,7 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
         this.cleanUpAfterwards = cleanUpAfterwards;
     }
 
-    @JIPipeDocumentation(name = "Override Ilastik environment", description = "If enabled, a different Ilastik environment is used for this node. Otherwise " +
+    @SetJIPipeDocumentation(name = "Override Ilastik environment", description = "If enabled, a different Ilastik environment is used for this node. Otherwise " +
             "the one in the Project > Application settings > Extensions > Ilastik is used.")
     @JIPipeParameter("override-environment")
     public OptionalProcessEnvironment getOverrideEnvironment() {
@@ -416,7 +416,7 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
             this.outputInputStage2 = other.outputInputStage2;
         }
 
-        @JIPipeDocumentation(name = "Output probabilities (Stage 1)", description = "Exports a multi-channel image where pixel values represent the probability that that pixel belongs to the class represented by that channel")
+        @SetJIPipeDocumentation(name = "Output probabilities (Stage 1)", description = "Exports a multi-channel image where pixel values represent the probability that that pixel belongs to the class represented by that channel")
         @JIPipeParameter("output-probabilities-stage-1")
         public boolean isOutputProbabilitiesStage1() {
             return outputProbabilitiesStage1;
@@ -427,7 +427,7 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
             this.outputProbabilitiesStage1 = outputProbabilitiesStage1;
         }
 
-        @JIPipeDocumentation(name = "Output probabilities (Stage 2)", description = "Exports a multi-channel image where pixel values represent the probability that that pixel belongs to the class represented by that channel")
+        @SetJIPipeDocumentation(name = "Output probabilities (Stage 2)", description = "Exports a multi-channel image where pixel values represent the probability that that pixel belongs to the class represented by that channel")
         @JIPipeParameter("output-probabilities-stage-2")
         public boolean isOutputProbabilitiesStage2() {
             return outputProbabilitiesStage2;
@@ -438,7 +438,7 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
             this.outputProbabilitiesStage2 = outputProbabilitiesStage2;
         }
 
-        @JIPipeDocumentation(name = "Output probabilities (All stages)", description = "Exports a multi-channel image where pixel values represent the probability that that pixel belongs to the class represented by that channel")
+        @SetJIPipeDocumentation(name = "Output probabilities (All stages)", description = "Exports a multi-channel image where pixel values represent the probability that that pixel belongs to the class represented by that channel")
         @JIPipeParameter("output-probabilities-all-stages")
         public boolean isOutputProbabilitiesAllStages() {
             return outputProbabilitiesAllStages;
@@ -449,7 +449,7 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
             this.outputProbabilitiesAllStages = outputProbabilitiesAllStages;
         }
 
-        @JIPipeDocumentation(name = "Output simple segmentation (Stage 1)", description = "Produces a single-channel image where the (integer) pixel values indicate the class to which a pixel belongs. " +
+        @SetJIPipeDocumentation(name = "Output simple segmentation (Stage 1)", description = "Produces a single-channel image where the (integer) pixel values indicate the class to which a pixel belongs. " +
                 "For this image, every pixel with the same value should belong to the same class of pixels")
         @JIPipeParameter("output-simple-segmentation-stage-1")
         public boolean isOutputSimpleSegmentationStage1() {
@@ -461,7 +461,7 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
             this.outputSimpleSegmentationStage1 = outputSimpleSegmentationStage1;
         }
 
-        @JIPipeDocumentation(name = "Output simple segmentation (Stage 2)", description = "Produces a single-channel image where the (integer) pixel values indicate the class to which a pixel belongs. " +
+        @SetJIPipeDocumentation(name = "Output simple segmentation (Stage 2)", description = "Produces a single-channel image where the (integer) pixel values indicate the class to which a pixel belongs. " +
                 "For this image, every pixel with the same value should belong to the same class of pixels")
         @JIPipeParameter("output-simple-segmentation-stage-2")
         public boolean isOutputSimpleSegmentationStage2() {
@@ -473,7 +473,7 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
             this.outputSimpleSegmentationStage2 = outputSimpleSegmentationStage2;
         }
 
-        @JIPipeDocumentation(name = "Output uncertainty (Stage 1)", description = "Produces an image where pixel intensity is proportional to the uncertainty found when trying to classify that pixel")
+        @SetJIPipeDocumentation(name = "Output uncertainty (Stage 1)", description = "Produces an image where pixel intensity is proportional to the uncertainty found when trying to classify that pixel")
         @JIPipeParameter("output-uncertainty-stage-1")
         public boolean isOutputUncertaintyStage1() {
             return outputUncertaintyStage1;
@@ -484,7 +484,7 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
             this.outputUncertaintyStage1 = outputUncertaintyStage1;
         }
 
-        @JIPipeDocumentation(name = "Output uncertainty (Stage 2)", description = "Produces an image where pixel intensity is proportional to the uncertainty found when trying to classify that pixel")
+        @SetJIPipeDocumentation(name = "Output uncertainty (Stage 2)", description = "Produces an image where pixel intensity is proportional to the uncertainty found when trying to classify that pixel")
         @JIPipeParameter("output-uncertainty-stage-2")
         public boolean isOutputUncertaintyStage2() {
             return outputUncertaintyStage2;
@@ -495,7 +495,7 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
             this.outputUncertaintyStage2 = outputUncertaintyStage2;
         }
 
-        @JIPipeDocumentation(name = "Output features (Stage 1)", description = "Outputs a multi-channel image where each channel represents one of the computed pixel features")
+        @SetJIPipeDocumentation(name = "Output features (Stage 1)", description = "Outputs a multi-channel image where each channel represents one of the computed pixel features")
         @JIPipeParameter("output-features-stage-1")
         public boolean isOutputFeaturesStage1() {
             return outputFeaturesStage1;
@@ -506,7 +506,7 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
             this.outputFeaturesStage1 = outputFeaturesStage1;
         }
 
-        @JIPipeDocumentation(name = "Output features (Stage 2)", description = "Outputs a multi-channel image where each channel represents one of the computed pixel features")
+        @SetJIPipeDocumentation(name = "Output features (Stage 2)", description = "Outputs a multi-channel image where each channel represents one of the computed pixel features")
         @JIPipeParameter("output-features-stage-2")
         public boolean isOutputFeaturesStage2() {
             return outputFeaturesStage2;
@@ -517,7 +517,7 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
             this.outputFeaturesStage2 = outputFeaturesStage2;
         }
 
-        @JIPipeDocumentation(name = "Output labels (Stage 1)", description = "Outputs an image representing the users’ manually created annotations")
+        @SetJIPipeDocumentation(name = "Output labels (Stage 1)", description = "Outputs an image representing the users’ manually created annotations")
         @JIPipeParameter("output-labels-stage-1")
         public boolean isOutputLabelsStage1() {
             return outputLabelsStage1;
@@ -528,7 +528,7 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
             this.outputLabelsStage1 = outputLabelsStage1;
         }
 
-        @JIPipeDocumentation(name = "Output labels (Stage 2)", description = "Outputs an image representing the users’ manually created annotations")
+        @SetJIPipeDocumentation(name = "Output labels (Stage 2)", description = "Outputs an image representing the users’ manually created annotations")
         @JIPipeParameter("output-labels-stage-2")
         public boolean isOutputLabelsStage2() {
             return outputLabelsStage2;
@@ -539,7 +539,7 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
             this.outputLabelsStage2 = outputLabelsStage2;
         }
 
-        @JIPipeDocumentation(name = "Output input (Stage 1)", description = "Outputs the raw input image that was fed into the first stage of the workflow")
+        @SetJIPipeDocumentation(name = "Output input (Stage 1)", description = "Outputs the raw input image that was fed into the first stage of the workflow")
         @JIPipeParameter("output-labels-stage-1")
         public boolean isOutputInputStage1() {
             return outputInputStage1;
@@ -550,7 +550,7 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
             this.outputInputStage1 = outputInputStage1;
         }
 
-        @JIPipeDocumentation(name = "Output input (Stage 2)", description = "Output the input received by the second Pixel Classification stage in the workflow")
+        @SetJIPipeDocumentation(name = "Output input (Stage 2)", description = "Output the input received by the second Pixel Classification stage in the workflow")
         @JIPipeParameter("output-labels-stage-2")
         public boolean isOutputInputStage2() {
             return outputInputStage2;

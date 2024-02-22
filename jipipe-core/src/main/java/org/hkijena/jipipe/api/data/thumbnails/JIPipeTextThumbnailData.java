@@ -1,15 +1,14 @@
 package org.hkijena.jipipe.api.data.thumbnails;
 
 import com.google.common.base.Charsets;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHidden;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
-import org.hkijena.jipipe.extensions.strings.StringData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 
@@ -20,10 +19,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-@JIPipeDocumentation(name = "Text thumbnail", description = "Text thumbnail data (used internally)")
+@SetJIPipeDocumentation(name = "Text thumbnail", description = "Text thumbnail data (used internally)")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.txt file that stores the current string.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/string-data.schema.json")
-@JIPipeHidden
+@LabelAsJIPipeHidden
 public class JIPipeTextThumbnailData implements JIPipeThumbnailData {
 
     private final String text;

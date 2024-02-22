@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.ij3d.utils;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import inra.ijpb.label.LabelImages;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -31,7 +31,7 @@ public class Roi3DDrawer extends AbstractJIPipeParameterCollection {
         this.overrideFillColor = new OptionalColorParameter(other.overrideFillColor);
     }
 
-    @JIPipeDocumentation(name = "Opacity", description = "Opacity of the added ROI and labels. If zero, they are not visible. If set to one, they are fully visible.")
+    @SetJIPipeDocumentation(name = "Opacity", description = "Opacity of the added ROI and labels. If zero, they are not visible. If set to one, they are fully visible.")
     @JIPipeParameter("opacity")
     @NumberParameterSettings(step = 0.1)
     public double getOpacity() {
@@ -46,7 +46,7 @@ public class Roi3DDrawer extends AbstractJIPipeParameterCollection {
         return true;
     }
 
-    @JIPipeDocumentation(name = "Draw over reference", description = "If enabled, draw the ROI over the reference image.")
+    @SetJIPipeDocumentation(name = "Draw over reference", description = "If enabled, draw the ROI over the reference image.")
     @JIPipeParameter("draw-over")
     public boolean isDrawOver() {
         return drawOver;
@@ -57,7 +57,7 @@ public class Roi3DDrawer extends AbstractJIPipeParameterCollection {
         this.drawOver = drawOver;
     }
 
-    @JIPipeDocumentation(name = "Override fill color", description = "If enabled, the fill color will be overridden by this value. " +
+    @SetJIPipeDocumentation(name = "Override fill color", description = "If enabled, the fill color will be overridden by this value. " +
             "If a ROI has no fill color, it will always fall back to this color.")
     @JIPipeParameter("override-fill-color")
     public OptionalColorParameter getOverrideFillColor() {

@@ -37,20 +37,20 @@ public class JIPipeRegistryIssues implements JIPipeValidatable {
     private Map<String, JIPipeValidationReport> preActivationIssues = new HashMap<>();
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         for (Map.Entry<String, JIPipeValidationReport> entry : preActivationIssues.entrySet()) {
             report.addAll(entry.getValue());
         }
         for (JIPipeImageJUpdateSiteDependency site : missingImageJSites) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new CustomValidationReportContext(context, "ImageJ update site checker"),
+                    new CustomValidationReportContext(reportContext, "ImageJ update site checker"),
                     "Missing ImageJ site: " + site.getName(),
                     String.format("An extension requests following ImageJ site to be activated: '%s' (%s)", site.getName(), site.getUrl()),
                     "Please activate the site in the update manager."));
         }
         for (PluginInfo<JIPipeJavaExtension> plugin : erroneousPlugins) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new CustomValidationReportContext(context, "Extension initialization"),
+                    new CustomValidationReportContext(reportContext, "Extension initialization"),
                     "Could not load extension '" + plugin.getIdentifier() + "'",
                     "There was an error while loading an extension.",
                     "Please install necessary dependencies via ImageJ. Then restart  ImageJ.",
@@ -58,7 +58,7 @@ public class JIPipeRegistryIssues implements JIPipeValidatable {
         }
         for (JIPipeNodeInfo info : erroneousNodes) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new CustomValidationReportContext(context, "Node initialization"),
+                    new CustomValidationReportContext(reportContext, "Node initialization"),
                     "Invalid node type '" + info.getName() + "'",
                     "There was an error while loading a node type.",
                     "Please install necessary dependencies via ImageJ. Then restart ImageJ.",
@@ -66,7 +66,7 @@ public class JIPipeRegistryIssues implements JIPipeValidatable {
         }
         for (Class<? extends JIPipeData> dataType : erroneousDataTypes) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new CustomValidationReportContext(context, "Data type initialization"),
+                    new CustomValidationReportContext(reportContext, "Data type initialization"),
                     "Invalid data type '" + dataType + "'",
                     "There was an error while loading a data type.",
                     "Please install necessary dependencies via ImageJ. Then restart ImageJ.",
@@ -74,7 +74,7 @@ public class JIPipeRegistryIssues implements JIPipeValidatable {
         }
         for (JIPipeParameterTypeInfo parameterType : erroneousParameterTypes) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new CustomValidationReportContext(context, "Parameter type initialization"),
+                    new CustomValidationReportContext(reportContext, "Parameter type initialization"),
                     "Invalid parameter type '" + parameterType.getId() + "'",
                     "There was an error while loading a parameter type.",
                     "Please install necessary dependencies via ImageJ. Then restart ImageJ.",

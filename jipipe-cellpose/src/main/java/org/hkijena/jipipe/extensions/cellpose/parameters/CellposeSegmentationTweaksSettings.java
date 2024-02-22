@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.cellpose.parameters;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
@@ -24,7 +24,7 @@ public class CellposeSegmentationTweaksSettings extends AbstractJIPipeParameterC
         this.disableResample = other.disableResample;
     }
 
-    @JIPipeDocumentation(name = "Normalize", description = "Normalize data so 0.0=1st percentile and 1.0=99th percentile of image intensities in each channel")
+    @SetJIPipeDocumentation(name = "Normalize", description = "Normalize data so 0.0=1st percentile and 1.0=99th percentile of image intensities in each channel")
     @JIPipeParameter("normalize")
     public boolean isNormalize() {
         return normalize;
@@ -35,7 +35,7 @@ public class CellposeSegmentationTweaksSettings extends AbstractJIPipeParameterC
         this.normalize = normalize;
     }
 
-    @JIPipeDocumentation(name = "Anisotropy (3D)", description = "For 3D segmentation, optional rescaling factor " +
+    @SetJIPipeDocumentation(name = "Anisotropy (3D)", description = "For 3D segmentation, optional rescaling factor " +
             "(e.g. set to 2.0 if Z is sampled half as dense as X or Y)")
     @JIPipeParameter("anisotropy")
     public OptionalDoubleParameter getAnisotropy() {
@@ -47,7 +47,7 @@ public class CellposeSegmentationTweaksSettings extends AbstractJIPipeParameterC
         this.anisotropy = anisotropy;
     }
 
-    @JIPipeDocumentation(name = "Average all networks", description = "Runs the 4 built-in networks and averages them if True, runs one network if disabled")
+    @SetJIPipeDocumentation(name = "Average all networks", description = "Runs the 4 built-in networks and averages them if True, runs one network if disabled")
     @JIPipeParameter("net-average")
     public boolean isNetAverage() {
         return netAverage;
@@ -58,7 +58,7 @@ public class CellposeSegmentationTweaksSettings extends AbstractJIPipeParameterC
         this.netAverage = netAverage;
     }
 
-    @JIPipeDocumentation(name = "Interpolate (2D)", description = "Interpolate during 2D dynamics (not available in 3D)")
+    @SetJIPipeDocumentation(name = "Interpolate (2D)", description = "Interpolate during 2D dynamics (not available in 3D)")
     @JIPipeParameter("interpolate")
     public boolean isInterpolate() {
         return interpolate;
@@ -69,7 +69,7 @@ public class CellposeSegmentationTweaksSettings extends AbstractJIPipeParameterC
         this.interpolate = interpolate;
     }
 
-    @JIPipeDocumentation(name = "Disable resample", description = "Disable dynamics on full image (makes algorithm faster for images with large diameters)")
+    @SetJIPipeDocumentation(name = "Disable resample", description = "Disable dynamics on full image (makes algorithm faster for images with large diameters)")
     @JIPipeParameter("no-resample")
     public boolean isDisableResample() {
         return disableResample;

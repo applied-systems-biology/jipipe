@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.functions.string;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Join string array", description = "Given an array of strings, the array is joined into one string with a delimiter. " +
+@SetJIPipeDocumentation(name = "Join string array", description = "Given an array of strings, the array is joined into one string with a delimiter. " +
         "For example you can join 'a', 'b' and 'c' into 'a,b,c'")
 public class StringJoinFunction extends ExpressionFunction {
 

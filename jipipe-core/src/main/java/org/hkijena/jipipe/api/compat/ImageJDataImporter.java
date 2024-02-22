@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.api.compat;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
@@ -46,12 +46,12 @@ public interface ImageJDataImporter {
     Class<?> getImportedImageJDataType();
 
     /**
-     * A documentation name. Utilizes a {@link org.hkijena.jipipe.api.JIPipeDocumentation} by default (if present). Otherwise, returns the class name.
+     * A documentation name. Utilizes a {@link SetJIPipeDocumentation} by default (if present). Otherwise, returns the class name.
      *
      * @return the name of this operation
      */
     default String getName() {
-        JIPipeDocumentation annotation = getClass().getAnnotation(JIPipeDocumentation.class);
+        SetJIPipeDocumentation annotation = getClass().getAnnotation(SetJIPipeDocumentation.class);
         if (annotation != null) {
             return annotation.name();
         } else {
@@ -60,12 +60,12 @@ public interface ImageJDataImporter {
     }
 
     /**
-     * A documentation description. Utilizes a {@link org.hkijena.jipipe.api.JIPipeDocumentation} by default (if present). Otherwise, returns an empty string.
+     * A documentation description. Utilizes a {@link SetJIPipeDocumentation} by default (if present). Otherwise, returns an empty string.
      *
      * @return the description of this operation
      */
     default String getDescription() {
-        JIPipeDocumentation annotation = getClass().getAnnotation(JIPipeDocumentation.class);
+        SetJIPipeDocumentation annotation = getClass().getAnnotation(SetJIPipeDocumentation.class);
         if (annotation != null) {
             return annotation.description();
         } else {

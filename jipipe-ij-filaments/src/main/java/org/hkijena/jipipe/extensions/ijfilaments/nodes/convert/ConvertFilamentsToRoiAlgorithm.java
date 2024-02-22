@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.ijfilaments.nodes.convert;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -14,10 +14,10 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.BooleanParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
 
-@JIPipeDocumentation(name = "Convert filaments to ROI", description = "Converts filaments into 2D line ImageJ ROI")
-@JIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Convert")
+@SetJIPipeDocumentation(name = "Convert filaments to ROI", description = "Converts filaments into 2D line ImageJ ROI")
+@AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
+@DefineJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Convert")
 public class ConvertFilamentsToRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean ignoreNon2DEdges = false;
@@ -44,14 +44,14 @@ public class ConvertFilamentsToRoiAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Filaments3DData inputData = iterationStep.getInputData(getFirstInputSlot(), Filaments3DData.class, progressInfo);
         ROIListData outputData = inputData.toRoi(ignoreNon2DEdges, withEdges, withVertices, forcedLineThickness.orElse(-1), forcedVertexRadius.orElse(-1));
 
         iterationStep.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Thin lines", description = "If enabled, the generated ROI will have thin lines instead of utilizing the thickness of the involved vertices")
+    @SetJIPipeDocumentation(name = "Thin lines", description = "If enabled, the generated ROI will have thin lines instead of utilizing the thickness of the involved vertices")
     @JIPipeParameter("thin-lines")
     public boolean isThinLines() {
         return thinLines;
@@ -62,7 +62,7 @@ public class ConvertFilamentsToRoiAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.thinLines = thinLines;
     }
 
-    @JIPipeDocumentation(name = "Non-2D edge behavior", description = "Determines the operation if an edge between two Z, C, or T locations is encountered. Either the vertex is copied to both locations, or " +
+    @SetJIPipeDocumentation(name = "Non-2D edge behavior", description = "Determines the operation if an edge between two Z, C, or T locations is encountered. Either the vertex is copied to both locations, or " +
             "the edge can be ignored")
     @BooleanParameterSettings(comboBoxStyle = true, trueLabel = "Ignore affected edges", falseLabel = "Copy vertices to both locations")
     @JIPipeParameter("ignore-non-2d-edges")
@@ -75,7 +75,7 @@ public class ConvertFilamentsToRoiAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.ignoreNon2DEdges = ignoreNon2DEdges;
     }
 
-    @JIPipeDocumentation(name = "With edges", description = "If enabled, edges are converted to ROI")
+    @SetJIPipeDocumentation(name = "With edges", description = "If enabled, edges are converted to ROI")
     @JIPipeParameter("with-edges")
     public boolean isWithEdges() {
         return withEdges;
@@ -86,7 +86,7 @@ public class ConvertFilamentsToRoiAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.withEdges = withEdges;
     }
 
-    @JIPipeDocumentation(name = "With vertices", description = "If enabled, vertices are converted to ROI")
+    @SetJIPipeDocumentation(name = "With vertices", description = "If enabled, vertices are converted to ROI")
     @JIPipeParameter("with-vertices")
     public boolean isWithVertices() {
         return withVertices;
@@ -97,7 +97,7 @@ public class ConvertFilamentsToRoiAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.withVertices = withVertices;
     }
 
-    @JIPipeDocumentation(name = "Override edge thickness", description = "If enabled, set the thickness of edges. Must be at least zero.")
+    @SetJIPipeDocumentation(name = "Override edge thickness", description = "If enabled, set the thickness of edges. Must be at least zero.")
     @JIPipeParameter("forced-line-thickness")
     public OptionalIntegerParameter getForcedLineThickness() {
         return forcedLineThickness;
@@ -108,7 +108,7 @@ public class ConvertFilamentsToRoiAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.forcedLineThickness = forcedLineThickness;
     }
 
-    @JIPipeDocumentation(name = "Override vertex radius", description = "If enabled, override the radius of vertices. Must be at least one.")
+    @SetJIPipeDocumentation(name = "Override vertex radius", description = "If enabled, override the radius of vertices. Must be at least one.")
     @JIPipeParameter("forced-vertex-radius")
     public OptionalIntegerParameter getForcedVertexRadius() {
         return forcedVertexRadius;

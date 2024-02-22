@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.tables.compat;
 import ij.WindowManager;
 import ij.measure.ResultsTable;
 import ij.text.TextWindow;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.ImageJDataImporter;
 import org.hkijena.jipipe.api.compat.ImageJImportParameters;
@@ -16,7 +16,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.awt.*;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Import results table", description = "Imports a results table. To import a table other than the default 'Results' table, customize the name.")
+@SetJIPipeDocumentation(name = "Import results table", description = "Imports a results table. To import a table other than the default 'Results' table, customize the name.")
 public class ResultsTableDataImageJImporter implements ImageJDataImporter {
     @Override
     public JIPipeDataTable importData(List<Object> objects, ImageJImportParameters parameters, JIPipeProgressInfo progressInfo) {

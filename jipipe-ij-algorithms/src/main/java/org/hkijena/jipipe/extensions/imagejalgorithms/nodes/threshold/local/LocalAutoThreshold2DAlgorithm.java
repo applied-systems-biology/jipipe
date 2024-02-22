@@ -22,8 +22,8 @@ import ij.plugin.filter.RankFilters;
 import ij.process.Blitter;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -43,16 +43,16 @@ import org.scijava.Priority;
  * Segmenter node that thresholds via an auto threshold
  * Based on code from {@link fiji.threshold.Auto_Local_Threshold}
  */
-@JIPipeDocumentation(name = "Local auto threshold 2D", description = "Applies a local auto-thresholding algorithm.\n\n" +
+@SetJIPipeDocumentation(name = "Local auto threshold 2D", description = "Applies a local auto-thresholding algorithm.\n\n" +
         "This node supports various methods:\n\nMean (threshold is mean local pixel value)\n" +
         "Median (threshold is median local pixel value)\n" +
         "MidGray (threshold is average of min and max pixel values)\n" +
         "Otsu (threshold is the local otsu threshold)\n\n" +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeNode(menuPath = "Threshold\nLocal", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust\nAuto Local Threshold")
+@DefineJIPipeNode(menuPath = "Threshold\nLocal", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust\nAuto Local Threshold")
 public class LocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Method method = Method.Otsu;
@@ -287,7 +287,7 @@ public class LocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         ImageJUtils.forEachIndexedZCTSlice(img, (processor, index) -> {
@@ -314,7 +314,7 @@ public class LocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
     }
 
     @JIPipeParameter(value = "method", priority = Priority.HIGH)
-    @JIPipeDocumentation(name = "Method", description = "Determines the thresholding method:\n\n" +
+    @SetJIPipeDocumentation(name = "Method", description = "Determines the thresholding method:\n\n" +
             "Mean (threshold is mean local pixel value)\n" +
             "Median (threshold is median local pixel value)\n" +
             "MidGray (threshold is average of min and max pixel values)\n" +
@@ -328,7 +328,7 @@ public class LocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.method = method;
     }
 
-    @JIPipeDocumentation(name = "Dark background", description = "If the background color is dark. Disable this if your image has a bright background.")
+    @SetJIPipeDocumentation(name = "Dark background", description = "If the background color is dark. Disable this if your image has a bright background.")
     @JIPipeParameter("dark-background")
     public boolean isDarkBackground() {
         return darkBackground;
@@ -339,7 +339,7 @@ public class LocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.darkBackground = darkBackground;
     }
 
-    @JIPipeDocumentation(name = "Modifier", description = "This value is subtracted from each calculated local threshold.")
+    @SetJIPipeDocumentation(name = "Modifier", description = "This value is subtracted from each calculated local threshold.")
     @JIPipeParameter("modifier")
     public int getModifier() {
         return modifier;
@@ -350,7 +350,7 @@ public class LocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.modifier = modifier;
     }
 
-    @JIPipeDocumentation(name = "Radius", description = "The radius of the circular local window.")
+    @SetJIPipeDocumentation(name = "Radius", description = "The radius of the circular local window.")
     @JIPipeParameter("radius")
     public int getRadius() {
         return radius;

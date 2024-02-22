@@ -4,8 +4,8 @@ import com.google.common.primitives.Ints;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -47,16 +47,16 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@JIPipeDocumentation(name = "Form processor (merging)", description = "An algorithm that iterates through groups of data in " +
+@SetJIPipeDocumentation(name = "Form processor (merging)", description = "An algorithm that iterates through groups of data in " +
         "its 'Data' slot and shows a user interface during the runtime that allows users to modify annotations via form elements. " +
         "Groups are based on the annotations. " +
         "These forms are provided via the 'Forms' slot, where all contained form elements are shown in the user interface." +
         "After the user input, the form data objects are stored in an output slot (one set of copies per data batch).")
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Forms")
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
-@JIPipeInputSlot(value = FormData.class, slotName = "Forms", autoCreate = true, role = JIPipeDataSlotRole.Parameters)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
-@JIPipeOutputSlot(value = FormData.class, slotName = "Forms", autoCreate = true, role = JIPipeDataSlotRole.Parameters)
+@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Forms")
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Data", create = true)
+@AddJIPipeInputSlot(value = FormData.class, slotName = "Forms", create = true, role = JIPipeDataSlotRole.Parameters)
+@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", create = true)
+@AddJIPipeOutputSlot(value = FormData.class, slotName = "Forms", create = true, role = JIPipeDataSlotRole.Parameters)
 public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JIPipeIterationStepAlgorithm {
 
     private String tabAnnotation = "Tab";
@@ -73,7 +73,7 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
+    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         JIPipeDataSlot dataSlot = getInputSlot("Data");
         JIPipeDataSlot formsSlot = getInputSlot("Forms");
         JIPipeDataSlot outputDataSlot = getOutputSlot("Data");
@@ -195,7 +195,7 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
         return true;
     }
 
-    @JIPipeDocumentation(name = "Form tab annotation", description = "The annotation that is used to group form elements into tabs.")
+    @SetJIPipeDocumentation(name = "Form tab annotation", description = "The annotation that is used to group form elements into tabs.")
     @JIPipeParameter("tab-annotation")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public String getTabAnnotation() {
@@ -207,7 +207,7 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
         this.tabAnnotation = tabAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Input management", description = "This algorithm has one input and will iterate through groups of rows and apply the workload. " +
+    @SetJIPipeDocumentation(name = "Input management", description = "This algorithm has one input and will iterate through groups of rows and apply the workload. " +
             "Use following settings to control which data batches are generated.")
     @JIPipeParameter(value = "jipipe:data-batch-generation", hidden = true)
     public JIPipeMergingAlgorithmIterationStepGenerationSettings getDataBatchGenerationSettings() {

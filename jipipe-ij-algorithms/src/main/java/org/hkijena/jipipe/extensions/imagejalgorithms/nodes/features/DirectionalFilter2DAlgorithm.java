@@ -4,9 +4,9 @@ import ij.ImagePlus;
 import inra.ijpb.algo.AlgoEvent;
 import inra.ijpb.algo.AlgoListener;
 import inra.ijpb.morphology.directional.DirectionalFilter;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -18,16 +18,16 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
-@JIPipeDocumentation(name = "Directional filter 2D", description = "Filter that enhances curvilinear structures by applying oriented filters, while preserving their thickness. More information: https://imagej.net/plugins/morpholibj. " +
+@SetJIPipeDocumentation(name = "Directional filter 2D", description = "Filter that enhances curvilinear structures by applying oriented filters, while preserving their thickness. More information: https://imagej.net/plugins/morpholibj. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Features")
-@JIPipeCitation("https://imagej.net/plugins/morpholibj")
-@JIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Features")
+@AddJIPipeCitation("https://imagej.net/plugins/morpholibj")
+@AddJIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
         "Bioinformatics (Oxford Univ Press) 32(22): 3532-3534, PMID 27412086, doi:10.1093/bioinformatics/btw413")
-@JIPipeCitation("Soille et al., 20012, Heneghan et al., 20023; Hendriks et al., 2003")
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nFiltering", aliasName = "Directional Filtering")
+@AddJIPipeCitation("Soille et al., 20012, Heneghan et al., 20023; Hendriks et al., 2003")
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nFiltering", aliasName = "Directional Filtering")
 public class DirectionalFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     int lineLength = 20;
@@ -47,7 +47,7 @@ public class DirectionalFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.nDirections = other.nDirections;
     }
 
-    @JIPipeDocumentation(name = "Operation", description = "The operation to apply using each oriented structuring element")
+    @SetJIPipeDocumentation(name = "Operation", description = "The operation to apply using each oriented structuring element")
     @JIPipeParameter(value = "operation", important = true)
     public DirectionalFilter.Operation getOperation() {
         return operation;
@@ -58,7 +58,7 @@ public class DirectionalFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.operation = operation;
     }
 
-    @JIPipeDocumentation(name = "Type", description = "Specifies how to combine the results for each oriented filter")
+    @SetJIPipeDocumentation(name = "Type", description = "Specifies how to combine the results for each oriented filter")
     @JIPipeParameter("type")
     public DirectionalFilter.Type getType() {
         return type;
@@ -69,7 +69,7 @@ public class DirectionalFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.type = type;
     }
 
-    @JIPipeDocumentation(name = "Line length", description = "The approximated length of the structuring element")
+    @SetJIPipeDocumentation(name = "Line length", description = "The approximated length of the structuring element")
     @JIPipeParameter("line-length")
     public int getLineLength() {
         return lineLength;
@@ -80,7 +80,7 @@ public class DirectionalFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.lineLength = lineLength;
     }
 
-    @JIPipeDocumentation(name = "Number of directions", description = "The number of oriented structuring elements to consider. To be increased if the length of line is large.")
+    @SetJIPipeDocumentation(name = "Number of directions", description = "The number of oriented structuring elements to consider. To be increased if the length of line is large.")
     @JIPipeParameter("n-directions")
     public int getnDirections() {
         return nDirections;
@@ -92,7 +92,7 @@ public class DirectionalFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         DirectionalFilter filter = new DirectionalFilter(this.type, this.operation, this.lineLength, this.nDirections);
         filter.addAlgoListener(new AlgoListener() {
             @Override

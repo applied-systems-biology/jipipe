@@ -2,8 +2,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.io;
 
 import ij.IJ;
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
@@ -27,17 +27,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Export image", description = "Exports incoming images into a non-JIPipe format (PNG, JPEG, BMP, AVI, TIFF). " +
+@SetJIPipeDocumentation(name = "Export image", description = "Exports incoming images into a non-JIPipe format (PNG, JPEG, BMP, AVI, TIFF). " +
         "Please note support for input images depending on the file format: " +
         "<ul>" +
         "<li>PNG, JPEG, BMP: 2D images only</li>" +
         "<li>AVI: 2D or 3D images only</li>" +
         "<li>TIFF: All images supported</li>" +
         "</ul>")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = FileData.class, slotName = "Exported file", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nSave")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = FileData.class, slotName = "Exported file", create = true)
+@DefineJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nSave")
 public class ExportImage2Algorithm extends JIPipeIteratingAlgorithm {
     private ExportImageAlgorithm.FileFormat fileFormat = ExportImageAlgorithm.FileFormat.PNG;
     private int movieFPS = 100;
@@ -61,7 +61,7 @@ public class ExportImage2Algorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
         ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
 
@@ -123,7 +123,7 @@ public class ExportImage2Algorithm extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new FileData(outputFile), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "File format", description = "The file format that should be used. " +
+    @SetJIPipeDocumentation(name = "File format", description = "The file format that should be used. " +
             "<ul>" +
             "<li>PNG, JPEG, BMP: 2D images only</li>" +
             "<li>AVI: 2D or 3D images only</li>" +
@@ -140,7 +140,7 @@ public class ExportImage2Algorithm extends JIPipeIteratingAlgorithm {
         emitParameterUIChangedEvent();
     }
 
-    @JIPipeDocumentation(name = "Animation FPS", description = "Only used if the format is AVI. The number of frames shown per second.")
+    @SetJIPipeDocumentation(name = "Animation FPS", description = "Only used if the format is AVI. The number of frames shown per second.")
     @JIPipeParameter("movie-fps")
     public int getMovieFPS() {
         return movieFPS;
@@ -151,7 +151,7 @@ public class ExportImage2Algorithm extends JIPipeIteratingAlgorithm {
         this.movieFPS = movieFPS;
     }
 
-    @JIPipeDocumentation(name = "Animated dimension", description = "Only used if the format is AVI. Determines which dimension is animated")
+    @SetJIPipeDocumentation(name = "Animated dimension", description = "Only used if the format is AVI. Determines which dimension is animated")
     @JIPipeParameter("movie-animated-dimension")
     public HyperstackDimension getMovieAnimatedDimension() {
         return movieAnimatedDimension;
@@ -162,7 +162,7 @@ public class ExportImage2Algorithm extends JIPipeIteratingAlgorithm {
         this.movieAnimatedDimension = movieAnimatedDimension;
     }
 
-    @JIPipeDocumentation(name = "AVI compression", description = "Only used if the format is AVI. Determines how the frames are compressed.")
+    @SetJIPipeDocumentation(name = "AVI compression", description = "Only used if the format is AVI. Determines how the frames are compressed.")
     @JIPipeParameter("avi-compression")
     public AVICompression getAviCompression() {
         return aviCompression;
@@ -173,7 +173,7 @@ public class ExportImage2Algorithm extends JIPipeIteratingAlgorithm {
         this.aviCompression = aviCompression;
     }
 
-    @JIPipeDocumentation(name = "AVI JPEG quality", description = "Only used if the format is AVI and the compression is JPEG. Value from 0-100 " +
+    @SetJIPipeDocumentation(name = "AVI JPEG quality", description = "Only used if the format is AVI and the compression is JPEG. Value from 0-100 " +
             "that determines the JPEG quality (100 is best).")
     @JIPipeParameter("jpeg-quality")
     public int getJpegQuality() {
@@ -188,7 +188,7 @@ public class ExportImage2Algorithm extends JIPipeIteratingAlgorithm {
         return true;
     }
 
-    @JIPipeDocumentation(name = "File path", description = "Expression that generates the output file path")
+    @SetJIPipeDocumentation(name = "File path", description = "Expression that generates the output file path")
     @JIPipeParameter("file-path")
     public DataExportExpressionParameter getFilePath() {
         return filePath;

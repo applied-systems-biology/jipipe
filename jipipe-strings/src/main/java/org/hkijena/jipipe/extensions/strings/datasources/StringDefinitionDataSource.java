@@ -13,22 +13,23 @@
 
 package org.hkijena.jipipe.extensions.strings.datasources;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.strings.StringData;
 
-@JIPipeDocumentation(name = "Define string", description = "Creates a string data object from a parameter")
-@JIPipeOutputSlot(value = StringData.class, slotName = "Output", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "Define string", description = "Creates a string data object from a parameter")
+@AddJIPipeOutputSlot(value = StringData.class, slotName = "Output", create = true)
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class StringDefinitionDataSource extends JIPipeSimpleIteratingAlgorithm {
 
     private String value = "";
@@ -43,11 +44,11 @@ public class StringDefinitionDataSource extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         iterationStep.addOutputData(getFirstOutputSlot(), new StringData(value), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Value", description = "The value that will be generated")
+    @SetJIPipeDocumentation(name = "Value", description = "The value that will be generated")
     @StringParameterSettings(monospace = true, multiline = true)
     @JIPipeParameter("value")
     public String getValue() {

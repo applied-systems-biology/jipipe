@@ -1,12 +1,11 @@
 package org.hkijena.jipipe.api.data.thumbnails;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHeavyData;
-import org.hkijena.jipipe.api.JIPipeHidden;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
+import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
-import org.hkijena.jipipe.api.data.context.JIPipeMutableDataContext;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -17,11 +16,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@JIPipeDocumentation(name = "Grid thumbnail", description = "Grid thumbnail data (used internally)")
-@JIPipeHeavyData
+@SetJIPipeDocumentation(name = "Grid thumbnail", description = "Grid thumbnail data (used internally)")
+@LabelAsJIPipeHeavyData
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Stores a data table in the standard JIPipe format (data-table.json plus numeric slot folders)",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-data-table.schema.json")
-@JIPipeHidden
+@LabelAsJIPipeHidden
 public class JIPipeGridThumbnailData implements JIPipeThumbnailData {
 
     private final List<JIPipeThumbnailData> children;

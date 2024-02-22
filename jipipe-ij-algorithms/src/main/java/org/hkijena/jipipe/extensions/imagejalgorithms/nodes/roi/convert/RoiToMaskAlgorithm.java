@@ -17,8 +17,8 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -34,12 +34,12 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@JIPipeDocumentation(name = "Convert ROI to mask", description = "Converts ROI lists to masks. " +
+@SetJIPipeDocumentation(name = "Convert ROI to mask", description = "Converts ROI lists to masks. " +
         "This algorithm needs a reference image that provides the output sizes. If you do not have a reference image, you can use the unreferenced variant.")
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", create = true)
 public class RoiToMaskAlgorithm extends JIPipeIteratingAlgorithm {
 
     private boolean drawOutline = false;
@@ -70,7 +70,7 @@ public class RoiToMaskAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROIListData inputData = (ROIListData) iterationStep.getInputData("ROI", ROIListData.class, progressInfo).duplicate(progressInfo);
         ImagePlus reference = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
 
@@ -118,7 +118,7 @@ public class RoiToMaskAlgorithm extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Draw outline", description = "If enabled, draw a white outline of the ROI")
+    @SetJIPipeDocumentation(name = "Draw outline", description = "If enabled, draw a white outline of the ROI")
     @JIPipeParameter("draw-outline")
     public boolean isDrawOutline() {
         return drawOutline;
@@ -129,7 +129,7 @@ public class RoiToMaskAlgorithm extends JIPipeIteratingAlgorithm {
         this.drawOutline = drawOutline;
     }
 
-    @JIPipeDocumentation(name = "Draw filled outline", description = "If enabled, fill the ROI areas")
+    @SetJIPipeDocumentation(name = "Draw filled outline", description = "If enabled, fill the ROI areas")
     @JIPipeParameter("fill-outline")
     public boolean isDrawFilledOutline() {
         return drawFilledOutline;
@@ -140,7 +140,7 @@ public class RoiToMaskAlgorithm extends JIPipeIteratingAlgorithm {
         this.drawFilledOutline = drawFilledOutline;
     }
 
-    @JIPipeDocumentation(name = "Line thickness", description = "Only relevant if 'Draw outline' is enabled. Sets the outline thickness.")
+    @SetJIPipeDocumentation(name = "Line thickness", description = "Only relevant if 'Draw outline' is enabled. Sets the outline thickness.")
     @JIPipeParameter("line-thickness")
     public int getLineThickness() {
         return lineThickness;
@@ -151,7 +151,7 @@ public class RoiToMaskAlgorithm extends JIPipeIteratingAlgorithm {
         this.lineThickness = lineThickness;
     }
 
-    @JIPipeDocumentation(name = "Draw over reference", description = "If enabled, draw the ROI over the reference image.")
+    @SetJIPipeDocumentation(name = "Draw over reference", description = "If enabled, draw the ROI over the reference image.")
     @JIPipeParameter("draw-over")
     public boolean isDrawOver() {
         return drawOver;

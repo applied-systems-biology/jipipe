@@ -4,8 +4,8 @@ import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import mcib3d.image3d.ImageHandler;
 import mcib3d.image3d.regionGrowing.Watershed3DVoronoi;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -22,13 +22,13 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import java.util.HashMap;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Voronoi 3D", description = "The Voronoi algorithm will draw lines between objects at equal distances from the boundaries of" +
+@SetJIPipeDocumentation(name = "Voronoi 3D", description = "The Voronoi algorithm will draw lines between objects at equal distances from the boundaries of" +
         " the different objects, then compute zones around objects based on these lines. This can also be seen as the splitting of the background.\n" +
         "\n" +
         "Neighbouring objects can then be computed as objects having a line in common. ")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Binary")
-@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Binary")
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels", create = true)
 public class Voronoi3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private float maxRadius = 0;
@@ -43,7 +43,7 @@ public class Voronoi3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus inputImage = iterationStep.getInputData("Input", ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
 
         Map<ImageSliceIndex, ImageProcessor> labelMap = new HashMap<>();
@@ -61,7 +61,7 @@ public class Voronoi3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData("Labels", new ImagePlusGreyscaleData(outputLabels), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Max radius", description = "The maximum radius (0 for no maximum radius)")
+    @SetJIPipeDocumentation(name = "Max radius", description = "The maximum radius (0 for no maximum radius)")
     @JIPipeParameter("max-radius")
     public float getMaxRadius() {
         return maxRadius;

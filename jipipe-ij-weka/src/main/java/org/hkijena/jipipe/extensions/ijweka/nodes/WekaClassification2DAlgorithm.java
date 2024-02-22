@@ -3,8 +3,8 @@ package org.hkijena.jipipe.extensions.ijweka.nodes;
 import ij.ImagePlus;
 import ij.ImageStack;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.*;
@@ -24,11 +24,11 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
 import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 import trainableSegmentation.WekaSegmentation;
 
-@JIPipeDocumentation(name = "Weka classifier 2D", description = "Classifies an image with a Weka model. If higher-dimensional data is provided, the classification is applied per slice. To obtain ROI from the generated labels, utilize the 'Labels to ROI' node.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", description = "Image on which the classification should be applied", autoCreate = true)
-@JIPipeInputSlot(value = WekaModelData.class, slotName = "Model", description = "The model", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Classified image", description = "The classified image", autoCreate = true)
+@SetJIPipeDocumentation(name = "Weka classifier 2D", description = "Classifies an image with a Weka model. If higher-dimensional data is provided, the classification is applied per slice. To obtain ROI from the generated labels, utilize the 'Labels to ROI' node.")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", description = "Image on which the classification should be applied", create = true)
+@AddJIPipeInputSlot(value = WekaModelData.class, slotName = "Model", description = "The model", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Classified image", description = "The classified image", create = true)
 public class WekaClassification2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final WekaTiling2DSettings tilingSettings;
@@ -50,7 +50,7 @@ public class WekaClassification2DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus image = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getDuplicateImage();
         WekaModelData modelData = iterationStep.getInputData("Model", WekaModelData.class, progressInfo);
         WekaSegmentation segmentation = modelData.getSegmentation();
@@ -93,7 +93,7 @@ public class WekaClassification2DAlgorithm extends JIPipeIteratingAlgorithm {
                         // Generate tiles
                         tileImage2DAlgorithm.clearSlotData();
                         tileImage2DAlgorithm.getFirstInputSlot().addData(new ImagePlusData(wholeSlice), progressInfo);
-                        tileImage2DAlgorithm.run(progressInfo.resolve("Generate tiles"));
+                        tileImage2DAlgorithm.run(runContext, progressInfo.resolve("Generate tiles"));
 
                         // Classify tiles
                         JIPipeDataTable tileTable = tileImage2DAlgorithm.getFirstOutputSlot();
@@ -107,7 +107,7 @@ public class WekaClassification2DAlgorithm extends JIPipeIteratingAlgorithm {
                         // Merge tiles
                         unTileImage2DAlgorithm.clearSlotData();
                         unTileImage2DAlgorithm.getFirstInputSlot().addDataFromTable(tileTable, progressInfo);
-                        unTileImage2DAlgorithm.run(progressInfo.resolve("Merge tiles"));
+                        unTileImage2DAlgorithm.run(runContext, progressInfo.resolve("Merge tiles"));
 
                         classified = unTileImage2DAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
 
@@ -126,13 +126,13 @@ public class WekaClassification2DAlgorithm extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData("Classified image", new ImagePlusData(new ImagePlus("Classified", stack)), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Generate tiles", description = "The following settings allow the generation of tiles to save memory.")
+    @SetJIPipeDocumentation(name = "Generate tiles", description = "The following settings allow the generation of tiles to save memory.")
     @JIPipeParameter("tiling-parameters")
     public WekaTiling2DSettings getTilingSettings() {
         return tilingSettings;
     }
 
-    @JIPipeDocumentation(name = "Override number of threads", description = "If enabled, set the number of threads to be utilized. Set to zero for automated assignment of threads.")
+    @SetJIPipeDocumentation(name = "Override number of threads", description = "If enabled, set the number of threads to be utilized. Set to zero for automated assignment of threads.")
     @JIPipeParameter("num-threads")
     public OptionalIntegerParameter getNumThreads() {
         return numThreads;
@@ -143,7 +143,7 @@ public class WekaClassification2DAlgorithm extends JIPipeIteratingAlgorithm {
         this.numThreads = numThreads;
     }
 
-    @JIPipeDocumentation(name = "Output probability maps", description = "If enabled, output probability maps instead of class labels.")
+    @SetJIPipeDocumentation(name = "Output probability maps", description = "If enabled, output probability maps instead of class labels.")
     @JIPipeParameter("output-probability-maps")
     public boolean isOutputProbabilityMaps() {
         return outputProbabilityMaps;

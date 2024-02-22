@@ -13,15 +13,15 @@
 
 package org.hkijena.jipipe.extensions.multiparameters.nodes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
-import org.hkijena.jipipe.api.data.context.JIPipeMutableDataContext;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
@@ -30,9 +30,9 @@ import org.hkijena.jipipe.extensions.parameters.library.table.ParameterTable;
 /**
  * Generates {@link org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData} objects
  */
-@JIPipeDocumentation(name = "Define multiple parameters", description = "Defines algorithm parameters that can be consumed by a multi-parameter algorithm")
-@JIPipeOutputSlot(value = ParametersData.class, slotName = "Parameters", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "Define multiple parameters", description = "Defines algorithm parameters that can be consumed by a multi-parameter algorithm")
+@AddJIPipeOutputSlot(value = ParametersData.class, slotName = "Parameters", create = true)
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class DefineParametersTableAlgorithm extends JIPipeAlgorithm {
 
     private ParameterTable parameterTable = new ParameterTable();
@@ -57,7 +57,7 @@ public class DefineParametersTableAlgorithm extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
+    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         JIPipeDataSlot outputSlot = getFirstOutputSlot();
         for (int row = 0; row < parameterTable.getRowCount(); ++row) {
             ParametersData data = new ParametersData();
@@ -70,7 +70,7 @@ public class DefineParametersTableAlgorithm extends JIPipeAlgorithm {
     }
 
     @JIPipeParameter("parameter-table")
-    @JIPipeDocumentation(name = "Parameters", description = "Parameters that are generated")
+    @SetJIPipeDocumentation(name = "Parameters", description = "Parameters that are generated")
     public ParameterTable getParameterTable() {
         return parameterTable;
     }

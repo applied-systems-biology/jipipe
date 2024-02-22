@@ -15,8 +15,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.filter;
 
 import ij.ImagePlus;
 import ij.process.FloatPolygon;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -36,12 +36,12 @@ import java.awt.*;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@JIPipeDocumentation(name = "Remove ROI at borders", description = "Removes all ROI that intersect with image borders. Use the 'Border' parameter " +
+@SetJIPipeDocumentation(name = "Remove ROI at borders", description = "Removes all ROI that intersect with image borders. Use the 'Border' parameter " +
         "to define a rectangle inside of the image dimensions. If a ROI is not contained within this region, it is removed.")
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", description = "The ROI to be processed", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", description = "The reference image", autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Cleaned ROI", description = "The cleaned ROI", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", description = "The ROI to be processed", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", description = "The reference image", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Cleaned ROI", description = "The cleaned ROI", create = true)
 public class RemoveBorderRoisAlgorithm extends JIPipeIteratingAlgorithm {
 
     private Margin borderDefinition = new Margin();
@@ -73,7 +73,7 @@ public class RemoveBorderRoisAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROIListData data = (ROIListData) iterationStep.getInputData("ROI", ROIListData.class, progressInfo).duplicate(progressInfo);
         data.outline(outline);
         ImagePlus reference = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
@@ -94,7 +94,7 @@ public class RemoveBorderRoisAlgorithm extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Border", description = "Defines the rectangle that is created within the image boundaries separate inside and outside. " +
+    @SetJIPipeDocumentation(name = "Border", description = "Defines the rectangle that is created within the image boundaries separate inside and outside. " +
             "If a ROI intersects with the outside area (meaning that it is not contained within the rectangle), it is removed.")
     @JIPipeParameter("border-definition")
     public Margin getBorderDefinition() {
@@ -106,7 +106,7 @@ public class RemoveBorderRoisAlgorithm extends JIPipeIteratingAlgorithm {
         this.borderDefinition = borderDefinition;
     }
 
-    @JIPipeDocumentation(name = "Outline method", description = "Determines how ROI are preprocessed to obtain the extreme points (i.e. polygon stops)")
+    @SetJIPipeDocumentation(name = "Outline method", description = "Determines how ROI are preprocessed to obtain the extreme points (i.e. polygon stops)")
     @JIPipeParameter("outline")
     public RoiOutline getOutline() {
         return outline;

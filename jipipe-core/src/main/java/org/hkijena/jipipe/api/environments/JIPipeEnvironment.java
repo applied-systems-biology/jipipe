@@ -2,7 +2,7 @@ package org.hkijena.jipipe.api.environments;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
@@ -42,7 +42,7 @@ public abstract class JIPipeEnvironment extends AbstractJIPipeParameterCollectio
      */
     public abstract String getInfo();
 
-    @JIPipeDocumentation(name = "Name", description = "This environment's name")
+    @SetJIPipeDocumentation(name = "Name", description = "This environment's name")
     @JIPipeParameter("name")
     @JsonGetter("name")
     public String getName() {
@@ -55,7 +55,7 @@ public abstract class JIPipeEnvironment extends AbstractJIPipeParameterCollectio
         this.name = name;
     }
 
-    @JIPipeDocumentation(name = "Version", description = "The version of this environment")
+    @SetJIPipeDocumentation(name = "Version", description = "The version of this environment")
     @JIPipeParameter("version")
     @JsonGetter("version")
     public String getVersion() {
@@ -68,7 +68,7 @@ public abstract class JIPipeEnvironment extends AbstractJIPipeParameterCollectio
         this.version = version;
     }
 
-    @JIPipeDocumentation(name = "Source", description = "Information about where this environment was sourced from")
+    @SetJIPipeDocumentation(name = "Source", description = "Information about where this environment was sourced from")
     @JIPipeParameter("source")
     @JsonGetter("source")
     public String getSource() {

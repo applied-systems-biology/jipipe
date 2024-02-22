@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.graphannotation.nodes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -62,25 +62,25 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
         registerSubParameter(textLocation);
     }
 
-    @JIPipeDocumentation(name = "Text location", description = "The following settings determine the location of the title and content")
+    @SetJIPipeDocumentation(name = "Text location", description = "The following settings determine the location of the title and content")
     @JIPipeParameter("text-location")
     public TextLocationParameters getTextLocation() {
         return textLocation;
     }
 
-    @JIPipeDocumentation(name = "Title style", description = "The following parameters determine how the title is rendered")
+    @SetJIPipeDocumentation(name = "Title style", description = "The following parameters determine how the title is rendered")
     @JIPipeParameter("title-style")
     public TextRenderParameters getTitleStyle() {
         return titleStyle;
     }
 
-    @JIPipeDocumentation(name = "Description style", description = "The following parameters determine how the description is rendered")
+    @SetJIPipeDocumentation(name = "Description style", description = "The following parameters determine how the description is rendered")
     @JIPipeParameter("content-style")
     public TextRenderParameters getContentStyle() {
         return contentStyle;
     }
 
-    @JIPipeDocumentation(name = "Title", description = "The title of the text box")
+    @SetJIPipeDocumentation(name = "Title", description = "The title of the text box")
     @JIPipeParameter(value = "text-title", important = true, uiOrder = -100)
     public String getTextTitle() {
         return textTitle;
@@ -91,7 +91,7 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
         this.textTitle = textTitle;
     }
 
-    @JIPipeDocumentation(name = "Content", description = "The additional text content of the text box")
+    @SetJIPipeDocumentation(name = "Content", description = "The additional text content of the text box")
     @JIPipeParameter(value = "text-content", important = true, uiOrder = -90)
     @StringParameterSettings(multiline = true)
     public String getTextContent() {
@@ -360,7 +360,7 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
             this.marginBottom = other.marginBottom;
         }
 
-        @JIPipeDocumentation(name = "Anchor", description = "Determines to which anchor location the text is attached to.")
+        @SetJIPipeDocumentation(name = "Anchor", description = "Determines to which anchor location the text is attached to.")
         @JIPipeParameter("anchor")
         public Anchor getAnchor() {
             return anchor;
@@ -371,7 +371,7 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
             this.anchor = anchor;
         }
 
-        @JIPipeDocumentation(name = "Margin left", description = "The left margin of the available text area relative to the node border")
+        @SetJIPipeDocumentation(name = "Margin left", description = "The left margin of the available text area relative to the node border")
         @JIPipeParameter("margin-left")
         public int getMarginLeft() {
             return marginLeft;
@@ -382,7 +382,7 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
             this.marginLeft = marginLeft;
         }
 
-        @JIPipeDocumentation(name = "Margin right", description = "The right margin of the available text area relative to the node border")
+        @SetJIPipeDocumentation(name = "Margin right", description = "The right margin of the available text area relative to the node border")
         @JIPipeParameter("margin-right")
         public int getMarginRight() {
             return marginRight;
@@ -393,7 +393,7 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
             this.marginRight = marginRight;
         }
 
-        @JIPipeDocumentation(name = "Margin top", description = "The top margin of the available text area relative to the node border")
+        @SetJIPipeDocumentation(name = "Margin top", description = "The top margin of the available text area relative to the node border")
         @JIPipeParameter("margin-top")
         public int getMarginTop() {
             return marginTop;
@@ -404,7 +404,7 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
             this.marginTop = marginTop;
         }
 
-        @JIPipeDocumentation(name = "Margin bottom", description = "The bottom margin of the available text area relative to the node border")
+        @SetJIPipeDocumentation(name = "Margin bottom", description = "The bottom margin of the available text area relative to the node border")
         @JIPipeParameter("margin-bottom")
         public int getMarginBottom() {
             return marginBottom;
@@ -433,7 +433,7 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
             this.color = other.color;
         }
 
-        @JIPipeDocumentation(name = "Color", description = "The color of the text")
+        @SetJIPipeDocumentation(name = "Color", description = "The color of the text")
         @JIPipeParameter("color")
         public Color getColor() {
             return color;
@@ -444,7 +444,7 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
             this.color = color;
         }
 
-        @JIPipeDocumentation(name = "Font", description = "The font family")
+        @SetJIPipeDocumentation(name = "Font", description = "The font family")
         @JIPipeParameter("font-family")
         public FontFamilyParameter getFontFamily() {
             return fontFamily;
@@ -455,7 +455,7 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
             this.fontFamily = fontFamily;
         }
 
-        @JIPipeDocumentation(name = "Font style", description = "The font style")
+        @SetJIPipeDocumentation(name = "Font style", description = "The font style")
         @JIPipeParameter("font-style")
         public FontStyleParameter getFontStyle() {
             return fontStyle;
@@ -466,7 +466,7 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
             this.fontStyle = fontStyle;
         }
 
-        @JIPipeDocumentation(name = "Font size", description = "The font size")
+        @SetJIPipeDocumentation(name = "Font size", description = "The font size")
         @JIPipeParameter("font-size")
         public int getFontSize() {
             return fontSize;

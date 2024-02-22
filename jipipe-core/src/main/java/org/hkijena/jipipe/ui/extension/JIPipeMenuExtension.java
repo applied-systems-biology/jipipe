@@ -13,14 +13,14 @@
 
 package org.hkijena.jipipe.ui.extension;
 
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import javax.swing.*;
 
 /**
  * An extension for the extension builder or analysis tool menu.
- * Use {@link JIPipeNode} to determine the target menu and any sub-menu
+ * Use {@link DefineJIPipeNode} to determine the target menu and any sub-menu
  */
 public abstract class JIPipeMenuExtension extends JMenuItem {
 

@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.annotation.datasources;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
@@ -28,10 +28,10 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 /**
  * Imports {@link AnnotationTableData} from a file
  */
-@JIPipeDocumentation(name = "Import annotation table")
-@JIPipeInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
-@JIPipeOutputSlot(value = AnnotationTableData.class, slotName = "Annotation table", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "Import annotation table")
+@AddJIPipeInputSlot(value = FileData.class, slotName = "Files", create = true)
+@AddJIPipeOutputSlot(value = AnnotationTableData.class, slotName = "Annotation table", create = true)
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class AnnotationTableFromFile extends JIPipeSimpleIteratingAlgorithm {
 
     /**
@@ -51,7 +51,7 @@ public class AnnotationTableFromFile extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         FileData fileData = iterationStep.getInputData(getFirstInputSlot(), FileData.class, progressInfo);
         ResultsTableData resultsTableData = ResultsTableData.fromCSV(fileData.toPath());
         iterationStep.addOutputData(getFirstOutputSlot(), new AnnotationTableData(resultsTableData), progressInfo);

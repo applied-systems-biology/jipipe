@@ -1,8 +1,8 @@
 package org.hkijena.jipipe.extensions.cellpose;
 
-import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
+import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
 
-@JIPipeDocumentationDescription(description = "See https://cellpose.readthedocs.io/en/latest/models.html for a description of all models")
+@AddJIPipeDocumentationDescription(description = "See https://cellpose.readthedocs.io/en/latest/models.html for a description of all models")
 public enum CellposeModel {
     Cytoplasm("cyto"),
     Cytoplasm2("cyto2"),

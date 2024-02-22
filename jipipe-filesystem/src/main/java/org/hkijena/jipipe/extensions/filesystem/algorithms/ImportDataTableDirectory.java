@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -41,10 +41,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Import data table (directory)", description = "Imports a data table directory. The folder contains a data-table.json file and multiple folders with numeric names.")
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeInputSlot(value = FolderData.class, slotName = "Data table folder", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
+@SetJIPipeDocumentation(name = "Import data table (directory)", description = "Imports a data table directory. The folder contains a data-table.json file and multiple folders with numeric names.")
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = FolderData.class, slotName = "Data table folder", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", create = true)
 public class ImportDataTableDirectory extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean ignoreInputTextAnnotations = false;
@@ -69,7 +69,7 @@ public class ImportDataTableDirectory extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         if (ignoreInputTextAnnotations)
             iterationStep.setMergedTextAnnotations(new HashMap<>());
         if (ignoreInputDataAnnotations)
@@ -97,7 +97,7 @@ public class ImportDataTableDirectory extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Ignore input text annotations", description = "If enabled, incoming text annotations from the input folder will not be passed to the output.")
+    @SetJIPipeDocumentation(name = "Ignore input text annotations", description = "If enabled, incoming text annotations from the input folder will not be passed to the output.")
     @JIPipeParameter("ignore-input-text-annotations")
     public boolean isIgnoreInputTextAnnotations() {
         return ignoreInputTextAnnotations;
@@ -108,7 +108,7 @@ public class ImportDataTableDirectory extends JIPipeSimpleIteratingAlgorithm {
         this.ignoreInputTextAnnotations = ignoreInputTextAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Ignore input data annotations", description = "If enabled, incoming data annotations from the input folder will not be passed to the output.")
+    @SetJIPipeDocumentation(name = "Ignore input data annotations", description = "If enabled, incoming data annotations from the input folder will not be passed to the output.")
     @JIPipeParameter("ignore-input-data-annotations")
     public boolean isIgnoreInputDataAnnotations() {
         return ignoreInputDataAnnotations;
@@ -119,7 +119,7 @@ public class ImportDataTableDirectory extends JIPipeSimpleIteratingAlgorithm {
         this.ignoreInputDataAnnotations = ignoreInputDataAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Ignore imported text annotations", description = "If enabled, annotations from imported text annotations are ignored.")
+    @SetJIPipeDocumentation(name = "Ignore imported text annotations", description = "If enabled, annotations from imported text annotations are ignored.")
     @JIPipeParameter("ignore-imported-text-annotations")
     public boolean isIgnoreImportedTextAnnotations() {
         return ignoreImportedTextAnnotations;
@@ -130,7 +130,7 @@ public class ImportDataTableDirectory extends JIPipeSimpleIteratingAlgorithm {
         this.ignoreImportedTextAnnotations = ignoreImportedTextAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Ignore imported data annotations", description = "If enabled, annotations from imported data annotations are ignored.")
+    @SetJIPipeDocumentation(name = "Ignore imported data annotations", description = "If enabled, annotations from imported data annotations are ignored.")
     @JIPipeParameter("ignore-imported-data-annotations")
     public boolean isIgnoreImportedDataAnnotations() {
         return ignoreImportedDataAnnotations;
@@ -141,7 +141,7 @@ public class ImportDataTableDirectory extends JIPipeSimpleIteratingAlgorithm {
         this.ignoreImportedDataAnnotations = ignoreImportedDataAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Merge imported text annotations", description = "Determines what happens when imported data has the same text annotations as the input folder.")
+    @SetJIPipeDocumentation(name = "Merge imported text annotations", description = "Determines what happens when imported data has the same text annotations as the input folder.")
     @JIPipeParameter("text-annotation-merge-mode")
     public JIPipeTextAnnotationMergeMode getTextAnnotationMergeMode() {
         return textAnnotationMergeMode;
@@ -152,7 +152,7 @@ public class ImportDataTableDirectory extends JIPipeSimpleIteratingAlgorithm {
         this.textAnnotationMergeMode = textAnnotationMergeMode;
     }
 
-    @JIPipeDocumentation(name = "Merge imported data annotations", description = "Determines what happens when imported data has the same data annotations as the input folder.")
+    @SetJIPipeDocumentation(name = "Merge imported data annotations", description = "Determines what happens when imported data has the same data annotations as the input folder.")
     @JIPipeParameter("data-annotation-merge-mode")
     public JIPipeDataAnnotationMergeMode getDataAnnotationMergeMode() {
         return dataAnnotationMergeMode;

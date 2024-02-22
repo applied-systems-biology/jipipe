@@ -16,8 +16,8 @@ package org.hkijena.jipipe.extensions.tables.nodes.columns;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -32,10 +32,10 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.util.*;
 
-@JIPipeDocumentation(name = "Annotate table by merged columns", description = "Copies column values into an annotation. If the column has different values, the annotations are merged according to the selected merging strategy.")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For tables")
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Annotate table by merged columns", description = "Copies column values into an annotation. If the column has different values, the annotations are merged according to the selected merging strategy.")
+@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For tables")
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class ColumnsToAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeTextAnnotationMergeMode rowMergingStrategy = JIPipeTextAnnotationMergeMode.Merge;
@@ -54,7 +54,7 @@ public class ColumnsToAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData tableData = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         Multimap<String, String> annotationsToGenerate = HashMultimap.create();
         for (int row = 0; row < tableData.getRowCount(); row++) {
@@ -76,7 +76,7 @@ public class ColumnsToAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorith
         iterationStep.addOutputData(getFirstOutputSlot(), tableData, annotationList, annotationMergeStrategy, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Row merging strategy", description = "Important if the rows of the selected columns have different values. Determines how they are merged. " +
+    @SetJIPipeDocumentation(name = "Row merging strategy", description = "Important if the rows of the selected columns have different values. Determines how they are merged. " +
             "Ordered by row index.")
     @JIPipeParameter("row-merging-strategy")
     public JIPipeTextAnnotationMergeMode getRowMergingStrategy() {
@@ -88,7 +88,7 @@ public class ColumnsToAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.rowMergingStrategy = rowMergingStrategy;
     }
 
-    @JIPipeDocumentation(name = "Annotation merge strategy", description = "Determines what happens if there is already an annotation with the same column name.")
+    @SetJIPipeDocumentation(name = "Annotation merge strategy", description = "Determines what happens if there is already an annotation with the same column name.")
     @JIPipeParameter("annotation-merge-strategy")
     public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {
         return annotationMergeStrategy;
@@ -99,7 +99,7 @@ public class ColumnsToAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
 
-    @JIPipeDocumentation(name = "Filter", description = "Filters the columns and/or table cell values. ")
+    @SetJIPipeDocumentation(name = "Filter", description = "Filters the columns and/or table cell values. ")
     @JIPipeParameter("filter")
     public TableCellValueQueryExpression getFilter() {
         return filter;

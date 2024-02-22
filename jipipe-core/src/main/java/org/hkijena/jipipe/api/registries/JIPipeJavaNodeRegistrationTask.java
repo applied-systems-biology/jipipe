@@ -16,9 +16,9 @@ package org.hkijena.jipipe.api.registries;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.infos.JIPipeJavaNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import java.net.URL;
@@ -48,10 +48,10 @@ public class JIPipeJavaNodeRegistrationTask extends JIPipeDefaultNodeRegistratio
         this.nodeClass = nodeClass;
         this.icon = icon;
 
-        for (JIPipeInputSlot slot : nodeClass.getAnnotationsByType(JIPipeInputSlot.class)) {
+        for (AddJIPipeInputSlot slot : nodeClass.getAnnotationsByType(AddJIPipeInputSlot.class)) {
             getDependencyDatatypeClasses().add(slot.value());
         }
-        for (JIPipeOutputSlot slot : nodeClass.getAnnotationsByType(JIPipeOutputSlot.class)) {
+        for (AddJIPipeOutputSlot slot : nodeClass.getAnnotationsByType(AddJIPipeOutputSlot.class)) {
             getDependencyDatatypeClasses().add(slot.value());
         }
     }

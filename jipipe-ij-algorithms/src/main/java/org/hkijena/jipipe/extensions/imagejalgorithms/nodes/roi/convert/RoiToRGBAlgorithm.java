@@ -19,8 +19,8 @@ import ij.gui.ImageCanvas;
 import ij.gui.Roi;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -46,12 +46,12 @@ import java.util.Collections;
 /**
  * Wrapper around {@link RoiDrawer}
  */
-@JIPipeDocumentation(name = "Convert ROI to RGB", description = "Converts ROI lists to masks. The line and fill color is stored within the ROI themselves. " +
+@SetJIPipeDocumentation(name = "Convert ROI to RGB", description = "Converts ROI lists to masks. The line and fill color is stored within the ROI themselves. " +
         "This algorithm needs a reference image that provides the output sizes. If you do not have a reference image, you can use the unreferenced variant.")
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", description = "The ROI", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", description = "The image where ROI are drawn on", autoCreate = true, optional = true)
-@JIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output", description = "The ROI visualization (RGB image)", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", description = "The ROI", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", description = "The image where ROI are drawn on", create = true, optional = true)
+@AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output", description = "The ROI visualization (RGB image)", create = true)
 public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
 
     private ROIElementDrawingMode drawOutlineMode = ROIElementDrawingMode.Always;
@@ -119,12 +119,12 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runPassThrough(JIPipeProgressInfo progressInfo) {
+    protected void runPassThrough(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         getFirstOutputSlot().addDataFromSlot(getInputSlot("Image"), progressInfo);
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROIListData rois = (ROIListData) iterationStep.getInputData("ROI", ROIListData.class, progressInfo).duplicate(progressInfo);
         ImagePlus reference = ImageJUtils.unwrap(iterationStep.getInputData("Image", ImagePlusData.class, progressInfo));
 
@@ -191,7 +191,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         targetStack.setProcessor(render, index.zeroSliceIndexToOneStackIndex(reference));
     }
 
-    @JIPipeDocumentation(name = "Opacity", description = "Opacity of the added ROI and labels. If zero, they are not visible. If set to one, they are fully visible.")
+    @SetJIPipeDocumentation(name = "Opacity", description = "Opacity of the added ROI and labels. If zero, they are not visible. If set to one, they are fully visible.")
     @JIPipeParameter("opacity")
     @NumberParameterSettings(step = 0.1)
     public double getOpacity() {
@@ -206,7 +206,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         return true;
     }
 
-    @JIPipeDocumentation(name = "Label font family", description = "The font family of the label")
+    @SetJIPipeDocumentation(name = "Label font family", description = "The font family of the label")
     @JIPipeParameter("label-font-family")
     public FontFamilyParameter getLabelFontFamily() {
         return labelFontFamily;
@@ -217,7 +217,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         this.labelFontFamily = labelFontFamily;
     }
 
-    @JIPipeDocumentation(name = "Draw outline", description = "If enabled, draw a white outline of the ROI")
+    @SetJIPipeDocumentation(name = "Draw outline", description = "If enabled, draw a white outline of the ROI")
     @JIPipeParameter("draw-outline-mode")
     public ROIElementDrawingMode getDrawOutlineMode() {
         return drawOutlineMode;
@@ -228,7 +228,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         this.drawOutlineMode = drawOutlineMode;
     }
 
-    @JIPipeDocumentation(name = "Draw filled outline", description = "If enabled, fill the ROI areas")
+    @SetJIPipeDocumentation(name = "Draw filled outline", description = "If enabled, fill the ROI areas")
     @JIPipeParameter("fill-outline-mode")
     public ROIElementDrawingMode getDrawFilledOutlineMode() {
         return drawFilledOutlineMode;
@@ -239,7 +239,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         this.drawFilledOutlineMode = drawFilledOutlineMode;
     }
 
-    @JIPipeDocumentation(name = "Draw labels", description = "Allows to draw labels on top of ROI.")
+    @SetJIPipeDocumentation(name = "Draw labels", description = "Allows to draw labels on top of ROI.")
     @JIPipeParameter("drawn-label")
     public RoiLabel getDrawnLabel() {
         return drawnLabel;
@@ -250,7 +250,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         this.drawnLabel = drawnLabel;
     }
 
-    @JIPipeDocumentation(name = "Label foreground", description = "The text color of the label (if enabled)")
+    @SetJIPipeDocumentation(name = "Label foreground", description = "The text color of the label (if enabled)")
     @JIPipeParameter("label-foreground")
     public Color getLabelForeground() {
         return labelForeground;
@@ -261,7 +261,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         this.labelForeground = labelForeground;
     }
 
-    @JIPipeDocumentation(name = "Label background", description = "The background color of the label (if enabled)")
+    @SetJIPipeDocumentation(name = "Label background", description = "The background color of the label (if enabled)")
     @JIPipeParameter("label-background")
     public OptionalColorParameter getLabelBackground() {
         return labelBackground;
@@ -272,7 +272,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         this.labelBackground = labelBackground;
     }
 
-    @JIPipeDocumentation(name = "Label size", description = "Font size of drawn labels")
+    @SetJIPipeDocumentation(name = "Label size", description = "Font size of drawn labels")
     @JIPipeParameter("label-size")
     public int getLabelSize() {
         return labelSize;
@@ -286,7 +286,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         return true;
     }
 
-    @JIPipeDocumentation(name = "Override fill color", description = "If enabled, the fill color will be overridden by this value. " +
+    @SetJIPipeDocumentation(name = "Override fill color", description = "If enabled, the fill color will be overridden by this value. " +
             "If a ROI has no fill color, it will always fall back to this color.")
     @JIPipeParameter("override-fill-color")
     public OptionalColorParameter getOverrideFillColor() {
@@ -298,7 +298,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         this.overrideFillColor = overrideFillColor;
     }
 
-    @JIPipeDocumentation(name = "Override line color", description = "If enabled, the line color will be overridden by this value. " +
+    @SetJIPipeDocumentation(name = "Override line color", description = "If enabled, the line color will be overridden by this value. " +
             "If a ROI has no line color, it will always fall back to this color.")
     @JIPipeParameter("override-line-color")
     public OptionalColorParameter getOverrideLineColor() {
@@ -310,7 +310,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         this.overrideLineColor = overrideLineColor;
     }
 
-    @JIPipeDocumentation(name = "Override line width", description = "If enabled, the line width will be overridden by this value. " +
+    @SetJIPipeDocumentation(name = "Override line width", description = "If enabled, the line width will be overridden by this value. " +
             "If a ROI has a line width equal or less than zero, it will fall back to this value.")
     @JIPipeParameter("override-line-width")
     public OptionalDoubleParameter getOverrideLineWidth() {
@@ -322,7 +322,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         this.overrideLineWidth = overrideLineWidth;
     }
 
-    @JIPipeDocumentation(name = "Draw over reference", description = "If enabled, draw the ROI over the reference image.")
+    @SetJIPipeDocumentation(name = "Draw over reference", description = "If enabled, draw the ROI over the reference image.")
     @JIPipeParameter("draw-over")
     public boolean isDrawOver() {
         return drawOver;
@@ -333,7 +333,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         this.drawOver = drawOver;
     }
 
-    @JIPipeDocumentation(name = "Ignore Z", description = "If enabled, ROI will show outside their Z layer")
+    @SetJIPipeDocumentation(name = "Ignore Z", description = "If enabled, ROI will show outside their Z layer")
     @JIPipeParameter("ignore-z")
     public boolean isIgnoreZ() {
         return ignoreZ;
@@ -344,7 +344,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         this.ignoreZ = ignoreZ;
     }
 
-    @JIPipeDocumentation(name = "Ignore channel", description = "If enabled, ROI will show outside their channel (C) layer")
+    @SetJIPipeDocumentation(name = "Ignore channel", description = "If enabled, ROI will show outside their channel (C) layer")
     @JIPipeParameter("ignore-c")
     public boolean isIgnoreC() {
         return ignoreC;
@@ -355,7 +355,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         this.ignoreC = ignoreC;
     }
 
-    @JIPipeDocumentation(name = "Ignore frame", description = "If enabled, ROI will show outside their frame (T) layer")
+    @SetJIPipeDocumentation(name = "Ignore frame", description = "If enabled, ROI will show outside their frame (T) layer")
     @JIPipeParameter("ignore-t")
     public boolean isIgnoreT() {
         return ignoreT;
@@ -366,7 +366,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         this.ignoreT = ignoreT;
     }
 
-    @JIPipeDocumentation(name = "Magnification", description = "Magnification applied during the rendering")
+    @SetJIPipeDocumentation(name = "Magnification", description = "Magnification applied during the rendering")
     @JIPipeParameter("magnification")
     public double getMagnification() {
         return magnification;
@@ -377,7 +377,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         this.magnification = magnification;
     }
 
-    @JIPipeDocumentation(name = "Prefer render via overlay", description = "If enabled, the rendering via an ImageJ overlay is preferred even if the magnification is 1.0")
+    @SetJIPipeDocumentation(name = "Prefer render via overlay", description = "If enabled, the rendering via an ImageJ overlay is preferred even if the magnification is 1.0")
     @JIPipeParameter("prefer-render-via-overlay")
     public boolean isPreferRenderViaOverlay() {
         return preferRenderViaOverlay;

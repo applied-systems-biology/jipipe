@@ -39,7 +39,7 @@ public class DataPreviewControlUI extends JPanel implements JIPipeParameterColle
     private void initialize() {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
-        JButton zoomOutButton = new JButton(UIUtils.getIconFromResources("actions/zoom-out.png"));
+        JButton zoomOutButton = new JButton(UIUtils.getIconFromResources("actions/square-minus.png"));
         UIUtils.makeFlat25x25(zoomOutButton);
         zoomOutButton.addActionListener(e -> decreaseSize());
         add(zoomOutButton);
@@ -49,7 +49,7 @@ public class DataPreviewControlUI extends JPanel implements JIPipeParameterColle
         initializeZoomMenu(zoomMenu);
         add(zoomStatusButton);
 
-        JButton zoomInButton = new JButton(UIUtils.getIconFromResources("actions/zoom-in.png"));
+        JButton zoomInButton = new JButton(UIUtils.getIconFromResources("actions/square-plus.png"));
         UIUtils.makeFlat25x25(zoomInButton);
         zoomInButton.addActionListener(e -> increaseSize());
         add(zoomInButton);

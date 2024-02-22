@@ -16,9 +16,9 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.greyscale;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ByteProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHeavyData;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
@@ -31,9 +31,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 /**
  * Mask 4D image
  */
-@JIPipeDocumentation(name = "4D image (mask)", description = "An 8-bit binary image")
-@JIPipeNode(menuPath = "Images\n4D\nGreyscale")
-@JIPipeHeavyData
+@SetJIPipeDocumentation(name = "4D image (mask)", description = "An 8-bit binary image")
+@DefineJIPipeNode(menuPath = "Images\n4D\nGreyscale")
+@LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ByteProcessor.class, colorSpace = GreyscaleColorSpace.class, pixelType = Byte.class, bitDepth = 8, numDimensions = 4)
 public class ImagePlus4DGreyscaleMaskData extends ImagePlus4DGreyscale8UData {
 

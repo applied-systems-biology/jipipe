@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -21,11 +21,11 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Annotate with data", description = "Annotates the incoming data with the other data.")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Annotation", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Annotate with data", description = "Annotates the incoming data with the other data.")
+@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Annotation", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
 public class AnnotateWithData extends JIPipeIteratingAlgorithm {
 
     private String annotationName = "Label";
@@ -48,7 +48,7 @@ public class AnnotateWithData extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         JIPipeDataSlot inputDataSlot = getInputSlot("Input");
         JIPipeDataSlot inputAnnotationSlot = getInputSlot("Annotation");
         int dataRow = iterationStep.getInputSlotRows().get(inputDataSlot);
@@ -71,7 +71,7 @@ public class AnnotateWithData extends JIPipeIteratingAlgorithm {
                 progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Generated annotation", description = "The name of the generated data annotation")
+    @SetJIPipeDocumentation(name = "Generated annotation", description = "The name of the generated data annotation")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/data-annotation.png")
     @JIPipeParameter("annotation-name")
     public String getAnnotationName() {
@@ -83,7 +83,7 @@ public class AnnotateWithData extends JIPipeIteratingAlgorithm {
         this.annotationName = annotationName;
     }
 
-    @JIPipeDocumentation(name = "Data annotation merge strategy", description = "Determines how the created data annotation is merged with existing ones")
+    @SetJIPipeDocumentation(name = "Data annotation merge strategy", description = "Determines how the created data annotation is merged with existing ones")
     @JIPipeParameter("data-annotation-merge-strategy")
     public JIPipeDataAnnotationMergeMode getDataAnnotationMergeMode() {
         return dataAnnotationMergeMode;
@@ -94,7 +94,7 @@ public class AnnotateWithData extends JIPipeIteratingAlgorithm {
         this.dataAnnotationMergeMode = dataAnnotationMergeMode;
     }
 
-    @JIPipeDocumentation(name = "Copy text annotations from input", description = "If enabled, annotations from the 'Input' slot are copied into the output (Default).")
+    @SetJIPipeDocumentation(name = "Copy text annotations from input", description = "If enabled, annotations from the 'Input' slot are copied into the output (Default).")
     @JIPipeParameter("merge-input-annotations")
     public boolean isMergeInputAnnotations() {
         return mergeInputAnnotations;
@@ -105,7 +105,7 @@ public class AnnotateWithData extends JIPipeIteratingAlgorithm {
         this.mergeInputAnnotations = mergeInputAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Copy text annotations from data annotation", description = "If enabled, annotations from the 'Annotation' slot are copied into the output.")
+    @SetJIPipeDocumentation(name = "Copy text annotations from data annotation", description = "If enabled, annotations from the 'Annotation' slot are copied into the output.")
     @JIPipeParameter("merge-label-annotations")
     public boolean isMergeLabelAnnotations() {
         return mergeLabelAnnotations;
@@ -116,7 +116,7 @@ public class AnnotateWithData extends JIPipeIteratingAlgorithm {
         this.mergeLabelAnnotations = mergeLabelAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Text annotation merge strategy", description = "Determines how text annotations from 'Input' and 'Annotation' are merged, " +
+    @SetJIPipeDocumentation(name = "Text annotation merge strategy", description = "Determines how text annotations from 'Input' and 'Annotation' are merged, " +
             "if both are enabled.")
     @JIPipeParameter("annotation-merge-strategy")
     public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {

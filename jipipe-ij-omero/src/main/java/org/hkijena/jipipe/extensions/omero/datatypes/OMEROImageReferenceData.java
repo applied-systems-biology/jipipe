@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.omero.datatypes;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import omero.gateway.model.ImageData;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
@@ -36,7 +36,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
 
-@JIPipeDocumentation(name = "OMERO Image", description = "An OMERO image ID")
+@SetJIPipeDocumentation(name = "OMERO Image", description = "An OMERO image ID")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.json file that stores the <pre>image-id</pre> in a JSON object.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/omero-image-reference-data.schema.json")
 public class OMEROImageReferenceData implements JIPipeData {

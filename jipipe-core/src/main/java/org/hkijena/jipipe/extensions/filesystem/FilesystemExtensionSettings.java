@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.filesystem;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
@@ -26,7 +26,7 @@ public class FilesystemExtensionSettings extends AbstractJIPipeParameterCollecti
     }
 
     @JIPipeParameter("relativize-paths")
-    @JIPipeDocumentation(name = "Relativize paths", description = "If enabled, file/folder/path data sources will relativize " +
+    @SetJIPipeDocumentation(name = "Relativize paths", description = "If enabled, file/folder/path data sources will relativize " +
             "their stored paths to the project directory, if paths are pointing to an element next or in a sub-folder of the project.")
     public boolean isRelativizePaths() {
         return relativizePaths;
@@ -37,7 +37,7 @@ public class FilesystemExtensionSettings extends AbstractJIPipeParameterCollecti
         this.relativizePaths = relativizePaths;
     }
 
-    @JIPipeDocumentation(name = "Auto-label output with file name", description = "If enabled, single file/folder/path data sources will automatically " +
+    @SetJIPipeDocumentation(name = "Auto-label output with file name", description = "If enabled, single file/folder/path data sources will automatically " +
             "label their output slot with the last path component (file/folder) name.")
     @JIPipeParameter("auto-label-output-with-filename")
     public boolean isAutoLabelOutputWithFileName() {

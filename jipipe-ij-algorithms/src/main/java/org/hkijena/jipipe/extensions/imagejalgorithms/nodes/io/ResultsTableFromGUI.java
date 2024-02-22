@@ -16,8 +16,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.io;
 import ij.WindowManager;
 import ij.measure.ResultsTable;
 import ij.text.TextWindow;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
@@ -36,10 +36,10 @@ import java.awt.*;
 /**
  * Imports {@link ImagePlusData} from the GUI
  */
-@JIPipeDocumentation(name = "Table from ImageJ", description = "Imports one or multiple active ImageJ results table windows into JIPipe")
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nImport")
+@SetJIPipeDocumentation(name = "Table from ImageJ", description = "Imports one or multiple active ImageJ results table windows into JIPipe")
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nImport")
 public class ResultsTableFromGUI extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter titleFilterExpression = new JIPipeExpressionParameter("title EQUALS \"Results\"");
@@ -54,7 +54,7 @@ public class ResultsTableFromGUI extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
         for (Window window : WindowManager.getAllNonImageWindows()) {
             if (window instanceof TextWindow) {
@@ -71,7 +71,7 @@ public class ResultsTableFromGUI extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Filter titles", description = "Allows to filter for the window titles. By default it is set to <pre>title EQUALS \"Results\"</pre>, which selects windows with the name 'Results'. If you want to apply no filtering, set it to 'TRUE'.")
+    @SetJIPipeDocumentation(name = "Filter titles", description = "Allows to filter for the window titles. By default it is set to <pre>title EQUALS \"Results\"</pre>, which selects windows with the name 'Results'. If you want to apply no filtering, set it to 'TRUE'.")
     @JIPipeParameter("title-filters")
     public JIPipeExpressionParameter getTitleFilterExpression() {
         return titleFilterExpression;

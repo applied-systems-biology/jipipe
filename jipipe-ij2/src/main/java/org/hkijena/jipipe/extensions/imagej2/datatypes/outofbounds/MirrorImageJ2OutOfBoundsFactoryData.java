@@ -2,14 +2,14 @@ package org.hkijena.jipipe.extensions.imagej2.datatypes.outofbounds;
 
 import net.imglib2.outofbounds.OutOfBoundsFactory;
 import net.imglib2.outofbounds.OutOfBoundsMirrorFactory;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
-@JIPipeDocumentation(name = "IJ2 Mirror Out Of Bounds factory", description = "Creates appropriate strategies that virtually mirror an image at its borders.")
+@SetJIPipeDocumentation(name = "IJ2 Mirror Out Of Bounds factory", description = "Creates appropriate strategies that virtually mirror an image at its borders.")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single JSON file that stores the status information.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
 public class MirrorImageJ2OutOfBoundsFactoryData extends ImageJ2OutOfBoundsFactoryData {
@@ -37,7 +37,7 @@ public class MirrorImageJ2OutOfBoundsFactoryData extends ImageJ2OutOfBoundsFacto
         return (MirrorImageJ2OutOfBoundsFactoryData) ImageJ2OutOfBoundsFactoryData.importData(storage, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Boundary", description = "Boundary pixels are either " +
+    @SetJIPipeDocumentation(name = "Boundary", description = "Boundary pixels are either " +
             "duplicated or not.  Note that if boundary pixels should not be duplicated " +
             "then all dimensions of the source must be larger than 1")
     @JIPipeParameter("boundary")

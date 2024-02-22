@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.expressions.functions.color;
 
 import com.google.common.collect.ImmutableList;
 import ij.process.ColorSpaceConverter;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-@JIPipeDocumentation(name = "LAB to RGB colors", description = "Converts an LAB color array into an RGB color array")
+@SetJIPipeDocumentation(name = "LAB to RGB colors", description = "Converts an LAB color array into an RGB color array")
 public class LABToRGBFunction extends ExpressionFunction {
 
     private static final ColorSpaceConverter CONVERTER = new ColorSpaceConverter();

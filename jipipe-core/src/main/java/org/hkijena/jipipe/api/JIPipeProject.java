@@ -453,8 +453,8 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        graph.reportValidity(context, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        graph.reportValidity(reportContext, report);
     }
 
     /**
@@ -813,7 +813,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
     }
 
     /**
-     * Returns a list of all nodes that generate heavy data ({@link JIPipeHeavyData}) and are intermediate (see getIntermediateAlgorithms()).
+     * Returns a list of all nodes that generate heavy data ({@link LabelAsJIPipeHeavyData}) and are intermediate (see getIntermediateAlgorithms()).
      * Skips all nodes that do not save outputs.
      *
      * @return intermediate nodes with heavy data

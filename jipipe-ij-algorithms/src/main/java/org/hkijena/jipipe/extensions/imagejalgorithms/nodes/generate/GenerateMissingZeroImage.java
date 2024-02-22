@@ -15,8 +15,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.generate;
 
 import ij.IJ;
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
@@ -33,11 +33,11 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@JIPipeDocumentation(name = "Generate missing image", description = "Generates an empty (black) image if it cannot be matched to a reference")
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true, optional = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true)
+@SetJIPipeDocumentation(name = "Generate missing image", description = "Generates an empty (black) image if it cannot be matched to a reference")
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true, optional = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
 public class GenerateMissingZeroImage extends JIPipeMissingDataGeneratorAlgorithm {
 
     private OptionalIntegerParameter overwriteWidth = new OptionalIntegerParameter(false, 256);
@@ -111,7 +111,7 @@ public class GenerateMissingZeroImage extends JIPipeMissingDataGeneratorAlgorith
         }
     }
 
-    @JIPipeDocumentation(name = "Generate one per batch", description = "If enabled, only one image per batch is generated. " +
+    @SetJIPipeDocumentation(name = "Generate one per batch", description = "If enabled, only one image per batch is generated. " +
             "The first image is used as reference.")
     @JIPipeParameter("generate-one-per-batch")
     public boolean isGenerateOnePerBatch() {
@@ -123,7 +123,7 @@ public class GenerateMissingZeroImage extends JIPipeMissingDataGeneratorAlgorith
         this.generateOnePerBatch = generateOnePerBatch;
     }
 
-    @JIPipeDocumentation(name = "Overwrite bit depth", description = "If none is selected, the output type is the same as the type " +
+    @SetJIPipeDocumentation(name = "Overwrite bit depth", description = "If none is selected, the output type is the same as the type " +
             "of the input image. Otherwise, the bit depth is set according to the selection.")
     @JIPipeParameter("overwrite-output-bit-depth")
     public OptionalBitDepth getOverwriteOutputBitDepth() {
@@ -135,7 +135,7 @@ public class GenerateMissingZeroImage extends JIPipeMissingDataGeneratorAlgorith
         this.overwriteOutputBitDepth = overwriteOutputBitDepth;
     }
 
-    @JIPipeDocumentation(name = "Overwrite Width", description = "The width of the generated image")
+    @SetJIPipeDocumentation(name = "Overwrite Width", description = "The width of the generated image")
     @JIPipeParameter("width")
     public OptionalIntegerParameter getOverwriteWidth() {
         return overwriteWidth;
@@ -146,7 +146,7 @@ public class GenerateMissingZeroImage extends JIPipeMissingDataGeneratorAlgorith
         this.overwriteWidth = overwriteWidth;
     }
 
-    @JIPipeDocumentation(name = "Overwrite Height", description = "The height of the generated image")
+    @SetJIPipeDocumentation(name = "Overwrite Height", description = "The height of the generated image")
     @JIPipeParameter("height")
     public OptionalIntegerParameter getOverwriteHeight() {
         return overwriteHeight;
@@ -157,7 +157,7 @@ public class GenerateMissingZeroImage extends JIPipeMissingDataGeneratorAlgorith
         this.overwriteHeight = overwriteHeight;
     }
 
-    @JIPipeDocumentation(name = "Overwrite number of slices (Z)", description = "Number of generated Z slices.")
+    @SetJIPipeDocumentation(name = "Overwrite number of slices (Z)", description = "Number of generated Z slices.")
     @JIPipeParameter("size-z")
     public OptionalIntegerParameter getOverwriteSizeZ() {
         return overwriteSizeZ;
@@ -168,7 +168,7 @@ public class GenerateMissingZeroImage extends JIPipeMissingDataGeneratorAlgorith
         this.overwriteSizeZ = overwriteSizeZ;
     }
 
-    @JIPipeDocumentation(name = "Overwrite number of channels (C)", description = "Number of generated channel slices.")
+    @SetJIPipeDocumentation(name = "Overwrite number of channels (C)", description = "Number of generated channel slices.")
     @JIPipeParameter("size-c")
     public OptionalIntegerParameter getOverwriteSizeC() {
         return overwriteSizeC;
@@ -179,7 +179,7 @@ public class GenerateMissingZeroImage extends JIPipeMissingDataGeneratorAlgorith
         this.overwriteSizeC = overwriteSizeC;
     }
 
-    @JIPipeDocumentation(name = "Overwrite number of frames (T)", description = "Number of generated frame slices.")
+    @SetJIPipeDocumentation(name = "Overwrite number of frames (T)", description = "Number of generated frame slices.")
     @JIPipeParameter("size-t")
     public OptionalIntegerParameter getOverwriteSizeT() {
         return overwriteSizeT;

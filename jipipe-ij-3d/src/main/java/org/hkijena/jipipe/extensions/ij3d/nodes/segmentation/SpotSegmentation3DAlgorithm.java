@@ -5,8 +5,9 @@ import ij.process.ImageProcessor;
 import mcib3d.image3d.ImageHandler;
 import mcib3d.image3d.processing.FastFilters3D;
 import mcib3d.image3d.segment.*;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
@@ -54,7 +55,7 @@ public abstract class SpotSegmentation3DAlgorithm extends JIPipeIteratingAlgorit
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus spotsImage = iterationStep.getInputData("Spots", ImagePlusGreyscaleData.class, progressInfo).getImage();
         ImagePlus seedsImage = ImageJUtils.unwrap(iterationStep.getInputData("Seeds", ImagePlusGreyscaleMaskData.class, progressInfo));
 
@@ -114,7 +115,7 @@ public abstract class SpotSegmentation3DAlgorithm extends JIPipeIteratingAlgorit
 
     protected abstract LocalThresholder createThresholder();
 
-    @JIPipeDocumentation(name = "Output 32-bit labels", description = "If enabled, generate 32-bit labels (support more than 32767 objects)")
+    @SetJIPipeDocumentation(name = "Output 32-bit labels", description = "If enabled, generate 32-bit labels (support more than 32767 objects)")
     @JIPipeParameter("output-32-bit")
     public boolean isOutput32bit() {
         return output32bit;
@@ -125,7 +126,7 @@ public abstract class SpotSegmentation3DAlgorithm extends JIPipeIteratingAlgorit
         this.output32bit = output32bit;
     }
 
-    @JIPipeDocumentation(name = "Seeds threshold", description = "Determines which seeds will be used")
+    @SetJIPipeDocumentation(name = "Seeds threshold", description = "Determines which seeds will be used")
     @JIPipeParameter("seeds-threshold")
     public int getSeedsThreshold() {
         return seedsThreshold;
@@ -136,20 +137,20 @@ public abstract class SpotSegmentation3DAlgorithm extends JIPipeIteratingAlgorit
         this.seedsThreshold = seedsThreshold;
     }
 
-    @JIPipeDocumentation(name = "Seed segmentation", description = "The following settings are utilized if no seed image is provided and " +
+    @SetJIPipeDocumentation(name = "Seed segmentation", description = "The following settings are utilized if no seed image is provided and " +
             "an automated algorithm is applied for the seed detection")
     @JIPipeParameter("seed-segmentation-settings")
     public SeedSegmentationSettings getSeedSegmentationSettings() {
         return seedSegmentationSettings;
     }
 
-    @JIPipeDocumentation(name = "Spot segmentation", description = "Settings related to the segmentation of the spots")
+    @SetJIPipeDocumentation(name = "Spot segmentation", description = "Settings related to the segmentation of the spots")
     @JIPipeParameter("spot-segmentation-settings")
     public SpotSegmentationSettings getSpotSegmentationSettings() {
         return spotSegmentationSettings;
     }
 
-    @JIPipeDocumentation(name = "Minimum volume (pixels)", description = "The minimum volume of objects (pixel units)")
+    @SetJIPipeDocumentation(name = "Minimum volume (pixels)", description = "The minimum volume of objects (pixel units)")
     @JIPipeParameter("min-volume-pixels")
     public int getMinVolumePixels() {
         return minVolumePixels;
@@ -160,7 +161,7 @@ public abstract class SpotSegmentation3DAlgorithm extends JIPipeIteratingAlgorit
         this.minVolumePixels = minVolumePixels;
     }
 
-    @JIPipeDocumentation(name = "Maximum volume (pixels)", description = "The maximum volume of objects (pixel units)")
+    @SetJIPipeDocumentation(name = "Maximum volume (pixels)", description = "The maximum volume of objects (pixel units)")
     @JIPipeParameter("max-volume-pixels")
     public int getMaxVolumePixels() {
         return maxVolumePixels;
@@ -171,7 +172,7 @@ public abstract class SpotSegmentation3DAlgorithm extends JIPipeIteratingAlgorit
         this.maxVolumePixels = maxVolumePixels;
     }
 
-    @JIPipeDocumentation(name = "Enable watershed", description = "If enabled, close spots will be separated")
+    @SetJIPipeDocumentation(name = "Enable watershed", description = "If enabled, close spots will be separated")
     @JIPipeParameter("enable-watershed")
     public boolean isEnableWatershed() {
         return enableWatershed;
@@ -198,7 +199,7 @@ public abstract class SpotSegmentation3DAlgorithm extends JIPipeIteratingAlgorit
             this.segmentationMethod = other.segmentationMethod;
         }
 
-        @JIPipeDocumentation(name = "Method", description = "When the threshold value has been determined, the plugin offers several\n" +
+        @SetJIPipeDocumentation(name = "Method", description = "When the threshold value has been determined, the plugin offers several\n" +
                 "methods of voxel clustering that segment the object. The segmentation\n" +
                 "proceeds by successive examination of voxels, starting from the seed.\n" +
                 "\n" +

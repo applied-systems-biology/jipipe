@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.datasources;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
@@ -27,10 +27,10 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 /**
  * Loads ROI data from a file via IJ.openFile()
  */
-@JIPipeDocumentation(name = "Extract ROI from OME image", description = "Loads a ROI list from an OME image.")
-@JIPipeInputSlot(value = OMEImageData.class, slotName = "Image", autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "Extract ROI from OME image", description = "Loads a ROI list from an OME image.")
+@AddJIPipeInputSlot(value = OMEImageData.class, slotName = "Image", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", create = true)
+@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class ROIDataFromOMEImage extends JIPipeSimpleIteratingAlgorithm {
 
     /**
@@ -50,7 +50,7 @@ public class ROIDataFromOMEImage extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         OMEImageData omeImageData = iterationStep.getInputData(getFirstInputSlot(), OMEImageData.class, progressInfo);
         if (omeImageData.getRois() != null)
             iterationStep.addOutputData(getFirstOutputSlot(), omeImageData.getRois(), progressInfo);

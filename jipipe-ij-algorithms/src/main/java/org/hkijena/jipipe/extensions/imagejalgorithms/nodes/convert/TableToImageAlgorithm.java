@@ -3,8 +3,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.convert;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -30,10 +30,10 @@ import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.ZeroTableColumn;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
-@JIPipeDocumentation(name = "Convert table to image", description = "Converts a table of pixel information into an image")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Convert")
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Convert table to image", description = "Converts a table of pixel information into an image")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Convert")
+@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final JIPipeDynamicParameterCollection columnAssignment;
@@ -64,7 +64,7 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImageTypeInfo typeInfo = outputImageType.getInfo().getDataClass().getAnnotation(ImageTypeInfo.class);
         ResultsTableData table = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
 
@@ -192,7 +192,7 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         return max + 1;
     }
 
-    @JIPipeDocumentation(name = "Output image type", description = "The image type that is generated.")
+    @SetJIPipeDocumentation(name = "Output image type", description = "The image type that is generated.")
     @JIPipeParameter(value = "output-image-type", important = true)
     @JIPipeDataParameterSettings(dataBaseClass = ImagePlusData.class, dataClassFilter = NonGenericImagePlusDataClassFilter.class)
     public JIPipeDataInfoRef getOutputImageType() {
@@ -210,7 +210,7 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Custom width", description = "If enabled, the image width is determined by this parameter. Otherwise, it is inferred from the table.")
+    @SetJIPipeDocumentation(name = "Custom width", description = "If enabled, the image width is determined by this parameter. Otherwise, it is inferred from the table.")
     @JIPipeParameter("custom-width")
     public OptionalIntegerParameter getCustomWidth() {
         return customWidth;
@@ -221,7 +221,7 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.customWidth = customWidth;
     }
 
-    @JIPipeDocumentation(name = "Custom height", description = "If enabled, the image height is determined by this parameter. Otherwise, it is inferred from the table.")
+    @SetJIPipeDocumentation(name = "Custom height", description = "If enabled, the image height is determined by this parameter. Otherwise, it is inferred from the table.")
     @JIPipeParameter("custom-height")
     public OptionalIntegerParameter getCustomHeight() {
         return customHeight;
@@ -232,7 +232,7 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.customHeight = customHeight;
     }
 
-    @JIPipeDocumentation(name = "Custom depth", description = "If enabled, the image depth is determined by this parameter. Otherwise, it is inferred from the table.")
+    @SetJIPipeDocumentation(name = "Custom depth", description = "If enabled, the image depth is determined by this parameter. Otherwise, it is inferred from the table.")
     @JIPipeParameter("custom-z-size")
     public OptionalIntegerParameter getCustomSizeZ() {
         return customSizeZ;
@@ -243,7 +243,7 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.customSizeZ = customSizeZ;
     }
 
-    @JIPipeDocumentation(name = "Custom channel size", description = "If enabled, the number of channel slices is determined by this parameter. Otherwise, it is inferred from the table.")
+    @SetJIPipeDocumentation(name = "Custom channel size", description = "If enabled, the number of channel slices is determined by this parameter. Otherwise, it is inferred from the table.")
     @JIPipeParameter("custom-c-size")
     public OptionalIntegerParameter getCustomSizeC() {
         return customSizeC;
@@ -254,7 +254,7 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.customSizeC = customSizeC;
     }
 
-    @JIPipeDocumentation(name = "Custom frames size", description = "If enabled, the number of frame slices is determined by this parameter. Otherwise, it is inferred from the table.")
+    @SetJIPipeDocumentation(name = "Custom frames size", description = "If enabled, the number of frame slices is determined by this parameter. Otherwise, it is inferred from the table.")
     @JIPipeParameter("custom-t-size")
     public OptionalIntegerParameter getCustomSizeT() {
         return customSizeT;
@@ -321,7 +321,7 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         emitParameterStructureChangedEvent();
     }
 
-    @JIPipeDocumentation(name = "Column assignments", description = "Following parameters determine how pixels are extracted from the table.")
+    @SetJIPipeDocumentation(name = "Column assignments", description = "Following parameters determine how pixels are extracted from the table.")
     @JIPipeParameter("column-assignments")
     public JIPipeDynamicParameterCollection getColumnAssignment() {
         return columnAssignment;

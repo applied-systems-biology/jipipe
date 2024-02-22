@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -42,10 +42,10 @@ import java.util.Set;
 /**
  * Filters input files
  */
-@JIPipeDocumentation(name = "Annotation table to paths", description = "Converts an annotation table to path data. If available, annotation are added to the output.")
-@JIPipeNode(menuPath = "Convert", nodeTypeCategory = TableNodeTypeCategory.class)
-@JIPipeInputSlot(value = AnnotationTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Annotation table to paths", description = "Converts an annotation table to path data. If available, annotation are added to the output.")
+@DefineJIPipeNode(menuPath = "Convert", nodeTypeCategory = TableNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = AnnotationTableData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = PathData.class, slotName = "Output", create = true)
 public class AnnotationTableToPaths extends JIPipeSimpleIteratingAlgorithm {
 
     private TableColumnSourceExpressionParameter column = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"data\"");
@@ -70,7 +70,7 @@ public class AnnotationTableToPaths extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         AnnotationTableData tableData = iterationStep.getInputData(getFirstInputSlot(), AnnotationTableData.class, progressInfo);
         TableColumn tableColumn = column.pickOrGenerateColumn(tableData);
         if (tableColumn == null) {
@@ -93,7 +93,7 @@ public class AnnotationTableToPaths extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Column", description = "The column that contains the paths")
+    @SetJIPipeDocumentation(name = "Column", description = "The column that contains the paths")
     @JIPipeParameter("column")
     public TableColumnSourceExpressionParameter getColumn() {
         return column;

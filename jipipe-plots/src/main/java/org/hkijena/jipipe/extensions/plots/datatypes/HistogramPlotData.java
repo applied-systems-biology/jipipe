@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.plots.datatypes;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -35,7 +35,7 @@ import java.util.Set;
  * Series table colums: Value (Numeric)
  * Multiple series: Yes
  */
-@JIPipeDocumentation(name = "Histogram plot", description = "Bar chart that displays the number of items for each bin. Please note that this plot requires " +
+@SetJIPipeDocumentation(name = "Histogram plot", description = "Bar chart that displays the number of items for each bin. Please note that this plot requires " +
         "raw values as input. A pre-defined histogram table should be rendered with an XY bar plot.")
 @PlotMetadata(columns = {@PlotColumn(name = "Value", description = "Values to generate a histogram from.", isNumeric = true)}, maxSeriesCount = Integer.MAX_VALUE)
 public class HistogramPlotData extends PlotData {
@@ -120,7 +120,7 @@ public class HistogramPlotData extends PlotData {
         return chart;
     }
 
-    @JIPipeDocumentation(name = "Bin axis label", description = "Label of the X-axis")
+    @SetJIPipeDocumentation(name = "Bin axis label", description = "Label of the X-axis")
     @JIPipeParameter("bin-axis-label")
     public String getBinAxisLabel() {
         return binAxisLabel;
@@ -132,7 +132,7 @@ public class HistogramPlotData extends PlotData {
 
     }
 
-    @JIPipeDocumentation(name = "Value axis label", description = "Label of the Y-axis")
+    @SetJIPipeDocumentation(name = "Value axis label", description = "Label of the Y-axis")
     @JIPipeParameter("value-axis-label")
     public String getValueAxisLabel() {
         return valueAxisLabel;
@@ -144,7 +144,7 @@ public class HistogramPlotData extends PlotData {
 
     }
 
-    @JIPipeDocumentation(name = "Value axis minimum", description = "Minimum of the value axis values. If disabled or infinite, the value is calculated automatically.")
+    @SetJIPipeDocumentation(name = "Value axis minimum", description = "Minimum of the value axis values. If disabled or infinite, the value is calculated automatically.")
     @JIPipeParameter("value-axis-minimum")
     public OptionalDoubleParameter getValueAxisMinimum() {
         return valueAxisMinimum;
@@ -155,7 +155,7 @@ public class HistogramPlotData extends PlotData {
         this.valueAxisMinimum = valueAxisMinimum;
     }
 
-    @JIPipeDocumentation(name = "Value axis maximum", description = "Maximum of the value axis values. If disabled or infinite, the value is calculated automatically.")
+    @SetJIPipeDocumentation(name = "Value axis maximum", description = "Maximum of the value axis values. If disabled or infinite, the value is calculated automatically.")
     @JIPipeParameter("value-axis-maximum")
     public OptionalDoubleParameter getValueAxisMaximum() {
         return valueAxisMaximum;
@@ -166,7 +166,7 @@ public class HistogramPlotData extends PlotData {
         this.valueAxisMaximum = valueAxisMaximum;
     }
 
-    @JIPipeDocumentation(name = "Bin axis minimum", description = "Minimum of the bin axis values. If disabled or infinite, the value is calculated automatically.")
+    @SetJIPipeDocumentation(name = "Bin axis minimum", description = "Minimum of the bin axis values. If disabled or infinite, the value is calculated automatically.")
     @JIPipeParameter("bin-axis-minimum")
     public OptionalDoubleParameter getBinAxisMinimum() {
         return binAxisMinimum;
@@ -177,7 +177,7 @@ public class HistogramPlotData extends PlotData {
         this.binAxisMinimum = binAxisMinimum;
     }
 
-    @JIPipeDocumentation(name = "Bin axis maximum", description = "Maximum of the bin axis values. If disabled or infinite, the value is calculated automatically.")
+    @SetJIPipeDocumentation(name = "Bin axis maximum", description = "Maximum of the bin axis values. If disabled or infinite, the value is calculated automatically.")
     @JIPipeParameter("bin-axis-maximum")
     public OptionalDoubleParameter getBinAxisMaximum() {
         return binAxisMaximum;
@@ -188,7 +188,7 @@ public class HistogramPlotData extends PlotData {
         this.binAxisMaximum = binAxisMaximum;
     }
 
-    @JIPipeDocumentation(name = "Bins", description = "Number of bins")
+    @SetJIPipeDocumentation(name = "Bins", description = "Number of bins")
     @JIPipeParameter("bins")
     public int getBins() {
         return bins;
@@ -200,7 +200,7 @@ public class HistogramPlotData extends PlotData {
 
     }
 
-    @JIPipeDocumentation(name = "Histogram type", description = "Type of histogram to generate")
+    @SetJIPipeDocumentation(name = "Histogram type", description = "Type of histogram to generate")
     @JIPipeParameter("histogram-type")
     public HistogramType_ getHistogramType() {
         return histogramType;
@@ -212,7 +212,7 @@ public class HistogramPlotData extends PlotData {
 
     }
 
-    @JIPipeDocumentation(name = "Bin axis font size", description = "Font size of the bin axis")
+    @SetJIPipeDocumentation(name = "Bin axis font size", description = "Font size of the bin axis")
     @JIPipeParameter("bin-axis-font-size")
     public int getBinAxisFontSize() {
         return binAxisFontSize;
@@ -223,7 +223,7 @@ public class HistogramPlotData extends PlotData {
         this.binAxisFontSize = binAxisFontSize;
     }
 
-    @JIPipeDocumentation(name = "Value axis font size", description = "Font size of the value axis")
+    @SetJIPipeDocumentation(name = "Value axis font size", description = "Font size of the value axis")
     @JIPipeParameter("value-axis-font-size")
     public int getValueAxisFontSize() {
         return valueAxisFontSize;

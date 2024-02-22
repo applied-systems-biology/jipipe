@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.settings;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
@@ -21,7 +21,7 @@ public class NotificationUISettings extends AbstractJIPipeParameterCollection {
         return JIPipe.getSettings().getSettings(ID, NotificationUISettings.class);
     }
 
-    @JIPipeDocumentation(name = "Show run notifications", description = "If enabled, show notifications when a run is finished. " +
+    @SetJIPipeDocumentation(name = "Show run notifications", description = "If enabled, show notifications when a run is finished. " +
             "Following processes are considered as run: " +
             "<ul>" +
             "<li>Pipeline run</li>" +
@@ -41,7 +41,7 @@ public class NotificationUISettings extends AbstractJIPipeParameterCollection {
         this.showRunNotifications = showRunNotifications;
     }
 
-    @JIPipeDocumentation(name = "Run notifications only if window is inactive", description = "If enabled, run notifications " +
+    @SetJIPipeDocumentation(name = "Run notifications only if window is inactive", description = "If enabled, run notifications " +
             "(see description of 'Show run notifications') are only shown if no JIPipe window is currently active.")
     @JIPipeParameter("show-run-notifications-only-if-inactive")
     public boolean isShowRunOnlyIfInactive() {
@@ -53,7 +53,7 @@ public class NotificationUISettings extends AbstractJIPipeParameterCollection {
         this.showRunOnlyIfInactive = showRunOnlyIfInactive;
     }
 
-    @JIPipeDocumentation(name = "Run notifications only for long runs", description = "If enabled, run notifications " +
+    @SetJIPipeDocumentation(name = "Run notifications only for long runs", description = "If enabled, run notifications " +
             "(see description of 'Show run notifications') are only shown if the run took the minimum time in minutes as " +
             "provided by the parameter.")
     @JIPipeParameter("only-show-run-after-min-runtime")
@@ -66,7 +66,7 @@ public class NotificationUISettings extends AbstractJIPipeParameterCollection {
         this.showAfterMinRuntime = showAfterMinRuntime;
     }
 
-    @JIPipeDocumentation(name = "Blocked action notifications", description = "This is a list of action notification Ids that are blocked and will " +
+    @SetJIPipeDocumentation(name = "Blocked action notifications", description = "This is a list of action notification Ids that are blocked and will " +
             "not be shown at the top right.")
     @JIPipeParameter("blocked-action-notifications")
     public StringList getBlockedNotifications() {
@@ -78,7 +78,7 @@ public class NotificationUISettings extends AbstractJIPipeParameterCollection {
         this.blockedNotifications = blockedNotifications;
     }
 
-    @JIPipeDocumentation(name = "Enable action notifications", description = "If enabled, JIPipe will inform you about broken configurations " +
+    @SetJIPipeDocumentation(name = "Enable action notifications", description = "If enabled, JIPipe will inform you about broken configurations " +
             "or missing functions at the top right of the window.")
     @JIPipeParameter("enable-action-notifications")
     public boolean isEnableNotifications() {
@@ -90,7 +90,7 @@ public class NotificationUISettings extends AbstractJIPipeParameterCollection {
         this.enableNotifications = enableNotifications;
     }
 
-    @JIPipeDocumentation(name = "Show action notifications on first start", description = "If enabled, show the list of action notifications on the first start of JIPipe")
+    @SetJIPipeDocumentation(name = "Show action notifications on first start", description = "If enabled, show the list of action notifications on the first start of JIPipe")
     @JIPipeParameter("show-notifications-after-first-start")
     public boolean isShowNotificationsAfterFirstStart() {
         return showNotificationsAfterFirstStart;

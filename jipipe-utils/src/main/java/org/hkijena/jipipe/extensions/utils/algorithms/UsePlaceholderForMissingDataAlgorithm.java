@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.utils.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -14,13 +14,13 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMissingDataGeneratorAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
-@JIPipeDocumentation(name = "Use placeholder for missing data", description = "Creates a data batch of the reference and data inputs. " +
+@SetJIPipeDocumentation(name = "Use placeholder for missing data", description = "Creates a data batch of the reference and data inputs. " +
         "If the data is missing for a reference, it is extracted from the items in the placeholder slot. ")
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Reference", autoCreate = true)
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true, optional = true)
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Placeholder", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
+@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Reference", create = true)
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Data", create = true, optional = true)
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Placeholder", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", create = true)
 public class UsePlaceholderForMissingDataAlgorithm extends JIPipeMissingDataGeneratorAlgorithm {
 
     private JIPipeTextAnnotationMergeMode placeholderAnnotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
@@ -44,7 +44,7 @@ public class UsePlaceholderForMissingDataAlgorithm extends JIPipeMissingDataGene
         }
     }
 
-    @JIPipeDocumentation(name = "Merge placeholder annotations", description = "Determines how annotations of placeholder items are merged")
+    @SetJIPipeDocumentation(name = "Merge placeholder annotations", description = "Determines how annotations of placeholder items are merged")
     @JIPipeParameter("placeholder-annotation-merge-strategy")
     public JIPipeTextAnnotationMergeMode getPlaceholderAnnotationMergeStrategy() {
         return placeholderAnnotationMergeStrategy;

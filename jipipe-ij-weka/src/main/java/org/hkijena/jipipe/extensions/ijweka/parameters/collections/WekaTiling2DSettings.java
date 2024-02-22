@@ -14,7 +14,7 @@
 
 package org.hkijena.jipipe.extensions.ijweka.parameters.collections;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.transform.BorderMode;
@@ -46,7 +46,7 @@ public class WekaTiling2DSettings extends AbstractJIPipeParameterCollection {
         this.overlapY = other.overlapY;
     }
 
-    @JIPipeDocumentation(name = "Use Weka's integrated tiling", description = "If enabled, the native Weka tiling algorithm is utilized. 'Border mode', 'Overlap (X)', and 'Overlap ('Y') do not have any effect in this case.")
+    @SetJIPipeDocumentation(name = "Use Weka's integrated tiling", description = "If enabled, the native Weka tiling algorithm is utilized. 'Border mode', 'Overlap (X)', and 'Overlap ('Y') do not have any effect in this case.")
     @JIPipeParameter(value = "use-weka-native-tiling", important = true)
     public boolean isUseWekaNativeTiling() {
         return useWekaNativeTiling;
@@ -57,7 +57,7 @@ public class WekaTiling2DSettings extends AbstractJIPipeParameterCollection {
         this.useWekaNativeTiling = useWekaNativeTiling;
     }
 
-    @JIPipeDocumentation(name = "Apply tiling", description = "If enabled, the input image is first split into tiles that are processed individually by the Weka segmentation. " +
+    @SetJIPipeDocumentation(name = "Apply tiling", description = "If enabled, the input image is first split into tiles that are processed individually by the Weka segmentation. " +
             "This can greatly reduce the memory cost. If borders are an issue, consider enabling the generation of a border.")
     @JIPipeParameter(value = "apply-tiling", uiOrder = -100, important = true)
     public boolean isApplyTiling() {
@@ -69,7 +69,7 @@ public class WekaTiling2DSettings extends AbstractJIPipeParameterCollection {
         this.applyTiling = applyTiling;
     }
 
-    @JIPipeDocumentation(name = "Tile width", description = "Width of each tile")
+    @SetJIPipeDocumentation(name = "Tile width", description = "Width of each tile")
     @JIPipeParameter("tile-size-x")
     public int getTileSizeX() {
         return tileSizeX;
@@ -80,7 +80,7 @@ public class WekaTiling2DSettings extends AbstractJIPipeParameterCollection {
         this.tileSizeX = tileSizeX;
     }
 
-    @JIPipeDocumentation(name = "Tile height", description = "Height of each tile")
+    @SetJIPipeDocumentation(name = "Tile height", description = "Height of each tile")
     @JIPipeParameter("tile-size-y")
     public int getTileSizeY() {
         return tileSizeY;
@@ -91,7 +91,7 @@ public class WekaTiling2DSettings extends AbstractJIPipeParameterCollection {
         this.tileSizeY = tileSizeY;
     }
 
-    @JIPipeDocumentation(name = "Border mode", description = "Determines how the border is generated if an overlap is applied. Has no effect if 'Use Weka's integrated tiling' is active.")
+    @SetJIPipeDocumentation(name = "Border mode", description = "Determines how the border is generated if an overlap is applied. Has no effect if 'Use Weka's integrated tiling' is active.")
     @JIPipeParameter("border-mode")
     public BorderMode getBorderMode() {
         return borderMode;
@@ -102,7 +102,7 @@ public class WekaTiling2DSettings extends AbstractJIPipeParameterCollection {
         this.borderMode = borderMode;
     }
 
-    @JIPipeDocumentation(name = "Overlap (X)", description = "If greater than zero, adds an overlap border around each tile to potentially remove issues when classification is applied close to the image border. Has no effect if 'Use Weka's integrated tiling' is active. ")
+    @SetJIPipeDocumentation(name = "Overlap (X)", description = "If greater than zero, adds an overlap border around each tile to potentially remove issues when classification is applied close to the image border. Has no effect if 'Use Weka's integrated tiling' is active. ")
     @JIPipeParameter("overlap-x")
     public int getOverlapX() {
         return overlapX;
@@ -116,7 +116,7 @@ public class WekaTiling2DSettings extends AbstractJIPipeParameterCollection {
         return false;
     }
 
-    @JIPipeDocumentation(name = "Overlap (Y)", description = "If greater than zero, adds an overlap border around each tile to potentially remove issues when classification is applied close to the image border. Has no effect if 'Use Weka's integrated tiling' is active.")
+    @SetJIPipeDocumentation(name = "Overlap (Y)", description = "If greater than zero, adds an overlap border around each tile to potentially remove issues when classification is applied close to the image border. Has no effect if 'Use Weka's integrated tiling' is active.")
     @JIPipeParameter("overlap-y")
     public int getOverlapY() {
         return overlapY;

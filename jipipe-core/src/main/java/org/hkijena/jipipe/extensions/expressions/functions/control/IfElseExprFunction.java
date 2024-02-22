@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.functions.control;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
@@ -8,7 +8,7 @@ import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "If-Else condition (lazy)", description = "Returns the second parameter if the first is true, otherwise return the third parameter. Compared to IF_ELSE, the if_true and if_false parameters are expected to be expressions.")
+@SetJIPipeDocumentation(name = "If-Else condition (lazy)", description = "Returns the second parameter if the first is true, otherwise return the third parameter. Compared to IF_ELSE, the if_true and if_false parameters are expected to be expressions.")
 public class IfElseExprFunction extends ExpressionFunction {
 
     public IfElseExprFunction() {

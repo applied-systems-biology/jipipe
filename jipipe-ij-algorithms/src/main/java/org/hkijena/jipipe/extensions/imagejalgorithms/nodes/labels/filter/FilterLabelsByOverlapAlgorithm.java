@@ -23,8 +23,6 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
-import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
@@ -40,18 +38,18 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.util.HashMap;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Filter Labels by overlap 2D", description = "Filters the labels by testing for mutual overlap. " +
+@SetJIPipeDocumentation(name = "Filter Labels by overlap 2D", description = "Filters the labels by testing for mutual overlap. " +
         "The Labels 1 output contains all Labels 1 input labels that overlap with any of Labels 2. " +
         "The Labels 2 output contains all Labels 2 input labels that overlap with a Labels 1 Labels. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Labels\nFilter")
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels 1", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels 2", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels 1", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels 2", autoCreate = true)
-@JIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Labels\nFilter")
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels 1", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels 2", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels 1", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels 2", create = true)
+@AddJIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
         "Bioinformatics (Oxford Univ Press) 32(22): 3532-3534, PMID 27412086, doi:10.1093/bioinformatics/btw413")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nLabel Images")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nLabel Images")
 public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
     private ImageStatisticsSetParameter overlapFilterMeasurements = new ImageStatisticsSetParameter();
@@ -111,7 +109,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
         ImagePlusGreyscaleData roi1_original = iterationStep.getInputData("Labels 1", ImagePlusGreyscaleData.class, progressInfo);
         ImagePlusGreyscaleData roi2_original = iterationStep.getInputData("Labels 2", ImagePlusGreyscaleData.class, progressInfo);
@@ -419,7 +417,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         return true;
     }
 
-    @JIPipeDocumentation(name = "Labels 1 filter", description = "Use following settings to determine how inputs into <b>Labels 1</b> are filtered " +
+    @SetJIPipeDocumentation(name = "Labels 1 filter", description = "Use following settings to determine how inputs into <b>Labels 1</b> are filtered " +
             "(by overlapping them with items in <b>Labels 2</b>). " +
             "Filtered Labels will be put into the corresponding <b>Labels 1</b> output.")
     @JIPipeParameter(value = "labels1", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/object-tweak-jitter-color.png",
@@ -428,7 +426,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         return labels1Settings;
     }
 
-    @JIPipeDocumentation(name = "Labels 2 filter", description = "Use following settings to determine how inputs into <b>Labels 2</b> are filtered " +
+    @SetJIPipeDocumentation(name = "Labels 2 filter", description = "Use following settings to determine how inputs into <b>Labels 2</b> are filtered " +
             "(by overlapping them with items in <b>Labels 1</b>). " +
             "Filtered Labels will be put into the corresponding <b>Labels 2</b> output.")
     @JIPipeParameter(value = "labels2", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/object-tweak-jitter-color.png",
@@ -437,7 +435,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         return labels2Settings;
     }
 
-    @JIPipeDocumentation(name = "Overlap filter measurements", description = "Measurements extracted for the overlap filter.")
+    @SetJIPipeDocumentation(name = "Overlap filter measurements", description = "Measurements extracted for the overlap filter.")
     @JIPipeParameter("overlap-filter-measurements")
     public ImageStatisticsSetParameter getOverlapFilterMeasurements() {
         return overlapFilterMeasurements;
@@ -470,7 +468,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             this.enforceOverlap = other.enforceOverlap;
         }
 
-        @JIPipeDocumentation(name = "Overlap filter: enforce overlap", description = "If enabled, a pair of labels is not considered for custom filtering if it does not overlap. Disable this setting if you want to implement special behavior.")
+        @SetJIPipeDocumentation(name = "Overlap filter: enforce overlap", description = "If enabled, a pair of labels is not considered for custom filtering if it does not overlap. Disable this setting if you want to implement special behavior.")
         @JIPipeParameter("enforce-overlap")
         public boolean isEnforceOverlap() {
             return enforceOverlap;
@@ -481,7 +479,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             this.enforceOverlap = enforceOverlap;
         }
 
-        @JIPipeDocumentation(name = "Enabled", description = "You can use this setting to disable generating this output.")
+        @SetJIPipeDocumentation(name = "Enabled", description = "You can use this setting to disable generating this output.")
         @JIPipeParameter("enabled")
         public boolean isEnabled() {
             return enabled;
@@ -492,7 +490,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             this.enabled = enabled;
         }
 
-        @JIPipeDocumentation(name = "Invert", description = "If enabled, labels are stored into the output if they do not overlap.")
+        @SetJIPipeDocumentation(name = "Invert", description = "If enabled, labels are stored into the output if they do not overlap.")
         @JIPipeParameter("invert")
         public boolean isInvert() {
             return invert;
@@ -503,7 +501,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             this.invert = invert;
         }
 
-        @JIPipeDocumentation(name = "Overlap filter", description = "This filter is applied to any combination of Labels that have an overlap. You will have three sets of measurements: Labels1, Overlap, and Labels2." +
+        @SetJIPipeDocumentation(name = "Overlap filter", description = "This filter is applied to any combination of Labels that have an overlap. You will have three sets of measurements: Labels1, Overlap, and Labels2." +
                 "'Labels1'and 'Labels2' correspond to a Labels from the input slots,respectively. 'Overlap' is the overlap between these labels." +
                 " Please open the expression builder to see a list of all available variables. If the filter is empty, " +
                 "no filtering is applied. " + "Please note that writing a custom expression into this field requires that statistics are obtained from labels and overlapping regions, which has a significant impact on the performance.")
@@ -518,7 +516,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             this.overlapFilter = overlapFilter;
         }
 
-        @JIPipeDocumentation(name = "Output overlapping regions", description = "If enabled, the overlapping regions, instead of the Labels are extracted.")
+        @SetJIPipeDocumentation(name = "Output overlapping regions", description = "If enabled, the overlapping regions, instead of the Labels are extracted.")
         @JIPipeParameter("output-overlaps")
         public boolean isOutputOverlaps() {
             return outputOverlaps;
@@ -529,7 +527,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             this.outputOverlaps = outputOverlaps;
         }
 
-        @JIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available. " +
+        @SetJIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available. " +
                 "Measurements will be in the physical sizes of the respective images. The overlap is measured in the targeted labels' calibration.")
         @JIPipeParameter("measure-in-physical-units")
         public boolean isMeasureInPhysicalUnits() {

@@ -4,8 +4,8 @@ import gnu.trove.map.*;
 import gnu.trove.map.hash.*;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -25,10 +25,10 @@ import org.hkijena.jipipe.utils.ArrayUtils;
 
 import java.util.Arrays;
 
-@JIPipeDocumentation(name = "Merge small labels", description = "Merges labels with a low number of pixels to its neighboring label set (larger or smaller).")
-@JIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Merge small labels", description = "Merges labels with a low number of pixels to its neighboring label set (larger or smaller).")
+@DefineJIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
 public class MergeSmallLabelsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private int minimumNumberOfPixels = 100;
@@ -53,7 +53,7 @@ public class MergeSmallLabelsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus image = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
         ROIListData roiInput = null;
         ImagePlus maskInput = null;
@@ -346,7 +346,7 @@ public class MergeSmallLabelsAlgorithm extends JIPipeIteratingAlgorithm {
         return ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(sourceArea, width, height, rois, mask, sliceIndex);
     }
 
-    @JIPipeDocumentation(name = "Extract values from ...", description = "Determines from which image areas the pixel values are extracted")
+    @SetJIPipeDocumentation(name = "Extract values from ...", description = "Determines from which image areas the pixel values are extracted")
     @JIPipeParameter("source-area")
     public ImageROITargetArea getSourceArea() {
         return sourceArea;
@@ -358,7 +358,7 @@ public class MergeSmallLabelsAlgorithm extends JIPipeIteratingAlgorithm {
         ImageJAlgorithmUtils.updateROIOrMaskSlot(sourceArea, getSlotConfiguration());
     }
 
-    @JIPipeDocumentation(name = "Minimum number of pixels", description = "The minimum number of pixels that a label should have")
+    @SetJIPipeDocumentation(name = "Minimum number of pixels", description = "The minimum number of pixels that a label should have")
     @JIPipeParameter(value = "minimum-number-of-pixels", important = true)
     public int getMinimumNumberOfPixels() {
         return minimumNumberOfPixels;
@@ -369,7 +369,7 @@ public class MergeSmallLabelsAlgorithm extends JIPipeIteratingAlgorithm {
         this.minimumNumberOfPixels = minimumNumberOfPixels;
     }
 
-    @JIPipeDocumentation(name = "Merge to ...", description = "Determines to which direction small labels are merged. If set to 'Smaller', small regions will be preferably merged into regions with a smaller label. If set to 'Larger', prefer merging to regions with a higher label.")
+    @SetJIPipeDocumentation(name = "Merge to ...", description = "Determines to which direction small labels are merged. If set to 'Smaller', small regions will be preferably merged into regions with a smaller label. If set to 'Larger', prefer merging to regions with a higher label.")
     @JIPipeParameter("merge-to-larger-labels")
     @BooleanParameterSettings(comboBoxStyle = true, trueLabel = "Larger", falseLabel = "Smaller")
     public boolean isMergeToLargerLabel() {
@@ -381,7 +381,7 @@ public class MergeSmallLabelsAlgorithm extends JIPipeIteratingAlgorithm {
         this.mergeToLargerLabel = mergeToLargerLabel;
     }
 
-    @JIPipeDocumentation(name = "Exclude zero", description = "If enabled, do not apply the algorithm to the zero label. Also prevents merging into the zero-label.")
+    @SetJIPipeDocumentation(name = "Exclude zero", description = "If enabled, do not apply the algorithm to the zero label. Also prevents merging into the zero-label.")
     @JIPipeParameter("exclude-zero")
     public boolean isExcludeZero() {
         return excludeZero;

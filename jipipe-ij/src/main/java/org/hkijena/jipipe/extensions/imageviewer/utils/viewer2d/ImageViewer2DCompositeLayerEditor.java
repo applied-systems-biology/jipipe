@@ -25,7 +25,7 @@ public class ImageViewer2DCompositeLayerEditor extends JPanel {
     private void initialize() {
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4),
-                BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(UIManager.getColor("Button.borderColor"), 1, true),
+                BorderFactory.createCompoundBorder(UIUtils.createControlBorder(),
                         BorderFactory.createEmptyBorder(4, 4, 0, 4))));
 
         // Priority controls

@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.python;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -54,7 +54,7 @@ public abstract class PythonPackageLibraryEnvironment extends JIPipeEnvironment 
         this.providedByEnvironment = other.providedByEnvironment;
     }
 
-    @JIPipeDocumentation(name = "Library directory", description = "The directory that contains the Python packages. Ignored if the Python packages are provided by the Python environment.")
+    @SetJIPipeDocumentation(name = "Library directory", description = "The directory that contains the Python packages. Ignored if the Python packages are provided by the Python environment.")
     @JIPipeParameter("library-directory")
     @PathParameterSettings(key = FileChooserSettings.LastDirectoryKey.External, pathMode = PathType.DirectoriesOnly, ioMode = PathIOMode.Open)
     @JsonGetter("library-directory")
@@ -68,7 +68,7 @@ public abstract class PythonPackageLibraryEnvironment extends JIPipeEnvironment 
         this.libraryDirectory = libraryDirectory;
     }
 
-    @JIPipeDocumentation(name = "Provided by Python environment", description = "If enabled, the library will be ignored. It is assumed that all packages are provided by the Python environment (Conda/Virtualenv).")
+    @SetJIPipeDocumentation(name = "Provided by Python environment", description = "If enabled, the library will be ignored. It is assumed that all packages are provided by the Python environment (Conda/Virtualenv).")
     @JIPipeParameter("provided-by-environment")
     @JsonGetter("provided-by-environment")
     public boolean isProvidedByEnvironment() {
@@ -82,11 +82,11 @@ public abstract class PythonPackageLibraryEnvironment extends JIPipeEnvironment 
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         if (!isProvidedByEnvironment()) {
             if (!Files.isDirectory(getAbsoluteLibraryDirectory())) {
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                        context,
+                        reportContext,
                         "Missing Python adapter library!",
                         "The Python integration requires an adapter library. It was not found at " + getAbsoluteLibraryDirectory(),
                         "Install the Python adapter library by navigating to Project > Application settings > Extensions > Python integration (adapter) or configure the adapter to be provided by the Python environment if applicable."));

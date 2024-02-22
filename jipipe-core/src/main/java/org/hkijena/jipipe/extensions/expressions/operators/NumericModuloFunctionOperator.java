@@ -13,10 +13,10 @@
 
 package org.hkijena.jipipe.extensions.expressions.operators;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
-@JIPipeDocumentation(name = "Modulo", description = "Calculates the modulo between the left and right operands")
+@SetJIPipeDocumentation(name = "Modulo", description = "Calculates the modulo between the left and right operands")
 public class NumericModuloFunctionOperator extends NumericFunctionOperator {
     public NumericModuloFunctionOperator(int precedence) {
         super("%", precedence);

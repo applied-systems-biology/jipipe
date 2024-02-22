@@ -25,7 +25,7 @@ import java.util.concurrent.Future;
 /**
  * Contains a fixed thread pool. Unfortunately, the one provided by {@link org.scijava.SciJava} is cached (unbounded)
  */
-public class JIPipeFixedThreadPool {
+public class JIPipeFixedThreadPool implements AutoCloseable {
     private final int maxThreads;
     private ExecutorService executorService;
 
@@ -112,5 +112,10 @@ public class JIPipeFixedThreadPool {
         if (executorService != null) {
             executorService.shutdownNow();
         }
+    }
+
+    @Override
+    public void close() throws Exception {
+        shutdown();
     }
 }

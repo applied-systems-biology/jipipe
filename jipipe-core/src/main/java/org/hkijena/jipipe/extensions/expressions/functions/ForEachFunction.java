@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.functions;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
@@ -15,7 +15,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Foreach loop", description = "Repeats an expression for all items of the second parameter. The resulting values are returned as list. Equivalent to TRANSFORM_ARRAY.")
+@SetJIPipeDocumentation(name = "Foreach loop", description = "Repeats an expression for all items of the second parameter. The resulting values are returned as list. Equivalent to TRANSFORM_ARRAY.")
 public class ForEachFunction extends ExpressionFunction {
     public ForEachFunction() {
         super("FOREACH", 2);

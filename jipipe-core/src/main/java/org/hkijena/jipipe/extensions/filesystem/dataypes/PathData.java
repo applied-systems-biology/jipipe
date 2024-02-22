@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.filesystem.dataypes;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
@@ -36,12 +36,11 @@ import java.io.IOException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 
 /**
  * Encapsulates a {@link java.nio.file.Path}
  */
-@JIPipeDocumentation(name = "Path", description = "A file or folder")
+@SetJIPipeDocumentation(name = "Path", description = "A file or folder")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.json file. The JSON data has following structure: " +
         "<pre>" +
         "{\n" +

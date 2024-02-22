@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.utils.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -18,12 +18,12 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.Intege
 import java.util.ArrayList;
 import java.util.HashSet;
 
-@JIPipeDocumentation(name = "Data batch slicer", description = "Merges the incoming data into merging data batches. Only outputs " +
+@SetJIPipeDocumentation(name = "Data batch slicer", description = "Merges the incoming data into merging data batches. Only outputs " +
         "the items according to the index range. You can use this to remove duplicates. Annotations are not modified (merged annotations are not copied into " +
         "the output).")
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Filter")
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
+@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Filter")
 public class IterationStepSlicer extends JIPipeMergingAlgorithm {
 
     private IntegerRange sliceRange = new IntegerRange("0");
@@ -38,7 +38,7 @@ public class IterationStepSlicer extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ArrayList<Integer> rows = new ArrayList<>(iterationStep.getInputRows(getFirstInputSlot()));
         HashSet<Integer> indices = new HashSet<>(sliceRange.getIntegers(0, rows.size(), new JIPipeExpressionVariablesMap()));
         for (int i = 0; i < rows.size(); i++) {
@@ -55,7 +55,7 @@ public class IterationStepSlicer extends JIPipeMergingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Slice range", description = "Only the items within this range are copied into the output. The first index is zero. " +
+    @SetJIPipeDocumentation(name = "Slice range", description = "Only the items within this range are copied into the output. The first index is zero. " +
             "If a data batch does not contain the requested index, no data is copied.")
     @JIPipeParameter("slice-range")
     public IntegerRange getSliceRange() {

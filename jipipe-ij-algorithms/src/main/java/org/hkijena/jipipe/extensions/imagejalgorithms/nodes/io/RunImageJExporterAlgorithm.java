@@ -1,8 +1,8 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.io;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -30,10 +30,10 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 
 import javax.swing.*;
 
-@JIPipeDocumentation(name = "Export to ImageJ", description = "Runs an ImageJ exporter. You can select the utilized exporter type in the parameters.")
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nExport")
+@SetJIPipeDocumentation(name = "Export to ImageJ", description = "Runs an ImageJ exporter. You can select the utilized exporter type in the parameters.")
+@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@DefineJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nExport")
 public class RunImageJExporterAlgorithm extends JIPipeMergingAlgorithm {
 
     private ImageJDataExporterRef exporterType = new ImageJDataExporterRef();
@@ -54,7 +54,7 @@ public class RunImageJExporterAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         JIPipeDataTable dataTable = new JIPipeDataTable(exporterType.getInstance().getExportedJIPipeDataType());
         for (Integer row : iterationStep.getInputRows(getFirstInputSlot())) {
             dataTable.addData(getFirstInputSlot().getDataItemStore(row),
@@ -69,16 +69,16 @@ public class RunImageJExporterAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         if (exporterType.getInstance() == null) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new ParameterValidationReportContext(context, this, "Exporter type", "exporter-type"),
+                    new ParameterValidationReportContext(reportContext, this, "Exporter type", "exporter-type"),
                     "No exporter type selected!", "No exporter type was selected", "Please select an exporter"));
         }
-        super.reportValidity(context, report);
+        super.reportValidity(reportContext, report);
     }
 
-    @JIPipeDocumentation(name = "Set export parameters", description = "Sets the export parameters via its default UI")
+    @SetJIPipeDocumentation(name = "Set export parameters", description = "Sets the export parameters via its default UI")
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/configure.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/configure.png")
     public void setExporterParametersFromUI(JIPipeWorkbench parent) {
@@ -98,7 +98,7 @@ public class RunImageJExporterAlgorithm extends JIPipeMergingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Exporter type", description = "Please select the exporter type")
+    @SetJIPipeDocumentation(name = "Exporter type", description = "Please select the exporter type")
     @JIPipeParameter(value = "exporter-type", important = true)
     public ImageJDataExporterRef getExporterType() {
         return exporterType;
@@ -109,7 +109,7 @@ public class RunImageJExporterAlgorithm extends JIPipeMergingAlgorithm {
         this.exporterType = exporterType;
     }
 
-    @JIPipeDocumentation(name = "Export parameters", description = "Please setup the following parameters to indicate which data is exported")
+    @SetJIPipeDocumentation(name = "Export parameters", description = "Please setup the following parameters to indicate which data is exported")
     @JIPipeParameter("export-parameters")
     public ImageJExportParameters getExportParameters() {
         return exportParameters;

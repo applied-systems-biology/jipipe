@@ -1,8 +1,8 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.properties;
 
 import ij.gui.Roi;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -18,10 +18,10 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Extract ROI metadata as table", description = "Extracts the metadata (properties map) of each ROI and writes them into a table")
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Metadata")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@SetJIPipeDocumentation(name = "Extract ROI metadata as table", description = "Extracts the metadata (properties map) of each ROI and writes them into a table")
+@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Metadata")
+@AddJIPipeInputSlot(value = ROIListData.class, slotName = "Input", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class ExtractROIMetadataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalStringParameter nameColumn = new OptionalStringParameter("ROI Name", false);
@@ -40,7 +40,7 @@ public class ExtractROIMetadataAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROIListData rois = iterationStep.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo);
         ResultsTableData table = new ResultsTableData();
         for (int i = 0; i < rois.size(); i++) {
@@ -60,7 +60,7 @@ public class ExtractROIMetadataAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         iterationStep.addOutputData(getFirstOutputSlot(), table, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Add ROI name", description = "If enabled, add a column with the ROI name")
+    @SetJIPipeDocumentation(name = "Add ROI name", description = "If enabled, add a column with the ROI name")
     @JIPipeParameter("name-column")
     public OptionalStringParameter getNameColumn() {
         return nameColumn;
@@ -71,7 +71,7 @@ public class ExtractROIMetadataAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         this.nameColumn = nameColumn;
     }
 
-    @JIPipeDocumentation(name = "Add ROI index", description = "If enabled, add a column with the ROI index")
+    @SetJIPipeDocumentation(name = "Add ROI index", description = "If enabled, add a column with the ROI index")
     @JIPipeParameter("index-column")
     public OptionalStringParameter getIndexColumn() {
         return indexColumn;

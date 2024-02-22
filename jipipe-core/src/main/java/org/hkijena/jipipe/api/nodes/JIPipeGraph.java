@@ -35,6 +35,7 @@ import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
+import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithmInput;
 import org.hkijena.jipipe.api.looping.LoopEndNode;
 import org.hkijena.jipipe.api.looping.LoopGroup;
 import org.hkijena.jipipe.api.looping.LoopStartNode;
@@ -1193,6 +1194,36 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
     }
 
     /**
+     * Copies the selected algorithms into a new graph
+     * Connections between the nodes are kept
+     * UUIDs are kept
+     * Nodes are copied shallow
+     *
+     * @param nodes        the nodes
+     * @param withInternal also copy internal algorithms
+     * @param skipLocked   skip locked nodes
+     * @return graph that only contains the selected algorithms, UUIDs are the same between the original and copies
+     */
+    public JIPipeGraph extractShallow(Collection<JIPipeGraphNode> nodes, boolean withInternal, boolean skipLocked) {
+        JIPipeGraph graph = new JIPipeGraph();
+        for (JIPipeGraphNode node : nodes) {
+            if (!withInternal && !node.getCategory().canExtract())
+                continue;
+            if (node.isUiLocked() && skipLocked)
+                continue;
+            graph.insertNode(node.getUUIDInParentGraph(), node, null);
+        }
+        for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : getSlotEdges()) {
+            JIPipeDataSlot source = edge.getKey();
+            JIPipeDataSlot target = edge.getValue();
+            if (nodes.contains(source.getNode()) && nodes.contains(target.getNode())) {
+                graph.connect(graph.getEquivalentSlot(source), graph.getEquivalentSlot(target));
+            }
+        }
+        return graph;
+    }
+
+    /**
      * @return The number of all algorithms
      */
     public int getNodeCount() {
@@ -1223,6 +1254,11 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
         }
         this.traversedSlots = result;
         return Collections.unmodifiableList(result);
+    }
+
+    @Override
+    public String toString() {
+        return nodeUUIDs.size() + " nodes, " + graph.vertexSet().size() + " slots, " + graph.edgeSet().size() + " edges";
     }
 
     public JIPipeGraphConnection getConnection(JIPipeDataSlot source, JIPipeDataSlot target) {
@@ -1434,7 +1470,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         for (Map.Entry<UUID, JIPipeGraphNode> entry : nodeUUIDs.entrySet()) {
             JIPipeGraphNode node = entry.getValue();
             if (node instanceof JIPipeAlgorithm) {
@@ -1442,7 +1478,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 if (!algorithm.isEnabled() || (algorithm.canPassThrough() && algorithm.isPassThrough()) || algorithm.isSkipped())
                     continue;
             }
-            report.report(new GraphNodeValidationReportContext(context, node), node);
+            report.report(new GraphNodeValidationReportContext(reportContext, node), node);
         }
         if (!RuntimeSettings.getInstance().isAllowSkipAlgorithmsWithoutInput()) {
             for (JIPipeDataSlot slot : graph.vertexSet()) {
@@ -1451,7 +1487,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 if (slot.isInput()) {
                     if (!slot.getInfo().isOptional() && graph.incomingEdgesOf(slot).isEmpty()) {
                         report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                                new GraphNodeSlotValidationReportContext(context, slot.getNode(), slot.getName(), slot.getSlotType()),
+                                new GraphNodeSlotValidationReportContext(reportContext, slot.getNode(), slot.getName(), slot.getSlotType()),
                                 "An input slot has no incoming data!",
                                 "Input slots must always be provided with input data.",
                                 "Please connect the slot to an output of another algorithm."));
@@ -1586,7 +1622,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
      * @param foreign An algorithm
      * @return Equivalent algorithm within this graph
      */
-    public JIPipeGraphNode getEquivalentAlgorithm(JIPipeGraphNode foreign) {
+    public JIPipeGraphNode getEquivalentNode(JIPipeGraphNode foreign) {
         return getNodeByUUID(foreign.getUUIDInParentGraph());
     }
 
@@ -1996,6 +2032,15 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 }
             }
         }
+    }
+
+    public <T extends JIPipeGraphNode> T findFirstNodeOfType(Class<T> klass) {
+        for (JIPipeGraphNode graphNode : getGraphNodes()) {
+            if(klass.isAssignableFrom(graphNode.getClass())) {
+                return (T) graphNode;
+            }
+        }
+        return null;
     }
 
     public interface GraphChangedEventListener {

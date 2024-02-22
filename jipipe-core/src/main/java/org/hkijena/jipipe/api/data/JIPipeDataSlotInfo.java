@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -111,7 +111,7 @@ public class JIPipeDataSlotInfo extends AbstractJIPipeParameterCollection {
     /**
      * @param slot Imported annotation
      */
-    public JIPipeDataSlotInfo(JIPipeInputSlot slot) {
+    public JIPipeDataSlotInfo(AddJIPipeInputSlot slot) {
         this(slot.value(), JIPipeSlotType.Input, slot.slotName(), slot.description(), null);
         this.role = slot.role();
         this.optional = slot.optional();
@@ -121,7 +121,7 @@ public class JIPipeDataSlotInfo extends AbstractJIPipeParameterCollection {
     /**
      * @param slot Imported annotation
      */
-    public JIPipeDataSlotInfo(JIPipeOutputSlot slot) {
+    public JIPipeDataSlotInfo(AddJIPipeOutputSlot slot) {
         this(slot.value(), JIPipeSlotType.Output, slot.slotName(), null);
         this.role = slot.role();
     }
@@ -160,8 +160,8 @@ public class JIPipeDataSlotInfo extends AbstractJIPipeParameterCollection {
      *
      * @return the annotation
      */
-    public JIPipeInputSlot toInputSlotAnnotation() {
-        return new DefaultJIPipeInputSlot(getDataClass(), getName(), getDescription(), false, isOptional(), getRole());
+    public AddJIPipeInputSlot toInputSlotAnnotation() {
+        return new DefaultAddJIPipeInputSlot(getDataClass(), getName(), getDescription(), false, isOptional(), getRole());
     }
 
     /**
@@ -170,8 +170,8 @@ public class JIPipeDataSlotInfo extends AbstractJIPipeParameterCollection {
      *
      * @return the annotation
      */
-    public JIPipeOutputSlot toOutputSlotAnnotation() {
-        return new DefaultJIPipeOutputSlot(getDataClass(), getName(), getDescription(), "", false, getRole());
+    public AddJIPipeOutputSlot toOutputSlotAnnotation() {
+        return new DefaultAddJIPipeOutputSlot(getDataClass(), getName(), getDescription(), "", false, getRole());
     }
 
     public JIPipeDataSlot createInstance(JIPipeGraphNode node) {
@@ -235,7 +235,7 @@ public class JIPipeDataSlotInfo extends AbstractJIPipeParameterCollection {
      * @return A custom name that the UI is displaying instead of getName() if the return value is not null or empty
      */
     @JIPipeParameter("custom-name")
-    @JIPipeDocumentation(name = "Custom label", description = "Custom name for this slot. This does not change how the output folders are named.")
+    @SetJIPipeDocumentation(name = "Custom label", description = "Custom name for this slot. This does not change how the output folders are named.")
     public String getCustomName() {
         return customName;
     }
@@ -251,7 +251,7 @@ public class JIPipeDataSlotInfo extends AbstractJIPipeParameterCollection {
     }
 
     @JIPipeParameter("description")
-    @JIPipeDocumentation(name = "Description", description = "Description of this slot")
+    @SetJIPipeDocumentation(name = "Description", description = "Description of this slot")
     public String getDescription() {
         return description;
     }
@@ -261,7 +261,7 @@ public class JIPipeDataSlotInfo extends AbstractJIPipeParameterCollection {
         this.description = description;
     }
 
-    @JIPipeDocumentation(name = "Is virtual", description = "Determines if the slot should be virtual.")
+    @SetJIPipeDocumentation(name = "Is virtual", description = "Determines if the slot should be virtual.")
     @JIPipeParameter("is-virtual")
     public boolean isVirtual() {
         return virtual;
@@ -272,7 +272,7 @@ public class JIPipeDataSlotInfo extends AbstractJIPipeParameterCollection {
         this.virtual = virtual;
     }
 
-    @JIPipeDocumentation(name = "Save outputs", description = "Determines if this slot's output should be saved. Only valid for output slots.")
+    @SetJIPipeDocumentation(name = "Save outputs", description = "Determines if this slot's output should be saved. Only valid for output slots.")
     @JIPipeParameter("save-outputs")
     public boolean isSaveOutputs() {
         return saveOutputs;
@@ -283,7 +283,7 @@ public class JIPipeDataSlotInfo extends AbstractJIPipeParameterCollection {
         this.saveOutputs = saveOutputs;
     }
 
-    @JIPipeDocumentation(name = "Optional", description = "If true, the input does not need an incoming edge")
+    @SetJIPipeDocumentation(name = "Optional", description = "If true, the input does not need an incoming edge")
     @JIPipeParameter("is-optional")
     public boolean isOptional() {
         return optional;

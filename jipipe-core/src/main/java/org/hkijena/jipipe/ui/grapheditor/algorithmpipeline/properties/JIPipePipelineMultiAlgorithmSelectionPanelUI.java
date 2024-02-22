@@ -65,20 +65,20 @@ public class JIPipePipelineMultiAlgorithmSelectionPanelUI extends JIPipeProjectW
 
         JPanel actionPanel = new JPanel(new BorderLayout());
 
-        DocumentTabPane tabPane = new DocumentTabPane(false);
-        tabPane.addTab("Selection", UIUtils.getIconFromResources("actions/edit-select-all.png"), actionPanel, DocumentTabPane.CloseMode.withoutCloseButton);
+        DocumentTabPane tabPane = new DocumentTabPane(false, DocumentTabPane.TabPlacement.Right);
+        tabPane.addTab("Selection", UIUtils.getIcon32FromResources("actions/edit-select-all.png"), actionPanel, DocumentTabPane.CloseMode.withoutCloseButton);
 
-        tabPane.addTab("Available nodes", UIUtils.getIconFromResources("actions/graph-node-add.png"),
+        tabPane.addTab("Add nodes", UIUtils.getIcon32FromResources("actions/graph-node-add.png"),
                 new NodeToolBox(getWorkbench(), true), DocumentTabPane.CloseMode.withoutCloseButton);
 
-        tabPane.addTab("Node templates", UIUtils.getIconFromResources("actions/favorite.png"),
-                new NodeTemplateBox(getWorkbench(), true), DocumentTabPane.CloseMode.withoutCloseButton);
+        tabPane.addTab("Templates", UIUtils.getIcon32FromResources("actions/star.png"),
+                new NodeTemplateBox(getWorkbench(), true, canvas, nodes), DocumentTabPane.CloseMode.withoutCloseButton);
 
-        tabPane.addTab("Bookmarks", UIUtils.getIconFromResources("actions/bookmarks.png"),
-                new BookmarkListPanel(getWorkbench(), canvas.getGraph(), canvas.getGraphEditorUI()), DocumentTabPane.CloseMode.withoutCloseButton);
+        tabPane.addTab("Bookmarks", UIUtils.getIcon32FromResources("actions/bookmarks.png"),
+                new BookmarkListPanel(getWorkbench(), canvas.getGraph(), canvas.getGraphEditorUI(), nodes), DocumentTabPane.CloseMode.withoutCloseButton);
 
-        tabPane.addTab("Journal",
-                UIUtils.getIconFromResources("actions/edit-undo-history.png"),
+        tabPane.addTab("History",
+                UIUtils.getIcon32FromResources("actions/edit-undo-history.png"),
                 new HistoryJournalUI(canvas.getHistoryJournal()),
                 DocumentTabPane.CloseMode.withoutCloseButton);
 

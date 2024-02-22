@@ -4,8 +4,8 @@ import ij.ImagePlus;
 import mcib3d.geom.Object3D;
 import mcib3d.geom.Objects3DPopulation;
 import mcib3d.image3d.ImageFloat;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.DefineJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -22,10 +22,10 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Find particles 3D", description = "Finds 3D particles within a mask image")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Analyze")
-@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", autoCreate = true)
-@JIPipeOutputSlot(value = ROI3DListData.class, slotName = "ROI", autoCreate = true)
+@SetJIPipeDocumentation(name = "Find particles 3D", description = "Finds 3D particles within a mask image")
+@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Analyze")
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", create = true)
+@AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "ROI", create = true)
 public class FindParticles3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private double minParticleSize = 0;
@@ -58,7 +58,7 @@ public class FindParticles3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus maskImage = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
 
         if (!blackBackground) {
@@ -119,7 +119,7 @@ public class FindParticles3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), roiList, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Neighborhood", description = "Determines which neighborhood is used to find connected components.")
+    @SetJIPipeDocumentation(name = "Neighborhood", description = "Determines which neighborhood is used to find connected components.")
     @JIPipeParameter("neighborhood")
     public Neighborhood3D getNeighborhood() {
         return neighborhood;
@@ -131,7 +131,7 @@ public class FindParticles3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter(value = "min-particle-size", uiOrder = -20)
-    @JIPipeDocumentation(name = "Min particle size", description = "The minimum particle size in the specified unit of the input image. " +
+    @SetJIPipeDocumentation(name = "Min particle size", description = "The minimum particle size in the specified unit of the input image. " +
             "If no unit is available, the unit is 'pixels'. If an object is not within the size range, it is removed from the results.")
     public double getMinParticleSize() {
         return minParticleSize;
@@ -144,7 +144,7 @@ public class FindParticles3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter(value = "max-particle-size", uiOrder = -19)
-    @JIPipeDocumentation(name = "Max particle size", description = "The maximum particle size in the specified unit of the input image. " +
+    @SetJIPipeDocumentation(name = "Max particle size", description = "The maximum particle size in the specified unit of the input image. " +
             "If no unit is available, the unit is 'pixels'. If an object is not within the size range, it is removed from the results.")
     public double getMaxParticleSize() {
         return maxParticleSize;
@@ -157,7 +157,7 @@ public class FindParticles3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter(value = "min-particle-sphericity", uiOrder = -18)
-    @JIPipeDocumentation(name = "Min particle sphericity", description = "The minimum sphericity. " +
+    @SetJIPipeDocumentation(name = "Min particle sphericity", description = "The minimum sphericity. " +
             "The value range is from 0-1. If an object is not within the sphericity range, it is removed from the results.")
     public double getMinParticleSphericity() {
         return minParticleSphericity;
@@ -177,7 +177,7 @@ public class FindParticles3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter(value = "max-particle-sphericity", uiOrder = -17)
-    @JIPipeDocumentation(name = "Max particle sphericity", description = "The maximum sphericity. " +
+    @SetJIPipeDocumentation(name = "Max particle sphericity", description = "The maximum sphericity. " +
             "The value range is from 0-1. If an object is not within the sphericity range, it is removed from the results.")
     public double getMaxParticleSphericity() {
         return maxParticleSphericity;
@@ -196,7 +196,7 @@ public class FindParticles3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         return true;
     }
 
-    @JIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
+    @SetJIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
     @JIPipeParameter("measure-in-physical-units")
     public boolean isMeasureInPhysicalUnits() {
         return measureInPhysicalUnits;
@@ -207,7 +207,7 @@ public class FindParticles3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.measureInPhysicalUnits = measureInPhysicalUnits;
     }
 
-    @JIPipeDocumentation(name = "Black background", description = "If enabled, the background is assumed to be black. If disabled, black pixels are extracted as ROI.")
+    @SetJIPipeDocumentation(name = "Black background", description = "If enabled, the background is assumed to be black. If disabled, black pixels are extracted as ROI.")
     @JIPipeParameter("black-background")
     public boolean isBlackBackground() {
         return blackBackground;
@@ -219,7 +219,7 @@ public class FindParticles3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("exclude-edges")
-    @JIPipeDocumentation(name = "Exclude edges", description = "If enabled, objects that are connected to the image edges are removed.")
+    @SetJIPipeDocumentation(name = "Exclude edges", description = "If enabled, objects that are connected to the image edges are removed.")
     public boolean isExcludeEdges() {
         return excludeEdges;
     }

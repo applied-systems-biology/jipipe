@@ -1,13 +1,13 @@
 package org.hkijena.jipipe.extensions.expressions.functions.string;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "String to uppercase", description = "Converts a string to a uppercase string")
+@SetJIPipeDocumentation(name = "String to uppercase", description = "Converts a string to a uppercase string")
 public class StringToUpperCaseFunction extends ExpressionFunction {
 
     public StringToUpperCaseFunction() {
