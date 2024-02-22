@@ -57,7 +57,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
         configuration.setLoadFromCache(settings.isLoadFromCache());
         configuration.setStoreToCache(settings.isStoreToCache());
         configuration.setNumThreads(settings.getNumThreads());
-        configuration.setSaveToDisk(settings.isSaveToDisk());
+        configuration.setStoreToDisk(settings.isSaveToDisk());
         configuration.setSilent(settings.isSilent());
 
         // This setting is needed to prevent cascading intelligent deactivation of nodes

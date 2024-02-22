@@ -35,6 +35,7 @@ import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
+import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithmInput;
 import org.hkijena.jipipe.api.looping.LoopEndNode;
 import org.hkijena.jipipe.api.looping.LoopGroup;
 import org.hkijena.jipipe.api.looping.LoopStartNode;
@@ -2031,6 +2032,15 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 }
             }
         }
+    }
+
+    public <T extends JIPipeGraphNode> T findFirstNodeOfType(Class<T> klass) {
+        for (JIPipeGraphNode graphNode : getGraphNodes()) {
+            if(klass.isAssignableFrom(graphNode.getClass())) {
+                return (T) graphNode;
+            }
+        }
+        return null;
     }
 
     public interface GraphChangedEventListener {

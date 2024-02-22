@@ -4,6 +4,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 
 public class JIPipeInputDataSlot extends JIPipeDataSlot {
+
+    private boolean skipDataGathering;
     public JIPipeInputDataSlot(JIPipeDataSlotInfo info, JIPipeGraphNode node) {
         super(info, node);
         if (info.getSlotType() != JIPipeSlotType.Input) {
@@ -13,5 +15,14 @@ public class JIPipeInputDataSlot extends JIPipeDataSlot {
 
     public JIPipeInputDataSlot(JIPipeDataSlot other, boolean shallow, JIPipeProgressInfo progressInfo) {
         super(other, shallow, progressInfo);
+    }
+
+
+    public boolean isSkipDataGathering() {
+        return skipDataGathering;
+    }
+
+    public void setSkipDataGathering(boolean skipDataGathering) {
+        this.skipDataGathering = skipDataGathering;
     }
 }

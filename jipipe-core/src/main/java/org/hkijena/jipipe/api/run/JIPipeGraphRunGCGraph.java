@@ -134,7 +134,12 @@ public class JIPipeGraphRunGCGraph extends DefaultDirectedGraph<Object, DefaultE
                 progressInfo.log("-O Clearing " + ((JIPipeOutputDataSlot) vertex).getDisplayName());
                 removeVertex(vertex);
                 gcEventEmitter.emit(new GCEvent(this, (JIPipeOutputDataSlot) vertex));
-                ((JIPipeOutputDataSlot) vertex).clear();
+                if(!((JIPipeOutputDataSlot) vertex).isSkipGC()) {
+                    ((JIPipeOutputDataSlot) vertex).clear();
+                }
+                else {
+                    progressInfo.log("--> Clearing was prevented [skip GC]");
+                }
             }
             else {
                 progressInfo.log("-? [!] Unregistering UNKNOWN " + vertex);

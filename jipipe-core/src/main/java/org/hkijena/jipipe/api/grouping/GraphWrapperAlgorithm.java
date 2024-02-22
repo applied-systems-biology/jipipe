@@ -21,6 +21,8 @@ import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
+import org.hkijena.jipipe.api.run.JIPipeGraphRun;
+import org.hkijena.jipipe.api.run.JIPipeGraphRunSettings;
 import org.hkijena.jipipe.api.run.JIPipeLegacyGraphRun;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
@@ -84,8 +86,9 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeIter
      * Updates the slots from the wrapped graph
      */
     public void updateGroupSlots() {
-        if (preventUpdateSlots)
+        if (preventUpdateSlots) {
             return;
+        }
         JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
         JIPipeMutableSlotConfiguration inputSlotConfiguration = (JIPipeMutableSlotConfiguration) getGroupInput().getSlotConfiguration();
         JIPipeMutableSlotConfiguration outputSlotConfiguration = (JIPipeMutableSlotConfiguration) getGroupOutput().getSlotConfiguration();
@@ -177,7 +180,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeIter
     }
 
     /**
-     * Gets the graphs's output node
+     * Gets the graphs' output node
      *
      * @return the graph's output node
      */
@@ -208,6 +211,8 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeIter
     }
 
     private void runPerBatch(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+        if(true)
+            throw new RuntimeException(new UnsupportedOperationException("Not implemented"));
         if (getDataInputSlots().isEmpty()) {
             runWithDataPassThrough(runContext, progressInfo);
             return;
@@ -246,39 +251,49 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeIter
             }
 
             // Clear all data in the wrapped graph
-            clearWrappedGraphData();
+//            clearWrappedGraphData();
         }
     }
 
     private void runWithDataPassThrough(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+
+        // Derive new settings and create a dedicated run
+        JIPipeGraphRunSettings graphRunSettings = new JIPipeGraphRunSettings(runContext.getGraphRun().getConfiguration());
+        graphRunSettings.setLoadFromCache(false);
+        graphRunSettings.setStoreToCache(false);
+        graphRunSettings.setStoreToDisk(false);
+
+        JIPipeGraphRun run = new JIPipeGraphRun(runContext.getGraphRun(), wrappedGraph, graphRunSettings);
+        run.setProgressInfo(progressInfo.resolve("Sub-graph"));
+
+        GraphWrapperAlgorithmInput copyGroupInput = run.getGraph().findFirstNodeOfType(GraphWrapperAlgorithmInput.class);
+        GraphWrapperAlgorithmOutput copyGroupOutput = run.getGraph().findFirstNodeOfType(GraphWrapperAlgorithmOutput.class);
+
+        // Skip GC clearing for the group outputs
+        for (JIPipeOutputDataSlot outputSlot : copyGroupOutput.getOutputSlots()) {
+            outputSlot.setSkipGC(true);
+        }
+
         // Iterate through own input slots and pass them to the equivalents in group input
         for (JIPipeDataSlot inputSlot : getInputSlots()) {
-            JIPipeDataSlot groupInputSlot = getGroupInput().getInputSlot(inputSlot.getName());
+            JIPipeInputDataSlot groupInputSlot = copyGroupInput.getInputSlot(inputSlot.getName());
+            groupInputSlot.setSkipDataGathering(true); // Prevent the function of the slot
             groupInputSlot.addDataFromSlot(inputSlot, progressInfo);
         }
 
-        // Run the graph
-        JIPipeLegacyGraphRun runner = new JIPipeLegacyGraphRun(wrappedGraph);
-        runner.setProgressInfo(progressInfo.detachProgress().resolve("Sub-graph"));
-        runner.setAlgorithmsWithExternalInput(Collections.singleton(getGroupInput()));
-        runner.getPersistentDataNodes().add(getGroupOutput());
-        runner.setRunContext(runContext);
-        runner.run();
+        run.run();
 
         // Copy into output
         for (JIPipeDataSlot outputSlot : getOutputSlots()) {
-            JIPipeDataSlot groupOutputSlot = getGroupOutput().getOutputSlot(outputSlot.getName());
+            JIPipeDataSlot groupOutputSlot = copyGroupOutput.getOutputSlot(outputSlot.getName());
             outputSlot.addDataFromSlot(groupOutputSlot, progressInfo);
         }
 
-        // Clear all data in the wrapped graph
-        clearWrappedGraphData();
-    }
-
-    private void clearWrappedGraphData() {
-        for (JIPipeDataSlot slot : wrappedGraph.traverseSlots()) {
-            slot.clearData();
+        // Clear
+        for (JIPipeDataSlot dataSlot : run.getGraph().getGraph().vertexSet()) {
+            dataSlot.clear();
         }
+
     }
 
     @Override

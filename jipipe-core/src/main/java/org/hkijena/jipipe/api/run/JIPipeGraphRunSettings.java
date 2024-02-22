@@ -33,12 +33,29 @@ public class JIPipeGraphRunSettings extends AbstractJIPipeParameterCollection {
     private Path outputPath;
     private boolean loadFromCache = true;
     private boolean storeToCache = false;
-    private boolean saveToDisk = true;
+    private boolean storeToDisk = true;
     private int numThreads = RuntimeSettings.getInstance().getDefaultRunThreads();
     private boolean silent = false;
     private boolean ignoreDeactivatedInputs = false;
     private Set<UUID> disableStoreToCacheNodes = new HashSet<>();
     private Set<UUID> disableSaveToDiskNodes = new HashSet<>();
+
+
+    public JIPipeGraphRunSettings() {
+
+    }
+
+    public JIPipeGraphRunSettings(JIPipeGraphRunSettings other) {
+        this.outputPath = other.outputPath;
+        this.loadFromCache = other.loadFromCache;
+        this.storeToCache = other.storeToCache;
+        this.storeToDisk = other.storeToDisk;
+        this.numThreads = other.numThreads;
+        this.silent = other.silent;
+        this.ignoreDeactivatedInputs = other.ignoreDeactivatedInputs;
+        this.disableStoreToCacheNodes = new HashSet<>(other.disableStoreToCacheNodes);
+        this.disableSaveToDiskNodes = new HashSet<>(other.disableSaveToDiskNodes);
+    }
 
     @JIPipeParameter(value = "output-path", uiOrder = -999)
     @SetJIPipeDocumentation(name = "Output folder")
@@ -93,12 +110,12 @@ public class JIPipeGraphRunSettings extends AbstractJIPipeParameterCollection {
         this.numThreads = numThreads;
     }
 
-    public boolean isSaveToDisk() {
-        return saveToDisk;
+    public boolean isStoreToDisk() {
+        return storeToDisk;
     }
 
-    public void setSaveToDisk(boolean saveToDisk) {
-        this.saveToDisk = saveToDisk;
+    public void setStoreToDisk(boolean storeToDisk) {
+        this.storeToDisk = storeToDisk;
     }
 
     /**
