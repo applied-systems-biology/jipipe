@@ -612,7 +612,7 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel implemen
                 setForeground(Color.WHITE);
             }
             if (isSelected) {
-                setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.DARK_GRAY),
+                setBorder(BorderFactory.createCompoundBorder(UIUtils.createControlBorder(),
                         BorderFactory.createEmptyBorder(4, 4, 4, 4)));
             } else {
                 setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));

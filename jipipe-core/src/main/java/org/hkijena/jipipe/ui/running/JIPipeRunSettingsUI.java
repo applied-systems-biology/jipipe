@@ -313,7 +313,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
 
             panel.add(toolBar, BorderLayout.NORTH);
             panel.add(contentPanel, BorderLayout.CENTER);
-            panel.setBorder(BorderFactory.createLineBorder(UIManager.getColor("Button.borderColor")));
+            panel.setBorder(UIUtils.createControlBorder());
 
             formPanel.addWideToForm(panel, null);
         }

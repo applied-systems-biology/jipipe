@@ -32,7 +32,7 @@ public class RecentProjectListCellRenderer extends JPanel implements ListCellRen
         pathLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
         openButton = new JButton("Open");
         UIUtils.setStandardButtonBorder(openButton);
-        openButton.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1, true));
+        openButton.setBorder(UIUtils.createControlBorder());
 
         add(iconLabel, new GridBagConstraints() {
             {

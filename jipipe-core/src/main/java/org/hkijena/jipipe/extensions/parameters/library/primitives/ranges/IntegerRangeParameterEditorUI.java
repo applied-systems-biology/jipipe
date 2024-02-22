@@ -61,8 +61,8 @@ public class IntegerRangeParameterEditorUI extends JIPipeParameterEditorUI {
             rangeString.setUseExpression(expressionModeToggle.isSelected());
             setParameter(rangeString, true);
         });
-        UIUtils.makeFlat25x25(expressionModeToggle);
-        expressionModeToggle.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 0, UIManager.getColor("Button.borderColor")));
+//        UIUtils.makeFlat25x25(expressionModeToggle);
+//        expressionModeToggle.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 0, UIManager.getColor("Button.borderColor")));
 
         rangeStringEditor = new JTextField();
         rangeStringEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
@@ -129,7 +129,7 @@ public class IntegerRangeParameterEditorUI extends JIPipeParameterEditorUI {
             rangeStringEditor.setBorder(UIUtils.createControlBorder());
             rangeStringEditor.setToolTipText("Valid!");
         } catch (Exception e) {
-            rangeStringEditor.setBorder(BorderFactory.createLineBorder(Color.RED));
+            rangeStringEditor.setBorder(UIUtils.createControlErrorBorder());
             rangeStringEditor.setToolTipText("Invalid: " + e.getMessage());
         }
     }

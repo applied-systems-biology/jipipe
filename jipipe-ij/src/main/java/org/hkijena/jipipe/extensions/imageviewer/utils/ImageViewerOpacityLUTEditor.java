@@ -114,7 +114,7 @@ public abstract class ImageViewerOpacityLUTEditor extends JPanel implements Thum
     private void initialize() {
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4),
-                BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(UIManager.getColor("Button.borderColor"), 1, true),
+                BorderFactory.createCompoundBorder(UIUtils.createControlBorder(),
                         BorderFactory.createEmptyBorder(4, 4, 0, 4))));
 
         // Left (info) panel

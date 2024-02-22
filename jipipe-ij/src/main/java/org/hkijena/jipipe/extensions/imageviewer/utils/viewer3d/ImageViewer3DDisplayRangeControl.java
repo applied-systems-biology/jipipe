@@ -123,7 +123,7 @@ public class ImageViewer3DDisplayRangeControl extends JPanel implements ThumbLis
         toolbar.add(Box.createHorizontalGlue());
 
         JToggleButton logarithmicHistogramToggle = new JToggleButton("log");
-        logarithmicHistogramToggle.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        logarithmicHistogramToggle.setBorder(UIUtils.createControlBorder());
         logarithmicHistogramToggle.setSelected(trackRenderer.isLogarithmic());
         logarithmicHistogramToggle.addActionListener(e -> {
             trackRenderer.setLogarithmic(logarithmicHistogramToggle.isSelected());

@@ -49,7 +49,8 @@ import java.util.Map;
 /**
  * A sub-graph algorithm that can be defined by a user
  */
-@SetJIPipeDocumentation(name = "Group", description = "A sub-graph that contains its own pipeline.")
+@SetJIPipeDocumentation(name = "Group", description = "A node that contains a sub-pipeline. Double-click the node to open the contained workflow and add inputs/outputs to the 'Group input'/'Group output' nodes. " +
+        "To expose parameters from within the group to the surrounding group node, go to the 'Parameters' tab and add references via 'Edit parameter references'.")
 @DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomParameterCollection, ParameterReferencesChangedEventListener {
 

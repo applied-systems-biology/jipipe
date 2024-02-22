@@ -304,6 +304,7 @@ public class FormPanel extends JXPanel {
                     gridwidth = 1;
                     gridy = numRows;
                     insets = UI_PADDING;
+                    fill = GridBagConstraints.HORIZONTAL;
                 }
             };
             contentPanel.add(description, labelPosition);
@@ -448,6 +449,35 @@ public class FormPanel extends JXPanel {
         entries.add(new FormPanelEntry(numRows, null, panel, null, true));
         groupHeaderPanels.add(panel);
         ++numRows;
+        return panel;
+    }
+
+    /**
+     * Adds a group header
+     *
+     * @param text Group text
+     * @param description  Group description
+     * @param icon Group icon
+     * @return the panel that allows adding more components to it
+     */
+    public GroupHeaderPanel addGroupHeader(String text, String description, Icon icon) {
+        GroupHeaderPanel panel = new GroupHeaderPanel(text, icon, getGroupHeaderPanels().isEmpty() ? 8 : 32);
+        GridBagConstraints gridBagConstraints = new GridBagConstraints() {
+            {
+                anchor = GridBagConstraints.WEST;
+                gridx = COLUMN_LABEL_OR_WIDE_CONTENT;
+                gridwidth = 3;
+                gridy = numRows;
+                insets = UI_PADDING;
+                fill = GridBagConstraints.HORIZONTAL;
+                weightx = 1;
+            }
+        };
+        contentPanel.add(panel, gridBagConstraints);
+        entries.add(new FormPanelEntry(numRows, null, panel, null, true));
+        groupHeaderPanels.add(panel);
+        ++numRows;
+        panel.setDescription(description);
         return panel;
     }
 

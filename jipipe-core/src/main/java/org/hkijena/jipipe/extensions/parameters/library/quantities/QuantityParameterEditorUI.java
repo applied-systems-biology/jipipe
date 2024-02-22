@@ -48,7 +48,7 @@ public class QuantityParameterEditorUI extends JIPipeParameterEditorUI {
                 if (NumberUtils.isCreatable(text)) {
                     valueEditor.setBorder(null);
                 } else {
-                    valueEditor.setBorder(BorderFactory.createLineBorder(Color.RED, 2));
+                    valueEditor.setBorder(UIUtils.createControlErrorBorder());
                 }
             }
         });

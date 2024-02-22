@@ -26,6 +26,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.notifications.JIPipeNotification;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -60,10 +62,10 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.text.MutableAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
+import javax.swing.text.*;
+import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.StyleSheet;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
@@ -124,6 +126,7 @@ public class UIUtils {
     private static Theme RSYNTAX_THEME_DARK;
 
     private static Border CONTROL_BORDER;
+    private static Border CONTROL_ERROR_BORDER;
 
     public static JLabel createInfoLabel(String text, String subtext) {
         JLabel label = new JLabel("<html><strong>" + text + "</strong><br/>" + subtext + "</html>",
@@ -139,6 +142,14 @@ public class UIUtils {
         label.setAlignmentX(0f);
         label.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         return label;
+    }
+
+    public static Border createControlErrorBorder() {
+        if(CONTROL_ERROR_BORDER == null) {
+            CONTROL_ERROR_BORDER = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
+                    new RoundedLineBorder(new Color(0xa51d2d), 1, 5));
+        }
+        return CONTROL_ERROR_BORDER;
     }
 
     public static Border createControlBorder() {
@@ -1617,10 +1628,29 @@ public class UIUtils {
         textPane.setEditable(false);
         textPane.setOpaque(opaque);
         textPane.setContentType("text/html");
+        setTextPaneFont(textPane, Font.DIALOG, 12);
         textPane.setText(text);
         textPane.setBorder(null);
         addHyperlinkListener(textPane);
         return textPane;
+    }
+
+    public static void setTextPaneFont(JTextPane textPane, String fontFamily, int fontSize) {
+        HTMLEditorKit kit = new HTMLEditorKit();
+        HTMLDocument doc = (HTMLDocument) kit.createDefaultDocument();
+        textPane.setEditorKit(kit);
+        textPane.setDocument(doc);
+
+        // Create a new style sheet
+        StyleSheet styleSheet = kit.getStyleSheet();
+        Style defaultStyle = styleSheet.getStyle(StyleContext.DEFAULT_STYLE);
+
+        // Set the default font family and size
+        styleSheet.addRule("body { font-family: " + fontFamily + "; font-size: " + fontSize + "pt; }");
+
+        // Set the default style in the document
+        doc.getStyleSheet().addStyleSheet(styleSheet);
+        doc.setLogicalStyle(0, defaultStyle);
     }
 
     private static void addHyperlinkListener(JTextPane textPane) {
@@ -1978,7 +2008,7 @@ public class UIUtils {
     public static void showConnectionErrorMessage(Component parent, JIPipeDataSlot source, JIPipeDataSlot target) {
         if (!JIPipe.getDataTypes().isConvertible(source.getAcceptedDataType(), target.getAcceptedDataType())) {
             JOptionPane.showMessageDialog(parent,
-                    String.format("Unable to convert data type '%s' to '%s'!\nPlease refer to the data type compendium (top right [?] button) for info about which data types are compatible.", JIPipeDataInfo.getInstance(source.getAcceptedDataType()).getName(), JIPipeDataInfo.getInstance(target.getAcceptedDataType())),
+                    String.format("Unable to convert data type '%s' to '%s'!\nPlease refer to the data type documentation (top right [?] button) for info about which data types are compatible.", JIPipeDataInfo.getInstance(source.getAcceptedDataType()).getName(), JIPipeDataInfo.getInstance(target.getAcceptedDataType())),
                     "Unable to connect slots",
                     JOptionPane.ERROR_MESSAGE);
         } else {
@@ -2095,6 +2125,12 @@ public class UIUtils {
         JButton button = createButton(text, icon, action);
         button.setHorizontalAlignment(SwingConstants.LEFT);
         return button;
+    }
+
+    public static void makeHighlightedSuccess(JButton button) {
+        button.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
+                BorderFactory.createCompoundBorder(new RoundedLineBorder(JIPipeNotificationAction.Style.Success.getBackground(), 1, 5),
+                        BorderFactory.createEmptyBorder(3, 3, 3, 3))));
     }
 
 

@@ -652,9 +652,9 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         projectInfo2.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW));
         helpMenu.add(projectInfo2);
 
-        JMenuItem algorithmCompendiumButton = new JMenuItem("Open algorithm compendium", UIUtils.getIconFromResources("data-types/node.png"));
+        JMenuItem algorithmCompendiumButton = new JMenuItem("Open node documentation", UIUtils.getIconFromResources("data-types/node.png"));
         algorithmCompendiumButton.addActionListener(e -> {
-            getDocumentTabPane().addTab("Algorithm compendium",
+            getDocumentTabPane().addTab("Node documentation",
                     UIUtils.getIconFromResources("actions/help.png"),
                     new JIPipeAlgorithmCompendiumUI(),
                     DocumentTabPane.CloseMode.withSilentCloseButton,
@@ -663,9 +663,9 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         });
         helpMenu.add(algorithmCompendiumButton);
 
-        JMenuItem datatypeCompendiumButton = new JMenuItem("Open data type compendium", UIUtils.getIconFromResources("data-types/data-type.png"));
+        JMenuItem datatypeCompendiumButton = new JMenuItem("Open data type documentation", UIUtils.getIconFromResources("data-types/data-type.png"));
         datatypeCompendiumButton.addActionListener(e -> {
-            getDocumentTabPane().addTab("Data type compendium",
+            getDocumentTabPane().addTab("Data type documentation",
                     UIUtils.getIconFromResources("actions/help.png"),
                     new JIPipeDataTypeCompendiumUI(),
                     DocumentTabPane.CloseMode.withSilentCloseButton,

@@ -13,6 +13,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.ui.cache.JIPipeDataTableRowUI;
 import org.hkijena.jipipe.ui.datatracer.DataTracerUI;
+import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.Store;
@@ -63,7 +64,7 @@ public class DataBatchAssistantInputPreviewPanelTable extends JPanel {
                 true,
                 true,
                 true,
-                true), BorderFactory.createLineBorder(Color.LIGHT_GRAY)));
+                true), BorderFactory.createLineBorder(ModernMetalTheme.MEDIUM_GRAY)));
 
 //        JToolBar toolBar = new JToolBar();
 //        toolBar.setFloatable(false);
@@ -295,8 +296,11 @@ public class DataBatchAssistantInputPreviewPanelTable extends JPanel {
         List<JIPipeMultiIterationStep> iterationSteps = iterationStepGenerationResult.getDataBatches();
         for (int iterationStepIndex = 0; iterationStepIndex < iterationSteps.size(); iterationStepIndex++) {
             JIPipeMultiIterationStep iterationStep = iterationSteps.get(iterationStepIndex);
-            for (Integer inputRow : iterationStep.getInputRows(inputSlot.getName())) {
-                iterationStepMapping.put(inputRow, iterationStepIndex);
+            Set<Integer> inputRows = iterationStep.getInputRows(inputSlot.getName());
+            if(inputRows != null) {
+                for (Integer inputRow : inputRows) {
+                    iterationStepMapping.put(inputRow, iterationStepIndex);
+                }
             }
         }
 
@@ -400,7 +404,7 @@ public class DataBatchAssistantInputPreviewPanelTable extends JPanel {
             }
 
             if (isSelected) {
-                setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.DARK_GRAY),
+                setBorder(BorderFactory.createCompoundBorder(UIUtils.createControlBorder(),
                         BorderFactory.createEmptyBorder(4, 4, 4, 4)));
             } else {
                 setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));

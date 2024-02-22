@@ -1,4 +1,4 @@
-# Data type compendium
+# Data type documentation
 
 This interface lets show all available information about a data type. 
 

@@ -42,7 +42,7 @@ public class JIPipePlotSeriesBuilderUI extends JIPipeWorkbenchPanel {
     }
 
     private void initialize() {
-        setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        setBorder(UIUtils.createControlBorder());
         setLayout(new BorderLayout());
         ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(),
                 seriesBuilder,

@@ -202,7 +202,7 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
                 if (isValidNumber(text)) {
                     pushValue(text);
                 } else {
-                    setBorder(BorderFactory.createLineBorder(Color.RED, 2));
+                    setBorder(UIUtils.createControlErrorBorder());
                 }
             }
         });
@@ -258,7 +258,7 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
             if (setCurrentValue(newValue)) {
                 setBorder(UIUtils.createControlBorder());
             } else {
-                setBorder(BorderFactory.createLineBorder(Color.RED, 2));
+                setBorder(UIUtils.createControlErrorBorder());
             }
         }
     }

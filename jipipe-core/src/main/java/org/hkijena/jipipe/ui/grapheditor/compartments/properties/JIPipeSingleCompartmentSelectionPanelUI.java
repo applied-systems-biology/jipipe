@@ -71,7 +71,7 @@ public class JIPipeSingleCompartmentSelectionPanelUI extends JIPipeProjectWorkbe
                 ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SCROLLING);
 
         tabbedPane.registerSingletonTab("OVERVIEW", "Overview", UIUtils.getIcon32FromResources("actions/list-check.png"),
-                this::createOverviewPanel, DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
+                () -> new JIPipeSingleCompartmentSelectionOverviewPanelUI(this), DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
 
         tabbedPane.addTab("Parameters", UIUtils.getIcon32FromResources("actions/configure.png"),
                 parametersUI,
@@ -111,8 +111,16 @@ public class JIPipeSingleCompartmentSelectionPanelUI extends JIPipeProjectWorkbe
 //        initializeToolbar();
     }
 
-    private JPanel createOverviewPanel() {
-        return new JPanel();
+    public JIPipeGraphCanvasUI getCanvas() {
+        return canvas;
+    }
+
+    public JIPipeGraphEditorUI getGraphEditorUI() {
+        return graphEditorUI;
+    }
+
+    public DocumentTabPane getTabbedPane() {
+        return tabbedPane;
     }
 
     private Component createQuickRunPanel() {
@@ -156,10 +164,7 @@ public class JIPipeSingleCompartmentSelectionPanelUI extends JIPipeProjectWorkbe
         getProjectWorkbench().getOrOpenPipelineEditorTab(compartment, true);
     }
 
-    /**
-     * @return the compartment
-     */
-    public JIPipeGraphNode getCompartment() {
+    public JIPipeProjectCompartment getCompartment() {
         return compartment;
     }
 

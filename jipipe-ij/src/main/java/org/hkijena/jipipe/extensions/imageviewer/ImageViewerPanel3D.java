@@ -586,7 +586,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     private JLabel createMessageLabel(String text, String subText, Icon icon) {
         JLabel label = new JLabel("<html><strong>" + text + "</strong><br/>" + subText, icon, JLabel.LEFT);
         label.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4),
-                BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(UIManager.getColor("Button.borderColor"), 1, true),
+                BorderFactory.createCompoundBorder(UIUtils.createControlBorder(),
                         BorderFactory.createEmptyBorder(16, 16, 16, 16))));
         return label;
     }

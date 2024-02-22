@@ -87,7 +87,7 @@ public class DynamicSetParameterEditorUI extends JIPipeParameterEditorUI {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        setBorder(BorderFactory.createLineBorder(UIManager.getColor("Button.borderColor")));
+        setBorder(UIUtils.createControlBorder());
 
         DynamicSetParameter<Object> parameter = getParameter(DynamicSetParameter.class);
         Object[] values;

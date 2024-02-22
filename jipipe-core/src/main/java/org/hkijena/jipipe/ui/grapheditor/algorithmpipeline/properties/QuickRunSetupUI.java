@@ -89,74 +89,88 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel implements JIPi
         selectionPanel = new JPanel(new BorderLayout());
         FormPanel formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
 
+        formPanel.addGroupHeader("Store to cache", "The following operations will store all results to the memory cache. " +
+                "Please note that for larger amounts of data, you might run into memory limitations.", UIUtils.getIconFromResources("actions/database.png"));
         addSelectionPanelItem(formPanel,
                 "Update cache",
                 UIUtils.getIconFromResources("actions/database.png"),
-                "This runs the current node and all dependencies. Results are stored into the memory cache. Intermediate results are discarded. Already cached intermediate results are used if possible.",
-                () -> updateCache(false));
+                "Runs the pipeline up until this algorithm and caches the results. Nothing is written to disk.",
+                () -> updateCache(false, false),
+                true);
         addSelectionPanelItem(formPanel,
                 "Cache intermediate results",
                 UIUtils.getIconFromResources("actions/cache-intermediate-results.png"),
                 "This runs the current node and all dependencies. Results and intermediate results are stored into the memory cache.  Already cached intermediate results are used if possible.",
-                () -> updateCache(true));
+                () -> updateCache(true, false),
+                true);
         addSelectionPanelItem(formPanel,
-                "Quick run",
+                "Update predecessor caches",
+                UIUtils.getIconFromResources("actions/cache-predecessors.png"),
+                "Runs the pipeline up until the predecessors of the selected node. Nothing is written to disk.",
+                () -> updateCache(true, true),
+                false);
+
+        formPanel.addGroupHeader("Store to disk", "The following operations will store all results to the hard drive.", UIUtils.getIconFromResources("devices/drive-harddisk.png"));
+
+        addSelectionPanelItem(formPanel,
+                "Run & Show results",
                 UIUtils.getIconFromResources("actions/player_start.png"),
-                "This runs the current node and all dependencies. Results are saved to the hard drive into a temporary directory. After the run, a tab opens where you can review the results.",
-                this::quickRun);
+                "Runs the pipeline up until this algorithm and shows the results. " +
+                        "The results will be stored on the hard drive.",
+                () -> quickRun(false),
+                false);
+
         addSelectionPanelItem(formPanel,
-                "Custom quick run",
+                "Run & Show intermediate results",
+                UIUtils.getIconFromResources("actions/rabbitvcs-update.png"),
+                "Runs the pipeline up until this algorithm and shows the results (including intermediate results). " +
+                        "The results will be stored on the hard drive.",
+               () -> quickRun(true), false);
+
+        formPanel.addGroupHeader("Miscellaneous", UIUtils.getIconFromResources("actions/configure.png"));
+        addSelectionPanelItem(formPanel,
+                "Custom run",
                 UIUtils.getIconFromResources("actions/configure.png"),
-                "Allows to customize all aspects of a quick run, including the output path an whether to utilize already cached results.",
-                this::tryShowSetupPanel);
+                "Setup a run with custom settings.",
+                this::tryShowSetupPanel,
+                false);
 
         formPanel.addVerticalGlue();
 
         selectionPanel.add(formPanel, BorderLayout.CENTER);
     }
 
-    private void quickRun() {
+    private void quickRun(boolean storeIntermediates) {
         if (validateOrShowError()) {
             currentSettings = new QuickRunSettings();
             currentSettings.setSaveToDisk(true);
             currentSettings.setExcludeSelected(false);
             currentSettings.setLoadFromCache(true);
             currentSettings.setStoreToCache(false);
-            currentSettings.setStoreIntermediateResults(true);
+            currentSettings.setStoreIntermediateResults(storeIntermediates);
             generateQuickRun(true);
         }
     }
 
-    private void addSelectionPanelItem(FormPanel formPanel, String name, ImageIcon icon, String description, Runnable action) {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1, true));
-
-        JLabel nameLabel = new JLabel(name);
-        nameLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        nameLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
-        panel.add(nameLabel, BorderLayout.NORTH);
-
+    private void addSelectionPanelItem(FormPanel formPanel, String name, ImageIcon icon, String description, Runnable action, boolean suggested) {
         JTextArea descriptionArea = UIUtils.makeReadonlyBorderlessTextArea(description);
         descriptionArea.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        panel.add(descriptionArea, BorderLayout.CENTER);
 
-        JPanel buttonPanel = new JPanel(new BorderLayout(4, 4));
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         JButton actionButton = new JButton(name, icon);
-        actionButton.setPreferredSize(new Dimension(200, 32));
         actionButton.addActionListener(e -> action.run());
-        buttonPanel.add(actionButton, BorderLayout.EAST);
+        if(suggested) {
+            UIUtils.makeHighlightedSuccess(actionButton);
+        }
 
-        panel.add(buttonPanel, BorderLayout.SOUTH);
+        formPanel.addToForm(descriptionArea, actionButton);
 
-        formPanel.addWideToForm(panel, null);
     }
 
-    private void updateCache(boolean cacheIntermediateResults) {
+    private void updateCache(boolean cacheIntermediateResults, boolean excludeSelected) {
         if (validateOrShowError()) {
             currentSettings = new QuickRunSettings();
             currentSettings.setSaveToDisk(false);
-            currentSettings.setExcludeSelected(false);
+            currentSettings.setExcludeSelected(excludeSelected);
             currentSettings.setLoadFromCache(true);
             currentSettings.setStoreToCache(true);
             currentSettings.setStoreIntermediateResults(cacheIntermediateResults);

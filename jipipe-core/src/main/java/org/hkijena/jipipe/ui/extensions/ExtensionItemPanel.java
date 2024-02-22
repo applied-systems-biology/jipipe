@@ -87,7 +87,7 @@ public class ExtensionItemPanel extends JIPipeWorkbenchPanel {
 
     private void initialize() {
         setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4),
-                BorderFactory.createLineBorder(Color.DARK_GRAY, 1, true)));
+                UIUtils.createControlBorder()));
         setLayout(new BorderLayout());
         setPreferredSize(new Dimension(350, 350));
         setSize(350, 350);

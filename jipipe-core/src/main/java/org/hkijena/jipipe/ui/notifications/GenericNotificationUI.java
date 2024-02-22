@@ -36,7 +36,7 @@ public class GenericNotificationUI extends JIPipeWorkbenchPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        setBorder(BorderFactory.createLineBorder(Color.GRAY, 1, true));
+        setBorder(UIUtils.createControlBorder());
 
         JPanel headerPanel = new JPanel();
         headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.X_AXIS));

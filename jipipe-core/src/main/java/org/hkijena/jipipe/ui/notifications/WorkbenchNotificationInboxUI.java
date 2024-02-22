@@ -84,7 +84,7 @@ public class WorkbenchNotificationInboxUI extends JIPipeWorkbenchPanel implement
         if (!hasNotifications) {
             JPanel noNotificationPanel = new JPanel(new BorderLayout());
             noNotificationPanel.setLayout(new BorderLayout());
-            noNotificationPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1, true));
+            noNotificationPanel.setBorder(UIUtils.createControlBorder());
 
             JLabel label = new JLabel("No notifications", UIUtils.getIcon64FromResources("check-circle-green.png"), JLabel.LEFT);
             label.setFont(label.getFont().deriveFont(26.0f));

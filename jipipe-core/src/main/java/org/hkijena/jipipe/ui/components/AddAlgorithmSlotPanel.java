@@ -194,7 +194,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
         if (canAddSlot()) {
             nameEditor.setBorder(UIUtils.createControlBorder());
         } else {
-            nameEditor.setBorder(BorderFactory.createLineBorder(Color.RED));
+            nameEditor.setBorder(UIUtils.createControlErrorBorder());
         }
     }
 
