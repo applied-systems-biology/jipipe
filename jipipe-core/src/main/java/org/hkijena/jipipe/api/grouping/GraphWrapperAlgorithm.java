@@ -211,8 +211,6 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeIter
     }
 
     private void runPerBatch(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        if(true)
-            throw new RuntimeException(new UnsupportedOperationException("Not implemented"));
         if (getDataInputSlots().isEmpty()) {
             runWithDataPassThrough(runContext, progressInfo);
             return;
@@ -220,11 +218,24 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeIter
         List<JIPipeMultiIterationStep> iterationSteps = generateDataBatchesGenerationResult(getDataInputSlots(), progressInfo).getDataBatches();
         for (int i = 0; i < iterationSteps.size(); i++) {
             JIPipeProgressInfo batchProgress = progressInfo.resolveAndLog("Data batch", i, iterationSteps.size());
+
+            // Derive new settings and create a dedicated run
+            JIPipeGraphRunSettings graphRunSettings = new JIPipeGraphRunSettings(runContext.getGraphRun().getConfiguration());
+            graphRunSettings.setLoadFromCache(false);
+            graphRunSettings.setStoreToCache(false);
+            graphRunSettings.setStoreToDisk(false);
+
+            JIPipeGraphRun run = new JIPipeGraphRun(runContext.getGraphRun(), wrappedGraph, graphRunSettings);
+            run.setProgressInfo(batchProgress.resolve("Sub-graph"));
+
+            GraphWrapperAlgorithmInput copyGroupInput = run.getGraph().findFirstNodeOfType(GraphWrapperAlgorithmInput.class);
+            GraphWrapperAlgorithmOutput copyGroupOutput = run.getGraph().findFirstNodeOfType(GraphWrapperAlgorithmOutput.class);
+
             JIPipeMultiIterationStep iterationStep = iterationSteps.get(i);
 
             // Iterate through own input slots and pass them to the equivalents in group input
             for (JIPipeDataSlot inputSlot : getInputSlots()) {
-                JIPipeDataSlot groupInputSlot = getGroupInput().getInputSlot(inputSlot.getName());
+                JIPipeDataSlot groupInputSlot = copyGroupInput.getInputSlot(inputSlot.getName());
                 for (Integer row : iterationStep.getInputRows(inputSlot)) {
                     groupInputSlot.addData(inputSlot.getDataItemStore(row),
                             inputSlot.getTextAnnotations(row),
@@ -236,6 +247,11 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeIter
                 }
             }
 
+            // Skip GC clearing for the group outputs
+            for (JIPipeOutputDataSlot outputSlot : copyGroupOutput.getOutputSlots()) {
+                outputSlot.setSkipGC(true);
+            }
+
             // Run the graph
             JIPipeLegacyGraphRun runner = new JIPipeLegacyGraphRun(wrappedGraph);
             runner.setRunContext(runContext);
@@ -244,14 +260,18 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeIter
             runner.getPersistentDataNodes().add(getGroupOutput());
             runner.run();
 
+            run.run();
+
             // Copy into output
             for (JIPipeDataSlot outputSlot : getOutputSlots()) {
-                JIPipeDataSlot groupOutputSlot = getGroupOutput().getOutputSlot(outputSlot.getName());
+                JIPipeDataSlot groupOutputSlot = copyGroupOutput.getOutputSlot(outputSlot.getName());
                 outputSlot.addDataFromSlot(groupOutputSlot, progressInfo);
             }
 
-            // Clear all data in the wrapped graph
-//            clearWrappedGraphData();
+            // Clear
+            for (JIPipeDataSlot dataSlot : run.getGraph().getGraph().vertexSet()) {
+                dataSlot.clear();
+            }
         }
     }
 
