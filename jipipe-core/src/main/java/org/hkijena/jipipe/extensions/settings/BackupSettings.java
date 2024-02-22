@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalPathParameter;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -52,15 +53,7 @@ public class BackupSettings extends AbstractJIPipeParameterCollection {
     }
 
     private Path getDefaultSavePath() {
-        Path imageJDir = Paths.get(Prefs.getImageJDir());
-        if (!Files.isDirectory(imageJDir)) {
-            try {
-                Files.createDirectories(imageJDir);
-            } catch (IOException e) {
-                IJ.handleException(e);
-            }
-        }
-        Path targetDirectory = imageJDir.resolve("jipipe").resolve("backups");
+        Path targetDirectory = PathUtils.getJIPipeUserDir().resolve("jipipe").resolve("backups");
         if (!Files.isDirectory(targetDirectory)) {
             try {
                 Files.createDirectories(targetDirectory);

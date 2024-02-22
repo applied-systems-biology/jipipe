@@ -5,6 +5,7 @@ import ij.Prefs;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.utils.ArchiveUtils;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.WebUtils;
 
 import java.io.IOException;
@@ -37,15 +38,7 @@ public class DownloadOfflineManualRun implements JIPipeRunnable {
     @Override
     public void run() {
         progressInfo.setMaxProgress(2);
-        Path imageJDir = Paths.get(Prefs.getImageJDir());
-        if (!Files.isDirectory(imageJDir)) {
-            try {
-                Files.createDirectories(imageJDir);
-            } catch (IOException e) {
-                IJ.handleException(e);
-            }
-        }
-        Path targetDirectory = imageJDir.resolve("jipipe").resolve("offline-manual");
+        Path targetDirectory = PathUtils.getJIPipeUserDir().resolve("jipipe").resolve("offline-manual");
         Path targetFile = targetDirectory.resolve("jipipe_offline_documentation.zip");
         if (!Files.isDirectory(targetDirectory)) {
             try {
