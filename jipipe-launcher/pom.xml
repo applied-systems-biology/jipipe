@@ -263,6 +263,11 @@
             <artifactId>jipipe-scene-3d</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>org.hkijena</groupId>
+            <artifactId>jipipe-imp</artifactId>
+            <scope>runtime</scope>
+        </dependency>
 <!--        <dependency>-->
 <!--            <groupId>org.hkijena</groupId>-->
 <!--            <artifactId>jipipe-ilastik</artifactId>-->
