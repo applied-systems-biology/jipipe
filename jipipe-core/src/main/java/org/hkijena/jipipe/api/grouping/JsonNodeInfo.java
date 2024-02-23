@@ -39,7 +39,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.util.*;
 
 /**
- * Info of a {@link GraphWrapperAlgorithm}
+ * Info of a {@link JIPipeGraphWrapperAlgorithm}
  */
 public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements JIPipeNodeInfo, JIPipeValidatable, JIPipeGraph.GraphChangedEventListener {
     private final List<AddJIPipeInputSlot> inputSlots = new ArrayList<>();
@@ -115,7 +115,7 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
 
     @Override
     public JIPipeGraphNode duplicate(JIPipeGraphNode algorithm) {
-        return new JsonAlgorithm((GraphWrapperAlgorithm) algorithm);
+        return new JsonAlgorithm((JIPipeGraphWrapperAlgorithm) algorithm);
     }
 
     public Map<JIPipeDataSlot, String> getExportedSlotNames() {

@@ -51,7 +51,7 @@ import java.util.*;
 /**
  * An algorithm that wraps another algorithm graph
  */
-public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeIterationStepAlgorithm {
+public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeIterationStepAlgorithm {
 
     private JIPipeGraph wrappedGraph;
     private GraphWrapperAlgorithmInput algorithmInput;
@@ -65,7 +65,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeIter
      * @param info         the info
      * @param wrappedGraph the graph wrapper
      */
-    public GraphWrapperAlgorithm(JIPipeNodeInfo info, JIPipeGraph wrappedGraph) {
+    public JIPipeGraphWrapperAlgorithm(JIPipeNodeInfo info, JIPipeGraph wrappedGraph) {
         super(info, new JIPipeDefaultMutableSlotConfiguration());
         this.setWrappedGraph(wrappedGraph);
     }
@@ -75,7 +75,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeIter
      *
      * @param other the original
      */
-    public GraphWrapperAlgorithm(GraphWrapperAlgorithm other) {
+    public JIPipeGraphWrapperAlgorithm(JIPipeGraphWrapperAlgorithm other) {
         super(other);
         this.iterationMode = other.iterationMode;
         this.batchGenerationSettings = new JIPipeMergingAlgorithmIterationStepGenerationSettings(other.batchGenerationSettings);
@@ -158,9 +158,9 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeIter
     }
 
     /**
-     * Gets the graphs's input node
+     * Gets the graphs' input node
      *
-     * @return the graph's input node
+     * @return the graphs' input node
      */
     public GraphWrapperAlgorithmInput getGroupInput() {
         if (algorithmInput == null) {
@@ -226,7 +226,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeIter
             graphRunSettings.setStoreToDisk(false);
 
             JIPipeGraphRun run = new JIPipeGraphRun(runContext.getGraphRun(), wrappedGraph, graphRunSettings);
-            run.setProgressInfo(batchProgress.resolve("Sub-graph"));
+            run.setProgressInfo(batchProgress.detachProgress());
 
             GraphWrapperAlgorithmInput copyGroupInput = run.getGraph().findFirstNodeOfType(GraphWrapperAlgorithmInput.class);
             GraphWrapperAlgorithmOutput copyGroupOutput = run.getGraph().findFirstNodeOfType(GraphWrapperAlgorithmOutput.class);
@@ -352,8 +352,12 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeIter
         return batchGenerationSettings;
     }
 
+    public void setBatchGenerationSettings(JIPipeMergingAlgorithmIterationStepGenerationSettings batchGenerationSettings) {
+        this.batchGenerationSettings = batchGenerationSettings;
+    }
+
     @Override
-    public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
+    public JIPipeDataBatchGenerationResult  generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
         if (iterationMode == IterationMode.PassThrough) {
             JIPipeMultiIterationStep iterationStep = new JIPipeMultiIterationStep(this);
             for (JIPipeDataSlot inputSlot : getDataInputSlots()) {

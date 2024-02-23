@@ -17,7 +17,7 @@ import com.google.common.collect.BiMap;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
+import org.hkijena.jipipe.api.grouping.JIPipeGraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.looping.LoopGroup;
 import org.hkijena.jipipe.api.looping.LoopStartNode;
@@ -34,7 +34,7 @@ import java.util.*;
 /**
  * Executes an {@link JIPipeGraph}.
  * This does not do any data storage or caching.
- * Use this class for nested algorithm graph runs (like {@link org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm})
+ * Use this class for nested algorithm graph runs (like {@link JIPipeGraphWrapperAlgorithm})
  * Use {@link JIPipeLegacyProjectRun} for full project runs.
  */
 public class JIPipeLegacyGraphRun implements JIPipeRunnable, JIPipeLegacyGraphGCHelper.SlotCompletedEventListener {
@@ -175,12 +175,12 @@ public class JIPipeLegacyGraphRun implements JIPipeRunnable, JIPipeLegacyGraphGC
                         BiMap<JIPipeDataSlot, JIPipeDataSlot> loopGraphSlotMap = group.autoCreateSlots();
                         group.setIterationMode(loop.getLoopStartNode().getIterationMode());
                         if (loop.getLoopStartNode().isPassThrough()) {
-                            group.setIterationMode(GraphWrapperAlgorithm.IterationMode.PassThrough);
+                            group.setIterationMode(JIPipeGraphWrapperAlgorithm.IterationMode.PassThrough);
                         }
 
                         // IMPORTANT! Otherwise the nested JIPipeLegacyGraphRunner will run into an infinite depth loop
                         ((LoopStartNode) loopGraph.getEquivalentNode(loop.getLoopStartNode()))
-                                .setIterationMode(GraphWrapperAlgorithm.IterationMode.PassThrough);
+                                .setIterationMode(JIPipeGraphWrapperAlgorithm.IterationMode.PassThrough);
 
                         // Pass input data from inputs of loop into equivalent input of group
                         for (JIPipeDataSlot inputSlot : loop.getLoopStartNode().getInputSlots()) {

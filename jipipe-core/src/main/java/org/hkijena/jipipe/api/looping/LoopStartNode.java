@@ -6,7 +6,7 @@ import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
+import org.hkijena.jipipe.api.grouping.JIPipeGraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepAlgorithm;
@@ -35,7 +35,7 @@ import java.util.List;
 @Deprecated
 public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeIterationStepAlgorithm {
 
-    private GraphWrapperAlgorithm.IterationMode iterationMode = GraphWrapperAlgorithm.IterationMode.IteratingDataBatch;
+    private JIPipeGraphWrapperAlgorithm.IterationMode iterationMode = JIPipeGraphWrapperAlgorithm.IterationMode.IteratingDataBatch;
     private JIPipeMergingAlgorithmIterationStepGenerationSettings batchGenerationSettings = new JIPipeMergingAlgorithmIterationStepGenerationSettings();
 
     public LoopStartNode(JIPipeNodeInfo info) {
@@ -58,12 +58,12 @@ public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeIterati
             "</ul><br/>" +
             "<strong>Automatically assumed to be 'Pass through', if the node is set to 'Pass through'</strong>")
     @JIPipeParameter("iteration-mode")
-    public GraphWrapperAlgorithm.IterationMode getIterationMode() {
+    public JIPipeGraphWrapperAlgorithm.IterationMode getIterationMode() {
         return iterationMode;
     }
 
     @JIPipeParameter("iteration-mode")
-    public void setIterationMode(GraphWrapperAlgorithm.IterationMode iterationMode) {
+    public void setIterationMode(JIPipeGraphWrapperAlgorithm.IterationMode iterationMode) {
         this.iterationMode = iterationMode;
     }
 
@@ -82,7 +82,7 @@ public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeIterati
 
     @Override
     public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
-        if (iterationMode == GraphWrapperAlgorithm.IterationMode.PassThrough) {
+        if (iterationMode == JIPipeGraphWrapperAlgorithm.IterationMode.PassThrough) {
             JIPipeMultiIterationStep iterationStep = new JIPipeMultiIterationStep(this);
             for (JIPipeDataSlot inputSlot : getDataInputSlots()) {
                 for (int row = 0; row < inputSlot.getRowCount(); row++) {
@@ -98,7 +98,7 @@ public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeIterati
         } else {
             JIPipeMultiIterationStepGenerator builder = new JIPipeMultiIterationStepGenerator();
             builder.setNode(this);
-            builder.setApplyMerging(iterationMode == GraphWrapperAlgorithm.IterationMode.MergingDataBatch);
+            builder.setApplyMerging(iterationMode == JIPipeGraphWrapperAlgorithm.IterationMode.MergingDataBatch);
             builder.setSlots(slots);
             builder.setAnnotationMergeStrategy(batchGenerationSettings.getAnnotationMergeStrategy());
             builder.setReferenceColumns(batchGenerationSettings.getColumnMatching(),

@@ -91,7 +91,7 @@ public class ModernMetalTheme extends DefaultMetalTheme {
     public void addCustomEntriesToTable(UIDefaults table) {
         Object focusBorder = new BorderUIResource.LineBorderUIResource(getPrimary1());
         Object directoryIcon = UIUtils.getIconFromResources("places/folder-blue.png");
-        Object fileIcon = UIUtils.getIconFromResources("mimetypes/application-x-kgeo.png");
+        Object fileIcon = UIUtils.getIconFromResources("mimetypes/gtk-file.png");
         List<Object> sliderGradient = Arrays.asList(new Object[]{
                 .3f, .2f,
                 PRIMARY4, getWhite(), new ColorUIResource(SECONDARY2)});

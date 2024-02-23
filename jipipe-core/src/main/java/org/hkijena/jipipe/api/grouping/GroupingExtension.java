@@ -28,7 +28,7 @@ import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
 /**
- * Extension for anything that is related to {@link GraphWrapperAlgorithm}
+ * Extension for anything that is related to {@link JIPipeGraphWrapperAlgorithm}
  */
 @Plugin(type = JIPipeJavaExtension.class)
 public class GroupingExtension extends JIPipePrepackagedDefaultJavaExtension {

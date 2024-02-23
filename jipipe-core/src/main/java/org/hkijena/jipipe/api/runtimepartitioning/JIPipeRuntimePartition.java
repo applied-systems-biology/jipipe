@@ -3,7 +3,7 @@ package org.hkijena.jipipe.api.runtimepartitioning;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
+import org.hkijena.jipipe.api.grouping.JIPipeGraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithmIterationStepGenerationSettings;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithmIterationStepGenerationSettings;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -23,7 +23,7 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
     private JIPipeIteratingAlgorithmIterationStepGenerationSettings loopIterationIteratingSettings;
     private JIPipeMergingAlgorithmIterationStepGenerationSettings loopIterationMergingSettings;
     private OutputSettings outputSettings;
-    private GraphWrapperAlgorithm.IterationMode iterationMode = GraphWrapperAlgorithm.IterationMode.PassThrough;
+    private JIPipeGraphWrapperAlgorithm.IterationMode iterationMode = JIPipeGraphWrapperAlgorithm.IterationMode.PassThrough;
 
     public JIPipeRuntimePartition() {
         this.outputSettings = new OutputSettings();
@@ -37,6 +37,7 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
         this.description = new HTMLText(other.description);
         this.color = new OptionalColorParameter(other.color);
         this.enableParallelization = other.enableParallelization;
+        this.iterationMode = other.iterationMode;
         this.outputSettings = new OutputSettings(other.outputSettings);
         this.loopIterationMergingSettings = new JIPipeMergingAlgorithmIterationStepGenerationSettings(other.loopIterationMergingSettings);
         this.loopIterationIteratingSettings = new JIPipeIteratingAlgorithmIterationStepGenerationSettings(other.loopIterationIteratingSettings);
@@ -48,6 +49,7 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
         this.description = new HTMLText(other.description);
         this.color = new OptionalColorParameter(other.color);
         this.enableParallelization = other.enableParallelization;
+        this.iterationMode = other.iterationMode;
         this.outputSettings = new OutputSettings(other.outputSettings);
         this.loopIterationMergingSettings = new JIPipeMergingAlgorithmIterationStepGenerationSettings(other.loopIterationMergingSettings);
         this.loopIterationIteratingSettings = new JIPipeIteratingAlgorithmIterationStepGenerationSettings(other.loopIterationIteratingSettings);
@@ -120,13 +122,14 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
     @SetJIPipeDocumentation(name = "Iteration mode", description = "If not set to 'Pass-through', the contents of this graph partition are looped based on the annotations of incoming data from other partitions. " +
             "You will need at least two partitions to make use of looping. Loops cannot be nested.")
     @JIPipeParameter("iteration-mode")
-    public GraphWrapperAlgorithm.IterationMode getIterationMode() {
+    public JIPipeGraphWrapperAlgorithm.IterationMode getIterationMode() {
         return iterationMode;
     }
 
     @JIPipeParameter("iteration-mode")
-    public void setIterationMode(GraphWrapperAlgorithm.IterationMode iterationMode) {
+    public void setIterationMode(JIPipeGraphWrapperAlgorithm.IterationMode iterationMode) {
         this.iterationMode = iterationMode;
+        emitParameterUIChangedEvent();
     }
 
     @SetJIPipeDocumentation(name = "Loop iteration (multiple data per slot)", description = "Determine how iteration steps for looping partitions are created. Only applied if the 'Iteration mode' is set to 'Loop (multiple data per slot)'")

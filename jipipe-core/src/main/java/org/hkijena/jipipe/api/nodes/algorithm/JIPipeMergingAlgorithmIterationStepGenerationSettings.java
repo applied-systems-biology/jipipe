@@ -62,6 +62,19 @@ public class JIPipeMergingAlgorithmIterationStepGenerationSettings extends Abstr
         this.forceNAIsAny = other.forceNAIsAny;
     }
 
+    public JIPipeMergingAlgorithmIterationStepGenerationSettings(JIPipeIteratingAlgorithmIterationStepGenerationSettings other) {
+        this.columnMatching = other.getColumnMatching();
+        this.skipIncompleteDataSets = other.isSkipIncompleteDataSets();
+        this.customColumns = new StringQueryExpression(other.getCustomColumns());
+        this.annotationMergeStrategy = other.getAnnotationMergeStrategy();
+        this.limit = new OptionalIntegerRange(other.getLimit());
+        this.annotationMatchingMethod = other.getAnnotationMatchingMethod();
+        this.customAnnotationMatching = new JIPipeExpressionParameter(other.getCustomAnnotationMatching());
+        this.dataAnnotationMergeStrategy = other.getDataAnnotationMergeStrategy();
+        this.forceFlowGraphSolver = other.isForceFlowGraphSolver();
+        this.forceNAIsAny = false;
+    }
+
     @SetJIPipeDocumentation(name = "Force NA is ANY (if available)", description = "If enabled, missing annotations are considered as ANY (and thus merged with other data) even if there is only one input. " +
             "Currently only works for the dictionary solver.")
     @JIPipeParameter("force-na-is-any")

@@ -18,10 +18,9 @@ import java.awt.*;
 
 public class RuntimePartitionReferenceParameterEditorUI extends JIPipeParameterEditorUI implements JIPipeRunnable.FinishedEventListener {
 
-    private final JLabel nameLabel = new JLabel();
+    private final JButton nameLabel = new JButton();
     private final JTextField pathLabel = UIUtils.makeReadonlyBorderlessTextField("");
     private final JPopupMenu configureMenu = new JPopupMenu();
-    private JButton configureButton;
 
     /**
      * Creates new instance
@@ -40,6 +39,8 @@ public class RuntimePartitionReferenceParameterEditorUI extends JIPipeParameterE
         setLayout(new BorderLayout(4, 0));
         nameLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
         nameLabel.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 12));
+        nameLabel.setOpaque(false);
+        nameLabel.addActionListener(e -> editCurrentPartition());
         setOpaque(true);
         setBackground(UIManager.getColor("TextField.background"));
         setBorder(UIUtils.createControlBorder());
@@ -51,7 +52,7 @@ public class RuntimePartitionReferenceParameterEditorUI extends JIPipeParameterE
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         add(buttonPanel, BorderLayout.EAST);
 
-        configureButton = new JButton("Configure ...", UIUtils.getIconFromResources("actions/configure.png"));
+        JButton configureButton = new JButton("Configure ...", UIUtils.getIconFromResources("actions/configure.png"));
         configureButton.setBackground(getBackground());
         configureButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 1, 0, 0,
                         UIManager.getColor("Separator.foreground")),

@@ -262,7 +262,7 @@ public class DocumentTabPane extends JPanel implements Disposable {
         title = StringUtils.makeUniqueString(title, " ", tabs.stream().map(DocumentTab::getTitle).collect(Collectors.toList()));
 
         // Create tab panel
-        DocumentTabComponent tabPanel = new DocumentTabComponent(this, title, icon);
+        DocumentTabComponent tabPanel = new DocumentTabComponent(this, icon);
 
         JPopupMenu popupMenu = new JPopupMenu();
         DocumentTab tab = new DocumentTab(this, title, icon, tabPanel, component, closeMode, popupMenu);
@@ -767,7 +767,7 @@ public class DocumentTabPane extends JPanel implements Disposable {
 
         private boolean compactMode;
 
-        public DocumentTabComponent(DocumentTabPane documentTabPane, String title, Icon icon) {
+        public DocumentTabComponent(DocumentTabPane documentTabPane, Icon icon) {
             this.tabPanelBorder = documentTabPane.tabPanelBorder;
             this.documentTabPane = documentTabPane;
             this.icon = icon;

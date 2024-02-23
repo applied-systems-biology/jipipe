@@ -34,8 +34,7 @@ import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
-import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
-import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithmInput;
+import org.hkijena.jipipe.api.grouping.JIPipeGraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.looping.LoopEndNode;
 import org.hkijena.jipipe.api.looping.LoopGroup;
 import org.hkijena.jipipe.api.looping.LoopStartNode;
@@ -1932,7 +1931,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
         for (JIPipeGraphNode node : getGraphNodes()) {
             if ((node instanceof LoopEndNode && !((LoopEndNode) node).isPassThrough()) || additionalLoopEnds.contains(node)) {
                 loopEnds.add(node);
-            } else if (node instanceof LoopStartNode && ((LoopStartNode) node).getIterationMode() != GraphWrapperAlgorithm.IterationMode.PassThrough && !((LoopStartNode) node).isPassThrough()) {
+            } else if (node instanceof LoopStartNode && ((LoopStartNode) node).getIterationMode() != JIPipeGraphWrapperAlgorithm.IterationMode.PassThrough && !((LoopStartNode) node).isPassThrough()) {
                 loopStarts.add(node);
             } else if (node.getOutputSlots().isEmpty()) {
                 loopEnds.add(node);
@@ -2023,9 +2022,9 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                     }
                 }
                 stringBuilder.append("</ul>");
-                if(node instanceof GraphWrapperAlgorithm) {
+                if(node instanceof JIPipeGraphWrapperAlgorithm) {
                     stringBuilder.append("<ul><li>This node contains a sub-graph. The \"Group Input\" and \"Group Output\" nodes contained in the graph are internally connected to the inputs and outputs of this node.</li></ul>");
-                    ((GraphWrapperAlgorithm) node).getWrappedGraph().getTextDescription(stringBuilder, null, nodeIndices, headingLevel);
+                    ((JIPipeGraphWrapperAlgorithm) node).getWrappedGraph().getTextDescription(stringBuilder, null, nodeIndices, headingLevel);
                 }
                 else {
                     node.getTextDescription(stringBuilder);

@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
-import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
+import org.hkijena.jipipe.api.grouping.JIPipeGraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.looping.LoopGroup;
 import org.hkijena.jipipe.api.looping.LoopStartNode;
@@ -354,12 +354,12 @@ public class JIPipeLegacyProjectRun implements JIPipeRunnable, JIPipeLegacyGraph
                             BiMap<JIPipeDataSlot, JIPipeDataSlot> loopGraphSlotMap = group.autoCreateSlots();
                             group.setIterationMode(loop.getLoopStartNode().getIterationMode());
                             if (loop.getLoopStartNode().isPassThrough()) {
-                                group.setIterationMode(GraphWrapperAlgorithm.IterationMode.PassThrough);
+                                group.setIterationMode(JIPipeGraphWrapperAlgorithm.IterationMode.PassThrough);
                             }
 
                             // IMPORTANT! Otherwise, the nested JIPipeLegacyGraphRunner will run into an infinite depth loop
                             ((LoopStartNode) loopGraph.getEquivalentNode(loop.getLoopStartNode()))
-                                    .setIterationMode(GraphWrapperAlgorithm.IterationMode.PassThrough);
+                                    .setIterationMode(JIPipeGraphWrapperAlgorithm.IterationMode.PassThrough);
 
                             // Pass input data from inputs of loop into equivalent input of group
                             for (JIPipeDataSlot inputSlot : loop.getLoopStartNode().getInputSlots()) {

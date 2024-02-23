@@ -207,6 +207,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         JIPipeLogs.getInstance();
 
         documentTabPane = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Top);
+        documentTabPane.setTabPanelBorder(BorderFactory.createEmptyBorder(12, 4, 12, 4));
         documentTabPane.registerSingletonTab(TAB_INTRODUCTION,
                 "Getting started",
                 UIUtils.getIconFromResources("actions/help-info.png"),

@@ -28,7 +28,7 @@ import java.util.*;
 /**
  * An algorithm that was imported from a Json extension.
  */
-public class JsonAlgorithm extends GraphWrapperAlgorithm implements JIPipeCustomParameterCollection {
+public class JsonAlgorithm extends JIPipeGraphWrapperAlgorithm implements JIPipeCustomParameterCollection {
 
     private GraphNodeParameterReferenceGroupCollection exportedParameters = new GraphNodeParameterReferenceGroupCollection();
 
@@ -47,7 +47,7 @@ public class JsonAlgorithm extends GraphWrapperAlgorithm implements JIPipeCustom
      *
      * @param other the original
      */
-    public JsonAlgorithm(GraphWrapperAlgorithm other) {
+    public JsonAlgorithm(JIPipeGraphWrapperAlgorithm other) {
         super(other);
     }
 

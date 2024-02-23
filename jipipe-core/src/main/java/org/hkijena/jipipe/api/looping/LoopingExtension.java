@@ -16,7 +16,7 @@ package org.hkijena.jipipe.api.looping;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
+import org.hkijena.jipipe.api.grouping.JIPipeGraphWrapperAlgorithm;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
@@ -25,7 +25,7 @@ import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
 /**
- * Extension for anything that is related to {@link GraphWrapperAlgorithm}
+ * Extension for anything that is related to {@link JIPipeGraphWrapperAlgorithm}
  */
 @Plugin(type = JIPipeJavaExtension.class)
 public class LoopingExtension extends JIPipePrepackagedDefaultJavaExtension {
