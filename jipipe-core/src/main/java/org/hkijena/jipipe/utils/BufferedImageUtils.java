@@ -3,6 +3,7 @@ package org.hkijena.jipipe.utils;
 import ij.plugin.filter.GaussianBlur;
 import ij.process.ByteProcessor;
 import ij.process.ColorProcessor;
+import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -19,6 +20,33 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class BufferedImageUtils {
+
+    public  static BufferedImage convertAlphaToCheckerboard(BufferedImage originalImage, int checkerSize) {
+        // Create a new BufferedImage without alpha channel
+        BufferedImage newImage = new BufferedImage(originalImage.getWidth(), originalImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2d = newImage.createGraphics();
+
+        // Draw the checkerboard pattern
+        for (int y = 0; y < originalImage.getHeight(); y += checkerSize) {
+            for (int x = 0; x < originalImage.getWidth(); x += checkerSize) {
+                if ((x / checkerSize + y / checkerSize) % 2 == 0) {
+                    g2d.setColor(Color.WHITE);
+                } else {
+                    g2d.setColor(ModernMetalTheme.GRAY);
+                }
+                g2d.fillRect(x, y, checkerSize, checkerSize);
+            }
+        }
+
+        // Draw the original image using the alpha channel
+        g2d.setComposite(AlphaComposite.SrcOver);
+        g2d.drawImage(originalImage, 0, 0, null);
+
+        // Dispose of the graphics object
+        g2d.dispose();
+
+        return newImage;
+    }
     public static BufferedImage scaleImageToFit(BufferedImage image, int maxWidth, int maxHeight) {
         double scale = 1.0;
         if (maxWidth > 0) {

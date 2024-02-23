@@ -312,6 +312,11 @@ See the LICENSE file provided with this code for the full license.
                 <artifactId>jipipe-scene-3d</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-imp</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 <!--            <dependency>-->
 <!--                <groupId>org.hkijena</groupId>-->
 <!--                <artifactId>jipipe-ilastik</artifactId>-->
