@@ -12,7 +12,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +23,9 @@ import java.util.List;
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For data tables")
 public class AnnotateWithDataTableProperties extends JIPipeSimpleIteratingAlgorithm {
 
-    private OptionalAnnotationNameParameter numRowsAnnotation = new OptionalAnnotationNameParameter("Num Rows", true);
-    private OptionalAnnotationNameParameter numTextAnnotationColumns = new OptionalAnnotationNameParameter("Num Text Annotation Columns", false);
-    private OptionalAnnotationNameParameter numDataAnnotationColumns = new OptionalAnnotationNameParameter("Num Text Annotation Columns", false);
+    private OptionalTextAnnotationNameParameter numRowsAnnotation = new OptionalTextAnnotationNameParameter("Num Rows", true);
+    private OptionalTextAnnotationNameParameter numTextAnnotationColumns = new OptionalTextAnnotationNameParameter("Num Text Annotation Columns", false);
+    private OptionalTextAnnotationNameParameter numDataAnnotationColumns = new OptionalTextAnnotationNameParameter("Num Text Annotation Columns", false);
 
     private JIPipeTextAnnotationMergeMode mergeMode = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
@@ -35,9 +35,9 @@ public class AnnotateWithDataTableProperties extends JIPipeSimpleIteratingAlgori
 
     public AnnotateWithDataTableProperties(AnnotateWithDataTableProperties other) {
         super(other);
-        this.numRowsAnnotation = new OptionalAnnotationNameParameter(other.numRowsAnnotation);
-        this.numTextAnnotationColumns = new OptionalAnnotationNameParameter(other.numTextAnnotationColumns);
-        this.numDataAnnotationColumns = new OptionalAnnotationNameParameter(other.numDataAnnotationColumns);
+        this.numRowsAnnotation = new OptionalTextAnnotationNameParameter(other.numRowsAnnotation);
+        this.numTextAnnotationColumns = new OptionalTextAnnotationNameParameter(other.numTextAnnotationColumns);
+        this.numDataAnnotationColumns = new OptionalTextAnnotationNameParameter(other.numDataAnnotationColumns);
         this.mergeMode = other.mergeMode;
     }
 
@@ -53,34 +53,34 @@ public class AnnotateWithDataTableProperties extends JIPipeSimpleIteratingAlgori
 
     @SetJIPipeDocumentation(name = "Annotate with number of rows", description = "If enabled, annotate the data table with its number of rows")
     @JIPipeParameter("num-rows-annotation")
-    public OptionalAnnotationNameParameter getNumRowsAnnotation() {
+    public OptionalTextAnnotationNameParameter getNumRowsAnnotation() {
         return numRowsAnnotation;
     }
 
     @JIPipeParameter("num-rows-annotation")
-    public void setNumRowsAnnotation(OptionalAnnotationNameParameter numRowsAnnotation) {
+    public void setNumRowsAnnotation(OptionalTextAnnotationNameParameter numRowsAnnotation) {
         this.numRowsAnnotation = numRowsAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with number of text annotation columns", description = "If enabled, annotate the data table with the number of text annotation columns")
     @JIPipeParameter("num-text-annotation-columns-annotation")
-    public OptionalAnnotationNameParameter getNumTextAnnotationColumns() {
+    public OptionalTextAnnotationNameParameter getNumTextAnnotationColumns() {
         return numTextAnnotationColumns;
     }
 
     @JIPipeParameter("num-text-annotation-columns-annotation")
-    public void setNumTextAnnotationColumns(OptionalAnnotationNameParameter numTextAnnotationColumns) {
+    public void setNumTextAnnotationColumns(OptionalTextAnnotationNameParameter numTextAnnotationColumns) {
         this.numTextAnnotationColumns = numTextAnnotationColumns;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with number of data annotation columns", description = "If enabled, annotate the data table with the number of data annotation columns")
     @JIPipeParameter("num-data-annotation-columns-annotation")
-    public OptionalAnnotationNameParameter getNumDataAnnotationColumns() {
+    public OptionalTextAnnotationNameParameter getNumDataAnnotationColumns() {
         return numDataAnnotationColumns;
     }
 
     @JIPipeParameter("num-data-annotation-columns-annotation")
-    public void setNumDataAnnotationColumns(OptionalAnnotationNameParameter numDataAnnotationColumns) {
+    public void setNumDataAnnotationColumns(OptionalTextAnnotationNameParameter numDataAnnotationColumns) {
         this.numDataAnnotationColumns = numDataAnnotationColumns;
     }
 

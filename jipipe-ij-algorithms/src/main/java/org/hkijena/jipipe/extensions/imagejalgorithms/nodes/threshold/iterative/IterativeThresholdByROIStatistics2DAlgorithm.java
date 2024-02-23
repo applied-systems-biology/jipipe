@@ -30,7 +30,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
@@ -56,7 +56,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
     private IntegerRange thresholds = new IntegerRange("0-255");
     private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
     private boolean measureInPhysicalUnits = true;
-    private OptionalAnnotationNameParameter thresholdAnnotation = new OptionalAnnotationNameParameter("Threshold", true);
+    private OptionalTextAnnotationNameParameter thresholdAnnotation = new OptionalTextAnnotationNameParameter("Threshold", true);
     private JIPipeExpressionParameter thresholdCombinationExpression = new JIPipeExpressionParameter("MIN(thresholds)");
     private JIPipeTextAnnotationMergeMode thresholdAnnotationStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
     private boolean excludeEdgeROIs = false;
@@ -73,7 +73,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         super(other);
         this.measurements = other.measurements;
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
-        this.thresholdAnnotation = new OptionalAnnotationNameParameter(other.thresholdAnnotation);
+        this.thresholdAnnotation = new OptionalTextAnnotationNameParameter(other.thresholdAnnotation);
         this.thresholdCombinationExpression = new JIPipeExpressionParameter(other.thresholdCombinationExpression);
         this.thresholdAnnotationStrategy = other.thresholdAnnotationStrategy;
         this.excludeEdgeROIs = other.excludeEdgeROIs;
@@ -328,12 +328,12 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
 
     @SetJIPipeDocumentation(name = "Threshold annotation", description = "Puts the generated threshold(s) into an annotation.")
     @JIPipeParameter("threshold-annotation")
-    public OptionalAnnotationNameParameter getThresholdAnnotation() {
+    public OptionalTextAnnotationNameParameter getThresholdAnnotation() {
         return thresholdAnnotation;
     }
 
     @JIPipeParameter("threshold-annotation")
-    public void setThresholdAnnotation(OptionalAnnotationNameParameter thresholdAnnotation) {
+    public void setThresholdAnnotation(OptionalTextAnnotationNameParameter thresholdAnnotation) {
         this.thresholdAnnotation = thresholdAnnotation;
     }
 

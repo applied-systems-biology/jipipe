@@ -14,7 +14,7 @@ import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.graph.AsSubgraph;
 
@@ -28,7 +28,7 @@ import java.util.Set;
 @AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
 public class SplitFilamentsIntoConnectedComponentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private OptionalAnnotationNameParameter componentIdAnnotation = new OptionalAnnotationNameParameter("#Component", true);
+    private OptionalTextAnnotationNameParameter componentIdAnnotation = new OptionalTextAnnotationNameParameter("#Component", true);
 
     public SplitFilamentsIntoConnectedComponentsAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -36,7 +36,7 @@ public class SplitFilamentsIntoConnectedComponentsAlgorithm extends JIPipeSimple
 
     public SplitFilamentsIntoConnectedComponentsAlgorithm(SplitFilamentsIntoConnectedComponentsAlgorithm other) {
         super(other);
-        this.componentIdAnnotation = new OptionalAnnotationNameParameter(other.componentIdAnnotation);
+        this.componentIdAnnotation = new OptionalTextAnnotationNameParameter(other.componentIdAnnotation);
     }
 
     @Override
@@ -65,12 +65,12 @@ public class SplitFilamentsIntoConnectedComponentsAlgorithm extends JIPipeSimple
 
     @SetJIPipeDocumentation(name = "Annotate with component index", description = "If enabled, the numeric index of the component is written into the specified annotation")
     @JIPipeParameter("component-id-annotation")
-    public OptionalAnnotationNameParameter getComponentIdAnnotation() {
+    public OptionalTextAnnotationNameParameter getComponentIdAnnotation() {
         return componentIdAnnotation;
     }
 
     @JIPipeParameter("component-id-annotation")
-    public void setComponentIdAnnotation(OptionalAnnotationNameParameter componentIdAnnotation) {
+    public void setComponentIdAnnotation(OptionalTextAnnotationNameParameter componentIdAnnotation) {
         this.componentIdAnnotation = componentIdAnnotation;
     }
 }

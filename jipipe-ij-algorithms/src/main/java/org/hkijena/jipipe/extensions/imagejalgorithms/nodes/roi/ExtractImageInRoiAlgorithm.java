@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,11 +41,11 @@ public class ExtractImageInRoiAlgorithm extends JIPipeIteratingAlgorithm {
     private boolean ignoreZ = false;
     private boolean ignoreC = false;
     private boolean ignoreT = false;
-    private OptionalAnnotationNameParameter annotationXLocation = new OptionalAnnotationNameParameter("X", true);
-    private OptionalAnnotationNameParameter annotationYLocation = new OptionalAnnotationNameParameter("Y", true);
-    private OptionalAnnotationNameParameter annotationZLocation = new OptionalAnnotationNameParameter("Z", true);
-    private OptionalAnnotationNameParameter annotationCLocation = new OptionalAnnotationNameParameter("C", true);
-    private OptionalAnnotationNameParameter annotationTLocation = new OptionalAnnotationNameParameter("T", true);
+    private OptionalTextAnnotationNameParameter annotationXLocation = new OptionalTextAnnotationNameParameter("X", true);
+    private OptionalTextAnnotationNameParameter annotationYLocation = new OptionalTextAnnotationNameParameter("Y", true);
+    private OptionalTextAnnotationNameParameter annotationZLocation = new OptionalTextAnnotationNameParameter("Z", true);
+    private OptionalTextAnnotationNameParameter annotationCLocation = new OptionalTextAnnotationNameParameter("C", true);
+    private OptionalTextAnnotationNameParameter annotationTLocation = new OptionalTextAnnotationNameParameter("T", true);
 
     public ExtractImageInRoiAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -57,11 +57,11 @@ public class ExtractImageInRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.ignoreZ = other.ignoreZ;
         this.ignoreC = other.ignoreC;
         this.ignoreT = other.ignoreT;
-        this.annotationXLocation = new OptionalAnnotationNameParameter(other.annotationXLocation);
-        this.annotationYLocation = new OptionalAnnotationNameParameter(other.annotationYLocation);
-        this.annotationZLocation = new OptionalAnnotationNameParameter(other.annotationZLocation);
-        this.annotationCLocation = new OptionalAnnotationNameParameter(other.annotationCLocation);
-        this.annotationTLocation = new OptionalAnnotationNameParameter(other.annotationTLocation);
+        this.annotationXLocation = new OptionalTextAnnotationNameParameter(other.annotationXLocation);
+        this.annotationYLocation = new OptionalTextAnnotationNameParameter(other.annotationYLocation);
+        this.annotationZLocation = new OptionalTextAnnotationNameParameter(other.annotationZLocation);
+        this.annotationCLocation = new OptionalTextAnnotationNameParameter(other.annotationCLocation);
+        this.annotationTLocation = new OptionalTextAnnotationNameParameter(other.annotationTLocation);
     }
 
     @Override
@@ -107,56 +107,56 @@ public class ExtractImageInRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Annotate with X", description = "If enabled, the extracted images are annotated with their source X location.")
     @JIPipeParameter("annotation-x")
-    public OptionalAnnotationNameParameter getAnnotationXLocation() {
+    public OptionalTextAnnotationNameParameter getAnnotationXLocation() {
         return annotationXLocation;
     }
 
     @JIPipeParameter("annotation-x")
-    public void setAnnotationXLocation(OptionalAnnotationNameParameter annotationXLocation) {
+    public void setAnnotationXLocation(OptionalTextAnnotationNameParameter annotationXLocation) {
         this.annotationXLocation = annotationXLocation;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with Y", description = "If enabled, the extracted images are annotated with their source Y location.")
     @JIPipeParameter("annotation-y")
-    public OptionalAnnotationNameParameter getAnnotationYLocation() {
+    public OptionalTextAnnotationNameParameter getAnnotationYLocation() {
         return annotationYLocation;
     }
 
     @JIPipeParameter("annotation-y")
-    public void setAnnotationYLocation(OptionalAnnotationNameParameter annotationYLocation) {
+    public void setAnnotationYLocation(OptionalTextAnnotationNameParameter annotationYLocation) {
         this.annotationYLocation = annotationYLocation;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with Z", description = "If enabled, the extracted images are annotated with their source Z location.")
     @JIPipeParameter("annotation-z")
-    public OptionalAnnotationNameParameter getAnnotationZLocation() {
+    public OptionalTextAnnotationNameParameter getAnnotationZLocation() {
         return annotationZLocation;
     }
 
     @JIPipeParameter("annotation-z")
-    public void setAnnotationZLocation(OptionalAnnotationNameParameter annotationZLocation) {
+    public void setAnnotationZLocation(OptionalTextAnnotationNameParameter annotationZLocation) {
         this.annotationZLocation = annotationZLocation;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with C", description = "If enabled, the extracted images are annotated with their source C location.")
     @JIPipeParameter("annotation-c")
-    public OptionalAnnotationNameParameter getAnnotationCLocation() {
+    public OptionalTextAnnotationNameParameter getAnnotationCLocation() {
         return annotationCLocation;
     }
 
     @JIPipeParameter("annotation-c")
-    public void setAnnotationCLocation(OptionalAnnotationNameParameter annotationCLocation) {
+    public void setAnnotationCLocation(OptionalTextAnnotationNameParameter annotationCLocation) {
         this.annotationCLocation = annotationCLocation;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with T", description = "If enabled, the extracted images are annotated with their source T location.")
     @JIPipeParameter("annotation-t")
-    public OptionalAnnotationNameParameter getAnnotationTLocation() {
+    public OptionalTextAnnotationNameParameter getAnnotationTLocation() {
         return annotationTLocation;
     }
 
     @JIPipeParameter("annotation-t")
-    public void setAnnotationTLocation(OptionalAnnotationNameParameter annotationTLocation) {
+    public void setAnnotationTLocation(OptionalTextAnnotationNameParameter annotationTLocation) {
         this.annotationTLocation = annotationTLocation;
     }
 }

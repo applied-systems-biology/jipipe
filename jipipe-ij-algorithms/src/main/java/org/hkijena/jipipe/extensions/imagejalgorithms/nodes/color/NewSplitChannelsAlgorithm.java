@@ -37,7 +37,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.parameters.library.graph.OutputSlotMapParameterCollection;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,9 +56,9 @@ public class NewSplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private final OutputSlotMapParameterCollection channelToSlotAssignment;
     private boolean ignoreMissingChannels = false;
 
-    private OptionalAnnotationNameParameter channelIndexAnnotation = new OptionalAnnotationNameParameter("Channel index", true);
+    private OptionalTextAnnotationNameParameter channelIndexAnnotation = new OptionalTextAnnotationNameParameter("Channel index", true);
 
-    private OptionalAnnotationNameParameter channelNameAnnotation = new OptionalAnnotationNameParameter("Channel", true);
+    private OptionalTextAnnotationNameParameter channelNameAnnotation = new OptionalTextAnnotationNameParameter("Channel", true);
 
     /**
      * Instantiates a new node type.
@@ -84,8 +84,8 @@ public class NewSplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public NewSplitChannelsAlgorithm(NewSplitChannelsAlgorithm other) {
         super(other);
         this.ignoreMissingChannels = other.ignoreMissingChannels;
-        this.channelIndexAnnotation = new OptionalAnnotationNameParameter(other.channelIndexAnnotation);
-        this.channelNameAnnotation = new OptionalAnnotationNameParameter(other.channelNameAnnotation);
+        this.channelIndexAnnotation = new OptionalTextAnnotationNameParameter(other.channelIndexAnnotation);
+        this.channelNameAnnotation = new OptionalTextAnnotationNameParameter(other.channelNameAnnotation);
 
         channelToSlotAssignment = new OutputSlotMapParameterCollection(Integer.class, this, (slotInfo) -> 0, false);
         other.channelToSlotAssignment.copyTo(channelToSlotAssignment);
@@ -164,23 +164,23 @@ public class NewSplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Annotate with channel index", description = "If enabled, create an annotation that contains the channel index (starting with zero)")
     @JIPipeParameter("channel-index-annotation")
-    public OptionalAnnotationNameParameter getChannelIndexAnnotation() {
+    public OptionalTextAnnotationNameParameter getChannelIndexAnnotation() {
         return channelIndexAnnotation;
     }
 
     @JIPipeParameter("channel-index-annotation")
-    public void setChannelIndexAnnotation(OptionalAnnotationNameParameter channelIndexAnnotation) {
+    public void setChannelIndexAnnotation(OptionalTextAnnotationNameParameter channelIndexAnnotation) {
         this.channelIndexAnnotation = channelIndexAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with channel name", description = "If enabled, create an annotation that contains the channel name as defined by the output slot")
     @JIPipeParameter("channel-name-annotation")
-    public OptionalAnnotationNameParameter getChannelNameAnnotation() {
+    public OptionalTextAnnotationNameParameter getChannelNameAnnotation() {
         return channelNameAnnotation;
     }
 
     @JIPipeParameter("channel-name-annotation")
-    public void setChannelNameAnnotation(OptionalAnnotationNameParameter channelNameAnnotation) {
+    public void setChannelNameAnnotation(OptionalTextAnnotationNameParameter channelNameAnnotation) {
         this.channelNameAnnotation = channelNameAnnotation;
     }
 }

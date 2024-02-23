@@ -22,7 +22,7 @@ import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +35,7 @@ import java.util.List;
 @AddJIPipeNodeAlias(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Filter", aliasName = "Filter multiple data by annotation (one data per slot)")
 public class SingleIterationStepCheckerAlgorithm extends JIPipeIteratingAlgorithm {
     private boolean keepOriginalAnnotations = true;
-    private OptionalAnnotationNameParameter iterationStepIndexAnnotation = new OptionalAnnotationNameParameter("Iteration step", false);
+    private OptionalTextAnnotationNameParameter iterationStepIndexAnnotation = new OptionalTextAnnotationNameParameter("Iteration step", false);
     private JIPipeExpressionParameter filter = new JIPipeExpressionParameter();
     public SingleIterationStepCheckerAlgorithm(JIPipeNodeInfo info) {
         super(info, new JIPipeIOSlotConfiguration());
@@ -44,7 +44,7 @@ public class SingleIterationStepCheckerAlgorithm extends JIPipeIteratingAlgorith
     public SingleIterationStepCheckerAlgorithm(SingleIterationStepCheckerAlgorithm other) {
         super(other);
         this.keepOriginalAnnotations = other.keepOriginalAnnotations;
-        this.iterationStepIndexAnnotation = new OptionalAnnotationNameParameter(other.iterationStepIndexAnnotation);
+        this.iterationStepIndexAnnotation = new OptionalTextAnnotationNameParameter(other.iterationStepIndexAnnotation);
         this.filter = new JIPipeExpressionParameter(other.filter);
     }
 
@@ -95,12 +95,12 @@ public class SingleIterationStepCheckerAlgorithm extends JIPipeIteratingAlgorith
 
     @SetJIPipeDocumentation(name = "Annotate with iteration step index", description = "If enabled, annotate each output with the annotation step index")
     @JIPipeParameter("iteration-step-index-annotation")
-    public OptionalAnnotationNameParameter getIterationStepIndexAnnotation() {
+    public OptionalTextAnnotationNameParameter getIterationStepIndexAnnotation() {
         return iterationStepIndexAnnotation;
     }
 
     @JIPipeParameter("iteration-step-index-annotation")
-    public void setIterationStepIndexAnnotation(OptionalAnnotationNameParameter iterationStepIndexAnnotation) {
+    public void setIterationStepIndexAnnotation(OptionalTextAnnotationNameParameter iterationStepIndexAnnotation) {
         this.iterationStepIndexAnnotation = iterationStepIndexAnnotation;
     }
 

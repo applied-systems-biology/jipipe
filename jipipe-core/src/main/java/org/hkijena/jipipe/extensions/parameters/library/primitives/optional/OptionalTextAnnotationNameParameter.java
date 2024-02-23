@@ -25,15 +25,15 @@ import java.util.Collection;
  * Parameter used for creating annotations
  */
 @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
-public class OptionalAnnotationNameParameter extends OptionalStringParameter implements JIPipeValidatable {
-    public OptionalAnnotationNameParameter() {
+public class OptionalTextAnnotationNameParameter extends OptionalStringParameter implements JIPipeValidatable {
+    public OptionalTextAnnotationNameParameter() {
     }
 
-    public OptionalAnnotationNameParameter(OptionalStringParameter other) {
+    public OptionalTextAnnotationNameParameter(OptionalStringParameter other) {
         super(other);
     }
 
-    public OptionalAnnotationNameParameter(String value, boolean enabled) {
+    public OptionalTextAnnotationNameParameter(String value, boolean enabled) {
         super(value, enabled);
     }
 

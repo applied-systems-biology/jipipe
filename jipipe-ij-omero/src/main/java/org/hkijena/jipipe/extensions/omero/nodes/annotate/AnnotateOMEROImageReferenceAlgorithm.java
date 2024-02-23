@@ -27,7 +27,7 @@ import org.hkijena.jipipe.extensions.omero.parameters.OMEROKeyValuePairToAnnotat
 import org.hkijena.jipipe.extensions.omero.parameters.OMEROTagToAnnotationImporter;
 import org.hkijena.jipipe.extensions.omero.util.OMEROGateway;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.ArrayList;
@@ -40,8 +40,8 @@ import java.util.List;
 public class AnnotateOMEROImageReferenceAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
-    private OptionalAnnotationNameParameter nameAnnotation = new OptionalAnnotationNameParameter("Image title", true);
-    private OptionalAnnotationNameParameter idAnnotation = new OptionalAnnotationNameParameter("#OMERO:Image_ID", true);
+    private OptionalTextAnnotationNameParameter nameAnnotation = new OptionalTextAnnotationNameParameter("Image title", true);
+    private OptionalTextAnnotationNameParameter idAnnotation = new OptionalTextAnnotationNameParameter("#OMERO:Image_ID", true);
     private final OMEROKeyValuePairToAnnotationImporter keyValuePairToAnnotationImporter;
     private final OMEROTagToAnnotationImporter tagToAnnotationImporter;
     private JIPipeTextAnnotationMergeMode annotationMergeMode = JIPipeTextAnnotationMergeMode.OverwriteExisting;
@@ -61,8 +61,8 @@ public class AnnotateOMEROImageReferenceAlgorithm extends JIPipeSingleIterationA
         this.tagToAnnotationImporter = new OMEROTagToAnnotationImporter(other.tagToAnnotationImporter);
         registerSubParameter(tagToAnnotationImporter);
         this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
-        this.nameAnnotation = new OptionalAnnotationNameParameter(other.nameAnnotation);
-        this.idAnnotation = new OptionalAnnotationNameParameter(other.idAnnotation);
+        this.nameAnnotation = new OptionalTextAnnotationNameParameter(other.nameAnnotation);
+        this.idAnnotation = new OptionalTextAnnotationNameParameter(other.idAnnotation);
         this.annotationMergeMode = other.annotationMergeMode;
     }
 
@@ -114,12 +114,12 @@ public class AnnotateOMEROImageReferenceAlgorithm extends JIPipeSingleIterationA
     @SetJIPipeDocumentation(name = "Annotate with image name", description = "Optional annotation type where the image title is written.")
     @JIPipeParameter("name-annotation")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
-    public OptionalAnnotationNameParameter getNameAnnotation() {
+    public OptionalTextAnnotationNameParameter getNameAnnotation() {
         return nameAnnotation;
     }
 
     @JIPipeParameter("name-annotation")
-    public void setNameAnnotation(OptionalAnnotationNameParameter nameAnnotation) {
+    public void setNameAnnotation(OptionalTextAnnotationNameParameter nameAnnotation) {
         this.nameAnnotation = nameAnnotation;
     }
 
@@ -137,12 +137,12 @@ public class AnnotateOMEROImageReferenceAlgorithm extends JIPipeSingleIterationA
 
     @SetJIPipeDocumentation(name = "Annotate with OMERO image ID", description = "If enabled, adds the OMERO image ID as annotation")
     @JIPipeParameter("id-annotation")
-    public OptionalAnnotationNameParameter getIdAnnotation() {
+    public OptionalTextAnnotationNameParameter getIdAnnotation() {
         return idAnnotation;
     }
 
     @JIPipeParameter("id-annotation")
-    public void setIdAnnotation(OptionalAnnotationNameParameter idAnnotation) {
+    public void setIdAnnotation(OptionalTextAnnotationNameParameter idAnnotation) {
         this.idAnnotation = idAnnotation;
     }
 

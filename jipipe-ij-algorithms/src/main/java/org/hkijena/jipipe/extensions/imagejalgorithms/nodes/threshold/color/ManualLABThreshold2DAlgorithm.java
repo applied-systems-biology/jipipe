@@ -21,7 +21,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.utils.LABLightnessTrackBac
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorLABData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.library.ranges.IntNumberRangeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.ranges.NumberRangeInvertedMode;
 import org.hkijena.jipipe.extensions.parameters.library.ranges.NumberRangeParameterSettings;
@@ -39,12 +39,12 @@ public class ManualLABThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
     private IntNumberRangeParameter lightnessThreshold = new IntNumberRangeParameter(0, 256);
     private IntNumberRangeParameter greenRedThreshold = new IntNumberRangeParameter(0, 256);
     private IntNumberRangeParameter blueYellowThreshold = new IntNumberRangeParameter(0, 256);
-    private OptionalAnnotationNameParameter minLightnessThresholdAnnotation = new OptionalAnnotationNameParameter("Min Threshold L", true);
-    private OptionalAnnotationNameParameter maxLightnessThresholdAnnotation = new OptionalAnnotationNameParameter("Max Threshold L", true);
-    private OptionalAnnotationNameParameter minGreenRedThresholdAnnotation = new OptionalAnnotationNameParameter("Min Threshold a", true);
-    private OptionalAnnotationNameParameter maxGreenRedThresholdAnnotation = new OptionalAnnotationNameParameter("Max Threshold a", true);
-    private OptionalAnnotationNameParameter minBlueYellowThresholdAnnotation = new OptionalAnnotationNameParameter("Min Threshold B", true);
-    private OptionalAnnotationNameParameter maxBlueYellowThresholdAnnotation = new OptionalAnnotationNameParameter("Max Threshold B", true);
+    private OptionalTextAnnotationNameParameter minLightnessThresholdAnnotation = new OptionalTextAnnotationNameParameter("Min Threshold L", true);
+    private OptionalTextAnnotationNameParameter maxLightnessThresholdAnnotation = new OptionalTextAnnotationNameParameter("Max Threshold L", true);
+    private OptionalTextAnnotationNameParameter minGreenRedThresholdAnnotation = new OptionalTextAnnotationNameParameter("Min Threshold a", true);
+    private OptionalTextAnnotationNameParameter maxGreenRedThresholdAnnotation = new OptionalTextAnnotationNameParameter("Max Threshold a", true);
+    private OptionalTextAnnotationNameParameter minBlueYellowThresholdAnnotation = new OptionalTextAnnotationNameParameter("Min Threshold B", true);
+    private OptionalTextAnnotationNameParameter maxBlueYellowThresholdAnnotation = new OptionalTextAnnotationNameParameter("Max Threshold B", true);
     private JIPipeTextAnnotationMergeMode thresholdAnnotationStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
 
@@ -57,12 +57,12 @@ public class ManualLABThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.lightnessThreshold = new IntNumberRangeParameter(other.lightnessThreshold);
         this.greenRedThreshold = new IntNumberRangeParameter(other.greenRedThreshold);
         this.blueYellowThreshold = new IntNumberRangeParameter(other.blueYellowThreshold);
-        this.minLightnessThresholdAnnotation = new OptionalAnnotationNameParameter(other.minLightnessThresholdAnnotation);
-        this.maxLightnessThresholdAnnotation = new OptionalAnnotationNameParameter(other.maxLightnessThresholdAnnotation);
-        this.minGreenRedThresholdAnnotation = new OptionalAnnotationNameParameter(other.minGreenRedThresholdAnnotation);
-        this.maxGreenRedThresholdAnnotation = new OptionalAnnotationNameParameter(other.maxGreenRedThresholdAnnotation);
-        this.minBlueYellowThresholdAnnotation = new OptionalAnnotationNameParameter(other.minBlueYellowThresholdAnnotation);
-        this.maxBlueYellowThresholdAnnotation = new OptionalAnnotationNameParameter(other.maxBlueYellowThresholdAnnotation);
+        this.minLightnessThresholdAnnotation = new OptionalTextAnnotationNameParameter(other.minLightnessThresholdAnnotation);
+        this.maxLightnessThresholdAnnotation = new OptionalTextAnnotationNameParameter(other.maxLightnessThresholdAnnotation);
+        this.minGreenRedThresholdAnnotation = new OptionalTextAnnotationNameParameter(other.minGreenRedThresholdAnnotation);
+        this.maxGreenRedThresholdAnnotation = new OptionalTextAnnotationNameParameter(other.maxGreenRedThresholdAnnotation);
+        this.minBlueYellowThresholdAnnotation = new OptionalTextAnnotationNameParameter(other.minBlueYellowThresholdAnnotation);
+        this.maxBlueYellowThresholdAnnotation = new OptionalTextAnnotationNameParameter(other.maxBlueYellowThresholdAnnotation);
         this.thresholdAnnotationStrategy = other.thresholdAnnotationStrategy;
     }
 
@@ -151,67 +151,67 @@ public class ManualLABThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
 
     @SetJIPipeDocumentation(name = "Min threshold annotation (R)", description = "If enabled, annotate with the min red threshold")
     @JIPipeParameter("annotate-min-red")
-    public OptionalAnnotationNameParameter getMinLightnessThresholdAnnotation() {
+    public OptionalTextAnnotationNameParameter getMinLightnessThresholdAnnotation() {
         return minLightnessThresholdAnnotation;
     }
 
     @JIPipeParameter("annotate-min-red")
-    public void setMinLightnessThresholdAnnotation(OptionalAnnotationNameParameter minLightnessThresholdAnnotation) {
+    public void setMinLightnessThresholdAnnotation(OptionalTextAnnotationNameParameter minLightnessThresholdAnnotation) {
         this.minLightnessThresholdAnnotation = minLightnessThresholdAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Max threshold annotation (R)", description = "If enabled, annotate with the max red threshold")
     @JIPipeParameter("annotate-max-red")
-    public OptionalAnnotationNameParameter getMaxLightnessThresholdAnnotation() {
+    public OptionalTextAnnotationNameParameter getMaxLightnessThresholdAnnotation() {
         return maxLightnessThresholdAnnotation;
     }
 
     @JIPipeParameter("annotate-max-red")
-    public void setMaxLightnessThresholdAnnotation(OptionalAnnotationNameParameter maxLightnessThresholdAnnotation) {
+    public void setMaxLightnessThresholdAnnotation(OptionalTextAnnotationNameParameter maxLightnessThresholdAnnotation) {
         this.maxLightnessThresholdAnnotation = maxLightnessThresholdAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Min threshold annotation (G)", description = "If enabled, annotate with the min green threshold")
     @JIPipeParameter("annotate-min-green")
-    public OptionalAnnotationNameParameter getMinGreenRedThresholdAnnotation() {
+    public OptionalTextAnnotationNameParameter getMinGreenRedThresholdAnnotation() {
         return minGreenRedThresholdAnnotation;
     }
 
     @JIPipeParameter("annotate-min-green")
-    public void setMinGreenRedThresholdAnnotation(OptionalAnnotationNameParameter minGreenRedThresholdAnnotation) {
+    public void setMinGreenRedThresholdAnnotation(OptionalTextAnnotationNameParameter minGreenRedThresholdAnnotation) {
         this.minGreenRedThresholdAnnotation = minGreenRedThresholdAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Max threshold annotation (G)", description = "If enabled, annotate with the max green threshold")
     @JIPipeParameter("annotate-max-green")
-    public OptionalAnnotationNameParameter getMaxGreenRedThresholdAnnotation() {
+    public OptionalTextAnnotationNameParameter getMaxGreenRedThresholdAnnotation() {
         return maxGreenRedThresholdAnnotation;
     }
 
     @JIPipeParameter("annotate-max-green")
-    public void setMaxGreenRedThresholdAnnotation(OptionalAnnotationNameParameter maxGreenRedThresholdAnnotation) {
+    public void setMaxGreenRedThresholdAnnotation(OptionalTextAnnotationNameParameter maxGreenRedThresholdAnnotation) {
         this.maxGreenRedThresholdAnnotation = maxGreenRedThresholdAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Min threshold annotation (B)", description = "If enabled, annotate with the min blue threshold")
     @JIPipeParameter("annotate-min-blue")
-    public OptionalAnnotationNameParameter getMinBlueYellowThresholdAnnotation() {
+    public OptionalTextAnnotationNameParameter getMinBlueYellowThresholdAnnotation() {
         return minBlueYellowThresholdAnnotation;
     }
 
     @JIPipeParameter("annotate-min-blue")
-    public void setMinBlueYellowThresholdAnnotation(OptionalAnnotationNameParameter minBlueYellowThresholdAnnotation) {
+    public void setMinBlueYellowThresholdAnnotation(OptionalTextAnnotationNameParameter minBlueYellowThresholdAnnotation) {
         this.minBlueYellowThresholdAnnotation = minBlueYellowThresholdAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Max threshold annotation (B)", description = "If enabled, annotate with the max blue threshold")
     @JIPipeParameter("annotate-max-blue")
-    public OptionalAnnotationNameParameter getMaxBlueYellowThresholdAnnotation() {
+    public OptionalTextAnnotationNameParameter getMaxBlueYellowThresholdAnnotation() {
         return maxBlueYellowThresholdAnnotation;
     }
 
     @JIPipeParameter("annotate-max-blue")
-    public void setMaxBlueYellowThresholdAnnotation(OptionalAnnotationNameParameter maxBlueYellowThresholdAnnotation) {
+    public void setMaxBlueYellowThresholdAnnotation(OptionalTextAnnotationNameParameter maxBlueYellowThresholdAnnotation) {
         this.maxBlueYellowThresholdAnnotation = maxBlueYellowThresholdAnnotation;
     }
 

@@ -50,7 +50,7 @@ public @interface AddJIPipeInputSlot {
      * If true, {@link JIPipeGraphNode} automatically configures its slots based on annotations (unless a custom {@link org.hkijena.jipipe.api.data.JIPipeSlotConfiguration}
      * is provided.
      *
-     * @return if auto-configuration is enabled
+     * @return if autoconfiguration is enabled
      */
     boolean create() default false;
 

@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,10 +46,10 @@ import java.util.List;
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Stacks to Image")
 public class StackTo2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private OptionalAnnotationNameParameter annotationIndex = new OptionalAnnotationNameParameter("Index", false);
-    private OptionalAnnotationNameParameter annotationZ = new OptionalAnnotationNameParameter("Z", true);
-    private OptionalAnnotationNameParameter annotationC = new OptionalAnnotationNameParameter("C", true);
-    private OptionalAnnotationNameParameter annotationT = new OptionalAnnotationNameParameter("T", true);
+    private OptionalTextAnnotationNameParameter annotationIndex = new OptionalTextAnnotationNameParameter("Index", false);
+    private OptionalTextAnnotationNameParameter annotationZ = new OptionalTextAnnotationNameParameter("Z", true);
+    private OptionalTextAnnotationNameParameter annotationC = new OptionalTextAnnotationNameParameter("C", true);
+    private OptionalTextAnnotationNameParameter annotationT = new OptionalTextAnnotationNameParameter("T", true);
 
     /**
      * Instantiates a new node type.
@@ -67,10 +67,10 @@ public class StackTo2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      */
     public StackTo2DAlgorithm(StackTo2DAlgorithm other) {
         super(other);
-        this.annotationC = new OptionalAnnotationNameParameter(other.annotationC);
-        this.annotationZ = new OptionalAnnotationNameParameter(other.annotationZ);
-        this.annotationT = new OptionalAnnotationNameParameter(other.annotationT);
-        this.annotationIndex = new OptionalAnnotationNameParameter(other.annotationIndex);
+        this.annotationC = new OptionalTextAnnotationNameParameter(other.annotationC);
+        this.annotationZ = new OptionalTextAnnotationNameParameter(other.annotationZ);
+        this.annotationT = new OptionalTextAnnotationNameParameter(other.annotationT);
+        this.annotationIndex = new OptionalTextAnnotationNameParameter(other.annotationIndex);
     }
 
     @Override
@@ -100,45 +100,45 @@ public class StackTo2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Annotate with index", description = "If enabled, annotate the output plane with the index inside the image.")
     @JIPipeParameter("annotation-index")
-    public OptionalAnnotationNameParameter getAnnotationIndex() {
+    public OptionalTextAnnotationNameParameter getAnnotationIndex() {
         return annotationIndex;
     }
 
     @JIPipeParameter("annotation-index")
-    public void setAnnotationIndex(OptionalAnnotationNameParameter annotationIndex) {
+    public void setAnnotationIndex(OptionalTextAnnotationNameParameter annotationIndex) {
         this.annotationIndex = annotationIndex;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with Z position", description = "If enabled, annotate the output plane with the Z position of the plane (first is zero).")
     @JIPipeParameter("annotation-z")
-    public OptionalAnnotationNameParameter getAnnotationZ() {
+    public OptionalTextAnnotationNameParameter getAnnotationZ() {
         return annotationZ;
     }
 
     @JIPipeParameter("annotation-z")
-    public void setAnnotationZ(OptionalAnnotationNameParameter annotationZ) {
+    public void setAnnotationZ(OptionalTextAnnotationNameParameter annotationZ) {
         this.annotationZ = annotationZ;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with channel", description = "If enabled, annotate the output plane with the channel (C) position of the plane (first is zero).")
     @JIPipeParameter("annotation-c")
-    public OptionalAnnotationNameParameter getAnnotationC() {
+    public OptionalTextAnnotationNameParameter getAnnotationC() {
         return annotationC;
     }
 
     @JIPipeParameter("annotation-c")
-    public void setAnnotationC(OptionalAnnotationNameParameter annotationC) {
+    public void setAnnotationC(OptionalTextAnnotationNameParameter annotationC) {
         this.annotationC = annotationC;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with frame", description = "If enabled, annotate the output plane with the frame (T) position of the plane (first is zero).")
     @JIPipeParameter("annotation-t")
-    public OptionalAnnotationNameParameter getAnnotationT() {
+    public OptionalTextAnnotationNameParameter getAnnotationT() {
         return annotationT;
     }
 
     @JIPipeParameter("annotation-t")
-    public void setAnnotationT(OptionalAnnotationNameParameter annotationT) {
+    public void setAnnotationT(OptionalTextAnnotationNameParameter annotationT) {
         this.annotationT = annotationT;
     }
 }

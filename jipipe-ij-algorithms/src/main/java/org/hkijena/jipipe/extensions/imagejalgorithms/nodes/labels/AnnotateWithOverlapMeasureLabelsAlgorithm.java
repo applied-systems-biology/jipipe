@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,12 +55,12 @@ import java.util.List;
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nAnalyze", aliasName = "Label Overlap Measures (to annotations)")
 public class AnnotateWithOverlapMeasureLabelsAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private OptionalAnnotationNameParameter totalOverlapAnnotation = new OptionalAnnotationNameParameter("Total overlap", false);
-    private OptionalAnnotationNameParameter jaccardIndexAnnotation = new OptionalAnnotationNameParameter("Jaccard index", false);
-    private OptionalAnnotationNameParameter diceCoefficientAnnotation = new OptionalAnnotationNameParameter("Dice coefficient", true);
-    private OptionalAnnotationNameParameter volumeSimilarityAnnotation = new OptionalAnnotationNameParameter("Volume similarity", false);
-    private OptionalAnnotationNameParameter falseNegativeErrorAnnotation = new OptionalAnnotationNameParameter("False negative error", false);
-    private OptionalAnnotationNameParameter falsePositiveErrorAnnotation = new OptionalAnnotationNameParameter("False positive error", false);
+    private OptionalTextAnnotationNameParameter totalOverlapAnnotation = new OptionalTextAnnotationNameParameter("Total overlap", false);
+    private OptionalTextAnnotationNameParameter jaccardIndexAnnotation = new OptionalTextAnnotationNameParameter("Jaccard index", false);
+    private OptionalTextAnnotationNameParameter diceCoefficientAnnotation = new OptionalTextAnnotationNameParameter("Dice coefficient", true);
+    private OptionalTextAnnotationNameParameter volumeSimilarityAnnotation = new OptionalTextAnnotationNameParameter("Volume similarity", false);
+    private OptionalTextAnnotationNameParameter falseNegativeErrorAnnotation = new OptionalTextAnnotationNameParameter("False negative error", false);
+    private OptionalTextAnnotationNameParameter falsePositiveErrorAnnotation = new OptionalTextAnnotationNameParameter("False positive error", false);
 
     public AnnotateWithOverlapMeasureLabelsAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -68,77 +68,77 @@ public class AnnotateWithOverlapMeasureLabelsAlgorithm extends JIPipeIteratingAl
 
     public AnnotateWithOverlapMeasureLabelsAlgorithm(AnnotateWithOverlapMeasureLabelsAlgorithm other) {
         super(other);
-        this.totalOverlapAnnotation = new OptionalAnnotationNameParameter(other.totalOverlapAnnotation);
-        this.jaccardIndexAnnotation = new OptionalAnnotationNameParameter(other.jaccardIndexAnnotation);
-        this.diceCoefficientAnnotation = new OptionalAnnotationNameParameter(other.diceCoefficientAnnotation);
-        this.volumeSimilarityAnnotation = new OptionalAnnotationNameParameter(other.volumeSimilarityAnnotation);
-        this.falseNegativeErrorAnnotation = new OptionalAnnotationNameParameter(other.falseNegativeErrorAnnotation);
-        this.falsePositiveErrorAnnotation = new OptionalAnnotationNameParameter(other.falsePositiveErrorAnnotation);
+        this.totalOverlapAnnotation = new OptionalTextAnnotationNameParameter(other.totalOverlapAnnotation);
+        this.jaccardIndexAnnotation = new OptionalTextAnnotationNameParameter(other.jaccardIndexAnnotation);
+        this.diceCoefficientAnnotation = new OptionalTextAnnotationNameParameter(other.diceCoefficientAnnotation);
+        this.volumeSimilarityAnnotation = new OptionalTextAnnotationNameParameter(other.volumeSimilarityAnnotation);
+        this.falseNegativeErrorAnnotation = new OptionalTextAnnotationNameParameter(other.falseNegativeErrorAnnotation);
+        this.falsePositiveErrorAnnotation = new OptionalTextAnnotationNameParameter(other.falsePositiveErrorAnnotation);
     }
 
     @SetJIPipeDocumentation(name = "Calculate total overlap", description = "If enabled, the total overlap will be annotated to the data.")
     @JIPipeParameter("total-overlap-annotation")
-    public OptionalAnnotationNameParameter getTotalOverlapAnnotation() {
+    public OptionalTextAnnotationNameParameter getTotalOverlapAnnotation() {
         return totalOverlapAnnotation;
     }
 
     @JIPipeParameter("total-overlap-annotation")
-    public void setTotalOverlapAnnotation(OptionalAnnotationNameParameter totalOverlapAnnotation) {
+    public void setTotalOverlapAnnotation(OptionalTextAnnotationNameParameter totalOverlapAnnotation) {
         this.totalOverlapAnnotation = totalOverlapAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Calculate Jaccard Index", description = "If enabled, the Jaccard Index will be annotated to the data.")
     @JIPipeParameter("jaccard-index-annotation")
-    public OptionalAnnotationNameParameter getJaccardIndexAnnotation() {
+    public OptionalTextAnnotationNameParameter getJaccardIndexAnnotation() {
         return jaccardIndexAnnotation;
     }
 
     @JIPipeParameter("jaccard-index-annotation")
-    public void setJaccardIndexAnnotation(OptionalAnnotationNameParameter jaccardIndexAnnotation) {
+    public void setJaccardIndexAnnotation(OptionalTextAnnotationNameParameter jaccardIndexAnnotation) {
         this.jaccardIndexAnnotation = jaccardIndexAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Calculate Dice Coefficient", description = "If enabled, the Dice Coefficient will be annotated to the data.")
     @JIPipeParameter("dice-coefficient-annotation")
-    public OptionalAnnotationNameParameter getDiceCoefficientAnnotation() {
+    public OptionalTextAnnotationNameParameter getDiceCoefficientAnnotation() {
         return diceCoefficientAnnotation;
     }
 
     @JIPipeParameter("dice-coefficient-annotation")
-    public void setDiceCoefficientAnnotation(OptionalAnnotationNameParameter diceCoefficientAnnotation) {
+    public void setDiceCoefficientAnnotation(OptionalTextAnnotationNameParameter diceCoefficientAnnotation) {
         this.diceCoefficientAnnotation = diceCoefficientAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Calculate volume similarity", description = "If enabled, the volume similarity will be annotated to the data.")
     @JIPipeParameter("volume-similarity-annotation")
-    public OptionalAnnotationNameParameter getVolumeSimilarityAnnotation() {
+    public OptionalTextAnnotationNameParameter getVolumeSimilarityAnnotation() {
         return volumeSimilarityAnnotation;
     }
 
     @JIPipeParameter("volume-similarity-annotation")
-    public void setVolumeSimilarityAnnotation(OptionalAnnotationNameParameter volumeSimilarityAnnotation) {
+    public void setVolumeSimilarityAnnotation(OptionalTextAnnotationNameParameter volumeSimilarityAnnotation) {
         this.volumeSimilarityAnnotation = volumeSimilarityAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Calculate false negative error", description = "If enabled, the false negative error will be annotated to the data.")
     @JIPipeParameter("false-negative-error-annotation")
-    public OptionalAnnotationNameParameter getFalseNegativeErrorAnnotation() {
+    public OptionalTextAnnotationNameParameter getFalseNegativeErrorAnnotation() {
         return falseNegativeErrorAnnotation;
     }
 
     @JIPipeParameter("false-negative-error-annotation")
-    public void setFalseNegativeErrorAnnotation(OptionalAnnotationNameParameter falseNegativeErrorAnnotation) {
+    public void setFalseNegativeErrorAnnotation(OptionalTextAnnotationNameParameter falseNegativeErrorAnnotation) {
         this.falseNegativeErrorAnnotation = falseNegativeErrorAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Calculate false positive error", description = "If enabled, the false positive error will be annotated to the data.")
     @JIPipeParameter("false-positive-error-annotation")
-    public OptionalAnnotationNameParameter getFalsePositiveErrorAnnotation() {
+    public OptionalTextAnnotationNameParameter getFalsePositiveErrorAnnotation() {
         return falsePositiveErrorAnnotation;
     }
 
     @JIPipeParameter("false-positive-error-annotation")
-    public void setFalsePositiveErrorAnnotation(OptionalAnnotationNameParameter falsePositiveErrorAnnotation) {
+    public void setFalsePositiveErrorAnnotation(OptionalTextAnnotationNameParameter falsePositiveErrorAnnotation) {
         this.falsePositiveErrorAnnotation = falsePositiveErrorAnnotation;
     }
 

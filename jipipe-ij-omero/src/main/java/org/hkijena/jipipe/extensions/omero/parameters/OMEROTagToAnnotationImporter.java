@@ -12,14 +12,14 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.util.List;
 import java.util.Set;
 
 public class OMEROTagToAnnotationImporter extends AbstractJIPipeParameterCollection {
-    private OptionalAnnotationNameParameter tagsToListAnnotation = new OptionalAnnotationNameParameter("OMERO:Tags", true);
+    private OptionalTextAnnotationNameParameter tagsToListAnnotation = new OptionalTextAnnotationNameParameter("OMERO:Tags", true);
     private StringQueryExpression tagsToListFilter = new StringQueryExpression("true");
 
     public OMEROTagToAnnotationImporter() {
@@ -28,18 +28,18 @@ public class OMEROTagToAnnotationImporter extends AbstractJIPipeParameterCollect
 
     public OMEROTagToAnnotationImporter(OMEROTagToAnnotationImporter other) {
         this.tagsToListFilter = new StringQueryExpression(other.tagsToListFilter);
-        this.tagsToListAnnotation = new OptionalAnnotationNameParameter(other.tagsToListAnnotation);
+        this.tagsToListAnnotation = new OptionalTextAnnotationNameParameter(other.tagsToListAnnotation);
     }
 
     @SetJIPipeDocumentation(name = "Convert tags into single annotation", description = "If enabled, write all tag names into a single annotation (as list). " +
             "The name of the annotation is determined by the value of this parameter")
     @JIPipeParameter("tags-to-list-annotation")
-    public OptionalAnnotationNameParameter getTagsToListAnnotation() {
+    public OptionalTextAnnotationNameParameter getTagsToListAnnotation() {
         return tagsToListAnnotation;
     }
 
     @JIPipeParameter("tags-to-list-annotation")
-    public void setTagsToListAnnotation(OptionalAnnotationNameParameter tagsToListAnnotation) {
+    public void setTagsToListAnnotation(OptionalTextAnnotationNameParameter tagsToListAnnotation) {
         this.tagsToListAnnotation = tagsToListAnnotation;
     }
 

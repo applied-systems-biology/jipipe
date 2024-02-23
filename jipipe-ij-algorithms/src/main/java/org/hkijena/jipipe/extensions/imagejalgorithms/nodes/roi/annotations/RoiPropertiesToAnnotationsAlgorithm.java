@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.utils.ColorUtils;
 
 import java.util.ArrayList;
@@ -41,16 +41,16 @@ import java.util.List;
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class RoiPropertiesToAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private OptionalAnnotationNameParameter countAnnotation = new OptionalAnnotationNameParameter("Count", true);
-    private OptionalAnnotationNameParameter nameAnnotation = new OptionalAnnotationNameParameter("Name", false);
-    private OptionalAnnotationNameParameter locationXAnnotation = new OptionalAnnotationNameParameter("X", false);
-    private OptionalAnnotationNameParameter locationYAnnotation = new OptionalAnnotationNameParameter("Y", false);
-    private OptionalAnnotationNameParameter locationZAnnotation = new OptionalAnnotationNameParameter("Z", false);
-    private OptionalAnnotationNameParameter locationCAnnotation = new OptionalAnnotationNameParameter("C", false);
-    private OptionalAnnotationNameParameter locationTAnnotation = new OptionalAnnotationNameParameter("T", false);
-    private OptionalAnnotationNameParameter fillColorAnnotation = new OptionalAnnotationNameParameter("Fill color", false);
-    private OptionalAnnotationNameParameter lineColorAnnotation = new OptionalAnnotationNameParameter("Line color", false);
-    private OptionalAnnotationNameParameter lineWidthAnnotation = new OptionalAnnotationNameParameter("Line width", false);
+    private OptionalTextAnnotationNameParameter countAnnotation = new OptionalTextAnnotationNameParameter("Count", true);
+    private OptionalTextAnnotationNameParameter nameAnnotation = new OptionalTextAnnotationNameParameter("Name", false);
+    private OptionalTextAnnotationNameParameter locationXAnnotation = new OptionalTextAnnotationNameParameter("X", false);
+    private OptionalTextAnnotationNameParameter locationYAnnotation = new OptionalTextAnnotationNameParameter("Y", false);
+    private OptionalTextAnnotationNameParameter locationZAnnotation = new OptionalTextAnnotationNameParameter("Z", false);
+    private OptionalTextAnnotationNameParameter locationCAnnotation = new OptionalTextAnnotationNameParameter("C", false);
+    private OptionalTextAnnotationNameParameter locationTAnnotation = new OptionalTextAnnotationNameParameter("T", false);
+    private OptionalTextAnnotationNameParameter fillColorAnnotation = new OptionalTextAnnotationNameParameter("Fill color", false);
+    private OptionalTextAnnotationNameParameter lineColorAnnotation = new OptionalTextAnnotationNameParameter("Line color", false);
+    private OptionalTextAnnotationNameParameter lineWidthAnnotation = new OptionalTextAnnotationNameParameter("Line width", false);
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
     private boolean deduplicate = false;
     private boolean onlyFirst = false;
@@ -61,16 +61,16 @@ public class RoiPropertiesToAnnotationsAlgorithm extends JIPipeSimpleIteratingAl
 
     public RoiPropertiesToAnnotationsAlgorithm(RoiPropertiesToAnnotationsAlgorithm other) {
         super(other);
-        this.countAnnotation = new OptionalAnnotationNameParameter(other.countAnnotation);
-        this.nameAnnotation = new OptionalAnnotationNameParameter(other.nameAnnotation);
-        this.locationXAnnotation = new OptionalAnnotationNameParameter(other.locationXAnnotation);
-        this.locationYAnnotation = new OptionalAnnotationNameParameter(other.locationYAnnotation);
-        this.locationZAnnotation = new OptionalAnnotationNameParameter(other.locationZAnnotation);
-        this.locationCAnnotation = new OptionalAnnotationNameParameter(other.locationCAnnotation);
-        this.locationTAnnotation = new OptionalAnnotationNameParameter(other.locationTAnnotation);
-        this.fillColorAnnotation = new OptionalAnnotationNameParameter(other.fillColorAnnotation);
-        this.lineColorAnnotation = new OptionalAnnotationNameParameter(other.lineColorAnnotation);
-        this.lineWidthAnnotation = new OptionalAnnotationNameParameter(other.lineWidthAnnotation);
+        this.countAnnotation = new OptionalTextAnnotationNameParameter(other.countAnnotation);
+        this.nameAnnotation = new OptionalTextAnnotationNameParameter(other.nameAnnotation);
+        this.locationXAnnotation = new OptionalTextAnnotationNameParameter(other.locationXAnnotation);
+        this.locationYAnnotation = new OptionalTextAnnotationNameParameter(other.locationYAnnotation);
+        this.locationZAnnotation = new OptionalTextAnnotationNameParameter(other.locationZAnnotation);
+        this.locationCAnnotation = new OptionalTextAnnotationNameParameter(other.locationCAnnotation);
+        this.locationTAnnotation = new OptionalTextAnnotationNameParameter(other.locationTAnnotation);
+        this.fillColorAnnotation = new OptionalTextAnnotationNameParameter(other.fillColorAnnotation);
+        this.lineColorAnnotation = new OptionalTextAnnotationNameParameter(other.lineColorAnnotation);
+        this.lineWidthAnnotation = new OptionalTextAnnotationNameParameter(other.lineWidthAnnotation);
         this.annotationMergeStrategy = other.annotationMergeStrategy;
         this.deduplicate = other.deduplicate;
         this.onlyFirst = other.onlyFirst;
@@ -136,111 +136,111 @@ public class RoiPropertiesToAnnotationsAlgorithm extends JIPipeSimpleIteratingAl
 
     @SetJIPipeDocumentation(name = "Annotate with list size", description = "Adds the size of the ROI list as annotation")
     @JIPipeParameter("count-annotation")
-    public OptionalAnnotationNameParameter getCountAnnotation() {
+    public OptionalTextAnnotationNameParameter getCountAnnotation() {
         return countAnnotation;
     }
 
     @JIPipeParameter("count-annotation")
-    public void setCountAnnotation(OptionalAnnotationNameParameter countAnnotation) {
+    public void setCountAnnotation(OptionalTextAnnotationNameParameter countAnnotation) {
         this.countAnnotation = countAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with names", description = "Adds the ROI names as annotation")
     @JIPipeParameter("name-annotation")
-    public OptionalAnnotationNameParameter getNameAnnotation() {
+    public OptionalTextAnnotationNameParameter getNameAnnotation() {
         return nameAnnotation;
     }
 
     @JIPipeParameter("name-annotation")
-    public void setNameAnnotation(OptionalAnnotationNameParameter nameAnnotation) {
+    public void setNameAnnotation(OptionalTextAnnotationNameParameter nameAnnotation) {
         this.nameAnnotation = nameAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with X locations", description = "Adds the ROI X locations (top left corner) as annotation")
     @JIPipeParameter("x-annotation")
-    public OptionalAnnotationNameParameter getLocationXAnnotation() {
+    public OptionalTextAnnotationNameParameter getLocationXAnnotation() {
         return locationXAnnotation;
     }
 
     @JIPipeParameter("x-annotation")
-    public void setLocationXAnnotation(OptionalAnnotationNameParameter locationXAnnotation) {
+    public void setLocationXAnnotation(OptionalTextAnnotationNameParameter locationXAnnotation) {
         this.locationXAnnotation = locationXAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with Y locations", description = "Adds the ROI Y locations (top left corner) as annotation")
     @JIPipeParameter("y-annotation")
-    public OptionalAnnotationNameParameter getLocationYAnnotation() {
+    public OptionalTextAnnotationNameParameter getLocationYAnnotation() {
         return locationYAnnotation;
     }
 
     @JIPipeParameter("y-annotation")
-    public void setLocationYAnnotation(OptionalAnnotationNameParameter locationYAnnotation) {
+    public void setLocationYAnnotation(OptionalTextAnnotationNameParameter locationYAnnotation) {
         this.locationYAnnotation = locationYAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with Z locations", description = "Adds the ROI Z locations as annotation. The first index is 1. A value of 0 indicates that the ROI is located on all planes.")
     @JIPipeParameter("z-annotation")
-    public OptionalAnnotationNameParameter getLocationZAnnotation() {
+    public OptionalTextAnnotationNameParameter getLocationZAnnotation() {
         return locationZAnnotation;
     }
 
     @JIPipeParameter("z-annotation")
-    public void setLocationZAnnotation(OptionalAnnotationNameParameter locationZAnnotation) {
+    public void setLocationZAnnotation(OptionalTextAnnotationNameParameter locationZAnnotation) {
         this.locationZAnnotation = locationZAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with C locations", description = "Adds the ROI C locations as annotation. The first index is 1. A value of 0 indicates that the ROI is located on all planes.")
     @JIPipeParameter("c-annotation")
-    public OptionalAnnotationNameParameter getLocationCAnnotation() {
+    public OptionalTextAnnotationNameParameter getLocationCAnnotation() {
         return locationCAnnotation;
     }
 
     @JIPipeParameter("c-annotation")
-    public void setLocationCAnnotation(OptionalAnnotationNameParameter locationCAnnotation) {
+    public void setLocationCAnnotation(OptionalTextAnnotationNameParameter locationCAnnotation) {
         this.locationCAnnotation = locationCAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with T locations", description = "Adds the ROI T locations as annotation. The first index is 1. A value of 0 indicates that the ROI is located on all planes.")
     @JIPipeParameter("t-annotation")
-    public OptionalAnnotationNameParameter getLocationTAnnotation() {
+    public OptionalTextAnnotationNameParameter getLocationTAnnotation() {
         return locationTAnnotation;
     }
 
     @JIPipeParameter("t-annotation")
-    public void setLocationTAnnotation(OptionalAnnotationNameParameter locationTAnnotation) {
+    public void setLocationTAnnotation(OptionalTextAnnotationNameParameter locationTAnnotation) {
         this.locationTAnnotation = locationTAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with fill colors", description = "Adds the ROI fill colors as annotation. No annotation is generated if the fill color is not explicitly set.")
     @JIPipeParameter("fill-color-annotation")
-    public OptionalAnnotationNameParameter getFillColorAnnotation() {
+    public OptionalTextAnnotationNameParameter getFillColorAnnotation() {
         return fillColorAnnotation;
     }
 
     @JIPipeParameter("fill-color-annotation")
-    public void setFillColorAnnotation(OptionalAnnotationNameParameter fillColorAnnotation) {
+    public void setFillColorAnnotation(OptionalTextAnnotationNameParameter fillColorAnnotation) {
         this.fillColorAnnotation = fillColorAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with line colors", description = "Adds the ROI line colors as annotation. No annotation is generated if the fill color is not explicitly set.")
     @JIPipeParameter("line-color-annotation")
-    public OptionalAnnotationNameParameter getLineColorAnnotation() {
+    public OptionalTextAnnotationNameParameter getLineColorAnnotation() {
         return lineColorAnnotation;
     }
 
     @JIPipeParameter("line-color-annotation")
-    public void setLineColorAnnotation(OptionalAnnotationNameParameter lineColorAnnotation) {
+    public void setLineColorAnnotation(OptionalTextAnnotationNameParameter lineColorAnnotation) {
         this.lineColorAnnotation = lineColorAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with line widths", description = "Adds the ROI line widths as annotation. 0 if not explicity set.")
     @JIPipeParameter("line-width-annotation")
-    public OptionalAnnotationNameParameter getLineWidthAnnotation() {
+    public OptionalTextAnnotationNameParameter getLineWidthAnnotation() {
         return lineWidthAnnotation;
     }
 
     @JIPipeParameter("line-width-annotation")
-    public void setLineWidthAnnotation(OptionalAnnotationNameParameter lineWidthAnnotation) {
+    public void setLineWidthAnnotation(OptionalTextAnnotationNameParameter lineWidthAnnotation) {
         this.lineWidthAnnotation = lineWidthAnnotation;
     }
 

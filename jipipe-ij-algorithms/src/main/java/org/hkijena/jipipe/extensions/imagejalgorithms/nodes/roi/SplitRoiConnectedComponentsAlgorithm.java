@@ -39,7 +39,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.jgrapht.Graphs;
@@ -58,7 +58,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
     private DimensionOperation dimensionZOperation = DimensionOperation.Split;
     private DimensionOperation dimensionCOperation = DimensionOperation.Merge;
     private DimensionOperation dimensionTOperation = DimensionOperation.Follow;
-    private OptionalAnnotationNameParameter componentNameAnnotation = new OptionalAnnotationNameParameter("Component", true);
+    private OptionalTextAnnotationNameParameter componentNameAnnotation = new OptionalTextAnnotationNameParameter("Component", true);
     private JIPipeExpressionParameter overlapFilter = new JIPipeExpressionParameter();
     private ImageStatisticsSetParameter overlapFilterMeasurements = new ImageStatisticsSetParameter();
     private JIPipeExpressionParameter graphPostprocessing = new JIPipeExpressionParameter();
@@ -76,7 +76,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
         this.dimensionZOperation = other.dimensionZOperation;
         this.dimensionCOperation = other.dimensionCOperation;
         this.dimensionTOperation = other.dimensionTOperation;
-        this.componentNameAnnotation = new OptionalAnnotationNameParameter(other.componentNameAnnotation);
+        this.componentNameAnnotation = new OptionalTextAnnotationNameParameter(other.componentNameAnnotation);
         this.overlapFilter = new JIPipeExpressionParameter(other.overlapFilter);
         this.overlapFilterMeasurements = new ImageStatisticsSetParameter(other.overlapFilterMeasurements);
         this.splitAtJunctions = other.splitAtJunctions;
@@ -423,12 +423,12 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
 
     @SetJIPipeDocumentation(name = "Annotate with component", description = "If enabled, an annotation with the numeric component index is generated.")
     @JIPipeParameter("component-name-annotation")
-    public OptionalAnnotationNameParameter getComponentNameAnnotation() {
+    public OptionalTextAnnotationNameParameter getComponentNameAnnotation() {
         return componentNameAnnotation;
     }
 
     @JIPipeParameter("component-name-annotation")
-    public void setComponentNameAnnotation(OptionalAnnotationNameParameter componentNameAnnotation) {
+    public void setComponentNameAnnotation(OptionalTextAnnotationNameParameter componentNameAnnotation) {
         this.componentNameAnnotation = componentNameAnnotation;
     }
 

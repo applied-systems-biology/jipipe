@@ -21,7 +21,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.utils.WhiteToRedTrackBackg
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorHSBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.library.ranges.IntNumberRangeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.ranges.NumberRangeInvertedMode;
 import org.hkijena.jipipe.extensions.parameters.library.ranges.NumberRangeParameterSettings;
@@ -39,12 +39,12 @@ public class ManualHSBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
     private IntNumberRangeParameter hueThreshold = new IntNumberRangeParameter(0, 256);
     private IntNumberRangeParameter brightnessThreshold = new IntNumberRangeParameter(0, 256);
     private IntNumberRangeParameter saturationThreshold = new IntNumberRangeParameter(0, 256);
-    private OptionalAnnotationNameParameter minHueThresholdAnnotation = new OptionalAnnotationNameParameter("Min Threshold H", true);
-    private OptionalAnnotationNameParameter maxHueThresholdAnnotation = new OptionalAnnotationNameParameter("Max Threshold H", true);
-    private OptionalAnnotationNameParameter minBrightnessThresholdAnnotation = new OptionalAnnotationNameParameter("Min Threshold B", true);
-    private OptionalAnnotationNameParameter maxBrightnessThresholdAnnotation = new OptionalAnnotationNameParameter("Max Threshold B", true);
-    private OptionalAnnotationNameParameter minSaturationThresholdAnnotation = new OptionalAnnotationNameParameter("Min Threshold S", true);
-    private OptionalAnnotationNameParameter maxSaturationThresholdAnnotation = new OptionalAnnotationNameParameter("Max Threshold S", true);
+    private OptionalTextAnnotationNameParameter minHueThresholdAnnotation = new OptionalTextAnnotationNameParameter("Min Threshold H", true);
+    private OptionalTextAnnotationNameParameter maxHueThresholdAnnotation = new OptionalTextAnnotationNameParameter("Max Threshold H", true);
+    private OptionalTextAnnotationNameParameter minBrightnessThresholdAnnotation = new OptionalTextAnnotationNameParameter("Min Threshold B", true);
+    private OptionalTextAnnotationNameParameter maxBrightnessThresholdAnnotation = new OptionalTextAnnotationNameParameter("Max Threshold B", true);
+    private OptionalTextAnnotationNameParameter minSaturationThresholdAnnotation = new OptionalTextAnnotationNameParameter("Min Threshold S", true);
+    private OptionalTextAnnotationNameParameter maxSaturationThresholdAnnotation = new OptionalTextAnnotationNameParameter("Max Threshold S", true);
     private JIPipeTextAnnotationMergeMode thresholdAnnotationStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
 
@@ -57,12 +57,12 @@ public class ManualHSBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.hueThreshold = new IntNumberRangeParameter(other.hueThreshold);
         this.brightnessThreshold = new IntNumberRangeParameter(other.brightnessThreshold);
         this.saturationThreshold = new IntNumberRangeParameter(other.saturationThreshold);
-        this.minHueThresholdAnnotation = new OptionalAnnotationNameParameter(other.minHueThresholdAnnotation);
-        this.maxHueThresholdAnnotation = new OptionalAnnotationNameParameter(other.maxHueThresholdAnnotation);
-        this.minBrightnessThresholdAnnotation = new OptionalAnnotationNameParameter(other.minBrightnessThresholdAnnotation);
-        this.maxBrightnessThresholdAnnotation = new OptionalAnnotationNameParameter(other.maxBrightnessThresholdAnnotation);
-        this.minSaturationThresholdAnnotation = new OptionalAnnotationNameParameter(other.minSaturationThresholdAnnotation);
-        this.maxSaturationThresholdAnnotation = new OptionalAnnotationNameParameter(other.maxSaturationThresholdAnnotation);
+        this.minHueThresholdAnnotation = new OptionalTextAnnotationNameParameter(other.minHueThresholdAnnotation);
+        this.maxHueThresholdAnnotation = new OptionalTextAnnotationNameParameter(other.maxHueThresholdAnnotation);
+        this.minBrightnessThresholdAnnotation = new OptionalTextAnnotationNameParameter(other.minBrightnessThresholdAnnotation);
+        this.maxBrightnessThresholdAnnotation = new OptionalTextAnnotationNameParameter(other.maxBrightnessThresholdAnnotation);
+        this.minSaturationThresholdAnnotation = new OptionalTextAnnotationNameParameter(other.minSaturationThresholdAnnotation);
+        this.maxSaturationThresholdAnnotation = new OptionalTextAnnotationNameParameter(other.maxSaturationThresholdAnnotation);
         this.thresholdAnnotationStrategy = other.thresholdAnnotationStrategy;
     }
 
@@ -151,67 +151,67 @@ public class ManualHSBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
 
     @SetJIPipeDocumentation(name = "Min threshold annotation (H)", description = "If enabled, annotate with the min hue threshold")
     @JIPipeParameter("annotate-min-hue")
-    public OptionalAnnotationNameParameter getMinHueThresholdAnnotation() {
+    public OptionalTextAnnotationNameParameter getMinHueThresholdAnnotation() {
         return minHueThresholdAnnotation;
     }
 
     @JIPipeParameter("annotate-min-hue")
-    public void setMinHueThresholdAnnotation(OptionalAnnotationNameParameter minHueThresholdAnnotation) {
+    public void setMinHueThresholdAnnotation(OptionalTextAnnotationNameParameter minHueThresholdAnnotation) {
         this.minHueThresholdAnnotation = minHueThresholdAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Max threshold annotation (H)", description = "If enabled, annotate with the max hue threshold")
     @JIPipeParameter("annotate-max-hue")
-    public OptionalAnnotationNameParameter getMaxHueThresholdAnnotation() {
+    public OptionalTextAnnotationNameParameter getMaxHueThresholdAnnotation() {
         return maxHueThresholdAnnotation;
     }
 
     @JIPipeParameter("annotate-max-hue")
-    public void setMaxHueThresholdAnnotation(OptionalAnnotationNameParameter maxHueThresholdAnnotation) {
+    public void setMaxHueThresholdAnnotation(OptionalTextAnnotationNameParameter maxHueThresholdAnnotation) {
         this.maxHueThresholdAnnotation = maxHueThresholdAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Min threshold annotation (B)", description = "If enabled, annotate with the min brightness threshold")
     @JIPipeParameter("annotate-min-brightness")
-    public OptionalAnnotationNameParameter getMinBrightnessThresholdAnnotation() {
+    public OptionalTextAnnotationNameParameter getMinBrightnessThresholdAnnotation() {
         return minBrightnessThresholdAnnotation;
     }
 
     @JIPipeParameter("annotate-min-brightness")
-    public void setMinBrightnessThresholdAnnotation(OptionalAnnotationNameParameter minBrightnessThresholdAnnotation) {
+    public void setMinBrightnessThresholdAnnotation(OptionalTextAnnotationNameParameter minBrightnessThresholdAnnotation) {
         this.minBrightnessThresholdAnnotation = minBrightnessThresholdAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Max threshold annotation (B)", description = "If enabled, annotate with the max brightness threshold")
     @JIPipeParameter("annotate-max-brightness")
-    public OptionalAnnotationNameParameter getMaxBrightnessThresholdAnnotation() {
+    public OptionalTextAnnotationNameParameter getMaxBrightnessThresholdAnnotation() {
         return maxBrightnessThresholdAnnotation;
     }
 
     @JIPipeParameter("annotate-max-brightness")
-    public void setMaxBrightnessThresholdAnnotation(OptionalAnnotationNameParameter maxBrightnessThresholdAnnotation) {
+    public void setMaxBrightnessThresholdAnnotation(OptionalTextAnnotationNameParameter maxBrightnessThresholdAnnotation) {
         this.maxBrightnessThresholdAnnotation = maxBrightnessThresholdAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Min threshold annotation (S)", description = "If enabled, annotate with the min saturation threshold")
     @JIPipeParameter("annotate-min-saturation")
-    public OptionalAnnotationNameParameter getMinSaturationThresholdAnnotation() {
+    public OptionalTextAnnotationNameParameter getMinSaturationThresholdAnnotation() {
         return minSaturationThresholdAnnotation;
     }
 
     @JIPipeParameter("annotate-min-saturation")
-    public void setMinSaturationThresholdAnnotation(OptionalAnnotationNameParameter minSaturationThresholdAnnotation) {
+    public void setMinSaturationThresholdAnnotation(OptionalTextAnnotationNameParameter minSaturationThresholdAnnotation) {
         this.minSaturationThresholdAnnotation = minSaturationThresholdAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Max threshold annotation (S)", description = "If enabled, annotate with the max saturation threshold")
     @JIPipeParameter("annotate-max-saturation")
-    public OptionalAnnotationNameParameter getMaxSaturationThresholdAnnotation() {
+    public OptionalTextAnnotationNameParameter getMaxSaturationThresholdAnnotation() {
         return maxSaturationThresholdAnnotation;
     }
 
     @JIPipeParameter("annotate-max-saturation")
-    public void setMaxSaturationThresholdAnnotation(OptionalAnnotationNameParameter maxSaturationThresholdAnnotation) {
+    public void setMaxSaturationThresholdAnnotation(OptionalTextAnnotationNameParameter maxSaturationThresholdAnnotation) {
         this.maxSaturationThresholdAnnotation = maxSaturationThresholdAnnotation;
     }
 

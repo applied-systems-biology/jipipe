@@ -39,7 +39,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 
 import java.util.ArrayList;
@@ -59,7 +59,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private AutoThresholder.Method method = AutoThresholder.Method.Default;
     private boolean darkBackground = true;
-    private OptionalAnnotationNameParameter thresholdAnnotation = new OptionalAnnotationNameParameter("Threshold", true);
+    private OptionalTextAnnotationNameParameter thresholdAnnotation = new OptionalTextAnnotationNameParameter("Threshold", true);
     private SliceThresholdMode thresholdMode = SliceThresholdMode.ApplyPerSlice;
 
     private JIPipeExpressionParameter thresholdCombinationExpression = new JIPipeExpressionParameter("MIN(thresholds)");
@@ -83,7 +83,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
         super(other);
         this.method = other.method;
         this.darkBackground = other.darkBackground;
-        this.thresholdAnnotation = new OptionalAnnotationNameParameter(other.thresholdAnnotation);
+        this.thresholdAnnotation = new OptionalTextAnnotationNameParameter(other.thresholdAnnotation);
         this.thresholdMode = other.thresholdMode;
         this.thresholdCombinationExpression = new JIPipeExpressionParameter(other.thresholdCombinationExpression);
         this.sourceArea = other.sourceArea;
@@ -248,12 +248,12 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Threshold annotation", description = "Puts the generated threshold(s) into an annotation.")
     @JIPipeParameter("threshold-annotation")
-    public OptionalAnnotationNameParameter getThresholdAnnotation() {
+    public OptionalTextAnnotationNameParameter getThresholdAnnotation() {
         return thresholdAnnotation;
     }
 
     @JIPipeParameter("threshold-annotation")
-    public void setThresholdAnnotation(OptionalAnnotationNameParameter thresholdAnnotation) {
+    public void setThresholdAnnotation(OptionalTextAnnotationNameParameter thresholdAnnotation) {
         this.thresholdAnnotation = thresholdAnnotation;
     }
 

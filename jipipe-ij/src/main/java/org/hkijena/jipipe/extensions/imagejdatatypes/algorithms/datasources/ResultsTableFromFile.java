@@ -31,7 +31,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -55,7 +55,7 @@ public class ResultsTableFromFile extends JIPipeSimpleIteratingAlgorithm {
     private StringList sheets = new StringList();
 
     private boolean ignoreMissingSheets = true;
-    private OptionalAnnotationNameParameter sheetNameAnnotation = new OptionalAnnotationNameParameter("Sheet", true);
+    private OptionalTextAnnotationNameParameter sheetNameAnnotation = new OptionalTextAnnotationNameParameter("Sheet", true);
 
     /**
      * @param info algorithm info
@@ -69,7 +69,7 @@ public class ResultsTableFromFile extends JIPipeSimpleIteratingAlgorithm {
         this.fileFormat = other.fileFormat;
         this.sheets = new StringList(other.sheets);
         this.ignoreMissingSheets = other.ignoreMissingSheets;
-        this.sheetNameAnnotation = new OptionalAnnotationNameParameter(other.sheetNameAnnotation);
+        this.sheetNameAnnotation = new OptionalTextAnnotationNameParameter(other.sheetNameAnnotation);
     }
 
     @Override
@@ -155,12 +155,12 @@ public class ResultsTableFromFile extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Annotate with sheet name", description = "If enabled, the tables are annotated with the sheet names. No annotation is generated for file formats without sheets (e.g., CSV).")
     @JIPipeParameter("sheet-name-annotation")
-    public OptionalAnnotationNameParameter getSheetNameAnnotation() {
+    public OptionalTextAnnotationNameParameter getSheetNameAnnotation() {
         return sheetNameAnnotation;
     }
 
     @JIPipeParameter("sheet-name-annotation")
-    public void setSheetNameAnnotation(OptionalAnnotationNameParameter sheetNameAnnotation) {
+    public void setSheetNameAnnotation(OptionalTextAnnotationNameParameter sheetNameAnnotation) {
         this.sheetNameAnnotation = sheetNameAnnotation;
     }
 

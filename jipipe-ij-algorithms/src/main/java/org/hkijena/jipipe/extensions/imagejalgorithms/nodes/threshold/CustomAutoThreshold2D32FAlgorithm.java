@@ -44,7 +44,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -64,7 +64,7 @@ import java.util.Set;
 public class CustomAutoThreshold2D32FAlgorithm extends JIPipeIteratingAlgorithm {
 
     private JIPipeExpressionParameter thresholdCalculationExpression = new JIPipeExpressionParameter("(stat_max + stat_min) / 2");
-    private OptionalAnnotationNameParameter thresholdAnnotation = new OptionalAnnotationNameParameter("Threshold", true);
+    private OptionalTextAnnotationNameParameter thresholdAnnotation = new OptionalTextAnnotationNameParameter("Threshold", true);
     private AutoThreshold2DAlgorithm.SliceThresholdMode thresholdMode = AutoThreshold2DAlgorithm.SliceThresholdMode.ApplyPerSlice;
 
     private JIPipeExpressionParameter thresholdCombinationExpression = new JIPipeExpressionParameter("MIN(thresholds)");
@@ -89,7 +89,7 @@ public class CustomAutoThreshold2D32FAlgorithm extends JIPipeIteratingAlgorithm 
     public CustomAutoThreshold2D32FAlgorithm(CustomAutoThreshold2D32FAlgorithm other) {
         super(other);
         this.thresholdCalculationExpression = new JIPipeExpressionParameter(other.thresholdCalculationExpression);
-        this.thresholdAnnotation = new OptionalAnnotationNameParameter(other.thresholdAnnotation);
+        this.thresholdAnnotation = new OptionalTextAnnotationNameParameter(other.thresholdAnnotation);
         this.thresholdMode = other.thresholdMode;
         this.thresholdCombinationExpression = new JIPipeExpressionParameter(other.thresholdCombinationExpression);
         this.sourceArea = other.sourceArea;
@@ -323,12 +323,12 @@ public class CustomAutoThreshold2D32FAlgorithm extends JIPipeIteratingAlgorithm 
 
     @SetJIPipeDocumentation(name = "Threshold annotation", description = "Puts the generated threshold(s) into an annotation.")
     @JIPipeParameter("threshold-annotation")
-    public OptionalAnnotationNameParameter getThresholdAnnotation() {
+    public OptionalTextAnnotationNameParameter getThresholdAnnotation() {
         return thresholdAnnotation;
     }
 
     @JIPipeParameter("threshold-annotation")
-    public void setThresholdAnnotation(OptionalAnnotationNameParameter thresholdAnnotation) {
+    public void setThresholdAnnotation(OptionalTextAnnotationNameParameter thresholdAnnotation) {
         this.thresholdAnnotation = thresholdAnnotation;
     }
 

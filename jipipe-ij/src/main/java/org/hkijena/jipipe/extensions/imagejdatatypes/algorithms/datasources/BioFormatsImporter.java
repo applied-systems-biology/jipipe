@@ -43,7 +43,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEColorMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIHandler;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.IntegerList;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.library.roi.RectangleList;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
@@ -79,8 +79,8 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
     private boolean stitchTiles;
     private boolean autoScale = true;
     private boolean extractRois = true;
-    private OptionalAnnotationNameParameter titleAnnotation = new OptionalAnnotationNameParameter("Image title", false);
-    private OptionalAnnotationNameParameter seriesAnnotation = new OptionalAnnotationNameParameter("Series", true);
+    private OptionalTextAnnotationNameParameter titleAnnotation = new OptionalTextAnnotationNameParameter("Image title", false);
+    private OptionalTextAnnotationNameParameter seriesAnnotation = new OptionalTextAnnotationNameParameter("Series", true);
     private RectangleList cropRegions = new RectangleList();
     private boolean openAllSeries = false;
     private IntegerList seriesToImport = new IntegerList();
@@ -111,11 +111,11 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
         this.stitchTiles = other.stitchTiles;
         this.autoScale = other.autoScale;
         this.cropRegions = new RectangleList(other.cropRegions);
-        this.titleAnnotation = new OptionalAnnotationNameParameter(other.titleAnnotation);
+        this.titleAnnotation = new OptionalTextAnnotationNameParameter(other.titleAnnotation);
         this.extractRois = other.extractRois;
         this.openAllSeries = other.openAllSeries;
         this.seriesToImport = new IntegerList(other.seriesToImport);
-        this.seriesAnnotation = new OptionalAnnotationNameParameter(other.seriesAnnotation);
+        this.seriesAnnotation = new OptionalTextAnnotationNameParameter(other.seriesAnnotation);
     }
 
     @Override
@@ -352,12 +352,12 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Annotate with title", description = "Optional annotation type where the image title is written.")
     @JIPipeParameter("title-annotation")
-    public OptionalAnnotationNameParameter getTitleAnnotation() {
+    public OptionalTextAnnotationNameParameter getTitleAnnotation() {
         return titleAnnotation;
     }
 
     @JIPipeParameter("title-annotation")
-    public void setTitleAnnotation(OptionalAnnotationNameParameter titleAnnotation) {
+    public void setTitleAnnotation(OptionalTextAnnotationNameParameter titleAnnotation) {
         this.titleAnnotation = titleAnnotation;
     }
 
@@ -398,12 +398,12 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
     @SetJIPipeDocumentation(name = "Annotate with series", description = "If enabled, attempt to extract the series number (starting with 1) from the last part of the image title. " +
             "The algorithm will take a look at the end of the title and expects a string '#[series]'. If none could be found, 1 will be returned.")
     @JIPipeParameter("series-annotation")
-    public OptionalAnnotationNameParameter getSeriesAnnotation() {
+    public OptionalTextAnnotationNameParameter getSeriesAnnotation() {
         return seriesAnnotation;
     }
 
     @JIPipeParameter("series-annotation")
-    public void setSeriesAnnotation(OptionalAnnotationNameParameter seriesAnnotation) {
+    public void setSeriesAnnotation(OptionalTextAnnotationNameParameter seriesAnnotation) {
         this.seriesAnnotation = seriesAnnotation;
     }
 

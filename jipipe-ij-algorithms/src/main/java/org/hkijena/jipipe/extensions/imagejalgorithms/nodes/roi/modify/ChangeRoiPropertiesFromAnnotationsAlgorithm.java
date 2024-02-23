@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.utils.ColorUtils;
 
 /**
@@ -39,18 +39,18 @@ import org.hkijena.jipipe.utils.ColorUtils;
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class ChangeRoiPropertiesFromAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private OptionalAnnotationNameParameter roiName = new OptionalAnnotationNameParameter();
-    private OptionalAnnotationNameParameter positionX = new OptionalAnnotationNameParameter();
-    private OptionalAnnotationNameParameter positionY = new OptionalAnnotationNameParameter();
-    private OptionalAnnotationNameParameter positionZ = new OptionalAnnotationNameParameter();
-    private OptionalAnnotationNameParameter positionC = new OptionalAnnotationNameParameter();
-    private OptionalAnnotationNameParameter positionT = new OptionalAnnotationNameParameter();
-    private OptionalAnnotationNameParameter fillColor = new OptionalAnnotationNameParameter();
-    private OptionalAnnotationNameParameter lineColor = new OptionalAnnotationNameParameter();
-    private OptionalAnnotationNameParameter lineWidth = new OptionalAnnotationNameParameter();
-    private OptionalAnnotationNameParameter scaleX = new OptionalAnnotationNameParameter();
-    private OptionalAnnotationNameParameter scaleY = new OptionalAnnotationNameParameter();
-    private OptionalAnnotationNameParameter centerScale = new OptionalAnnotationNameParameter();
+    private OptionalTextAnnotationNameParameter roiName = new OptionalTextAnnotationNameParameter();
+    private OptionalTextAnnotationNameParameter positionX = new OptionalTextAnnotationNameParameter();
+    private OptionalTextAnnotationNameParameter positionY = new OptionalTextAnnotationNameParameter();
+    private OptionalTextAnnotationNameParameter positionZ = new OptionalTextAnnotationNameParameter();
+    private OptionalTextAnnotationNameParameter positionC = new OptionalTextAnnotationNameParameter();
+    private OptionalTextAnnotationNameParameter positionT = new OptionalTextAnnotationNameParameter();
+    private OptionalTextAnnotationNameParameter fillColor = new OptionalTextAnnotationNameParameter();
+    private OptionalTextAnnotationNameParameter lineColor = new OptionalTextAnnotationNameParameter();
+    private OptionalTextAnnotationNameParameter lineWidth = new OptionalTextAnnotationNameParameter();
+    private OptionalTextAnnotationNameParameter scaleX = new OptionalTextAnnotationNameParameter();
+    private OptionalTextAnnotationNameParameter scaleY = new OptionalTextAnnotationNameParameter();
+    private OptionalTextAnnotationNameParameter centerScale = new OptionalTextAnnotationNameParameter();
 
     /**
      * Instantiates a new node type.
@@ -68,18 +68,18 @@ public class ChangeRoiPropertiesFromAnnotationsAlgorithm extends JIPipeSimpleIte
      */
     public ChangeRoiPropertiesFromAnnotationsAlgorithm(ChangeRoiPropertiesFromAnnotationsAlgorithm other) {
         super(other);
-        this.positionX = new OptionalAnnotationNameParameter(other.positionX);
-        this.positionY = new OptionalAnnotationNameParameter(other.positionY);
-        this.positionZ = new OptionalAnnotationNameParameter(other.positionZ);
-        this.positionC = new OptionalAnnotationNameParameter(other.positionC);
-        this.positionT = new OptionalAnnotationNameParameter(other.positionT);
-        this.fillColor = new OptionalAnnotationNameParameter(other.fillColor);
-        this.lineColor = new OptionalAnnotationNameParameter(other.lineColor);
-        this.lineWidth = new OptionalAnnotationNameParameter(other.lineWidth);
-        this.roiName = new OptionalAnnotationNameParameter(other.roiName);
-        this.scaleX = new OptionalAnnotationNameParameter(other.scaleX);
-        this.scaleY = new OptionalAnnotationNameParameter(other.scaleY);
-        this.centerScale = new OptionalAnnotationNameParameter(other.centerScale);
+        this.positionX = new OptionalTextAnnotationNameParameter(other.positionX);
+        this.positionY = new OptionalTextAnnotationNameParameter(other.positionY);
+        this.positionZ = new OptionalTextAnnotationNameParameter(other.positionZ);
+        this.positionC = new OptionalTextAnnotationNameParameter(other.positionC);
+        this.positionT = new OptionalTextAnnotationNameParameter(other.positionT);
+        this.fillColor = new OptionalTextAnnotationNameParameter(other.fillColor);
+        this.lineColor = new OptionalTextAnnotationNameParameter(other.lineColor);
+        this.lineWidth = new OptionalTextAnnotationNameParameter(other.lineWidth);
+        this.roiName = new OptionalTextAnnotationNameParameter(other.roiName);
+        this.scaleX = new OptionalTextAnnotationNameParameter(other.scaleX);
+        this.scaleY = new OptionalTextAnnotationNameParameter(other.scaleY);
+        this.centerScale = new OptionalTextAnnotationNameParameter(other.centerScale);
     }
 
     @Override
@@ -137,35 +137,35 @@ public class ChangeRoiPropertiesFromAnnotationsAlgorithm extends JIPipeSimpleIte
 
     @SetJIPipeDocumentation(name = "Location (X)", description = "The X location. The annotation value is converted to an integer.")
     @JIPipeParameter("position-x")
-    public OptionalAnnotationNameParameter getPositionX() {
+    public OptionalTextAnnotationNameParameter getPositionX() {
         return positionX;
     }
 
     @JIPipeParameter("position-x")
-    public void setPositionX(OptionalAnnotationNameParameter positionX) {
+    public void setPositionX(OptionalTextAnnotationNameParameter positionX) {
         this.positionX = positionX;
     }
 
     @SetJIPipeDocumentation(name = "Location (Y)", description = "The Y location. The annotation value is converted to an integer.")
     @JIPipeParameter("position-y")
-    public OptionalAnnotationNameParameter getPositionY() {
+    public OptionalTextAnnotationNameParameter getPositionY() {
         return positionY;
     }
 
     @JIPipeParameter("position-y")
-    public void setPositionY(OptionalAnnotationNameParameter positionY) {
+    public void setPositionY(OptionalTextAnnotationNameParameter positionY) {
         this.positionY = positionY;
     }
 
     @SetJIPipeDocumentation(name = "Slice position (Z)", description = "Allows to relocate the ROI to a different Z-position. " +
             "The first index is 1. If set to zero, the ROI is located on all slices. The annotation value is converted to an integer.")
     @JIPipeParameter("position-z")
-    public OptionalAnnotationNameParameter getPositionZ() {
+    public OptionalTextAnnotationNameParameter getPositionZ() {
         return positionZ;
     }
 
     @JIPipeParameter("position-z")
-    public void setPositionZ(OptionalAnnotationNameParameter positionZ) {
+    public void setPositionZ(OptionalTextAnnotationNameParameter positionZ) {
         this.positionZ = positionZ;
     }
 
@@ -173,101 +173,101 @@ public class ChangeRoiPropertiesFromAnnotationsAlgorithm extends JIPipeSimpleIte
             "that 'Channel' refers to an image slice and not to a pixel channel. " +
             "The first index is 1. If set to zero, the ROI is located on all channels. The annotation value is converted to an integer.")
     @JIPipeParameter("position-c")
-    public OptionalAnnotationNameParameter getPositionC() {
+    public OptionalTextAnnotationNameParameter getPositionC() {
         return positionC;
     }
 
     @JIPipeParameter("position-c")
-    public void setPositionC(OptionalAnnotationNameParameter positionC) {
+    public void setPositionC(OptionalTextAnnotationNameParameter positionC) {
         this.positionC = positionC;
     }
 
     @SetJIPipeDocumentation(name = "Slice position (Frame)", description = "Allows to relocate the ROI to a different frame/time-position. " +
             "The first index is 1. If set to zero, the ROI is located on all frames. The annotation value is converted to an integer.")
     @JIPipeParameter("position-t")
-    public OptionalAnnotationNameParameter getPositionT() {
+    public OptionalTextAnnotationNameParameter getPositionT() {
         return positionT;
     }
 
     @JIPipeParameter("position-t")
-    public void setPositionT(OptionalAnnotationNameParameter positionT) {
+    public void setPositionT(OptionalTextAnnotationNameParameter positionT) {
         this.positionT = positionT;
     }
 
     @SetJIPipeDocumentation(name = "Fill color", description = "Allows to change the fill color when rendered as RGB and within ImageJ. " + ColorUtils.PARSE_COLOR_DESCRIPTION)
     @JIPipeParameter("fill-color")
-    public OptionalAnnotationNameParameter getFillColor() {
+    public OptionalTextAnnotationNameParameter getFillColor() {
         return fillColor;
     }
 
     @JIPipeParameter("fill-color")
-    public void setFillColor(OptionalAnnotationNameParameter fillColor) {
+    public void setFillColor(OptionalTextAnnotationNameParameter fillColor) {
         this.fillColor = fillColor;
     }
 
     @SetJIPipeDocumentation(name = "Line color", description = "Allows to change the line color when rendered as RGB and within ImageJ. " + ColorUtils.PARSE_COLOR_DESCRIPTION)
     @JIPipeParameter("line-color")
-    public OptionalAnnotationNameParameter getLineColor() {
+    public OptionalTextAnnotationNameParameter getLineColor() {
         return lineColor;
     }
 
     @JIPipeParameter("line-color")
-    public void setLineColor(OptionalAnnotationNameParameter lineColor) {
+    public void setLineColor(OptionalTextAnnotationNameParameter lineColor) {
         this.lineColor = lineColor;
     }
 
     @SetJIPipeDocumentation(name = "Line width", description = "Allows to change the line width when rendered as RGB and within ImageJ. The annotation value is converted to an integer.")
     @JIPipeParameter("line-width")
-    public OptionalAnnotationNameParameter getLineWidth() {
+    public OptionalTextAnnotationNameParameter getLineWidth() {
         return lineWidth;
     }
 
     @JIPipeParameter("line-width")
-    public void setLineWidth(OptionalAnnotationNameParameter lineWidth) {
+    public void setLineWidth(OptionalTextAnnotationNameParameter lineWidth) {
         this.lineWidth = lineWidth;
     }
 
     @SetJIPipeDocumentation(name = "ROI name", description = "Allows to change the ROI name")
     @JIPipeParameter("roi-name")
-    public OptionalAnnotationNameParameter getRoiName() {
+    public OptionalTextAnnotationNameParameter getRoiName() {
         return roiName;
     }
 
     @JIPipeParameter("roi-name")
-    public void setRoiName(OptionalAnnotationNameParameter roiName) {
+    public void setRoiName(OptionalTextAnnotationNameParameter roiName) {
         this.roiName = roiName;
     }
 
     @SetJIPipeDocumentation(name = "Scale X", description = "Allows to scale the ROI. Please note that the scale will not be saved inside the ROI. Must be a number.")
     @JIPipeParameter("scale-x")
-    public OptionalAnnotationNameParameter getScaleX() {
+    public OptionalTextAnnotationNameParameter getScaleX() {
         return scaleX;
     }
 
     @JIPipeParameter("scale-x")
-    public void setScaleX(OptionalAnnotationNameParameter scaleX) {
+    public void setScaleX(OptionalTextAnnotationNameParameter scaleX) {
         this.scaleX = scaleX;
     }
 
     @SetJIPipeDocumentation(name = "Scale Y", description = "Allows to scale the ROI. Please note that the scale will not be saved inside the ROI. Must be a number.")
     @JIPipeParameter("scale-y")
-    public OptionalAnnotationNameParameter getScaleY() {
+    public OptionalTextAnnotationNameParameter getScaleY() {
         return scaleY;
     }
 
     @JIPipeParameter("scale-y")
-    public void setScaleY(OptionalAnnotationNameParameter scaleY) {
+    public void setScaleY(OptionalTextAnnotationNameParameter scaleY) {
         this.scaleY = scaleY;
     }
 
     @SetJIPipeDocumentation(name = "Center scale", description = "If the annotation is true, each ROI is scaled relative to its center. Defaults to false. Must be true or false")
     @JIPipeParameter("center-scale")
-    public OptionalAnnotationNameParameter getCenterScale() {
+    public OptionalTextAnnotationNameParameter getCenterScale() {
         return centerScale;
     }
 
     @JIPipeParameter("center-scale")
-    public void setCenterScale(OptionalAnnotationNameParameter centerScale) {
+    public void setCenterScale(OptionalTextAnnotationNameParameter centerScale) {
         this.centerScale = centerScale;
     }
 }

@@ -19,7 +19,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.transform.TileImage2
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.transform.UnTileImage2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 import trainableSegmentation.WekaSegmentation;
@@ -61,20 +61,20 @@ public class WekaClassification2DAlgorithm extends JIPipeIteratingAlgorithm {
         tileImage2DAlgorithm.setTileSizeX(tilingSettings.getTileSizeX());
         tileImage2DAlgorithm.setTileSizeY(tilingSettings.getTileSizeY());
         tileImage2DAlgorithm.setBorderMode(tilingSettings.getBorderMode());
-        tileImage2DAlgorithm.setTileInsetXAnnotation(new OptionalAnnotationNameParameter("inset_x", true));
-        tileImage2DAlgorithm.setTileInsetYAnnotation(new OptionalAnnotationNameParameter("inset_y", true));
-        tileImage2DAlgorithm.setTileRealXAnnotation(new OptionalAnnotationNameParameter("real_x", true));
-        tileImage2DAlgorithm.setTileRealYAnnotation(new OptionalAnnotationNameParameter("real_y", true));
-        tileImage2DAlgorithm.setImageWidthAnnotation(new OptionalAnnotationNameParameter("img_width", true));
-        tileImage2DAlgorithm.setImageHeightAnnotation(new OptionalAnnotationNameParameter("img_height", true));
+        tileImage2DAlgorithm.setTileInsetXAnnotation(new OptionalTextAnnotationNameParameter("inset_x", true));
+        tileImage2DAlgorithm.setTileInsetYAnnotation(new OptionalTextAnnotationNameParameter("inset_y", true));
+        tileImage2DAlgorithm.setTileRealXAnnotation(new OptionalTextAnnotationNameParameter("real_x", true));
+        tileImage2DAlgorithm.setTileRealYAnnotation(new OptionalTextAnnotationNameParameter("real_y", true));
+        tileImage2DAlgorithm.setImageWidthAnnotation(new OptionalTextAnnotationNameParameter("img_width", true));
+        tileImage2DAlgorithm.setImageHeightAnnotation(new OptionalTextAnnotationNameParameter("img_height", true));
 
         UnTileImage2DAlgorithm unTileImage2DAlgorithm = JIPipe.createNode(UnTileImage2DAlgorithm.class);
-        unTileImage2DAlgorithm.setTileInsetXAnnotation(new OptionalAnnotationNameParameter("inset_x", true));
-        unTileImage2DAlgorithm.setTileInsetYAnnotation(new OptionalAnnotationNameParameter("inset_y", true));
-        unTileImage2DAlgorithm.setTileRealXAnnotation(new OptionalAnnotationNameParameter("real_x", true));
-        unTileImage2DAlgorithm.setTileRealYAnnotation(new OptionalAnnotationNameParameter("real_y", true));
-        unTileImage2DAlgorithm.setImageWidthAnnotation(new OptionalAnnotationNameParameter("img_width", true));
-        unTileImage2DAlgorithm.setImageHeightAnnotation(new OptionalAnnotationNameParameter("img_height", true));
+        unTileImage2DAlgorithm.setTileInsetXAnnotation(new OptionalTextAnnotationNameParameter("inset_x", true));
+        unTileImage2DAlgorithm.setTileInsetYAnnotation(new OptionalTextAnnotationNameParameter("inset_y", true));
+        unTileImage2DAlgorithm.setTileRealXAnnotation(new OptionalTextAnnotationNameParameter("real_x", true));
+        unTileImage2DAlgorithm.setTileRealYAnnotation(new OptionalTextAnnotationNameParameter("real_y", true));
+        unTileImage2DAlgorithm.setImageWidthAnnotation(new OptionalTextAnnotationNameParameter("img_width", true));
+        unTileImage2DAlgorithm.setImageHeightAnnotation(new OptionalTextAnnotationNameParameter("img_height", true));
 
         ImageStack stack = new ImageStack(image.getWidth(), image.getHeight(), image.getNSlices() * image.getNChannels() * image.getNChannels());
         try (IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo.resolve("Weka"))) {

@@ -21,7 +21,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.graph.OutputSlotMapParameterCollection;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerRange;
 
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public class SplitByDimensionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private OutputSlotMapParameterCollection outputIndices;
     private HyperstackDimension targetDimension = HyperstackDimension.Channel;
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
-    private OptionalAnnotationNameParameter targetDimensionAnnotation = new OptionalAnnotationNameParameter("Channel", true);
+    private OptionalTextAnnotationNameParameter targetDimensionAnnotation = new OptionalTextAnnotationNameParameter("Channel", true);
 
     public SplitByDimensionAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
@@ -55,7 +55,7 @@ public class SplitByDimensionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         super(other);
 
         this.targetDimension = other.targetDimension;
-        this.targetDimensionAnnotation = new OptionalAnnotationNameParameter(other.targetDimensionAnnotation);
+        this.targetDimensionAnnotation = new OptionalTextAnnotationNameParameter(other.targetDimensionAnnotation);
         outputIndices = new OutputSlotMapParameterCollection(OptionalIntegerRange.class, this, null, false);
         other.outputIndices.copyTo(outputIndices);
         registerSubParameter(outputIndices);
@@ -172,12 +172,12 @@ public class SplitByDimensionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Annotate with split dimension", description = "If enabled, create annotations for the index of the split dimension.")
     @JIPipeParameter("target-dimension-annotation")
-    public OptionalAnnotationNameParameter getTargetDimensionAnnotation() {
+    public OptionalTextAnnotationNameParameter getTargetDimensionAnnotation() {
         return targetDimensionAnnotation;
     }
 
     @JIPipeParameter("target-dimension-annotation")
-    public void setTargetDimensionAnnotation(OptionalAnnotationNameParameter targetDimensionAnnotation) {
+    public void setTargetDimensionAnnotation(OptionalTextAnnotationNameParameter targetDimensionAnnotation) {
         this.targetDimensionAnnotation = targetDimensionAnnotation;
     }
 

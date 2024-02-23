@@ -12,7 +12,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -29,11 +29,11 @@ import java.util.List;
 @AddJIPipeOutputSlot(value = PathData.class, slotName = "Output", create = true)
 public class AnnotateWithPathProperties extends JIPipeSimpleIteratingAlgorithm {
 
-    private OptionalAnnotationNameParameter fileNameAnnotation = new OptionalAnnotationNameParameter("File name", true);
-    private OptionalAnnotationNameParameter parentPathAnnotation = new OptionalAnnotationNameParameter("Parent", true);
-    private OptionalAnnotationNameParameter sizeAnnotation = new OptionalAnnotationNameParameter("Size", true);
-    private OptionalAnnotationNameParameter typeAnnotation = new OptionalAnnotationNameParameter("Type", true);
-    private OptionalAnnotationNameParameter lastModifiedTime = new OptionalAnnotationNameParameter("Last modified", true);
+    private OptionalTextAnnotationNameParameter fileNameAnnotation = new OptionalTextAnnotationNameParameter("File name", true);
+    private OptionalTextAnnotationNameParameter parentPathAnnotation = new OptionalTextAnnotationNameParameter("Parent", true);
+    private OptionalTextAnnotationNameParameter sizeAnnotation = new OptionalTextAnnotationNameParameter("Size", true);
+    private OptionalTextAnnotationNameParameter typeAnnotation = new OptionalTextAnnotationNameParameter("Type", true);
+    private OptionalTextAnnotationNameParameter lastModifiedTime = new OptionalTextAnnotationNameParameter("Last modified", true);
 
 
     public AnnotateWithPathProperties(JIPipeNodeInfo info) {
@@ -42,11 +42,11 @@ public class AnnotateWithPathProperties extends JIPipeSimpleIteratingAlgorithm {
 
     public AnnotateWithPathProperties(AnnotateWithPathProperties other) {
         super(other);
-        this.fileNameAnnotation = new OptionalAnnotationNameParameter(other.fileNameAnnotation);
-        this.parentPathAnnotation = new OptionalAnnotationNameParameter(other.parentPathAnnotation);
-        this.sizeAnnotation = new OptionalAnnotationNameParameter(other.sizeAnnotation);
-        this.typeAnnotation = new OptionalAnnotationNameParameter(other.typeAnnotation);
-        this.lastModifiedTime = new OptionalAnnotationNameParameter(other.lastModifiedTime);
+        this.fileNameAnnotation = new OptionalTextAnnotationNameParameter(other.fileNameAnnotation);
+        this.parentPathAnnotation = new OptionalTextAnnotationNameParameter(other.parentPathAnnotation);
+        this.sizeAnnotation = new OptionalTextAnnotationNameParameter(other.sizeAnnotation);
+        this.typeAnnotation = new OptionalTextAnnotationNameParameter(other.typeAnnotation);
+        this.lastModifiedTime = new OptionalTextAnnotationNameParameter(other.lastModifiedTime);
     }
 
     @Override
@@ -125,56 +125,56 @@ public class AnnotateWithPathProperties extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Annotate with file name", description = "If enabled, a file/directory name annotation is created")
     @JIPipeParameter("file-name-annotation")
-    public OptionalAnnotationNameParameter getFileNameAnnotation() {
+    public OptionalTextAnnotationNameParameter getFileNameAnnotation() {
         return fileNameAnnotation;
     }
 
     @JIPipeParameter("file-name-annotation")
-    public void setFileNameAnnotation(OptionalAnnotationNameParameter fileNameAnnotation) {
+    public void setFileNameAnnotation(OptionalTextAnnotationNameParameter fileNameAnnotation) {
         this.fileNameAnnotation = fileNameAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with parent path", description = "If enabled, a parent path annotation is created")
     @JIPipeParameter("parent-path-annotation")
-    public OptionalAnnotationNameParameter getParentPathAnnotation() {
+    public OptionalTextAnnotationNameParameter getParentPathAnnotation() {
         return parentPathAnnotation;
     }
 
     @JIPipeParameter("parent-path-annotation")
-    public void setParentPathAnnotation(OptionalAnnotationNameParameter parentPathAnnotation) {
+    public void setParentPathAnnotation(OptionalTextAnnotationNameParameter parentPathAnnotation) {
         this.parentPathAnnotation = parentPathAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with size", description = "If enabled, the path is annotated with its size in bytes. For directories, the size of the whole directory is returned.")
     @JIPipeParameter("size-annotation")
-    public OptionalAnnotationNameParameter getSizeAnnotation() {
+    public OptionalTextAnnotationNameParameter getSizeAnnotation() {
         return sizeAnnotation;
     }
 
     @JIPipeParameter("size-annotation")
-    public void setSizeAnnotation(OptionalAnnotationNameParameter sizeAnnotation) {
+    public void setSizeAnnotation(OptionalTextAnnotationNameParameter sizeAnnotation) {
         this.sizeAnnotation = sizeAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with type", description = "If enabled, the path type is annotated. <code>File</code> for files and <code>Directory</code> for directories.")
     @JIPipeParameter("type-annotation")
-    public OptionalAnnotationNameParameter getTypeAnnotation() {
+    public OptionalTextAnnotationNameParameter getTypeAnnotation() {
         return typeAnnotation;
     }
 
     @JIPipeParameter("type-annotation")
-    public void setTypeAnnotation(OptionalAnnotationNameParameter typeAnnotation) {
+    public void setTypeAnnotation(OptionalTextAnnotationNameParameter typeAnnotation) {
         this.typeAnnotation = typeAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with last modification time", description = "If enabled, the path is annotated with its last modification time. The format is ISO 8601: <code>YYYY-MM-DDThh:mm:ss[.s+]Z</code>")
     @JIPipeParameter("last-modified-time-annotation")
-    public OptionalAnnotationNameParameter getLastModifiedTime() {
+    public OptionalTextAnnotationNameParameter getLastModifiedTime() {
         return lastModifiedTime;
     }
 
     @JIPipeParameter("last-modified-time-annotation")
-    public void setLastModifiedTime(OptionalAnnotationNameParameter lastModifiedTime) {
+    public void setLastModifiedTime(OptionalTextAnnotationNameParameter lastModifiedTime) {
         this.lastModifiedTime = lastModifiedTime;
     }
 }

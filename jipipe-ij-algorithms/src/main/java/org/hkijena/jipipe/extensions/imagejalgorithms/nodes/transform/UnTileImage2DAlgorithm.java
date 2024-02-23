@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 
 import java.awt.*;
 import java.util.IdentityHashMap;
@@ -29,17 +29,17 @@ import java.util.Map;
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 public class UnTileImage2DAlgorithm extends JIPipeMergingAlgorithm {
 
-    private OptionalAnnotationNameParameter tileRealXAnnotation = new OptionalAnnotationNameParameter("Original X", true);
+    private OptionalTextAnnotationNameParameter tileRealXAnnotation = new OptionalTextAnnotationNameParameter("Original X", true);
 
-    private OptionalAnnotationNameParameter tileRealYAnnotation = new OptionalAnnotationNameParameter("Original Y", true);
+    private OptionalTextAnnotationNameParameter tileRealYAnnotation = new OptionalTextAnnotationNameParameter("Original Y", true);
 
-    private OptionalAnnotationNameParameter tileInsetXAnnotation = new OptionalAnnotationNameParameter("Inset X", true);
+    private OptionalTextAnnotationNameParameter tileInsetXAnnotation = new OptionalTextAnnotationNameParameter("Inset X", true);
 
-    private OptionalAnnotationNameParameter tileInsetYAnnotation = new OptionalAnnotationNameParameter("Inset Y", true);
+    private OptionalTextAnnotationNameParameter tileInsetYAnnotation = new OptionalTextAnnotationNameParameter("Inset Y", true);
 
-    private OptionalAnnotationNameParameter imageWidthAnnotation = new OptionalAnnotationNameParameter("Original width", true);
+    private OptionalTextAnnotationNameParameter imageWidthAnnotation = new OptionalTextAnnotationNameParameter("Original width", true);
 
-    private OptionalAnnotationNameParameter imageHeightAnnotation = new OptionalAnnotationNameParameter("Original height", true);
+    private OptionalTextAnnotationNameParameter imageHeightAnnotation = new OptionalTextAnnotationNameParameter("Original height", true);
 
     public UnTileImage2DAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -47,12 +47,12 @@ public class UnTileImage2DAlgorithm extends JIPipeMergingAlgorithm {
 
     public UnTileImage2DAlgorithm(UnTileImage2DAlgorithm other) {
         super(other);
-        this.tileRealXAnnotation = new OptionalAnnotationNameParameter(other.tileRealXAnnotation);
-        this.tileRealYAnnotation = new OptionalAnnotationNameParameter(other.tileRealYAnnotation);
-        this.tileInsetXAnnotation = new OptionalAnnotationNameParameter(other.tileInsetXAnnotation);
-        this.tileInsetYAnnotation = new OptionalAnnotationNameParameter(other.tileInsetYAnnotation);
-        this.imageWidthAnnotation = new OptionalAnnotationNameParameter(other.imageWidthAnnotation);
-        this.imageHeightAnnotation = new OptionalAnnotationNameParameter(other.imageHeightAnnotation);
+        this.tileRealXAnnotation = new OptionalTextAnnotationNameParameter(other.tileRealXAnnotation);
+        this.tileRealYAnnotation = new OptionalTextAnnotationNameParameter(other.tileRealYAnnotation);
+        this.tileInsetXAnnotation = new OptionalTextAnnotationNameParameter(other.tileInsetXAnnotation);
+        this.tileInsetYAnnotation = new OptionalTextAnnotationNameParameter(other.tileInsetYAnnotation);
+        this.imageWidthAnnotation = new OptionalTextAnnotationNameParameter(other.imageWidthAnnotation);
+        this.imageHeightAnnotation = new OptionalTextAnnotationNameParameter(other.imageHeightAnnotation);
     }
 
     @Override
@@ -151,67 +151,67 @@ public class UnTileImage2DAlgorithm extends JIPipeMergingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Use original X location", description = "If enabled, use the annotation that contains the original X location. Currently mandatory.")
     @JIPipeParameter("tile-real-x-annotation")
-    public OptionalAnnotationNameParameter getTileRealXAnnotation() {
+    public OptionalTextAnnotationNameParameter getTileRealXAnnotation() {
         return tileRealXAnnotation;
     }
 
     @JIPipeParameter("tile-real-x-annotation")
-    public void setTileRealXAnnotation(OptionalAnnotationNameParameter tileRealXAnnotation) {
+    public void setTileRealXAnnotation(OptionalTextAnnotationNameParameter tileRealXAnnotation) {
         this.tileRealXAnnotation = tileRealXAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Use original Y location", description = "If enabled, use the annotation that contains the original Y location. Currently mandatory.")
     @JIPipeParameter("tile-real-y-annotation")
-    public OptionalAnnotationNameParameter getTileRealYAnnotation() {
+    public OptionalTextAnnotationNameParameter getTileRealYAnnotation() {
         return tileRealYAnnotation;
     }
 
     @JIPipeParameter("tile-real-y-annotation")
-    public void setTileRealYAnnotation(OptionalAnnotationNameParameter tileRealYAnnotation) {
+    public void setTileRealYAnnotation(OptionalTextAnnotationNameParameter tileRealYAnnotation) {
         this.tileRealYAnnotation = tileRealYAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Use original width", description = "If enabled, use the original image width annotation. Otherwise, the output image size is calculated from the tiles.")
     @JIPipeParameter("tile-original-width")
-    public OptionalAnnotationNameParameter getImageWidthAnnotation() {
+    public OptionalTextAnnotationNameParameter getImageWidthAnnotation() {
         return imageWidthAnnotation;
     }
 
     @JIPipeParameter("tile-original-width")
-    public void setImageWidthAnnotation(OptionalAnnotationNameParameter imageWidthAnnotation) {
+    public void setImageWidthAnnotation(OptionalTextAnnotationNameParameter imageWidthAnnotation) {
         this.imageWidthAnnotation = imageWidthAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Use original height", description = "If enabled, use the original image height annotation. Otherwise, the output image size is calculated from the tiles.")
     @JIPipeParameter("tile-original-height")
-    public OptionalAnnotationNameParameter getImageHeightAnnotation() {
+    public OptionalTextAnnotationNameParameter getImageHeightAnnotation() {
         return imageHeightAnnotation;
     }
 
     @JIPipeParameter("tile-original-height")
-    public void setImageHeightAnnotation(OptionalAnnotationNameParameter imageHeightAnnotation) {
+    public void setImageHeightAnnotation(OptionalTextAnnotationNameParameter imageHeightAnnotation) {
         this.imageHeightAnnotation = imageHeightAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Use inset X", description = "If enabled, use the inset annotation. Otherwise the inset is assumed to be zero.")
     @JIPipeParameter("tile-inset-x")
-    public OptionalAnnotationNameParameter getTileInsetXAnnotation() {
+    public OptionalTextAnnotationNameParameter getTileInsetXAnnotation() {
         return tileInsetXAnnotation;
     }
 
     @JIPipeParameter("tile-inset-x")
-    public void setTileInsetXAnnotation(OptionalAnnotationNameParameter tileInsetXAnnotation) {
+    public void setTileInsetXAnnotation(OptionalTextAnnotationNameParameter tileInsetXAnnotation) {
         this.tileInsetXAnnotation = tileInsetXAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Use inset Y", description = "If enabled, use the inset annotation. Otherwise the inset is assumed to be zero.")
     @JIPipeParameter("tile-inset-y")
-    public OptionalAnnotationNameParameter getTileInsetYAnnotation() {
+    public OptionalTextAnnotationNameParameter getTileInsetYAnnotation() {
         return tileInsetYAnnotation;
     }
 
     @JIPipeParameter("tile-inset-y")
-    public void setTileInsetYAnnotation(OptionalAnnotationNameParameter tileInsetYAnnotation) {
+    public void setTileInsetYAnnotation(OptionalTextAnnotationNameParameter tileInsetYAnnotation) {
         this.tileInsetYAnnotation = tileInsetYAnnotation;
     }
 }

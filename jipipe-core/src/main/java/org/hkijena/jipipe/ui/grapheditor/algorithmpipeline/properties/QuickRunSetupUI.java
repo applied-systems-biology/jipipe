@@ -114,7 +114,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel implements JIPi
 
         addSelectionPanelItem(formPanel,
                 "Run & Show results",
-                UIUtils.getIconFromResources("actions/player_start.png"),
+                UIUtils.getIconFromResources("actions/play.png"),
                 "Runs the pipeline up until this algorithm and shows the results. " +
                         "The results will be stored on the hard drive.",
                 () -> quickRun(false),

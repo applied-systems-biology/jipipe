@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -39,9 +39,9 @@ import java.util.List;
 public class AnnotateByTablePropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
-    private OptionalAnnotationNameParameter rowCountAnnotation = new OptionalAnnotationNameParameter("Num Rows", true);
-    private OptionalAnnotationNameParameter columnCountAnnotation = new OptionalAnnotationNameParameter("Num Columns", true);
-    private OptionalAnnotationNameParameter columnNamesAnnotation = new OptionalAnnotationNameParameter("Column names", false);
+    private OptionalTextAnnotationNameParameter rowCountAnnotation = new OptionalTextAnnotationNameParameter("Num Rows", true);
+    private OptionalTextAnnotationNameParameter columnCountAnnotation = new OptionalTextAnnotationNameParameter("Num Columns", true);
+    private OptionalTextAnnotationNameParameter columnNamesAnnotation = new OptionalTextAnnotationNameParameter("Column names", false);
 
     public AnnotateByTablePropertiesAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -50,9 +50,9 @@ public class AnnotateByTablePropertiesAlgorithm extends JIPipeSimpleIteratingAlg
     public AnnotateByTablePropertiesAlgorithm(AnnotateByTablePropertiesAlgorithm other) {
         super(other);
         this.annotationMergeStrategy = other.annotationMergeStrategy;
-        this.rowCountAnnotation = new OptionalAnnotationNameParameter(other.rowCountAnnotation);
-        this.columnCountAnnotation = new OptionalAnnotationNameParameter(other.columnCountAnnotation);
-        this.columnNamesAnnotation = new OptionalAnnotationNameParameter(other.columnNamesAnnotation);
+        this.rowCountAnnotation = new OptionalTextAnnotationNameParameter(other.rowCountAnnotation);
+        this.columnCountAnnotation = new OptionalTextAnnotationNameParameter(other.columnCountAnnotation);
+        this.columnNamesAnnotation = new OptionalTextAnnotationNameParameter(other.columnNamesAnnotation);
     }
 
     @Override
@@ -82,34 +82,34 @@ public class AnnotateByTablePropertiesAlgorithm extends JIPipeSimpleIteratingAlg
 
     @SetJIPipeDocumentation(name = "Annotate with row count", description = "If enabled, annotate with the row count")
     @JIPipeParameter("row-count-annotation")
-    public OptionalAnnotationNameParameter getRowCountAnnotation() {
+    public OptionalTextAnnotationNameParameter getRowCountAnnotation() {
         return rowCountAnnotation;
     }
 
     @JIPipeParameter("row-count-annotation")
-    public void setRowCountAnnotation(OptionalAnnotationNameParameter rowCountAnnotation) {
+    public void setRowCountAnnotation(OptionalTextAnnotationNameParameter rowCountAnnotation) {
         this.rowCountAnnotation = rowCountAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with column count", description = "If enabled, annotate with the column count")
     @JIPipeParameter("column-count-annotation")
-    public OptionalAnnotationNameParameter getColumnCountAnnotation() {
+    public OptionalTextAnnotationNameParameter getColumnCountAnnotation() {
         return columnCountAnnotation;
     }
 
     @JIPipeParameter("column-count-annotation")
-    public void setColumnCountAnnotation(OptionalAnnotationNameParameter columnCountAnnotation) {
+    public void setColumnCountAnnotation(OptionalTextAnnotationNameParameter columnCountAnnotation) {
         this.columnCountAnnotation = columnCountAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with column names", description = "If enabled, annotate with the column names as JSON string")
     @JIPipeParameter("column-names-annotation")
-    public OptionalAnnotationNameParameter getColumnNamesAnnotation() {
+    public OptionalTextAnnotationNameParameter getColumnNamesAnnotation() {
         return columnNamesAnnotation;
     }
 
     @JIPipeParameter("column-names-annotation")
-    public void setColumnNamesAnnotation(OptionalAnnotationNameParameter columnNamesAnnotation) {
+    public void setColumnNamesAnnotation(OptionalTextAnnotationNameParameter columnNamesAnnotation) {
         this.columnNamesAnnotation = columnNamesAnnotation;
     }
 }

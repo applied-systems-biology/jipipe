@@ -45,7 +45,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -423,7 +423,7 @@ public class CustomAutoThreshold2D16Uv2Algorithm extends JIPipeIteratingAlgorith
 
     public static class ThresholdParameters extends AbstractJIPipeParameterCollection {
         private JIPipeExpressionParameter thresholdCalculationExpression = new JIPipeExpressionParameter("(stat_max + stat_min) / 2");
-        private OptionalAnnotationNameParameter thresholdAnnotation = new OptionalAnnotationNameParameter("Threshold", true);
+        private OptionalTextAnnotationNameParameter thresholdAnnotation = new OptionalTextAnnotationNameParameter("Threshold", true);
         private JIPipeExpressionParameter thresholdCombinationExpression = new JIPipeExpressionParameter("MIN(thresholds)");
 
         public ThresholdParameters() {
@@ -431,7 +431,7 @@ public class CustomAutoThreshold2D16Uv2Algorithm extends JIPipeIteratingAlgorith
 
         public ThresholdParameters(ThresholdParameters other) {
             this.thresholdCalculationExpression = new JIPipeExpressionParameter(other.thresholdCalculationExpression);
-            this.thresholdAnnotation = new OptionalAnnotationNameParameter(other.thresholdAnnotation);
+            this.thresholdAnnotation = new OptionalTextAnnotationNameParameter(other.thresholdAnnotation);
             this.thresholdCombinationExpression = new JIPipeExpressionParameter(other.thresholdCombinationExpression);
         }
 
@@ -464,12 +464,12 @@ public class CustomAutoThreshold2D16Uv2Algorithm extends JIPipeIteratingAlgorith
 
         @SetJIPipeDocumentation(name = "Threshold annotation", description = "Puts the generated threshold(s) into an annotation.")
         @JIPipeParameter("threshold-annotation")
-        public OptionalAnnotationNameParameter getThresholdAnnotation() {
+        public OptionalTextAnnotationNameParameter getThresholdAnnotation() {
             return thresholdAnnotation;
         }
 
         @JIPipeParameter("threshold-annotation")
-        public void setThresholdAnnotation(OptionalAnnotationNameParameter thresholdAnnotation) {
+        public void setThresholdAnnotation(OptionalTextAnnotationNameParameter thresholdAnnotation) {
             this.thresholdAnnotation = thresholdAnnotation;
         }
 

@@ -23,7 +23,7 @@ import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.extensions.ij3d.utils.ROI3DRelationMeasurementExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.ij3d.utils.ROI3DRelationMeasurementSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.jgrapht.alg.connectivity.ConnectivityInspector;
@@ -40,7 +40,7 @@ import java.util.Set;
 @AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "Components", create = true)
 public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingAlgorithm {
-    private OptionalAnnotationNameParameter componentNameAnnotation = new OptionalAnnotationNameParameter("Component", true);
+    private OptionalTextAnnotationNameParameter componentNameAnnotation = new OptionalTextAnnotationNameParameter("Component", true);
     private JIPipeExpressionParameter overlapFilter = new JIPipeExpressionParameter("");
     private ROI3DRelationMeasurementSetParameter overlapFilterMeasurements = new ROI3DRelationMeasurementSetParameter();
     private boolean measureInPhysicalUnits = true;
@@ -56,7 +56,7 @@ public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingA
 
     public SplitRoi3DIntoConnectedComponentsAlgorithm(SplitRoi3DIntoConnectedComponentsAlgorithm other) {
         super(other);
-        this.componentNameAnnotation = new OptionalAnnotationNameParameter(other.componentNameAnnotation);
+        this.componentNameAnnotation = new OptionalTextAnnotationNameParameter(other.componentNameAnnotation);
         this.overlapFilter = new JIPipeExpressionParameter(other.overlapFilter);
         this.overlapFilterMeasurements = new ROI3DRelationMeasurementSetParameter(other.overlapFilterMeasurements);
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
@@ -162,12 +162,12 @@ public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingA
 
     @SetJIPipeDocumentation(name = "Annotate with component", description = "If enabled, an annotation with the numeric component index is generated.")
     @JIPipeParameter("component-name-annotation")
-    public OptionalAnnotationNameParameter getComponentNameAnnotation() {
+    public OptionalTextAnnotationNameParameter getComponentNameAnnotation() {
         return componentNameAnnotation;
     }
 
     @JIPipeParameter("component-name-annotation")
-    public void setComponentNameAnnotation(OptionalAnnotationNameParameter componentNameAnnotation) {
+    public void setComponentNameAnnotation(OptionalTextAnnotationNameParameter componentNameAnnotation) {
         this.componentNameAnnotation = componentNameAnnotation;
     }
 

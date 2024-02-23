@@ -22,7 +22,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.utils.Image5DSliceIndexExp
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndices;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -42,9 +42,9 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private boolean iteratePerC = false;
     private boolean iteratePerT = false;
     private boolean removeDuplicates = true;
-    private OptionalAnnotationNameParameter annotateZ = new OptionalAnnotationNameParameter("Z", true);
-    private OptionalAnnotationNameParameter annotateC = new OptionalAnnotationNameParameter("C", true);
-    private OptionalAnnotationNameParameter annotateT = new OptionalAnnotationNameParameter("T", true);
+    private OptionalTextAnnotationNameParameter annotateZ = new OptionalTextAnnotationNameParameter("Z", true);
+    private OptionalTextAnnotationNameParameter annotateC = new OptionalTextAnnotationNameParameter("C", true);
+    private OptionalTextAnnotationNameParameter annotateT = new OptionalTextAnnotationNameParameter("T", true);
 
     public ExpressionSlicerAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -59,9 +59,9 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.iteratePerT = other.iteratePerT;
         this.iteratePerZ = other.iteratePerZ;
         this.removeDuplicates = other.removeDuplicates;
-        this.annotateZ = new OptionalAnnotationNameParameter(other.annotateZ);
-        this.annotateC = new OptionalAnnotationNameParameter(other.annotateC);
-        this.annotateT = new OptionalAnnotationNameParameter(other.annotateT);
+        this.annotateZ = new OptionalTextAnnotationNameParameter(other.annotateZ);
+        this.annotateC = new OptionalTextAnnotationNameParameter(other.annotateC);
+        this.annotateT = new OptionalTextAnnotationNameParameter(other.annotateT);
     }
 
     @Override
@@ -285,34 +285,34 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Annotate with Z indices", description = "If enabled, the output is annotated with the source Z slices (zero-based)")
     @JIPipeParameter("annotate-z")
-    public OptionalAnnotationNameParameter getAnnotateZ() {
+    public OptionalTextAnnotationNameParameter getAnnotateZ() {
         return annotateZ;
     }
 
     @JIPipeParameter("annotate-z")
-    public void setAnnotateZ(OptionalAnnotationNameParameter annotateZ) {
+    public void setAnnotateZ(OptionalTextAnnotationNameParameter annotateZ) {
         this.annotateZ = annotateZ;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with C indices", description = "If enabled, the output is annotated with the source channel slices (zero-based)")
     @JIPipeParameter("annotate-c")
-    public OptionalAnnotationNameParameter getAnnotateC() {
+    public OptionalTextAnnotationNameParameter getAnnotateC() {
         return annotateC;
     }
 
     @JIPipeParameter("annotate-c")
-    public void setAnnotateC(OptionalAnnotationNameParameter annotateC) {
+    public void setAnnotateC(OptionalTextAnnotationNameParameter annotateC) {
         this.annotateC = annotateC;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with T indices", description = "If enabled, the output is annotated with the source frame slices (zero-based)")
     @JIPipeParameter("annotate-t")
-    public OptionalAnnotationNameParameter getAnnotateT() {
+    public OptionalTextAnnotationNameParameter getAnnotateT() {
         return annotateT;
     }
 
     @JIPipeParameter("annotate-t")
-    public void setAnnotateT(OptionalAnnotationNameParameter annotateT) {
+    public void setAnnotateT(OptionalTextAnnotationNameParameter annotateT) {
         this.annotateT = annotateT;
     }
 

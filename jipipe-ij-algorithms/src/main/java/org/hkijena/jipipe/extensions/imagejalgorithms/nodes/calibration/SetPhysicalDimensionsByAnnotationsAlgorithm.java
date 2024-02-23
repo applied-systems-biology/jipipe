@@ -16,7 +16,7 @@ import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterSettin
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImagePlusPropertiesExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
 
 @SetJIPipeDocumentation(name = "Set physical dimensions from annotations", description = "Allows to set the physical dimensions of the incoming images. This node allows " +
@@ -27,11 +27,11 @@ import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nProperties")
 public class SetPhysicalDimensionsByAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private OptionalAnnotationNameParameter physicalDimensionXAnnotation = new OptionalAnnotationNameParameter("Physical dimension (X)", true);
-    private OptionalAnnotationNameParameter physicalDimensionYAnnotation = new OptionalAnnotationNameParameter("Physical dimension (Y)", true);
-    private OptionalAnnotationNameParameter physicalDimensionZAnnotation = new OptionalAnnotationNameParameter("Physical dimension (Z)", true);
-    private OptionalAnnotationNameParameter physicalDimensionTAnnotation = new OptionalAnnotationNameParameter("Physical dimension (Time)", false);
-    private OptionalAnnotationNameParameter physicalDimensionValueAnnotation = new OptionalAnnotationNameParameter("Physical dimension (Value)", false);
+    private OptionalTextAnnotationNameParameter physicalDimensionXAnnotation = new OptionalTextAnnotationNameParameter("Physical dimension (X)", true);
+    private OptionalTextAnnotationNameParameter physicalDimensionYAnnotation = new OptionalTextAnnotationNameParameter("Physical dimension (Y)", true);
+    private OptionalTextAnnotationNameParameter physicalDimensionZAnnotation = new OptionalTextAnnotationNameParameter("Physical dimension (Z)", true);
+    private OptionalTextAnnotationNameParameter physicalDimensionTAnnotation = new OptionalTextAnnotationNameParameter("Physical dimension (Time)", false);
+    private OptionalTextAnnotationNameParameter physicalDimensionValueAnnotation = new OptionalTextAnnotationNameParameter("Physical dimension (Value)", false);
 
     public SetPhysicalDimensionsByAnnotationsAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -39,11 +39,11 @@ public class SetPhysicalDimensionsByAnnotationsAlgorithm extends JIPipeSimpleIte
 
     public SetPhysicalDimensionsByAnnotationsAlgorithm(SetPhysicalDimensionsByAnnotationsAlgorithm other) {
         super(other);
-        this.physicalDimensionXAnnotation = new OptionalAnnotationNameParameter(other.physicalDimensionXAnnotation);
-        this.physicalDimensionYAnnotation = new OptionalAnnotationNameParameter(other.physicalDimensionYAnnotation);
-        this.physicalDimensionZAnnotation = new OptionalAnnotationNameParameter(other.physicalDimensionZAnnotation);
-        this.physicalDimensionTAnnotation = new OptionalAnnotationNameParameter(other.physicalDimensionTAnnotation);
-        this.physicalDimensionValueAnnotation = new OptionalAnnotationNameParameter(other.physicalDimensionValueAnnotation);
+        this.physicalDimensionXAnnotation = new OptionalTextAnnotationNameParameter(other.physicalDimensionXAnnotation);
+        this.physicalDimensionYAnnotation = new OptionalTextAnnotationNameParameter(other.physicalDimensionYAnnotation);
+        this.physicalDimensionZAnnotation = new OptionalTextAnnotationNameParameter(other.physicalDimensionZAnnotation);
+        this.physicalDimensionTAnnotation = new OptionalTextAnnotationNameParameter(other.physicalDimensionTAnnotation);
+        this.physicalDimensionValueAnnotation = new OptionalTextAnnotationNameParameter(other.physicalDimensionValueAnnotation);
     }
 
     @Override
@@ -86,60 +86,60 @@ public class SetPhysicalDimensionsByAnnotationsAlgorithm extends JIPipeSimpleIte
     @SetJIPipeDocumentation(name = "Physical dimension (X)", description = "If enabled, sets the physical dimension of the image")
     @JIPipeParameter("physical-dimension-x")
     @JIPipeExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariablesInfo.class)
-    public OptionalAnnotationNameParameter getPhysicalDimensionX() {
+    public OptionalTextAnnotationNameParameter getPhysicalDimensionX() {
         return physicalDimensionXAnnotation;
     }
 
     @JIPipeParameter("physical-dimension-x")
-    public void setPhysicalDimensionX(OptionalAnnotationNameParameter physicalDimensionX) {
+    public void setPhysicalDimensionX(OptionalTextAnnotationNameParameter physicalDimensionX) {
         this.physicalDimensionXAnnotation = physicalDimensionX;
     }
 
     @SetJIPipeDocumentation(name = "Physical dimension (Y)", description = "If enabled, sets the physical dimension of the image")
     @JIPipeParameter("physical-dimension-y")
     @JIPipeExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariablesInfo.class)
-    public OptionalAnnotationNameParameter getPhysicalDimensionY() {
+    public OptionalTextAnnotationNameParameter getPhysicalDimensionY() {
         return physicalDimensionYAnnotation;
     }
 
     @JIPipeParameter("physical-dimension-y")
-    public void setPhysicalDimensionY(OptionalAnnotationNameParameter physicalDimensionY) {
+    public void setPhysicalDimensionY(OptionalTextAnnotationNameParameter physicalDimensionY) {
         this.physicalDimensionYAnnotation = physicalDimensionY;
     }
 
     @SetJIPipeDocumentation(name = "Physical dimension (Z)", description = "If enabled, sets the physical dimension of the image")
     @JIPipeParameter("physical-dimension-z")
     @JIPipeExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariablesInfo.class)
-    public OptionalAnnotationNameParameter getPhysicalDimensionZ() {
+    public OptionalTextAnnotationNameParameter getPhysicalDimensionZ() {
         return physicalDimensionZAnnotation;
     }
 
     @JIPipeParameter("physical-dimension-z")
-    public void setPhysicalDimensionZ(OptionalAnnotationNameParameter physicalDimensionZ) {
+    public void setPhysicalDimensionZ(OptionalTextAnnotationNameParameter physicalDimensionZ) {
         this.physicalDimensionZAnnotation = physicalDimensionZ;
     }
 
     @SetJIPipeDocumentation(name = "Physical dimension (T)", description = "If enabled, sets the physical dimension of the image. Please note that only the unit is supported.")
     @JIPipeParameter("physical-dimension-t")
     @JIPipeExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariablesInfo.class)
-    public OptionalAnnotationNameParameter getPhysicalDimensionT() {
+    public OptionalTextAnnotationNameParameter getPhysicalDimensionT() {
         return physicalDimensionTAnnotation;
     }
 
     @JIPipeParameter("physical-dimension-t")
-    public void setPhysicalDimensionT(OptionalAnnotationNameParameter physicalDimensionT) {
+    public void setPhysicalDimensionT(OptionalTextAnnotationNameParameter physicalDimensionT) {
         this.physicalDimensionTAnnotation = physicalDimensionT;
     }
 
     @SetJIPipeDocumentation(name = "Physical dimension (Value)", description = "If enabled, sets the physical dimension of the image. Please note that only the unit is supported.")
     @JIPipeParameter("physical-dimension-value")
     @JIPipeExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariablesInfo.class)
-    public OptionalAnnotationNameParameter getPhysicalDimensionValue() {
+    public OptionalTextAnnotationNameParameter getPhysicalDimensionValue() {
         return physicalDimensionValueAnnotation;
     }
 
     @JIPipeParameter("physical-dimension-value")
-    public void setPhysicalDimensionValue(OptionalAnnotationNameParameter physicalDimensionValue) {
+    public void setPhysicalDimensionValue(OptionalTextAnnotationNameParameter physicalDimensionValue) {
         this.physicalDimensionValueAnnotation = physicalDimensionValue;
     }
 }

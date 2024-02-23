@@ -32,7 +32,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
 
 import java.awt.*;
@@ -47,13 +47,13 @@ import java.util.List;
 public class ExtractFromROIAlgorithm extends JIPipeIteratingAlgorithm {
 
     private OptionalColorParameter outsideColor = new OptionalColorParameter(Color.BLACK, true);
-    private OptionalAnnotationNameParameter annotationX = new OptionalAnnotationNameParameter("X", true);
-    private OptionalAnnotationNameParameter annotationY = new OptionalAnnotationNameParameter("Y", true);
-    private OptionalAnnotationNameParameter annotationZ = new OptionalAnnotationNameParameter("Z", true);
-    private OptionalAnnotationNameParameter annotationC = new OptionalAnnotationNameParameter("C", true);
-    private OptionalAnnotationNameParameter annotationT = new OptionalAnnotationNameParameter("T", true);
-    private OptionalAnnotationNameParameter annotationBoundingWidth = new OptionalAnnotationNameParameter("Width", true);
-    private OptionalAnnotationNameParameter annotationBoundingHeight = new OptionalAnnotationNameParameter("Height", true);
+    private OptionalTextAnnotationNameParameter annotationX = new OptionalTextAnnotationNameParameter("X", true);
+    private OptionalTextAnnotationNameParameter annotationY = new OptionalTextAnnotationNameParameter("Y", true);
+    private OptionalTextAnnotationNameParameter annotationZ = new OptionalTextAnnotationNameParameter("Z", true);
+    private OptionalTextAnnotationNameParameter annotationC = new OptionalTextAnnotationNameParameter("C", true);
+    private OptionalTextAnnotationNameParameter annotationT = new OptionalTextAnnotationNameParameter("T", true);
+    private OptionalTextAnnotationNameParameter annotationBoundingWidth = new OptionalTextAnnotationNameParameter("Width", true);
+    private OptionalTextAnnotationNameParameter annotationBoundingHeight = new OptionalTextAnnotationNameParameter("Height", true);
     private Anchor xyAnchor = Anchor.TopLeft;
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
@@ -64,14 +64,14 @@ public class ExtractFromROIAlgorithm extends JIPipeIteratingAlgorithm {
     public ExtractFromROIAlgorithm(ExtractFromROIAlgorithm other) {
         super(other);
         this.outsideColor = new OptionalColorParameter(other.outsideColor);
-        this.annotationX = new OptionalAnnotationNameParameter(other.annotationX);
-        this.annotationY = new OptionalAnnotationNameParameter(other.annotationY);
-        this.annotationZ = new OptionalAnnotationNameParameter(other.annotationZ);
-        this.annotationC = new OptionalAnnotationNameParameter(other.annotationC);
-        this.annotationT = new OptionalAnnotationNameParameter(other.annotationT);
+        this.annotationX = new OptionalTextAnnotationNameParameter(other.annotationX);
+        this.annotationY = new OptionalTextAnnotationNameParameter(other.annotationY);
+        this.annotationZ = new OptionalTextAnnotationNameParameter(other.annotationZ);
+        this.annotationC = new OptionalTextAnnotationNameParameter(other.annotationC);
+        this.annotationT = new OptionalTextAnnotationNameParameter(other.annotationT);
         this.xyAnchor = other.xyAnchor;
-        this.annotationBoundingWidth = new OptionalAnnotationNameParameter(other.annotationBoundingWidth);
-        this.annotationBoundingHeight = new OptionalAnnotationNameParameter(other.annotationBoundingHeight);
+        this.annotationBoundingWidth = new OptionalTextAnnotationNameParameter(other.annotationBoundingWidth);
+        this.annotationBoundingHeight = new OptionalTextAnnotationNameParameter(other.annotationBoundingHeight);
         this.annotationMergeStrategy = other.annotationMergeStrategy;
     }
 
@@ -128,56 +128,56 @@ public class ExtractFromROIAlgorithm extends JIPipeIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Annotate with X location", description = "If enabled, the generated image is annotated with the top-left X coordinate of the ROI bounding box.")
     @JIPipeParameter(value = "annotation-x", uiOrder = -50)
-    public OptionalAnnotationNameParameter getAnnotationX() {
+    public OptionalTextAnnotationNameParameter getAnnotationX() {
         return annotationX;
     }
 
     @JIPipeParameter("annotation-x")
-    public void setAnnotationX(OptionalAnnotationNameParameter annotationX) {
+    public void setAnnotationX(OptionalTextAnnotationNameParameter annotationX) {
         this.annotationX = annotationX;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with Y location", description = "If enabled, the generated image is annotated with the top-left Y coordinate of the ROI bounding box.")
     @JIPipeParameter(value = "annotation-y", uiOrder = -45)
-    public OptionalAnnotationNameParameter getAnnotationY() {
+    public OptionalTextAnnotationNameParameter getAnnotationY() {
         return annotationY;
     }
 
     @JIPipeParameter("annotation-y")
-    public void setAnnotationY(OptionalAnnotationNameParameter annotationY) {
+    public void setAnnotationY(OptionalTextAnnotationNameParameter annotationY) {
         this.annotationY = annotationY;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with Z location", description = "If enabled, the generated image is annotated with the Z slice of the ROI. The first index is 1. A value of zero indicates that the ROI is located on all Z slices.")
     @JIPipeParameter("annotation-z")
-    public OptionalAnnotationNameParameter getAnnotationZ() {
+    public OptionalTextAnnotationNameParameter getAnnotationZ() {
         return annotationZ;
     }
 
     @JIPipeParameter("annotation-z")
-    public void setAnnotationZ(OptionalAnnotationNameParameter annotationZ) {
+    public void setAnnotationZ(OptionalTextAnnotationNameParameter annotationZ) {
         this.annotationZ = annotationZ;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with C location", description = "If enabled, the generated image is annotated with the channel slice of the ROI. The first index is 1. A value of zero indicates that the ROI is located on all C slices.")
     @JIPipeParameter("annotation-c")
-    public OptionalAnnotationNameParameter getAnnotationC() {
+    public OptionalTextAnnotationNameParameter getAnnotationC() {
         return annotationC;
     }
 
     @JIPipeParameter("annotation-c")
-    public void setAnnotationC(OptionalAnnotationNameParameter annotationC) {
+    public void setAnnotationC(OptionalTextAnnotationNameParameter annotationC) {
         this.annotationC = annotationC;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with T location", description = "If enabled, the generated image is annotated with the frame slice of the ROI. The first index is 1. A value of zero indicates that the ROI is located on all T slices.")
     @JIPipeParameter("annotation-t")
-    public OptionalAnnotationNameParameter getAnnotationT() {
+    public OptionalTextAnnotationNameParameter getAnnotationT() {
         return annotationT;
     }
 
     @JIPipeParameter("annotation-t")
-    public void setAnnotationT(OptionalAnnotationNameParameter annotationT) {
+    public void setAnnotationT(OptionalTextAnnotationNameParameter annotationT) {
         this.annotationT = annotationT;
     }
 
@@ -194,23 +194,23 @@ public class ExtractFromROIAlgorithm extends JIPipeIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Annotate with ROI width", description = "If enabled, the generated image is annotated with the width of the ROI")
     @JIPipeParameter("annotation-width")
-    public OptionalAnnotationNameParameter getAnnotationBoundingWidth() {
+    public OptionalTextAnnotationNameParameter getAnnotationBoundingWidth() {
         return annotationBoundingWidth;
     }
 
     @JIPipeParameter("annotation-width")
-    public void setAnnotationBoundingWidth(OptionalAnnotationNameParameter annotationBoundingWidth) {
+    public void setAnnotationBoundingWidth(OptionalTextAnnotationNameParameter annotationBoundingWidth) {
         this.annotationBoundingWidth = annotationBoundingWidth;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with ROI height", description = "If enabled, the generated image is annotated with the height of the ROI")
     @JIPipeParameter("annotation-height")
-    public OptionalAnnotationNameParameter getAnnotationBoundingHeight() {
+    public OptionalTextAnnotationNameParameter getAnnotationBoundingHeight() {
         return annotationBoundingHeight;
     }
 
     @JIPipeParameter("annotation-height")
-    public void setAnnotationBoundingHeight(OptionalAnnotationNameParameter annotationBoundingHeight) {
+    public void setAnnotationBoundingHeight(OptionalTextAnnotationNameParameter annotationBoundingHeight) {
         this.annotationBoundingHeight = annotationBoundingHeight;
     }
 

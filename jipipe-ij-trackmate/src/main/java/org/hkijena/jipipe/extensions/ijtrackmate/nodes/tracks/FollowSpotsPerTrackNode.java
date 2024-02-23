@@ -33,7 +33,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -48,7 +48,7 @@ import java.util.Set;
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 public class FollowSpotsPerTrackNode extends JIPipeIteratingAlgorithm {
 
-    private OptionalAnnotationNameParameter trackIDAnnotation = new OptionalAnnotationNameParameter("Track ID", true);
+    private OptionalTextAnnotationNameParameter trackIDAnnotation = new OptionalTextAnnotationNameParameter("Track ID", true);
     private int minWidth = 0;
     private int minHeight = 0;
 
@@ -64,7 +64,7 @@ public class FollowSpotsPerTrackNode extends JIPipeIteratingAlgorithm {
 
     public FollowSpotsPerTrackNode(FollowSpotsPerTrackNode other) {
         super(other);
-        this.trackIDAnnotation = new OptionalAnnotationNameParameter(other.trackIDAnnotation);
+        this.trackIDAnnotation = new OptionalTextAnnotationNameParameter(other.trackIDAnnotation);
         this.minWidth = other.minWidth;
         this.minHeight = other.minHeight;
         this.cropXY = other.cropXY;
@@ -191,12 +191,12 @@ public class FollowSpotsPerTrackNode extends JIPipeIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Annotate with track ID", description = "If enabled, the track ID is annotated to each ROI")
     @JIPipeParameter("track-id-annotation")
-    public OptionalAnnotationNameParameter getTrackIDAnnotation() {
+    public OptionalTextAnnotationNameParameter getTrackIDAnnotation() {
         return trackIDAnnotation;
     }
 
     @JIPipeParameter("track-id-annotation")
-    public void setTrackIDAnnotation(OptionalAnnotationNameParameter trackIDAnnotation) {
+    public void setTrackIDAnnotation(OptionalTextAnnotationNameParameter trackIDAnnotation) {
         this.trackIDAnnotation = trackIDAnnotation;
     }
 

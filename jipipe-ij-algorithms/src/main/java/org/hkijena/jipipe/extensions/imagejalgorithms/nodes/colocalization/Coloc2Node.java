@@ -31,7 +31,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMap;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.BooleanParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.strings.StringData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
@@ -74,9 +74,9 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
     private boolean outputWarnings;
     private String channel1Name = "Ch1";
     private String channel2Name = "Ch2";
-    private OptionalAnnotationNameParameter plotNameAnnotation = new OptionalAnnotationNameParameter("Name", true);
+    private OptionalTextAnnotationNameParameter plotNameAnnotation = new OptionalTextAnnotationNameParameter("Name", true);
 
-    private OptionalAnnotationNameParameter histogramNameAnnotation = new OptionalAnnotationNameParameter("Name", true);
+    private OptionalTextAnnotationNameParameter histogramNameAnnotation = new OptionalTextAnnotationNameParameter("Name", true);
 
     public Coloc2Node(JIPipeNodeInfo info) {
         super(info);
@@ -92,8 +92,8 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
         this.channel2Name = other.channel2Name;
         this.setInputMasks(other.inputMasks);
         this.settings = new Settings(other.settings);
-        this.plotNameAnnotation = new OptionalAnnotationNameParameter(other.plotNameAnnotation);
-        this.histogramNameAnnotation = new OptionalAnnotationNameParameter(other.histogramNameAnnotation);
+        this.plotNameAnnotation = new OptionalTextAnnotationNameParameter(other.plotNameAnnotation);
+        this.histogramNameAnnotation = new OptionalTextAnnotationNameParameter(other.histogramNameAnnotation);
         registerSubParameter(settings);
         this.setOutputWarnings(other.outputWarnings);
     }
@@ -300,23 +300,23 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Annotate histograms with name", description = "If enabled, generated histograms are annotated by their name.")
     @JIPipeParameter("histogram-name-annotation")
-    public OptionalAnnotationNameParameter getHistogramNameAnnotation() {
+    public OptionalTextAnnotationNameParameter getHistogramNameAnnotation() {
         return histogramNameAnnotation;
     }
 
     @JIPipeParameter("histogram-name-annotation")
-    public void setHistogramNameAnnotation(OptionalAnnotationNameParameter histogramNameAnnotation) {
+    public void setHistogramNameAnnotation(OptionalTextAnnotationNameParameter histogramNameAnnotation) {
         this.histogramNameAnnotation = histogramNameAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Annotate plots with name", description = "If enabled, generated plots are annotated by their name.")
     @JIPipeParameter("plot-name-annotation")
-    public OptionalAnnotationNameParameter getPlotNameAnnotation() {
+    public OptionalTextAnnotationNameParameter getPlotNameAnnotation() {
         return plotNameAnnotation;
     }
 
     @JIPipeParameter("plot-name-annotation")
-    public void setPlotNameAnnotation(OptionalAnnotationNameParameter plotNameAnnotation) {
+    public void setPlotNameAnnotation(OptionalTextAnnotationNameParameter plotNameAnnotation) {
         this.plotNameAnnotation = plotNameAnnotation;
     }
 

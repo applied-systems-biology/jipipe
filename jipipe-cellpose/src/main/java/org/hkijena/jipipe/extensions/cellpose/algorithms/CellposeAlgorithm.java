@@ -37,7 +37,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
@@ -95,7 +95,7 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
     private CellposeModel model = CellposeModel.Cytoplasm;
     private OptionalDoubleParameter diameter = new OptionalDoubleParameter(30.0, true);
     private boolean enable3DSegmentation = true;
-    private OptionalAnnotationNameParameter diameterAnnotation = new OptionalAnnotationNameParameter("Diameter", true);
+    private OptionalTextAnnotationNameParameter diameterAnnotation = new OptionalTextAnnotationNameParameter("Diameter", true);
     private boolean cleanUpAfterwards = true;
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
 
@@ -127,7 +127,7 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
 
         this.model = other.model;
         this.diameter = new OptionalDoubleParameter(other.diameter);
-        this.diameterAnnotation = new OptionalAnnotationNameParameter(other.diameterAnnotation);
+        this.diameterAnnotation = new OptionalTextAnnotationNameParameter(other.diameterAnnotation);
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.enable3DSegmentation = other.enable3DSegmentation;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
@@ -591,12 +591,12 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
     @SetJIPipeDocumentation(name = "Annotate with diameter", description = "If enabled, the diameter is attached as annotation. " +
             "Useful if you want to let Cellpose estimate the object diameters.")
     @JIPipeParameter("diameter-annotation")
-    public OptionalAnnotationNameParameter getDiameterAnnotation() {
+    public OptionalTextAnnotationNameParameter getDiameterAnnotation() {
         return diameterAnnotation;
     }
 
     @JIPipeParameter("diameter-annotation")
-    public void setDiameterAnnotation(OptionalAnnotationNameParameter diameterAnnotation) {
+    public void setDiameterAnnotation(OptionalTextAnnotationNameParameter diameterAnnotation) {
         this.diameterAnnotation = diameterAnnotation;
     }
 

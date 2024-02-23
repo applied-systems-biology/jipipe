@@ -33,7 +33,7 @@ import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.utils.CoreImageJUtils;
@@ -57,7 +57,7 @@ import java.util.List;
 public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeDataInfoRef generatedImageType = new JIPipeDataInfoRef("imagej-imgplus");
-    private OptionalAnnotationNameParameter titleAnnotation = new OptionalAnnotationNameParameter();
+    private OptionalTextAnnotationNameParameter titleAnnotation = new OptionalTextAnnotationNameParameter();
     private boolean removeLut = false;
     private boolean removeOverlay = false;
     private boolean forceNativeImport = false;
@@ -78,7 +78,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
     public ImagePlusFromFile(ImagePlusFromFile other) {
         super(other);
         setGeneratedImageType(new JIPipeDataInfoRef(other.generatedImageType));
-        this.titleAnnotation = new OptionalAnnotationNameParameter(other.titleAnnotation);
+        this.titleAnnotation = new OptionalTextAnnotationNameParameter(other.titleAnnotation);
         this.removeLut = other.removeLut;
         this.removeOverlay = other.removeOverlay;
         this.forceNativeImport = other.forceNativeImport;
@@ -176,12 +176,12 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Title annotation", description = "Optional annotation type where the image title is written.")
     @JIPipeParameter("title-annotation")
-    public OptionalAnnotationNameParameter getTitleAnnotation() {
+    public OptionalTextAnnotationNameParameter getTitleAnnotation() {
         return titleAnnotation;
     }
 
     @JIPipeParameter("title-annotation")
-    public void setTitleAnnotation(OptionalAnnotationNameParameter titleAnnotation) {
+    public void setTitleAnnotation(OptionalTextAnnotationNameParameter titleAnnotation) {
         this.titleAnnotation = titleAnnotation;
     }
 

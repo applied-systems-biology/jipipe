@@ -63,7 +63,7 @@ public class StandardSettingsExtension extends JIPipePrepackagedDefaultJavaExten
         registerSettingsSheet(RuntimeSettings.ID,
                 "Runtime",
                 "General properties of JIPipe runs (number of threads, etc.)",
-                UIUtils.getIconFromResources("actions/player_start.png"),
+                UIUtils.getIconFromResources("actions/play.png"),
                 null,
                 null,
                 new RuntimeSettings());

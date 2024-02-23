@@ -36,7 +36,7 @@ import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotations
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.Image5DExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -52,17 +52,17 @@ public class TileImage2Dv2Algorithm extends JIPipeSimpleIteratingAlgorithm {
     private JIPipeExpressionParameter tileSizeY = new JIPipeExpressionParameter("512");
     private JIPipeExpressionParameter overlapX = new JIPipeExpressionParameter("0");
     private JIPipeExpressionParameter overlapY = new JIPipeExpressionParameter("0");
-    private OptionalAnnotationNameParameter tileXAnnotation = new OptionalAnnotationNameParameter("Tile X", true);
-    private OptionalAnnotationNameParameter tileYAnnotation = new OptionalAnnotationNameParameter("Tile Y", true);
-    private OptionalAnnotationNameParameter numTilesX = new OptionalAnnotationNameParameter("Num Tiles X", true);
-    private OptionalAnnotationNameParameter numTilesY = new OptionalAnnotationNameParameter("Num Tiles Y", true);
+    private OptionalTextAnnotationNameParameter tileXAnnotation = new OptionalTextAnnotationNameParameter("Tile X", true);
+    private OptionalTextAnnotationNameParameter tileYAnnotation = new OptionalTextAnnotationNameParameter("Tile Y", true);
+    private OptionalTextAnnotationNameParameter numTilesX = new OptionalTextAnnotationNameParameter("Num Tiles X", true);
+    private OptionalTextAnnotationNameParameter numTilesY = new OptionalTextAnnotationNameParameter("Num Tiles Y", true);
     private BorderMode borderMode = BorderMode.Constant;
-    private OptionalAnnotationNameParameter tileRealXAnnotation = new OptionalAnnotationNameParameter("Original X", true);
-    private OptionalAnnotationNameParameter tileRealYAnnotation = new OptionalAnnotationNameParameter("Original Y", true);
-    private OptionalAnnotationNameParameter imageWidthAnnotation = new OptionalAnnotationNameParameter("Original width", true);
-    private OptionalAnnotationNameParameter imageHeightAnnotation = new OptionalAnnotationNameParameter("Original height", true);
-    private OptionalAnnotationNameParameter tileInsetXAnnotation = new OptionalAnnotationNameParameter("Inset X", true);
-    private OptionalAnnotationNameParameter tileInsetYAnnotation = new OptionalAnnotationNameParameter("Inset Y", true);
+    private OptionalTextAnnotationNameParameter tileRealXAnnotation = new OptionalTextAnnotationNameParameter("Original X", true);
+    private OptionalTextAnnotationNameParameter tileRealYAnnotation = new OptionalTextAnnotationNameParameter("Original Y", true);
+    private OptionalTextAnnotationNameParameter imageWidthAnnotation = new OptionalTextAnnotationNameParameter("Original width", true);
+    private OptionalTextAnnotationNameParameter imageHeightAnnotation = new OptionalTextAnnotationNameParameter("Original height", true);
+    private OptionalTextAnnotationNameParameter tileInsetXAnnotation = new OptionalTextAnnotationNameParameter("Inset X", true);
+    private OptionalTextAnnotationNameParameter tileInsetYAnnotation = new OptionalTextAnnotationNameParameter("Inset Y", true);
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
     public TileImage2Dv2Algorithm(JIPipeNodeInfo info) {
@@ -73,17 +73,17 @@ public class TileImage2Dv2Algorithm extends JIPipeSimpleIteratingAlgorithm {
         super(other);
         this.tileSizeX = other.tileSizeX;
         this.tileSizeY = other.tileSizeY;
-        this.tileXAnnotation = new OptionalAnnotationNameParameter(other.tileXAnnotation);
-        this.tileYAnnotation = new OptionalAnnotationNameParameter(other.tileYAnnotation);
+        this.tileXAnnotation = new OptionalTextAnnotationNameParameter(other.tileXAnnotation);
+        this.tileYAnnotation = new OptionalTextAnnotationNameParameter(other.tileYAnnotation);
         this.annotationMergeStrategy = other.annotationMergeStrategy;
-        this.tileRealXAnnotation = new OptionalAnnotationNameParameter(other.tileRealXAnnotation);
-        this.tileRealYAnnotation = new OptionalAnnotationNameParameter(other.tileRealYAnnotation);
-        this.imageWidthAnnotation = new OptionalAnnotationNameParameter(other.imageWidthAnnotation);
-        this.imageHeightAnnotation = new OptionalAnnotationNameParameter(other.imageHeightAnnotation);
-        this.tileInsetXAnnotation = new OptionalAnnotationNameParameter(other.tileInsetXAnnotation);
-        this.tileInsetYAnnotation = new OptionalAnnotationNameParameter(other.tileInsetYAnnotation);
-        this.numTilesX = new OptionalAnnotationNameParameter(other.numTilesX);
-        this.numTilesY = new OptionalAnnotationNameParameter(other.numTilesY);
+        this.tileRealXAnnotation = new OptionalTextAnnotationNameParameter(other.tileRealXAnnotation);
+        this.tileRealYAnnotation = new OptionalTextAnnotationNameParameter(other.tileRealYAnnotation);
+        this.imageWidthAnnotation = new OptionalTextAnnotationNameParameter(other.imageWidthAnnotation);
+        this.imageHeightAnnotation = new OptionalTextAnnotationNameParameter(other.imageHeightAnnotation);
+        this.tileInsetXAnnotation = new OptionalTextAnnotationNameParameter(other.tileInsetXAnnotation);
+        this.tileInsetYAnnotation = new OptionalTextAnnotationNameParameter(other.tileInsetYAnnotation);
+        this.numTilesX = new OptionalTextAnnotationNameParameter(other.numTilesX);
+        this.numTilesY = new OptionalTextAnnotationNameParameter(other.numTilesY);
         this.overlapX = other.overlapX;
         this.overlapY = other.overlapY;
         this.borderMode = other.borderMode;
@@ -188,45 +188,45 @@ public class TileImage2Dv2Algorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Annotate with tile X", description = "If true, annotate each tile with its X location (in tile coordinates)")
     @JIPipeParameter("tile-x-annotation")
-    public OptionalAnnotationNameParameter getTileXAnnotation() {
+    public OptionalTextAnnotationNameParameter getTileXAnnotation() {
         return tileXAnnotation;
     }
 
     @JIPipeParameter("tile-x-annotation")
-    public void setTileXAnnotation(OptionalAnnotationNameParameter tileXAnnotation) {
+    public void setTileXAnnotation(OptionalTextAnnotationNameParameter tileXAnnotation) {
         this.tileXAnnotation = tileXAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with tile Y", description = "If true, annotate each tile with its Y location (in tile coordinates)")
     @JIPipeParameter("tile-y-annotation")
-    public OptionalAnnotationNameParameter getTileYAnnotation() {
+    public OptionalTextAnnotationNameParameter getTileYAnnotation() {
         return tileYAnnotation;
     }
 
     @JIPipeParameter("tile-y-annotation")
-    public void setTileYAnnotation(OptionalAnnotationNameParameter tileYAnnotation) {
+    public void setTileYAnnotation(OptionalTextAnnotationNameParameter tileYAnnotation) {
         this.tileYAnnotation = tileYAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with number of X tiles", description = "If true, annotate each tile with the number of tiles in the image")
     @JIPipeParameter("num-tile-x-annotation")
-    public OptionalAnnotationNameParameter getNumTilesX() {
+    public OptionalTextAnnotationNameParameter getNumTilesX() {
         return numTilesX;
     }
 
     @JIPipeParameter("num-tile-x-annotation")
-    public void setNumTilesX(OptionalAnnotationNameParameter numTilesX) {
+    public void setNumTilesX(OptionalTextAnnotationNameParameter numTilesX) {
         this.numTilesX = numTilesX;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with number of Y tiles", description = "If true, annotate each tile with the number of tiles in the image")
     @JIPipeParameter("num-tile-y-annotation")
-    public OptionalAnnotationNameParameter getNumTilesY() {
+    public OptionalTextAnnotationNameParameter getNumTilesY() {
         return numTilesY;
     }
 
     @JIPipeParameter("num-tile-y-annotation")
-    public void setNumTilesY(OptionalAnnotationNameParameter numTilesY) {
+    public void setNumTilesY(OptionalTextAnnotationNameParameter numTilesY) {
         this.numTilesY = numTilesY;
     }
 
@@ -260,45 +260,45 @@ public class TileImage2Dv2Algorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Annotate with original X location", description = "If true, annotate the tile with its location within the original image. Only works if the scaling anchor is top left")
     @JIPipeParameter("tile-real-x-annotation")
-    public OptionalAnnotationNameParameter getTileRealXAnnotation() {
+    public OptionalTextAnnotationNameParameter getTileRealXAnnotation() {
         return tileRealXAnnotation;
     }
 
     @JIPipeParameter("tile-real-x-annotation")
-    public void setTileRealXAnnotation(OptionalAnnotationNameParameter tileRealXAnnotation) {
+    public void setTileRealXAnnotation(OptionalTextAnnotationNameParameter tileRealXAnnotation) {
         this.tileRealXAnnotation = tileRealXAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with original Y location", description = "If true, annotate the tile with its location within the original image. Only works if the scaling anchor is top left")
     @JIPipeParameter("tile-real-y-annotation")
-    public OptionalAnnotationNameParameter getTileRealYAnnotation() {
+    public OptionalTextAnnotationNameParameter getTileRealYAnnotation() {
         return tileRealYAnnotation;
     }
 
     @JIPipeParameter("tile-real-y-annotation")
-    public void setTileRealYAnnotation(OptionalAnnotationNameParameter tileRealYAnnotation) {
+    public void setTileRealYAnnotation(OptionalTextAnnotationNameParameter tileRealYAnnotation) {
         this.tileRealYAnnotation = tileRealYAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with original width", description = "If true, annotate the tile with the width of the original image")
     @JIPipeParameter("tile-original-width-annotation")
-    public OptionalAnnotationNameParameter getImageWidthAnnotation() {
+    public OptionalTextAnnotationNameParameter getImageWidthAnnotation() {
         return imageWidthAnnotation;
     }
 
     @JIPipeParameter("tile-original-width-annotation")
-    public void setImageWidthAnnotation(OptionalAnnotationNameParameter imageWidthAnnotation) {
+    public void setImageWidthAnnotation(OptionalTextAnnotationNameParameter imageWidthAnnotation) {
         this.imageWidthAnnotation = imageWidthAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with original height", description = "If true, annotate the tile with the height of the original image")
     @JIPipeParameter("tile-original-height-annotation")
-    public OptionalAnnotationNameParameter getImageHeightAnnotation() {
+    public OptionalTextAnnotationNameParameter getImageHeightAnnotation() {
         return imageHeightAnnotation;
     }
 
     @JIPipeParameter("tile-original-height-annotation")
-    public void setImageHeightAnnotation(OptionalAnnotationNameParameter imageHeightAnnotation) {
+    public void setImageHeightAnnotation(OptionalTextAnnotationNameParameter imageHeightAnnotation) {
         this.imageHeightAnnotation = imageHeightAnnotation;
     }
 
@@ -332,23 +332,23 @@ public class TileImage2Dv2Algorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Annotate with tile inset (X)", description = "If enabled, each tile is annotated with its inset, meaning the overlap in the X direction. This value can be utilized to remove the overlap at a later point.")
     @JIPipeParameter("tile-inset-x-annotation")
-    public OptionalAnnotationNameParameter getTileInsetXAnnotation() {
+    public OptionalTextAnnotationNameParameter getTileInsetXAnnotation() {
         return tileInsetXAnnotation;
     }
 
     @JIPipeParameter("tile-inset-x-annotation")
-    public void setTileInsetXAnnotation(OptionalAnnotationNameParameter tileInsetXAnnotation) {
+    public void setTileInsetXAnnotation(OptionalTextAnnotationNameParameter tileInsetXAnnotation) {
         this.tileInsetXAnnotation = tileInsetXAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with tile inset (Y)", description = "If enabled, each tile is annotated with its inset, meaning the overlap in the Y direction. This value can be utilized to remove the overlap at a later point.")
     @JIPipeParameter("tile-inset-y-annotation")
-    public OptionalAnnotationNameParameter getTileInsetYAnnotation() {
+    public OptionalTextAnnotationNameParameter getTileInsetYAnnotation() {
         return tileInsetYAnnotation;
     }
 
     @JIPipeParameter("tile-inset-y-annotation")
-    public void setTileInsetYAnnotation(OptionalAnnotationNameParameter tileInsetYAnnotation) {
+    public void setTileInsetYAnnotation(OptionalTextAnnotationNameParameter tileInsetYAnnotation) {
         this.tileInsetYAnnotation = tileInsetYAnnotation;
     }
 

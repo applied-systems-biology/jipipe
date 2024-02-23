@@ -31,7 +31,7 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerRange;
 
 import java.util.ArrayList;
@@ -48,7 +48,7 @@ public class CropLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalIntegerRange labelIdLimit = new OptionalIntegerRange();
     private int border = 0;
-    private OptionalAnnotationNameParameter labelIdAnnotation = new OptionalAnnotationNameParameter("Label ID", true);
+    private OptionalTextAnnotationNameParameter labelIdAnnotation = new OptionalTextAnnotationNameParameter("Label ID", true);
 
     public CropLabelsAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -58,7 +58,7 @@ public class CropLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         super(other);
         this.labelIdLimit = new OptionalIntegerRange(other.labelIdLimit);
         this.border = other.border;
-        this.labelIdAnnotation = new OptionalAnnotationNameParameter(other.labelIdAnnotation);
+        this.labelIdAnnotation = new OptionalTextAnnotationNameParameter(other.labelIdAnnotation);
     }
 
     @SetJIPipeDocumentation(name = "Limit label IDs", description = "Allows to determine which label IDs should be extracted")
@@ -85,12 +85,12 @@ public class CropLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Annotate with label ID", description = "If enabled, an annotation with the label ID is created for each output")
     @JIPipeParameter("label-id-annotation")
-    public OptionalAnnotationNameParameter getLabelIdAnnotation() {
+    public OptionalTextAnnotationNameParameter getLabelIdAnnotation() {
         return labelIdAnnotation;
     }
 
     @JIPipeParameter("label-id-annotation")
-    public void setLabelIdAnnotation(OptionalAnnotationNameParameter labelIdAnnotation) {
+    public void setLabelIdAnnotation(OptionalTextAnnotationNameParameter labelIdAnnotation) {
         this.labelIdAnnotation = labelIdAnnotation;
     }
 

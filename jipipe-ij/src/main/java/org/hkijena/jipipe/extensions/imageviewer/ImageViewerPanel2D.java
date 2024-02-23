@@ -62,9 +62,9 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
     private final JSlider stackSlider = new JSlider(1, 100, 1);
     private final JSlider channelSlider = new JSlider(1, 100, 1);
     private final JSlider frameSlider = new JSlider(1, 100, 1);
-    private final JToggleButton animationStackToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
-    private final JToggleButton animationChannelToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
-    private final JToggleButton animationFrameToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
+    private final JToggleButton animationStackToggle = new JToggleButton(UIUtils.getIconFromResources("actions/play.png"));
+    private final JToggleButton animationChannelToggle = new JToggleButton(UIUtils.getIconFromResources("actions/play.png"));
+    private final JToggleButton animationFrameToggle = new JToggleButton(UIUtils.getIconFromResources("actions/play.png"));
     private final JSpinner animationFPSControl = new JSpinner(new SpinnerNumberModel(24, 0.01, 1000, 0.1));
     private final JToolBar toolBar = new JToolBar();
     private final JToggleButton enableSideBarButton = new JToggleButton();

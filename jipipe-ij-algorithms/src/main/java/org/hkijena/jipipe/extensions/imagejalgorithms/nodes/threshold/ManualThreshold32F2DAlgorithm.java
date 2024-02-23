@@ -33,7 +33,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,8 +52,8 @@ public class ManualThreshold32F2DAlgorithm extends JIPipeSimpleIteratingAlgorith
 
     private float minThreshold = 0;
     private float maxThreshold = Float.POSITIVE_INFINITY;
-    private OptionalAnnotationNameParameter minThresholdAnnotation = new OptionalAnnotationNameParameter("Min Threshold", true);
-    private OptionalAnnotationNameParameter maxThresholdAnnotation = new OptionalAnnotationNameParameter("Max Threshold", true);
+    private OptionalTextAnnotationNameParameter minThresholdAnnotation = new OptionalTextAnnotationNameParameter("Min Threshold", true);
+    private OptionalTextAnnotationNameParameter maxThresholdAnnotation = new OptionalTextAnnotationNameParameter("Max Threshold", true);
     private JIPipeTextAnnotationMergeMode thresholdAnnotationStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
     /**
@@ -74,8 +74,8 @@ public class ManualThreshold32F2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         super(other);
         this.minThreshold = other.minThreshold;
         this.maxThreshold = other.maxThreshold;
-        this.minThresholdAnnotation = new OptionalAnnotationNameParameter(other.minThresholdAnnotation);
-        this.maxThresholdAnnotation = new OptionalAnnotationNameParameter(other.maxThresholdAnnotation);
+        this.minThresholdAnnotation = new OptionalTextAnnotationNameParameter(other.minThresholdAnnotation);
+        this.maxThresholdAnnotation = new OptionalTextAnnotationNameParameter(other.maxThresholdAnnotation);
         this.thresholdAnnotationStrategy = other.thresholdAnnotationStrategy;
     }
 
@@ -148,23 +148,23 @@ public class ManualThreshold32F2DAlgorithm extends JIPipeSimpleIteratingAlgorith
 
     @SetJIPipeDocumentation(name = "Min threshold annotation", description = "Annotation added to the output that contains the min threshold")
     @JIPipeParameter("min-threshold-annotation")
-    public OptionalAnnotationNameParameter getMinThresholdAnnotation() {
+    public OptionalTextAnnotationNameParameter getMinThresholdAnnotation() {
         return minThresholdAnnotation;
     }
 
     @JIPipeParameter("min-threshold-annotation")
-    public void setMinThresholdAnnotation(OptionalAnnotationNameParameter minThresholdAnnotation) {
+    public void setMinThresholdAnnotation(OptionalTextAnnotationNameParameter minThresholdAnnotation) {
         this.minThresholdAnnotation = minThresholdAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Max threshold annotation", description = "Annotation added to the output that contains the max threshold")
     @JIPipeParameter("max-threshold-annotation")
-    public OptionalAnnotationNameParameter getMaxThresholdAnnotation() {
+    public OptionalTextAnnotationNameParameter getMaxThresholdAnnotation() {
         return maxThresholdAnnotation;
     }
 
     @JIPipeParameter("max-threshold-annotation")
-    public void setMaxThresholdAnnotation(OptionalAnnotationNameParameter maxThresholdAnnotation) {
+    public void setMaxThresholdAnnotation(OptionalTextAnnotationNameParameter maxThresholdAnnotation) {
         this.maxThresholdAnnotation = maxThresholdAnnotation;
     }
 

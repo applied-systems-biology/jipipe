@@ -80,7 +80,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     private final JLabel renderInfoLabel = new JLabel("No image",
             UIUtils.getIconFromResources("devices/video-display.png"), JLabel.LEFT);
     private final JSlider frameSlider = new JSlider(1, 100, 1);
-    private final JToggleButton animationFrameToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
+    private final JToggleButton animationFrameToggle = new JToggleButton(UIUtils.getIconFromResources("actions/play.png"));
     private final JSpinner animationFPSControl = new JSpinner(new SpinnerNumberModel(24, 0.01, 1000, 0.1));
     private final JLabel frameSliderLabel = new JLabel("Frame (T)");
     private ImagePlusData image;

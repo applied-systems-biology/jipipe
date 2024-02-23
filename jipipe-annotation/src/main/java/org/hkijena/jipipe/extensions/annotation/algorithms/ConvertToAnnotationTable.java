@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 
 import java.util.Set;
@@ -42,7 +42,7 @@ import java.util.Set;
 public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {
 
     private boolean removeOutputAnnotations = false;
-    private OptionalAnnotationNameParameter addDataToString = new OptionalAnnotationNameParameter("data_as_string", false);
+    private OptionalTextAnnotationNameParameter addDataToString = new OptionalTextAnnotationNameParameter("data_as_string", false);
 
     /**
      * @param info algorithm info
@@ -104,12 +104,12 @@ public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Add data as string", description = "Adds the string representation of data as string")
     @JIPipeParameter("add-data-as-string")
-    public OptionalAnnotationNameParameter getAddDataToString() {
+    public OptionalTextAnnotationNameParameter getAddDataToString() {
         return addDataToString;
     }
 
     @JIPipeParameter("add-data-as-string")
-    public void setAddDataToString(OptionalAnnotationNameParameter addDataToString) {
+    public void setAddDataToString(OptionalTextAnnotationNameParameter addDataToString) {
         this.addDataToString = addDataToString;
     }
 }

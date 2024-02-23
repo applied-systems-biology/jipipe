@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -182,14 +182,14 @@ public abstract class FormData extends AbstractJIPipeParameterCollection impleme
 
     public static class TabSettings extends AbstractJIPipeParameterCollection {
         private String tab = "General";
-        private OptionalAnnotationNameParameter tabAnnotation = new OptionalAnnotationNameParameter("Tab", true);
+        private OptionalTextAnnotationNameParameter tabAnnotation = new OptionalTextAnnotationNameParameter("Tab", true);
 
         public TabSettings() {
         }
 
         public TabSettings(TabSettings other) {
             this.tab = other.tab;
-            this.tabAnnotation = new OptionalAnnotationNameParameter(other.tabAnnotation);
+            this.tabAnnotation = new OptionalTextAnnotationNameParameter(other.tabAnnotation);
         }
 
         @SetJIPipeDocumentation(name = "Tab", description = "The tab where this form data will appear in.")
@@ -205,12 +205,12 @@ public abstract class FormData extends AbstractJIPipeParameterCollection impleme
 
         @SetJIPipeDocumentation(name = "Tab annotation", description = "The annotation that contains the tab name.")
         @JIPipeParameter("form:tab-annotation")
-        public OptionalAnnotationNameParameter getTabAnnotation() {
+        public OptionalTextAnnotationNameParameter getTabAnnotation() {
             return tabAnnotation;
         }
 
         @JIPipeParameter("form:tab-annotation")
-        public void setTabAnnotation(OptionalAnnotationNameParameter tabAnnotation) {
+        public void setTabAnnotation(OptionalTextAnnotationNameParameter tabAnnotation) {
             this.tabAnnotation = tabAnnotation;
         }
     }

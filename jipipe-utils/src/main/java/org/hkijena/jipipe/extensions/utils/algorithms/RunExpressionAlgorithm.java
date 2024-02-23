@@ -16,7 +16,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -31,7 +31,7 @@ import java.util.Set;
 public class RunExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter expression = new JIPipeExpressionParameter();
-    private OptionalAnnotationNameParameter writeToAnnotation = new OptionalAnnotationNameParameter("", false);
+    private OptionalTextAnnotationNameParameter writeToAnnotation = new OptionalTextAnnotationNameParameter("", false);
     private JIPipeTextAnnotationMergeMode writeToAnnotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
     public RunExpressionAlgorithm(JIPipeNodeInfo info) {
@@ -41,7 +41,7 @@ public class RunExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public RunExpressionAlgorithm(RunExpressionAlgorithm other) {
         super(other);
         this.expression = new JIPipeExpressionParameter(other.expression);
-        this.writeToAnnotation = new OptionalAnnotationNameParameter(other.writeToAnnotation);
+        this.writeToAnnotation = new OptionalTextAnnotationNameParameter(other.writeToAnnotation);
         this.writeToAnnotationMergeStrategy = other.writeToAnnotationMergeStrategy;
     }
 
@@ -60,12 +60,12 @@ public class RunExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Write result to annotation", description = "If enabled, the expression result is written to an annotation.")
     @JIPipeParameter("write-to-annotation")
-    public OptionalAnnotationNameParameter getWriteToAnnotation() {
+    public OptionalTextAnnotationNameParameter getWriteToAnnotation() {
         return writeToAnnotation;
     }
 
     @JIPipeParameter("write-to-annotation")
-    public void setWriteToAnnotation(OptionalAnnotationNameParameter writeToAnnotation) {
+    public void setWriteToAnnotation(OptionalTextAnnotationNameParameter writeToAnnotation) {
         this.writeToAnnotation = writeToAnnotation;
     }
 
