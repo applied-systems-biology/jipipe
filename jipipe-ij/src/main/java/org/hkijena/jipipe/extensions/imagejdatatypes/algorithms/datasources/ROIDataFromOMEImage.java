@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.datasources;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
@@ -30,7 +30,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 @SetJIPipeDocumentation(name = "Extract ROI from OME image", description = "Loads a ROI list from an OME image.")
 @AddJIPipeInputSlot(value = OMEImageData.class, slotName = "Image", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", create = true)
-@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class ROIDataFromOMEImage extends JIPipeSimpleIteratingAlgorithm {
 
     /**

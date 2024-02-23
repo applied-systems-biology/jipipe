@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
  */
 @SetJIPipeDocumentation(name = "Merge inputs", description = "Structural node that indicates that all inputs are merged into a single output. Please note that JIPipe nodes accept multiple inputs. " +
         "This node is not needed outside structuring the pipeline.")
-@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
 public class MergeDataSlots extends JIPipeAlgorithm {

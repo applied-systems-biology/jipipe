@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.math.distancemap;
 import ij.ImagePlus;
 import ij.plugin.filter.EDM;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -35,7 +35,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
  */
 @SetJIPipeDocumentation(name = "Euclidean distance transform 2D", description = "Applies a euclidean distance transform on binary images." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@DefineJIPipeNode(menuPath = "Math\nDistance map", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@ConfigureJIPipeNode(menuPath = "Math\nDistance map", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nBinary", aliasName = "Distance Map")

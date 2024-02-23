@@ -4,7 +4,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -44,7 +44,7 @@ import java.util.Set;
         "</ul>")
 @AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = FileData.class, slotName = "Exported file", create = true)
-@DefineJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
+@ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nSave")
 @Deprecated
 @LabelAsJIPipeHidden

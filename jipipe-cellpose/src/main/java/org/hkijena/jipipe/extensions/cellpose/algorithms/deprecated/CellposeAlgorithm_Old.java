@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableList;
 import ij.IJ;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -72,7 +72,7 @@ import java.util.stream.Collectors;
 @AddJIPipeOutputSlot(value = ImagePlus3DGreyscale32FData.class, slotName = "Probabilities")
 @AddJIPipeOutputSlot(value = ImagePlus2DGreyscale32FData.class, slotName = "Styles")
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning\nDeprecated")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning\nDeprecated")
 @Deprecated
 public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
 

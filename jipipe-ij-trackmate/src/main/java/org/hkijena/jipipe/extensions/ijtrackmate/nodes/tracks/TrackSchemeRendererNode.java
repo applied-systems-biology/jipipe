@@ -21,7 +21,7 @@ import fiji.plugin.trackmate.visualization.trackscheme.TrackScheme;
 import fiji.plugin.trackmate.visualization.trackscheme.TrackSchemeGraphComponent;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -39,7 +39,7 @@ import java.awt.image.BufferedImage;
 import java.lang.reflect.InvocationTargetException;
 
 @SetJIPipeDocumentation(name = "Render track scheme", description = "Renders the track scheme as image")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nVisualize")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nVisualize")
 @AddJIPipeInputSlot(value = TrackCollectionData.class, slotName = "Tracks", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Track scheme", create = true)
 public class TrackSchemeRendererNode extends JIPipeSimpleIteratingAlgorithm {

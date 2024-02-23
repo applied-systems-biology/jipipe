@@ -21,7 +21,7 @@ import ij.plugin.filter.GaussianBlur;
 import ij.plugin.filter.RankFilters;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -56,7 +56,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
         "<li>Morphological hole filling</li>" +
         "<li>Morphological erosion</li>" +
         "</ol>")
-@DefineJIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@ConfigureJIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", create = true)
 public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

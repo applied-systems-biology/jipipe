@@ -10,7 +10,7 @@ import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -32,7 +32,7 @@ import java.awt.*;
 @SetJIPipeDocumentation(name = "Ridge detector", description = "A ridge detector that detects lines and outputs a binary mask where lines are detected.")
 @AddJIPipeCitation("https://github.com/thorstenwagner/ij-ridgedetection")
 @AddJIPipeCitation("https://imagej.net/plugins/ridge-detection")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Segment")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Segment")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Lines", create = true)

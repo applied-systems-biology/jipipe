@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.modify;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
@@ -32,7 +32,7 @@ import java.util.Set;
 @AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", create = true)
-@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
+@ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
 public class ChangeRoiNameFromExpressionsAndMeasurementsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private StringQueryExpression expression = new StringQueryExpression();

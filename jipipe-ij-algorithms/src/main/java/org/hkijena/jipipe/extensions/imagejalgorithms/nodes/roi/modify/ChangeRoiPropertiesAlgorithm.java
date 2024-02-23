@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.modify;
 import ij.gui.Roi;
 import ij.plugin.RoiScaler;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -34,7 +34,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
 @SetJIPipeDocumentation(name = "Change ROI properties", description = "Sets properties of all Roi to a user-defined value.")
-@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
+@ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
 @AddJIPipeInputSlot(value = ROIListData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm {

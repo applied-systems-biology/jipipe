@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SetJIPipeDocumentation(name = "Annotate with path properties", description = "Annotates files or directories with their properties")
-@DefineJIPipeNode(menuPath = "For paths", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
+@ConfigureJIPipeNode(menuPath = "For paths", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = PathData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = PathData.class, slotName = "Output", create = true)
 public class AnnotateWithPathProperties extends JIPipeSimpleIteratingAlgorithm {

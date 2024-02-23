@@ -6,7 +6,7 @@ import net.imagej.axis.AxisType;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
@@ -36,7 +36,7 @@ import java.util.Map;
 import static org.hkijena.jipipe.extensions.ilastik.utils.ImgUtils.DEFAULT_AXES;
 
 @SetJIPipeDocumentation(name = "Export Ilastik HDF5 image", description = "Exports an image into the Ilastik HDF5 format")
-@DefineJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
+@ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
 @AddJIPipeOutputSlot(value = FileData.class, slotName = "HDF5 File", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nSave")

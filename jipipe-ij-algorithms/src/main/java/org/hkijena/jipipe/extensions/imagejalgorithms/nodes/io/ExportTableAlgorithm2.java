@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.io;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
@@ -23,7 +23,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Export table", description = "Exports a results table to CSV/XLSX")
 @AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = FileData.class, slotName = "Exported file", create = true)
-@DefineJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Tables")
+@ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Tables")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nSave")
 public class ExportTableAlgorithm2 extends JIPipeIteratingAlgorithm {
 

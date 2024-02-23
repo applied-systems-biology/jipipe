@@ -8,7 +8,7 @@ import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -30,7 +30,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 @SetJIPipeDocumentation(name = "Detect lines 2D (Hough)", description = "Finds lines within the image via a Hough lines transformation. " + "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Binary")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Binary")
 @AddJIPipeCitation("Based on code by David Chatting, https://github.com/davidchatting/hough_lines/blob/master/HoughTransform.java")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Mask", description = "Mask that contains the segmented edges. ", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Lines", create = true, description = "The detected lines represented as ROI")

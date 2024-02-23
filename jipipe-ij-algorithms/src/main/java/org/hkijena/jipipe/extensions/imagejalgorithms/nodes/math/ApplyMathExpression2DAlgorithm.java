@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.math;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
@@ -36,7 +36,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
  * Wrapper around {@link ij.process.ImageProcessor}
  */
 @SetJIPipeDocumentation(name = "Math expression", description = "Applies a mathematical operation to each pixel.")
-@DefineJIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@ConfigureJIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nMath", aliasName = "Macro... (per pixel, greyscale)")

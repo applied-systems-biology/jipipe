@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.modify;
 import gnu.trove.list.TDoubleList;
 import gnu.trove.list.array.TDoubleArrayList;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -38,7 +38,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
 @SetJIPipeDocumentation(name = "Color 3D ROI by statistics", description = "Sets the 3D ROI item colors by measurements.")
-@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
+@ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
 @AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", create = true)

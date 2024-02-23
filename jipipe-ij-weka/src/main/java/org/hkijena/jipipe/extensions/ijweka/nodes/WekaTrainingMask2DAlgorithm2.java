@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.ijweka.nodes;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @SetJIPipeDocumentation(name = "Train Weka model from mask (multiple images, 2D)", description = "Trains a Weka model on 2D image data that classified into two classes via a mask.")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
 @AddJIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Image", description = "Image on which the training should be applied", create = true)
 @AddJIPipeInputSlot(value = ImagePlus2DGreyscaleMaskData.class, slotName = "Mask", description = "Mask that marks foreground objects via white pixels (255) and the background with black pixels (0)", create = true)
 @AddJIPipeOutputSlot(value = WekaModelData.class, slotName = "Trained model", description = "The model", create = true)

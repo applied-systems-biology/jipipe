@@ -17,7 +17,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ColorProcessor;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -36,7 +36,7 @@ import java.awt.image.BufferedImage;
  * Wrapper around {@link ij.process.ImageProcessor}
  */
 @SetJIPipeDocumentation(name = "Render color map", description = "Creates a new image that renders the contents of a color map as RGB image.")
-@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 public class GenerateLUTImageFromColorMap extends JIPipeSimpleIteratingAlgorithm {
 

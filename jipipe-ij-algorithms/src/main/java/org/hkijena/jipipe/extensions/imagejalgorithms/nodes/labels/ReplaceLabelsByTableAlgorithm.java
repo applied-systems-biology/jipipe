@@ -17,7 +17,7 @@ import gnu.trove.map.TFloatFloatMap;
 import gnu.trove.map.hash.TFloatFloatHashMap;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -36,7 +36,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 
 @SetJIPipeDocumentation(name = "Replace label values by table", description = "Replaces label values by a mapping as specified in a table. The table should contain two columns, one for the old label and a second column defining the replacement value.")
-@DefineJIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@ConfigureJIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Labels", create = true)
 @AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Mappings", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Labels", create = true)

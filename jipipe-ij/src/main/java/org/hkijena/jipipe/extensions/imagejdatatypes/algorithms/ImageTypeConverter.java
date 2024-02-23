@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.algorithms;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -37,7 +37,7 @@ import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataPar
 @AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 @SetJIPipeDocumentation(name = "Convert ImageJ image", description = "Converts an ImageJ image into another ImageJ image data type")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)
 public class ImageTypeConverter extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeDataInfoRef outputType = new JIPipeDataInfoRef(ImagePlusData.class);

@@ -17,7 +17,7 @@ import ij.WindowManager;
 import ij.measure.ResultsTable;
 import ij.text.TextWindow;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
@@ -38,7 +38,7 @@ import java.awt.*;
  */
 @SetJIPipeDocumentation(name = "Table from ImageJ", description = "Imports one or multiple active ImageJ results table windows into JIPipe")
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
-@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nImport")
 public class ResultsTableFromGUI extends JIPipeSimpleIteratingAlgorithm {
 

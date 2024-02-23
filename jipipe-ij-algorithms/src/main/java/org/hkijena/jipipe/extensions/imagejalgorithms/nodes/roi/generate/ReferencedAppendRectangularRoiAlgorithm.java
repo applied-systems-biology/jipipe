@@ -17,7 +17,7 @@ import ij.ImagePlus;
 import ij.gui.ShapeRoi;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -37,7 +37,7 @@ import java.awt.*;
  */
 @SetJIPipeDocumentation(name = "Append rectangular ROI (referenced)", description = "Appends manually defines rectangular ROI to all input ROI lists. " +
         "Ths algorithm allows to add rectangles as margins to the reference image bounds.")
-@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Merge")
+@ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Merge")
 @AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)

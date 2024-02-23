@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.filesystem.datasources;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @SetJIPipeDocumentation(name = "Project user directory", description = "Returns a project user (Project > Project settings > User directories) folder as data")
-@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeOutputSlot(value = FolderData.class, slotName = "Output", create = true)
 public class ProjectUserFolderDataSource extends JIPipeSimpleIteratingAlgorithm {
 

@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.dimensions;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
@@ -50,7 +50,7 @@ import java.util.*;
         "The type of the output image is determined by the consensus bit depth. " +
         "This node has similar functionality to the 'Combine stacks' node. " +
         "If no order (ascending) is given for each input, the order of input images is determined by the order in the slot list.")
-@DefineJIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@ConfigureJIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nHyperstacks")
 public class StackToDimensionMerger2Algorithm extends JIPipeIteratingAlgorithm {

@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.utils.algorithms.datatable;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -20,7 +20,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Annotate with data table properties", description = "Annotates data table data with properties (e.g., the size)")
 @AddJIPipeInputSlot(value = JIPipeDataTable.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeDataTable.class, slotName = "Output", create = true)
-@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For data tables")
+@ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For data tables")
 public class AnnotateWithDataTableProperties extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalAnnotationNameParameter numRowsAnnotation = new OptionalAnnotationNameParameter("Num Rows", true);

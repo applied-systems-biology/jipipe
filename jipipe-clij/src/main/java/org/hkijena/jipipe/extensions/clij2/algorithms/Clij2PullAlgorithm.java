@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.clij2.algorithms;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -16,7 +16,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 @SetJIPipeDocumentation(name = "CLIJ2 Pull from GPU", description = "Converts a GPU image into a non-CLIJ image")
 @AddJIPipeInputSlot(slotName = "Input", value = CLIJImageData.class, create = true)
 @AddJIPipeOutputSlot(slotName = "Output", value = ImagePlusData.class, create = true)
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "CLIJ")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "CLIJ")
 public class Clij2PullAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean deallocate = false;

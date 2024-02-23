@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.strings.datasources;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -29,7 +29,7 @@ import org.hkijena.jipipe.extensions.strings.StringData;
 
 @SetJIPipeDocumentation(name = "Define string", description = "Creates a string data object from a parameter")
 @AddJIPipeOutputSlot(value = StringData.class, slotName = "Output", create = true)
-@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class StringDefinitionDataSource extends JIPipeSimpleIteratingAlgorithm {
 
     private String value = "";

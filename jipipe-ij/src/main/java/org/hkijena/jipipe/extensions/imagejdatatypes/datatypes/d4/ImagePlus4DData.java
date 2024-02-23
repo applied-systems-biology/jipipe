@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
@@ -28,7 +28,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
  * 4D image
  */
 @SetJIPipeDocumentation(name = "4D image", description = "A 4D image")
-@DefineJIPipeNode(menuPath = "Images\n4D")
+@ConfigureJIPipeNode(menuPath = "Images\n4D")
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(numDimensions = 4)
 public class ImagePlus4DData extends ImagePlusData implements Image4DData {

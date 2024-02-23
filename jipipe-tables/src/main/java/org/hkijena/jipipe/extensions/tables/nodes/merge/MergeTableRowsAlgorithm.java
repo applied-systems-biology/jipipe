@@ -15,7 +15,7 @@
 package org.hkijena.jipipe.extensions.tables.nodes.merge;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -28,7 +28,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
  * Algorithm that integrates columns
  */
 @SetJIPipeDocumentation(name = "Merge table rows", description = "Merges multiple tables into one table by merging the list of rows. Columns are automatically created if they do not exist.")
-@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Merge")
+@ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Merge")
 @AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class MergeTableRowsAlgorithm extends JIPipeMergingAlgorithm {

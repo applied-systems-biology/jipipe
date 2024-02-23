@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.utils.algorithms.processes;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -29,7 +29,7 @@ import java.util.Collections;
 import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Run process (Iterating)", description = "Executes a process.")
-@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Process")
+@ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Process")
 public class RunProcessIteratingAlgorithm extends JIPipeIteratingAlgorithm {
 
     private ProcessEnvironment processEnvironment = new ProcessEnvironment();

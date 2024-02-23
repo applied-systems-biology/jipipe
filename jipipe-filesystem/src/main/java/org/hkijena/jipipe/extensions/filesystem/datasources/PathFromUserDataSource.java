@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.filesystem.datasources;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @SetJIPipeDocumentation(name = "Select path (interactive)", description = "Asks for a path (file/folder) interactively when the node is run.")
-@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeOutputSlot(value = PathData.class, slotName = "Path", create = true)
 public class PathFromUserDataSource extends JIPipeSimpleIteratingAlgorithm {
 

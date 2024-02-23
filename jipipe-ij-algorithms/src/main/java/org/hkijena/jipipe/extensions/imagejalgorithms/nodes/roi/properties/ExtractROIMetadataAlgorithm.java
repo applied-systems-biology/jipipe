@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.properties;
 
 import ij.gui.Roi;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -19,7 +19,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Extract ROI metadata as table", description = "Extracts the metadata (properties map) of each ROI and writes them into a table")
-@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Metadata")
+@ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Metadata")
 @AddJIPipeInputSlot(value = ROIListData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class ExtractROIMetadataAlgorithm extends JIPipeSimpleIteratingAlgorithm {

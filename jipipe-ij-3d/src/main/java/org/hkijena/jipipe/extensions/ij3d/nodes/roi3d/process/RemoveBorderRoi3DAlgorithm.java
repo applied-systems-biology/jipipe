@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.process;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -14,7 +14,7 @@ import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
 @SetJIPipeDocumentation(name = "Remove border 3D ROI", description = "Removes 3D ROI at the image borders")
-@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true)
 @AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", create = true)

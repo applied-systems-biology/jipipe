@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.split;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Split into individual 3D ROI lists", description = "Splits the 3D ROI lists into individual 3D ROI lists.")
-@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Split")
+@ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Split")
 @AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", create = true)
 public class ExplodeRoi3DListAlgorithm extends JIPipeSimpleIteratingAlgorithm {

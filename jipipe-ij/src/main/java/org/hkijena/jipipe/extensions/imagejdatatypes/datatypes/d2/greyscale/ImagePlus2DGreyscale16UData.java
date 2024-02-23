@@ -18,7 +18,7 @@ import ij.ImagePlus;
 import ij.process.ShortProcessor;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
@@ -32,7 +32,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
  * 16-bit greyscale 2D image
  */
 @SetJIPipeDocumentation(name = "2D image (16 bit)", description = "A 16-bit greyscale image")
-@DefineJIPipeNode(menuPath = "Images\n2D\nGreyscale")
+@ConfigureJIPipeNode(menuPath = "Images\n2D\nGreyscale")
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ShortProcessor.class, colorSpace = GreyscaleColorSpace.class, pixelType = Short.class, bitDepth = 16, numDimensions = 2)
 public class ImagePlus2DGreyscale16UData extends ImagePlus2DGreyscaleData {

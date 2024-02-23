@@ -18,7 +18,7 @@ import ij.ImagePlus;
 import ij.process.ShortProcessor;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
@@ -34,7 +34,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
  * Conversion works through {@link org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.ImplicitImageTypeConverter}
  */
 @SetJIPipeDocumentation(name = "Image (16 bit)", description = "A 16-bit greyscale image")
-@DefineJIPipeNode(menuPath = "Images\nGreyscale")
+@ConfigureJIPipeNode(menuPath = "Images\nGreyscale")
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ShortProcessor.class, colorSpace = GreyscaleColorSpace.class, pixelType = Short.class, bitDepth = 16)
 public class ImagePlusGreyscale16UData extends ImagePlusGreyscaleData {

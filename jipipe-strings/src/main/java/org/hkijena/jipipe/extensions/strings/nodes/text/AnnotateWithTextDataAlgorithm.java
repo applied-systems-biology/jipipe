@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.strings.nodes.text;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SetJIPipeDocumentation(name = "Annotate with text values", description = "Extracts a value from the input text data (via an expression) and annotates the data with the result.")
-@DefineJIPipeNode(menuPath = "For text", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
+@ConfigureJIPipeNode(menuPath = "For text", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = StringData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = StringData.class, slotName = "Output", create = true)
 public class AnnotateWithTextDataAlgorithm extends JIPipeSimpleIteratingAlgorithm {

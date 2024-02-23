@@ -49,7 +49,7 @@ import java.util.Map;
         "Parameters can either point to a project parameter (preferred way) or to a parameter within a specific node (prefix with [node id]/). To find out the parameter ids, take a look at the 'Node ID' documentation on selecting a node.")
 @AddJIPipeInputSlot(value = ParametersData.class, slotName = "Project parameters", create = true)
 @AddJIPipeOutputSlot(value = JIPipeOutputData.class, slotName = "Output", create = true)
-@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Meta run")
+@ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Meta run")
 public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Path projectFile = Paths.get("");

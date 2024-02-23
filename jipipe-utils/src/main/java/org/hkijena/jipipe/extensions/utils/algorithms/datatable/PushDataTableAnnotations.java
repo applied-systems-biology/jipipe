@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.utils.algorithms.datatable;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -23,7 +23,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Push annotations into data tables", description = "Copies the annotations of a data table into the table itself")
 @AddJIPipeInputSlot(value = JIPipeDataTable.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeDataTable.class, slotName = "Output", create = true)
-@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For data tables")
+@ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For data tables")
 public class PushDataTableAnnotations extends JIPipeSimpleIteratingAlgorithm {
 
     private AnnotationQueryExpression textAnnotationFilter = new AnnotationQueryExpression();

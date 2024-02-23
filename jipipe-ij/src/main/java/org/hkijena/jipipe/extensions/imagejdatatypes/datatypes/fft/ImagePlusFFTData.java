@@ -21,7 +21,7 @@ import ij.plugin.FFT;
 import ij.process.FHT;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
@@ -40,7 +40,7 @@ import java.nio.file.Path;
  * Image in frequency space
  */
 @SetJIPipeDocumentation(name = "FFT Image")
-@DefineJIPipeNode(menuPath = "Images\nFFT")
+@ConfigureJIPipeNode(menuPath = "Images\nFFT")
 @LabelAsJIPipeHeavyData
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains two image files: fht.ome.tif / fht.tif and power_spectrum.ome.tif / power_spectrum.tif, as well as a file fht_info.json. Either the OME TIFF or TIFF " +
         "must be present. fht.ome.tif / fht.tif contains the FHT (float32). power_spectrum.ome.tif / power_spectrum.tif contains the power spectrum (float32). " +

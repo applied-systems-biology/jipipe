@@ -18,7 +18,7 @@ import ij.measure.Calibration;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.nodes.*;
@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
         "This node is deprecated. Use the node 'Create montage'.")
 @AddJIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlus2DData.class, slotName = "Output", create = true)
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Montage")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Montage")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Make Montage... (of inputs)")
 @LabelAsJIPipeHidden
 @Deprecated

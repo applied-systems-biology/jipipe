@@ -17,7 +17,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.morphology;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -29,7 +29,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.Imag
 import sc.fiji.skeletonize3D.Skeletonize3D_;
 
 @SetJIPipeDocumentation(name = "Morphological skeletonize 3D", description = "Performs the skeletonization of 2D and 3D binary images (8-bit images)")
-@DefineJIPipeNode(menuPath = "Morphology", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@ConfigureJIPipeNode(menuPath = "Morphology", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlus3DGreyscaleMaskData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlus3DGreyscaleMaskData.class, slotName = "Output", create = true)
 @AddJIPipeCitation("Implementation by Ignacio Arganda-Carreras https://imagej.net/plugins/skeletonize3d")

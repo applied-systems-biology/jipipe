@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.tables.nodes;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -21,7 +21,7 @@ import java.util.Set;
         "it will be automatically renamed to be unique.")
 @AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
-@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
 public class ModifyTableColumnNamesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private StringQueryExpression expression = new StringQueryExpression("value");

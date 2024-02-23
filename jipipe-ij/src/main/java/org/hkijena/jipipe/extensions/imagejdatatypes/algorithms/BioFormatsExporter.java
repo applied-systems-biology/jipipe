@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Bio-Formats exporter", description = "Deprecated. Please use the new node. Writes the OME images into an *.ome.tif file.")
-@DefineJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
+@ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
 @AddJIPipeInputSlot(value = OMEImageData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = FileData.class, slotName = "Output", create = true)
 @AddJIPipeCitation("Melissa Linkert, Curtis T. Rueden, Chris Allan, Jean-Marie Burel, Will Moore, Andrew Patterson, Brian Loranger, Josh Moore, " +

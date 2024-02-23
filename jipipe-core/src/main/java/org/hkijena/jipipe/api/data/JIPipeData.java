@@ -87,7 +87,7 @@ public interface JIPipeData extends Closeable, AutoCloseable {
      * @return The menu path of the data class
      */
     static String getMenuPathOf(Class<? extends JIPipeData> klass) {
-        DefineJIPipeNode[] annotations = klass.getAnnotationsByType(DefineJIPipeNode.class);
+        ConfigureJIPipeNode[] annotations = klass.getAnnotationsByType(ConfigureJIPipeNode.class);
         if (annotations.length > 0) {
             return annotations[0].menuPath();
         } else {

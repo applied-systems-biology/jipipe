@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -35,7 +35,7 @@ import java.nio.file.Paths;
  */
 @SetJIPipeDocumentation(name = "Annotation to path", description = "Converts an annotation of to a path. " +
         "If the specified annotation is not present, an empty path is generated.")
-@DefineJIPipeNode(menuPath = "Convert", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
+@ConfigureJIPipeNode(menuPath = "Convert", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = PathData.class, slotName = "Output", create = true)
 public class AnnotationToPath extends JIPipeSimpleIteratingAlgorithm {

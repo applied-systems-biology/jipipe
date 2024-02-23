@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
  */
 @SetJIPipeDocumentation(name = "Annotate with source slot", description = "Annotates the data with the name or custom label of the source slot. Please note " +
         "that this node cannot resolve multiple input slots, as, for optimization purposes, the information where data is coming from is deleted.")
-@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
+@ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
 @AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Data", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Annotated data", create = true)
 public class AnnotateWithSourceSlot extends JIPipeSimpleIteratingAlgorithm {

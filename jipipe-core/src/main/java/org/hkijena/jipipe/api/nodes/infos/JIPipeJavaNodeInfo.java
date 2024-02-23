@@ -23,7 +23,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
 import org.hkijena.jipipe.api.nodes.*;
@@ -109,7 +109,7 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
      * @return The category
      */
     public static JIPipeNodeTypeCategory getCategoryOf(Class<? extends JIPipeGraphNode> klass) {
-        DefineJIPipeNode[] annotations = klass.getAnnotationsByType(DefineJIPipeNode.class);
+        ConfigureJIPipeNode[] annotations = klass.getAnnotationsByType(ConfigureJIPipeNode.class);
         if (annotations.length > 0) {
             Class<? extends JIPipeNodeTypeCategory> categoryClass = annotations[0].nodeTypeCategory();
             return (JIPipeNodeTypeCategory) ReflectionUtils.newInstance(categoryClass);
@@ -125,7 +125,7 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
      * @return The menu path
      */
     public static String getMenuPathOf(Class<? extends JIPipeGraphNode> klass) {
-        DefineJIPipeNode[] annotations = klass.getAnnotationsByType(DefineJIPipeNode.class);
+        ConfigureJIPipeNode[] annotations = klass.getAnnotationsByType(ConfigureJIPipeNode.class);
         if (annotations.length > 0) {
             return annotations[0].menuPath();
         } else {
@@ -142,7 +142,7 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
      * @return The menu path of the data class
      */
     static Class<? extends JIPipeData> getDataSourceMenuLocationOf(Class<? extends JIPipeGraphNode> klass) {
-        DefineJIPipeNode[] annotations = klass.getAnnotationsByType(DefineJIPipeNode.class);
+        ConfigureJIPipeNode[] annotations = klass.getAnnotationsByType(ConfigureJIPipeNode.class);
         if (annotations.length > 0) {
             return annotations[0].dataSourceMenuLocation();
         } else {

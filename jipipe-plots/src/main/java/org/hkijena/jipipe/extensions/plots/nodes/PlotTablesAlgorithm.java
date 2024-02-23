@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.plots.nodes;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
@@ -53,7 +53,7 @@ import java.util.*;
 @SetJIPipeDocumentation(name = "Plot tables", description = "Plots incoming tables. First, set the plot type via a parameter. This " +
         "will then show the available settings for this plot type, and a list of input columns for the plot. " +
         "Please ensure to correctly setup these input columns.")
-@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
 @AddJIPipeInputSlot(ResultsTableData.class)
 @AddJIPipeOutputSlot(PlotData.class)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Plot (JFreeChart)")

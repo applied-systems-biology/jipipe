@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.ijweka.nodes;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -19,7 +19,7 @@ import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 import trainableSegmentation.WekaSegmentation;
 
 @SetJIPipeDocumentation(name = "Weka classifier 3D", description = "Classifies a 3D image with a Weka model. To obtain ROI from the generated labels, utilize the 'Labels to ROI' node.")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
 @AddJIPipeInputSlot(value = ImagePlus3DData.class, slotName = "Image", description = "Image on which the classification should be applied", create = true)
 @AddJIPipeInputSlot(value = WekaModelData.class, slotName = "Model", description = "The model", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Classified image", description = "The classified image", create = true)

@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.utils.algorithms.datatable;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -23,7 +23,7 @@ import java.util.List;
         " If multiple tables are supplied, the rows are merged.")
 @AddJIPipeInputSlot(value = JIPipeDataTable.class, slotName = "Table", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", create = true)
-@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Data tables")
+@ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Data tables")
 public class ExtractTableAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     private boolean mergeAnnotations = true;

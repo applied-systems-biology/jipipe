@@ -18,7 +18,7 @@ import gnu.trove.list.TDoubleList;
 import gnu.trove.list.array.TDoubleArrayList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -43,7 +43,7 @@ import java.util.Set;
 @SetJIPipeDocumentation(name = "Add missing rows (series)", description = "Adds missing rows in a table that contains a numeric series of rows (e.g., a time series)")
 @AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
-@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Append")
+@ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Append")
 public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private StringQueryExpression countingColumn = new StringQueryExpression();

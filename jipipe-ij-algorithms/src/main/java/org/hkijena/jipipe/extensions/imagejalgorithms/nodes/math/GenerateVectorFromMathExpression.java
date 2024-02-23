@@ -17,7 +17,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
@@ -43,7 +43,7 @@ import java.util.List;
  */
 @SetJIPipeDocumentation(name = "Generate vector field from math expression", description = "Generates a vector field by utilizing a math expression. " +
         "The expression must return an array of numbers (or scalar if there are only 1 components).")
-@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Annotations", create = true, optional = true, description = "Optional annotations that can be referenced in the expression")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 public class GenerateVectorFromMathExpression extends JIPipeSimpleIteratingAlgorithm {

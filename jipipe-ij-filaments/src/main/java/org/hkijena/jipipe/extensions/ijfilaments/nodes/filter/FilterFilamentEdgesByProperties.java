@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.ijfilaments.nodes.filter;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -20,7 +20,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Filter filament edges", description = "Filters filament edges by various properties")
-@DefineJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Filter")
+@ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Filter")
 @AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
 public class FilterFilamentEdgesByProperties extends JIPipeSimpleIteratingAlgorithm {

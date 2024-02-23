@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -27,7 +27,7 @@ import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Reorder hyperstack slices (Expression)", description = "Uses an expression that iterates through all hyperstack slices to assign a new location within the output hyperstack. " +
         "Can also filter slices based on the location.")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
 @AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 public class ReorderHyperstackSlicesExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {

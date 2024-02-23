@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.fft;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -26,7 +26,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
  * 3D image in frequency space
  */
 @SetJIPipeDocumentation(name = "3D FFT Image")
-@DefineJIPipeNode(menuPath = "Images\nFFT")
+@ConfigureJIPipeNode(menuPath = "Images\nFFT")
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(numDimensions = 3)
 public class ImagePlusFFT3DData extends ImagePlusFFT2DData {

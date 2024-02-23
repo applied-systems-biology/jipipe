@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.tables.nodes.columns;
 
 import com.google.common.primitives.Doubles;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -44,7 +44,7 @@ import java.util.*;
  */
 @SetJIPipeDocumentation(name = "Apply expression to columns", description = "Applies an expression function to all column values. " +
         "The result of the operation is stored in the same or a new column.")
-@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class ApplyExpressionToColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

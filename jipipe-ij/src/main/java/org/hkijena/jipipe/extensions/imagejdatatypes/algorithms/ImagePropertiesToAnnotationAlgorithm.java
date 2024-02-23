@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.algorithms;
 import ij.ImagePlus;
 import ij.measure.Calibration;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -36,7 +36,7 @@ import java.util.List;
  * Adds data annotations that contain the image properties
  */
 @SetJIPipeDocumentation(name = "Annotate with image properties", description = "Adds data annotations that contain the image properties.")
-@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For images")
+@ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For images")
 @AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Annotated image", create = true)
 public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingAlgorithm {

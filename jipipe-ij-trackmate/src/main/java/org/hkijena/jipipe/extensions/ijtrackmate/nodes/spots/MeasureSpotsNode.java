@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots;
 
 import fiji.plugin.trackmate.Spot;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -16,7 +16,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Measure spots", description = "Measures the spots and outputs the results into a table. If tracked spots are provided, the track ID will also be added.")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nMeasure")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nMeasure")
 @AddJIPipeInputSlot(value = SpotsCollectionData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class MeasureSpotsNode extends JIPipeSimpleIteratingAlgorithm {

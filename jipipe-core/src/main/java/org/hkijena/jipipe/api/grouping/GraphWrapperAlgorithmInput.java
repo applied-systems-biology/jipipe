@@ -14,12 +14,12 @@
 package org.hkijena.jipipe.api.grouping;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 
 @SetJIPipeDocumentation(name = "Group input", description = "Acts as input of a node group.")
-@DefineJIPipeNode()
+@ConfigureJIPipeNode()
 public class GraphWrapperAlgorithmInput extends IOInterfaceAlgorithm {
 
     public GraphWrapperAlgorithmInput(JIPipeNodeInfo info) {

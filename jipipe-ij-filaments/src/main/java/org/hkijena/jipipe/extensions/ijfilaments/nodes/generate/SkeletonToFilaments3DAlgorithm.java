@@ -18,7 +18,7 @@ import ij.ImagePlus;
 import ij.measure.Calibration;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -39,7 +39,7 @@ import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Binary skeleton to 3D filaments", description = "Applies a simple algorithm that converts a binary skeleton into a filament. " +
         "This algorithm 3D data and will apply the processing per C/T stack.")
-@DefineJIPipeNode(menuPath = "Convert", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@ConfigureJIPipeNode(menuPath = "Convert", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Skeleton", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Filaments", description = "The filaments as extracted by the algorithm", create = true)
 public class SkeletonToFilaments3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

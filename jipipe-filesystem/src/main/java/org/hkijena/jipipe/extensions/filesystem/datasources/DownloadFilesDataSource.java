@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.filesystem.datasources;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -24,7 +24,7 @@ import java.net.URL;
 import java.nio.file.Path;
 
 @SetJIPipeDocumentation(name = "Download files", description = "Downloads one or multiple files from web resources. This node will download the files and places each one of them into a temporary folder. The output of this node is the path to the downloaded file.")
-@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeOutputSlot(value = FileData.class, slotName = "Output", create = true)
 public class DownloadFilesDataSource extends JIPipeSimpleIteratingAlgorithm {
 

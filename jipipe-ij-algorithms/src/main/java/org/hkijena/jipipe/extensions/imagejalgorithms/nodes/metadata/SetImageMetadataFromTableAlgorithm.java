@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.metadata;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Set image metadata from table", description = "Sets the image metadata (property map) from a table. Only the first row is utilized.")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Metadata")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Metadata")
 @AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
 @AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Metadata", description = "Table of image metadata (one row)", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)

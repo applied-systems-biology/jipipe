@@ -8,7 +8,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -58,7 +58,7 @@ import static org.hkijena.jipipe.extensions.ilastik.utils.ImgUtils.*;
 @SetJIPipeDocumentation(name = "Ilastik object classification (segmentation image)", description = "The object classification workflow aims to classify full objects, based on object-level features and user annotations. " +
         "Supports projects that have the raw data and the segmentation image as input.")
 @AddJIPipeCitation("Object classification documentation: https://www.ilastik.org/documentation/objects/objects")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Ilastik")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Ilastik")
 @AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true, description = "The image(s) to classify. Requires a data annotation that contains the segmentation image.")
 @AddJIPipeInputSlot(value = IlastikModelData.class, slotName = "Project", create = true, description = "The Ilastik project. Must support pixel classification.")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Object Predictions", description = "A label image of the object class predictions")

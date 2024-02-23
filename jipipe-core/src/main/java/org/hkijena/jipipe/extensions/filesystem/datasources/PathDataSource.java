@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.filesystem.datasources;
 
 import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
@@ -46,7 +46,7 @@ import java.util.Objects;
  */
 @SetJIPipeDocumentation(name = "Path", description = "Converts the path parameter into path data.")
 @AddJIPipeOutputSlot(value = PathData.class, slotName = "Path", create = true)
-@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class PathDataSource extends JIPipeAlgorithm {
 
     private Path currentWorkingDirectory;

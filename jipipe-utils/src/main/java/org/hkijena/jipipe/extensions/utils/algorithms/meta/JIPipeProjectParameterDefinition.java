@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.utils.algorithms.meta;
 
 import ij.IJ;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
@@ -43,7 +43,7 @@ import java.util.Map;
         "If it matches with a pipeline parameter (that can be set up via a pipeline's settings), this parameter is changed. It can also match with an absolute path to a node's parameter with following format: " +
         "[node-id]/[node parameter key]")
 @AddJIPipeOutputSlot(value = ParametersData.class, slotName = "Parameters", create = true)
-@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class JIPipeProjectParameterDefinition extends DefineParametersTableAlgorithm {
     public JIPipeProjectParameterDefinition(JIPipeNodeInfo info) {
         super(info);

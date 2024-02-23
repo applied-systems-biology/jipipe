@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.multiparameters.nodes;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
@@ -14,7 +14,7 @@ import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 
 @SetJIPipeDocumentation(name = "Merge parameters", description = "Merges multiple parameter sets. To always multiply all incoming parameters, set the data batch grouping method to 'Multiply'. " +
         "Parameters with the same unique key are overwritten according to the input slot order.")
-@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Parameters")
+@ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Parameters")
 @AddJIPipeInputSlot(value = ParametersData.class, slotName = "Input 1", create = true)
 @AddJIPipeInputSlot(value = ParametersData.class, slotName = "Input 2", create = true)
 @AddJIPipeOutputSlot(value = ParametersData.class, slotName = "Output", create = true)

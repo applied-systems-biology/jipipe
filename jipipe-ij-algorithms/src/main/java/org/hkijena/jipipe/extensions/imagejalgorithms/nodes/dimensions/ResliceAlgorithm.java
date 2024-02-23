@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.dimensions;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -19,7 +19,7 @@ import org.hkijena.jipipe.extensions.parameters.library.roi.AnchorParameterSetti
 @SetJIPipeDocumentation(name = "Reslice", description = "Defines a new Z axis and projects the image so that its Z axis is the newly defined one.")
 @AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
-@DefineJIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@ConfigureJIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Reslice Z")
 public class ResliceAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

@@ -5,7 +5,7 @@ import gnu.trove.set.hash.TIntHashSet;
 import ij.ImagePlus;
 import inra.ijpb.label.LabelImages;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @SetJIPipeDocumentation(name = "Train Weka model from labels (multiple images, 2D)", description = "Trains a Weka model on 2D image data that classified by a label image.")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
 @AddJIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Labeled Images", description = "Images on which the training should be applied. " +
         "Each image should have a data annotation that contains the label data.", create = true)
 @AddJIPipeOutputSlot(value = WekaModelData.class, slotName = "Trained model", description = "The model", create = true)

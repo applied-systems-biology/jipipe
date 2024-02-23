@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.ijfilaments.nodes.convert;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -20,7 +20,7 @@ import java.awt.*;
 import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Convert filaments to 3D scene", description = "Converts 3D filaments into a 3D scene.")
-@DefineJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Convert")
+@ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Convert")
 @AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = Scene3DData.class, slotName = "Output", create = true)
 public class ConvertFilamentsTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {

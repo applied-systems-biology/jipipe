@@ -18,7 +18,7 @@ import ij.ImagePlus;
 import ij.process.ColorProcessor;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
@@ -36,7 +36,7 @@ import java.awt.*;
  * RGB color 4D image
  */
 @SetJIPipeDocumentation(name = "4D image (LAB)", description = "A color image (LAB colors)")
-@DefineJIPipeNode(menuPath = "Images\n4D\nColor")
+@ConfigureJIPipeNode(menuPath = "Images\n4D\nColor")
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ColorProcessor.class, colorSpace = LABColorSpace.class, pixelType = Integer.class, bitDepth = 24, numDimensions = 4)
 public class ImagePlus4DColorLABData extends ImagePlus4DColorData {

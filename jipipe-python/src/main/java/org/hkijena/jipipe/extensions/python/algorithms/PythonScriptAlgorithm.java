@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.python.algorithms;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -50,7 +50,7 @@ import java.util.Map;
  */
 @SetJIPipeDocumentation(name = "Python script (multi-parameter capable, custom)", description = "Runs a Python script that is executed once and has access to all incoming data. " +
         "This node uses an existing dedicated Python interpreter that must be set up in the application settings.\n\nTo learn more about the JIPipe Python API, visit https://jipipe.hki-jena.de/apidocs/python-current/index.html")
-@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
+@ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
 public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     private PythonScript code = new PythonScript();

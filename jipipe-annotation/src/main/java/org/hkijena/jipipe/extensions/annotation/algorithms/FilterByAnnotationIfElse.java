@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
@@ -31,7 +31,7 @@ import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 // Algorithm metadata
 @SetJIPipeDocumentation(name = "Filter by annotation (If else)", description = "Filters data based on the annotation value. Has two outputs, one that contains the data that matches the filter, and " +
         "another output that contains all data that does not match the filter")
-@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Filter")
+@ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Filter")
 @AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Matched", create = true, description = "Data that matched the filter")
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Unmatched", create = true, description = "Data that does not match the filter")

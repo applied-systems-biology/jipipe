@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.strings.nodes.text;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -16,7 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 @SetJIPipeDocumentation(name = "Convert table to CSV text", description = "Converts a table to a text in CSV format")
-@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Convert")
+@ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Convert")
 @AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = StringData.class, slotName = "Output", create = true)
 public class TableToCSVTextAlgorithm extends JIPipeSimpleIteratingAlgorithm {

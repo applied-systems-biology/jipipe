@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.strings.nodes.xml;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
@@ -13,7 +13,7 @@ import org.hkijena.jipipe.extensions.strings.XMLData;
 import org.hkijena.jipipe.utils.xml.XmlUtils;
 
 @SetJIPipeDocumentation(name = "Prettify XML", description = "Prettifies/formats the input XML data")
-@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "XML")
+@ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "XML")
 @AddJIPipeInputSlot(value = XMLData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = XMLData.class, slotName = "Output", create = true)
 public class PrettifyXMLAlgorithm extends JIPipeSimpleIteratingAlgorithm {

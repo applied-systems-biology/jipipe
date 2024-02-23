@@ -17,7 +17,7 @@ import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -35,7 +35,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Crop to ROI", description = "Crops the incoming images to fit into the boundaries defined by the ROI.")
-@DefineJIPipeNode(menuPath = "Transform", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@ConfigureJIPipeNode(menuPath = "Transform", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
 @AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Cropped", create = true)

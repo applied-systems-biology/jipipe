@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.ijfilaments.nodes.modify;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -21,7 +21,7 @@ import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
 import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Change filament vertex properties", description = "Allows to override various properties of the filament vertices")
-@DefineJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
+@ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
 @AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
 public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm {

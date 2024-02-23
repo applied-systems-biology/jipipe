@@ -6,7 +6,7 @@ import inra.ijpb.algo.AlgoListener;
 import inra.ijpb.morphology.directional.DirectionalFilter;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -20,7 +20,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 @SetJIPipeDocumentation(name = "Directional filter 2D", description = "Filter that enhances curvilinear structures by applying oriented filters, while preserving their thickness. More information: https://imagej.net/plugins/morpholibj. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Features")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Features")
 @AddJIPipeCitation("https://imagej.net/plugins/morpholibj")
 @AddJIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
         "Bioinformatics (Oxford Univ Press) 32(22): 3532-3534, PMID 27412086, doi:10.1093/bioinformatics/btw413")

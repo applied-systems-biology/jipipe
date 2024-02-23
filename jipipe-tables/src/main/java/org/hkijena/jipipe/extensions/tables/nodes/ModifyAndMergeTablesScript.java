@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.tables.nodes;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -48,7 +48,7 @@ import java.util.List;
         "'data' is a dictionary with the column name as key and values being an array of strings or doubles. " +
         "'nrow' is an integer that contains the number of rows. " +
         "'annotations' is a dictionary from string to string containing all annotations.")
-@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class ModifyAndMergeTablesScript extends JIPipeAlgorithm {

@@ -22,7 +22,7 @@ import ij.plugin.RGBStackMerge;
 import ij.plugin.ZProjector;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
@@ -51,7 +51,7 @@ import java.util.Set;
  * Wrapper around {@link ImageProcessor}
  */
 @SetJIPipeDocumentation(name = "Merge channels", description = "Merges each greyscale image plane into a multi-channel image. ")
-@DefineJIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@ConfigureJIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nColor", aliasName = "Merge Channels...")

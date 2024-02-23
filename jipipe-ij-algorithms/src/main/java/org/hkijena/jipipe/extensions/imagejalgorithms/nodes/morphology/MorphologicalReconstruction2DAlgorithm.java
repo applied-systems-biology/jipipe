@@ -5,7 +5,7 @@ import ij.process.ImageProcessor;
 import inra.ijpb.morphology.Reconstruction;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -24,7 +24,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.BooleanParame
         "Two images are required: the marker image, used to initialize the reconstruction, an the mask image, used to constrain the reconstruction. " +
         "More information: https://imagej.net/plugins/morpholibj")
 @AddJIPipeCitation("https://imagej.net/plugins/morpholibj")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Morphology")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Morphology")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Marker", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)

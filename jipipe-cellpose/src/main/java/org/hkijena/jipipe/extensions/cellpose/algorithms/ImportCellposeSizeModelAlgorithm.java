@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.cellpose.algorithms;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
@@ -12,7 +12,7 @@ import org.hkijena.jipipe.extensions.cellpose.datatypes.CellposeSizeModelData;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 
 @SetJIPipeDocumentation(name = "Import Cellpose size model", description = "Imports a Cellpose size model from a file")
-@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = FileData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = CellposeSizeModelData.class, slotName = "Output", create = true)
 public class ImportCellposeSizeModelAlgorithm extends JIPipeSimpleIteratingAlgorithm {

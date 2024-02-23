@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.omero.nodes.datasources;
 import omero.gateway.LoginCredentials;
 import omero.gateway.model.ImageData;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -35,7 +35,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.list.LongList
 
 @SetJIPipeDocumentation(name = "Define image IDs", description = "Manually defines OMERO image ids that can be used for importing data.")
 @AddJIPipeOutputSlot(value = OMEROImageReferenceData.class, slotName = "Output", create = true)
-@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class, menuPath = "OMERO")
+@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class, menuPath = "OMERO")
 public class OMEROImageReferenceDataSource extends JIPipeSimpleIteratingAlgorithm {
 
     private LongList imageIds = new LongList();

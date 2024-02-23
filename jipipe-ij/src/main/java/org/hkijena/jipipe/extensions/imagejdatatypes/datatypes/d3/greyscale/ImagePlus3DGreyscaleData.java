@@ -17,7 +17,7 @@ import ij.ImagePlus;
 import ij.process.FloatProcessor;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
@@ -32,7 +32,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
  * Greyscale 3D image
  */
 @SetJIPipeDocumentation(name = "3D image (greyscale)", description = "A greyscale image")
-@DefineJIPipeNode(menuPath = "Images\n3D\nGreyscale")
+@ConfigureJIPipeNode(menuPath = "Images\n3D\nGreyscale")
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = FloatProcessor.class, colorSpace = GreyscaleColorSpace.class, pixelType = Float.class, bitDepth = 32, numDimensions = 3)
 public class ImagePlus3DGreyscaleData extends ImagePlus3DData implements JIPipeData {

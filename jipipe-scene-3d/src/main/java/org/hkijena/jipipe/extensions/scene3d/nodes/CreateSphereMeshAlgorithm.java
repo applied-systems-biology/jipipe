@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.scene3d.nodes;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -16,7 +16,7 @@ import org.hkijena.jipipe.extensions.scene3d.model.geometries.Scene3DSphereGeome
 
 @SetJIPipeDocumentation(name = "Create 3D sphere mesh", description = "Generates a 3D scene containing a sphere mesh at the specified location.")
 @AddJIPipeOutputSlot(value = Scene3DData.class, slotName = "Output", create = true)
-@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class CreateSphereMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final Scene3DSphereGeometry geometry;

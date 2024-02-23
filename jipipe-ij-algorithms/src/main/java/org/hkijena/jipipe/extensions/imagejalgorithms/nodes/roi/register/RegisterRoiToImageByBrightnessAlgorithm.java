@@ -5,7 +5,7 @@ import ij.gui.Roi;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SetJIPipeDocumentation(name = "Register ROI 2D (by intensity)", description = "Tests multiple locations of the specified ROI within the image and finds the scale, rotation, and translation of the ROI where its components align to the maximum average intensity.")
-@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Register")
+@ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Register")
 @AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Image", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Registered ROI", create = true)

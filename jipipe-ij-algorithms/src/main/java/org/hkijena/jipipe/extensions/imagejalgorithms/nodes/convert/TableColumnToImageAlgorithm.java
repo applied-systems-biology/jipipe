@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.convert;
 import ij.ImagePlus;
 import ij.process.FloatProcessor;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -17,7 +17,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 
 @SetJIPipeDocumentation(name = "Table column to image", description = "Converts a selected numeric table column into an image with 1px width and a height based on the number of rows. Opposite operation to 'Image to table column'.")
-@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Convert")
+@ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Convert")
 @AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlus2DGreyscale32FData.class, slotName = "Output", create = true)
 public class TableColumnToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {

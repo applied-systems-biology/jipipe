@@ -5,7 +5,7 @@ import ij.process.ImageProcessor;
 import mcib3d.image3d.ImageHandler;
 import mcib3d.image3d.regionGrowing.Watershed3DVoronoi;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -26,7 +26,7 @@ import java.util.Map;
         " the different objects, then compute zones around objects based on these lines. This can also be seen as the splitting of the background.\n" +
         "\n" +
         "Neighbouring objects can then be computed as objects having a line in common. ")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Binary")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Binary")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels", create = true)
 public class Voronoi3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

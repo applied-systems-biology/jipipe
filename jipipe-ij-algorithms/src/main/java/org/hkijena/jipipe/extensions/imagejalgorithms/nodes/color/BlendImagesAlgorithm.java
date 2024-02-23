@@ -17,7 +17,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -43,7 +43,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @SetJIPipeDocumentation(name = "Blend images", description = "Overlays greyscale or RGB images.")
-@DefineJIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@ConfigureJIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
 @AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output")
 public class BlendImagesAlgorithm extends JIPipeIteratingAlgorithm {

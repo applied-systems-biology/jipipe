@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.tables.nodes.merge;
 
 import com.google.common.collect.Sets;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -38,7 +38,7 @@ import java.util.*;
  * Algorithm that integrates columns
  */
 @SetJIPipeDocumentation(name = "Merge table columns (supplement)", description = "Merges columns from the source table into the target table. You can choose one or multiple reference columns that determine which rows from each table should be merged together.")
-@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Merge")
+@ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Merge")
 @AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Target", create = true)
 @AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Source", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)

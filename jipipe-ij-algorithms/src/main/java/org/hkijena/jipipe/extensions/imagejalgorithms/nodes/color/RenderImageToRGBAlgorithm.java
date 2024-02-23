@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.color;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -19,7 +19,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
         "that contrast settings are preserved.")
 @AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output", create = true)
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Colors")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Colors")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nType", aliasName = "RGB Color")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Colors\nConvert", aliasName = "Convert image to RGB colors (Render)")
 public class RenderImageToRGBAlgorithm extends JIPipeSimpleIteratingAlgorithm {

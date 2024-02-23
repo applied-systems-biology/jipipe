@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -35,7 +35,7 @@ import java.util.Set;
  */
 @SetJIPipeDocumentation(name = "Convert to annotation table", description = "Converts data into an annotation table that contains " +
         "all annotations of the data row. You can also add a string representation of the data.")
-@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeNodeAlias(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, aliasName = "Annotations to table")
 @AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = AnnotationTableData.class, slotName = "Output", create = true)

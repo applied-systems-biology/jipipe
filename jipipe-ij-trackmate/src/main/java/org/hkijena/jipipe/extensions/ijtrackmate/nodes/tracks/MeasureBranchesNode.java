@@ -4,7 +4,7 @@ import fiji.plugin.trackmate.SelectionModel;
 import fiji.plugin.trackmate.visualization.table.BranchTableView;
 import fiji.plugin.trackmate.visualization.table.TablePanel;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -19,7 +19,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
         + "tracks, and outputs in an ImageJ results "
         + "table the number of its predecessors, of "
         + "successors, and its duration.")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nMeasure")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nMeasure")
 @AddJIPipeInputSlot(value = TrackCollectionData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class MeasureBranchesNode extends JIPipeSimpleIteratingAlgorithm {

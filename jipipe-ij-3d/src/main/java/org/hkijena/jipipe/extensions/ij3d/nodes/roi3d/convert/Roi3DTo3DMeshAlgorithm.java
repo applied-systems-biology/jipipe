@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.convert;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -20,7 +20,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.awt.*;
 
 @SetJIPipeDocumentation(name = "3D ROI to 3D scene", description = "Converts 3D ROI into a 3D scene.")
-@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
+@ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
 @AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = Scene3DData.class, slotName = "Output", create = true)
 public class Roi3DTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {

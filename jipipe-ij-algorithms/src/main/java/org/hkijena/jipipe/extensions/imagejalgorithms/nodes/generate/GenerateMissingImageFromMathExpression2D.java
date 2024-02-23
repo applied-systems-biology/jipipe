@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.generate;
 import ij.IJ;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
@@ -42,7 +42,7 @@ import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 @SetJIPipeDocumentation(name = "Generate missing from math expression", description = "Generates an image if it cannot be matched to a reference " +
         "in a data batch according to the mathematical operation." +
         " Applies a mathematical operation to each pixel. The value is written into the image. ")
-@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Image", create = true)

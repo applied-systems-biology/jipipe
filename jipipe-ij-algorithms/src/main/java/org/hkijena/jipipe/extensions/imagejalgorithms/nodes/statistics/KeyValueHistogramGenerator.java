@@ -9,7 +9,7 @@ import gnu.trove.map.hash.TDoubleObjectHashMap;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -40,7 +40,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @SetJIPipeDocumentation(name = "Key/Value Histogram 5D", description = "This node consumes two images with the same dimensions that respectively contain the keys and value components of each pixel position. The values assigned to each key are collected and integrated, thus allowing to generate histograms. Allows the generation of normalized and cumulative histograms.")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Key", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Value", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Histogram", create = true)

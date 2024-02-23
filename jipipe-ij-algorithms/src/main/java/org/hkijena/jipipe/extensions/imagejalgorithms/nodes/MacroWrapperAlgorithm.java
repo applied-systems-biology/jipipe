@@ -20,7 +20,7 @@ import ij.measure.ResultsTable;
 import ij.plugin.frame.RoiManager;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.compat.ImageJDataExporter;
@@ -79,7 +79,7 @@ import java.util.Map;
         "<li>Annotations can also be accessed via a function getJIPipeAnnotation(key), which returns the string value of the annotation or an empty string if no value was set.</li>" +
         "<li>You can define variables that are passed from JIPipe to ImageJ. Variables are also created for incoming path-like data, named according to the slot name.</li>" +
         "</ul>")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(ImagePlusData.class)
 @AddJIPipeInputSlot(ROIListData.class)
 @AddJIPipeInputSlot(ResultsTableData.class)

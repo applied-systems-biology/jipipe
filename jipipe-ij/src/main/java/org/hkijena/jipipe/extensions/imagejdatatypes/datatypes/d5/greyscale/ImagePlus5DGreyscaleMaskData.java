@@ -18,7 +18,7 @@ import ij.ImagePlus;
 import ij.process.ByteProcessor;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
@@ -32,7 +32,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
  * Mask 5D image
  */
 @SetJIPipeDocumentation(name = "5D image (mask)", description = "An 8-bit binary image")
-@DefineJIPipeNode(menuPath = "Images\n5D\nGreyscale")
+@ConfigureJIPipeNode(menuPath = "Images\n5D\nGreyscale")
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ByteProcessor.class, colorSpace = GreyscaleColorSpace.class, pixelType = Byte.class, bitDepth = 8, numDimensions = 5)
 public class ImagePlus5DGreyscaleMaskData extends ImagePlus5DGreyscale8UData {

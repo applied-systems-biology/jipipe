@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.io;
 
 import ij.plugin.frame.RoiManager;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
@@ -31,7 +31,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
  */
 @SetJIPipeDocumentation(name = "ROI from ImageJ", description = "Imports ROI from the ImageJ ROI manager")
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
-@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nImport")
 public class ROIFromGUI extends JIPipeSimpleIteratingAlgorithm {
 

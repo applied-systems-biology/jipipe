@@ -8,7 +8,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -54,7 +54,7 @@ import static org.hkijena.jipipe.extensions.ilastik.utils.ImgUtils.*;
 @SetJIPipeDocumentation(name = "Ilastik pixel classification", description = "Assigns labels to pixels based on pixel features and user annotations. " +
         "Please note that results will be generated for each image and each project (pairwise).")
 @AddJIPipeCitation("Pixel classification documentation: https://www.ilastik.org/documentation/pixelclassification/pixelclassification")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Ilastik")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Ilastik")
 @AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true, description = "The image(s) to classify.")
 @AddJIPipeInputSlot(value = IlastikModelData.class, slotName = "Project", create = true, description = "The Ilastik project. Must support pixel classification.")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Probabilities", description = "Multi-channel image where pixel values represent the probability that that pixel belongs to the class represented by that channel")

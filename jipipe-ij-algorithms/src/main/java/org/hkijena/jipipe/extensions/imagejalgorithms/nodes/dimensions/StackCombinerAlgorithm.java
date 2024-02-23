@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.dimensions;
 import ij.ImagePlus;
 import ij.ImageStack;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -23,7 +23,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 @SetJIPipeDocumentation(name = "Combine stacks", description = "Combines the incoming stacks into one by adding the corresponding slices of the second stack to the first one. " +
         "For example, this allows to combine two one-channel stacks with the same number of slices into one with two channels. " +
         "This node has similar functionality to the 'Merge stacks into dimension' node.")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
 @AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Target", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Source", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Combined", create = true)

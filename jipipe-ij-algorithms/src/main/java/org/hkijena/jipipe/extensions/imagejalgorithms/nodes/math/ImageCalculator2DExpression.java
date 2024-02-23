@@ -4,7 +4,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
@@ -32,7 +32,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Image calculator 2D (Expression)", description = "Applies a pixel-wise mathematical operation that produces a single output image.")
 @AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", create = true)
-@DefineJIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@ConfigureJIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process", aliasName = "Image Calculator... (expression)")
 public class ImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
 

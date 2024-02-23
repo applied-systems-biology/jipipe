@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.modify;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -15,7 +15,7 @@ import org.hkijena.jipipe.extensions.parameters.library.util.LogicalOperation;
 @SetJIPipeDocumentation(name = "ROI 3D calculator", description = "Applies logical operations to the input ROI list. The logical operations are applied to " +
         "the whole list, meaning that an AND operation will create the union of all ROI in the list. If you want to apply the operation only to a sub-set of ROI," +
         " preprocess using a ROI splitter algorithm.")
-@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", create = true)
 public class ROI3DCalculatorAlgorithm extends JIPipeSimpleIteratingAlgorithm {

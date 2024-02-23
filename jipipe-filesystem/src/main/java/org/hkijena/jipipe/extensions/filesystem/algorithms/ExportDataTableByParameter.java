@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -41,7 +41,7 @@ import java.nio.file.Paths;
 @SetJIPipeDocumentation(name = "Export data table", description = "Exports all incoming data as data table directory.")
 @AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Data", create = true)
 @AddJIPipeOutputSlot(value = PathData.class, slotName = "Path", create = true)
-@DefineJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class)
 public class ExportDataTableByParameter extends JIPipeMergingAlgorithm {
 
     private Path outputDirectory = Paths.get("exported-data");

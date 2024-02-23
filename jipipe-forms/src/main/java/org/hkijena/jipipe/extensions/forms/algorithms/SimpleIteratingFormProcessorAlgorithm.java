@@ -4,7 +4,7 @@ import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -48,7 +48,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
         "of its 'Data' slot and shows a user interface during the runtime that allows users to modify annotations via form elements. " +
         "These forms are provided via the 'Forms' slot, where all contained form elements are shown in the user interface. " +
         "After the user input, the form data objects are stored in an output slot (one set of copies per data batch).")
-@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Forms")
+@ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Forms")
 @AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Data", create = true)
 @AddJIPipeInputSlot(value = FormData.class, slotName = "Forms", create = true, role = JIPipeDataSlotRole.Parameters)
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", create = true)

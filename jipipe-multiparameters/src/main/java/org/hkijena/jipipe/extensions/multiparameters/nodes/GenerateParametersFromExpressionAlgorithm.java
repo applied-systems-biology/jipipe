@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.multiparameters.nodes;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
@@ -33,7 +33,7 @@ import java.util.*;
 @SetJIPipeDocumentation(name = "Generate parameters from expression", description = "Generates a table of parameters from expressions defined in the 'Generated parameter columns' parameter.")
 @AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Annotations", description = "Optional data that act as source for annotations.", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ParametersData.class, slotName = "Parameters", description = "Generated parameters", create = true)
-@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private ParameterCollectionList columns;

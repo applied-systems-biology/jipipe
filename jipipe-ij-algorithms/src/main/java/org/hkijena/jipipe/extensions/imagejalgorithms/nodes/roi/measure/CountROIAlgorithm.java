@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.measure;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
         "This node can merge ROI lists according to their annotations. The sum of the counts within the same data batch are generated.")
 @AddJIPipeInputSlot(value = ROIListData.class)
 @AddJIPipeOutputSlot(value = AnnotationTableData.class, slotName = "Counts")
-@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")
+@ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")
 public class CountROIAlgorithm extends JIPipeMergingAlgorithm {
 
     private AnnotationTableData currentResult;

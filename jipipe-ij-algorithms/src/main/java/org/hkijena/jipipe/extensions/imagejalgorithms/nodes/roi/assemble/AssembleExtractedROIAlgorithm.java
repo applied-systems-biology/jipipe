@@ -18,7 +18,7 @@ import ij.gui.Roi;
 import ij.process.ImageProcessor;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -39,7 +39,7 @@ import java.awt.*;
 import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Overlay with extracted ROI", description = "Assembles/overlays extracted ROI onto the target images.")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "ROI")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "ROI")
 @AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Target", create = true)
 @AddJIPipeInputSlot(value = ImagePlus2DData.class, slotName = "ROI", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)

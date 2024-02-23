@@ -17,7 +17,7 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.plugin.StackMaker;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -36,7 +36,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DDat
  * Implementation of {@link ij.plugin.MontageMaker}
  */
 @SetJIPipeDocumentation(name = "Montage to stack", description = "Slices an image montage into a stack.")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Montage")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Montage")
 @AddJIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlus3DData.class, slotName = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Montage to Stack...")

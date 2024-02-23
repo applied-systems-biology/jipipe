@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.ij3d.nodes.roi3d;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -30,7 +30,7 @@ import java.util.Set;
 @SetJIPipeDocumentation(name = "Export 3D ROI", description = "Deprecated. Please use the new node. Exports a 3D ROI list into one or multiple ROI files")
 @AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = FileData.class, slotName = "Exported file", create = true)
-@DefineJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "ROI")
+@ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "ROI")
 @Deprecated
 @LabelAsJIPipeHidden
 public class ExportROI3DAlgorithm extends JIPipeIteratingAlgorithm {

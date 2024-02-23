@@ -4,7 +4,7 @@ import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -31,7 +31,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ZeroTableColumn;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
 @SetJIPipeDocumentation(name = "Convert table to image", description = "Converts a table of pixel information into an image")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Convert")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Convert")
 @AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {

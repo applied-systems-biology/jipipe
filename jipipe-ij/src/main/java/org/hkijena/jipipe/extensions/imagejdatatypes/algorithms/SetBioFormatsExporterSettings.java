@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.algorithms;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
@@ -26,7 +26,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEExporterSettings;
 
 @SetJIPipeDocumentation(name = "Setup Bio-Formats exporter", description = "Sets the settings of an OME image that will be used to write the image into an *.ome.tif file.")
-@DefineJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
+@ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
 @AddJIPipeInputSlot(value = OMEImageData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = OMEImageData.class, slotName = "Output", create = true)
 public class SetBioFormatsExporterSettings extends JIPipeSimpleIteratingAlgorithm {

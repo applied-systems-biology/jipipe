@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks;
 
 import fiji.plugin.trackmate.tracking.SpotTracker;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -29,7 +29,7 @@ import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.JIPipeLogger;
 
 @SetJIPipeDocumentation(name = "Track spots", description = "Track spots using TrackMate")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking")
 @AddJIPipeInputSlot(value = SpotsCollectionData.class, slotName = "Spots", description = "The detected spots", create = true)
 @AddJIPipeInputSlot(value = SpotTrackerData.class, slotName = "Spot tracker", description = "The algorithm that tracks the spots", create = true)
 @AddJIPipeOutputSlot(value = TrackCollectionData.class, slotName = "Tracks", description = "The detected tracks", create = true)

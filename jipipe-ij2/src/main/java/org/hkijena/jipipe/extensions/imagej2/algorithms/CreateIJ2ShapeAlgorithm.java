@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.imagej2.algorithms;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -19,7 +19,7 @@ import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataPar
 import org.hkijena.jipipe.utils.classfilters.NonGenericClassFilter;
 
 @SetJIPipeDocumentation(name = "Create shape", description = "Defines an ImageJ2 shape")
-@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeOutputSlot(value = ImageJ2ShapeData.class, slotName = "Shape", create = true)
 public class CreateIJ2ShapeAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

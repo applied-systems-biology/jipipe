@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.utils.algorithms.meta;
 
 import ij.IJ;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -46,7 +46,7 @@ import java.nio.file.Path;
 @SetJIPipeDocumentation(name = "Get JIPipe slot folder", description = "Extracts a slot output folder from a JIPipe output. Use the 'Set output slot' button to select the correct parameters.")
 @AddJIPipeInputSlot(value = JIPipeOutputData.class, slotName = "JIPipe output", create = true)
 @AddJIPipeOutputSlot(value = FolderData.class, slotName = "Slot output folder", create = true)
-@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Meta run")
+@ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Meta run")
 public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private String nodeId;

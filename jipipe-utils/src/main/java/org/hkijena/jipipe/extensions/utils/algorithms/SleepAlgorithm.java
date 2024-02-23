@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.utils.algorithms;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -16,7 +16,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import java.util.List;
 
 @SetJIPipeDocumentation(name = "Wait", description = "Waits/sleeps the specified time and proceeds to pass the input to the output unchanged")
-@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true, optional = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
 public class SleepAlgorithm extends JIPipeParameterSlotAlgorithm {

@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
@@ -34,7 +34,7 @@ import java.nio.file.Files;
  */
 @SetJIPipeDocumentation(name = "Create directory", description = "Creates directories in the filesystem according to the input paths. " +
         "If the path already exists, it will be silently skipped.")
-@DefineJIPipeNode(nodeTypeCategory = FileSystemNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
 
 @AddJIPipeInputSlot(value = PathData.class, slotName = "Input", create = true)

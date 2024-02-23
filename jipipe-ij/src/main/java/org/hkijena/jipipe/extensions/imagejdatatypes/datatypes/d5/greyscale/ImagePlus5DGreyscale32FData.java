@@ -18,7 +18,7 @@ import ij.ImagePlus;
 import ij.process.FloatProcessor;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
@@ -32,7 +32,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
  * 32-bit floating point greyscale image
  */
 @SetJIPipeDocumentation(name = "5D image (float)", description = "A 32-bit greyscale image")
-@DefineJIPipeNode(menuPath = "Images\n5D\nGreyscale")
+@ConfigureJIPipeNode(menuPath = "Images\n5D\nGreyscale")
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = FloatProcessor.class, colorSpace = GreyscaleColorSpace.class, pixelType = Float.class, bitDepth = 32, numDimensions = 5)
 public class ImagePlus5DGreyscale32FData extends ImagePlus5DGreyscaleData {

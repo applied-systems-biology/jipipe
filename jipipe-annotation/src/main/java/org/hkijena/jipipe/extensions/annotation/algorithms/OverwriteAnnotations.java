@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -24,7 +24,7 @@ import java.util.Map;
 @AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Target", create = true, description = "The target data")
 @AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Source", create = true, description = "The data where the annotations are sourced from")
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Target", create = true, description = "Annotated target")
-@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class)
 public class OverwriteAnnotations extends JIPipeIteratingAlgorithm {
     private JIPipeExpressionParameter removeExistingAnnotationsFilter = new AnnotationQueryExpression("false");
     private JIPipeExpressionParameter sourceAnnotationFilter = new AnnotationQueryExpression("true");

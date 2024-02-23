@@ -7,7 +7,7 @@ import mcib3d.image3d.processing.CannyEdge3D;
 import mcib3d.image3d.processing.SymmetryFilter;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -25,7 +25,7 @@ import java.util.Map;
 
 @SetJIPipeDocumentation(name = "3D symmetry filter", description = "Compute the gradients of the image based on the Canny edge detector. " +
         "Then the symmetry filter will vote for the voxels inside the object based on the gradient vector direction.")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Features")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Features")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Symmetry", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Symmetry smoothed", create = true)

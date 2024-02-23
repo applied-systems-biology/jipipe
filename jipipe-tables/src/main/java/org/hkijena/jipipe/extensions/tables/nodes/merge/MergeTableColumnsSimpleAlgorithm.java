@@ -15,7 +15,7 @@
 package org.hkijena.jipipe.extensions.tables.nodes.merge;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -40,7 +40,7 @@ import java.util.Set;
 @SetJIPipeDocumentation(name = "Merge table columns (simple)", description = "Merges multiple tables into one table by merging the list of columns. " +
         "The generated table is sized according to the table with the most rows. In missing columns, the values are filled in. " +
         "The algorithm behind this is not 'smart' and is not capable of supplementing a table with data from another table. ")
-@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Merge")
+@ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Merge")
 @AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class MergeTableColumnsSimpleAlgorithm extends JIPipeMergingAlgorithm {

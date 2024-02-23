@@ -4,7 +4,7 @@ import ij.ImagePlus;
 import mcib3d.image3d.ImageHandler;
 import mcib3d.image3d.processing.MaximaFinder;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -22,7 +22,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
         " All other local maxima from these zones are removed. " +
         "The next local maximum is processed, this step is repeated until there are no more local maxima to process. " +
         "The final image is created with local maxima, with their original intensity value.")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Features")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Features")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
 public class FindMaxima3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.tables.nodes;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -40,7 +40,7 @@ import org.hkijena.jipipe.extensions.tables.parameters.processors.ExpressionTabl
 @SetJIPipeDocumentation(name = "Add table column", description = "Adds a new column. By default no changes are applied if the column already exists. " +
         "Can be optionally configured to replace existing columns.")
 @AddJIPipeNodeAlias(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Append", aliasName = "Add missing columns")
-@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {

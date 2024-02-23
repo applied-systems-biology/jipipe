@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.annotation.algorithms;
 
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -39,7 +39,7 @@ import java.util.List;
  * Generates annotations from filenames
  */
 @SetJIPipeDocumentation(name = "Rename annotation", description = "Renames one or multiple annotations.")
-@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Modify")
+@ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Modify")
 @AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
 public class RenameAnnotation extends JIPipeSimpleIteratingAlgorithm {

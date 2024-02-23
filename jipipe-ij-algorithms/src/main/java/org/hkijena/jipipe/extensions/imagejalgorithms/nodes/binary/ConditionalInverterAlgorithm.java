@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.binary;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Conditional invert", description = "Inverts the image if a condition (based on statistics) is met. Otherwise, the image is not inverted.")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Binary")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Binary")
 @AddJIPipeInputSlot(slotName = "Input", value = ImagePlusGreyscaleMaskData.class, create = true)
 @AddJIPipeOutputSlot(slotName = "Output", value = ImagePlusGreyscaleMaskData.class, create = true)
 public class ConditionalInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {

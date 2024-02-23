@@ -5,7 +5,7 @@ import mcib3d.geom.Object3D;
 import mcib3d.geom.Objects3DPopulation;
 import mcib3d.image3d.ImageHandler;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SetJIPipeDocumentation(name = "Labels to 3D ROI", description = "Converts a label image into 3D ROI")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Labels")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Labels")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Labels", create = true)
 @AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "ROI", create = true)
 public class Roi3DFromLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

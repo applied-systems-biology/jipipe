@@ -10,7 +10,7 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.LongType;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -52,7 +52,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Coloc 2", description = "Colocalization analysis via the pixel intensity correlation over space methods of Pearson, Manders, Costes, Li and more, " +
         "for scatterplots, analysis, automatic thresholding and statistical significance testing. Coloc 2 does NOT perform object based colocalization measurements, where objects are first segmented from the image, then their spatial relationships like overlap etc. are measured. " +
         "This complementary approach is implemented in many ways elsewhere.")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Colocalization")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Colocalization")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze\nColocalization")
 @AddJIPipeCitation("See https://imagej.net/plugins/coloc-2")
 @AddJIPipeCitation("See https://imagej.net/imaging/colocalization-analysis for more information abot colocalization")

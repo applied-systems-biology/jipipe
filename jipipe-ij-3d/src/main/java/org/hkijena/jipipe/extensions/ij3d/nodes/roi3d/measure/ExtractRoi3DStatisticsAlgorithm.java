@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.measure;
 
 import mcib3d.image3d.ImageHandler;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -18,7 +18,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 @SetJIPipeDocumentation(name = "Extract ROI 3D statistics", description = "Generates a results table containing 3D ROI statistics. If a reference image is provided, the statistics are calculated for the reference image. Otherwise, " +
         "NaN is returned.")
-@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")
+@ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")
 @AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true, optional = true, description = "Optional image that is the basis for the measurements. If not set, all affected measurements are set to NaN.")
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", create = true)

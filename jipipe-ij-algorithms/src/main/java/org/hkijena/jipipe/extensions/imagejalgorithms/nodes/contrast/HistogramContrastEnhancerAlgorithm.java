@@ -6,7 +6,7 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.*;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -26,7 +26,7 @@ import static ij.measure.Measurements.MIN_MAX;
 @SetJIPipeDocumentation(name = "Histogram-based contrast enhancer", description = "Implementation of the ImageJ contrast enhancer feature that uses histograms and normalization methods.")
 @AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Contrast")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Contrast")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process", aliasName = "Enhance Contrast...")
 public class HistogramContrastEnhancerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.utils.algorithms;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -47,7 +47,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Import JIPipe slot folder", description = "Extracts a slot output folder from a JIPipe output and imports their data. Use the 'Set output slot' button to select the correct parameters.")
 @AddJIPipeInputSlot(value = JIPipeOutputData.class, slotName = "JIPipe output", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", create = true)
-@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Meta run")
+@ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Meta run")
 public class ImportJIPipeSlotFolderAlgorithm extends GetJIPipeSlotFolderAlgorithm {
 
     private boolean ignoreInputTextAnnotations = false;

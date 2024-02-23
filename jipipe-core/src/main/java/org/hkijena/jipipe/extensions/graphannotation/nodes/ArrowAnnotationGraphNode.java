@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.graphannotation.nodes;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.GraphAnnotationsNodeTypeCategory;
@@ -13,7 +13,7 @@ import java.awt.*;
 import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Arrow", description = "An arrow")
-@DefineJIPipeNode(nodeTypeCategory = GraphAnnotationsNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = GraphAnnotationsNodeTypeCategory.class)
 public class ArrowAnnotationGraphNode extends JIPipeAnnotationGraphNode {
 
     private int angle = 0;

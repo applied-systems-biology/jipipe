@@ -20,7 +20,7 @@ import omero.gateway.facility.TablesFacility;
 import omero.gateway.model.ImageData;
 import omero.gateway.model.TableData;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
@@ -47,7 +47,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 @SetJIPipeDocumentation(name = "Attach table to OMERO image", description = "Attaches a table to an OMERO image")
-@DefineJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Tables")
+@ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Tables")
 @AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Tables", create = true, description = "The table to attach")
 @AddJIPipeInputSlot(value = OMEROImageReferenceData.class, slotName = "Target", create = true, description = "The target OMERO image")
 @AddJIPipeOutputSlot(value = OMEROAnnotationReferenceData.class, slotName = "Tables", create = true, description = "Reference to the generated table annotation")

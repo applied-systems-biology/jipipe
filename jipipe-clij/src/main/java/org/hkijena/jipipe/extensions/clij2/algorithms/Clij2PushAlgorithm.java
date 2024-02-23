@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.clij2.algorithms;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -15,7 +15,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 @SetJIPipeDocumentation(name = "CLIJ2 Push to GPU", description = "Converts an image into a GPU image managed by CLIJ")
 @AddJIPipeInputSlot(slotName = "Input", value = ImagePlusData.class, create = true)
 @AddJIPipeOutputSlot(slotName = "Output", value = CLIJImageData.class, create = true)
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "CLIJ")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "CLIJ")
 public class Clij2PushAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public Clij2PushAlgorithm(JIPipeNodeInfo info) {

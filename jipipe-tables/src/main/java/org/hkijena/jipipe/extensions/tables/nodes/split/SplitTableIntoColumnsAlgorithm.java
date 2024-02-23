@@ -15,7 +15,7 @@
 package org.hkijena.jipipe.extensions.tables.nodes.split;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -40,7 +40,7 @@ import java.util.List;
  * Algorithm that integrates columns
  */
 @SetJIPipeDocumentation(name = "Split table into columns", description = "Splits a table into individual columns")
-@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Split")
+@ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Split")
 @AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = TableColumn.class, slotName = "Output", create = true)
 public class SplitTableIntoColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.tables.nodes.columns;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -33,7 +33,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
  * Algorithm that removes columns
  */
 @SetJIPipeDocumentation(name = "To numeric column", description = "Converts one or multiple columns into a numeric column")
-@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class ColumnToNumericAlgorithm extends JIPipeSimpleIteratingAlgorithm {

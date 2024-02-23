@@ -17,7 +17,7 @@ import ij.ImagePlus;
 import inra.ijpb.label.LabelImages;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -45,7 +45,7 @@ import java.util.List;
         "<li>False Positive Error</li>" +
         "</ul>")
 @AddJIPipeCitation("See https://imagej.net/plugins/morpholibj#label-overlap-measures for the formulas")
-@DefineJIPipeNode(menuPath = "For images", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
+@ConfigureJIPipeNode(menuPath = "For images", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Image 1", create = true)
 @AddJIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Image 2", create = true)
 @AddJIPipeOutputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Image 1", create = true)

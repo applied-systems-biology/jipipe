@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.imagej2.algorithms;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -19,7 +19,7 @@ import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataPar
 import org.hkijena.jipipe.utils.classfilters.NonGenericClassFilter;
 
 @SetJIPipeDocumentation(name = "Create Out Of Bounds factory", description = "Defines an ImageJ2 Out Of Bounds factory")
-@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeOutputSlot(value = ImageJ2OutOfBoundsFactoryData.class, slotName = "Factory", create = true)
 public class CreateIJ2OutOfBoundsFactoryAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

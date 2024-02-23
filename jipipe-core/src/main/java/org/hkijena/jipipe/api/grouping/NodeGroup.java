@@ -18,7 +18,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -51,7 +51,7 @@ import java.util.Map;
  */
 @SetJIPipeDocumentation(name = "Group", description = "A node that contains a sub-pipeline. Double-click the node to open the contained workflow and add inputs/outputs to the 'Group input'/'Group output' nodes. " +
         "To expose parameters from within the group to the surrounding group node, go to the 'Parameters' tab and add references via 'Edit parameter references'.")
-@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 public class NodeGroup extends JIPipeGraphWrapperAlgorithm implements JIPipeCustomParameterCollection, ParameterReferencesChangedEventListener {
 
     private NodeGroupContents contents;

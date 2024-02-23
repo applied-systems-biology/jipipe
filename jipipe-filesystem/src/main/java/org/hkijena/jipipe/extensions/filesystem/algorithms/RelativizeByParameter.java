@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
@@ -33,7 +33,7 @@ import java.nio.file.Paths;
  */
 @SetJIPipeDocumentation(name = "Relativize paths by string", description = "Modifies the incoming paths so that they are relative to a parent " +
         "path defined by the parameter. If you leave the parameter empty, the paths are un-changed.")
-@DefineJIPipeNode(menuPath = "Modify", nodeTypeCategory = FileSystemNodeTypeCategory.class)
+@ConfigureJIPipeNode(menuPath = "Modify", nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
 
 @AddJIPipeInputSlot(value = PathData.class, slotName = "Child", create = true)

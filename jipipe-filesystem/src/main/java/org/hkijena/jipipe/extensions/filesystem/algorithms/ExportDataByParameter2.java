@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
@@ -36,7 +36,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Export data", description = "Exports the input data via JIPipe's standard exporter. The output is the directory that contains the generated file(s).")
 @AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Data", create = true)
 @AddJIPipeOutputSlot(value = FolderData.class, slotName = "Output path", create = true)
-@DefineJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class)
 public class ExportDataByParameter2 extends JIPipeSimpleIteratingAlgorithm {
 
     private DataExportExpressionParameter filePath = new DataExportExpressionParameter();

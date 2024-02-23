@@ -28,7 +28,7 @@ import java.util.List;
         "All following nodes are assigned to a loop, unless a node has no output connections, or it is a loop end node. " +
         "Please be aware that intermediate results of this loop are discarded automatically, meaning that only the end points will contain the generated data. " +
         "You can also explicitly insert loop end nodes to collect results.")
-@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Data")
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Data")
 @LabelAsJIPipeHidden

@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.tables.nodes.annotations;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -28,7 +28,7 @@ import java.util.List;
 @AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Data", description = "The data that should be annotated", create = true)
 @AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Table", description = "The table that contains the data", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Annotated data", description = "The annotated data", create = true)
-@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
+@ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
 public class AnnotateDataWithTableValues extends JIPipeIteratingAlgorithm {
 
     private JIPipeTextAnnotationMergeMode annotationMergeMode = JIPipeTextAnnotationMergeMode.Merge;

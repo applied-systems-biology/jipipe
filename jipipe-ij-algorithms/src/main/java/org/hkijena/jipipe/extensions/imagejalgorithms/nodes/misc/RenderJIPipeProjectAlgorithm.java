@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.misc;
 import ij.ImagePlus;
 import ij.process.ColorProcessor;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.nodes.*;
@@ -25,7 +25,7 @@ import java.io.IOException;
 @SetJIPipeDocumentation(name = "Render JIPipe project pipeline", description = "Creates a single-image render of a whole JIPipe pipeline project. " +
         "This node is equivalent to <code>Tools &gt; Project &gt; Export whole pipeline as *.png</code>. Please note that the pipelines should be arranged " +
         "in a space-efficient way to reduce the file sizes.")
-@DefineJIPipeNode(menuPath = "Meta run", nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@ConfigureJIPipeNode(menuPath = "Meta run", nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = FileData.class, slotName = "Project file", create = true)
 @AddJIPipeOutputSlot(value = ImagePlus2DColorRGBData.class, slotName = "Render", create = true)
 public class RenderJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {

@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.strings.nodes.xml;
 
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -34,7 +34,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Annotate with XML values", description = "Extracts a value from the input text data (via XPath) and annotates the data with the result. " +
         "Please visit https://www.w3schools.com/xml/xpath_intro.asp to learn about XPath.")
 @AddJIPipeCitation("XPath: https://www.w3schools.com/xml/xpath_intro.asp")
-@DefineJIPipeNode(menuPath = "For XML", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
+@ConfigureJIPipeNode(menuPath = "For XML", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = XMLData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = XMLData.class, slotName = "Output", create = true)
 public class AnnotateWithXPathDataAlgorithm extends JIPipeSimpleIteratingAlgorithm {

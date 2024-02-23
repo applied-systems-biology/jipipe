@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.measure;
 
 import mcib3d.image3d.ImageHandler;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
@@ -17,7 +17,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 @SetJIPipeDocumentation(name = "Extract pairwise 3D ROI statistics", description = "Extracts all pairwise statistics between the 3D ROI")
-@DefineJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")
+@ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")
 @AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "ROI 1", create = true)
 @AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "ROI 2", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true, optional = true)

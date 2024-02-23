@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Simplify annotations", description = "Merges multiple annotations that are used for data batch generation into a single annotation. Deletes or downgrades annotations that were involved in the merge.")
-@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
 public class SimplifyAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

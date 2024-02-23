@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.annotation.datasources;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
@@ -31,7 +31,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 @SetJIPipeDocumentation(name = "Import annotation table")
 @AddJIPipeInputSlot(value = FileData.class, slotName = "Files", create = true)
 @AddJIPipeOutputSlot(value = AnnotationTableData.class, slotName = "Annotation table", create = true)
-@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class AnnotationTableFromFile extends JIPipeSimpleIteratingAlgorithm {
 
     /**

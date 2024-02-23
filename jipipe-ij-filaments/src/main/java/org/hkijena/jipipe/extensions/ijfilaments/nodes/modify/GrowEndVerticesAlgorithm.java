@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.ijfilaments.nodes.modify;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
@@ -27,7 +27,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Grow end vertices (direction)", description = "Iteratively adds vertices to end points (degree 1) and grows them in the direction determined by the neighbor")
-@DefineJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
+@ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
 @AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
 public class GrowEndVerticesAlgorithm extends JIPipeSimpleIteratingAlgorithm {

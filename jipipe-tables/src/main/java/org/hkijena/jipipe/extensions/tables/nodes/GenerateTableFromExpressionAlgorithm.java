@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.tables.nodes;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -39,7 +39,7 @@ import org.hkijena.jipipe.extensions.tables.parameters.processors.ExpressionTabl
  * Algorithm that adds or replaces a column by a generated value
  */
 @SetJIPipeDocumentation(name = "Table from expressions", description = "Generates a table from expressions")
-@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class GenerateTableFromExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

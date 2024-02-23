@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Split tracks", description = "Creates a list for each individual track")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nSplit/Merge")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nSplit/Merge")
 @AddJIPipeInputSlot(value = TrackCollectionData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = TrackCollectionData.class, slotName = "Output", create = true)
 public class SplitTracksNode extends JIPipeSimpleIteratingAlgorithm {

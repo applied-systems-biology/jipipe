@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
@@ -32,7 +32,7 @@ import org.hkijena.jipipe.utils.StringUtils;
  * Applies subfolder navigation to each input folder
  */
 @SetJIPipeDocumentation(name = "Rename path", description = "Sets the file or folder name of each path to the specified string.")
-@DefineJIPipeNode(menuPath = "Modify", nodeTypeCategory = FileSystemNodeTypeCategory.class)
+@ConfigureJIPipeNode(menuPath = "Modify", nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
 
 @AddJIPipeInputSlot(value = PathData.class, slotName = "Input", create = true)

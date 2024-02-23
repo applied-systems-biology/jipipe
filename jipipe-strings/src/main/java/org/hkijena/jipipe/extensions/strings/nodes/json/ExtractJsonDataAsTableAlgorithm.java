@@ -6,7 +6,7 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 @SetJIPipeDocumentation(name = "Extract JSON values as table", description = "Extracts a value from the input JSON data (via JsonPath) and writes the results into a table. " +
         "Please visit https://goessner.net/articles/JsonPath/ to learn more about JsonPath")
 @AddJIPipeCitation("JsonPath: https://goessner.net/articles/JsonPath/")
-@DefineJIPipeNode(menuPath = "JSON", nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@ConfigureJIPipeNode(menuPath = "JSON", nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = JsonData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class ExtractJsonDataAsTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {

@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
@@ -24,7 +24,7 @@ import java.nio.file.Paths;
 @SetJIPipeDocumentation(name = "Modify path", description = "Uses an expression to modify a path.")
 @AddJIPipeInputSlot(value = PathData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = PathData.class, slotName = "Output", create = true)
-@DefineJIPipeNode(menuPath = "Modify", nodeTypeCategory = FileSystemNodeTypeCategory.class)
+@ConfigureJIPipeNode(menuPath = "Modify", nodeTypeCategory = FileSystemNodeTypeCategory.class)
 public class ModifyPath extends JIPipeSimpleIteratingAlgorithm {
 
     private PathQueryExpression expression = new PathQueryExpression("path");

@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots;
 
 import fiji.plugin.trackmate.Spot;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -28,7 +28,7 @@ import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
 import java.util.List;
 
 @SetJIPipeDocumentation(name = "Merge spots", description = "Merges spot lists. Please ensure that the spots are sourced from the same image.")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nSplit/Merge")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nSplit/Merge")
 @AddJIPipeInputSlot(value = SpotsCollectionData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = SpotsCollectionData.class, slotName = "Output", create = true)
 public class MergeSpotsNode extends JIPipeMergingAlgorithm {

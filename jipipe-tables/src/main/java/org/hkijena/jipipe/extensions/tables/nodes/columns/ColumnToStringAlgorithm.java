@@ -15,7 +15,7 @@
 package org.hkijena.jipipe.extensions.tables.nodes.columns;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -31,7 +31,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.StringArrayTableColumn;
  * Algorithm that removes columns
  */
 @SetJIPipeDocumentation(name = "To string column", description = "Converts one or multiple columns into a string column")
-@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class ColumnToStringAlgorithm extends JIPipeSimpleIteratingAlgorithm {

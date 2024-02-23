@@ -15,7 +15,7 @@
 package org.hkijena.jipipe.extensions.tables.nodes.columns;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -40,7 +40,7 @@ import java.util.Map;
  */
 @SetJIPipeDocumentation(name = "Apply function to columns", description = "Applies a converting function to all column values. " +
         "The result of the operation is stored in the same or a new column.")
-@DefineJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class ConvertColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

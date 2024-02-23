@@ -42,7 +42,7 @@ import java.util.Map;
         "The Labels 1 output contains all Labels 1 input labels that overlap with any of Labels 2. " +
         "The Labels 2 output contains all Labels 2 input labels that overlap with a Labels 1 Labels. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Labels\nFilter")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Labels\nFilter")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels 1", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels 2", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels 1", create = true)

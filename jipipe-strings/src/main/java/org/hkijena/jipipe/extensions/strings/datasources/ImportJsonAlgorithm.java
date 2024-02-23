@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.strings.datasources;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 @SetJIPipeDocumentation(name = "Import JSON", description = "Imports JSON data from a file")
-@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = FileData.class, slotName = "File", create = true)
 @AddJIPipeOutputSlot(value = JsonData.class, slotName = "Json", create = true)
 public class ImportJsonAlgorithm extends JIPipeSimpleIteratingAlgorithm {

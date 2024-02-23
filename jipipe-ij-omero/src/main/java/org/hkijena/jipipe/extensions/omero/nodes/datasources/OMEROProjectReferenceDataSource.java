@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.omero.nodes.datasources;
 import omero.gateway.LoginCredentials;
 import omero.gateway.model.ProjectData;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -35,7 +35,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.list.LongList
 
 @SetJIPipeDocumentation(name = "Define project IDs", description = "Manually defines OMERO project ids.")
 @AddJIPipeOutputSlot(value = OMEROProjectReferenceData.class, slotName = "Output", create = true)
-@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class, menuPath = "OMERO")
+@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class, menuPath = "OMERO")
 public class OMEROProjectReferenceDataSource extends JIPipeSimpleIteratingAlgorithm {
 
     private LongList projectIds = new LongList();

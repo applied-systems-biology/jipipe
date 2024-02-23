@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -21,7 +21,7 @@ import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalStringParameter;
 
 @SetJIPipeDocumentation(name = "Extract data annotations", description = "Extracts a data annotation.")
-@DefineJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
 public class ExtractDataAnnotation extends JIPipeSimpleIteratingAlgorithm {

@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.utils.algorithms.iterationsteps;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -18,7 +18,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParamet
 
 @SetJIPipeDocumentation(name = "Crash on inputs", description = "Cancels the current run if data is processed. Use this node to inform users about unwanted conditions in your pipeline.")
 @AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
-@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 public class CrasherAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private String errorTitle = "Data was received in 'Crash on inputs'";

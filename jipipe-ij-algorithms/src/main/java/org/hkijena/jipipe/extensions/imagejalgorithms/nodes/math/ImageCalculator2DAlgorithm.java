@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.math;
 import ij.ImagePlus;
 import ij.plugin.ImageCalculator;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.nodes.*;
@@ -44,7 +44,7 @@ import java.util.Set;
  */
 @SetJIPipeDocumentation(name = "Image calculator 2D", description = "Applies a mathematical operation between two images. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@DefineJIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@ConfigureJIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input 1", create = true, description = "The first operand")
 @AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input 2", create = true, description = "The second operand")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true, description = "The calculation result")

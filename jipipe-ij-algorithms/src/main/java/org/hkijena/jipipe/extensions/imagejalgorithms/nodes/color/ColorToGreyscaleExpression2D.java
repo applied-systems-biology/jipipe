@@ -5,7 +5,7 @@ import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
@@ -35,7 +35,7 @@ import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 
 @SetJIPipeDocumentation(name = "Color to greyscale (Expression)", description = "Applies a mathematical operation to each pixel to convert the color " +
         "into a greyscale value.")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Colors\nConvert")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Colors\nConvert")
 @AddJIPipeInputSlot(value = ImagePlusColorData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
 public class ColorToGreyscaleExpression2D extends JIPipeSimpleIteratingAlgorithm {

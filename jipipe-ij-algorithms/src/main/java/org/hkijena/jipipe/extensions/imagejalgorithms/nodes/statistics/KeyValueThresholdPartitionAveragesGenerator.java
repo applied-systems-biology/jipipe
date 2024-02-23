@@ -6,7 +6,7 @@ import gnu.trove.map.hash.TDoubleObjectHashMap;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -37,7 +37,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Key/Value threshold statistics 5D (fast averages)", description = "This node consumes two images with the same dimensions that respectively contain the keys and value components of each pixel position. " +
         "The set of value pixels is partitioned into two sets based on whether the key is lower, or equal/higher than the currently processed key. " +
         "This is a fast version of 'Key/Value threshold statistics 5D' that only produces the number of pixels in each partition, the sum of values, as well as the average.")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Key", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Value", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)

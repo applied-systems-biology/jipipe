@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.analyze;
 import ij.gui.ShapeRoi;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -42,7 +42,7 @@ import java.awt.*;
 @SetJIPipeDocumentation(name = "Extract image statistics", description = "Extracts statistics of the whole image or a masked part. Please note " +
         "that this node will not be able to extract the shape of masked areas. All shape-description features (Centroid, Perimeter, ...) are calculated on the " +
         "rectangle formed by the image dimensions.")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Analyze")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Analyze")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Image", create = true)
 @AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", create = true)

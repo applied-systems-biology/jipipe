@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.strings.nodes.xml;
 
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
@@ -36,7 +36,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Extract XML values as table", description = "Extracts a value from the input text data (via XPath) and writes the results into a table. " +
         "Please visit https://www.w3schools.com/xml/xpath_intro.asp to learn about XPath.")
 @AddJIPipeCitation("XPath: https://www.w3schools.com/xml/xpath_intro.asp")
-@DefineJIPipeNode(menuPath = "XML", nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@ConfigureJIPipeNode(menuPath = "XML", nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = XMLData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class ExtractXPathDataAsTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {

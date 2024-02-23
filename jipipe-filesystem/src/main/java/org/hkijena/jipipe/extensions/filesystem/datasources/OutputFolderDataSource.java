@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.filesystem.datasources;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
@@ -15,7 +15,7 @@ import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import java.nio.file.Path;
 
 @SetJIPipeDocumentation(name = "Run output folder", description = "Generates a path that points to the data output folder of the current run.")
-@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeOutputSlot(value = FolderData.class, slotName = "Output", create = true)
 public class OutputFolderDataSource extends JIPipeAlgorithm {
 

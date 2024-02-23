@@ -17,7 +17,7 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.plugin.ChannelArranger;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -54,7 +54,7 @@ import java.util.stream.Collectors;
  */
 @SetJIPipeDocumentation(name = "Reduce & split stacks (slice)", description = "Splits incoming stacks into a customizable amount of stacks based on stack indices. Add more output slots " +
         "to create more groups. Please note that this node utilizes slice indices and cannot handle 5D images. Please use 'Reduce & split hyperstack' or 'Reduce & split hyperstack (Expression)' if you want to properly handle 5D images.")
-@DefineJIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@ConfigureJIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks")

@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots;
 import fiji.plugin.trackmate.Spot;
 import fiji.plugin.trackmate.SpotCollection;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Filter spots", description = "Filter TrackMate spots via expressions")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nFilter")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nFilter")
 @AddJIPipeInputSlot(value = SpotsCollectionData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = SpotsCollectionData.class, slotName = "Output", create = true)
 public class SpotFilterNode extends JIPipeSimpleIteratingAlgorithm {

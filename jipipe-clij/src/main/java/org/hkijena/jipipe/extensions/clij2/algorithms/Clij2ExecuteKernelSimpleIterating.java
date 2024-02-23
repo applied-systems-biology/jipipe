@@ -17,7 +17,7 @@ import net.haesleinhuepf.clij.clearcl.ClearCLBuffer;
 import net.haesleinhuepf.clij2.CLIJ2;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -54,7 +54,7 @@ import java.nio.file.Path;
 import java.util.*;
 
 @SetJIPipeDocumentation(name = "CLIJ2 Execute OpenCL kernel (simple iterating)", description = "Executes an OpenCL kernel via CLIJ2 to process images. This node can have only one input.")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "CLIJ")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "CLIJ")
 public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgorithm {
 
     private OpenCLKernelScript kernelScript = new OpenCLKernelScript();

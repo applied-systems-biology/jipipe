@@ -7,7 +7,7 @@ import ij.process.ColorProcessor;
 import ij.process.FloatProcessor;
 import mpicbg.ij.integral.BlockPMCC;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -34,7 +34,7 @@ import java.util.Arrays;
         "Both the size of the block and the search radius are parameters of the method.\n\n" +
         "The output is a two-channel image with (T-1) items. The pixels in each channel describe the relative location" +
         " of the next similar pixel in polar coordinates (default) or cartesian coordinates.")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Optical flow")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Optical flow")
 @AddJIPipeInputSlot(value = ImagePlus3DGreyscale32FData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlus4DGreyscale32FData.class, slotName = "Vector field", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nOptic Flow", aliasName = "Integral Block PMCC")

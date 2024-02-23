@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.ijfilaments.nodes.generate;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
@@ -17,7 +17,7 @@ import java.nio.file.Path;
 @SetJIPipeDocumentation(name = "Import filaments from JSON", description = "Imports filaments from a JSON file")
 @AddJIPipeInputSlot(value = FileData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
-@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class ImportFilamentsFromJsonAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public ImportFilamentsFromJsonAlgorithm(JIPipeNodeInfo info) {
         super(info);

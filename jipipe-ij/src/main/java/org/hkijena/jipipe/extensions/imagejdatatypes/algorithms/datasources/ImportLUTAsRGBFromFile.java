@@ -6,7 +6,7 @@ import ij.process.ByteProcessor;
 import ij.process.ColorProcessor;
 import ij.process.LUT;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -20,7 +20,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.color.ImagePlu
 @SetJIPipeDocumentation(name = "Import LUT as RGB image", description = "Imports an ImageJ *.lut file")
 @AddJIPipeInputSlot(value = FileData.class, slotName = "Input", description = "A *.lut file", create = true)
 @AddJIPipeOutputSlot(value = ImagePlus2DColorRGBData.class, slotName = "Output", description = "Description of the LUT as RGB image", create = true)
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File", aliasName = "Open (LUT)")
 public class ImportLUTAsRGBFromFile extends JIPipeSimpleIteratingAlgorithm {
     public ImportLUTAsRGBFromFile(JIPipeNodeInfo info) {

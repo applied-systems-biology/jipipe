@@ -19,7 +19,7 @@ import ij.ImageStack;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -39,7 +39,7 @@ import java.awt.image.BufferedImage;
 import java.util.Collections;
 
 @SetJIPipeDocumentation(name = "Convert tracks to RGB", description = "Visualizes tracks")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nVisualize")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nVisualize")
 @AddJIPipeInputSlot(value = TrackCollectionData.class, slotName = "Tracks", create = true)
 @AddJIPipeInputSlot(value = ImagePlusColorRGBData.class, slotName = "Image", create = true, optional = true, description = "")
 @AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output", create = true)

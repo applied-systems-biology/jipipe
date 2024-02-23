@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
@@ -28,7 +28,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
  * 3D image
  */
 @SetJIPipeDocumentation(name = "3D image", description = "A 3D image")
-@DefineJIPipeNode(menuPath = "Images\n3D")
+@ConfigureJIPipeNode(menuPath = "Images\n3D")
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(numDimensions = 3)
 public class ImagePlus3DData extends ImagePlusData implements Image3DData {

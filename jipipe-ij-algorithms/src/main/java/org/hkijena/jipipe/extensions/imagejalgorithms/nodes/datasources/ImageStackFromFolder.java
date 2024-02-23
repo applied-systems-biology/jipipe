@@ -17,7 +17,7 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
  */
 @SetJIPipeDocumentation(name = "Import image stack", description = "Loads an image stack via the native ImageJ functions. " +
         "The current implementation only allows 2D images to be imported and will show an error if higher-dimensional data is provided.")
-@DefineJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = FolderData.class, slotName = "Folder", description = "One or multiple directories", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Image", description = "The imported image(s)", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nImport", aliasName = "Image Sequence...")

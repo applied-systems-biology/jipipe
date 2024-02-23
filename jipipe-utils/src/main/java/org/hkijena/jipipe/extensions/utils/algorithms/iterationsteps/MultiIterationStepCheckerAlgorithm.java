@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.utils.algorithms.iterationsteps;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -29,7 +29,7 @@ import java.util.List;
 
 @SetJIPipeDocumentation(name = "Check iteration steps (multiple data per slot)", description = "Pass multiple inputs through this node to check if iteration steps are correctly created and filter out incomplete steps. " +
         "This node is designed for creating iteration steps where multiple data items can be assigned to an iteration step input slot.")
-@DefineJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Iteration steps")
+@ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Iteration steps")
 @AddJIPipeNodeAlias(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Filter", aliasName = "Limit to iteration steps (multiple data per slot)")
 @AddJIPipeNodeAlias(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Filter", aliasName = "Filter multiple data by annotation (multiple data per slot)")
 public class MultiIterationStepCheckerAlgorithm extends JIPipeMergingAlgorithm {

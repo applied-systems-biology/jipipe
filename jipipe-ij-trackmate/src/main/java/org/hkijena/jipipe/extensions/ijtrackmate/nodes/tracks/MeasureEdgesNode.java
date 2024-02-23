@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -13,7 +13,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
 @SetJIPipeDocumentation(name = "Measure edges", description = "Measures the edges and outputs the results into a table")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nMeasure")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nMeasure")
 @AddJIPipeInputSlot(value = TrackCollectionData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class MeasureEdgesNode extends JIPipeSimpleIteratingAlgorithm {

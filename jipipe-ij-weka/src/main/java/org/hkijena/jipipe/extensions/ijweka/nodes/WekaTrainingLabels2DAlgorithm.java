@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.ijweka.nodes;
 import ij.ImagePlus;
 import inra.ijpb.label.LabelImages;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @SetJIPipeDocumentation(name = "Train Weka model from labels (2D)", description = "Trains a Weka model on 2D image data that classified by a label image. " +
         "Can only train on a single image. " +
         "Use the multi-image node if you want to train from multiple images.")
-@DefineJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
 @AddJIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Image", description = "Image on which the training should be applied", create = true)
 @AddJIPipeInputSlot(value = ImagePlus2DGreyscaleData.class, slotName = "Labels", description = "A labels image", create = true)
 @AddJIPipeOutputSlot(value = WekaModelData.class, slotName = "Trained model", description = "The model", create = true)

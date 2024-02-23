@@ -21,7 +21,7 @@ import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.model.DatasetData;
 import omero.gateway.model.ImageData;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.DefineJIPipeNode;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.*;
@@ -51,7 +51,7 @@ import java.nio.file.Path;
 import java.util.*;
 
 @SetJIPipeDocumentation(name = "Upload image to OMERO", description = "Uploads an image to OMERO.")
-@DefineJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
+@ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
 @AddJIPipeInputSlot(value = OMEImageData.class, slotName = "Images", create = true, description = "The image(s) to upload")
 @AddJIPipeInputSlot(value = OMERODatasetReferenceData.class, slotName = "Target dataset", create = true, description = "The data set where the image(s) will be stored")
 @AddJIPipeOutputSlot(value = OMEROImageReferenceData.class, slotName = "Images", create = true, description = "Reference to the uploaded image(s)")
