@@ -7,6 +7,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
+import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.WeakStore;
@@ -43,7 +44,7 @@ public class DataTrackerNodeOutputUI extends JIPipeProjectWorkbenchPanel impleme
                 true,
                 true,
                 true,
-                true),UIUtils.createControlBorder()));
+                true), BorderFactory.createLineBorder(ModernMetalTheme.MEDIUM_GRAY)));
 
         JIPipeGraphNode node = getProjectWorkbench().getProject().getGraph().getNodeByUUID(UUID.fromString(nodeUUID));
         JIPipeOutputDataSlot outputSlot = node.getOutputSlot(outputSlotName);

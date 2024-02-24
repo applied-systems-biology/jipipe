@@ -3,6 +3,7 @@ package org.hkijena.jipipe.utils;
 import ij.plugin.filter.GaussianBlur;
 import ij.process.ByteProcessor;
 import ij.process.ColorProcessor;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
@@ -12,9 +13,7 @@ import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.WritableRaster;
+import java.awt.image.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -22,30 +21,57 @@ import java.util.Arrays;
 
 public class BufferedImageUtils {
 
+    public static BufferedImage setAlpha(BufferedImage image, BufferedImage mask) {
+        if(mask.getType() != BufferedImage.TYPE_BYTE_GRAY) {
+            mask = copyBufferedImageToGray(mask);
+        }
+        if(image.getWidth() != mask.getWidth() || image.getHeight() != mask.getHeight()) {
+            throw new JIPipeValidationRuntimeException(new IllegalArgumentException("Images have unequal size!"),
+                    "Images have a different size!",
+                    "The provided images have a different size",
+                    "Check the inputs");
+        }
+        image = copyBufferedImageToARGB(image);
+        int width = image.getWidth();
+        int height = image.getHeight();
+        byte[] alphaBuffer = ((DataBufferByte) mask.getRaster().getDataBuffer()).getData();
+        int[] targetBuffer = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
+
+        for (int i = 0; i < width * height; i++) {
+            int a = Byte.toUnsignedInt(alphaBuffer[i]);
+            targetBuffer[i] = (a << 24) | (targetBuffer[i] & 0x00FFFFFF);
+        }
+
+        return image;
+    }
+
     public static BufferedImage extractAlpha(BufferedImage src) {
         int width = src.getWidth();
         int height = src.getHeight();
-        BufferedImage alphaImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        int[] dstBuffer = src.getData().getPixels(0, 0, width, height, (int[]) null);
+        BufferedImage alphaImage = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+        byte[] dstBuffer = ((DataBufferByte) alphaImage.getRaster().getDataBuffer()).getData();
+//        int[] dstBuffer = new int[width * height];
 
         if (!src.getColorModel().hasAlpha()) {
             // Just color it white
-            Arrays.fill(dstBuffer, 0xffffff);
+            Arrays.fill(dstBuffer, (byte)255);
         } else {
             if (src.getType() != BufferedImage.TYPE_INT_ARGB) {
                 src = copyBufferedImageToARGB(src);
             }
 
-            int[] srcBuffer = src.getData().getPixels(0, 0, width, height, (int[]) null);
+            int[] srcBuffer = ((DataBufferInt) src.getRaster().getDataBuffer()).getData();
 
             for (int i = 0; i < width * height; i++) {
                 int a = (srcBuffer[i] >> 24) & 0xff;
-                dstBuffer[i] = a | a << 8 | a << 16;
+                dstBuffer[i] = (byte) a;
+//                dstBuffer[i] = (byte) (i % width == 0 ? 255 : 0);
             }
         }
 
-        WritableRaster raster = (WritableRaster) alphaImage.getData();
-        raster.setPixels(0, 0, width, height, dstBuffer);
+//        WritableRaster raster = (WritableRaster) alphaImage.getData();
+//        raster.setPixels(0, 0, width, height, dstBuffer);
+
 
         return alphaImage;
     }
@@ -216,6 +242,14 @@ public class BufferedImageUtils {
         return result;
     }
 
+    public static BufferedImage copyBufferedImageToGray(BufferedImage bi) {
+        BufferedImage result = new BufferedImage(bi.getWidth(), bi.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+        Graphics2D graphics = result.createGraphics();
+        graphics.drawImage(bi, 0, 0, null);
+        graphics.dispose();
+        return result;
+    }
+
     public static BufferedImage spatialBlurLinear(BufferedImage bi, Point start, Point end, double sigma) {
 
         BufferedImage maskImage = new BufferedImage(bi.getWidth(), bi.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
@@ -256,5 +290,6 @@ public class BufferedImageUtils {
     public static int lerpColorValue(int x0, int x1, double frac) {
         return (int) (x0 + frac * (x1 - x0));
     }
+
 
 }

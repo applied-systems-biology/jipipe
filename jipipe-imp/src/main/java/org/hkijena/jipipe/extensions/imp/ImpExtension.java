@@ -27,6 +27,7 @@ import org.hkijena.jipipe.extensions.imp.datatypes.ImpImageOutputFormat;
 import org.hkijena.jipipe.extensions.imp.datatypes.ImpImageToImageJImageDataTypeConverter;
 import org.hkijena.jipipe.extensions.imp.nodes.ExportImpImageAlgorithm;
 import org.hkijena.jipipe.extensions.imp.nodes.ImportImpImageAlgorithm;
+import org.hkijena.jipipe.extensions.imp.nodes.SetImpAlphaChannelAlgorithm;
 import org.hkijena.jipipe.extensions.imp.nodes.SplitImpAlphaChannelAlgorithm;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
@@ -90,6 +91,7 @@ public class ImpExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("import-imp-image", ImportImpImageAlgorithm.class);
         registerNodeType("export-imp-image", ExportImpImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
         registerNodeType("split-imp-image-alpha", SplitImpAlphaChannelAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
+        registerNodeType("set-imp-image-alpha", SetImpAlphaChannelAlgorithm.class, UIUtils.getIconURLFromResources("actions/adjusthsl.png"));
 
         registerEnumParameterType("imp-image-output-format", ImpImageOutputFormat.class, "IMP image output format", "Output format supported by IMP");
     }
