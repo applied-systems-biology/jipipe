@@ -18,17 +18,66 @@ import java.awt.image.WritableRaster;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class BufferedImageUtils {
 
-    public  static BufferedImage convertAlphaToCheckerboard(BufferedImage originalImage, int checkerSize) {
+    public static BufferedImage extractAlpha(BufferedImage src) {
+        int width = src.getWidth();
+        int height = src.getHeight();
+        BufferedImage alphaImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        int[] dstBuffer = src.getData().getPixels(0, 0, width, height, (int[]) null);
+
+        if (!src.getColorModel().hasAlpha()) {
+            // Just color it white
+            Arrays.fill(dstBuffer, 0xffffff);
+        } else {
+            if (src.getType() != BufferedImage.TYPE_INT_ARGB) {
+                src = copyBufferedImageToARGB(src);
+            }
+
+            int[] srcBuffer = src.getData().getPixels(0, 0, width, height, (int[]) null);
+
+            for (int i = 0; i < width * height; i++) {
+                int a = (srcBuffer[i] >> 24) & 0xff;
+                dstBuffer[i] = a | a << 8 | a << 16;
+            }
+        }
+
+        WritableRaster raster = (WritableRaster) alphaImage.getData();
+        raster.setPixels(0, 0, width, height, dstBuffer);
+
+        return alphaImage;
+    }
+
+    public static String getColorModelString(BufferedImage image) {
+        ColorModel cm = image.getColorModel();
+        int numComponents = cm.getNumComponents();
+        boolean hasAlpha = cm.hasAlpha();
+
+        if (numComponents == 1 && !hasAlpha) {
+            return "I";
+        } else if (numComponents == 2 && hasAlpha) {
+            return "IA";
+        } else if (numComponents == 3 && !hasAlpha) {
+            return "RGB";
+        } else if (numComponents == 4 && hasAlpha) {
+            return "RGBA";
+        } else {
+            return "Unknown";
+        }
+    }
+
+    public static BufferedImage convertAlphaToCheckerboard(Image originalImage, int checkerSize) {
         // Create a new BufferedImage without alpha channel
-        BufferedImage newImage = new BufferedImage(originalImage.getWidth(), originalImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+        int width = originalImage.getWidth(null);
+        int height = originalImage.getHeight(null);
+        BufferedImage newImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = newImage.createGraphics();
 
         // Draw the checkerboard pattern
-        for (int y = 0; y < originalImage.getHeight(); y += checkerSize) {
-            for (int x = 0; x < originalImage.getWidth(); x += checkerSize) {
+        for (int y = 0; y < height; y += checkerSize) {
+            for (int x = 0; x < width; x += checkerSize) {
                 if ((x / checkerSize + y / checkerSize) % 2 == 0) {
                     g2d.setColor(Color.WHITE);
                 } else {
@@ -47,6 +96,7 @@ public class BufferedImageUtils {
 
         return newImage;
     }
+
     public static BufferedImage scaleImageToFit(BufferedImage image, int maxWidth, int maxHeight) {
         double scale = 1.0;
         if (maxWidth > 0) {
@@ -146,6 +196,20 @@ public class BufferedImageUtils {
      */
     public static BufferedImage copyBufferedImageToARGB(BufferedImage bi) {
         BufferedImage result = new BufferedImage(bi.getWidth(), bi.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D graphics = result.createGraphics();
+        graphics.drawImage(bi, 0, 0, null);
+        graphics.dispose();
+        return result;
+    }
+
+    /**
+     * Copy a {@link BufferedImage}
+     *
+     * @param bi the image
+     * @return the copy
+     */
+    public static BufferedImage copyBufferedImageToRGB(BufferedImage bi) {
+        BufferedImage result = new BufferedImage(bi.getWidth(), bi.getHeight(), BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics = result.createGraphics();
         graphics.drawImage(bi, 0, 0, null);
         graphics.dispose();

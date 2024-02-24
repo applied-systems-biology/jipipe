@@ -4,6 +4,7 @@ import ij.ImagePlus;
 import ij.process.ColorProcessor;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedImagePlusDataViewerWindow;
 import org.hkijena.jipipe.extensions.imp.datatypes.ImpImageData;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
@@ -15,5 +16,6 @@ public class ImpImageDataImageViewerCustomLoader extends CachedImagePlusDataView
     public void load(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo) {
         BufferedImage image = virtualData.getData(ImpImageData.class, progressInfo).getImageWithoutAlpha();
         setImagePlus(new ImagePlus("image", new ColorProcessor(image)));
+        setRois(new ROIListData());
     }
 }

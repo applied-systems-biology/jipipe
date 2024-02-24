@@ -10,6 +10,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeImageThumbnailData;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedImagePlusDataViewerWindow;
@@ -21,6 +23,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -66,6 +69,18 @@ public class ImpImageData implements JIPipeData {
         SwingUtilities.invokeLater(window::reloadDisplayedData);
     }
 
+    @Override
+    public JIPipeThumbnailData createThumbnail(int width, int height, JIPipeProgressInfo progressInfo) {
+        double factorX = 1.0 * width / image.getWidth();
+        double factorY = 1.0 * height / image.getHeight();
+        double factor = Math.min(factorX, factorY);
+        boolean smooth = factor < 0;
+        int imageWidth = (int) Math.max(1, image.getWidth() * factor);
+        int imageHeight = (int) Math.max(1, image.getHeight() * factor);
+        Image scaledInstance = image.getScaledInstance(imageWidth, imageHeight, Image.SCALE_SMOOTH);
+        return new JIPipeImageThumbnailData(BufferedImageUtils.convertAlphaToCheckerboard(scaledInstance, 10));
+    }
+
     public static ImpImageData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         Path targetFile = PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".tif", ".tiff", ".png", ".jpg", ".jpeg", ".bmp");
         if (targetFile == null) {
@@ -84,5 +99,10 @@ public class ImpImageData implements JIPipeData {
 
     public BufferedImage getImageWithoutAlpha() {
         return BufferedImageUtils.convertAlphaToCheckerboard(image, 10);
+    }
+
+    @Override
+    public String toString() {
+        return image.getWidth() + " x " + image.getHeight() + " [" + BufferedImageUtils.getColorModelString(image) + "]";
     }
 }
