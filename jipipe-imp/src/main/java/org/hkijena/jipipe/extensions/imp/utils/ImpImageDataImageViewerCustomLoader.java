@@ -14,8 +14,7 @@ import java.awt.image.BufferedImage;
 public class ImpImageDataImageViewerCustomLoader extends CachedImagePlusDataViewerWindow.CustomDataLoader {
     @Override
     public void load(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo) {
-        BufferedImage image = virtualData.getData(ImpImageData.class, progressInfo).getImageWithoutAlpha();
-        setImagePlus(new ImagePlus("image", new ColorProcessor(image)));
+        setImagePlus(virtualData.getData(ImpImageData.class, progressInfo).toImagePlus(true, 10));
         setRois(new ROIListData());
     }
 }

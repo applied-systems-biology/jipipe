@@ -22,6 +22,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imp.datatypes.ImpImageData;
 import org.hkijena.jipipe.extensions.imp.datatypes.ImpImageOutputFormat;
+import org.hkijena.jipipe.extensions.imp.utils.ImpImageUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.imageio.ImageIO;
@@ -69,17 +70,36 @@ public class ExportImpImageAlgorithm extends JIPipeIteratingAlgorithm {
                 iterationStep.getInputRow(getFirstInputSlot()),
                 new ArrayList<>(iterationStep.getMergedTextAnnotations().values()));
 
-        BufferedImage image = inputData.getImage();
-        Path outputFile = PathUtils.ensureExtension(outputPath, fileFormat.getExtension(), fileFormat.getExtensions());
-        progressInfo.log("Saving to " + outputFile);
-        PathUtils.ensureParentDirectoriesExist(outputFile);
-        try {
-            ImageIO.write(image, fileFormat.getNativeValue(), outputFile.toFile());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if(inputData.isHyperstack()) {
+            ImpImageUtils.forEachIndexedZCTSlice(inputData, (ip, index) -> {
+                Path outputFile = outputPath.getParent().resolve(outputPath.getFileName().toString() + "-z" + index.getZ() + "c" + index.getC() + "t" + index.getT());
+                outputFile = PathUtils.ensureExtension(outputFile, fileFormat.getExtension(), fileFormat.getExtensions());
+                progressInfo.log("Saving to " + outputFile);
+
+                PathUtils.ensureParentDirectoriesExist(outputFile);
+                try {
+                    ImageIO.write(ip, fileFormat.getNativeValue(), outputFile.toFile());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+                iterationStep.addOutputData(getFirstOutputSlot(), new FileData(outputFile), progressInfo);
+            }, progressInfo);
+        }
+        else {
+            BufferedImage image = inputData.getImage(0);
+            Path outputFile = PathUtils.ensureExtension(outputPath, fileFormat.getExtension(), fileFormat.getExtensions());
+            progressInfo.log("Saving to " + outputFile);
+            PathUtils.ensureParentDirectoriesExist(outputFile);
+            try {
+                ImageIO.write(image, fileFormat.getNativeValue(), outputFile.toFile());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            iterationStep.addOutputData(getFirstOutputSlot(), new FileData(outputFile), progressInfo);
         }
 
-        iterationStep.addOutputData(getFirstOutputSlot(), new FileData(outputFile), progressInfo);
     }
 
     @SetJIPipeDocumentation(name = "File format", description = "The file format that should be used. ")

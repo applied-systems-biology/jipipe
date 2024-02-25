@@ -12,6 +12,8 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.extensions.imp.datatypes.ImpImageData;
+import org.hkijena.jipipe.extensions.imp.utils.ImpImageDataBuilder;
+import org.hkijena.jipipe.extensions.imp.utils.ImpImageUtils;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
 
 import java.awt.image.BufferedImage;
@@ -32,8 +34,14 @@ public class SplitImpAlphaChannelAlgorithm extends JIPipeSimpleIteratingAlgorith
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        BufferedImage image = iterationStep.getInputData(getFirstInputSlot(), ImpImageData.class, progressInfo).getImage();
-        iterationStep.addOutputData("RGB", new ImpImageData(BufferedImageUtils.copyBufferedImageToRGB(image)), progressInfo);
-        iterationStep.addOutputData("Alpha", new ImpImageData(BufferedImageUtils.extractAlpha(image)), progressInfo);
+        ImpImageData inputData = iterationStep.getInputData(getFirstInputSlot(), ImpImageData.class, progressInfo);
+        ImpImageDataBuilder rgbBuilder = new ImpImageDataBuilder();
+        ImpImageDataBuilder maskBuilder = new ImpImageDataBuilder();
+        ImpImageUtils.forEachIndexedZCTSlice(inputData, (ip, index) -> {
+            rgbBuilder.put(index, BufferedImageUtils.copyBufferedImageToRGB(ip));
+            maskBuilder.put(index, BufferedImageUtils.extractAlpha(ip));
+        }, progressInfo);
+        iterationStep.addOutputData("RGB",rgbBuilder.build(), progressInfo);
+        iterationStep.addOutputData("Alpha", maskBuilder.build(), progressInfo);
     }
 }

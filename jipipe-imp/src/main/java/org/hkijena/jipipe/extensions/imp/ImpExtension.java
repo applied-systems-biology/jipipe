@@ -25,10 +25,7 @@ import org.hkijena.jipipe.extensions.imp.datatypes.ImageJImageToImpImageDataType
 import org.hkijena.jipipe.extensions.imp.datatypes.ImpImageData;
 import org.hkijena.jipipe.extensions.imp.datatypes.ImpImageOutputFormat;
 import org.hkijena.jipipe.extensions.imp.datatypes.ImpImageToImageJImageDataTypeConverter;
-import org.hkijena.jipipe.extensions.imp.nodes.ExportImpImageAlgorithm;
-import org.hkijena.jipipe.extensions.imp.nodes.ImportImpImageAlgorithm;
-import org.hkijena.jipipe.extensions.imp.nodes.SetImpAlphaChannelAlgorithm;
-import org.hkijena.jipipe.extensions.imp.nodes.SplitImpAlphaChannelAlgorithm;
+import org.hkijena.jipipe.extensions.imp.nodes.*;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
@@ -50,7 +47,7 @@ public class ImpExtension extends JIPipePrepackagedDefaultJavaExtension {
      */
     public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:imp",
             JIPipe.getJIPipeVersion(),
-            "Image Manipulation and Processing toolkit");
+            "Image Manipulation Pipeline");
 
     public static final JIPipeResourceManager RESOURCES = new JIPipeResourceManager(ImpExtension.class, "org/hkijena/jipipe/extensions/imp");
 
@@ -69,7 +66,7 @@ public class ImpExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public String getName() {
-        return "Image Manipulation and Processing toolkit";
+        return "Image Manipulation Pipeline";
     }
 
     @Override
@@ -92,6 +89,7 @@ public class ImpExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("export-imp-image", ExportImpImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
         registerNodeType("split-imp-image-alpha", SplitImpAlphaChannelAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("set-imp-image-alpha", SetImpAlphaChannelAlgorithm.class, UIUtils.getIconURLFromResources("actions/adjusthsl.png"));
+        registerNodeType("convert-imp-to-imagej", ConvertImpImageToImagePlusAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_refresh.png"));
 
         registerEnumParameterType("imp-image-output-format", ImpImageOutputFormat.class, "IMP image output format", "Output format supported by IMP");
     }

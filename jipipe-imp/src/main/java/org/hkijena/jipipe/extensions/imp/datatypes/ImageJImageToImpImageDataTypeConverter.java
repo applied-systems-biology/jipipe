@@ -21,6 +21,6 @@ public class ImageJImageToImpImageDataTypeConverter implements JIPipeDataConvert
     @Override
     public JIPipeData convert(JIPipeData input, JIPipeProgressInfo progressInfo) {
         ImagePlus img = ((ImagePlusData)input).getImage();
-        return new ImpImageData(ImageJUtils.renderToRGBWithLUTIfNeeded(img, progressInfo).getBufferedImage());
+        return new ImpImageData(img);
     }
 }

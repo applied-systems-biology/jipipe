@@ -19,7 +19,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
 
-@SetJIPipeDocumentation(name = "Import IMP image", description = "Imports an image via the Image Manipulation and Processing toolkit.")
+@SetJIPipeDocumentation(name = "Import IMP image", description = "Imports an image via the Image Manipulation Pipeline.")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = FileData.class, slotName = "File", create = true, description = "The file to be imported")
 @AddJIPipeOutputSlot(value = ImpImageData.class, slotName = "Image", create = true, description = "The image")

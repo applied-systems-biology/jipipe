@@ -95,6 +95,10 @@ public class BufferedImageUtils {
     }
 
     public static BufferedImage convertAlphaToCheckerboard(Image originalImage, int checkerSize) {
+        return convertAlphaToCheckerboard(originalImage, checkerSize, Color.WHITE, ModernMetalTheme.GRAY);
+    }
+
+    public static BufferedImage convertAlphaToCheckerboard(Image originalImage, int checkerSize, Color checkerColor1, Color checkerColor2) {
         // Create a new BufferedImage without alpha channel
         int width = originalImage.getWidth(null);
         int height = originalImage.getHeight(null);
@@ -105,9 +109,9 @@ public class BufferedImageUtils {
         for (int y = 0; y < height; y += checkerSize) {
             for (int x = 0; x < width; x += checkerSize) {
                 if ((x / checkerSize + y / checkerSize) % 2 == 0) {
-                    g2d.setColor(Color.WHITE);
+                    g2d.setColor(checkerColor1);
                 } else {
-                    g2d.setColor(ModernMetalTheme.GRAY);
+                    g2d.setColor(checkerColor2);
                 }
                 g2d.fillRect(x, y, checkerSize, checkerSize);
             }

@@ -11,10 +11,15 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imp.datatypes.ImpImageData;
+import org.hkijena.jipipe.extensions.imp.utils.ImpImageDataBuilder;
+import org.hkijena.jipipe.extensions.imp.utils.ImpImageUtils;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
 
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Set alpha channel from mask", description = "Sets the alpha channel of an IMP image from a mask")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "IMP")
@@ -32,9 +37,17 @@ public class SetImpAlphaChannelAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        BufferedImage image = iterationStep.getInputData("Image", ImpImageData.class, progressInfo).getImage();
-        BufferedImage mask = iterationStep.getInputData("Alpha", ImpImageData.class, progressInfo).getImage();
-        BufferedImage result = BufferedImageUtils.setAlpha(image, mask);
-        iterationStep.addOutputData(getFirstOutputSlot(), new ImpImageData(result), progressInfo);
+
+        ImpImageData inputImage = iterationStep.getInputData("Image", ImpImageData.class, progressInfo);
+        ImpImageData maskImage = iterationStep.getInputData("Alpha", ImpImageData.class, progressInfo);
+        ImpImageDataBuilder builder = new ImpImageDataBuilder();
+
+        ImpImageUtils.forEachIndexedZCTSlice(inputImage, (image, index) -> {
+            BufferedImage mask = maskImage.getImageOrExpand(index);
+            BufferedImage result = BufferedImageUtils.setAlpha(image, mask);
+            builder.put(index, result);
+        }, progressInfo);
+
+        iterationStep.addOutputData(getFirstOutputSlot(), builder.build(), progressInfo);
     }
 }

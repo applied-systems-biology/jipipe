@@ -19,6 +19,6 @@ public class ImpImageToImageJImageDataTypeConverter implements JIPipeDataConvert
 
     @Override
     public JIPipeData convert(JIPipeData input, JIPipeProgressInfo progressInfo) {
-        return new ImagePlusData(new ImagePlus("Image", ((ImpImageData)input).getImageWithoutAlpha()));
+        return new ImagePlusData(((ImpImageData)input).toImagePlus(true, 10));
     }
 }
