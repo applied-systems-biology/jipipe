@@ -21,20 +21,19 @@ import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
-import org.hkijena.jipipe.api.run.JIPipeGraphRun;
-import org.hkijena.jipipe.api.run.JIPipeGraphRunSettings;
-import org.hkijena.jipipe.api.run.JIPipeLegacyGraphRun;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithmIterationStepGenerationSettings;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettings;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStepGenerator;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithmIterationStepGenerationSettings;
+import org.hkijena.jipipe.api.run.JIPipeGraphRun;
+import org.hkijena.jipipe.api.run.JIPipeGraphRunSettings;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
@@ -58,6 +57,8 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
     private GraphWrapperAlgorithmOutput algorithmOutput;
     private IOSlotWatcher ioSlotWatcher;
     private boolean preventUpdateSlots = false;
+
+    private boolean continueOnFailure = false;
     private IterationMode iterationMode = IterationMode.PassThrough;
     private JIPipeMergingAlgorithmIterationStepGenerationSettings batchGenerationSettings = new JIPipeMergingAlgorithmIterationStepGenerationSettings();
 
@@ -79,6 +80,7 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
         super(other);
         this.iterationMode = other.iterationMode;
         this.batchGenerationSettings = new JIPipeMergingAlgorithmIterationStepGenerationSettings(other.batchGenerationSettings);
+        this.continueOnFailure = other.continueOnFailure;
         setWrappedGraph(new JIPipeGraph(other.wrappedGraph));
     }
 
@@ -97,7 +99,7 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
         Multimap<String, JIPipeDataSlot> outputTargetsBackup = HashMultimap.create();
 
         // Backup connections
-        if(getParentGraph() != null) {
+        if (getParentGraph() != null) {
             for (JIPipeInputDataSlot inputSlot : getInputSlots()) {
                 for (JIPipeDataSlot sourceSlot : getParentGraph().getInputIncomingSourceSlots(inputSlot)) {
                     inputSourcesBackup.put(inputSlot.getName(), sourceSlot);
@@ -126,11 +128,10 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
         for (Map.Entry<String, JIPipeDataSlot> entry : inputSourcesBackup.entries()) {
             JIPipeInputDataSlot inputSlot = getInputSlot(entry.getKey());
             JIPipeDataSlot sourceSlot = entry.getValue();
-            if(inputSlot != null && inputSlot.accepts(sourceSlot.getAcceptedDataType())) {
+            if (inputSlot != null && inputSlot.accepts(sourceSlot.getAcceptedDataType())) {
                 try {
                     getParentGraph().connect(sourceSlot, inputSlot);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -138,11 +139,10 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
         for (Map.Entry<String, JIPipeDataSlot> entry : outputTargetsBackup.entries()) {
             JIPipeOutputDataSlot outputSlot = getOutputSlot(entry.getKey());
             JIPipeDataSlot targetSlot = entry.getValue();
-            if(outputSlot != null && targetSlot.accepts(outputSlot.getAcceptedDataType())) {
+            if (outputSlot != null && targetSlot.accepts(outputSlot.getAcceptedDataType())) {
                 try {
                     getParentGraph().connect(outputSlot, targetSlot);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -155,6 +155,14 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
 
     public void setPreventUpdateSlots(boolean preventUpdateSlots) {
         this.preventUpdateSlots = preventUpdateSlots;
+    }
+
+    public boolean isContinueOnFailure() {
+        return continueOnFailure;
+    }
+
+    public void setContinueOnFailure(boolean continueOnFailure) {
+        this.continueOnFailure = continueOnFailure;
     }
 
     /**
@@ -252,20 +260,27 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
                 outputSlot.setSkipGC(true);
             }
 
-            // Run the graph
-            JIPipeLegacyGraphRun runner = new JIPipeLegacyGraphRun(wrappedGraph);
-            runner.setRunContext(runContext);
-            runner.setProgressInfo(batchProgress.detachProgress().resolve("Group"));
-            runner.setAlgorithmsWithExternalInput(Collections.singleton(getGroupInput()));
-            runner.getPersistentDataNodes().add(getGroupOutput());
-            runner.run();
+            try {
+                run.run();
 
-            run.run();
+                // Copy into output
+                for (JIPipeDataSlot outputSlot : getOutputSlots()) {
+                    JIPipeDataSlot groupOutputSlot = copyGroupOutput.getOutputSlot(outputSlot.getName());
+                    outputSlot.addDataFromSlot(groupOutputSlot, progressInfo);
+                }
+            } catch (Throwable e) {
+                if (progressInfo.isCancelled()) {
+                    throw e;
+                }
+                if (continueOnFailure) {
 
-            // Copy into output
-            for (JIPipeDataSlot outputSlot : getOutputSlots()) {
-                JIPipeDataSlot groupOutputSlot = copyGroupOutput.getOutputSlot(outputSlot.getName());
-                outputSlot.addDataFromSlot(groupOutputSlot, progressInfo);
+                    progressInfo.log("\n\n------------------------\n" +
+                            "Wrapped graph iteration execution FAILED!\n" +
+                            "Message: " + e.getMessage() + "\n" +
+                            "\n" +
+                            "CONTINUING AS REQUESTED!\n" +
+                            "------------------------\n\n");
+                }
             }
 
             // Clear
@@ -301,7 +316,24 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
             groupInputSlot.addDataFromSlot(inputSlot, progressInfo);
         }
 
-        run.run();
+        try {
+
+            run.run();
+
+        } catch (Throwable e) {
+            if (progressInfo.isCancelled()) {
+                throw e;
+            }
+            if (continueOnFailure) {
+
+                progressInfo.log("\n\n------------------------\n" +
+                        "Wrapped graph execution FAILED!\n" +
+                        "Message: " + e.getMessage() + "\n" +
+                        "\n" +
+                        "CONTINUING AS REQUESTED!\n" +
+                        "------------------------\n\n");
+            }
+        }
 
         // Copy into output
         for (JIPipeDataSlot outputSlot : getOutputSlots()) {
@@ -357,7 +389,7 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
     }
 
     @Override
-    public JIPipeDataBatchGenerationResult  generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
+    public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
         if (iterationMode == IterationMode.PassThrough) {
             JIPipeMultiIterationStep iterationStep = new JIPipeMultiIterationStep(this);
             for (JIPipeDataSlot inputSlot : getDataInputSlots()) {

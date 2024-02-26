@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.ui.resultanalysis;
 
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
-import org.hkijena.jipipe.api.run.JIPipeLegacyProjectRun;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -33,7 +32,7 @@ import java.util.List;
 import java.util.*;
 
 /**
- * UI around an {@link JIPipeLegacyProjectRun} result
+ * UI around an {@link JIPipeGraphRun} result
  */
 public class JIPipeResultUI extends JIPipeProjectWorkbenchPanel {
     private JIPipeGraphRun run;

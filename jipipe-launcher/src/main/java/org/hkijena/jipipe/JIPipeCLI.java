@@ -4,9 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import net.imagej.ImageJ;
-import org.hkijena.jipipe.api.run.JIPipeLegacyProjectRun;
+import org.hkijena.jipipe.api.run.JIPipeGraphRun;
+import org.hkijena.jipipe.api.run.JIPipeGraphRunSettings;
 import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.run.JIPipeLegacyProjectRunSettings;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
@@ -201,10 +201,10 @@ public class JIPipeCLI {
             }
         }
 
-        JIPipeLegacyProjectRunSettings settings = new JIPipeLegacyProjectRunSettings();
+        JIPipeGraphRunSettings settings = new JIPipeGraphRunSettings();
         settings.setNumThreads(numThreads);
         settings.setOutputPath(outputFolder);
-        settings.setSaveToDisk(saveToDisk);
+        settings.setStoreToDisk(saveToDisk);
         settings.setStoreToCache(false);
         if (saveToDisk && saveToDiskOnlyCompartments) {
             for (JIPipeGraphNode graphNode : project.getGraph().getGraphNodes()) {
@@ -214,7 +214,7 @@ public class JIPipeCLI {
             }
         }
 
-        JIPipeLegacyProjectRun run = new JIPipeLegacyProjectRun(project, settings);
+        JIPipeGraphRun run = new JIPipeGraphRun(project, settings);
         run.getProgressInfo().setLogToStdOut(true);
         run.run();
 

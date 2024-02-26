@@ -16,7 +16,6 @@ package org.hkijena.jipipe.ui.running;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.run.JIPipeGraphRunSettings;
-import org.hkijena.jipipe.api.run.JIPipeLegacyProjectRunSettings;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
@@ -52,7 +51,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Settings UI for {@link JIPipeLegacyProjectRunSettings}
+ * Settings UI for {@link JIPipeGraphRunSettings}
  */
 public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
 

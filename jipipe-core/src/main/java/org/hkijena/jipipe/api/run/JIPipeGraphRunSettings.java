@@ -27,7 +27,7 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Settings for an {@link JIPipeLegacyProjectRun}
+ * Settings for an {@link JIPipeGraphRun}
  */
 public class JIPipeGraphRunSettings extends AbstractJIPipeParameterCollection {
     private Path outputPath;

@@ -23,8 +23,8 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.api.run.JIPipeLegacyProjectRun;
-import org.hkijena.jipipe.api.run.JIPipeLegacyProjectRunSettings;
+import org.hkijena.jipipe.api.run.JIPipeGraphRun;
+import org.hkijena.jipipe.api.run.JIPipeGraphRunSettings;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
@@ -125,12 +125,12 @@ public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         Path rowStoragePath = getFirstOutputSlot().getRowStoragePath(getFirstOutputSlot().getRowCount());
 
         // Generate the run
-        JIPipeLegacyProjectRunSettings settings = new JIPipeLegacyProjectRunSettings();
+        JIPipeGraphRunSettings settings = new JIPipeGraphRunSettings();
         settings.setOutputPath(rowStoragePath);
         settings.setStoreToCache(false);
         settings.setLoadFromCache(false);
         settings.setNumThreads(threads.isEnabled() ? threads.getContent() : RuntimeSettings.getInstance().getDefaultRunThreads());
-        JIPipeLegacyProjectRun run = new JIPipeLegacyProjectRun(project, settings);
+        JIPipeGraphRun run = new JIPipeGraphRun(project, settings);
         run.setProgressInfo(progressInfo.resolve("Project " + projectFile.getFileName().toString()));
 
         run.run();

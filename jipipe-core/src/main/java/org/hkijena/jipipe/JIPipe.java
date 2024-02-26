@@ -40,8 +40,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.registries.*;
-import org.hkijena.jipipe.api.run.JIPipeLegacyProjectRun;
-import org.hkijena.jipipe.api.run.JIPipeLegacyProjectRunSettings;
+import org.hkijena.jipipe.api.run.JIPipeGraphRun;
+import org.hkijena.jipipe.api.run.JIPipeGraphRunSettings;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.JavaExtensionValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
@@ -356,12 +356,12 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * @param threads      the number of threads (set to zero for using the default value)
      * @return the result
      */
-    public static JIPipeLegacyProjectRun runProject(JIPipeProject project, Path outputFolder, int threads) {
-        JIPipeLegacyProjectRunSettings settings = new JIPipeLegacyProjectRunSettings();
+    public static JIPipeGraphRun runProject(JIPipeProject project, Path outputFolder, int threads) {
+        JIPipeGraphRunSettings settings = new JIPipeGraphRunSettings();
         settings.setOutputPath(outputFolder);
         if (threads > 0)
             settings.setNumThreads(threads);
-        JIPipeLegacyProjectRun run = new JIPipeLegacyProjectRun(project, settings);
+        JIPipeGraphRun run = new JIPipeGraphRun(project, settings);
         run.run();
         return run;
     }
@@ -375,8 +375,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * @param settings settings for the run
      * @return the result
      */
-    public static JIPipeLegacyProjectRun runProject(JIPipeProject project, JIPipeLegacyProjectRunSettings settings) {
-        JIPipeLegacyProjectRun run = new JIPipeLegacyProjectRun(project, settings);
+    public static JIPipeGraphRun runProject(JIPipeProject project, JIPipeGraphRunSettings settings) {
+        JIPipeGraphRun run = new JIPipeGraphRun(project, settings);
         run.run();
         return run;
     }
@@ -390,12 +390,12 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * @param threads      the number of threads (set to zero for using the default value)
      * @return the future result. You have to check the {@link JIPipeRunnerQueue} to see if the run is finished.
      */
-    public static JIPipeLegacyProjectRun enqueueProject(JIPipeProject project, Path outputFolder, int threads) {
-        JIPipeLegacyProjectRunSettings settings = new JIPipeLegacyProjectRunSettings();
+    public static JIPipeGraphRun enqueueProject(JIPipeProject project, Path outputFolder, int threads) {
+        JIPipeGraphRunSettings settings = new JIPipeGraphRunSettings();
         settings.setOutputPath(outputFolder);
         if (threads > 0)
             settings.setNumThreads(threads);
-        JIPipeLegacyProjectRun run = new JIPipeLegacyProjectRun(project, settings);
+        JIPipeGraphRun run = new JIPipeGraphRun(project, settings);
         JIPipeRunnerQueue.getInstance().enqueue(run);
         return run;
     }
@@ -408,8 +408,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * @param settings settings for the run
      * @return the future result. You have to check the {@link JIPipeRunnerQueue} to see if the run is finished.
      */
-    public static JIPipeLegacyProjectRun enqueueProject(JIPipeProject project, JIPipeLegacyProjectRunSettings settings) {
-        JIPipeLegacyProjectRun run = new JIPipeLegacyProjectRun(project, settings);
+    public static JIPipeGraphRun enqueueProject(JIPipeProject project, JIPipeGraphRunSettings settings) {
+        JIPipeGraphRun run = new JIPipeGraphRun(project, settings);
         JIPipeRunnerQueue.getInstance().enqueue(run);
         return run;
     }

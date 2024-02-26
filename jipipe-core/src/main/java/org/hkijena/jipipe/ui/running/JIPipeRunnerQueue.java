@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.ui.running;
 
 import com.google.common.collect.ImmutableList;
-import org.hkijena.jipipe.api.run.JIPipeLegacyProjectRun;
 import org.hkijena.jipipe.api.JIPipeRunnable;
+import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 
 import java.util.ArrayDeque;
 import java.util.HashMap;
@@ -115,7 +115,7 @@ public class JIPipeRunnerQueue implements JIPipeRunnable.FinishedEventListener, 
     }
 
     /**
-     * The size of the queue (includes the currently running {@link JIPipeLegacyProjectRun}
+     * The size of the queue (includes the currently running {@link JIPipeGraphRun}
      *
      * @return the size
      */

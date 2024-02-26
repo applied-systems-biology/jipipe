@@ -216,6 +216,19 @@ public class NodeGroup extends JIPipeGraphWrapperAlgorithm implements JIPipeCust
         contents.setParent(this);
     }
 
+    @SetJIPipeDocumentation(name = "Continue on failure", description = "If enabled, the pipeline will continue if a node within the group fails. For pass-through iteration, " +
+            "JIPipe will continue with the pipeline (no data is output from the group). If you enabled iteration, all successful results will be stored and passed as output.")
+    @JIPipeParameter("continue-on-failure")
+    @Override
+    public boolean isContinueOnFailure() {
+        return super.isContinueOnFailure();
+    }
+
+    @Override
+    public void setContinueOnFailure(boolean continueOnFailure) {
+        super.setContinueOnFailure(continueOnFailure);
+    }
+
     @SetJIPipeDocumentation(name = "Wrapped graph", description = "The graph that is wrapped inside this node")
     @JIPipeParameter("contents")
     public NodeGroupContents getContents() {
