@@ -34,6 +34,7 @@ import org.hkijena.jipipe.ui.running.JIPipeRunQueuePanelUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.scijava.Disposable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -43,12 +44,15 @@ import java.util.HashMap;
 /**
  * UI for a single {@link JIPipeProjectCompartment}
  */
-public class JIPipeSingleCompartmentSelectionPanelUI extends JIPipeProjectWorkbenchPanel {
+public class JIPipeSingleCompartmentSelectionPanelUI extends JIPipeProjectWorkbenchPanel implements Disposable {
+
+    private static String SAVED_TAB = null;
     private final JIPipeProjectCompartment compartment;
     private final JIPipeGraphCanvasUI canvas;
     private final JIPipeGraphEditorUI graphEditorUI;
 
     private final DocumentTabPane tabbedPane = new DocumentTabPane(false, DocumentTabPane.TabPlacement.Right);
+    private boolean disposed;
 
     /**
      * @param graphEditorUI the graph editor
@@ -108,7 +112,31 @@ public class JIPipeSingleCompartmentSelectionPanelUI extends JIPipeProjectWorkbe
 
         add(tabbedPane, BorderLayout.CENTER);
 
+        restoreTabState();
+        tabbedPane.getTabbedPane().addChangeListener(e -> saveTabState(tabbedPane));
+
 //        initializeToolbar();
+    }
+
+    private void restoreTabState() {
+        if (SAVED_TAB == null)
+            return;
+        tabbedPane.selectSingletonTab(SAVED_TAB);
+    }
+
+    private void saveTabState(DocumentTabPane tabbedPane) {
+        if (!disposed) {
+            String id = tabbedPane.getCurrentlySelectedSingletonTabId();
+            if (id != null) {
+                SAVED_TAB = id;
+            }
+        }
+    }
+
+    @Override
+    public void dispose() {
+        disposed = true;
+        UIUtils.removeAllWithDispose(this);
     }
 
     public JIPipeGraphCanvasUI getCanvas() {

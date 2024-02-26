@@ -24,6 +24,7 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
     private JIPipeMergingAlgorithmIterationStepGenerationSettings loopIterationMergingSettings;
     private OutputSettings outputSettings;
     private JIPipeGraphWrapperAlgorithm.IterationMode iterationMode = JIPipeGraphWrapperAlgorithm.IterationMode.PassThrough;
+    private boolean continueOnFailure = false;
 
     public JIPipeRuntimePartition() {
         this.outputSettings = new OutputSettings();
@@ -38,6 +39,7 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
         this.color = new OptionalColorParameter(other.color);
         this.enableParallelization = other.enableParallelization;
         this.iterationMode = other.iterationMode;
+        this.continueOnFailure = other.continueOnFailure;
         this.outputSettings = new OutputSettings(other.outputSettings);
         this.loopIterationMergingSettings = new JIPipeMergingAlgorithmIterationStepGenerationSettings(other.loopIterationMergingSettings);
         this.loopIterationIteratingSettings = new JIPipeIteratingAlgorithmIterationStepGenerationSettings(other.loopIterationIteratingSettings);
@@ -55,6 +57,18 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
         this.loopIterationIteratingSettings = new JIPipeIteratingAlgorithmIterationStepGenerationSettings(other.loopIterationIteratingSettings);
         registerSubParameters(outputSettings, loopIterationMergingSettings, loopIterationIteratingSettings);
         emitParameterUIChangedEvent();
+    }
+
+    @SetJIPipeDocumentation(name = "Continue on failure", description = "If enabled, the pipeline will continue if a node within the partition fails. For pass-through iteration, " +
+            "JIPipe will continue with the other partitions (no data is output from the current partition). If you enabled iteration, all successful results will be stored and passed to dependents.")
+    @JIPipeParameter("continue-on-failure")
+    public boolean isContinueOnFailure() {
+        return continueOnFailure;
+    }
+
+    @JIPipeParameter("continue-on-failure")
+    public void setContinueOnFailure(boolean continueOnFailure) {
+        this.continueOnFailure = continueOnFailure;
     }
 
     @SetJIPipeDocumentation(name = "Enable parallelization", description = "If enabled, the nodes in this partition will be able to parallelize their workloads using JIPipe's parallelization system. " +
