@@ -17,10 +17,74 @@ import java.awt.image.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Arrays;
 
 public class BufferedImageUtils {
 
+    public static BufferedImage read(Path filePath, boolean greyscaleCorrection) {
+        try {
+            BufferedImage image = ImageIO.read(filePath.toFile());
+            if(greyscaleCorrection && image.getType() == BufferedImage.TYPE_CUSTOM && image.getColorModel().hasAlpha() && image.getColorModel().getNumComponents() == 2) {
+                int width = image.getWidth();
+                int height = image.getHeight();
+                BufferedImage fixed = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+
+                // Get the Raster from the greyscale image
+                Raster srcRaster = image.getRaster();
+
+                // Get the DataBuffer to access the pixel data directly
+                DataBuffer targetBuffer = fixed.getRaster().getDataBuffer();
+
+                // Iterate over each pixel and copy greyscale value to RGBA
+                for (int y = 0; y < height; y++) {
+                    for (int x = 0; x < width; x++) {
+                        // Get the greyscale value without applying color management
+                        int greyValue = srcRaster.getSample(x, y, 0);
+                        int alphaValue = srcRaster.getSample(x, y, 1);
+
+                        // Create an RGBA value
+                        int rgbaValue = (greyValue << 16) | (greyValue << 8) | greyValue | (alphaValue << 24);
+
+                        // Set the RGBA value in the DataBuffer
+                        targetBuffer.setElem(y * width + x, rgbaValue);
+                    }
+                }
+                return fixed;
+            }
+            else if(greyscaleCorrection && image.getType() == BufferedImage.TYPE_BYTE_GRAY && !image.getColorModel().hasAlpha() && image.getColorModel().getNumComponents() == 1) {
+                int width = image.getWidth();
+                int height = image.getHeight();
+                BufferedImage fixed = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+
+                // Get the Raster from the greyscale image
+                Raster srcRaster = image.getRaster();
+
+                // Get the DataBuffer to access the pixel data directly
+                DataBuffer targetBuffer = fixed.getRaster().getDataBuffer();
+
+                // Iterate over each pixel and copy greyscale value to RGBA
+                for (int y = 0; y < height; y++) {
+                    for (int x = 0; x < width; x++) {
+                        // Get the greyscale value without applying color management
+                        int greyValue = srcRaster.getSample(x, y, 0);
+
+                        // Create an RGBA value
+                        int rgbaValue = (greyValue << 16) | (greyValue << 8) | greyValue;
+
+                        // Set the RGBA value in the DataBuffer
+                        targetBuffer.setElem(y * width + x, rgbaValue);
+                    }
+                }
+                return fixed;
+            }
+            else {
+                return image;
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public static BufferedImage setAlpha(BufferedImage image, BufferedImage mask) {
         if(mask.getType() != BufferedImage.TYPE_BYTE_GRAY) {
             mask = copyBufferedImageToGray(mask);

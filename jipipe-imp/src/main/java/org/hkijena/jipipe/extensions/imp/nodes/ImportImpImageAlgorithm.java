@@ -11,8 +11,10 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.imp.datatypes.ImpImageData;
+import org.hkijena.jipipe.utils.BufferedImageUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -24,22 +26,33 @@ import java.nio.file.Path;
 @AddJIPipeInputSlot(value = FileData.class, slotName = "File", create = true, description = "The file to be imported")
 @AddJIPipeOutputSlot(value = ImpImageData.class, slotName = "Image", create = true, description = "The image")
 public class ImportImpImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+
+    private boolean greyscaleCorrection = true;
+
     public ImportImpImageAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
     public ImportImpImageAlgorithm(ImportImpImageAlgorithm other) {
         super(other);
+        this.greyscaleCorrection = other.greyscaleCorrection;
     }
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Path file = iterationStep.getInputData(getFirstInputSlot(), FileData.class, progressInfo).toPath();
-        try {
-            BufferedImage image = ImageIO.read(file.toFile());
-            iterationStep.addOutputData(getFirstOutputSlot(), new ImpImageData(image), progressInfo);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        BufferedImage image = BufferedImageUtils.read(file, greyscaleCorrection);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImpImageData(image), progressInfo);
+    }
+
+    @SetJIPipeDocumentation(name = "Apply greyscale correction", description = "If enabled, convert greyscale images to RGBA to prevent washed-out colors")
+    @JIPipeParameter("greyscale-correction")
+    public boolean isGreyscaleCorrection() {
+        return greyscaleCorrection;
+    }
+
+    @JIPipeParameter("greyscale-correction")
+    public void setGreyscaleCorrection(boolean greyscaleCorrection) {
+        this.greyscaleCorrection = greyscaleCorrection;
     }
 }
