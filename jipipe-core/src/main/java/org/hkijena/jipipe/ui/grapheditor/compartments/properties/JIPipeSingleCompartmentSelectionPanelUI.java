@@ -77,11 +77,11 @@ public class JIPipeSingleCompartmentSelectionPanelUI extends JIPipeProjectWorkbe
         tabbedPane.registerSingletonTab("OVERVIEW", "Overview", UIUtils.getIcon32FromResources("actions/view-list-details.png"),
                 () -> new JIPipeSingleCompartmentSelectionOverviewPanelUI(this), DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
 
-        tabbedPane.registerSingletonTab("PARAMETERS","Parameters", UIUtils.getIcon32FromResources("actions/configure2.png"),
+        tabbedPane.registerSingletonTab("PARAMETERS","Parameters", UIUtils.getIcon32FromResources("actions/configure.png"),
                 () -> parametersUI, DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
 
         JIPipeSlotEditorUI compartmentSlotEditorUI = new JIPipeSlotEditorUI(graphEditorUI, compartment);
-        tabbedPane.addTab("Connections", UIUtils.getIcon32FromResources("actions/plug2.png"),
+        tabbedPane.addTab("Connections", UIUtils.getIcon32FromResources("actions/plug.png"),
                 compartmentSlotEditorUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);

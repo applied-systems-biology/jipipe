@@ -224,6 +224,7 @@ public class NodeGroup extends JIPipeGraphWrapperAlgorithm implements JIPipeCust
         return super.isContinueOnFailure();
     }
 
+    @JIPipeParameter("continue-on-failure")
     @Override
     public void setContinueOnFailure(boolean continueOnFailure) {
         super.setContinueOnFailure(continueOnFailure);
