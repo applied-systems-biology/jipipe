@@ -337,7 +337,6 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
     @SetJIPipeDocumentation(name = "Input management", description = "This algorithm has one input and will iterate through each row of its input and apply the workload. " +
             "Use following settings to control which data batches are generated.")
     @JIPipeParameter(value = "jipipe:data-batch-generation",
-            hidden = true,
             iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/package.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/package.png")
     public JIPipeSimpleIteratingAlgorithmIterationStepGenerationSettings getDataBatchGenerationSettings() {

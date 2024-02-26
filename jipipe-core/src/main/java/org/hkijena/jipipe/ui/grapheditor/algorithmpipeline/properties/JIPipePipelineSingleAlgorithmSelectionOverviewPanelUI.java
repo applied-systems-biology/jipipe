@@ -7,6 +7,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.cache.JIPipeCache;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
+import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -84,6 +85,7 @@ public class JIPipePipelineSingleAlgorithmSelectionOverviewPanelUI extends JIPip
         if (node instanceof NodeGroup) {
             initializeNodeGroup(formPanel);
         }
+        initializeParameters(formPanel);
         if (node instanceof JIPipeAlgorithm) {
             Map<String, JIPipeDataTable> query = getProject().getCache().query(node, node.getUUIDInParentGraph(), new JIPipeProgressInfo());
             if (!query.isEmpty()) {
@@ -94,6 +96,11 @@ public class JIPipePipelineSingleAlgorithmSelectionOverviewPanelUI extends JIPip
 
         revalidate();
         repaint();
+    }
+
+    private void initializeParameters(FormPanel formPanel) {
+//        JIPipeGraphNode copyNode = node.getInfo().newInstance();
+//        GraphNodeParameterReferenceGroupCollection
     }
 
     private void initializeCache(FormPanel formPanel, Map<String, JIPipeDataTable> query) {
