@@ -16,6 +16,7 @@ package org.hkijena.jipipe.ui.plotbuilder;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -53,8 +54,8 @@ public class JIPipePlotSeriesBuilderUI extends JIPipeWorkbenchPanel {
         // Create title panel
         JPanel titlePanel = new JPanel();
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.LINE_AXIS));
-        titlePanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 4, 0));
-        titlePanel.setBackground(Color.LIGHT_GRAY);
+        titlePanel.setBorder(UIUtils.createControlBorder());
+        titlePanel.setBackground(ModernMetalTheme.MEDIUM_GRAY);
         titlePanel.setOpaque(true);
 
         moveDownButton = new JButton(UIUtils.getIconFromResources("actions/caret-down.png"));

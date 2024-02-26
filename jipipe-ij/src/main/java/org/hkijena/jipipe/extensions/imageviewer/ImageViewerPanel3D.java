@@ -71,7 +71,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     private final JPanel viewerCanvasPanel = new JPanel(new BorderLayout());
     private final JToolBar toolBar = new JToolBar();
     private final JToggleButton enableSideBarButton = new JToggleButton();
-    private final DocumentTabPane tabPane = new DocumentTabPane();
+    private final DocumentTabPane tabPane = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Right);
     private final NewThrobberIcon initializationThrobberIcon = new NewThrobberIcon(this);
     private final Timer rebuildImageLaterTimer;
     private final Map<String, FormPanel> formPanels = new HashMap<>();

@@ -64,7 +64,7 @@ import java.util.*;
 public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterCollection, JIPipeValidatable, JIPipeParameterCollection.ParameterChangedEventListener {
     private final BiMap<String, TableColumn> availableData = HashBiMap.create();
     private final List<JIPipePlotSeriesBuilder> seriesBuilders = new ArrayList<>();
-    private final DocumentTabPane sideBar = new DocumentTabPane(false, DocumentTabPane.TabPlacement.Top);
+    private final DocumentTabPane sideBar = new DocumentTabPane(false, DocumentTabPane.TabPlacement.Right);
     private final ParameterChangedEventEmitter parameterChangedEventEmitter = new ParameterChangedEventEmitter();
     private final ParameterStructureChangedEventEmitter parameterStructureChangedEventEmitter = new ParameterStructureChangedEventEmitter();
     private final ParameterUIChangedEventEmitter parameterUIChangedEventEmitter = new ParameterUIChangedEventEmitter();
