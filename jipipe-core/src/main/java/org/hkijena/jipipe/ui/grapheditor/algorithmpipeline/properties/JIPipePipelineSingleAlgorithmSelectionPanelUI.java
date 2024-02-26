@@ -76,21 +76,21 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
         setLayout(new BorderLayout());
         tabbedPane = new DocumentTabPane(false, DocumentTabPane.TabPlacement.Right);
 
-        tabbedPane.registerSingletonTab("OVERVIEW", "Overview", UIUtils.getIcon32FromResources("actions/list-check.png"),
+        tabbedPane.registerSingletonTab("OVERVIEW", "Overview", UIUtils.getIcon32FromResources("actions/view-list-details.png"),
                 () -> new JIPipePipelineSingleAlgorithmSelectionOverviewPanelUI(this), DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
 
-        tabbedPane.registerSingletonTab("PARAMETERS", "Parameters", UIUtils.getIcon32FromResources("actions/configure.png"),
+        tabbedPane.registerSingletonTab("PARAMETERS", "Parameters", UIUtils.getIcon32FromResources("actions/configure2.png"),
                 this::createParametersPanel, DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
 
         if (node.getParentGraph().getAttachment(JIPipeGraphType.class) == JIPipeGraphType.Project) {
 
             JIPipeSlotEditorUI slotEditorUI = new JIPipeSlotEditorUI(graphEditorUI, node);
-            tabbedPane.registerSingletonTab("SLOTS", "Slots", UIUtils.getIcon32FromResources("actions/plug.png"),
+            tabbedPane.registerSingletonTab("SLOTS", "Slots", UIUtils.getIcon32FromResources("actions/plug2.png"),
                     () -> slotEditorUI,
                     DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
             if (node instanceof JIPipeIterationStepAlgorithm) {
                 batchAssistantTabContent = new JPanel(new BorderLayout());
-                tabbedPane.registerSingletonTab("DATA_BATCHES", "Input management", UIUtils.getIcon32FromResources("actions/package.png"),
+                tabbedPane.registerSingletonTab("DATA_BATCHES", "Input management", UIUtils.getIcon32FromResources("actions/extract-archive.png"),
                         () -> batchAssistantTabContent,
                         DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
             }
@@ -112,19 +112,19 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
 
             cacheBrowserTabContent = new JPanel(new BorderLayout());
             if (node instanceof JIPipeAlgorithm) {
-                tabbedPane.registerSingletonTab("CACHE_BROWSER", "Results", UIUtils.getIcon32FromResources("actions/database.png"),
+                tabbedPane.registerSingletonTab("CACHE_BROWSER", "Results", UIUtils.getIcon32FromResources("actions/network-server-database.png"),
                         () -> cacheBrowserTabContent,
                         DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
             }
 
             if (JIPipeRunnerQueue.getInstance().getCurrentRun() != null) {
                 currentRunTabContent = new JPanel(new BorderLayout());
-                tabbedPane.registerSingletonTab("CURRENT_RUN", "Progress", UIUtils.getIcon32FromResources("actions/show_log.png"),
+                tabbedPane.registerSingletonTab("CURRENT_RUN", "Progress", UIUtils.getIcon32FromResources("actions/rabbitvcs-show_log.png"),
                         () -> currentRunTabContent, DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
             }
         } else {
             JIPipeSlotEditorUI slotEditorUI = new JIPipeSlotEditorUI(graphEditorUI, node);
-            tabbedPane.registerSingletonTab("SLOTS", "Slots", UIUtils.getIcon32FromResources("actions/plug.png"),
+            tabbedPane.registerSingletonTab("SLOTS", "Slots", UIUtils.getIcon32FromResources("actions/plug2.png"),
                     () -> slotEditorUI,
                     DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
             if (node instanceof JIPipeAlgorithm && !getProjectWorkbench().getProject().getNodeExamples(node.getInfo().getId()).isEmpty()) {
@@ -144,10 +144,10 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
         }
 
         // Additional tabs for the help panel
-        tabbedPane.addTab("Add nodes", UIUtils.getIcon32FromResources("actions/graph-node-add.png"),
+        tabbedPane.addTab("Add nodes", UIUtils.getIcon32FromResources("actions/node-add.png"),
                 new NodeToolBox(getWorkbench(), true), DocumentTabPane.CloseMode.withoutCloseButton);
 
-        tabbedPane.addTab("Templates", UIUtils.getIcon32FromResources("actions/star.png"),
+        tabbedPane.addTab("Templates", UIUtils.getIcon32FromResources("actions/star2.png"),
                 new NodeTemplateBox(getWorkbench(), true, canvas, Collections.singleton(node)), DocumentTabPane.CloseMode.withoutCloseButton);
 
         tabbedPane.addTab("Bookmarks", UIUtils.getIcon32FromResources("actions/bookmarks.png"),

@@ -74,14 +74,14 @@ public class JIPipeSingleCompartmentSelectionPanelUI extends JIPipeProjectWorkbe
                 MarkdownDocument.fromPluginResource("documentation/compartment-graph.md", new HashMap<>()),
                 ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SCROLLING);
 
-        tabbedPane.registerSingletonTab("OVERVIEW", "Overview", UIUtils.getIcon32FromResources("actions/list-check.png"),
+        tabbedPane.registerSingletonTab("OVERVIEW", "Overview", UIUtils.getIcon32FromResources("actions/view-list-details.png"),
                 () -> new JIPipeSingleCompartmentSelectionOverviewPanelUI(this), DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
 
-        tabbedPane.registerSingletonTab("PARAMETERS","Parameters", UIUtils.getIcon32FromResources("actions/configure.png"),
+        tabbedPane.registerSingletonTab("PARAMETERS","Parameters", UIUtils.getIcon32FromResources("actions/configure2.png"),
                 () -> parametersUI, DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
 
         JIPipeSlotEditorUI compartmentSlotEditorUI = new JIPipeSlotEditorUI(graphEditorUI, compartment);
-        tabbedPane.addTab("Connections", UIUtils.getIcon32FromResources("actions/plug.png"),
+        tabbedPane.addTab("Connections", UIUtils.getIcon32FromResources("actions/plug2.png"),
                 compartmentSlotEditorUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
@@ -90,12 +90,12 @@ public class JIPipeSingleCompartmentSelectionPanelUI extends JIPipeProjectWorkbe
                 this::createQuickRunPanel,
                 DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
 
-        tabbedPane.registerSingletonTab("CACHE_BROWSER", "Results", UIUtils.getIcon32FromResources("actions/database.png"),
+        tabbedPane.registerSingletonTab("CACHE_BROWSER", "Results", UIUtils.getIcon32FromResources("actions/network-server-database.png"),
                 this::createCacheBrowser,
                 DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
 
         if (JIPipeRunnerQueue.getInstance().getCurrentRun() != null) {
-            tabbedPane.registerSingletonTab("CURRENT_RUN", "Progress", UIUtils.getIcon32FromResources("actions/show_log.png"),
+            tabbedPane.registerSingletonTab("CURRENT_RUN", "Progress", UIUtils.getIcon32FromResources("actions/rabbitvcs-show_log.png"),
                     this::createCurrentRunInfo, DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
         }
 
