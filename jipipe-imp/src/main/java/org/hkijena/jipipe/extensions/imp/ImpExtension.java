@@ -26,6 +26,7 @@ import org.hkijena.jipipe.extensions.imp.datatypes.ImpImageData;
 import org.hkijena.jipipe.extensions.imp.datatypes.ImpImageOutputFormat;
 import org.hkijena.jipipe.extensions.imp.datatypes.ImpImageToImageJImageDataTypeConverter;
 import org.hkijena.jipipe.extensions.imp.nodes.*;
+import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
@@ -54,7 +55,7 @@ public class ImpExtension extends JIPipePrepackagedDefaultJavaExtension {
     public ImpExtension() {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_IMPORT_EXPORT,
                 PluginCategoriesEnumParameter.CATEGORY_VISUALIZATION);
-//        getMetadata().setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("thumbnails/imp.png")));
+        getMetadata().setThumbnail(new ImageParameter(RESOURCES.getResourceURL("thumbnail.png")));
     }
 
 
