@@ -13,6 +13,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.grouping.JIPipeGraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithmIterationStepGenerationSettings;
@@ -738,9 +739,28 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
             }
         }
         if (configuration.isStoreToDisk() && !configuration.getDisableSaveToDiskNodes().contains(outputDataSlot.getNode().getUUIDInParentGraph()) && !outputDataSlot.isSkipExport()) {
+
+            JIPipeRuntimePartition runtimePartition = getRuntimePartition(((JIPipeAlgorithm) outputDataSlot.getNode()).getRuntimePartition());
+
+            JIPipeDataTable filtered = outputDataSlot.filter((table, row) -> {
+                JIPipeDataInfo info = table.getDataInfo(row);
+                if (info.isHeavy()) {
+                    return runtimePartition.getOutputSettings().isExportHeavyData();
+                } else {
+                    return runtimePartition.getOutputSettings().isExportLightweightData();
+                }
+            });
+
             JIPipeProgressInfo saveProgress = storageProgress.resolveAndLog(String.format("Saving data in slot '%s' (data type %s)", outputDataSlot.getDisplayName(), JIPipeDataInfo.getInstance(outputDataSlot.getAcceptedDataType()).getName()));
-            storageProgress.log("Flushing output slot " + outputDataSlot.getDisplayName());
-            outputDataSlot.flush(saveProgress);
+            storageProgress.log("Storing " + outputDataSlot.getDisplayName() + " to hard drive");
+
+            try {
+                filtered.exportData(new JIPipeFileSystemWriteDataStorage(saveProgress, outputDataSlot.getSlotStoragePath()), saveProgress);
+            }
+            finally {
+                filtered.clear();
+                outputDataSlot.clear();
+            }
         }
     }
 }

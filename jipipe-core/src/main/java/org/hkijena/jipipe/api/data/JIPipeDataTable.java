@@ -40,6 +40,8 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.locks.StampedLock;
+import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 @SetJIPipeDocumentation(name = "Data table", description = "A table of data")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Stores a data table in the standard JIPipe format (data-table.json plus numeric slot folders)",
@@ -373,6 +375,14 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      */
     public Class<? extends JIPipeData> getAcceptedDataType() {
         return acceptedDataType;
+    }
+
+    /**
+     * Return the info about the slot's data type
+     * @return the info
+     */
+    public JIPipeDataInfo getAcceptedDataTypeInfo() {
+        return JIPipeDataInfo.getInstance(acceptedDataType);
     }
 
     /**
@@ -1327,7 +1337,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      * @deprecated use addDataFromSlot
      */
     @Deprecated
-    public void addData(JIPipeDataSlot sourceSlot, JIPipeProgressInfo progressInfo) {
+    public void addData(JIPipeDataTable sourceSlot, JIPipeProgressInfo progressInfo) {
         addDataFromSlot(sourceSlot, progressInfo);
     }
 
@@ -1339,7 +1349,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      * @param sourceSlot   The other slot
      * @param progressInfo the progress
      */
-    public void addDataFromSlot(JIPipeDataSlot sourceSlot, JIPipeProgressInfo progressInfo) {
+    public void addDataFromSlot(JIPipeDataTable sourceSlot, JIPipeProgressInfo progressInfo) {
         String text = "Copying data from " + sourceSlot.getDisplayName() + " to " + getDisplayName();
         int rowCount = sourceSlot.getRowCount();
         for (int row = 0; row < rowCount; ++row) {
@@ -1499,7 +1509,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     }
 
     /**
-     * Creates a new {@link JIPipeDataSlot} instance that contains only the selected rows.
+     * Creates a new {@link JIPipeDataTable} instance that contains only the selected rows.
      * All other attributes are copied.
      *
      * @param rows the rows
@@ -1514,6 +1524,21 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
             }
         }
         return result;
+    }
+
+    /**
+     * Creates a new {@link JIPipeDataTable} that contains the filtered items.
+     * @param predicate the predicate (the current table, row index)
+     * @return filtered table
+     */
+    public JIPipeDataTable filter(BiPredicate<JIPipeDataTable, Integer> predicate) {
+        List<Integer> rows = new ArrayList<>();
+        for (int i = 0; i < dataArray.size(); i++) {
+            if(predicate.test(this, i)) {
+                rows.add(i);
+            }
+        }
+        return slice(rows);
     }
 
     /**
@@ -1752,5 +1777,14 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      */
     public JIPipeDataAnnotation getDataAnnotation(int row, int col) {
         return getDataAnnotation(row, getDataAnnotationColumnNames().get(col));
+    }
+
+    /**
+     * Returns Information about the true data type that is stored at given row
+     * @param row the row
+     * @return the data type info (true type stored in the table)
+     */
+    public JIPipeDataInfo getDataInfo(int row) {
+        return JIPipeDataInfo.getInstance(getDataClass(row));
     }
 }

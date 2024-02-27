@@ -198,6 +198,7 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
     public static class OutputSettings extends AbstractJIPipeParameterCollection {
         private boolean exportLightweightData = true;
         private boolean exportHeavyData = true;
+        private boolean exportUnknownData = true;
 
         public OutputSettings() {
         }
