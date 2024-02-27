@@ -235,7 +235,7 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel implemen
     private void initializeExportMenu() {
         JMenu exportMenu = menuManager.getOrCreateMenu("Export");
 
-        JMenuItem exportAsTableItem = new JMenuItem("Metadata as table", UIUtils.getIconFromResources("actions/link.png"));
+        JMenuItem exportAsTableItem = new JMenuItem("Metadata as table", UIUtils.getIconFromResources("actions/open-in-new-window.png"));
         exportAsTableItem.addActionListener(e -> exportAsTable());
         exportMenu.add(exportAsTableItem);
 

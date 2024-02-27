@@ -91,7 +91,7 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D implements Mas
         Ribbon.Task importExportTask = getRibbon().getOrCreateTask("Import/Export");
         Ribbon.Band importExportMeasurementsBand = importExportTask.addBand("Measurements");
         importExportMeasurementsBand.add(new SmallButtonAction("Export to file", "Exports the measurements to *.csv/*.xlsx", UIUtils.getIconFromResources("actions/save.png"), this::exportMeasurementsToFile));
-        importExportMeasurementsBand.add(new SmallButtonAction("Open in editor", "Opens the measurements in a table editor", UIUtils.getIconFromResources("actions/link.png"), this::exportMeasurementsToEditor));
+        importExportMeasurementsBand.add(new SmallButtonAction("Open in editor", "Opens the measurements in a table editor", UIUtils.getIconFromResources("actions/open-in-new-window.png"), this::exportMeasurementsToEditor));
 
         autoMeasureToggle.setSelected(true);
 //        table.setBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 3));

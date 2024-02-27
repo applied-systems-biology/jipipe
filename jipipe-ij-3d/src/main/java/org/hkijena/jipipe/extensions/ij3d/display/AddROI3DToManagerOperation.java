@@ -67,6 +67,6 @@ public class AddROI3DToManagerOperation implements JIPipeDataDisplayOperation {
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/link.png");
+        return UIUtils.getIconFromResources("actions/open-in-new-window.png");
     }
 }

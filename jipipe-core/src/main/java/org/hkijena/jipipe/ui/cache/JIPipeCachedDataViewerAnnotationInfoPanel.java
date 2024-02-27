@@ -46,7 +46,7 @@ public class JIPipeCachedDataViewerAnnotationInfoPanel extends JIPipeWorkbenchPa
         JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/document-export.png"));
         JPopupMenu exportMenu = UIUtils.addPopupMenuToButton(exportButton);
 
-        JMenuItem exportToEditorItem = new JMenuItem("Open in editor", UIUtils.getIconFromResources("actions/link.png"));
+        JMenuItem exportToEditorItem = new JMenuItem("Open in editor", UIUtils.getIconFromResources("actions/open-in-new-window.png"));
         exportToEditorItem.addActionListener(e -> exportToTableEditor());
         exportMenu.add(exportToEditorItem);
 

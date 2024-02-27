@@ -177,7 +177,7 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel imp
 
         // Metadata band
         metadataBand.add(new SmallButtonAction("To CSV/Excel", "Exports the text annotations as table", UIUtils.getIcon16FromResources("actions/table.png"), this::exportMetadataAsFiles));
-        metadataBand.add(new SmallButtonAction("Open as table", "Opens the text annotations as table", UIUtils.getIcon16FromResources("actions/link.png"), this::exportMetadataAsTableEditor));
+        metadataBand.add(new SmallButtonAction("Open as table", "Opens the text annotations as table", UIUtils.getIcon16FromResources("actions/open-in-new-window.png"), this::exportMetadataAsTableEditor));
     }
 
     private void initializeToolbar(JPanel menuContainerPanel) {
