@@ -383,8 +383,8 @@ public class JIPipeProjectWindow extends JFrame {
             JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
             notifications.connectDismissTo(JIPipeNotificationInbox.getInstance());
             try {
-                Path parameterFilePath = path.resolve("project.jip");
-                JsonNode jsonData = JsonUtils.getObjectMapper().readValue(parameterFilePath.toFile(), JsonNode.class);
+                Path projectPath = path.resolve("project.jip");
+                JsonNode jsonData = JsonUtils.getObjectMapper().readValue(projectPath.toFile(), JsonNode.class);
                 Set<JIPipeDependency> dependencySet = JIPipeProject.loadDependenciesFromJson(jsonData);
                 Set<JIPipeDependency> missingDependencies = JIPipeExtensionRegistry.findUnsatisfiedDependencies(dependencySet);
                 if (!missingDependencies.isEmpty()) {
@@ -392,9 +392,8 @@ public class JIPipeProjectWindow extends JFrame {
                         return;
                 }
 
-                JIPipeGraphRun run = JIPipeGraphRun.loadFromFolder(path, report, notifications);
-                run.getProject().setWorkDirectory(path);
-                JIPipeProjectWindow window = openProjectInThisOrNewWindow("Open JIPipe output", run.getProject(), false, false);
+                JIPipeProject newProject = JIPipeProject.loadProject(projectPath, new UnspecifiedValidationReportContext(), report, notifications);
+                JIPipeProjectWindow window = openProjectInThisOrNewWindow("Open JIPipe output", newProject, false, false);
                 if (window == null)
                     return;
 
@@ -419,9 +418,9 @@ public class JIPipeProjectWindow extends JFrame {
 
                 if (selectedOption == JOptionPane.YES_OPTION) {
                     // Create a new tab
-                    window.getProjectUI().getDocumentTabPane().addTab("Run",
-                            UIUtils.getIconFromResources("actions/run-build.png"),
-                            new JIPipeResultUI(window.projectUI, run),
+                    window.getProjectUI().getDocumentTabPane().addTab("Results",
+                            UIUtils.getIconFromResources("actions/document-open-folder.png"),
+                            new JIPipeResultUI(window.projectUI, project, path),
                             DocumentTabPane.CloseMode.withAskOnCloseButton,
                             true);
                     window.getProjectUI().getDocumentTabPane().switchToLastTab();

@@ -335,8 +335,9 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
      */
     @Override
     public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
-        if (event.getRun() == run)
+        if (event.getRun() == run) {
             openResults();
+        }
     }
 
     /**
@@ -391,7 +392,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
     }
 
     private void openResults() {
-        JIPipeResultUI resultUI = new JIPipeResultUI(getProjectWorkbench(), run);
+        JIPipeResultUI resultUI = new JIPipeResultUI(getProjectWorkbench(), run.getProject(), run.getConfiguration().getOutputPath());
         removeAll();
         add(resultUI, BorderLayout.CENTER);
         revalidate();

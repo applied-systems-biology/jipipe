@@ -18,10 +18,8 @@ import org.hkijena.jipipe.api.grouping.JIPipeGraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithmIterationStepGenerationSettings;
 import org.hkijena.jipipe.api.nodes.infos.JIPipeEmptyNodeInfo;
-import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.runtimepartitioning.RuntimePartitionReferenceParameter;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.utils.ReflectionUtils;
@@ -64,10 +62,6 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
         for (JIPipeRuntimePartition runtimePartition : project.getRuntimePartitions().toList()) {
             this.runtimePartitions.add(new JIPipeRuntimePartition(runtimePartition));
         }
-    }
-
-    public static JIPipeGraphRun loadFromFolder(Path path, JIPipeValidationReport report, JIPipeNotificationInbox notifications) {
-        throw new UnsupportedOperationException("not implemented");
     }
 
     public JIPipeGraphRun getParent() {
@@ -120,10 +114,10 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
         }
 
         progressInfo.log("Preparing ...");
-        initializeInternalStoragePaths();
+        initializeNodeStoragePaths();
         initializeScratchDirectory();
         initializeRelativeDirectories();
-        assignDataStoragePaths();
+        initializeSlotStoragePaths();
         if (parent == null) {
             progressInfo.log("Outputs will be written to " + configuration.getOutputPath());
         }
@@ -223,7 +217,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
     /**
      * Iterates through output slots and assigns the data storage paths
      */
-    private void assignDataStoragePaths() {
+    private void initializeSlotStoragePaths() {
         if (configuration.getOutputPath() != null) {
             if (!Files.exists(configuration.getOutputPath())) {
                 try {
@@ -270,7 +264,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
         }
     }
 
-    private void initializeInternalStoragePaths() {
+    private void initializeNodeStoragePaths() {
         for (JIPipeGraphNode node : graph.getGraphNodes()) {
             JIPipeProjectCompartment compartment = project.getCompartments().get(node.getCompartmentUUIDInParentGraph());
             if (compartment != null) {
@@ -283,6 +277,38 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
             }
             node.setProjectDirectory(project.getWorkDirectory());
             node.setRuntimeProject(project);
+        }
+    }
+
+    /**
+     * Writes node internal storage paths and output slot storage paths into the graph of the project
+     * Used for the legacy result viewer
+     * @param project the project
+     * @param outputPath the output path
+     */
+    public static void restoreStoragePaths(JIPipeProject project, Path outputPath) {
+        JIPipeGraph graph = project.getGraph();
+
+        // Internal storage path
+        for (JIPipeGraphNode node : graph.getGraphNodes()) {
+            JIPipeProjectCompartment compartment = project.getCompartments().get(node.getCompartmentUUIDInParentGraph());
+            if (compartment != null) {
+                node.setInternalStoragePath(Paths.get(StringUtils.safeJsonify(compartment.getAliasIdInParentGraph()))
+                        .resolve(StringUtils.safeJsonify(graph.getAliasIdOf(node))));
+            } else {
+                node.setInternalStoragePath(Paths.get("_sub")
+                        .resolve(UUID.randomUUID().toString())
+                        .resolve(StringUtils.safeJsonify(graph.getAliasIdOf(node))));
+            }
+            node.setProjectDirectory(project.getWorkDirectory());
+            node.setRuntimeProject(project);
+        }
+
+        // Slot storage paths
+        for (JIPipeDataSlot slot : graph.getSlotNodes()) {
+            if (slot.isOutput()) {
+                slot.setSlotStoragePath(outputPath.resolve(slot.getNode().getInternalStoragePath().resolve(slot.getName())));
+            }
         }
     }
 

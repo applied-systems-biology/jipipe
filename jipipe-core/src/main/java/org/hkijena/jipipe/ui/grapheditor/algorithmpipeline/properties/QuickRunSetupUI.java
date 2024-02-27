@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.properties;
 
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
@@ -372,8 +373,9 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel implements JIPi
 
             if (showNextResults) {
                 try {
-                    JIPipeResultUI resultUI = new JIPipeResultUI(getProjectWorkbench(), currentQuickRun.getRun());
-                    String name = "Quick run: " + algorithm.getName();
+                    JIPipeGraphRun run = currentQuickRun.getRun();
+                    JIPipeResultUI resultUI = new JIPipeResultUI(getProjectWorkbench(), run.getProject(), run.getConfiguration().getOutputPath());
+                    String name = "Run: " + algorithm.getName();
                     getProjectWorkbench().getDocumentTabPane().addTab(name, UIUtils.getIconFromResources("actions/testbench.png"),
                             resultUI, DocumentTabPane.CloseMode.withAskOnCloseButton, true);
                     getProjectWorkbench().getDocumentTabPane().switchToLastTab();

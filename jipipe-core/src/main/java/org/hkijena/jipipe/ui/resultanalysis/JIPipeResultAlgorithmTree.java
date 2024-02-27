@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.resultanalysis;
 
+import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -29,6 +30,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -37,18 +39,17 @@ import java.util.stream.Collectors;
  * Displays a tree where the user can select data slots
  */
 public class JIPipeResultAlgorithmTree extends JIPipeProjectWorkbenchPanel {
-    private JIPipeGraphRun run;
+    private final JIPipeProject project;
+    private final Path storagePath;
     private JScrollPane treeScrollPane;
     private JTree tree;
     private SearchTextField searchTextField;
 
-    /**
-     * @param workbenchUI Workbench ui
-     * @param run         The run
-     */
-    public JIPipeResultAlgorithmTree(JIPipeProjectWorkbench workbenchUI, JIPipeGraphRun run) {
+
+    public JIPipeResultAlgorithmTree(JIPipeProjectWorkbench workbenchUI, JIPipeProject project, Path storagePath) {
         super(workbenchUI);
-        this.run = run;
+        this.project = project;
+        this.storagePath = storagePath;
         initialize();
         refreshTree();
     }
@@ -57,7 +58,7 @@ public class JIPipeResultAlgorithmTree extends JIPipeProjectWorkbenchPanel {
         int scrollPosition = treeScrollPane.getVerticalScrollBar().getValue();
 
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(null);
-        for (JIPipeProjectCompartment compartment : run.getProject().getCompartmentGraph().traverse()
+        for (JIPipeProjectCompartment compartment : project.getCompartmentGraph().traverse()
                 .stream().filter(a -> a instanceof JIPipeProjectCompartment)
                 .map(a -> (JIPipeProjectCompartment) a).collect(Collectors.toList())) {
             DefaultMutableTreeNode compartmentNode = new DefaultMutableTreeNode(compartment);
@@ -65,7 +66,7 @@ public class JIPipeResultAlgorithmTree extends JIPipeProjectWorkbenchPanel {
             boolean compartmentHasMatchedChildren = false;
             UUID projectCompartmentUUID = compartment.getProjectCompartmentUUID();
 
-            for (JIPipeGraphNode algorithm : run.getGraph().traverse()) {
+            for (JIPipeGraphNode algorithm : project.getGraph().traverse()) {
                 if (Objects.equals(algorithm.getCompartmentUUIDInParentGraph(), projectCompartmentUUID)) {
                     DefaultMutableTreeNode algorithmNode = new DefaultMutableTreeNode(algorithm);
 

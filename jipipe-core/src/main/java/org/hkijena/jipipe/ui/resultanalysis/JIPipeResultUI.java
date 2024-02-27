@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.resultanalysis;
 
+import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -28,6 +29,7 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
 
@@ -35,24 +37,27 @@ import java.util.*;
  * UI around an {@link JIPipeGraphRun} result
  */
 public class JIPipeResultUI extends JIPipeProjectWorkbenchPanel {
-    private JIPipeGraphRun run;
+    private final JIPipeProject project;
+    private final Path storagePath;
     private JSplitPane splitPane;
     private JIPipeResultAlgorithmTree algorithmTree;
 
-    /**
-     * @param workbenchUI the workbench
-     * @param run         the finished run
-     */
-    public JIPipeResultUI(JIPipeProjectWorkbench workbenchUI, JIPipeGraphRun run) {
+    public JIPipeResultUI(JIPipeProjectWorkbench workbenchUI, JIPipeProject project, Path storagePath) {
         super(workbenchUI);
-        this.run = run;
+        this.project = project;
+        this.storagePath = storagePath;
+
+        // Needed here to get back the storage paths
+        JIPipeGraphRun.restoreStoragePaths(project, storagePath);
+
+        // Continue with init
         initialize();
         showDataSlots(listAllDataSlots());
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
-        algorithmTree = new JIPipeResultAlgorithmTree(getProjectWorkbench(), run);
+        algorithmTree = new JIPipeResultAlgorithmTree(getProjectWorkbench(), project, storagePath);
 
         splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, algorithmTree,
                 new JPanel(), AutoResizeSplitPane.RATIO_1_TO_3);
@@ -91,7 +96,7 @@ public class JIPipeResultUI extends JIPipeProjectWorkbenchPanel {
 
     private List<JIPipeDataSlot> listAllDataSlots() {
         List<JIPipeDataSlot> result = new ArrayList<>();
-        for (JIPipeGraphNode algorithm : run.getGraph().getGraphNodes()) {
+        for (JIPipeGraphNode algorithm : project.getGraph().getGraphNodes()) {
             for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
                 if (Files.exists(outputSlot.getSlotStoragePath().resolve("data-table.json"))) {
                     result.add(outputSlot);
@@ -114,7 +119,7 @@ public class JIPipeResultUI extends JIPipeProjectWorkbenchPanel {
     private List<JIPipeDataSlot> listDataSlotsOfCompartment(JIPipeProjectCompartment compartment) {
         UUID projectCompartmentUUID = compartment.getProjectCompartmentUUID();
         List<JIPipeDataSlot> result = new ArrayList<>();
-        for (JIPipeGraphNode algorithm : run.getGraph().getGraphNodes()) {
+        for (JIPipeGraphNode algorithm : project.getGraph().getGraphNodes()) {
             if (Objects.equals(algorithm.getCompartmentUUIDInParentGraph(), projectCompartmentUUID)) {
                 for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
                     if (Files.exists(outputSlot.getSlotStoragePath().resolve("data-table.json"))) {
@@ -127,13 +132,13 @@ public class JIPipeResultUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void showDataSlots(List<JIPipeDataSlot> slots) {
-        JIPipeMergedResultDataSlotTableUI ui = new JIPipeMergedResultDataSlotTableUI(getProjectWorkbench(), run, slots);
+        JIPipeMergedResultDataSlotTableUI ui = new JIPipeMergedResultDataSlotTableUI(getProjectWorkbench(), project, storagePath, slots);
         splitPane.setRightComponent(ui);
         revalidate();
     }
 
     private void showDataSlot(JIPipeDataSlot dataSlot) {
-        JIPipeResultDataSlotTableUI ui = new JIPipeResultDataSlotTableUI(getProjectWorkbench(), run, dataSlot);
+        JIPipeResultDataSlotTableUI ui = new JIPipeResultDataSlotTableUI(getProjectWorkbench(), project, storagePath, dataSlot);
         splitPane.setRightComponent(ui);
         revalidate();
     }
@@ -155,7 +160,7 @@ public class JIPipeResultUI extends JIPipeProjectWorkbenchPanel {
 
     private void openLog() {
         try {
-            Desktop.getDesktop().open(run.getConfiguration().getOutputPath().resolve("log.txt").toFile());
+            Desktop.getDesktop().open(storagePath.resolve("log.txt").toFile());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -163,16 +168,10 @@ public class JIPipeResultUI extends JIPipeProjectWorkbenchPanel {
 
     private void openOutputFolder() {
         try {
-            Desktop.getDesktop().open(run.getConfiguration().getOutputPath().toFile());
+            Desktop.getDesktop().open(storagePath.toFile());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    /**
-     * @return The run
-     */
-    public JIPipeGraphRun getRun() {
-        return run;
-    }
 }

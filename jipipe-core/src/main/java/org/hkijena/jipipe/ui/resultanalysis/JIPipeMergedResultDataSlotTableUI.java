@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.resultanalysis;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
@@ -64,8 +65,9 @@ import java.util.Set;
  */
 public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel implements JIPipeParameterCollection.ParameterChangedEventListener {
 
+    private final JIPipeProject project;
+    private final Path storagePath;
     private final List<JIPipeDataSlot> slots;
-    private final JIPipeGraphRun run;
     private final SearchTextField searchTextField = new SearchTextField();
     private final Ribbon ribbon = new Ribbon();
     private JXTable table;
@@ -75,14 +77,10 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
     private JIPipeRowDataMergedTableCellRenderer previewRenderer;
     private JIPipeRowDataAnnotationMergedTableCellRenderer dataAnnotationPreviewRenderer;
 
-    /**
-     * @param workbenchUI The workbench
-     * @param run         The algorithm run
-     * @param slots       The displayed slots
-     */
-    public JIPipeMergedResultDataSlotTableUI(JIPipeProjectWorkbench workbenchUI, JIPipeGraphRun run, List<JIPipeDataSlot> slots) {
-        super(workbenchUI);
-        this.run = run;
+    public JIPipeMergedResultDataSlotTableUI(JIPipeProjectWorkbench projectWorkbench, JIPipeProject project, Path storagePath, List<JIPipeDataSlot> slots) {
+        super(projectWorkbench);
+        this.project = project;
+        this.storagePath = storagePath;
         this.slots = slots;
 
         initialize();
@@ -210,7 +208,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
         } else if (slots.stream().map(JIPipeDataSlot::getNode).distinct().count() == 1) {
             UIUtils.openFileInNative(slots.get(0).getSlotStoragePath().getParent());
         } else {
-            UIUtils.openFileInNative(run.getConfiguration().getOutputPath());
+            UIUtils.openFileInNative(storagePath);
         }
     }
 
