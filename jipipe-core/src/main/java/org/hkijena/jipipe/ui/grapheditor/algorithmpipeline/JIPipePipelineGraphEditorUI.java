@@ -381,7 +381,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
         markdownReader.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-graph.md", new HashMap<>()));
         bottomPanel.addTab("Quick guide", UIUtils.getIcon32FromResources("actions/help.png"), markdownReader, DocumentTabPane.CloseMode.withoutCloseButton);
 
-        bottomPanel.addTab("Add nodes", UIUtils.getIcon32FromResources("actions/graph-node-add.png"),
+        bottomPanel.addTab("Add nodes", UIUtils.getIcon32FromResources("actions/node-add.png"),
                 new NodeToolBox(getWorkbench(), true), DocumentTabPane.CloseMode.withoutCloseButton);
 
         bottomPanel.addTab("Templates", UIUtils.getIcon32FromResources("actions/star.png"),

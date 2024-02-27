@@ -101,7 +101,7 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
     private void openEntryMenu(JIPipeNodeDatabaseEntry entry, Point location) {
         JPopupMenu menu = new JPopupMenu();
         if(!entry.exists()) {
-            menu.add(UIUtils.createMenuItem("Add new to graph", "Adds the selected node", UIUtils.getIconFromResources("actions/graph-node-add.png"), () -> addEntryToGraph(entry)));
+            menu.add(UIUtils.createMenuItem("Add new to graph", "Adds the selected node", UIUtils.getIconFromResources("actions/node-add.png"), () -> addEntryToGraph(entry)));
         }
         if(querySlot != null) {
             if(querySlot.isInput()) {

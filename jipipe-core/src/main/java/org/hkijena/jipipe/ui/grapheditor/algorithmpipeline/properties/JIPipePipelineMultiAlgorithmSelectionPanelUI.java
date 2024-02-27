@@ -68,7 +68,7 @@ public class JIPipePipelineMultiAlgorithmSelectionPanelUI extends JIPipeProjectW
         DocumentTabPane tabPane = new DocumentTabPane(false, DocumentTabPane.TabPlacement.Right);
         tabPane.addTab("Selection", UIUtils.getIcon32FromResources("actions/edit-select-all.png"), actionPanel, DocumentTabPane.CloseMode.withoutCloseButton);
 
-        tabPane.addTab("Add nodes", UIUtils.getIcon32FromResources("actions/graph-node-add.png"),
+        tabPane.addTab("Add nodes", UIUtils.getIcon32FromResources("actions/node-add.png"),
                 new NodeToolBox(getWorkbench(), true), DocumentTabPane.CloseMode.withoutCloseButton);
 
         tabPane.addTab("Templates", UIUtils.getIcon32FromResources("actions/star.png"),
