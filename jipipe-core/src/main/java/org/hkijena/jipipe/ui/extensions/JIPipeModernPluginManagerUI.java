@@ -7,16 +7,15 @@
  * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * The project code is licensed under BSD 2-Clause.
+ * The project code is licensed under MIT.
  * See the LICENSE file provided with the code for the full license.
- *
  */
 
 package org.hkijena.jipipe.ui.extensions;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.JIPipeExtension;
+import org.hkijena.jipipe.JIPipePlugin;
 import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
@@ -46,7 +45,7 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel implements
     private ExtensionListPanel extensionListPanel;
     private FormPanel sidePanel;
     private SearchTextField searchTextField;
-    private List<JIPipeExtension> currentlyShownItems = new ArrayList<>(getExtensionRegistry().getKnownExtensionsList());
+    private List<JIPipePlugin> currentlyShownItems = new ArrayList<>(getExtensionRegistry().getKnownExtensionsList());
     private JLabel currentListHeading;
     private JButton updateSitesButton;
     private AutoResizeSplitPane splitPane;
@@ -137,8 +136,8 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel implements
         if (searchStrings == null || searchStrings.length == 0) {
             extensionListPanel.setPlugins(currentlyShownItems);
         } else {
-            List<JIPipeExtension> filtered = new ArrayList<>();
-            for (JIPipeExtension item : currentlyShownItems) {
+            List<JIPipePlugin> filtered = new ArrayList<>();
+            for (JIPipePlugin item : currentlyShownItems) {
                 String combined = item.getMetadata().getName() + item.getMetadata().getDescription() + String.join("", item.getMetadata().getProcessedCategories());
                 combined = combined.toLowerCase();
                 for (String searchString : searchStrings) {
@@ -185,14 +184,14 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel implements
 
     }
 
-    private void showItems(List<JIPipeExtension> items, String heading) {
+    private void showItems(List<JIPipePlugin> items, String heading) {
         this.currentlyShownItems = items;
         currentListHeading.setText(heading);
         splitPane.setRightComponent(mainPanel);
         updateSearch();
     }
 
-    private void addSidePanelButton(String label, Icon icon, Supplier<List<JIPipeExtension>> items, boolean small) {
+    private void addSidePanelButton(String label, Icon icon, Supplier<List<JIPipePlugin>> items, boolean small) {
         JButton button = new JButton(label, icon);
         if (small) {
             button.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
@@ -209,7 +208,7 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel implements
         sidePanel.addWideToForm(button, null);
     }
 
-    private JButton addImageJSidePanelButton(String label, Icon icon, Predicate<UpdateSiteExtension> filter, boolean small) {
+    private JButton addImageJSidePanelButton(String label, Icon icon, Predicate<UpdateSitePlugin> filter, boolean small) {
         JButton button = new JButton(label, icon);
         if (small) {
             button.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
@@ -230,7 +229,7 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel implements
         return button;
     }
 
-    public void showExtensionDetails(JIPipeExtension extension) {
+    public void showExtensionDetails(JIPipePlugin extension) {
         JPanel detailsPanel = new JPanel(new BorderLayout());
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);

@@ -7,15 +7,14 @@
  * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * The project code is licensed under BSD 2-Clause.
+ * The project code is licensed under MIT.
  * See the LICENSE file provided with the code for the full license.
- *
  */
 
 package org.hkijena.jipipe.ui.extensions;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeExtension;
+import org.hkijena.jipipe.JIPipePlugin;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
@@ -26,9 +25,9 @@ import javax.swing.*;
 public class ExtensionItemActionButton extends JButton implements JIPipeExtensionRegistry.ScheduledActivateExtensionEventListener, JIPipeExtensionRegistry.ScheduledDeactivateExtensionEventListener, JIPipeRunnable.FinishedEventListener {
 
     private final JIPipeModernPluginManager pluginManager;
-    private final JIPipeExtension extension;
+    private final JIPipePlugin extension;
 
-    public ExtensionItemActionButton(JIPipeModernPluginManager pluginManager, JIPipeExtension extension) {
+    public ExtensionItemActionButton(JIPipeModernPluginManager pluginManager, JIPipePlugin extension) {
         this.pluginManager = pluginManager;
         this.extension = extension;
         addActionListener(e -> executeAction());
@@ -84,9 +83,9 @@ public class ExtensionItemActionButton extends JButton implements JIPipeExtensio
     @Override
     public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
         if (event.getRun() instanceof ActivateAndApplyUpdateSiteRun || event.getRun() instanceof DeactivateAndApplyUpdateSiteRun) {
-            if (extension instanceof UpdateSiteExtension) {
+            if (extension instanceof UpdateSitePlugin) {
                 // Try to update it
-                ((UpdateSiteExtension) extension).getUpdateSite(pluginManager.getUpdateSites());
+                ((UpdateSitePlugin) extension).getUpdateSite(pluginManager.getUpdateSites());
             }
             updateDisplay();
         }

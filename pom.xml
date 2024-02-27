@@ -26,8 +26,8 @@ See the LICENSE file provided with this code for the full license.
     </organization>
     <licenses>
         <license>
-            <name>BSD-2-Clause</name>
-            <url>https://opensource.org/licenses/BSD-2-Clause</url>
+            <name>MIT</name>
+            <url>https://opensource.org/licenses/MIT</url>
             <distribution>repo</distribution>
         </license>
     </licenses>

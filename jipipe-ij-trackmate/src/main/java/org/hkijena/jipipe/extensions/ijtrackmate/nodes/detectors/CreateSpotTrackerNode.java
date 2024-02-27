@@ -7,9 +7,8 @@
  * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * The project code is licensed under BSD 2-Clause.
+ * The project code is licensed under MIT.
  * See the LICENSE file provided with the code for the full license.
- *
  */
 
 package org.hkijena.jipipe.extensions.ijtrackmate.nodes.detectors;
@@ -25,7 +24,7 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.extensions.ijtrackmate.TrackMateExtension;
+import org.hkijena.jipipe.extensions.ijtrackmate.TrackMatePlugin;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotTrackerData;
 
 import java.util.HashMap;
@@ -63,7 +62,7 @@ public class CreateSpotTrackerNode extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @SetJIPipeDocumentation(name = "Spot tracker settings")
-    @JIPipeParameter(value = "spot-tracker-parameters", resourceClass = TrackMateExtension.class, iconURL = "/org/hkijena/jipipe/extensions/ijtrackmate/icons/trackmate.png")
+    @JIPipeParameter(value = "spot-tracker-parameters", resourceClass = TrackMatePlugin.class, iconURL = "/org/hkijena/jipipe/extensions/ijtrackmate/icons/trackmate.png")
     public JIPipeDynamicParameterCollection getParameters() {
         return parameters;
     }

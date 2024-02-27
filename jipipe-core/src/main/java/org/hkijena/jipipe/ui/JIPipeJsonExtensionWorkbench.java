@@ -7,14 +7,14 @@
  * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * The project code is licensed under BSD 2-Clause.
+ * The project code is licensed under MIT.
  * See the LICENSE file provided with the code for the full license.
  */
 
 package org.hkijena.jipipe.ui;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeJsonExtension;
+import org.hkijena.jipipe.JIPipeJsonPlugin;
 import org.hkijena.jipipe.JIPipeService;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -40,12 +40,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * UI around a {@link JIPipeJsonExtension}
+ * UI around a {@link JIPipeJsonPlugin}
  */
 public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbench, JIPipeService.ExtensionRegisteredEventListener, JIPipeService.ExtensionContentRemovedEventListener {
     private final JIPipeJsonExtensionWindow window;
     private final Context context;
-    private final JIPipeJsonExtension project;
+    private final JIPipeJsonPlugin project;
     public DocumentTabPane documentTabPane;
     private JLabel statusText;
     private ReloadableValidityChecker validityCheckerPanel;
@@ -59,7 +59,7 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
      * @param project          The project
      * @param showIntroduction if show intro
      */
-    public JIPipeJsonExtensionWorkbench(JIPipeJsonExtensionWindow window, Context context, JIPipeJsonExtension project, boolean showIntroduction) {
+    public JIPipeJsonExtensionWorkbench(JIPipeJsonExtensionWindow window, Context context, JIPipeJsonPlugin project, boolean showIntroduction) {
         this.window = window;
         this.context = context;
         this.project = project;
@@ -263,7 +263,7 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
     /**
      * @return The extension project
      */
-    public JIPipeJsonExtension getProject() {
+    public JIPipeJsonPlugin getProject() {
         return project;
     }
 

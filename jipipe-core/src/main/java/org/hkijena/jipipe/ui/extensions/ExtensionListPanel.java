@@ -7,19 +7,17 @@
  * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * The project code is licensed under BSD 2-Clause.
+ * The project code is licensed under MIT.
  * See the LICENSE file provided with the code for the full license.
- *
  */
 
 package org.hkijena.jipipe.ui.extensions;
 
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.JIPipeExtension;
-import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.JIPipePlugin;
+import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.layouts.ModifiedFlowLayout;
-import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.jdesktop.swingx.JXPanel;
 import org.jdesktop.swingx.ScrollableSizeHint;
@@ -35,8 +33,8 @@ public class ExtensionListPanel extends JIPipeWorkbenchPanel {
     public static final int MIN_VISIBLE_ITEMS = 30;
 
     private final JIPipeModernPluginManagerUI pluginManagerUI;
-    private final Deque<JIPipeExtension> infiniteScrollingQueue = new ArrayDeque<>();
-    private List<JIPipeExtension> plugins;
+    private final Deque<JIPipePlugin> infiniteScrollingQueue = new ArrayDeque<>();
+    private List<JIPipePlugin> plugins;
     private JXPanel listPanel;
     private JScrollPane scrollPane;
     private final Timer scrollToBeginTimer = new Timer(200, e -> scrollToBeginning());
@@ -49,8 +47,8 @@ public class ExtensionListPanel extends JIPipeWorkbenchPanel {
     }
 
     private boolean isCoreDependency(JIPipeDependency dependency) {
-        if (dependency instanceof JIPipeJavaExtension)
-            return ((JIPipeJavaExtension) dependency).isCoreExtension();
+        if (dependency instanceof JIPipeJavaPlugin)
+            return ((JIPipeJavaPlugin) dependency).isCoreExtension();
         return false;
     }
 
@@ -64,18 +62,18 @@ public class ExtensionListPanel extends JIPipeWorkbenchPanel {
         add(scrollPane, BorderLayout.CENTER);
     }
 
-    public List<JIPipeExtension> getPlugins() {
+    public List<JIPipePlugin> getPlugins() {
         return plugins;
     }
 
-    public void setPlugins(List<JIPipeExtension> plugins) {
+    public void setPlugins(List<JIPipePlugin> plugins) {
         this.plugins = new ArrayList<>(plugins);
         this.plugins.sort(Comparator.comparing(this::isCoreDependency).thenComparing(dependency -> dependency.getMetadata().getName().toLowerCase(), NaturalOrderComparator.INSTANCE));
         listPanel.removeAll();
         revalidate();
         repaint();
         infiniteScrollingQueue.clear();
-        for (JIPipeExtension plugin : this.plugins) {
+        for (JIPipePlugin plugin : this.plugins) {
             infiniteScrollingQueue.addLast(plugin);
         }
 //        SwingUtilities.invokeLater(this::updateInfiniteScroll);
@@ -86,7 +84,7 @@ public class ExtensionListPanel extends JIPipeWorkbenchPanel {
     private void updateInfiniteScroll() {
         JScrollBar scrollBar = scrollPane.getVerticalScrollBar();
         if ((listPanel.getComponentCount() < MIN_VISIBLE_ITEMS || !scrollBar.isVisible() || (scrollBar.getValue() + scrollBar.getVisibleAmount()) > (scrollBar.getMaximum() - 100)) && !infiniteScrollingQueue.isEmpty()) {
-            JIPipeExtension value = infiniteScrollingQueue.removeFirst();
+            JIPipePlugin value = infiniteScrollingQueue.removeFirst();
             ExtensionItemPanel panel = new ExtensionItemPanel(pluginManagerUI, value);
             listPanel.add(panel);
             revalidate();

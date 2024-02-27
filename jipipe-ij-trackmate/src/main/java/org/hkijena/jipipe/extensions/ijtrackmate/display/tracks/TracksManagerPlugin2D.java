@@ -7,9 +7,8 @@
  * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * The project code is licensed under BSD 2-Clause.
+ * The project code is licensed under MIT.
  * See the LICENSE file provided with the code for the full license.
- *
  */
 
 package org.hkijena.jipipe.extensions.ijtrackmate.display.tracks;
@@ -25,7 +24,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
-import org.hkijena.jipipe.extensions.ijtrackmate.TrackMateExtension;
+import org.hkijena.jipipe.extensions.ijtrackmate.TrackMatePlugin;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.display.trackscheme.TrackSchemeDataDisplayOperation;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.MeasureEdgesNode;
@@ -180,7 +179,7 @@ public class TracksManagerPlugin2D extends JIPipeImageViewerPlugin2D {
         {
             Ribbon.Task toolsTask = ribbon.addTask("Tools");
             Ribbon.Band generalBand = toolsTask.addBand("General");
-            generalBand.add(new LargeButtonAction("Track scheme", "Displays the track scheme", TrackMateExtension.RESOURCES.getIcon32FromResources("trackscheme.png"), this::openTrackScheme));
+            generalBand.add(new LargeButtonAction("Track scheme", "Displays the track scheme", TrackMatePlugin.RESOURCES.getIcon32FromResources("trackscheme.png"), this::openTrackScheme));
         }
     }
 
@@ -347,7 +346,7 @@ public class TracksManagerPlugin2D extends JIPipeImageViewerPlugin2D {
 
     @Override
     public Icon getCategoryIcon() {
-        return TrackMateExtension.RESOURCES.getIconFromResources("trackmate-tracker.png");
+        return TrackMatePlugin.RESOURCES.getIconFromResources("trackmate-tracker.png");
     }
 
     private void initialize() {
@@ -487,7 +486,7 @@ public class TracksManagerPlugin2D extends JIPipeImageViewerPlugin2D {
             setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
             setBorder(BorderFactory.createEmptyBorder(4, 2, 4, 2));
             this.roiInfoLabel = new JLabel();
-            roiInfoLabel.setIcon(TrackMateExtension.RESOURCES.getIconFromResources("trackmate-tracker.png"));
+            roiInfoLabel.setIcon(TrackMatePlugin.RESOURCES.getIconFromResources("trackmate-tracker.png"));
             roiInfoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
             add(roiInfoLabel);
             add(Box.createHorizontalGlue());

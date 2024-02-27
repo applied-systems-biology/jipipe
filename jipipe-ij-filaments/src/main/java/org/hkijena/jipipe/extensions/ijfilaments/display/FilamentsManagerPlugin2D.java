@@ -7,9 +7,8 @@
  * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * The project code is licensed under BSD 2-Clause.
+ * The project code is licensed under MIT.
  * See the LICENSE file provided with the code for the full license.
- *
  */
 
 package org.hkijena.jipipe.extensions.ijfilaments.display;
@@ -20,7 +19,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
-import org.hkijena.jipipe.extensions.ijfilaments.FilamentsExtension;
+import org.hkijena.jipipe.extensions.ijfilaments.FilamentsPlugin;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.extensions.ijfilaments.settings.ImageViewerUIFilamentDisplaySettings;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentEdge;
@@ -324,7 +323,7 @@ public class FilamentsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
 
     @Override
     public Icon getCategoryIcon() {
-        return FilamentsExtension.RESOURCES.getIconFromResources("data-type-filaments.png");
+        return FilamentsPlugin.RESOURCES.getIconFromResources("data-type-filaments.png");
     }
 
     private void initialize() {
@@ -424,7 +423,7 @@ public class FilamentsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
             setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
             setBorder(BorderFactory.createEmptyBorder(4, 2, 4, 2));
             this.roiInfoLabel = new JLabel();
-            roiInfoLabel.setIcon(FilamentsExtension.RESOURCES.getIconFromResources("data-type-filaments.png"));
+            roiInfoLabel.setIcon(FilamentsPlugin.RESOURCES.getIconFromResources("data-type-filaments.png"));
             roiInfoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
             add(roiInfoLabel);
             add(Box.createHorizontalGlue());

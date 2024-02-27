@@ -1,3 +1,16 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under MIT.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
 package org.hkijena.jipipe.extensions.ilastik.nodes;
 
 import ij.ImagePlus;
@@ -29,7 +42,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.extensions.ilastik.IlastikExtension;
+import org.hkijena.jipipe.extensions.ilastik.IlastikPlugin;
 import org.hkijena.jipipe.extensions.ilastik.IlastikSettings;
 import org.hkijena.jipipe.extensions.ilastik.datatypes.IlastikModelData;
 import org.hkijena.jipipe.extensions.ilastik.parameters.IlastikProjectValidationMode;
@@ -265,7 +278,7 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
                 }
 
                 // Run ilastik
-                IlastikExtension.runIlastik(overrideEnvironment.getContentOrDefault(IlastikSettings.getInstance().getEnvironment()),
+                IlastikPlugin.runIlastik(overrideEnvironment.getContentOrDefault(IlastikSettings.getInstance().getEnvironment()),
                         args,
                         exportSourceProgress.resolve("Run Ilastik"),
                         false);

@@ -7,7 +7,7 @@
  * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * The project code is licensed under BSD 2-Clause.
+ * The project code is licensed under MIT.
  * See the LICENSE file provided with the code for the full license.
  */
 
@@ -16,7 +16,7 @@ package org.hkijena.jipipe.api.grouping;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeJsonExtension;
+import org.hkijena.jipipe.JIPipeJsonPlugin;
 import org.hkijena.jipipe.api.registries.JIPipeDefaultNodeRegistrationTask;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -30,14 +30,14 @@ import java.util.Map;
 public class JsonNodeRegistrationTask extends JIPipeDefaultNodeRegistrationTask {
 
     private final JsonNode jsonNode;
-    private final JIPipeJsonExtension source;
+    private final JIPipeJsonPlugin source;
     private boolean alreadyRegistered = false;
 
     /**
      * @param jsonNode The JSON serialized graph wrapper algorithm
      * @param source   dependency that registers the algorithm
      */
-    public JsonNodeRegistrationTask(JsonNode jsonNode, JIPipeJsonExtension source) {
+    public JsonNodeRegistrationTask(JsonNode jsonNode, JIPipeJsonPlugin source) {
         this.jsonNode = jsonNode;
         this.source = source;
         findDependencyAlgorithms();

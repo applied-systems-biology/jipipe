@@ -7,9 +7,8 @@
  * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * The project code is licensed under BSD 2-Clause.
+ * The project code is licensed under MIT.
  * See the LICENSE file provided with the code for the full license.
- *
  */
 
 package org.hkijena.jipipe.ui.extensions;
@@ -35,9 +34,9 @@ import java.util.Set;
 public class ExtensionInfoPanel extends JPanel {
 
     private final JIPipeModernPluginManagerUI pluginManagerUI;
-    private final JIPipeExtension extension;
+    private final JIPipePlugin extension;
 
-    public ExtensionInfoPanel(JIPipeModernPluginManagerUI pluginManagerUI, JIPipeExtension extension) {
+    public ExtensionInfoPanel(JIPipeModernPluginManagerUI pluginManagerUI, JIPipePlugin extension) {
         this.pluginManagerUI = pluginManagerUI;
         this.extension = extension;
         initialize();
@@ -71,7 +70,7 @@ public class ExtensionInfoPanel extends JPanel {
 //        tabPane.getTabbedPane().setTabPlacement(SwingConstants.LEFT);
         add(tabPane, BorderLayout.CENTER);
         initializeOverview(tabPane);
-        if (extension.isActivated() && !(extension instanceof UpdateSiteExtension)) {
+        if (extension.isActivated() && !(extension instanceof UpdateSitePlugin)) {
             initializeNodeCompendium(tabPane);
             initializeDataTypeCompendium(tabPane);
         }
@@ -99,7 +98,7 @@ public class ExtensionInfoPanel extends JPanel {
         panel.addToForm(UIUtils.makeReadonlyTextField(extension.getMetadata().getLicense()), new JLabel("License"), null);
         panel.addToForm(UIUtils.makeReadonlyTextField("" + extension.getDependencyLocation()), new JLabel("Defining file"), null);
         String typeName;
-        if (extension instanceof UpdateSiteExtension) {
+        if (extension instanceof UpdateSitePlugin) {
             typeName = "ImageJ update site";
         } else if (extension.isCoreExtension()) {
             typeName = "Core extension [" + extension.getClass() + "]";
@@ -135,14 +134,14 @@ public class ExtensionInfoPanel extends JPanel {
         JPanel titlePanel = new JPanel();
         titlePanel.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2), BorderFactory.createEmptyBorder(8, 8, 8, 8)));
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.X_AXIS));
-        if (extension instanceof JIPipeJavaExtension && !((JIPipeJavaExtension) extension).getSplashIcons().isEmpty()) {
-            for (ImageIcon splashIcon : ((JIPipeJavaExtension) extension).getSplashIcons()) {
+        if (extension instanceof JIPipeJavaPlugin && !((JIPipeJavaPlugin) extension).getSplashIcons().isEmpty()) {
+            for (ImageIcon splashIcon : ((JIPipeJavaPlugin) extension).getSplashIcons()) {
                 titlePanel.add(new JLabel(splashIcon));
                 titlePanel.add(Box.createHorizontalStrut(4));
             }
-        } else if (extension instanceof UpdateSiteExtension) {
+        } else if (extension instanceof UpdateSitePlugin) {
             titlePanel.add(new JLabel(UIUtils.getIcon32FromResources("module-imagej.png")));
-        } else if (extension instanceof JIPipeJavaExtension) {
+        } else if (extension instanceof JIPipeJavaPlugin) {
             titlePanel.add(new JLabel(UIUtils.getIcon32FromResources("module-java.png")));
         } else {
             titlePanel.add(new JLabel(UIUtils.getIcon32FromResources("module-json.png")));

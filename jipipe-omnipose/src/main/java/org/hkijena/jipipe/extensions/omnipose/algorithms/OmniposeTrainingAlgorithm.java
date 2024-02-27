@@ -1,3 +1,16 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under MIT.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
 package org.hkijena.jipipe.extensions.omnipose.algorithms;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -37,7 +50,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.Imag
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.omnipose.OmniposeExtension;
+import org.hkijena.jipipe.extensions.omnipose.OmniposePlugin;
 import org.hkijena.jipipe.extensions.omnipose.OmniposePretrainedModel;
 import org.hkijena.jipipe.extensions.omnipose.OmniposeSettings;
 import org.hkijena.jipipe.extensions.omnipose.parameters.OmniposeTrainingTweaksSettings;
@@ -208,19 +221,19 @@ public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     }
 
     @SetJIPipeDocumentation(name = "Omnipose: GPU", description = "Controls how the graphics card is utilized.")
-    @JIPipeParameter(value = "gpu-settings", collapsed = true, resourceClass = OmniposeExtension.class, iconURL = "/org/hkijena/jipipe/extensions/omnipose/icons/omnipose.png")
+    @JIPipeParameter(value = "gpu-settings", collapsed = true, resourceClass = OmniposePlugin.class, iconURL = "/org/hkijena/jipipe/extensions/omnipose/icons/omnipose.png")
     public CellposeGPUSettings getGpuSettings() {
         return gpuSettings;
     }
 
     @SetJIPipeDocumentation(name = "Omnipose: Tweaks", description = "Advanced settings for the training.")
-    @JIPipeParameter(value = "tweaks-settings", collapsed = true, resourceClass = OmniposeExtension.class, iconURL = "/org/hkijena/jipipe/extensions/omnipose/icons/omnipose.png")
+    @JIPipeParameter(value = "tweaks-settings", collapsed = true, resourceClass = OmniposePlugin.class, iconURL = "/org/hkijena/jipipe/extensions/omnipose/icons/omnipose.png")
     public OmniposeTrainingTweaksSettings getTweaksSettings() {
         return tweaksSettings;
     }
 
     @SetJIPipeDocumentation(name = "Omnipose: Channels", description = "Determines which channels are used for the segmentation")
-    @JIPipeParameter(value = "channel-parameters", resourceClass = OmniposeExtension.class, iconURL = "/org/hkijena/jipipe/extensions/omnipose/icons/omnipose.png")
+    @JIPipeParameter(value = "channel-parameters", resourceClass = OmniposePlugin.class, iconURL = "/org/hkijena/jipipe/extensions/omnipose/icons/omnipose.png")
     public CellposeChannelSettings getChannelSettings() {
         return channelSettings;
     }
@@ -530,6 +543,6 @@ public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     @Override
     protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
         super.onDeserialized(node, issues, notifications);
-        OmniposeExtension.createMissingPythonNotificationIfNeeded(notifications);
+        OmniposePlugin.createMissingPythonNotificationIfNeeded(notifications);
     }
 }

@@ -7,9 +7,8 @@
  * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * The project code is licensed under BSD 2-Clause.
+ * The project code is licensed under MIT.
  * See the LICENSE file provided with the code for the full license.
- *
  */
 
 package org.hkijena.jipipe.ui.extensions;
@@ -17,7 +16,7 @@ package org.hkijena.jipipe.ui.extensions;
 import net.imagej.updater.UpdateSite;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.JIPipeExtension;
+import org.hkijena.jipipe.JIPipePlugin;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -32,12 +31,12 @@ import java.util.Set;
 
 public class ActivateDependenciesConfirmationDialog extends JDialog {
     private final JIPipeModernPluginManager pluginManager;
-    private final JIPipeExtension extension;
+    private final JIPipePlugin extension;
     private final Set<JIPipeDependency> dependencyExtensionsToActivate;
     private Map<JIPipeImageJUpdateSiteDependency, Boolean> dependencySitesToInstall = new HashMap<>();
     private boolean cancelled = true;
 
-    public ActivateDependenciesConfirmationDialog(Component parent, JIPipeModernPluginManager pluginManager, JIPipeExtension extension, Set<JIPipeDependency> missingDependencies, Set<JIPipeImageJUpdateSiteDependency> missingUpdateSites) {
+    public ActivateDependenciesConfirmationDialog(Component parent, JIPipeModernPluginManager pluginManager, JIPipePlugin extension, Set<JIPipeDependency> missingDependencies, Set<JIPipeImageJUpdateSiteDependency> missingUpdateSites) {
         super(SwingUtilities.getWindowAncestor(parent));
         this.pluginManager = pluginManager;
         this.extension = extension;
@@ -84,7 +83,7 @@ public class ActivateDependenciesConfirmationDialog extends JDialog {
             dependencyPanel.add(UIUtils.makeBorderlessReadonlyTextPane(dependency.getMetadata().getDescription().getHtml(), false), new GridBagConstraints(0, 2, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
 
             // Try to find the extension
-            JIPipeExtension extension = JIPipe.getInstance().getExtensionRegistry().getKnownExtensionById(dependency.getDependencyId());
+            JIPipePlugin extension = JIPipe.getInstance().getExtensionRegistry().getKnownExtensionById(dependency.getDependencyId());
             if (extension != null) {
                 dependencyPanel.add(UIUtils.createJLabel("Extension will be activated", UIUtils.getIconFromResources("emblems/vcs-normal.png")), new GridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(4, 4, 4, 4), 0, 0));
             } else {

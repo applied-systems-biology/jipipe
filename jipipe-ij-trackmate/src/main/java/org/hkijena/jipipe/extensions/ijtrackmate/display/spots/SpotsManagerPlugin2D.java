@@ -7,9 +7,8 @@
  * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * The project code is licensed under BSD 2-Clause.
+ * The project code is licensed under MIT.
  * See the LICENSE file provided with the code for the full license.
- *
  */
 
 package org.hkijena.jipipe.extensions.ijtrackmate.display.spots;
@@ -26,7 +25,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
-import org.hkijena.jipipe.extensions.ijtrackmate.TrackMateExtension;
+import org.hkijena.jipipe.extensions.ijtrackmate.TrackMatePlugin;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.MeasureSpotsNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeature;
@@ -356,7 +355,7 @@ public class SpotsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
 
     @Override
     public Icon getCategoryIcon() {
-        return TrackMateExtension.RESOURCES.getIconFromResources("trackmate-spots.png");
+        return TrackMatePlugin.RESOURCES.getIconFromResources("trackmate-spots.png");
     }
 
     private void initialize() {
@@ -467,7 +466,7 @@ public class SpotsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
             setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
             setBorder(BorderFactory.createEmptyBorder(4, 2, 4, 2));
             this.roiInfoLabel = new JLabel();
-            roiInfoLabel.setIcon(TrackMateExtension.RESOURCES.getIconFromResources("trackmate-spots.png"));
+            roiInfoLabel.setIcon(TrackMatePlugin.RESOURCES.getIconFromResources("trackmate-spots.png"));
             roiInfoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
             add(roiInfoLabel);
             add(Box.createHorizontalGlue());

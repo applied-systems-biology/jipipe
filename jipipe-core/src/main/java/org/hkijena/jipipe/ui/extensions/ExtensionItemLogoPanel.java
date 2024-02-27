@@ -7,15 +7,14 @@
  * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * The project code is licensed under BSD 2-Clause.
+ * The project code is licensed under MIT.
  * See the LICENSE file provided with the code for the full license.
- *
  */
 
 package org.hkijena.jipipe.ui.extensions;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeExtension;
+import org.hkijena.jipipe.JIPipePlugin;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
@@ -35,12 +34,12 @@ public class ExtensionItemLogoPanel extends JPanel implements JIPipeExtensionReg
 
     private static final Map<BufferedImage, BufferedImage> THUMBNAIL_DISABLED_CACHE = new IdentityHashMap<>();
 
-    private final JIPipeExtension extension;
+    private final JIPipePlugin extension;
     private BufferedImage thumbnail;
 
     private BufferedImage thumbnailDeactivated;
 
-    public ExtensionItemLogoPanel(JIPipeExtension extension) {
+    public ExtensionItemLogoPanel(JIPipePlugin extension) {
         this.extension = extension;
         setOpaque(false);
         initializeThumbnail();

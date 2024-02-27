@@ -1,9 +1,22 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under MIT.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
 package org.hkijena.jipipe.extensions.imagejalgorithms.parameters;
 
 import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsPlugin;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.OMEAccessorTemplate;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -71,7 +84,7 @@ public class OMEAccessorParameterEditorUI extends JIPipeParameterEditorUI {
 
     private void showTemplateHelp() {
         OMEAccessorParameter parameter = getParameter(OMEAccessorParameter.class);
-        OMEAccessorTemplate template = ImageJAlgorithmsExtension.OME_ACCESSOR_STORAGE.getTemplateMap().getOrDefault(parameter.getAccessorId(), null);
+        OMEAccessorTemplate template = ImageJAlgorithmsPlugin.OME_ACCESSOR_STORAGE.getTemplateMap().getOrDefault(parameter.getAccessorId(), null);
         if (template != null) {
             MarkdownReader.showDialog(new MarkdownDocument(template.getDescription()), true, template.getName(), this, false);
         }
@@ -95,7 +108,7 @@ public class OMEAccessorParameterEditorUI extends JIPipeParameterEditorUI {
     @Override
     public void reload() {
         OMEAccessorParameter parameter = getParameter(OMEAccessorParameter.class);
-        OMEAccessorTemplate template = ImageJAlgorithmsExtension.OME_ACCESSOR_STORAGE.getTemplateMap().getOrDefault(parameter.getAccessorId(), null);
+        OMEAccessorTemplate template = ImageJAlgorithmsPlugin.OME_ACCESSOR_STORAGE.getTemplateMap().getOrDefault(parameter.getAccessorId(), null);
         if (template != null) {
             currentTemplateButton.setText(template.getName());
         } else {

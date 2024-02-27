@@ -7,7 +7,7 @@
  * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * The project code is licensed under BSD 2-Clause.
+ * The project code is licensed under MIT.
  * See the LICENSE file provided with the code for the full license.
  */
 
@@ -18,7 +18,7 @@ import ij.IJ;
 import net.imagej.ui.swing.updater.ProgressDialog;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.JIPipeJsonExtension;
+import org.hkijena.jipipe.JIPipeJsonPlugin;
 import org.hkijena.jipipe.JIPipeRegistryIssues;
 import org.hkijena.jipipe.api.JIPipeMetadata;
 import org.hkijena.jipipe.api.JIPipeProject;
@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
-import org.hkijena.jipipe.extensions.jsonextensionloader.JsonExtensionLoaderExtension;
+import org.hkijena.jipipe.extensions.jsonextensionloader.JsonExtensionLoaderPlugin;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -55,7 +55,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Window that displays {@link JIPipeJsonExtension} UIs
+ * Window that displays {@link JIPipeJsonPlugin} UIs
  */
 public class JIPipeJsonExtensionWindow extends JFrame {
 
@@ -64,7 +64,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
     public static final WindowClosedEventEmitter WINDOW_CLOSED_EVENT_EMITTER = new WindowClosedEventEmitter();
     private static final Set<JIPipeJsonExtensionWindow> OPEN_WINDOWS = new HashSet<>();
     private Context context;
-    private JIPipeJsonExtension project;
+    private JIPipeJsonPlugin project;
     private JIPipeJsonExtensionWorkbench projectUI;
     private Path projectSavePath;
 
@@ -75,7 +75,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
      * @param project          The project
      * @param showIntroduction show intro
      */
-    public JIPipeJsonExtensionWindow(Context context, JIPipeJsonExtension project, boolean showIntroduction) {
+    public JIPipeJsonExtensionWindow(Context context, JIPipeJsonPlugin project, boolean showIntroduction) {
         OPEN_WINDOWS.add(this);
         WINDOW_OPENED_EVENT_EMITTER.emit(new WindowOpenedEvent(this));
         this.context = context;
@@ -95,7 +95,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
      * @param showIntroduction whether to show introduction
      * @return The window
      */
-    public static JIPipeJsonExtensionWindow newWindow(Context context, JIPipeJsonExtension project, boolean showIntroduction) {
+    public static JIPipeJsonExtensionWindow newWindow(Context context, JIPipeJsonPlugin project, boolean showIntroduction) {
         JIPipeJsonExtensionWindow frame = new JIPipeJsonExtensionWindow(context, project, showIntroduction);
         frame.pack();
         frame.setSize(1024, 768);
@@ -142,7 +142,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
                     return;
             }
 
-            JIPipeJsonExtension project = JIPipeJsonExtension.loadProject(jsonData);
+            JIPipeJsonPlugin project = JIPipeJsonPlugin.loadProject(jsonData);
             installExtension(workbench, project, true, checkDependencies);
 
             if (!silent) {
@@ -162,7 +162,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
      * @param silent            whether to show a dialog confirming the installation
      * @param checkDependencies whether to check dependencies
      */
-    public static void installExtension(JIPipeWorkbench workbench, JIPipeJsonExtension extension, boolean silent, boolean checkDependencies) {
+    public static void installExtension(JIPipeWorkbench workbench, JIPipeJsonPlugin extension, boolean silent, boolean checkDependencies) {
         boolean alreadyExists = JIPipe.getInstance().getRegisteredExtensionIds().contains(extension.getDependencyId());
         if (alreadyExists) {
             if (JOptionPane.showConfirmDialog(workbench.getWindow(), "There already exists an extension with ID '"
@@ -170,7 +170,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
                 return;
             }
         }
-        Path pluginFolder = JsonExtensionLoaderExtension.getPluginDirectory();
+        Path pluginFolder = JsonExtensionLoaderPlugin.getPluginDirectory();
         if (!Files.exists(pluginFolder)) {
             try {
                 Files.createDirectories(pluginFolder);
@@ -183,8 +183,8 @@ public class JIPipeJsonExtensionWindow extends JFrame {
         Path suggestedPath = pluginFolder.resolve(StringUtils.makeFilesystemCompatible(extension.getDependencyId()) + ".jipipe.json");
         if (alreadyExists) {
             JIPipeDependency dependency = JIPipe.getInstance().findExtensionById(extension.getDependencyId());
-            if (dependency instanceof JIPipeJsonExtension) {
-                Path jsonExtensionPath = ((JIPipeJsonExtension) dependency).getJsonFilePath();
+            if (dependency instanceof JIPipeJsonPlugin) {
+                Path jsonExtensionPath = ((JIPipeJsonPlugin) dependency).getJsonFilePath();
                 if (jsonExtensionPath != null && Files.exists(jsonExtensionPath)) {
                     suggestedPath = jsonExtensionPath;
                 }
@@ -208,7 +208,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
 
         // Install extension by reloading (to be sure)
         try {
-            JIPipeJsonExtension loadedExtension = JsonUtils.getObjectMapper().readValue(selectedPath.toFile(), JIPipeJsonExtension.class);
+            JIPipeJsonPlugin loadedExtension = JsonUtils.getObjectMapper().readValue(selectedPath.toFile(), JIPipeJsonPlugin.class);
             JIPipe.getInstance().register(loadedExtension, JIPipe.getInstance().getProgressInfo());
             if (!silent) {
                 JOptionPane.showMessageDialog(workbench.getWindow(), "The extension was installed. We recommend to restart ImageJ, " +
@@ -272,7 +272,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
      * @param project          The project
      * @param showIntroduction show intro
      */
-    public void loadProject(JIPipeJsonExtension project, boolean showIntroduction) {
+    public void loadProject(JIPipeJsonPlugin project, boolean showIntroduction) {
         this.project = project;
         this.projectUI = new JIPipeJsonExtensionWorkbench(this, context, project, showIntroduction);
         setContentPane(projectUI);
@@ -284,7 +284,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
      * @param showIntroduction show intro
      */
     public void newProject(boolean showIntroduction) {
-        JIPipeJsonExtension project = new JIPipeJsonExtension();
+        JIPipeJsonPlugin project = new JIPipeJsonPlugin();
         JIPipeJsonExtensionWindow window = openProjectInThisOrNewWindow("New extension", project, showIntroduction);
         if (window == null)
             return;
@@ -356,7 +356,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
                     return;
             }
 
-            JIPipeJsonExtension project = JIPipeJsonExtension.loadProject(jsonData);
+            JIPipeJsonPlugin project = JIPipeJsonPlugin.loadProject(jsonData);
             JIPipeJsonExtensionWindow window = openProjectInThisOrNewWindow("Open project", project, false);
             if (window == null)
                 return;
@@ -401,7 +401,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
             getProject().saveProject(tempFile);
 
             // Check if the saved project can be loaded
-            JIPipeJsonExtension.loadProject(tempFile);
+            JIPipeJsonPlugin.loadProject(tempFile);
 
             // Overwrite the target file
             if (Files.exists(savePath))
@@ -435,7 +435,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
      * @param showIntroduction show intro
      * @return The window that hosts the porject UI
      */
-    private JIPipeJsonExtensionWindow openProjectInThisOrNewWindow(String messageTitle, JIPipeJsonExtension project, boolean showIntroduction) {
+    private JIPipeJsonExtensionWindow openProjectInThisOrNewWindow(String messageTitle, JIPipeJsonPlugin project, boolean showIntroduction) {
         switch (UIUtils.askOpenInCurrentWindow(this, messageTitle)) {
             case JOptionPane.YES_OPTION:
                 loadProject(project, showIntroduction);
@@ -456,7 +456,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
     /**
      * @return The project
      */
-    public JIPipeJsonExtension getProject() {
+    public JIPipeJsonPlugin getProject() {
         return project;
     }
 

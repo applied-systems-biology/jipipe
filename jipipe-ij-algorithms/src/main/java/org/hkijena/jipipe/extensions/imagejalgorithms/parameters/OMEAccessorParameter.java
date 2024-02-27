@@ -1,3 +1,16 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under MIT.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
 package org.hkijena.jipipe.extensions.imagejalgorithms.parameters;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
@@ -7,7 +20,7 @@ import ome.xml.meta.MetadataRetrieve;
 import ome.xml.model.primitives.PrimitiveNumber;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsPlugin;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.OMEAccessorTemplate;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -21,7 +34,7 @@ public class OMEAccessorParameter {
     private JIPipeDynamicParameterCollection parameters = new JIPipeDynamicParameterCollection(false);
 
     public OMEAccessorParameter() {
-        Set<String> keys = ImageJAlgorithmsExtension.OME_ACCESSOR_STORAGE.getTemplateMap().keySet();
+        Set<String> keys = ImageJAlgorithmsPlugin.OME_ACCESSOR_STORAGE.getTemplateMap().keySet();
         if (!keys.isEmpty()) {
             accessorId = keys.iterator().next();
         }
@@ -50,7 +63,7 @@ public class OMEAccessorParameter {
 
     public void resetParameters() {
         if (accessorId != null) {
-            OMEAccessorTemplate template = ImageJAlgorithmsExtension.OME_ACCESSOR_STORAGE.getTemplateMap().getOrDefault(accessorId, null);
+            OMEAccessorTemplate template = ImageJAlgorithmsPlugin.OME_ACCESSOR_STORAGE.getTemplateMap().getOrDefault(accessorId, null);
             parameters = new JIPipeDynamicParameterCollection(template.getParameterCollection());
         }
     }
@@ -66,7 +79,7 @@ public class OMEAccessorParameter {
     }
 
     public Object evaluate(MetadataRetrieve metadataRetrieve) {
-        OMEAccessorTemplate template = ImageJAlgorithmsExtension.OME_ACCESSOR_STORAGE.getTemplateMap().getOrDefault(accessorId, null);
+        OMEAccessorTemplate template = ImageJAlgorithmsPlugin.OME_ACCESSOR_STORAGE.getTemplateMap().getOrDefault(accessorId, null);
         if (template != null) {
             Object[] parameters = new Object[template.getParameterIds().size()];
             List<String> parameterIds = template.getParameterIds();

@@ -7,14 +7,14 @@
  * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * The project code is licensed under BSD 2-Clause.
+ * The project code is licensed under MIT.
  * See the LICENSE file provided with the code for the full license.
  */
 
 package org.hkijena.jipipe.ui.components;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeService;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -130,9 +130,9 @@ public class SplashScreen extends JWindow implements LogListener, Contextual, JI
 
     @Override
     public void onJIPipeExtensionDiscovered(JIPipe.ExtensionDiscoveredEvent event) {
-        if (event.getExtension() instanceof JIPipeJavaExtension) {
+        if (event.getExtension() instanceof JIPipeJavaPlugin) {
             SwingUtilities.invokeLater(() -> {
-                for (ImageIcon icon : ((JIPipeJavaExtension) event.getExtension()).getSplashIcons()) {
+                for (ImageIcon icon : ((JIPipeJavaPlugin) event.getExtension()).getSplashIcons()) {
                     if (icon.getIconWidth() != 32 && icon.getIconHeight() != 32) {
                         Image scaledInstance = icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
                         icon = new ImageIcon(scaledInstance);

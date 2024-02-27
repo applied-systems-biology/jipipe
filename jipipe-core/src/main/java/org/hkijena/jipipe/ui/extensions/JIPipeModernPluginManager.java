@@ -7,9 +7,8 @@
  * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * The project code is licensed under BSD 2-Clause.
+ * The project code is licensed under MIT.
  * See the LICENSE file provided with the code for the full license.
- *
  */
 
 package org.hkijena.jipipe.ui.extensions;
@@ -21,7 +20,7 @@ import net.imagej.updater.FilesCollection;
 import net.imagej.updater.UpdateSite;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.JIPipeExtension;
+import org.hkijena.jipipe.JIPipePlugin;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
@@ -48,7 +47,7 @@ public class JIPipeModernPluginManager implements JIPipeExtensionRegistry.Schedu
     private final Component parent;
 
     private final MessagePanel messagePanel;
-    private final List<UpdateSiteExtension> updateSiteWrapperExtensions = new ArrayList<>();
+    private final List<UpdateSitePlugin> updateSiteWrapperExtensions = new ArrayList<>();
     private MessagePanel.Message updateSiteMessage;
     private MessagePanel.Message restartMessage;
     private RefreshRepositoryRun refreshRepositoryRun;
@@ -188,7 +187,7 @@ public class JIPipeModernPluginManager implements JIPipeExtensionRegistry.Schedu
         return updateSites;
     }
 
-    public List<UpdateSiteExtension> getUpdateSiteWrapperExtensions() {
+    public List<UpdateSitePlugin> getUpdateSiteWrapperExtensions() {
         return Collections.unmodifiableList(updateSiteWrapperExtensions);
     }
 
@@ -200,21 +199,21 @@ public class JIPipeModernPluginManager implements JIPipeExtensionRegistry.Schedu
         updateSiteWrapperExtensions.clear();
         if (updateSites != null) {
             for (UpdateSite updateSite : updateSites.getUpdateSites(true)) {
-                UpdateSiteExtension extension = new UpdateSiteExtension(updateSite);
+                UpdateSitePlugin extension = new UpdateSitePlugin(updateSite);
                 updateSiteWrapperExtensions.add(extension);
             }
         }
     }
 
-    public void deactivateExtension(JIPipeExtension extension) {
-        if (extension instanceof UpdateSiteExtension) {
-            deactivateUpdateSiteExtension((UpdateSiteExtension) extension);
+    public void deactivateExtension(JIPipePlugin extension) {
+        if (extension instanceof UpdateSitePlugin) {
+            deactivateUpdateSiteExtension((UpdateSitePlugin) extension);
         } else {
             deactivateJIPipeExtension(extension);
         }
     }
 
-    private void deactivateJIPipeExtension(JIPipeExtension extension) {
+    private void deactivateJIPipeExtension(JIPipePlugin extension) {
 
         Set<String> dependents = getExtensionRegistry().getAllDependentsOf(extension.getDependencyId());
         for (String s : ImmutableList.copyOf(dependents)) {
@@ -236,7 +235,7 @@ public class JIPipeModernPluginManager implements JIPipeExtensionRegistry.Schedu
         getExtensionRegistry().scheduleDeactivateExtension(extension.getDependencyId());
     }
 
-    private void deactivateUpdateSiteExtension(UpdateSiteExtension extension) {
+    private void deactivateUpdateSiteExtension(UpdateSitePlugin extension) {
         if (!isUpdateSitesReady()) {
             JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(parent), "ImageJ updates sites are currently not ready/unavailable.",
                     "Deactivate ImageJ update site", JOptionPane.ERROR_MESSAGE);
@@ -252,15 +251,15 @@ public class JIPipeModernPluginManager implements JIPipeExtensionRegistry.Schedu
         }
     }
 
-    public void activateExtension(JIPipeExtension extension) {
-        if (extension instanceof UpdateSiteExtension) {
-            activateUpdateSiteExtension((UpdateSiteExtension) extension);
+    public void activateExtension(JIPipePlugin extension) {
+        if (extension instanceof UpdateSitePlugin) {
+            activateUpdateSiteExtension((UpdateSitePlugin) extension);
         } else {
             activateJIPipeExtension(extension);
         }
     }
 
-    private void activateJIPipeExtension(JIPipeExtension extension) {
+    private void activateJIPipeExtension(JIPipePlugin extension) {
 
         // Get all dependencies and attempt to resolve them against the known extensions
         Set<JIPipeDependency> allDependencies = getExtensionRegistry().tryResolveToKnownDependencies(extension.getAllDependencies());
@@ -336,7 +335,7 @@ public class JIPipeModernPluginManager implements JIPipeExtensionRegistry.Schedu
 
     }
 
-    private void activateUpdateSiteExtension(UpdateSiteExtension extension) {
+    private void activateUpdateSiteExtension(UpdateSitePlugin extension) {
         if (!isUpdateSitesReady()) {
             JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(parent), "ImageJ updates sites are currently not ready/unavailable.",
                     "Activate ImageJ update site", JOptionPane.ERROR_MESSAGE);

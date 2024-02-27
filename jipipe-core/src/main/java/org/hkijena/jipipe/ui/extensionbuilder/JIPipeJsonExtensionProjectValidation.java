@@ -7,14 +7,14 @@
  * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * The project code is licensed under BSD 2-Clause.
+ * The project code is licensed under MIT.
  * See the LICENSE file provided with the code for the full license.
  */
 
 package org.hkijena.jipipe.ui.extensionbuilder;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeJsonExtension;
+import org.hkijena.jipipe.JIPipeJsonPlugin;
 import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.JsonNodeInfoValidationReportContext;
@@ -25,14 +25,14 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
  * Supplies additional validation only for projects
  */
 public class JIPipeJsonExtensionProjectValidation implements JIPipeValidatable {
-    private final JIPipeJsonExtension extension;
+    private final JIPipeJsonPlugin extension;
 
     /**
      * Creates a new instance
      *
      * @param extension the extension
      */
-    public JIPipeJsonExtensionProjectValidation(JIPipeJsonExtension extension) {
+    public JIPipeJsonExtensionProjectValidation(JIPipeJsonPlugin extension) {
         this.extension = extension;
     }
 

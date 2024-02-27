@@ -1,3 +1,16 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under MIT.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
 package org.hkijena.jipipe.extensions.cellpose.algorithms;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -23,7 +36,7 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.extensions.cellpose.CellposeExtension;
+import org.hkijena.jipipe.extensions.cellpose.CellposePlugin;
 import org.hkijena.jipipe.extensions.cellpose.CellposeModel;
 import org.hkijena.jipipe.extensions.cellpose.CellposeSettings;
 import org.hkijena.jipipe.extensions.cellpose.CellposeUtils;
@@ -278,7 +291,7 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         // Deploy and run extraction script
         progressInfo.log("Deploying script to extract Cellpose *.npy results ...");
         Path npyExtractorScript = workDirectory.resolve("extract-cellpose-npy.py");
-        CellposeExtension.RESOURCES.exportResourceToFile("extract-cellpose-npy.py", npyExtractorScript);
+        CellposePlugin.RESOURCES.exportResourceToFile("extract-cellpose-npy.py", npyExtractorScript);
         if (!runWith2D.isEmpty()) {
             List<String> arguments = new ArrayList<>();
             arguments.add(npyExtractorScript.toString());
@@ -668,7 +681,7 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
     @Override
     protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
         super.onDeserialized(node, issues, notifications);
-        CellposeExtension.createMissingPythonNotificationIfNeeded(notifications);
+        CellposePlugin.createMissingPythonNotificationIfNeeded(notifications);
     }
 
     private static class CellposeImageInfo {

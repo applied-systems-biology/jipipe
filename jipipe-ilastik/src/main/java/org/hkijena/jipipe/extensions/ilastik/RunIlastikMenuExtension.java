@@ -1,3 +1,16 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under MIT.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
 package org.hkijena.jipipe.extensions.ilastik;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -22,7 +35,7 @@ public class RunIlastikMenuExtension extends JIPipeMenuExtension implements Acti
     public RunIlastikMenuExtension(JIPipeWorkbench workbench) {
         super(workbench);
         setText("Run Ilastik");
-        setIcon(IlastikExtension.RESOURCES.getIconFromResources("ilastik.png"));
+        setIcon(IlastikPlugin.RESOURCES.getIconFromResources("ilastik.png"));
         setToolTipText("Starts a new instance of Ilastik.");
         addActionListener(this);
     }
@@ -43,11 +56,11 @@ public class RunIlastikMenuExtension extends JIPipeMenuExtension implements Acti
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             progressInfo.setLogToStdOut(true);
             getWorkbench().sendStatusBarText("Launching Ilastik ...");
-            IlastikExtension.runIlastik(null, Collections.emptyList(), progressInfo, true);
+            IlastikPlugin.runIlastik(null, Collections.emptyList(), progressInfo, true);
         }
         else {
             JIPipeNotificationInbox inbox = new JIPipeNotificationInbox();
-            IlastikExtension.createMissingIlastikNotificationIfNeeded(inbox);
+            IlastikPlugin.createMissingIlastikNotificationIfNeeded(inbox);
             GenericNotificationInboxUI ui = new GenericNotificationInboxUI(getWorkbench(), inbox);
             JFrame dialog = new JFrame();
             dialog.setTitle("Run Ilastik");

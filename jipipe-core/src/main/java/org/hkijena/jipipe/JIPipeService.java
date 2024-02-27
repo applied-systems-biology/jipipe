@@ -7,7 +7,7 @@
  * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * The project code is licensed under BSD 2-Clause.
+ * The project code is licensed under MIT.
  * See the LICENSE file provided with the code for the full license.
  */
 
@@ -127,23 +127,23 @@ public interface JIPipeService extends Service, JIPipeValidatable {
     }
 
     /**
-     * Generated when content is added to an {@link JIPipeJsonExtension}
+     * Generated when content is added to an {@link JIPipeJsonPlugin}
      */
     public static class ExtensionContentAddedEvent extends AbstractJIPipeEvent {
-        private final JIPipeJsonExtension extension;
+        private final JIPipeJsonPlugin extension;
         private final Object content;
 
         /**
          * @param extension event source
          * @param content   the new content
          */
-        public ExtensionContentAddedEvent(JIPipeJsonExtension extension, Object content) {
+        public ExtensionContentAddedEvent(JIPipeJsonPlugin extension, Object content) {
             super(extension);
             this.extension = extension;
             this.content = content;
         }
 
-        public JIPipeJsonExtension getExtension() {
+        public JIPipeJsonPlugin getExtension() {
             return extension;
         }
 
@@ -160,23 +160,23 @@ public interface JIPipeService extends Service, JIPipeValidatable {
     }
 
     /**
-     * Generated when content is removed from an {@link JIPipeJsonExtension}
+     * Generated when content is removed from an {@link JIPipeJsonPlugin}
      */
     public static class ExtensionContentRemovedEvent extends AbstractJIPipeEvent {
-        private final JIPipeJsonExtension extension;
+        private final JIPipeJsonPlugin extension;
         private final Object content;
 
         /**
          * @param extension event source
          * @param content   removed content
          */
-        public ExtensionContentRemovedEvent(JIPipeJsonExtension extension, Object content) {
+        public ExtensionContentRemovedEvent(JIPipeJsonPlugin extension, Object content) {
             super(extension);
             this.extension = extension;
             this.content = content;
         }
 
-        public JIPipeJsonExtension getExtension() {
+        public JIPipeJsonPlugin getExtension() {
             return extension;
         }
 

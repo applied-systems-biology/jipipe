@@ -7,16 +7,15 @@
  * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * The project code is licensed under BSD 2-Clause.
+ * The project code is licensed under MIT.
  * See the LICENSE file provided with the code for the full license.
- *
  */
 
 package org.hkijena.jipipe.ui.extensions;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.JIPipeExtension;
+import org.hkijena.jipipe.JIPipePlugin;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
@@ -31,10 +30,10 @@ import java.util.stream.Collectors;
 public class ExtensionItemPanel extends JIPipeWorkbenchPanel {
 
     private final JIPipeModernPluginManagerUI pluginManagerUI;
-    private final JIPipeExtension extension;
+    private final JIPipePlugin extension;
     private ExtensionItemLogoPanel logoPanel;
 
-    public ExtensionItemPanel(JIPipeModernPluginManagerUI pluginManagerUI, JIPipeExtension extension) {
+    public ExtensionItemPanel(JIPipeModernPluginManagerUI pluginManagerUI, JIPipePlugin extension) {
         super(pluginManagerUI.getWorkbench());
         this.pluginManagerUI = pluginManagerUI;
         this.extension = extension;
@@ -166,7 +165,7 @@ public class ExtensionItemPanel extends JIPipeWorkbenchPanel {
             JLabel infoLabel = new JLabel("Core extension", UIUtils.getIconFromResources("emblems/emblem-important-blue.png"), JLabel.LEFT);
             infoLabel.setToolTipText("This is a mandatory core extension that cannot be disabled");
             buttonPanel.add(infoLabel);
-        } else if (extension instanceof UpdateSiteExtension) {
+        } else if (extension instanceof UpdateSitePlugin) {
             JLabel infoLabel = new JLabel("ImageJ plugin", UIUtils.getIconFromResources("apps/imagej.png"), JLabel.LEFT);
             infoLabel.setToolTipText("This is not an extension for JIPipe, but an ImageJ update site that might contain functionality for JIPipe.");
             buttonPanel.add(infoLabel);

@@ -7,7 +7,7 @@
  * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * The project code is licensed under BSD 2-Clause.
+ * The project code is licensed under MIT.
  * See the LICENSE file provided with the code for the full license.
  */
 
@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui.documentation;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.compat.ImageJDataExporter;
 import org.hkijena.jipipe.api.compat.ImageJDataImporter;
@@ -306,7 +306,7 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeCompendiumUI<JIPipeDataInf
                 builder.append("<tr><td><strong>Refer to/Also cite</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(dependencyCitation)).append("</td></tr>");
             }
             builder.append("<tr><td><strong>Plugin name</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(source.getMetadata().getName())).append("</td></tr>");
-            if (source instanceof JIPipeJavaExtension && ((JIPipeJavaExtension) source).isBeta()) {
+            if (source instanceof JIPipeJavaPlugin && ((JIPipeJavaPlugin) source).isBeta()) {
                 builder.append("<tr><td><strong>Plugin status</strong></td><td>The plugin is currently in beta-testing. There might be extensive changes in future updates.</td></tr>");
             }
             for (JIPipeAuthorMetadata author : source.getMetadata().getAuthors()) {

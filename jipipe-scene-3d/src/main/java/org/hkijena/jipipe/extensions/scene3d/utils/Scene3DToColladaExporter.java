@@ -1,9 +1,22 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under MIT.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
 package org.hkijena.jipipe.extensions.scene3d.utils;
 
 import com.google.common.primitives.Ints;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.extensions.scene3d.Scene3DExtension;
+import org.hkijena.jipipe.extensions.scene3d.Scene3DPlugin;
 import org.hkijena.jipipe.extensions.scene3d.datatypes.Scene3DData;
 import org.hkijena.jipipe.extensions.scene3d.model.Scene3DGeometry;
 import org.hkijena.jipipe.extensions.scene3d.model.Scene3DGroupNode;
@@ -336,7 +349,7 @@ public class Scene3DToColladaExporter extends AbstractJIPipeRunnable {
         assetElement.appendChild(contributorElement);
 
         contributorElement.appendChild(createTextElement(doc, "author", "JIPipe user"));
-        contributorElement.appendChild(createTextElement(doc, "authoring_tool", "JIPipe DAE exporter version " + Scene3DExtension.AS_DEPENDENCY.getDependencyVersion()));
+        contributorElement.appendChild(createTextElement(doc, "authoring_tool", "JIPipe DAE exporter version " + Scene3DPlugin.AS_DEPENDENCY.getDependencyVersion()));
 
         assetElement.appendChild(createTextElement(doc, "created", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)));
         assetElement.appendChild(createTextElement(doc, "modified", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)));

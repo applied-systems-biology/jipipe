@@ -7,9 +7,8 @@
  * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * The project code is licensed under BSD 2-Clause.
+ * The project code is licensed under MIT.
  * See the LICENSE file provided with the code for the full license.
- *
  */
 
 package org.hkijena.jipipe.extensions.ijtrackmate.utils;
@@ -22,7 +21,7 @@ import fiji.plugin.trackmate.features.spot.SpotAnalyzerFactoryBase;
 import fiji.plugin.trackmate.features.track.TrackAnalyzer;
 import fiji.plugin.trackmate.tracking.SpotTrackerFactory;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.extensions.ijtrackmate.TrackMateExtension;
+import org.hkijena.jipipe.extensions.ijtrackmate.TrackMatePlugin;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.detectors.CreateSpotDetectorNodeInfo;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.detectors.CreateSpotTrackerNodeInfo;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.EdgeFeature;
@@ -117,14 +116,14 @@ public class TrackMateUtils {
         }
     }
 
-    public static void registerSpotTrackers(TrackMateExtension trackMateExtension, JIPipeProgressInfo progressInfo, PluginService service) {
+    public static void registerSpotTrackers(TrackMatePlugin trackMateExtension, JIPipeProgressInfo progressInfo, PluginService service) {
         JIPipeProgressInfo spotDetectorProgress = progressInfo.resolveAndLog("Spot trackers");
         for (PluginInfo<SpotTrackerFactory> info : service.getPluginsOfType(SpotTrackerFactory.class)) {
             JIPipeProgressInfo detectorProgress = spotDetectorProgress.resolveAndLog(info.toString());
             try {
                 SpotTrackerFactory instance = info.createInstance();
                 CreateSpotTrackerNodeInfo nodeInfo = new CreateSpotTrackerNodeInfo(instance);
-                trackMateExtension.registerNodeType(nodeInfo, TrackMateExtension.RESOURCES.getIcon16URLFromResources("trackmate.png"));
+                trackMateExtension.registerNodeType(nodeInfo, TrackMatePlugin.RESOURCES.getIcon16URLFromResources("trackmate.png"));
                 SPOT_TRACKERS.put(instance.getKey(), info);
             } catch (Throwable throwable) {
                 detectorProgress.log("Unable to register: " + throwable.getMessage());
@@ -132,14 +131,14 @@ public class TrackMateUtils {
         }
     }
 
-    public static void registerSpotDetectors(TrackMateExtension trackMateExtension, JIPipeProgressInfo progressInfo, PluginService service) {
+    public static void registerSpotDetectors(TrackMatePlugin trackMateExtension, JIPipeProgressInfo progressInfo, PluginService service) {
         JIPipeProgressInfo spotDetectorProgress = progressInfo.resolveAndLog("Spot detectors");
         for (PluginInfo<SpotDetectorFactory> info : service.getPluginsOfType(SpotDetectorFactory.class)) {
             JIPipeProgressInfo detectorProgress = spotDetectorProgress.resolveAndLog(info.toString());
             try {
                 SpotDetectorFactory instance = info.createInstance();
                 CreateSpotDetectorNodeInfo nodeInfo = new CreateSpotDetectorNodeInfo(instance);
-                trackMateExtension.registerNodeType(nodeInfo, TrackMateExtension.RESOURCES.getIcon16URLFromResources("trackmate.png"));
+                trackMateExtension.registerNodeType(nodeInfo, TrackMatePlugin.RESOURCES.getIcon16URLFromResources("trackmate.png"));
                 SPOT_DETECTORS.put(instance.getKey(), info);
             } catch (Throwable throwable) {
                 detectorProgress.log("Unable to register: " + throwable.getMessage());

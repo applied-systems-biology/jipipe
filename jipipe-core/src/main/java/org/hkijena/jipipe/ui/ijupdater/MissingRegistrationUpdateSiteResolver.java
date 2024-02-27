@@ -7,7 +7,7 @@
  * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * The project code is licensed under BSD 2-Clause.
+ * The project code is licensed under MIT.
  * See the LICENSE file provided with the code for the full license.
  */
 
@@ -27,7 +27,7 @@ import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.extensions.ActivateAndApplyUpdateSiteRun;
 import org.hkijena.jipipe.ui.extensions.ExtensionItemActionButton;
 import org.hkijena.jipipe.ui.extensions.JIPipeModernPluginManager;
-import org.hkijena.jipipe.ui.extensions.UpdateSiteExtension;
+import org.hkijena.jipipe.ui.extensions.UpdateSitePlugin;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -142,7 +142,7 @@ public class MissingRegistrationUpdateSiteResolver extends JFrame implements JIP
                 dependencyPanel.add(UIUtils.makeBorderlessReadonlyTextPane(dependency.getDescription(), false), new GridBagConstraints(0, 2, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
 
                 // Try to find the extension
-                UpdateSiteExtension extension = new UpdateSiteExtension(dependency);
+                UpdateSitePlugin extension = new UpdateSitePlugin(dependency);
                 ExtensionItemActionButton button = new ExtensionItemActionButton(pluginManager, extension);
                 button.setFont(new Font(Font.DIALOG, Font.PLAIN, 22));
                 dependencyPanel.add(button, new GridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(4, 4, 4, 4), 0, 0));

@@ -7,7 +7,7 @@
  * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * The project code is licensed under BSD 2-Clause.
+ * The project code is licensed under MIT.
  * See the LICENSE file provided with the code for the full license.
  */
 
@@ -615,7 +615,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
 
         IJ.showStatus("Initializing JIPipe ...");
         nodeRegistry.installEvents();
-        List<PluginInfo<JIPipeJavaExtension>> pluginList = pluginService.getPluginsOfType(JIPipeJavaExtension.class).stream()
+        List<PluginInfo<JIPipeJavaPlugin>> pluginList = pluginService.getPluginsOfType(JIPipeJavaPlugin.class).stream()
                 .sorted(JIPipe::comparePlugins).collect(Collectors.toList());
         extensionRegistry.initialize(); // Init extension registry
         extensionRegistry.load();
@@ -625,10 +625,10 @@ public class JIPipe extends AbstractService implements JIPipeService {
         // Creating instances of extensions
         Map<String, JIPipeJavaExtensionInitializationInfo> allJavaExtensionsByID = new HashMap<>();
 
-        for (PluginInfo<JIPipeJavaExtension> pluginInfo : pluginList) {
+        for (PluginInfo<JIPipeJavaPlugin> pluginInfo : pluginList) {
             try {
                 progressInfo.log("Creating instance of " + pluginInfo + " ...");
-                JIPipeJavaExtension extension = pluginInfo.createInstance();
+                JIPipeJavaPlugin extension = pluginInfo.createInstance();
 
                 // Validate ID
                 if (!isValidExtensionId(extension.getDependencyId())) {
@@ -663,7 +663,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
         do {
             impliedLoadedJavaExtensionsChanged = false;
             for (JIPipeJavaExtensionInitializationInfo initializationInfo : allJavaExtensionsByID.values()) {
-                JIPipeJavaExtension extension = initializationInfo.getInstance();
+                JIPipeJavaPlugin extension = initializationInfo.getInstance();
                 if(extension == null) {
                     continue;
                 }
@@ -695,7 +695,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
         for (int i = 0; i < allJavaExtensionsList.size(); i++) {
             JIPipeJavaExtensionInitializationInfo initializationInfo = allJavaExtensionsList.get(i);
             IJ.showProgress(i + 1, allJavaExtensionsList.size());
-            JIPipeJavaExtension extension = initializationInfo.getInstance();
+            JIPipeJavaPlugin extension = initializationInfo.getInstance();
 
             if(extension == null) {
                 continue;
@@ -762,11 +762,11 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 continue;
             }
 
-            PluginInfo<JIPipeJavaExtension> info = initializationInfo.getPluginInfo();
+            PluginInfo<JIPipeJavaPlugin> info = initializationInfo.getPluginInfo();
 
             IJ.showProgress(i + 1, allJavaExtensionsList.size());
             registerFeaturesProgress.log("Registering plugin " + info);
-            JIPipeJavaExtension extension = null;
+            JIPipeJavaPlugin extension = null;
             try {
                 extension = initializationInfo.getInstance();
 
@@ -837,9 +837,9 @@ public class JIPipe extends AbstractService implements JIPipeService {
         progressInfo.setProgress(5);
         JIPipeProgressInfo postprocessingProgress = progressInfo.resolveAndLog("Postprocessing");
         for (JIPipeDependency extension : registeredExtensions) {
-            if (!failedExtensions.contains(extension) && extension instanceof JIPipeJavaExtension) {
+            if (!failedExtensions.contains(extension) && extension instanceof JIPipeJavaPlugin) {
                 postprocessingProgress.log(extension.getDependencyId());
-                ((JIPipeJavaExtension) extension).postprocess(postprocessingProgress);
+                ((JIPipeJavaPlugin) extension).postprocess(postprocessingProgress);
             }
         }
         postprocessingProgress.log("Converting display operations to import operations ...");
@@ -1250,7 +1250,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * @param extension    The extension
      * @param progressInfo the progress info
      */
-    public void register(JIPipeJsonExtension extension, JIPipeProgressInfo progressInfo) {
+    public void register(JIPipeJsonPlugin extension, JIPipeProgressInfo progressInfo) {
         progressInfo.log("Registering Json Extension " + extension.getDependencyId());
         extension.setRegistry(this);
         extension.register();

@@ -7,14 +7,13 @@
  * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * The project code is licensed under BSD 2-Clause.
+ * The project code is licensed under MIT.
  * See the LICENSE file provided with the code for the full license.
- *
  */
 
 package org.hkijena.jipipe.extensions.ijtrackmate.display.tracks;
 
-import org.hkijena.jipipe.extensions.ijtrackmate.TrackMateExtension;
+import org.hkijena.jipipe.extensions.ijtrackmate.TrackMatePlugin;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -40,7 +39,7 @@ public class TrackListCellRenderer extends JPanel implements ListCellRenderer<In
     private void initialize() {
         setOpaque(true);
         setLayout(new GridBagLayout());
-        iconLabel.setIcon(TrackMateExtension.RESOURCES.getIconFromResources("trackscheme.png"));
+        iconLabel.setIcon(TrackMatePlugin.RESOURCES.getIconFromResources("trackscheme.png"));
         infoLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
         add(iconLabel, new GridBagConstraints() {
             {

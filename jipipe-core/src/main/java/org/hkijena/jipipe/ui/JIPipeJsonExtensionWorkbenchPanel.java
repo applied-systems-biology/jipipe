@@ -7,16 +7,16 @@
  * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * The project code is licensed under BSD 2-Clause.
+ * The project code is licensed under MIT.
  * See the LICENSE file provided with the code for the full license.
  */
 
 package org.hkijena.jipipe.ui;
 
-import org.hkijena.jipipe.JIPipeJsonExtension;
+import org.hkijena.jipipe.JIPipeJsonPlugin;
 
 /**
- * UI panel that contains references to an {@link JIPipeJsonExtension} UI
+ * UI panel that contains references to an {@link JIPipeJsonPlugin} UI
  */
 public class JIPipeJsonExtensionWorkbenchPanel extends JIPipeWorkbenchPanel {
 
@@ -40,7 +40,7 @@ public class JIPipeJsonExtensionWorkbenchPanel extends JIPipeWorkbenchPanel {
     /**
      * @return The extension
      */
-    public JIPipeJsonExtension getProject() {
+    public JIPipeJsonPlugin getProject() {
         return workbenchUI.getProject();
     }
 }

@@ -7,7 +7,7 @@
  * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * The project code is licensed under BSD 2-Clause.
+ * The project code is licensed under MIT.
  * See the LICENSE file provided with the code for the full license.
  */
 
@@ -17,11 +17,9 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import ij.IJ;
-import ij.Prefs;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.JIPipeExtension;
+import org.hkijena.jipipe.JIPipePlugin;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.utils.GraphUtils;
@@ -32,10 +30,8 @@ import org.jgrapht.alg.cycle.CycleDetector;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -57,7 +53,7 @@ public class JIPipeExtensionRegistry {
             "org.hkijena.jipipe:cellpose", "org.hkijena.jipipe:clij2-integration", "org.hkijena.jipipe:ij-multi-template-matching", "org.hkijena.jipipe:ij-weka", "org.hkijena.jipipe:omero"};
 
     private final JIPipe jiPipe;
-    private final Map<String, JIPipeExtension> knownExtensions = new HashMap<>();
+    private final Map<String, JIPipePlugin> knownExtensions = new HashMap<>();
     private final Set<String> scheduledActivateExtensions = new HashSet<>();
     private final Set<String> scheduledDeactivateExtensions = new HashSet<>();
     private final Set<String> newExtensions = new HashSet<>();
@@ -155,7 +151,7 @@ public class JIPipeExtensionRegistry {
      *
      * @param extension the extension
      */
-    public void registerKnownExtension(JIPipeExtension extension) {
+    public void registerKnownExtension(JIPipePlugin extension) {
         jiPipe.getProgressInfo().resolve("Extension management").log("Discovered extension: " + extension.getDependencyId() + " version " + extension.getDependencyVersion() + " (of type " + extension.getClass().getName() + ")");
         knownExtensions.put(extension.getDependencyId(), extension);
         dependencyGraph = null;
@@ -169,7 +165,7 @@ public class JIPipeExtensionRegistry {
      * @param id the ID
      * @return the extension or null
      */
-    public JIPipeExtension getKnownExtensionById(String id) {
+    public JIPipePlugin getKnownExtensionById(String id) {
         return knownExtensions.getOrDefault(id, null);
     }
 
@@ -178,7 +174,7 @@ public class JIPipeExtensionRegistry {
      */
     public void findNewExtensions() {
         Set<String> activatedExtensions = getActivatedExtensions();
-        for (JIPipeExtension knownExtension : getKnownExtensionsList()) {
+        for (JIPipePlugin knownExtension : getKnownExtensionsList()) {
             if (!activatedExtensions.contains(knownExtension.getDependencyId()) && !settings.getSilencedExtensions().contains(knownExtension.getDependencyId())) {
                 newExtensions.add(knownExtension.getDependencyId());
             }
@@ -199,11 +195,11 @@ public class JIPipeExtensionRegistry {
         return Collections.unmodifiableSet(newExtensions);
     }
 
-    public List<JIPipeExtension> getKnownExtensionsList() {
+    public List<JIPipePlugin> getKnownExtensionsList() {
         return new ArrayList<>(knownExtensions.values());
     }
 
-    public Map<String, JIPipeExtension> getKnownExtensionsById() {
+    public Map<String, JIPipePlugin> getKnownExtensionsById() {
         return Collections.unmodifiableMap(knownExtensions);
     }
 
@@ -247,7 +243,7 @@ public class JIPipeExtensionRegistry {
     }
 
     public void scheduleActivateExtension(String id) {
-        JIPipeExtension extension = getKnownExtensionById(id);
+        JIPipePlugin extension = getKnownExtensionById(id);
         Set<String> ids = new HashSet<>();
         ids.add(id);
         ids.addAll(getAllDependenciesOf(id));
@@ -264,7 +260,7 @@ public class JIPipeExtensionRegistry {
     }
 
     public void scheduleDeactivateExtension(String id) {
-        JIPipeExtension extension = getKnownExtensionById(id);
+        JIPipePlugin extension = getKnownExtensionById(id);
         Set<String> ids = new HashSet<>();
         ids.add(id);
         ids.addAll(getAllDependentsOf(id));
@@ -339,7 +335,7 @@ public class JIPipeExtensionRegistry {
     public Set<JIPipeDependency> tryResolveToKnownDependencies(Set<JIPipeDependency> dependencies) {
         Set<JIPipeDependency> result = new HashSet<>();
         for (JIPipeDependency dependency : dependencies) {
-            JIPipeExtension known = knownExtensions.getOrDefault(dependency.getDependencyId(), null);
+            JIPipePlugin known = knownExtensions.getOrDefault(dependency.getDependencyId(), null);
             if (known == null)
                 result.add(dependency);
             else

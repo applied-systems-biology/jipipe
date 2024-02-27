@@ -22,7 +22,7 @@
     <licenses>
         <license>
             <name>bsd_2</name>
-            <url>https://opensource.org/licenses/BSD-2-Clause</url>
+            <url>https://opensource.org/licenses/MIT</url>
             <distribution>repo</distribution>
         </license>
     </licenses>

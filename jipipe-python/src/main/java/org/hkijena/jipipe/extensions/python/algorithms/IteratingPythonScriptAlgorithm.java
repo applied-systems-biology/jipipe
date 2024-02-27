@@ -7,7 +7,7 @@
  * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * The project code is licensed under BSD 2-Clause.
+ * The project code is licensed under MIT.
  * See the LICENSE file provided with the code for the full license.
  */
 
@@ -35,7 +35,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.library.scripts.PythonScript;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
-import org.hkijena.jipipe.extensions.python.PythonExtension;
+import org.hkijena.jipipe.extensions.python.PythonPlugin;
 import org.hkijena.jipipe.extensions.python.PythonExtensionSettings;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.extensions.python.adapter.PythonAdapterExtensionSettings;
@@ -222,7 +222,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
     @Override
     protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
         super.onDeserialized(node, issues, notifications);
-        PythonExtension.createMissingPythonNotificationIfNeeded(notifications);
-        PythonExtension.createMissingLibJIPipePythonNotificationIfNeeded(notifications);
+        PythonPlugin.createMissingPythonNotificationIfNeeded(notifications);
+        PythonPlugin.createMissingLibJIPipePythonNotificationIfNeeded(notifications);
     }
 }

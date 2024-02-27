@@ -1,3 +1,16 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under MIT.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
 package org.hkijena.jipipe.extensions.forms.ui;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -8,7 +21,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
-import org.hkijena.jipipe.extensions.forms.FormsExtension;
+import org.hkijena.jipipe.extensions.forms.FormsPlugin;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.forms.datatypes.ParameterFormData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -54,7 +67,7 @@ public class FormsDialog extends JFrame {
         this.workbench = workbench;
         this.iterationStepList = iterationStepList;
         this.tabAnnotation = tabAnnotation;
-        this.documentation = MarkdownDocument.fromResourceURL(FormsExtension.class.getResource("/org/hkijena/jipipe/extensions/forms/form-dialog-documentation.md"),
+        this.documentation = MarkdownDocument.fromResourceURL(FormsPlugin.class.getResource("/org/hkijena/jipipe/extensions/forms/form-dialog-documentation.md"),
                 true, new HashMap<>());
 
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();

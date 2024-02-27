@@ -1,3 +1,16 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under MIT.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
 package org.hkijena.jipipe.extensions.cellpose.algorithms.deprecated;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -24,7 +37,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.extensions.cellpose.CellposeExtension;
+import org.hkijena.jipipe.extensions.cellpose.CellposePlugin;
 import org.hkijena.jipipe.extensions.cellpose.CellposePretrainedModel;
 import org.hkijena.jipipe.extensions.cellpose.CellposeSettings;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellposeModelData;
@@ -658,6 +671,6 @@ public class CellposeTrainingAlgorithm_Old extends JIPipeSingleIterationAlgorith
     @Override
     protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
         super.onDeserialized(node, issues, notifications);
-        CellposeExtension.createMissingPythonNotificationIfNeeded(notifications);
+        CellposePlugin.createMissingPythonNotificationIfNeeded(notifications);
     }
 }

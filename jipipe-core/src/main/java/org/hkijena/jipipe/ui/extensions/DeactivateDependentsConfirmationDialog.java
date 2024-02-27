@@ -7,15 +7,14 @@
  * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * The project code is licensed under BSD 2-Clause.
+ * The project code is licensed under MIT.
  * See the LICENSE file provided with the code for the full license.
- *
  */
 
 package org.hkijena.jipipe.ui.extensions;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeExtension;
+import org.hkijena.jipipe.JIPipePlugin;
 import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
@@ -28,10 +27,10 @@ import java.util.Set;
 
 public class DeactivateDependentsConfirmationDialog extends JDialog {
     private final JIPipeModernPluginManager pluginManager;
-    private final JIPipeExtension extension;
+    private final JIPipePlugin extension;
     private boolean cancelled = true;
 
-    public DeactivateDependentsConfirmationDialog(Component parent, JIPipeModernPluginManager pluginManager, JIPipeExtension extension) {
+    public DeactivateDependentsConfirmationDialog(Component parent, JIPipeModernPluginManager pluginManager, JIPipePlugin extension) {
         super(SwingUtilities.getWindowAncestor(parent));
         this.pluginManager = pluginManager;
         this.extension = extension;
@@ -54,7 +53,7 @@ public class DeactivateDependentsConfirmationDialog extends JDialog {
 
         Set<String> dependents = getExtensionRegistry().getAllDependentsOf(extension.getDependencyId());
         dependents.stream().sorted(NaturalOrderComparator.INSTANCE).forEach(id -> {
-            JIPipeExtension dependency = getExtensionRegistry().getKnownExtensionById(id);
+            JIPipePlugin dependency = getExtensionRegistry().getKnownExtensionById(id);
             JPanel dependencyPanel = new JPanel(new GridBagLayout());
             dependencyPanel.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2), BorderFactory.createEmptyBorder(8, 8, 8, 8)));
             dependencyPanel.add(UIUtils.createJLabel(dependency.getMetadata().getName(), UIUtils.getIcon32FromResources("module-json.png"), 16), new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));

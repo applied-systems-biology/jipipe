@@ -1,3 +1,16 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under MIT.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
 package org.hkijena.jipipe.extensions.omnipose.algorithms;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -23,7 +36,7 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.extensions.cellpose.CellposeExtension;
+import org.hkijena.jipipe.extensions.cellpose.CellposePlugin;
 import org.hkijena.jipipe.extensions.cellpose.CellposeUtils;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.extensions.cellpose.parameters.CellposeChannelSettings;
@@ -36,7 +49,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.omnipose.OmniposeExtension;
+import org.hkijena.jipipe.extensions.omnipose.OmniposePlugin;
 import org.hkijena.jipipe.extensions.omnipose.OmniposeModel;
 import org.hkijena.jipipe.extensions.omnipose.OmniposeSettings;
 import org.hkijena.jipipe.extensions.omnipose.parameters.OmniposeSegmentationThresholdSettings;
@@ -258,7 +271,7 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         // Deploy and run extraction script
         progressInfo.log("Deploying script to extract Omnipose *.npy results ...");
         Path npyExtractorScript = workDirectory.resolve("extract-cellpose-npy.py");
-        CellposeExtension.RESOURCES.exportResourceToFile("extract-cellpose-npy.py", npyExtractorScript);
+        CellposePlugin.RESOURCES.exportResourceToFile("extract-cellpose-npy.py", npyExtractorScript);
         if (!runWith2D.isEmpty()) {
             List<String> arguments = new ArrayList<>();
             arguments.add(npyExtractorScript.toString());
@@ -607,31 +620,31 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
     }
 
     @SetJIPipeDocumentation(name = "Omnipose: Channels", description = "Determines which channels are used for the segmentation")
-    @JIPipeParameter(value = "channel-parameters", resourceClass = OmniposeExtension.class, iconURL = "/org/hkijena/jipipe/extensions/omnipose/icons/omnipose.png")
+    @JIPipeParameter(value = "channel-parameters", resourceClass = OmniposePlugin.class, iconURL = "/org/hkijena/jipipe/extensions/omnipose/icons/omnipose.png")
     public CellposeChannelSettings getChannelSettings() {
         return channelSettings;
     }
 
     @SetJIPipeDocumentation(name = "Omnipose: Tweaks", description = "Additional options like augmentation and averaging over multiple networks")
-    @JIPipeParameter(value = "enhancement-parameters", resourceClass = OmniposeExtension.class, iconURL = "/org/hkijena/jipipe/extensions/omnipose/icons/omnipose.png", collapsed = true)
+    @JIPipeParameter(value = "enhancement-parameters", resourceClass = OmniposePlugin.class, iconURL = "/org/hkijena/jipipe/extensions/omnipose/icons/omnipose.png", collapsed = true)
     public OmniposeSegmentationTweaksSettings getEnhancementParameters() {
         return segmentationTweaksSettings;
     }
 
     @SetJIPipeDocumentation(name = "Omnipose: Thresholds", description = "Parameters that control which objects are selected.")
-    @JIPipeParameter(value = "threshold-parameters", resourceClass = OmniposeExtension.class, iconURL = "/org/hkijena/jipipe/extensions/omnipose/icons/omnipose.png", collapsed = true)
+    @JIPipeParameter(value = "threshold-parameters", resourceClass = OmniposePlugin.class, iconURL = "/org/hkijena/jipipe/extensions/omnipose/icons/omnipose.png", collapsed = true)
     public OmniposeSegmentationThresholdSettings getThresholdParameters() {
         return segmentationThresholdSettings;
     }
 
     @SetJIPipeDocumentation(name = "Omnipose: Outputs", description = "The following settings allow you to select which outputs are generated.")
-    @JIPipeParameter(value = "output-parameters", collapsed = true, resourceClass = OmniposeExtension.class, iconURL = "/org/hkijena/jipipe/extensions/omnipose/icons/omnipose.png")
+    @JIPipeParameter(value = "output-parameters", collapsed = true, resourceClass = OmniposePlugin.class, iconURL = "/org/hkijena/jipipe/extensions/omnipose/icons/omnipose.png")
     public CellposeSegmentationOutputSettings getSegmentationOutputSettings() {
         return segmentationOutputSettings;
     }
 
     @SetJIPipeDocumentation(name = "Omnipose: GPU", description = "Controls how the graphics card is utilized.")
-    @JIPipeParameter(value = "gpu-parameters", collapsed = true, resourceClass = OmniposeExtension.class, iconURL = "/org/hkijena/jipipe/extensions/omnipose/icons/omnipose.png")
+    @JIPipeParameter(value = "gpu-parameters", collapsed = true, resourceClass = OmniposePlugin.class, iconURL = "/org/hkijena/jipipe/extensions/omnipose/icons/omnipose.png")
     public CellposeGPUSettings getGpuSettings() {
         return gpuSettings;
     }
@@ -650,7 +663,7 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
     @Override
     protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
         super.onDeserialized(node, issues, notifications);
-        OmniposeExtension.createMissingPythonNotificationIfNeeded(notifications);
+        OmniposePlugin.createMissingPythonNotificationIfNeeded(notifications);
     }
 
     private void updateOutputSlots() {

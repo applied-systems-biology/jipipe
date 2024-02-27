@@ -1,3 +1,16 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under MIT.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
 package org.hkijena.jipipe.ui;
 
 import com.google.common.collect.Sets;
@@ -5,7 +18,7 @@ import com.google.common.escape.Escaper;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.JIPipeExtension;
+import org.hkijena.jipipe.JIPipePlugin;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
@@ -178,7 +191,7 @@ public class JIPipeProjectReportUI extends JIPipeProjectWorkbenchPanel implement
 
             // Collect dependencies
             for (JIPipeDependency dependency : project.getSimplifiedMinimalDependencies()) {
-                JIPipeExtension fullInstance = JIPipe.getInstance().getExtensionRegistry().getKnownExtensionById(dependency.getDependencyId());
+                JIPipePlugin fullInstance = JIPipe.getInstance().getExtensionRegistry().getKnownExtensionById(dependency.getDependencyId());
                 if(!StringUtils.isNullOrEmpty(fullInstance.getMetadata().getCitation())) {
                     citations.add(fullInstance.getMetadata().getCitation());
                 }
@@ -211,7 +224,7 @@ public class JIPipeProjectReportUI extends JIPipeProjectWorkbenchPanel implement
             stringBuilder.append("<table>");
             stringBuilder.append("<tr><th>Name</th><th>Version</th><th>Author(s)</th></tr>");
             for (JIPipeDependency dependency : project.getSimplifiedMinimalDependencies()) {
-                JIPipeExtension fullInstance = JIPipe.getInstance().getExtensionRegistry().getKnownExtensionById(dependency.getDependencyId());
+                JIPipePlugin fullInstance = JIPipe.getInstance().getExtensionRegistry().getKnownExtensionById(dependency.getDependencyId());
                 stringBuilder.append("<tr>");
                 stringBuilder.append("<td><strong>").append(escaper.escape(fullInstance.getMetadata().getName())).append("</strong></td>");
                 stringBuilder.append("<td>").append(escaper.escape(fullInstance.getDependencyVersion())).append("</td>");
@@ -224,7 +237,7 @@ public class JIPipeProjectReportUI extends JIPipeProjectWorkbenchPanel implement
             stringBuilder.append("<table>");
             stringBuilder.append("<tr><th>Name</th><th>URL</th></tr>");
             for (JIPipeDependency dependency : project.getSimplifiedMinimalDependencies()) {
-                JIPipeExtension fullInstance = JIPipe.getInstance().getExtensionRegistry().getKnownExtensionById(dependency.getDependencyId());
+                JIPipePlugin fullInstance = JIPipe.getInstance().getExtensionRegistry().getKnownExtensionById(dependency.getDependencyId());
                 for (JIPipeImageJUpdateSiteDependency siteDependency : fullInstance.getImageJUpdateSiteDependencies()) {
                     stringBuilder.append("<tr>");
                     stringBuilder.append("<td><strong>").append(escaper.escape(siteDependency.getName())).append("</strong></td>");

@@ -7,7 +7,7 @@
  * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * The project code is licensed under BSD 2-Clause.
+ * The project code is licensed under MIT.
  * See the LICENSE file provided with the code for the full license.
  */
 
@@ -30,7 +30,7 @@ import java.util.Set;
  */
 public class JIPipeRegistryIssues implements JIPipeValidatable {
     private Set<JIPipeImageJUpdateSiteDependency> missingImageJSites = new HashSet<>();
-    private Set<PluginInfo<JIPipeJavaExtension>> erroneousPlugins = new HashSet<>();
+    private Set<PluginInfo<JIPipeJavaPlugin>> erroneousPlugins = new HashSet<>();
     private Set<Class<? extends JIPipeData>> erroneousDataTypes = new HashSet<>();
     private Set<JIPipeParameterTypeInfo> erroneousParameterTypes = new HashSet<>();
     private Set<JIPipeNodeInfo> erroneousNodes = new HashSet<>();
@@ -48,7 +48,7 @@ public class JIPipeRegistryIssues implements JIPipeValidatable {
                     String.format("An extension requests following ImageJ site to be activated: '%s' (%s)", site.getName(), site.getUrl()),
                     "Please activate the site in the update manager."));
         }
-        for (PluginInfo<JIPipeJavaExtension> plugin : erroneousPlugins) {
+        for (PluginInfo<JIPipeJavaPlugin> plugin : erroneousPlugins) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     new CustomValidationReportContext(reportContext, "Extension initialization"),
                     "Could not load extension '" + plugin.getIdentifier() + "'",
@@ -98,11 +98,11 @@ public class JIPipeRegistryIssues implements JIPipeValidatable {
         this.missingImageJSites = missingImageJSites;
     }
 
-    public Set<PluginInfo<JIPipeJavaExtension>> getErroneousPlugins() {
+    public Set<PluginInfo<JIPipeJavaPlugin>> getErroneousPlugins() {
         return erroneousPlugins;
     }
 
-    public void setErroneousPlugins(Set<PluginInfo<JIPipeJavaExtension>> erroneousPlugins) {
+    public void setErroneousPlugins(Set<PluginInfo<JIPipeJavaPlugin>> erroneousPlugins) {
         this.erroneousPlugins = erroneousPlugins;
     }
 

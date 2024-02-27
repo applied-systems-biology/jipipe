@@ -7,7 +7,7 @@
  * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * The project code is licensed under BSD 2-Clause.
+ * The project code is licensed under MIT.
  * See the LICENSE file provided with the code for the full license.
  */
 
@@ -39,7 +39,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
-import org.hkijena.jipipe.extensions.clij2.CLIJExtension;
+import org.hkijena.jipipe.extensions.clij2.CLIJPlugin;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 import org.hkijena.jipipe.extensions.clij2.parameters.OpenCLKernelScript;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.StringAndStringPairParameter;
@@ -61,7 +61,7 @@ public class Clij2ExecuteKernelIterating extends JIPipeIteratingAlgorithm {
     private String kernelFunction = "";
     private PythonScript preprocessingScript = new PythonScript();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
-            CLIJExtension.ALLOWED_PARAMETER_TYPES);
+            CLIJPlugin.ALLOWED_PARAMETER_TYPES);
     private StringAndStringPairParameter.List outputSizes = new StringAndStringPairParameter.List();
 
     public Clij2ExecuteKernelIterating(JIPipeNodeInfo info) {

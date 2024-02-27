@@ -7,12 +7,13 @@
  * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * The project code is licensed under BSD 2-Clause.
+ * The project code is licensed under MIT.
  * See the LICENSE file provided with the code for the full license.
  */
 
 package org.hkijena.jipipe.ui.components;
 
+import org.hkijena.jipipe.JIPipeJsonPlugin;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWindow;
@@ -21,7 +22,7 @@ import javax.swing.*;
 import java.nio.file.Path;
 
 /**
- * Menu that displays recently opened {@link org.hkijena.jipipe.JIPipeJsonExtension}
+ * Menu that displays recently opened {@link JIPipeJsonPlugin}
  */
 public class RecentJsonExtensionsMenu extends JMenu implements JIPipeParameterCollection.ParameterChangedEventListener {
 

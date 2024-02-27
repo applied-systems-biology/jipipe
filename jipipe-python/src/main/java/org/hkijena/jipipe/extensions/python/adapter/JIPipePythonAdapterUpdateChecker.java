@@ -1,3 +1,16 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under MIT.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
 package org.hkijena.jipipe.extensions.python.adapter;
 
 import org.apache.commons.lang3.StringUtils;
@@ -6,7 +19,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.environments.EasyInstallExternalEnvironmentInstallerPackage;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.extensions.python.PythonExtension;
+import org.hkijena.jipipe.extensions.python.PythonPlugin;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
@@ -98,7 +111,7 @@ public class JIPipePythonAdapterUpdateChecker extends AbstractJIPipeRunnable {
 
         if (update != null) {
             progressInfo.log("Update found: " + update);
-            PythonExtension.createOldLibJIPipePythonNotification(JIPipeNotificationInbox.getInstance(), currentVersion, updateVersion);
+            PythonPlugin.createOldLibJIPipePythonNotification(JIPipeNotificationInbox.getInstance(), currentVersion, updateVersion);
         } else {
             progressInfo.log("No update found.");
         }

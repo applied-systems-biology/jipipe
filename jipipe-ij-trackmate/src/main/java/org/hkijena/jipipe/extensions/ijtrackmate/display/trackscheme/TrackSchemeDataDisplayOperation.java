@@ -7,9 +7,8 @@
  * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * The project code is licensed under BSD 2-Clause.
+ * The project code is licensed under MIT.
  * See the LICENSE file provided with the code for the full license.
- *
  */
 
 package org.hkijena.jipipe.extensions.ijtrackmate.display.trackscheme;
@@ -18,7 +17,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
-import org.hkijena.jipipe.extensions.ijtrackmate.TrackMateExtension;
+import org.hkijena.jipipe.extensions.ijtrackmate.TrackMatePlugin;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import javax.swing.*;
@@ -52,6 +51,6 @@ public class TrackSchemeDataDisplayOperation implements JIPipeDataDisplayOperati
 
     @Override
     public Icon getIcon() {
-        return TrackMateExtension.RESOURCES.getIconFromResources("trackscheme.png");
+        return TrackMatePlugin.RESOURCES.getIconFromResources("trackscheme.png");
     }
 }

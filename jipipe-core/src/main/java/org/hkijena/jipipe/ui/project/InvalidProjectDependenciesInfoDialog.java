@@ -7,7 +7,7 @@
  * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * The project code is licensed under BSD 2-Clause.
+ * The project code is licensed under MIT.
  * See the LICENSE file provided with the code for the full license.
  */
 
@@ -15,7 +15,7 @@ package org.hkijena.jipipe.ui.project;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.JIPipeExtension;
+import org.hkijena.jipipe.JIPipePlugin;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -23,7 +23,7 @@ import org.hkijena.jipipe.ui.components.MessagePanel;
 import org.hkijena.jipipe.ui.components.icons.AnimatedIcon;
 import org.hkijena.jipipe.ui.extensions.ExtensionItemActionButton;
 import org.hkijena.jipipe.ui.extensions.JIPipeModernPluginManager;
-import org.hkijena.jipipe.ui.extensions.UpdateSiteExtension;
+import org.hkijena.jipipe.ui.extensions.UpdateSitePlugin;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.VersionUtils;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
@@ -112,7 +112,7 @@ public class InvalidProjectDependenciesInfoDialog extends JDialog implements JIP
                 dependencyPanel.add(UIUtils.makeBorderlessReadonlyTextPane(dependency.getMetadata().getDescription().getHtml(), false), new GridBagConstraints(0, 2, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
                 // Try to find the extension
-                JIPipeExtension extension = JIPipe.getInstance().getExtensionRegistry().getKnownExtensionById(dependency.getDependencyId());
+                JIPipePlugin extension = JIPipe.getInstance().getExtensionRegistry().getKnownExtensionById(dependency.getDependencyId());
                 if (extension != null) {
                     if(VersionUtils.compareVersions(extension.getDependencyVersion(), dependency.getDependencyVersion()) == -1) {
                         dependencyPanel.add(UIUtils.createJLabel("Installed version too old (" + extension.getDependencyVersion() + " < " + dependency.getDependencyVersion() + ")",
@@ -192,7 +192,7 @@ public class InvalidProjectDependenciesInfoDialog extends JDialog implements JIP
                 dependencyPanel.add(UIUtils.makeBorderlessReadonlyTextPane(dependency.getDescription(), false), new GridBagConstraints(0, 2, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
 
                 // Try to find the extension
-                UpdateSiteExtension extension = new UpdateSiteExtension(dependency);
+                UpdateSitePlugin extension = new UpdateSitePlugin(dependency);
                 ExtensionItemActionButton button = new ExtensionItemActionButton(pluginManager, extension);
                 button.setFont(new Font(Font.DIALOG, Font.PLAIN, 22));
                 dependencyPanel.add(button, new GridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(4, 4, 4, 4), 0, 0));

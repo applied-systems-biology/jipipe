@@ -1,32 +1,14 @@
 /*
- NaturalOrderComparator.java -- Perform 'natural order' comparisons of strings in Java.
- Copyright (C) 2003 by Pierre-Luc Paour <natorder@paour.com>
-
- Based on the C version by Martin Pool, of which this is more or less a straight conversion.
- Copyright (C) 2000 by Martin Pool <mbp@humbug.org.au>
-
- This software is provided 'as-is', without any express or implied
- warranty.  In no event will the authors be held liable for any damages
- arising from the use of this software.
-
- Permission is granted to anyone to use this software for any purpose,
- including commercial applications, and to alter it and redistribute it
- freely, subject to the following restrictions:
-
- 1. The origin of this software must not be misrepresented; you must not
- claim that you wrote the original software. If you use this software
- in a product, an acknowledgment in the product documentation would be
- appreciated but is not required.
- 2. Altered source versions must be plainly marked as such, and must not be
- misrepresented as being the original software.
- 3. This notice may not be removed or altered from any source distribution.
-
- Changes:
- * Updated to java conventions
- * Singleton
- * Direct comparison if numbers are provided
- * Ability to handle null
-
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under MIT.
+ * See the LICENSE file provided with the code for the full license.
  */
 
 package org.hkijena.jipipe.utils;
