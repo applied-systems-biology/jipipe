@@ -211,7 +211,7 @@ public class JIPipeSingleCompartmentSelectionOverviewPanelUI extends JIPipeProje
             getProject().getCache().getModifiedEventEmitter().unsubscribe(this);
             return;
         }
-        reload();
+        SwingUtilities.invokeLater(this::reload);
     }
 
     @Override
@@ -221,7 +221,7 @@ public class JIPipeSingleCompartmentSelectionOverviewPanelUI extends JIPipeProje
             return;
         }
         if ("jipipe:algorithm:enabled".equals(event.getKey()) || "jipipe:algorithm:pass-through".equals(event.getKey()) || "jipipe:node:ui-locked".equals(event.getKey())) {
-            reload();
+            SwingUtilities.invokeLater(this::reload);
         }
     }
 }

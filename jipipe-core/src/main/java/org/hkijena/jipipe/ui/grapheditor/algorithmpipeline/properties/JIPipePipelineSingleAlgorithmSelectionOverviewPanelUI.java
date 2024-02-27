@@ -339,7 +339,7 @@ public class JIPipePipelineSingleAlgorithmSelectionOverviewPanelUI extends JIPip
             return;
         }
         if ("jipipe:algorithm:enabled".equals(event.getKey()) || "jipipe:algorithm:pass-through".equals(event.getKey()) || "jipipe:node:ui-locked".equals(event.getKey())) {
-            reload();
+            SwingUtilities.invokeLater(this::reload);
         }
     }
 
@@ -349,6 +349,6 @@ public class JIPipePipelineSingleAlgorithmSelectionOverviewPanelUI extends JIPip
             getProject().getCache().getModifiedEventEmitter().unsubscribe(this);
             return;
         }
-        reload();
+        SwingUtilities.invokeLater(this::reload);
     }
 }
