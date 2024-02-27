@@ -344,7 +344,7 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel implements J
         Ribbon.Band previewBand = viewTask.addBand("Previews");
 
         // Table band
-        tableBand.add(new LargeButtonAction("Open as tab", "Opens the current table in a new tab", UIUtils.getIcon32FromResources("actions/link.png"), this::openTableInNewTab));
+        tableBand.add(new LargeButtonAction("Open as tab", "Opens the current table in a new tab", UIUtils.getIcon32FromResources("actions/open-in-new-window.png"), this::openTableInNewTab));
         tableBand.add(new LargeButtonAction("Filter", "Opens the current filtered table in a new tab", UIUtils.getIcon32FromResources("actions/view-filter.png"), this::openFilteredTableInNewTab));
         tableBand.add(new SmallButtonAction("Fit columns", "Fits the table columns to their contents", UIUtils.getIconFromResources("actions/zoom-fit-width.png"), table::packAll));
         tableBand.add(new SmallButtonAction("Compact columns", "Auto-size columns to the default size", UIUtils.getIconFromResources("actions/zoom-fit-width.png"), () -> UIUtils.packDataTable(table)));

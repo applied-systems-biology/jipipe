@@ -80,7 +80,8 @@
     "jipipe-cellpose",
     "jipipe-omnipose",
     "jipipe-scene-3d",
+    "jipipe-imp",
     "jipipe-launcher"
   ],
-  "jipipe-version": "1.74.0"
+  "jipipe-version": "3.0.0"
 }
