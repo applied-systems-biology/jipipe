@@ -62,7 +62,7 @@
       } ],
       "acknowledgements" : [ ],
       "website" : "https://www.jipipe.org/",
-      "license" : "BSD 2-Clause",
+      "license" : "MIT",
       "citation" : "Gerst, R., Cseresnyés, Z. & Figge, M.T. JIPipe: visual batch processing for ImageJ. Nat Methods (2023). https://doi.org/10.1038/s41592-022-01744-4",
       "dependency-citations" : [ ],
       "thumbnail" : {
@@ -113,7 +113,7 @@
       } ],
       "acknowledgements" : [ ],
       "website" : "https://www.jipipe.org/",
-      "license" : "BSD 2-Clause",
+      "license" : "MIT",
       "citation" : "Gerst, R., Cseresnyés, Z. & Figge, M.T. JIPipe: visual batch processing for ImageJ. Nat Methods (2023). https://doi.org/10.1038/s41592-022-01744-4",
       "dependency-citations" : [ ],
       "thumbnail" : {
@@ -164,7 +164,7 @@
       } ],
       "acknowledgements" : [ ],
       "website" : "https://www.jipipe.org/",
-      "license" : "BSD 2-Clause",
+      "license" : "MIT",
       "citation" : "Gerst, R., Cseresnyés, Z. & Figge, M.T. JIPipe: visual batch processing for ImageJ. Nat Methods (2023). https://doi.org/10.1038/s41592-022-01744-4",
       "dependency-citations" : [ ],
       "thumbnail" : {
@@ -257,7 +257,7 @@
       } ],
       "acknowledgements" : [ ],
       "website" : "https://www.jipipe.org/",
-      "license" : "BSD 2-Clause",
+      "license" : "MIT",
       "citation" : "Gerst, R., Cseresnyés, Z. & Figge, M.T. JIPipe: visual batch processing for ImageJ. Nat Methods (2023). https://doi.org/10.1038/s41592-022-01744-4",
       "dependency-citations" : [ ],
       "thumbnail" : {
@@ -348,7 +348,7 @@
         "custom-text" : "<html><head></head><body></body></html>"
       } ],
       "website" : "https://www.jipipe.org/",
-      "license" : "BSD 2-Clause",
+      "license" : "MIT",
       "citation" : "Gerst, R., Cseresnyés, Z. & Figge, M.T. JIPipe: visual batch processing for ImageJ. Nat Methods (2023). https://doi.org/10.1038/s41592-022-01744-4",
       "dependency-citations" : [ "Stringer, C., Wang, T., Michaelos, M., & Pachitariu, M. (2021). Cellpose: a generalist algorithm for cellular segmentation. Nature Methods, 18(1), 100-106." ],
       "thumbnail" : {

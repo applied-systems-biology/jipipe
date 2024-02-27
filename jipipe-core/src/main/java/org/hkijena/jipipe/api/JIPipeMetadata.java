@@ -246,7 +246,7 @@ public class JIPipeMetadata extends AbstractJIPipeParameterCollection {
     /**
      * @return the license
      */
-    @SetJIPipeDocumentation(name = "License", description = "A license name like GPL v2 or BSD 2-Clause. We recommend Open Source licenses.")
+    @SetJIPipeDocumentation(name = "License", description = "A license name like GPL v2 or MIT. We recommend Open Source licenses.")
     @JIPipeParameter(value = "license", uiOrder = 7)
     @JsonGetter("license")
     public String getLicense() {

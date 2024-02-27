@@ -75,7 +75,7 @@ public abstract class JIPipePrepackagedDefaultJavaPlugin extends JIPipeDefaultJa
 
     @Override
     public String getLicense() {
-        return "BSD 2-Clause";
+        return "MIT";
     }
 
     @Override

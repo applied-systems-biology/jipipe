@@ -17,7 +17,7 @@ Adolf-Reichwein-Straße 23, 07745 Jena, Germany
 
 <h1>License</h1>
 
-BSD 2-Clause License
+MIT License
 
 Copyright (c) 2019, Zoltán Cseresnyés, Ruman Gerst
 All rights reserved.

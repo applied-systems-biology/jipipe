@@ -29,7 +29,7 @@
         "affiliations" : "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany\nFaculty of Biological Sciences, Friedrich-Schiller-University Jena, Germany"
       } ],
       "website" : "https://www.jipipe.org/",
-      "license" : "BSD 2-Clause",
+      "license" : "MIT",
       "citation" : ""
     },
     "id" : "org.hkijena.jipipe:compartments",
