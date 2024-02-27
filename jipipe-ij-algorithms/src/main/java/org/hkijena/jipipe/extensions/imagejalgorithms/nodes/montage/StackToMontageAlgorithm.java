@@ -240,12 +240,12 @@ public class StackToMontageAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     private void drawLabel(ImageProcessor montage, int slice, String label, int x, int y, int width, int height, int borderWidth) {
-        if (label != null && !label.equals("") && montage.getStringWidth(label) >= width) {
+        if (label != null && !label.isEmpty() && montage.getStringWidth(label) >= width) {
             do {
                 label = label.substring(0, label.length() - 1);
             } while (label.length() > 1 && montage.getStringWidth(label) >= width);
         }
-        if (label == null || label.equals(""))
+        if (label == null || label.isEmpty())
             label = "" + slice;
         int swidth = montage.getStringWidth(label);
         x += width / 2 - swidth / 2;

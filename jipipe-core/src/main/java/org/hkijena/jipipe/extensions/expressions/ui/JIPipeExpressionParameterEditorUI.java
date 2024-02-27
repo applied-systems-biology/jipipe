@@ -46,8 +46,8 @@ public class JIPipeExpressionParameterEditorUI extends JIPipeParameterEditorUI {
     /**
      * Creates new instance
      *
-     * @param workbench       the workbech
-     * @param parameterTree
+     * @param workbench       the workbench
+     * @param parameterTree the parameter tree
      * @param parameterAccess Parameter
      */
     public JIPipeExpressionParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {

@@ -429,7 +429,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
     /**
      * Contains single-column series that will be later spliced together depending on the user's settings
      *
-     * @return the set of avilable data
+     * @return the map of available data
      */
     public Map<String, TableColumn> getAvailableData() {
         return Collections.unmodifiableMap(availableData);

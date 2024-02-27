@@ -1509,7 +1509,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     }
 
     /**
-     * Creates a new {@link JIPipeDataTable} instance that contains only the selected rows.
+     * Creates a new instance that contains only the selected rows.
      * All other attributes are copied.
      *
      * @param rows the rows
@@ -1527,7 +1527,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     }
 
     /**
-     * Creates a new {@link JIPipeDataTable} that contains the filtered items.
+     * Creates a new instance that contains the filtered items.
      * @param predicate the predicate (the current table, row index)
      * @return filtered table
      */

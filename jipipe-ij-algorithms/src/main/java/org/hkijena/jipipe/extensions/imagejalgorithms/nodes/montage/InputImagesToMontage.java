@@ -195,7 +195,7 @@ public class InputImagesToMontage extends JIPipeMergingAlgorithm {
     }
 
     private void drawLabel(ImageProcessor montage, String label, int x, int y, int width, int height, int borderWidth) {
-        if (label != null && !label.equals("") && montage.getStringWidth(label) >= width) {
+        if (label != null && !label.isEmpty() && montage.getStringWidth(label) >= width) {
             do {
                 label = label.substring(0, label.length() - 1);
             } while (label.length() > 1 && montage.getStringWidth(label) >= width);

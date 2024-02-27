@@ -193,7 +193,7 @@ public abstract class ConflictDialog extends JDialog implements ActionListener {
     }
 
     protected void maybeAddSeparator() {
-        if (panel.getText().equals("") && panel.getComponents().length == 0) return;
+        if (panel.getText().isEmpty() && panel.getComponents().length == 0) return;
         addText("\n");
         selectEnd();
         panel.insertComponent(new JSeparator());

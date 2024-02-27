@@ -50,7 +50,7 @@ public class CellposeSettings extends AbstractJIPipeParameterCollection {
     /**
      * Checks if the Python settings are valid or reports an invalid state
      *
-     * @param context
+     * @param context the validation context
      * @param report  the report
      */
     public static void checkPythonSettings(JIPipeValidationReportContext context, JIPipeValidationReport report) {

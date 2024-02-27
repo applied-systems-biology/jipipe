@@ -8,6 +8,7 @@ import org.hkijena.jipipe.extensions.cellpose.algorithms.deprecated.CellposeAlgo
 /**
  * @deprecated Used by the old {@link CellposeAlgorithm_Old}
  */
+@Deprecated
 public class CellposeSegmentationOutputSettings_Old extends AbstractJIPipeParameterCollection {
     private boolean outputLabels = false;
     private boolean outputFlows = false;

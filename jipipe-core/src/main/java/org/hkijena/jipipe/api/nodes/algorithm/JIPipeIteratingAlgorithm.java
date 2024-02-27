@@ -459,7 +459,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
      *
      * @param iterationStep    The data interface
      * @param iterationContext The iteration context
-     * @param runContext
+     * @param runContext the run context
      * @param progressInfo     the progress info from the run
      */
     protected abstract void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo);

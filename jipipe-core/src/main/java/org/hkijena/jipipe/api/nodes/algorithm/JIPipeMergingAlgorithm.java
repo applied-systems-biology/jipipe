@@ -386,7 +386,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
      *
      * @param iterationStep    The data interface
      * @param iterationContext The iteration context
-     * @param runContext
+     * @param runContext the run context
      * @param progressInfo     the progress from the run
      */
     protected abstract void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo);
