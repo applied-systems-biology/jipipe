@@ -31,12 +31,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class JIPipeGraphRunPartitionGraph extends DirectedAcyclicGraph<Set<JIPipeGraphNode>, DefaultEdge> {
-    public JIPipeGraphRunPartitionGraph() {
+    private final JIPipeGraphRun graphRun;
+    public JIPipeGraphRunPartitionGraph(JIPipeGraphRun graphRun) {
         super(DefaultEdge.class);
+        this.graphRun = graphRun;
     }
 
-    public JIPipeGraphRunPartitionGraph(JIPipeGraph graph) {
+    public JIPipeGraphRunPartitionGraph(JIPipeGraph graph, JIPipeGraphRun graphRun) {
         super(DefaultEdge.class);
+        this.graphRun = graphRun;
         addGraph(graph);
     }
 
@@ -48,7 +51,8 @@ public class JIPipeGraphRunPartitionGraph extends DirectedAcyclicGraph<Set<JIPip
             JIPipeGraphNode source = copy.getGraph().getEdgeSource(edge).getNode();
             JIPipeGraphNode target = copy.getGraph().getEdgeTarget(edge).getNode();
             if (source instanceof JIPipeAlgorithm && target instanceof JIPipeAlgorithm) {
-                if (!Objects.equals(((JIPipeAlgorithm) source).getRuntimePartition(), ((JIPipeAlgorithm) target).getRuntimePartition())) {
+                if (!graphRun.runtimePartitionEquals(source, target)) {
+                    System.out.println("RM " + source.getDisplayName() + " >>> " + target.getDisplayName());
                     copy.getGraph().removeEdge(edge);
                 }
             }
@@ -75,8 +79,8 @@ public class JIPipeGraphRunPartitionGraph extends DirectedAcyclicGraph<Set<JIPip
                         for (JIPipeGraphEdge edge : graph.getGraph().incomingEdgesOf(inputSlot)) {
                             JIPipeDataSlot source = graph.getGraph().getEdgeSource(edge);
                             if (source.getNode() instanceof JIPipeAlgorithm) {
-                                if (!Objects.equals(((JIPipeAlgorithm) source.getNode()).getRuntimePartition(),
-                                        ((JIPipeAlgorithm) node).getRuntimePartition())) {
+                                if (!graphRun.runtimePartitionEquals(source.getNode(),
+                                        node)) {
                                     addEdge(components.get(source.getNode()), nodes);
                                 }
                             }

@@ -328,7 +328,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
 
     private void runGraph(JIPipeGraph graph, JIPipeProgressInfo progressInfo) {
         progressInfo.log("Iterating on graph " + graph + " ...");
-        JIPipeGraphRunPartitionGraph partitionGraph = new JIPipeGraphRunPartitionGraph(graph);
+        JIPipeGraphRunPartitionGraph partitionGraph = new JIPipeGraphRunPartitionGraph(graph, this);
         progressInfo.log("-> Created partition graph " + partitionGraph);
 
         JIPipeGraphRunGCGraph gcGraph = new JIPipeGraphRunGCGraph(graph, graph.getGraphNodes());
@@ -357,7 +357,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
         int partitionId = 0;
         for (JIPipeGraphNode graphNode : partitionNodeSet) {
             if (graphNode instanceof JIPipeAlgorithm) {
-                partitionId = ((JIPipeAlgorithm) graphNode).getRuntimePartition().getIndex();
+                partitionId = Math.max(0, ((JIPipeAlgorithm) graphNode).getRuntimePartition().getIndex());
             }
         }
         JIPipeRuntimePartition runtimePartition = getRuntimePartition(partitionId);
@@ -398,7 +398,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                     for (JIPipeGraphEdge graphEdge : graph.getGraph().incomingEdgesOf(inputSlot)) {
                         JIPipeDataSlot edgeSource = graph.getGraph().getEdgeSource(graphEdge);
                         if (edgeSource.getNode() instanceof JIPipeAlgorithm) {
-                            if (!Objects.equals(((JIPipeAlgorithm) edgeSource.getNode()).getRuntimePartition(), ((JIPipeAlgorithm) node).getRuntimePartition())) {
+                            if (!runtimePartitionEquals(edgeSource.getNode(), node)) {
                                 String uuid = UUID.randomUUID().toString();
                                 progressInfo.log("--> Detecting interfacing input " + inputSlot.getDisplayName() + " (registered as " + uuid + ")");
                                 inputMap.put(inputSlot, uuid);
@@ -431,7 +431,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                         for (JIPipeGraphEdge graphEdge : graph.getGraph().outgoingEdgesOf(outputSlot)) {
                             JIPipeDataSlot edgeTarget = graph.getGraph().getEdgeTarget(graphEdge);
                             if (edgeTarget.getNode() instanceof JIPipeAlgorithm) {
-                                if (!Objects.equals(((JIPipeAlgorithm) edgeTarget.getNode()).getRuntimePartition(), ((JIPipeAlgorithm) node).getRuntimePartition())) {
+                                if (!runtimePartitionEquals(edgeTarget.getNode(), node)) {
                                     String uuid = UUID.randomUUID().toString();
                                     progressInfo.log("--> Detecting interfacing output " + outputSlot.getDisplayName() + " (registered as " + uuid + ")");
                                     outputMap.put(outputSlot, uuid);
@@ -781,18 +781,26 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
         return graph;
     }
 
+    public boolean runtimePartitionEquals(JIPipeGraphNode node1, JIPipeGraphNode node2) {
+        if(node1 instanceof JIPipeAlgorithm && node2 instanceof JIPipeAlgorithm) {
+            return getValidRuntimePartitionIndex(((JIPipeAlgorithm) node1).getRuntimePartition().getIndex()) ==
+                    getValidRuntimePartitionIndex(((JIPipeAlgorithm) node2).getRuntimePartition().getIndex());
+        }
+        else {
+            throw new IllegalArgumentException("Not an algorithm!");
+        }
+    }
+
+    public int getValidRuntimePartitionIndex(int index) {
+        return Math.max(0, Math.min(runtimePartitions.size() - 1, index));
+    }
+
     public JIPipeRuntimePartition getRuntimePartition(RuntimePartitionReferenceParameter reference) {
         return getRuntimePartition(reference.getIndex());
     }
 
     public JIPipeRuntimePartition getRuntimePartition(int index) {
-        if (index >= 0 && index < runtimePartitions.size()) {
-            return runtimePartitions.get(index);
-        } else {
-            JIPipeRuntimePartition dummy = new JIPipeRuntimePartition();
-            dummy.setName("Unnamed " + index + " (fallback)");
-            return dummy;
-        }
+        return runtimePartitions.get(getValidRuntimePartitionIndex(index));
     }
 
     @Override
