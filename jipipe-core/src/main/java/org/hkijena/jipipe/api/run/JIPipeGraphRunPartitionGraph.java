@@ -52,7 +52,7 @@ public class JIPipeGraphRunPartitionGraph extends DirectedAcyclicGraph<Set<JIPip
             JIPipeGraphNode target = copy.getGraph().getEdgeTarget(edge).getNode();
             if (source instanceof JIPipeAlgorithm && target instanceof JIPipeAlgorithm) {
                 if (!graphRun.runtimePartitionEquals(source, target)) {
-                    System.out.println("RM " + source.getDisplayName() + " >>> " + target.getDisplayName());
+//                    System.out.println("RM " + source.getDisplayName() + " >>> " + target.getDisplayName());
                     copy.getGraph().removeEdge(edge);
                 }
             }
