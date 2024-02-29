@@ -363,7 +363,12 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
         JIPipeRuntimePartition runtimePartition = getRuntimePartition(partitionId);
         progressInfo.log("--> Selected runtime partition id=" + partitionId + " as name=" + runtimePartition.getName());
 
-        if (runtimePartition.getIterationMode() == JIPipeGraphWrapperAlgorithm.IterationMode.PassThrough) {
+        boolean passThroughMode = runtimePartition.getIterationMode() == JIPipeGraphWrapperAlgorithm.IterationMode.PassThrough;
+        if(!passThroughMode && configuration.isStoreToCache() && runtimePartition.isForcePassThroughLoopIterationInCaching()) {
+            passThroughMode = true;
+        }
+
+        if (passThroughMode) {
             // Non-iterating mode
             JIPipeProgressInfo partitionProgress = progressInfo.resolve("Partition " + partitionId);
             runGraph(graph, partitionNodeSet, gcGraph, runtimePartition, partitionProgress);

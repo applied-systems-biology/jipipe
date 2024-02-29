@@ -34,6 +34,7 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
     private HTMLText description = new HTMLText();
     private OptionalColorParameter color = new OptionalColorParameter(Color.RED, true);
     private boolean enableParallelization = false;
+    private boolean forcePassThroughLoopIterationInCaching = false;
     private JIPipeIteratingAlgorithmIterationStepGenerationSettings loopIterationIteratingSettings;
     private JIPipeMergingAlgorithmIterationStepGenerationSettings loopIterationMergingSettings;
     private OutputSettings outputSettings;
@@ -57,6 +58,7 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
         this.outputSettings = new OutputSettings(other.outputSettings);
         this.loopIterationMergingSettings = new JIPipeMergingAlgorithmIterationStepGenerationSettings(other.loopIterationMergingSettings);
         this.loopIterationIteratingSettings = new JIPipeIteratingAlgorithmIterationStepGenerationSettings(other.loopIterationIteratingSettings);
+        this.forcePassThroughLoopIterationInCaching = other.forcePassThroughLoopIterationInCaching;
         registerSubParameters(outputSettings, loopIterationMergingSettings, loopIterationIteratingSettings);
     }
 
@@ -152,8 +154,10 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
     }
 
     @SetJIPipeDocumentation(name = "Iteration mode", description = "If not set to 'Pass-through', the contents of this graph partition are looped based on the annotations of incoming data from other partitions. " +
-            "You will need at least two partitions to make use of looping. Loops cannot be nested.")
-    @JIPipeParameter("iteration-mode")
+            "You will need at least two partitions to make use of looping. Loops cannot be nested. " +
+            "Loops cannot access cached data, which means that the whole loop will be repeated on 'Update cache''Cache intermediate results'/'Update predecessor caches'. " +
+            "Enable 'Disable iteration in 'Update cache' to turn off iteration during cache updated.")
+    @JIPipeParameter(value = "iteration-mode", important = true, pinned = true)
     @JsonGetter("iteration-mode")
     public JIPipeGraphWrapperAlgorithm.IterationMode getIterationMode() {
         return iterationMode;
@@ -164,6 +168,19 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
     public void setIterationMode(JIPipeGraphWrapperAlgorithm.IterationMode iterationMode) {
         this.iterationMode = iterationMode;
         emitParameterUIChangedEvent();
+    }
+
+    @SetJIPipeDocumentation(name = "Disable iteration in 'Update cache'", description = "If enabled, the iteration mode is set to 'Pass-through' if the partition is run within 'Update cache'/'Cache intermediate results'/'Update predecessor caches'")
+    @JIPipeParameter("force-pass-through-loop-iteration-in-caching")
+    @JsonGetter("force-pass-through-loop-iteration-in-caching")
+    public boolean isForcePassThroughLoopIterationInCaching() {
+        return forcePassThroughLoopIterationInCaching;
+    }
+
+    @JIPipeParameter("force-pass-through-loop-iteration-in-caching")
+    @JsonSetter("force-pass-through-loop-iteration-in-caching")
+    public void setForcePassThroughLoopIterationInCaching(boolean forcePassThroughLoopIterationInCaching) {
+        this.forcePassThroughLoopIterationInCaching = forcePassThroughLoopIterationInCaching;
     }
 
     @SetJIPipeDocumentation(name = "Loop iteration (multiple data per slot)", description = "Determine how iteration steps for looping partitions are created. Only applied if the 'Iteration mode' is set to 'Loop (multiple data per slot)'")
