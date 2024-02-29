@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
@@ -415,8 +416,13 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                         String uuid = UUID.randomUUID().toString();
 
                         if(!isCaching && !runtimePartition.getOutputSettings().isExportLoopTerminating()) {
-                            progressInfo.log("--> NOT detecting endpoint output " + outputSlot.getDisplayName() + " (registered as " + uuid + ") [export terminating nodes disabled]");
-                            continue;
+                            if(runtimePartition.getOutputSettings().isAlwaysExportCompartmentOutputs() && outputSlot.getNode() instanceof JIPipeCompartmentOutput) {
+                                progressInfo.log("--> Compartment output " + outputSlot.getDisplayName() + " (registered as " + uuid + ") --> endpoint will be exported [always export compartment outputs]");
+                            }
+                            else {
+                                progressInfo.log("--> NOT detecting endpoint output " + outputSlot.getDisplayName() + " (registered as " + uuid + ") [export terminating nodes disabled]");
+                                continue;
+                            }
                         }
 
                         progressInfo.log("--> Detecting endpoint output " + outputSlot.getDisplayName() + " (registered as " + uuid + ")");
@@ -428,11 +434,6 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                                 if (!Objects.equals(((JIPipeAlgorithm) edgeTarget.getNode()).getRuntimePartition(), ((JIPipeAlgorithm) node).getRuntimePartition())) {
                                     String uuid = UUID.randomUUID().toString();
                                     progressInfo.log("--> Detecting interfacing output " + outputSlot.getDisplayName() + " (registered as " + uuid + ")");
-                                    outputMap.put(outputSlot, uuid);
-                                    continue outer;
-                                } else if (!outputSlot.isSkipExport() && !outputSlot.isSkipCache() && !configuration.getDisableStoreToCacheNodes().contains(outputSlot.getNode().getUUIDInParentGraph())) {
-                                    String uuid = UUID.randomUUID().toString();
-                                    progressInfo.log("--> Detecting intermediate output " + outputSlot.getDisplayName() + " (registered as " + uuid + ")");
                                     outputMap.put(outputSlot, uuid);
                                     continue outer;
                                 }
@@ -821,6 +822,11 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                     return runtimePartition.getOutputSettings().isExportLightweightData();
                 }
             });
+
+            if(filtered.isEmpty()) {
+                storageProgress.log("NOT Storing " + outputDataSlot.getDisplayName() + " to hard drive (is empty)");
+                return;
+            }
 
             JIPipeProgressInfo saveProgress = storageProgress.resolveAndLog(String.format("Saving data in slot '%s' (data type %s)", outputDataSlot.getDisplayName(), JIPipeDataInfo.getInstance(outputDataSlot.getAcceptedDataType()).getName()));
             storageProgress.log("Storing " + outputDataSlot.getDisplayName() + " to hard drive");

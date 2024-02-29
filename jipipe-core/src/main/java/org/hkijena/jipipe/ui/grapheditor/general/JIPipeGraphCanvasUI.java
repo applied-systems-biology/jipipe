@@ -20,6 +20,7 @@ import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
@@ -49,6 +50,7 @@ import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.NodeUIContextAction
 import org.hkijena.jipipe.ui.grapheditor.general.layout.MSTGraphAutoLayoutMethod;
 import org.hkijena.jipipe.ui.grapheditor.general.layout.SugiyamaGraphAutoLayoutMethod;
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.*;
+import org.hkijena.jipipe.ui.settings.JIPipeRuntimePartitionListEditor;
 import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -1428,11 +1430,20 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
         // Node partitioning menus
         if (getWorkbench() instanceof JIPipeProjectWorkbench) {
-            JIPipeRuntimePartitionConfiguration runtimePartitions = ((JIPipeProjectWorkbench) getWorkbench()).getProject().getRuntimePartitions();
+            JIPipeProject project = ((JIPipeProjectWorkbench) getWorkbench()).getProject();
+            JIPipeRuntimePartitionConfiguration runtimePartitions = project.getRuntimePartitions();
 
             // Algorithms
             if (selection.stream().anyMatch(ui -> ui.getNode() instanceof JIPipeAlgorithm)) {
                 menu.addSeparator();
+                Set<Integer> partitionIds = selection.stream().filter(ui -> ui.getNode() instanceof JIPipeAlgorithm).map(ui -> ((JIPipeAlgorithm) ui.getNode()).getRuntimePartition().getIndex()).collect(Collectors.toSet());
+                if(partitionIds.size() == 1) {
+                    JIPipeRuntimePartition runtimePartition = project.getRuntimePartitions().get(partitionIds.iterator().next());
+                    menu.add(UIUtils.createMenuItem("Edit partition '" +project.getRuntimePartitions().getFullName(runtimePartition) + "'",
+                            "Edit the partition configuration", UIUtils.getIconFromResources("actions/edit.png"), () -> {
+                                JIPipeRuntimePartitionListEditor.editRuntimePartition(getWorkbench(), runtimePartition);
+                            }));
+                }
                 JMenu partitionMenu = new JMenu("Move to partition ...");
                 for (JIPipeRuntimePartition runtimePartition : runtimePartitions.toList()) {
                     JMenuItem item = new JMenuItem(runtimePartitions.getFullName(runtimePartition), runtimePartitions.getIcon(runtimePartition));

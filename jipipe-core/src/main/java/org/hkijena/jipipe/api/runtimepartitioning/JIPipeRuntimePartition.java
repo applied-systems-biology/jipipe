@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.runtimepartitioning;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.apache.commons.math3.geometry.enclosing.EnclosingBall;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.grouping.JIPipeGraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithmIterationStepGenerationSettings;
@@ -75,11 +76,13 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
     @SetJIPipeDocumentation(name = "Continue on failure", description = "If enabled, the pipeline will continue if a node within the partition fails. For pass-through iteration, " +
             "JIPipe will continue with the other partitions (no data is output from the current partition). If you enabled iteration, all successful results will be stored and passed to dependents.")
     @JIPipeParameter("continue-on-failure")
+    @JsonGetter("continue-on-failure")
     public boolean isContinueOnFailure() {
         return continueOnFailure;
     }
 
     @JIPipeParameter("continue-on-failure")
+    @JsonSetter("continue-on-failure")
     public void setContinueOnFailure(boolean continueOnFailure) {
         this.continueOnFailure = continueOnFailure;
     }
@@ -87,11 +90,13 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
     @SetJIPipeDocumentation(name = "Enable parallelization", description = "If enabled, the nodes in this partition will be able to parallelize their workloads using JIPipe's parallelization system. " +
             "The underlying algorithms may still utilize parallelization even if this setting is disabled.")
     @JIPipeParameter("enable-parallelization")
+    @JsonGetter("enable-parallelization")
     public boolean isEnableParallelization() {
         return enableParallelization;
     }
 
     @JIPipeParameter("enable-parallelization")
+    @JsonSetter("enable-parallelization")
     public void setEnableParallelization(boolean enableParallelization) {
         this.enableParallelization = enableParallelization;
     }
@@ -149,11 +154,13 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
     @SetJIPipeDocumentation(name = "Iteration mode", description = "If not set to 'Pass-through', the contents of this graph partition are looped based on the annotations of incoming data from other partitions. " +
             "You will need at least two partitions to make use of looping. Loops cannot be nested.")
     @JIPipeParameter("iteration-mode")
+    @JsonGetter("iteration-mode")
     public JIPipeGraphWrapperAlgorithm.IterationMode getIterationMode() {
         return iterationMode;
     }
 
     @JIPipeParameter("iteration-mode")
+    @JsonSetter("iteration-mode")
     public void setIterationMode(JIPipeGraphWrapperAlgorithm.IterationMode iterationMode) {
         this.iterationMode = iterationMode;
         emitParameterUIChangedEvent();
@@ -213,6 +220,7 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
         private boolean exportHeavyData = true;
         private boolean exportLoopIntermediateResults = false;
         private boolean exportLoopTerminating = true;
+        private boolean alwaysExportCompartmentOutputs = true;
 
         public OutputSettings() {
         }
@@ -222,16 +230,32 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
             this.exportHeavyData = other.exportHeavyData;
             this.exportLoopIntermediateResults = other.exportLoopIntermediateResults;
             this.exportLoopTerminating = other.exportLoopTerminating;
+            this.alwaysExportCompartmentOutputs = other.alwaysExportCompartmentOutputs;
+        }
+
+        @SetJIPipeDocumentation(name = "Always export compartment outputs", description = "Ensures that compartment outputs are always exported.")
+        @JIPipeParameter("always-export-compartment-outputs")
+        @JsonGetter("always-export-compartment-outputs")
+        public boolean isAlwaysExportCompartmentOutputs() {
+            return alwaysExportCompartmentOutputs;
+        }
+
+        @JIPipeParameter("always-export-compartment-outputs")
+        @JsonSetter("always-export-compartment-outputs")
+        public void setAlwaysExportCompartmentOutputs(boolean alwaysExportCompartmentOutputs) {
+            this.alwaysExportCompartmentOutputs = alwaysExportCompartmentOutputs;
         }
 
         @SetJIPipeDocumentation(name = "Loops: export intermediate results", description = "If enabled, the intermediate results of looping partitions are exported. " +
                 "Please note that this increases memory usage. Not applicable to caching (cache intermediate results).")
         @JIPipeParameter("export-loop-intermediate-results")
+        @JsonGetter("export-loop-intermediate-results")
         public boolean isExportLoopIntermediateResults() {
             return exportLoopIntermediateResults;
         }
 
         @JIPipeParameter("export-loop-intermediate-results")
+        @JsonSetter("export-loop-intermediate-results")
         public void setExportLoopIntermediateResults(boolean exportLoopIntermediateResults) {
             this.exportLoopIntermediateResults = exportLoopIntermediateResults;
         }
@@ -239,11 +263,13 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
         @SetJIPipeDocumentation(name = "Loops: export terminating results", description = "If enabled, non-intermediate results within loop partitions are exported. " +
                 "Not applicable to caching.")
         @JIPipeParameter("export-loop-terminating")
+        @JsonGetter("export-loop-terminating")
         public boolean isExportLoopTerminating() {
             return exportLoopTerminating;
         }
 
         @JIPipeParameter("export-loop-terminating")
+        @JsonSetter("export-loop-terminating")
         public void setExportLoopTerminating(boolean exportLoopTerminating) {
             this.exportLoopTerminating = exportLoopTerminating;
         }
