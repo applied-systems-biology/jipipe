@@ -32,6 +32,7 @@ import org.hkijena.jipipe.api.data.utils.JIPipeWeakDataReferenceData;
 import org.hkijena.jipipe.api.grapheditortool.*;
 import org.hkijena.jipipe.api.nodes.JIPipeTextAnnotationMatchingMethod;
 import org.hkijena.jipipe.api.nodes.categories.*;
+import org.hkijena.jipipe.api.run.JIPipeGraphRunPartitionInheritedBoolean;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.extensions.core.data.CopyContainingFolderDataImportOperation;
 import org.hkijena.jipipe.extensions.core.data.DefaultDataDisplayOperation;
@@ -142,6 +143,10 @@ public class CorePlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 JIPipeUITheme.class,
                 "Theme",
                 "A theme for the JIPipe GUI");
+        registerEnumParameterType("jipipe:graph-run-partition-inherited-boolean",
+                JIPipeGraphRunPartitionInheritedBoolean.class,
+                "Graph run partition boolean (inheritable)",
+                "A boolean where the value can be inherited from the partition");
 
         registerProjectTemplatesFromResources(JIPipe.RESOURCES, "templates");
 

@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
-import org.hkijena.jipipe.api.run.JIPipeGraphRunSettings;
+import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -52,7 +52,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
     }
 
     private void initialize() {
-        JIPipeGraphRunSettings configuration = new JIPipeGraphRunSettings();
+        JIPipeGraphRunConfiguration configuration = new JIPipeGraphRunConfiguration();
         configuration.setOutputPath(settings.getOutputPath());
         configuration.setLoadFromCache(settings.isLoadFromCache());
         configuration.setStoreToCache(settings.isStoreToCache());

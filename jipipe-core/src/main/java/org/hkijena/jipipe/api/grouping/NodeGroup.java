@@ -34,6 +34,7 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithmIterationSte
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.api.run.JIPipeGraphRunPartitionInheritedBoolean;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
@@ -218,16 +219,30 @@ public class NodeGroup extends JIPipeGraphWrapperAlgorithm implements JIPipeCust
 
     @SetJIPipeDocumentation(name = "Continue on failure", description = "If enabled, the pipeline will continue if a node within the group fails. For pass-through iteration, " +
             "JIPipe will continue with the pipeline (no data is output from the group). If you enabled iteration, all successful results will be stored and passed as output.")
-    @JIPipeParameter("continue-on-failure")
+    @JIPipeParameter(value = "continue-on-failure", important = true)
     @Override
-    public boolean isContinueOnFailure() {
+    public JIPipeGraphRunPartitionInheritedBoolean isContinueOnFailure() {
         return super.isContinueOnFailure();
     }
 
     @JIPipeParameter("continue-on-failure")
     @Override
-    public void setContinueOnFailure(boolean continueOnFailure) {
+    public void setContinueOnFailure(JIPipeGraphRunPartitionInheritedBoolean continueOnFailure) {
         super.setContinueOnFailure(continueOnFailure);
+    }
+
+    @SetJIPipeDocumentation(name = "Save inputs of failed sub-pipeline", description = "If enabled, the inputs of saved sub-pipelines will be saved to allow diagnostics. " +
+            "Increases memory consumption.")
+    @JIPipeParameter("continue-on-failure-backup-mode")
+    @Override
+    public JIPipeGraphRunPartitionInheritedBoolean getContinueOnFailureExportFailedInputs() {
+        return super.getContinueOnFailureExportFailedInputs();
+    }
+
+    @JIPipeParameter("continue-on-failure-backup-mode")
+    @Override
+    public void setContinueOnFailureExportFailedInputs(JIPipeGraphRunPartitionInheritedBoolean continueOnFailureExportFailedInputs) {
+        super.setContinueOnFailureExportFailedInputs(continueOnFailureExportFailedInputs);
     }
 
     @SetJIPipeDocumentation(name = "Wrapped graph", description = "The graph that is wrapped inside this node")

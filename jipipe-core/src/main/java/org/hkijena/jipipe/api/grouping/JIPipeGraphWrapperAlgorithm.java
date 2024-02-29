@@ -33,7 +33,9 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationS
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStepGenerator;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
-import org.hkijena.jipipe.api.run.JIPipeGraphRunSettings;
+import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
+import org.hkijena.jipipe.api.run.JIPipeGraphRunPartitionInheritedBoolean;
+import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
@@ -57,8 +59,8 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
     private GraphWrapperAlgorithmOutput algorithmOutput;
     private IOSlotWatcher ioSlotWatcher;
     private boolean preventUpdateSlots = false;
-
-    private boolean continueOnFailure = false;
+    private JIPipeGraphRunPartitionInheritedBoolean continueOnFailure = JIPipeGraphRunPartitionInheritedBoolean.InheritFromPartition;
+    private JIPipeGraphRunPartitionInheritedBoolean continueOnFailureExportFailedInputs = JIPipeGraphRunPartitionInheritedBoolean.InheritFromPartition;
     private IterationMode iterationMode = IterationMode.PassThrough;
     private JIPipeMergingAlgorithmIterationStepGenerationSettings batchGenerationSettings = new JIPipeMergingAlgorithmIterationStepGenerationSettings();
 
@@ -81,6 +83,7 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
         this.iterationMode = other.iterationMode;
         this.batchGenerationSettings = new JIPipeMergingAlgorithmIterationStepGenerationSettings(other.batchGenerationSettings);
         this.continueOnFailure = other.continueOnFailure;
+        this.continueOnFailureExportFailedInputs = other.continueOnFailureExportFailedInputs;
         setWrappedGraph(new JIPipeGraph(other.wrappedGraph));
     }
 
@@ -149,6 +152,14 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
         }
     }
 
+    public JIPipeGraphRunPartitionInheritedBoolean getContinueOnFailureExportFailedInputs() {
+        return continueOnFailureExportFailedInputs;
+    }
+
+    public void setContinueOnFailureExportFailedInputs(JIPipeGraphRunPartitionInheritedBoolean continueOnFailureExportFailedInputs) {
+        this.continueOnFailureExportFailedInputs = continueOnFailureExportFailedInputs;
+    }
+
     public boolean isPreventUpdateSlots() {
         return preventUpdateSlots;
     }
@@ -157,13 +168,18 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
         this.preventUpdateSlots = preventUpdateSlots;
     }
 
-    public boolean isContinueOnFailure() {
+    public JIPipeGraphRunPartitionInheritedBoolean isContinueOnFailure() {
         return continueOnFailure;
     }
 
-    public void setContinueOnFailure(boolean continueOnFailure) {
+    public void setContinueOnFailure(JIPipeGraphRunPartitionInheritedBoolean continueOnFailure) {
         this.continueOnFailure = continueOnFailure;
     }
+
+    public JIPipeGraphRunPartitionInheritedBoolean getContinueOnFailure() {
+        return continueOnFailure;
+    }
+
 
     /**
      * Gets the graphs' input node
@@ -223,44 +239,47 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
             runWithDataPassThrough(runContext, progressInfo);
             return;
         }
-        List<JIPipeMultiIterationStep> iterationSteps = generateDataBatchesGenerationResult(getDataInputSlots(), progressInfo).getDataBatches();
-        for (int i = 0; i < iterationSteps.size(); i++) {
-            JIPipeProgressInfo batchProgress = progressInfo.resolveAndLog("Data batch", i, iterationSteps.size());
+        try {
+            List<JIPipeMultiIterationStep> iterationSteps = generateDataBatchesGenerationResult(getDataInputSlots(), progressInfo).getDataBatches();
+            for (int i = 0; i < iterationSteps.size(); i++) {
+                JIPipeProgressInfo batchProgress = progressInfo.resolveAndLog("Data batch", i, iterationSteps.size());
 
-            // Derive new settings and create a dedicated run
-            JIPipeGraphRunSettings graphRunSettings = new JIPipeGraphRunSettings(runContext.getGraphRun().getConfiguration());
-            graphRunSettings.setLoadFromCache(false);
-            graphRunSettings.setStoreToCache(false);
-            graphRunSettings.setStoreToDisk(false);
+                // Derive new settings and create a dedicated run
+                JIPipeGraphRunConfiguration graphRunSettings = new JIPipeGraphRunConfiguration(runContext.getGraphRun().getConfiguration());
+                graphRunSettings.setLoadFromCache(false);
+                graphRunSettings.setStoreToCache(false);
+                graphRunSettings.setStoreToDisk(false);
+                graphRunSettings.setContinueOnFailureExportFailedInputs(getContinueOnFailureExportFailedInputs());
+                graphRunSettings.setContinueOnFailure(getContinueOnFailure());
 
-            JIPipeGraphRun run = new JIPipeGraphRun(runContext.getGraphRun(), wrappedGraph, graphRunSettings);
-            run.setProgressInfo(batchProgress.detachProgress());
+                JIPipeGraphRun run = new JIPipeGraphRun(runContext.getGraphRun(), wrappedGraph, graphRunSettings);
+                run.setProgressInfo(batchProgress.detachProgress());
 
-            GraphWrapperAlgorithmInput copyGroupInput = run.getGraph().findFirstNodeOfType(GraphWrapperAlgorithmInput.class);
-            GraphWrapperAlgorithmOutput copyGroupOutput = run.getGraph().findFirstNodeOfType(GraphWrapperAlgorithmOutput.class);
+                GraphWrapperAlgorithmInput copyGroupInput = run.getGraph().findFirstNodeOfType(GraphWrapperAlgorithmInput.class);
+                GraphWrapperAlgorithmOutput copyGroupOutput = run.getGraph().findFirstNodeOfType(GraphWrapperAlgorithmOutput.class);
 
-            JIPipeMultiIterationStep iterationStep = iterationSteps.get(i);
+                JIPipeMultiIterationStep iterationStep = iterationSteps.get(i);
 
-            // Iterate through own input slots and pass them to the equivalents in group input
-            for (JIPipeDataSlot inputSlot : getInputSlots()) {
-                JIPipeDataSlot groupInputSlot = copyGroupInput.getInputSlot(inputSlot.getName());
-                for (Integer row : iterationStep.getInputRows(inputSlot)) {
-                    groupInputSlot.addData(inputSlot.getDataItemStore(row),
-                            inputSlot.getTextAnnotations(row),
-                            JIPipeTextAnnotationMergeMode.OverwriteExisting,
-                            inputSlot.getDataAnnotations(row),
-                            JIPipeDataAnnotationMergeMode.OverwriteExisting,
-                            inputSlot.getDataContext(row),
-                            batchProgress);
+                // Iterate through own input slots and pass them to the equivalents in group input
+                for (JIPipeDataSlot inputSlot : getInputSlots()) {
+                    JIPipeDataSlot groupInputSlot = copyGroupInput.getInputSlot(inputSlot.getName());
+                    for (Integer row : iterationStep.getInputRows(inputSlot)) {
+                        groupInputSlot.addData(inputSlot.getDataItemStore(row),
+                                inputSlot.getTextAnnotations(row),
+                                JIPipeTextAnnotationMergeMode.OverwriteExisting,
+                                inputSlot.getDataAnnotations(row),
+                                JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                                inputSlot.getDataContext(row),
+                                batchProgress);
+                    }
                 }
-            }
 
-            // Skip GC clearing for the group outputs
-            for (JIPipeOutputDataSlot outputSlot : copyGroupOutput.getOutputSlots()) {
-                outputSlot.setSkipGC(true);
-            }
+                // Skip GC clearing for the group outputs
+                for (JIPipeOutputDataSlot outputSlot : copyGroupOutput.getOutputSlots()) {
+                    outputSlot.setSkipGC(true);
+                }
 
-            try {
+
                 run.run();
 
                 // Copy into output
@@ -268,24 +287,51 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
                     JIPipeDataSlot groupOutputSlot = copyGroupOutput.getOutputSlot(outputSlot.getName());
                     outputSlot.addDataFromSlot(groupOutputSlot, progressInfo);
                 }
-            } catch (Throwable e) {
-                if (progressInfo.isCancelled()) {
-                    throw e;
-                }
-                if (continueOnFailure) {
 
-                    progressInfo.log("\n\n------------------------\n" +
-                            "Wrapped graph iteration execution FAILED!\n" +
-                            "Message: " + e.getMessage() + "\n" +
-                            "\n" +
-                            "CONTINUING AS REQUESTED!\n" +
-                            "------------------------\n\n");
+                // Clear
+                for (JIPipeDataSlot dataSlot : run.getGraph().getGraph().vertexSet()) {
+                    dataSlot.clear();
                 }
             }
+        } catch (Throwable e) {
+            try {
+                doContinueOnFailure(runContext, progressInfo, e);
+            } catch (Throwable ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
 
-            // Clear
-            for (JIPipeDataSlot dataSlot : run.getGraph().getGraph().vertexSet()) {
-                dataSlot.clear();
+    private void doContinueOnFailure(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo, Throwable e) throws Throwable {
+        if (progressInfo.isCancelled()) {
+            throw e;
+        }
+        if(continueOnFailure == JIPipeGraphRunPartitionInheritedBoolean.Enable) {
+            progressInfo.log("\n\n------------------------\n" +
+                    "Wrapped graph execution FAILED!\n" +
+                    "Message: " + e.getMessage() + "\n" +
+                    "\n" +
+                    "CONTINUING AS REQUESTED (Enabled)!\n" +
+                    "------------------------\n\n");
+            return;
+        }
+        if(continueOnFailure == JIPipeGraphRunPartitionInheritedBoolean.Disable) {
+            throw e;
+        }
+        if(continueOnFailure == JIPipeGraphRunPartitionInheritedBoolean.InheritFromPartition) {
+            // We kill it in this case
+            JIPipeRuntimePartition runtimePartition = runContext.getGraphRun().getRuntimePartition(getRuntimePartition());
+            if(runtimePartition.getContinueOnFailureSettings().isContinueOnFailure()) {
+                progressInfo.log("\n\n------------------------\n" +
+                        "Wrapped graph execution FAILED!\n" +
+                        "Message: " + e.getMessage() + "\n" +
+                        "\n" +
+                        "CONTINUING AS REQUESTED (Inherited)!\n" +
+                        "------------------------\n\n");
+                return;
+            }
+            else {
+                throw e;
             }
         }
     }
@@ -293,7 +339,7 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
     private void runWithDataPassThrough(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
         // Derive new settings and create a dedicated run
-        JIPipeGraphRunSettings graphRunSettings = new JIPipeGraphRunSettings(runContext.getGraphRun().getConfiguration());
+        JIPipeGraphRunConfiguration graphRunSettings = new JIPipeGraphRunConfiguration(runContext.getGraphRun().getConfiguration());
         graphRunSettings.setLoadFromCache(false);
         graphRunSettings.setStoreToCache(false);
         graphRunSettings.setStoreToDisk(false);
@@ -321,17 +367,10 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
             run.run();
 
         } catch (Throwable e) {
-            if (progressInfo.isCancelled()) {
-                throw e;
-            }
-            if (continueOnFailure) {
-
-                progressInfo.log("\n\n------------------------\n" +
-                        "Wrapped graph execution FAILED!\n" +
-                        "Message: " + e.getMessage() + "\n" +
-                        "\n" +
-                        "CONTINUING AS REQUESTED!\n" +
-                        "------------------------\n\n");
+            try {
+                doContinueOnFailure(runContext, progressInfo, e);
+            } catch (Throwable ex) {
+                throw new RuntimeException(ex);
             }
         }
 

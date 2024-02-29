@@ -41,7 +41,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.registries.*;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
-import org.hkijena.jipipe.api.run.JIPipeGraphRunSettings;
+import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.JavaExtensionValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
@@ -357,7 +357,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * @return the result
      */
     public static JIPipeGraphRun runProject(JIPipeProject project, Path outputFolder, int threads) {
-        JIPipeGraphRunSettings settings = new JIPipeGraphRunSettings();
+        JIPipeGraphRunConfiguration settings = new JIPipeGraphRunConfiguration();
         settings.setOutputPath(outputFolder);
         if (threads > 0)
             settings.setNumThreads(threads);
@@ -375,7 +375,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * @param settings settings for the run
      * @return the result
      */
-    public static JIPipeGraphRun runProject(JIPipeProject project, JIPipeGraphRunSettings settings) {
+    public static JIPipeGraphRun runProject(JIPipeProject project, JIPipeGraphRunConfiguration settings) {
         JIPipeGraphRun run = new JIPipeGraphRun(project, settings);
         run.run();
         return run;
@@ -391,7 +391,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * @return the future result. You have to check the {@link JIPipeRunnerQueue} to see if the run is finished.
      */
     public static JIPipeGraphRun enqueueProject(JIPipeProject project, Path outputFolder, int threads) {
-        JIPipeGraphRunSettings settings = new JIPipeGraphRunSettings();
+        JIPipeGraphRunConfiguration settings = new JIPipeGraphRunConfiguration();
         settings.setOutputPath(outputFolder);
         if (threads > 0)
             settings.setNumThreads(threads);
@@ -408,7 +408,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * @param settings settings for the run
      * @return the future result. You have to check the {@link JIPipeRunnerQueue} to see if the run is finished.
      */
-    public static JIPipeGraphRun enqueueProject(JIPipeProject project, JIPipeGraphRunSettings settings) {
+    public static JIPipeGraphRun enqueueProject(JIPipeProject project, JIPipeGraphRunConfiguration settings) {
         JIPipeGraphRun run = new JIPipeGraphRun(project, settings);
         JIPipeRunnerQueue.getInstance().enqueue(run);
         return run;

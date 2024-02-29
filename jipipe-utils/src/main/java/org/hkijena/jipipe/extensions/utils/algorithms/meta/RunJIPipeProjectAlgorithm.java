@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
-import org.hkijena.jipipe.api.run.JIPipeGraphRunSettings;
+import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
@@ -125,7 +125,7 @@ public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         Path rowStoragePath = getFirstOutputSlot().getRowStoragePath(getFirstOutputSlot().getRowCount());
 
         // Generate the run
-        JIPipeGraphRunSettings settings = new JIPipeGraphRunSettings();
+        JIPipeGraphRunConfiguration settings = new JIPipeGraphRunConfiguration();
         settings.setOutputPath(rowStoragePath);
         settings.setStoreToCache(false);
         settings.setLoadFromCache(false);

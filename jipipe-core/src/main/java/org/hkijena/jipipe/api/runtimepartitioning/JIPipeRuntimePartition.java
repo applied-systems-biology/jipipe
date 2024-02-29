@@ -38,14 +38,15 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
     private JIPipeIteratingAlgorithmIterationStepGenerationSettings loopIterationIteratingSettings;
     private JIPipeMergingAlgorithmIterationStepGenerationSettings loopIterationMergingSettings;
     private OutputSettings outputSettings;
+    private ContinueOnFailureSettings continueOnFailureSettings;
     private JIPipeGraphWrapperAlgorithm.IterationMode iterationMode = JIPipeGraphWrapperAlgorithm.IterationMode.PassThrough;
-    private boolean continueOnFailure = false;
 
     public JIPipeRuntimePartition() {
         this.outputSettings = new OutputSettings();
         this.loopIterationMergingSettings = new JIPipeMergingAlgorithmIterationStepGenerationSettings();
         this.loopIterationIteratingSettings = new JIPipeIteratingAlgorithmIterationStepGenerationSettings();
-        registerSubParameters(outputSettings, loopIterationMergingSettings, loopIterationIteratingSettings);
+        this.continueOnFailureSettings = new ContinueOnFailureSettings();
+        registerSubParameters(outputSettings, loopIterationMergingSettings, loopIterationIteratingSettings, continueOnFailureSettings);
     }
 
     public JIPipeRuntimePartition(JIPipeRuntimePartition other) {
@@ -54,12 +55,12 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
         this.color = new OptionalColorParameter(other.color);
         this.enableParallelization = other.enableParallelization;
         this.iterationMode = other.iterationMode;
-        this.continueOnFailure = other.continueOnFailure;
         this.outputSettings = new OutputSettings(other.outputSettings);
         this.loopIterationMergingSettings = new JIPipeMergingAlgorithmIterationStepGenerationSettings(other.loopIterationMergingSettings);
         this.loopIterationIteratingSettings = new JIPipeIteratingAlgorithmIterationStepGenerationSettings(other.loopIterationIteratingSettings);
+        this.continueOnFailureSettings = new ContinueOnFailureSettings(other.continueOnFailureSettings);
         this.forcePassThroughLoopIterationInCaching = other.forcePassThroughLoopIterationInCaching;
-        registerSubParameters(outputSettings, loopIterationMergingSettings, loopIterationIteratingSettings);
+        registerSubParameters(outputSettings, loopIterationMergingSettings, loopIterationIteratingSettings, continueOnFailureSettings);
     }
 
     public void setTo(JIPipeRuntimePartition other) {
@@ -75,18 +76,16 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
         emitParameterUIChangedEvent();
     }
 
-    @SetJIPipeDocumentation(name = "Continue on failure", description = "If enabled, the pipeline will continue if a node within the partition fails. For pass-through iteration, " +
-            "JIPipe will continue with the other partitions (no data is output from the current partition). If you enabled iteration, all successful results will be stored and passed to dependents.")
-    @JIPipeParameter("continue-on-failure")
-    @JsonGetter("continue-on-failure")
-    public boolean isContinueOnFailure() {
-        return continueOnFailure;
+    @SetJIPipeDocumentation(name = "Continue on failure", description = "Allows the pipeline to continue if partitions/loop iterations fail")
+    @JIPipeParameter("continue-on-failure-settings")
+    @JsonGetter("continue-on-failure-settings")
+    public ContinueOnFailureSettings getContinueOnFailureSettings() {
+        return continueOnFailureSettings;
     }
 
-    @JIPipeParameter("continue-on-failure")
-    @JsonSetter("continue-on-failure")
-    public void setContinueOnFailure(boolean continueOnFailure) {
-        this.continueOnFailure = continueOnFailure;
+    @JsonSetter("continue-on-failure-settings")
+    public void setContinueOnFailureSettings(ContinueOnFailureSettings continueOnFailureSettings) {
+        this.continueOnFailureSettings = continueOnFailureSettings;
     }
 
     @SetJIPipeDocumentation(name = "Enable parallelization", description = "If enabled, the nodes in this partition will be able to parallelize their workloads using JIPipe's parallelization system. " +
@@ -230,6 +229,62 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
             break;
         }
         return super.isParameterUIVisible(tree, subParameter);
+    }
+
+    public static class ContinueOnFailureSettings extends AbstractJIPipeParameterCollection {
+        private boolean continueOnFailure = false;
+        private boolean exportFailedLoopInputs = true;
+        private boolean exportFailedPartitionInputs = false;
+
+        public ContinueOnFailureSettings() {
+
+        }
+
+        public ContinueOnFailureSettings(ContinueOnFailureSettings other) {
+            this.continueOnFailure = other.continueOnFailure;
+            this.exportFailedLoopInputs = other.exportFailedLoopInputs;
+            this.exportFailedPartitionInputs = other.exportFailedPartitionInputs;
+        }
+
+        @SetJIPipeDocumentation(name = "Continue on failure", description = "If enabled, the pipeline will continue if a node within the partition fails. For pass-through iteration, " +
+                "JIPipe will continue with the other partitions (no data is output from the current partition). If you enabled iteration, all successful results will be stored and passed to dependents.")
+        @JIPipeParameter(value = "continue-on-failure", important = true)
+        @JsonGetter("continue-on-failure")
+        public boolean isContinueOnFailure() {
+            return continueOnFailure;
+        }
+
+        @JIPipeParameter("continue-on-failure")
+        @JsonSetter("continue-on-failure")
+        public void setContinueOnFailure(boolean continueOnFailure) {
+            this.continueOnFailure = continueOnFailure;
+        }
+
+        @SetJIPipeDocumentation(name = "Export failed loop inputs", description = "If enabled, the inputs of failed loop iterations are exported into a directory '_error'.")
+        @JIPipeParameter("export-failed-loop-inputs")
+        @JsonGetter("export-failed-loop-inputs")
+        public boolean isExportFailedLoopInputs() {
+            return exportFailedLoopInputs;
+        }
+
+        @JIPipeParameter("export-failed-loop-inputs")
+        @JsonSetter("export-failed-loop-inputs")
+        public void setExportFailedLoopInputs(boolean exportFailedLoopInputs) {
+            this.exportFailedLoopInputs = exportFailedLoopInputs;
+        }
+
+        @SetJIPipeDocumentation(name = "Export failed partition inputs", description = "If enabled, the inputs of failed partitions. Can increase memory usage.")
+        @JIPipeParameter("export-failed-partition-inputs")
+        @JsonGetter("export-failed-partition-inputs")
+        public boolean isExportFailedPartitionInputs() {
+            return exportFailedPartitionInputs;
+        }
+
+        @JIPipeParameter("export-failed-partition-inputs")
+        @JsonSetter("export-failed-partition-inputs")
+        public void setExportFailedPartitionInputs(boolean exportFailedPartitionInputs) {
+            this.exportFailedPartitionInputs = exportFailedPartitionInputs;
+        }
     }
 
     public static class OutputSettings extends AbstractJIPipeParameterCollection {

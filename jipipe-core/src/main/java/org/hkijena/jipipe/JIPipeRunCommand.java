@@ -14,7 +14,7 @@
 package org.hkijena.jipipe;
 
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
-import org.hkijena.jipipe.api.run.JIPipeGraphRunSettings;
+import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -101,7 +101,7 @@ public class JIPipeRunCommand implements Command {
                     "Try to load the parameter file in the JIPipe GUI.");
         }
 
-        JIPipeGraphRunSettings configuration = new JIPipeGraphRunSettings();
+        JIPipeGraphRunConfiguration configuration = new JIPipeGraphRunConfiguration();
         configuration.setLoadFromCache(false);
         configuration.setStoreToCache(false);
         configuration.setOutputPath(outputDirectory.toPath());

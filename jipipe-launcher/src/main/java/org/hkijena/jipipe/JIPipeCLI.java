@@ -18,7 +18,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import net.imagej.ImageJ;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
-import org.hkijena.jipipe.api.run.JIPipeGraphRunSettings;
+import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -214,7 +214,7 @@ public class JIPipeCLI {
             }
         }
 
-        JIPipeGraphRunSettings settings = new JIPipeGraphRunSettings();
+        JIPipeGraphRunConfiguration settings = new JIPipeGraphRunConfiguration();
         settings.setNumThreads(numThreads);
         settings.setOutputPath(outputFolder);
         settings.setStoreToDisk(saveToDisk);

@@ -29,7 +29,7 @@ import java.util.UUID;
 /**
  * Settings for an {@link JIPipeGraphRun}
  */
-public class JIPipeGraphRunSettings extends AbstractJIPipeParameterCollection {
+public class JIPipeGraphRunConfiguration extends AbstractJIPipeParameterCollection {
     private Path outputPath;
     private boolean loadFromCache = true;
     private boolean storeToCache = false;
@@ -40,12 +40,14 @@ public class JIPipeGraphRunSettings extends AbstractJIPipeParameterCollection {
     private Set<UUID> disableStoreToCacheNodes = new HashSet<>();
     private Set<UUID> disableSaveToDiskNodes = new HashSet<>();
 
+    private JIPipeGraphRunPartitionInheritedBoolean continueOnFailure = JIPipeGraphRunPartitionInheritedBoolean.InheritFromPartition;
+    private JIPipeGraphRunPartitionInheritedBoolean continueOnFailureExportFailedInputs = JIPipeGraphRunPartitionInheritedBoolean.InheritFromPartition;
 
-    public JIPipeGraphRunSettings() {
+    public JIPipeGraphRunConfiguration() {
 
     }
 
-    public JIPipeGraphRunSettings(JIPipeGraphRunSettings other) {
+    public JIPipeGraphRunConfiguration(JIPipeGraphRunConfiguration other) {
         this.outputPath = other.outputPath;
         this.loadFromCache = other.loadFromCache;
         this.storeToCache = other.storeToCache;
@@ -55,6 +57,8 @@ public class JIPipeGraphRunSettings extends AbstractJIPipeParameterCollection {
         this.ignoreDeactivatedInputs = other.ignoreDeactivatedInputs;
         this.disableStoreToCacheNodes = new HashSet<>(other.disableStoreToCacheNodes);
         this.disableSaveToDiskNodes = new HashSet<>(other.disableSaveToDiskNodes);
+        this.continueOnFailureExportFailedInputs = other.continueOnFailureExportFailedInputs;
+        this.continueOnFailure = other.continueOnFailure;
     }
 
     @JIPipeParameter(value = "output-path", uiOrder = -999)
@@ -170,5 +174,21 @@ public class JIPipeGraphRunSettings extends AbstractJIPipeParameterCollection {
 
     public void setDisableSaveToDiskNodes(Set<UUID> disableSaveToDiskNodes) {
         this.disableSaveToDiskNodes = disableSaveToDiskNodes;
+    }
+
+    public JIPipeGraphRunPartitionInheritedBoolean getContinueOnFailureExportFailedInputs() {
+        return continueOnFailureExportFailedInputs;
+    }
+
+    public void setContinueOnFailureExportFailedInputs(JIPipeGraphRunPartitionInheritedBoolean continueOnFailureExportFailedInputs) {
+        this.continueOnFailureExportFailedInputs = continueOnFailureExportFailedInputs;
+    }
+
+    public JIPipeGraphRunPartitionInheritedBoolean getContinueOnFailure() {
+        return continueOnFailure;
+    }
+
+    public void setContinueOnFailure(JIPipeGraphRunPartitionInheritedBoolean continueOnFailure) {
+        this.continueOnFailure = continueOnFailure;
     }
 }
