@@ -29,7 +29,7 @@ public class DisableSaveOutputsNodeUIContextAction implements NodeUIContextActio
             if (ui.getNode() instanceof JIPipeAlgorithm) {
                 JIPipeAlgorithm algorithm = (JIPipeAlgorithm) ui.getNode();
                 for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
-                    if (outputSlot.getInfo().isSaveOutputs())
+                    if (outputSlot.getInfo().isStoreToDisk())
                         return true;
                 }
             }
@@ -43,7 +43,7 @@ public class DisableSaveOutputsNodeUIContextAction implements NodeUIContextActio
             if (ui.getNode() instanceof JIPipeAlgorithm) {
                 JIPipeAlgorithm algorithm = (JIPipeAlgorithm) ui.getNode();
                 for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
-                    outputSlot.getInfo().setSaveOutputs(false);
+                    outputSlot.getInfo().setStoreToDisk(false);
                 }
                 ui.updateView(false, true, false);
             }

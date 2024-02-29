@@ -386,6 +386,8 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
         // Create a group i/o slot for all interfacing inputs and all outputs
         BiMap<JIPipeDataSlot, String> inputMap = HashBiMap.create();
         BiMap<JIPipeDataSlot, String> outputMap = HashBiMap.create();
+        final boolean isCaching = configuration.isStoreToCache();
+        final boolean isExporting = configuration.isStoreToDisk();
         for (JIPipeGraphNode node : partitionNodeSet) {
             if (node instanceof JIPipeAlgorithm) {
 
@@ -409,7 +411,14 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                 outer:
                 for (JIPipeOutputDataSlot outputSlot : node.getOutputSlots()) {
                     if (graph.getGraph().outDegreeOf(outputSlot) == 0) {
+                        // Detected an endpoint
                         String uuid = UUID.randomUUID().toString();
+
+                        if(!isCaching && !runtimePartition.getOutputSettings().isExportLoopTerminating()) {
+                            progressInfo.log("--> NOT detecting endpoint output " + outputSlot.getDisplayName() + " (registered as " + uuid + ") [export terminating nodes disabled]");
+                            continue;
+                        }
+
                         progressInfo.log("--> Detecting endpoint output " + outputSlot.getDisplayName() + " (registered as " + uuid + ")");
                         outputMap.put(outputSlot, uuid);
                     } else {
@@ -426,6 +435,29 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                                     progressInfo.log("--> Detecting intermediate output " + outputSlot.getDisplayName() + " (registered as " + uuid + ")");
                                     outputMap.put(outputSlot, uuid);
                                     continue outer;
+                                }
+                                else {
+                                    // Detected an intermediate result
+
+                                    if(isCaching) {
+                                        // Store unless deactivated
+                                        if(!outputSlot.isSkipCache() && !configuration.getDisableStoreToCacheNodes().contains(outputSlot.getNode().getUUIDInParentGraph())) {
+                                            String uuid = UUID.randomUUID().toString();
+                                            progressInfo.log("--> Detecting intermediate output " + outputSlot.getDisplayName() + " (registered as " + uuid + ") [cache]");
+                                            outputMap.put(outputSlot, uuid);
+                                            continue outer;
+                                        }
+                                    }
+
+                                    if(isExporting) {
+                                        // Store unless deactivated and user activated storage of intermediates
+                                        if(!outputSlot.isSkipExport() && runtimePartition.getOutputSettings().isExportLoopIntermediateResults() && outputSlot.getInfo().isStoreToDisk()) {
+                                            String uuid = UUID.randomUUID().toString();
+                                            progressInfo.log("--> Detecting intermediate output " + outputSlot.getDisplayName() + " (registered as " + uuid + ") [export]");
+                                            outputMap.put(outputSlot, uuid);
+                                            continue outer;
+                                        }
+                                    }
                                 }
                             }
                         }

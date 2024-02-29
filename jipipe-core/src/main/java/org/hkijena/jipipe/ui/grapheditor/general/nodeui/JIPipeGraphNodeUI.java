@@ -46,7 +46,6 @@ import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.*;
 import org.hkijena.jipipe.ui.grapheditor.nodefinder.JIPipeNodeFinderDialogUI;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
@@ -1414,7 +1413,7 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
         UIUtils.addSeparatorIfNeeded(menu);
 
         if (!(getNode() instanceof JIPipeProjectCompartment)) {
-            if (slot.getInfo().isSaveOutputs()) {
+            if (slot.getInfo().isStoreToDisk()) {
                 JMenuItem toggleSaveOutputsButton = new JMenuItem("Disable saving outputs", UIUtils.getIconFromResources("actions/no-save.png"));
                 toggleSaveOutputsButton.setToolTipText("Makes that the data stored in this slot are not saved in a full analysis. Does not have an effect when updating the cache.");
                 toggleSaveOutputsButton.addActionListener(e -> setSaveOutputs(slot, false));
@@ -1889,7 +1888,7 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
 
 
     private void setSaveOutputs(JIPipeDataSlot slot, boolean saveOutputs) {
-        slot.getInfo().setSaveOutputs(saveOutputs);
+        slot.getInfo().setStoreToDisk(saveOutputs);
     }
 
     private void openSlotMenuGenerateInformationItems(JIPipeNodeUISlotActiveArea slotState, JIPipeDataSlot slot, JPopupMenu menu) {

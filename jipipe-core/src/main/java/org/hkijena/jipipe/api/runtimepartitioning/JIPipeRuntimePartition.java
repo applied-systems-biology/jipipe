@@ -211,7 +211,8 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
     public static class OutputSettings extends AbstractJIPipeParameterCollection {
         private boolean exportLightweightData = true;
         private boolean exportHeavyData = true;
-        private boolean exportUnknownData = true;
+        private boolean exportLoopIntermediateResults = false;
+        private boolean exportLoopTerminating = true;
 
         public OutputSettings() {
         }
@@ -219,6 +220,32 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
         public OutputSettings(OutputSettings other) {
             this.exportLightweightData = other.exportLightweightData;
             this.exportHeavyData = other.exportHeavyData;
+            this.exportLoopIntermediateResults = other.exportLoopIntermediateResults;
+            this.exportLoopTerminating = other.exportLoopTerminating;
+        }
+
+        @SetJIPipeDocumentation(name = "Loops: export intermediate results", description = "If enabled, the intermediate results of looping partitions are exported. " +
+                "Please note that this increases memory usage. Not applicable to caching (cache intermediate results).")
+        @JIPipeParameter("export-loop-intermediate-results")
+        public boolean isExportLoopIntermediateResults() {
+            return exportLoopIntermediateResults;
+        }
+
+        @JIPipeParameter("export-loop-intermediate-results")
+        public void setExportLoopIntermediateResults(boolean exportLoopIntermediateResults) {
+            this.exportLoopIntermediateResults = exportLoopIntermediateResults;
+        }
+
+        @SetJIPipeDocumentation(name = "Loops: export terminating results", description = "If enabled, non-intermediate results within loop partitions are exported. " +
+                "Not applicable to caching.")
+        @JIPipeParameter("export-loop-terminating")
+        public boolean isExportLoopTerminating() {
+            return exportLoopTerminating;
+        }
+
+        @JIPipeParameter("export-loop-terminating")
+        public void setExportLoopTerminating(boolean exportLoopTerminating) {
+            this.exportLoopTerminating = exportLoopTerminating;
         }
 
         @SetJIPipeDocumentation(name = "Auto-export lightweight data", description = "If enabled, save data that is generally small, e.g., tables, 2D ROI, or text files.")

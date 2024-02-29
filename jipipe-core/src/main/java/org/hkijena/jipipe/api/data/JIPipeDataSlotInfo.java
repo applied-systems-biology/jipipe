@@ -44,7 +44,7 @@ public class JIPipeDataSlotInfo extends AbstractJIPipeParameterCollection {
     private String customName;
     private String description;
     private boolean virtual;
-    private boolean saveOutputs = true;
+    private boolean storeToDisk = true;
     private boolean optional = false;
     private boolean userModifiable = true;
 
@@ -138,7 +138,7 @@ public class JIPipeDataSlotInfo extends AbstractJIPipeParameterCollection {
         this.description = other.description;
         this.customName = other.customName;
         this.virtual = other.virtual;
-        this.saveOutputs = other.saveOutputs;
+        this.storeToDisk = other.storeToDisk;
         this.optional = other.optional;
         this.userModifiable = other.userModifiable;
         this.role = other.role;
@@ -272,15 +272,15 @@ public class JIPipeDataSlotInfo extends AbstractJIPipeParameterCollection {
         this.virtual = virtual;
     }
 
-    @SetJIPipeDocumentation(name = "Save outputs", description = "Determines if this slot's output should be saved. Only valid for output slots.")
+    @SetJIPipeDocumentation(name = "Save outputs to disk", description = "Determines if this slot's output should be exported. Only valid for output slots.")
     @JIPipeParameter("save-outputs")
-    public boolean isSaveOutputs() {
-        return saveOutputs;
+    public boolean isStoreToDisk() {
+        return storeToDisk;
     }
 
     @JIPipeParameter("save-outputs")
-    public void setSaveOutputs(boolean saveOutputs) {
-        this.saveOutputs = saveOutputs;
+    public void setStoreToDisk(boolean storeToDisk) {
+        this.storeToDisk = storeToDisk;
     }
 
     @SetJIPipeDocumentation(name = "Optional", description = "If true, the input does not need an incoming edge")
@@ -345,7 +345,7 @@ public class JIPipeDataSlotInfo extends AbstractJIPipeParameterCollection {
             jsonGenerator.writeStringField("custom-name", definition.customName);
             jsonGenerator.writeStringField("description", definition.description);
             jsonGenerator.writeBooleanField("is-virtual", definition.virtual);
-            jsonGenerator.writeBooleanField("save-outputs", definition.saveOutputs);
+            jsonGenerator.writeBooleanField("save-outputs", definition.storeToDisk);
             jsonGenerator.writeBooleanField("is-optional", definition.optional);
             jsonGenerator.writeEndObject();
         }
@@ -382,7 +382,7 @@ public class JIPipeDataSlotInfo extends AbstractJIPipeParameterCollection {
             }
             JsonNode saveOutputsNode = node.path("save-outputs");
             if (!saveOutputsNode.isMissingNode()) {
-                definition.saveOutputs = saveOutputsNode.asBoolean();
+                definition.storeToDisk = saveOutputsNode.asBoolean();
             }
             JsonNode isOptionalNode = node.path("is-optional");
             if (!isOptionalNode.isMissingNode()) {

@@ -241,7 +241,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
                         JCheckBox checkBox = new JCheckBox(outputSlot.getName(), true);
                         checkBox.addActionListener(e -> {
                             JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentNode(node);
-                            runAlgorithm.getOutputSlot(outputSlot.getName()).getInfo().setSaveOutputs(checkBox.isSelected());
+                            runAlgorithm.getOutputSlot(outputSlot.getName()).getInfo().setStoreToDisk(checkBox.isSelected());
                         });
                         JLabel compartmentLabel = new JLabel(node.getCompartmentDisplayName(),
                                 UIUtils.getIconFromResources("data-types/graph-compartment.png"), JLabel.LEFT);
@@ -292,7 +292,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
                 for (JIPipeDataSlot slot : outputSlots) {
                     JIPipeGraphNode node = slot.getNode();
                     JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentNode(node);
-                    runAlgorithm.getOutputSlot(slot.getName()).getInfo().setSaveOutputs(true);
+                    runAlgorithm.getOutputSlot(slot.getName()).getInfo().setStoreToDisk(true);
                 }
             });
             toolBar.add(selectAllButton);
@@ -305,7 +305,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
                 for (JIPipeDataSlot slot : outputSlots) {
                     JIPipeGraphNode node = slot.getNode();
                     JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentNode(node);
-                    runAlgorithm.getOutputSlot(slot.getName()).getInfo().setSaveOutputs(false);
+                    runAlgorithm.getOutputSlot(slot.getName()).getInfo().setStoreToDisk(false);
                 }
             });
             toolBar.add(selectNoneButton);
