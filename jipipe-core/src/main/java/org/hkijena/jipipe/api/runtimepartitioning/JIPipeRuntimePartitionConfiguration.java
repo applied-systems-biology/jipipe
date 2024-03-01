@@ -76,6 +76,9 @@ public class JIPipeRuntimePartitionConfiguration {
         JIPipeRuntimePartition partition = new JIPipeRuntimePartition();
         partition.setName("Partition " + (extraRuntimePartitions.size() + 1));
 
+        final float baseSaturation = 1.2f / 100f;
+        final float baseValue = 98.04f / 100f;
+
         // Find a proper hue
         Set<Integer> usedHues = new HashSet<>();
         if(defaultRuntimePartition.getColor().isEnabled()) {
@@ -95,12 +98,12 @@ public class JIPipeRuntimePartitionConfiguration {
         if(usedHues.size() >= 9) {
             for (int i = 0; i < 10; i++) {
                 if(!usedHues.contains(i)) {
-                    partition.setColor(new OptionalColorParameter(Color.getHSBColor(i / 10.0f, 0.3f, 0.91f), true));
+                    partition.setColor(new OptionalColorParameter(Color.getHSBColor(i / 10.0f, baseSaturation, baseValue), true));
                 }
             }
         }
         else {
-            partition.setColor(new OptionalColorParameter(Color.getHSBColor(RandomFunction.RANDOM.nextFloat(), 0.3f, 0.91f), true));
+            partition.setColor(new OptionalColorParameter(Color.getHSBColor(RandomFunction.RANDOM.nextFloat(), baseSaturation, baseValue), true));
         }
 
         extraRuntimePartitions.add(partition);

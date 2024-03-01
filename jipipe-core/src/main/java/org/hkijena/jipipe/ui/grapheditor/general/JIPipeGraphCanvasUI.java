@@ -28,7 +28,10 @@ import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeDefaultGraphEditorTool;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorTool;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
@@ -51,6 +54,7 @@ import org.hkijena.jipipe.ui.grapheditor.general.layout.MSTGraphAutoLayoutMethod
 import org.hkijena.jipipe.ui.grapheditor.general.layout.SugiyamaGraphAutoLayoutMethod;
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.*;
 import org.hkijena.jipipe.ui.settings.JIPipeRuntimePartitionListEditor;
+import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -1437,9 +1441,9 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             if (selection.stream().anyMatch(ui -> ui.getNode() instanceof JIPipeAlgorithm)) {
                 menu.addSeparator();
                 Set<Integer> partitionIds = selection.stream().filter(ui -> ui.getNode() instanceof JIPipeAlgorithm).map(ui -> ((JIPipeAlgorithm) ui.getNode()).getRuntimePartition().getIndex()).collect(Collectors.toSet());
-                if(partitionIds.size() == 1) {
+                if (partitionIds.size() == 1) {
                     JIPipeRuntimePartition runtimePartition = project.getRuntimePartitions().get(partitionIds.iterator().next());
-                    menu.add(UIUtils.createMenuItem("Edit partition '" +project.getRuntimePartitions().getFullName(runtimePartition) + "'",
+                    menu.add(UIUtils.createMenuItem("Edit partition '" + project.getRuntimePartitions().getFullName(runtimePartition) + "'",
                             "Edit the partition configuration", UIUtils.getIconFromResources("actions/edit.png"), () -> {
                                 JIPipeRuntimePartitionListEditor.editRuntimePartition(getWorkbench(), runtimePartition);
                             }));
@@ -2449,11 +2453,9 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
                 if (muteMode == EdgeMuteMode.ForceVisible) {
                     hidden = false;
-                }
-                else if(muteMode == EdgeMuteMode.ForceMuted) {
+                } else if (muteMode == EdgeMuteMode.ForceMuted) {
                     hidden = true;
-                }
-                else {
+                } else {
                     switch (displayedSlotEdge.edge.getUiVisibility()) {
                         case Smart:
                         case SmartSilent: {
@@ -2591,8 +2593,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
                         if (slot.getSlot() == displayedSlotEdge.getTarget()) {
                             highlightedEdges.put(displayedSlotEdge.getSource(), displayedSlotEdge);
-                        }
-                        else if(slot.getSlot() == displayedSlotEdge.getSource()) {
+                        } else if (slot.getSlot() == displayedSlotEdge.getSource()) {
                             highlightedEdges.put(displayedSlotEdge.getTarget(), displayedSlotEdge);
                         }
 
@@ -2602,32 +2603,37 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         }
 
         // Cancel if there is only a single edge and not far away
-        if(edgeIds.isEmpty()) {
+        if (edgeIds.isEmpty()) {
             return;
         }
-        g.setPaint(new Color(0xc50f1f));
+        g.setPaint(ModernMetalTheme.PRIMARY5);
+        g.setStroke(new BasicStroke((int)Math.round(2 * zoom), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
         for (JIPipeDataSlot dataSlot : highlightedEdges.keySet()) {
             JIPipeGraphNodeUI nodeUI = nodeUIs.get(dataSlot.getNode());
-            if(nodeUI != null) {
+            if (nodeUI != null) {
                 JIPipeNodeUISlotActiveArea slotActiveArea = nodeUI.getSlotActiveArea(dataSlot);
                 int nodeX = nodeUI.getX();
                 int nodeY = nodeUI.getY();
                 if (slotActiveArea != null && slotActiveArea.getLastFillRect() != null) {
                     Rectangle lastFillRect = slotActiveArea.getLastFillRect();
                     int x = (int) Math.round(lastFillRect.x + 2 * zoom);
+                    int y = (int)Math.round(lastFillRect.y + 2 * zoom);
                     int width = lastFillRect.width - (int) Math.round(2 * 2 * zoom);
-                    int height = (int) Math.round(2 * zoom);
+                    int height = (int) Math.round(lastFillRect.height - 2 * 2 * zoom);
                     int arc = (int) Math.round(2 * zoom);
 
-                    if(dataSlot.isInput()) {
-                        int indicatorY =  (int) Math.round(2 * zoom);
-                        g.fillRoundRect(nodeX + x, nodeY + indicatorY, width, height, arc, arc);
-                    }
-                    else {
-                        int indicatorY =  (int) Math.round(nodeUI.getHeight() - 4 * zoom);
-                        g.fillRoundRect(nodeX + x, nodeY + indicatorY, width, height, arc, arc);
-                    }
+//                    if(dataSlot.isInput()) {
+//                        int indicatorY =  (int) Math.round(2 * zoom);
+//                        g.fillRoundRect(nodeX + x, nodeY + indicatorY, width, height, arc, arc);
+//                    }
+//                    else {
+//                        int indicatorY =  (int) Math.round(nodeUI.getHeight() - 4 * zoom);
+//                        g.fillRoundRect(nodeX + x, nodeY + indicatorY, width, height, arc, arc);
+//                    }
+//                    g.fillRoundRect(nodeX + x, (int) Math.round(nodeY + lastFillRect.y + 2 * zoom), width, height, arc, arc);
+//                    g.fillRoundRect(nodeX + x, (int) Math.round(nodeY + lastFillRect.y + lastFillRect.height - 4 * zoom), width, height, arc, arc);
+                    g.drawRoundRect(nodeX + x, nodeY + y, width - 1, height, arc, arc);
                 }
             }
         }
