@@ -46,6 +46,7 @@ public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
     private int autoHideEdgeDistanceThreshold = 512;
     private boolean autoMuteEdgesEnabled = true;
     private boolean drawLabelsOnHover = true;
+    private boolean autoMuteBySelection = true;
     private double autoHideEdgeOverlapThreshold = 0.5;
 
     private boolean showToolInfo = true;
@@ -56,6 +57,17 @@ public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
 
     public static GraphEditorUISettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, GraphEditorUISettings.class);
+    }
+
+    @SetJIPipeDocumentation(name = "Auto-mute edges by selection", description = "If enabled, all edges that are not part of the selected nodes are muted")
+    @JIPipeParameter("auto-mute-by-selection")
+    public boolean isAutoMuteBySelection() {
+        return autoMuteBySelection;
+    }
+
+    @JIPipeParameter("auto-mute-by-selection")
+    public void setAutoMuteBySelection(boolean autoMuteBySelection) {
+        this.autoMuteBySelection = autoMuteBySelection;
     }
 
     @SetJIPipeDocumentation(name = "Show current tool info", description = "If enabled, show a tooltip text to the mouse cursor if a graph editor tool is active")

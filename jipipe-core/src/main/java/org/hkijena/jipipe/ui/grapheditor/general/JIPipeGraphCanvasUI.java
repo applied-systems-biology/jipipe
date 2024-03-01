@@ -51,7 +51,6 @@ import org.hkijena.jipipe.ui.grapheditor.general.layout.MSTGraphAutoLayoutMethod
 import org.hkijena.jipipe.ui.grapheditor.general.layout.SugiyamaGraphAutoLayoutMethod;
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.*;
 import org.hkijena.jipipe.ui.settings.JIPipeRuntimePartitionListEditor;
-import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -203,17 +202,17 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     public Stroke getStrokeHighlight() {
         int width = (int) Math.max(1, zoom * 8);
-        return new BasicStroke(width);
+        return new BasicStroke(width, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER);
     }
 
     public Stroke getStrokeDefault() {
         int width = (int) Math.max(1, zoom * 4);
-        return new BasicStroke(width);
+        return new BasicStroke(width, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER);
     }
 
     public Stroke getStrokeDefaultBorder() {
         int width = (int) Math.max(1, zoom * 4) + 2;
-        return new BasicStroke(width);
+        return new BasicStroke(width, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER);
     }
 
     public Color getImprovedStrokeBackgroundColor() {
@@ -1946,7 +1945,8 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 viewX,
                 viewY,
                 false,
-                false, false);
+                false,
+                EdgeMuteMode.Auto);
     }
 
     @Override
@@ -2022,7 +2022,8 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 0,
                 0,
                 true,
-                isAutoMuteEdges(), false);
+                isAutoMuteEdges(),
+                (selection.isEmpty() || !settings.isAutoMuteBySelection()) ? EdgeMuteMode.Auto : EdgeMuteMode.ForceMuted);
 
         // Outside edges drawing
         if (renderOutsideEdges && getCompartment() != null && settings.isDrawOutsideEdges()) {
@@ -2042,7 +2043,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                     0,
                     true,
                     false,
-                    true);
+                    EdgeMuteMode.ForceVisible);
         }
 
         // Draw highlights
@@ -2366,7 +2367,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         }
     }
 
-    private List<DisplayedSlotEdge> paintEdges(Graphics2D g, Stroke stroke, Stroke strokeBorder, Stroke strokeComment, boolean onlySelected, boolean multicolor, double scale, int viewX, int viewY, boolean enableArrows, boolean enableAutoHide, boolean forceVisible) {
+    private List<DisplayedSlotEdge> paintEdges(Graphics2D g, Stroke stroke, Stroke strokeBorder, Stroke strokeComment, boolean onlySelected, boolean multicolor, double scale, int viewX, int viewY, boolean enableArrows, boolean enableAutoHide, EdgeMuteMode muteMode) {
         Set<Map.Entry<JIPipeDataSlot, JIPipeDataSlot>> slotEdges = graph.getSlotEdges();
         List<DisplayedSlotEdge> displayedSlotEdges = new ArrayList<>();
 
@@ -2446,49 +2447,53 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
                 boolean hidden;
 
-                switch (displayedSlotEdge.edge.getUiVisibility()) {
-                    case Smart:
-                    case SmartSilent: {
-                        hidden = false;
-                        if (enableAutoHide) {
-                            if (displayedSlotEdge.getUIManhattanDistance() > settings.getAutoHideEdgeDistanceThreshold()) {
-                                int currentArea = rectangle.width * rectangle.height;
-                                for (Rectangle existingDrawnSlot : existingDrawnSlots) {
-                                    Rectangle intersection = rectangle.intersection(existingDrawnSlot);
-                                    int intersectionArea = intersection.width * intersection.height;
-                                    int existingArea = existingDrawnSlot.width * existingDrawnSlot.height;
-                                    double diceScore = (2.0 * intersectionArea) / (existingArea + currentArea);
-                                    if (diceScore > settings.getAutoHideEdgeOverlapThreshold()) {
-                                        hidden = true;
-                                        break;
-                                    }
+                if (muteMode == EdgeMuteMode.ForceVisible) {
+                    hidden = false;
+                }
+                else if(muteMode == EdgeMuteMode.ForceMuted) {
+                    hidden = true;
+                }
+                else {
+                    switch (displayedSlotEdge.edge.getUiVisibility()) {
+                        case Smart:
+                        case SmartSilent: {
+                            hidden = false;
+                            if (enableAutoHide) {
+                                if (displayedSlotEdge.getUIManhattanDistance() > settings.getAutoHideEdgeDistanceThreshold()) {
+                                    int currentArea = rectangle.width * rectangle.height;
+                                    for (Rectangle existingDrawnSlot : existingDrawnSlots) {
+                                        Rectangle intersection = rectangle.intersection(existingDrawnSlot);
+                                        int intersectionArea = intersection.width * intersection.height;
+                                        int existingArea = existingDrawnSlot.width * existingDrawnSlot.height;
+                                        double diceScore = (2.0 * intersectionArea) / (existingArea + currentArea);
+                                        if (diceScore > settings.getAutoHideEdgeOverlapThreshold()) {
+                                            hidden = true;
+                                            break;
+                                        }
 //                                    if(intersectionArea > 0) {
 //                                        g.setPaint(Color.RED);
 //                                        g.draw(intersection);
 //                                    }
 //                                    g.setPaint(Color.BLUE);
 //                                    g.draw(rectangle);
+                                    }
                                 }
                             }
                         }
-                    }
-                    break;
-                    case AlwaysHiddenWithLabel:
-                    case AlwaysHidden: {
-                        hidden = true;
-                    }
-                    break;
-                    case AlwaysVisible: {
-                        hidden = false;
-                    }
-                    break;
-                    default:
-                        hidden = false;
                         break;
-                }
-
-                if (forceVisible) {
-                    hidden = false;
+                        case AlwaysHiddenWithLabel:
+                        case AlwaysHidden: {
+                            hidden = true;
+                        }
+                        break;
+                        case AlwaysVisible: {
+                            hidden = false;
+                        }
+                        break;
+                        default:
+                            hidden = false;
+                            break;
+                    }
                 }
 
                 displayedSlotEdge.setHidden(hidden);
@@ -2600,7 +2605,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         if(edgeIds.isEmpty()) {
             return;
         }
-        g.setPaint(ModernMetalTheme.PRIMARY5);
+        g.setPaint(new Color(0xc50f1f));
 
         for (JIPipeDataSlot dataSlot : highlightedEdges.keySet()) {
             JIPipeGraphNodeUI nodeUI = nodeUIs.get(dataSlot.getNode());
@@ -3659,5 +3664,11 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         public JIPipeNodeUISlotActiveArea getTarget() {
             return target;
         }
+    }
+
+    public enum EdgeMuteMode {
+        ForceMuted,
+        ForceVisible,
+        Auto
     }
 }
