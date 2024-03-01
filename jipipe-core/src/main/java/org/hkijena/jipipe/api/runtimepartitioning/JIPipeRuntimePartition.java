@@ -72,7 +72,9 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
         this.outputSettings = new OutputSettings(other.outputSettings);
         this.loopIterationMergingSettings = new JIPipeMergingAlgorithmIterationStepGenerationSettings(other.loopIterationMergingSettings);
         this.loopIterationIteratingSettings = new JIPipeIteratingAlgorithmIterationStepGenerationSettings(other.loopIterationIteratingSettings);
-        registerSubParameters(outputSettings, loopIterationMergingSettings, loopIterationIteratingSettings);
+        this.continueOnFailureSettings = new ContinueOnFailureSettings(other.continueOnFailureSettings);
+        this.forcePassThroughLoopIterationInCaching = other.forcePassThroughLoopIterationInCaching;
+        registerSubParameters(outputSettings, loopIterationMergingSettings, loopIterationIteratingSettings, continueOnFailureSettings);
         emitParameterUIChangedEvent();
     }
 

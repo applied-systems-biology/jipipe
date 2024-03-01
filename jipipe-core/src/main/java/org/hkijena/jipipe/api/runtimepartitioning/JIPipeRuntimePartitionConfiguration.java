@@ -95,12 +95,12 @@ public class JIPipeRuntimePartitionConfiguration {
         if(usedHues.size() >= 9) {
             for (int i = 0; i < 10; i++) {
                 if(!usedHues.contains(i)) {
-                    partition.setColor(new OptionalColorParameter(Color.getHSBColor(i / 10.0f, 0.65f, 0.29f), true));
+                    partition.setColor(new OptionalColorParameter(Color.getHSBColor(i / 10.0f, 0.3f, 0.91f), true));
                 }
             }
         }
         else {
-            partition.setColor(new OptionalColorParameter(Color.getHSBColor(RandomFunction.RANDOM.nextFloat(), 0.65f, 0.29f), true));
+            partition.setColor(new OptionalColorParameter(Color.getHSBColor(RandomFunction.RANDOM.nextFloat(), 0.3f, 0.91f), true));
         }
 
         extraRuntimePartitions.add(partition);

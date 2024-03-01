@@ -169,34 +169,36 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                     }
                 }
             }
+
+            // Postprocessing
+            if (parent == null) {
+                progressInfo.log("Postprocessing steps ...");
+                try {
+                    if (configuration.getOutputPath() != null && configuration.isStoreToDisk())
+                        project.saveProject(configuration.getOutputPath().resolve("project.jip"));
+                } catch (IOException e) {
+                    throw new JIPipeValidationRuntimeException(e,
+                            "Could not save project to '" + configuration.getOutputPath().resolve("project.jip") + "'!",
+                            "Either the path is invalid, or you have no permission to write to the disk, or the disk space is full",
+                            "Check if you can write to the output directory.");
+                }
+
+                progressInfo.log("Run ending at " + StringUtils.formatDateTime(LocalDateTime.now()));
+                progressInfo.log("\n--> Required " + StringUtils.formatDuration(System.currentTimeMillis() - startTime) + " to execute.\n");
+
+                try {
+                    if (configuration.getOutputPath() != null)
+                        Files.write(configuration.getOutputPath().resolve("log.txt"), progressInfo.getLog().toString().getBytes(Charsets.UTF_8));
+                } catch (IOException e) {
+                    throw new JIPipeValidationRuntimeException(e,
+                            "Could not write log '" + configuration.getOutputPath().resolve("log.txt") + "'!",
+                            "Either the path is invalid, or you have no permission to write to the disk, or the disk space is full",
+                            "Check if you can write to the output directory.");
+                }
+            }
         }
 
-        // Postprocessing
-        if (parent == null) {
-            progressInfo.log("Postprocessing steps ...");
-            try {
-                if (configuration.getOutputPath() != null && configuration.isStoreToDisk())
-                    project.saveProject(configuration.getOutputPath().resolve("project.jip"));
-            } catch (IOException e) {
-                throw new JIPipeValidationRuntimeException(e,
-                        "Could not save project to '" + configuration.getOutputPath().resolve("project.jip") + "'!",
-                        "Either the path is invalid, or you have no permission to write to the disk, or the disk space is full",
-                        "Check if you can write to the output directory.");
-            }
 
-            progressInfo.log("Run ending at " + StringUtils.formatDateTime(LocalDateTime.now()));
-            progressInfo.log("\n--> Required " + StringUtils.formatDuration(System.currentTimeMillis() - startTime) + " to execute.\n");
-
-            try {
-                if (configuration.getOutputPath() != null)
-                    Files.write(configuration.getOutputPath().resolve("log.txt"), progressInfo.getLog().toString().getBytes(Charsets.UTF_8));
-            } catch (IOException e) {
-                throw new JIPipeValidationRuntimeException(e,
-                        "Could not write log '" + configuration.getOutputPath().resolve("log.txt") + "'!",
-                        "Either the path is invalid, or you have no permission to write to the disk, or the disk space is full",
-                        "Check if you can write to the output directory.");
-            }
-        }
     }
 
     public void cleanGraph(JIPipeGraph graph, JIPipeProgressInfo progressInfo) {
