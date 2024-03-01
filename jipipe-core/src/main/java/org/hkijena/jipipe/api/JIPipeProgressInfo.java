@@ -15,6 +15,8 @@ package org.hkijena.jipipe.api;
 
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.scijava.Cancelable;
 
@@ -42,8 +44,8 @@ public class JIPipeProgressInfo implements Cancelable {
     private AtomicBoolean logToStdOut = new AtomicBoolean(false);
     private boolean detachedProgress = false;
     private String cancelReason;
-
     private StatusUpdatedEventEmitter statusUpdatedEventEmitter;
+    private JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
 
     public JIPipeProgressInfo() {
         this.statusUpdatedEventEmitter = new StatusUpdatedEventEmitter();
@@ -63,6 +65,7 @@ public class JIPipeProgressInfo implements Cancelable {
         this.cancelReason = other.cancelReason;
         this.numLines = other.numLines;
         this.withSpinner = other.withSpinner;
+        this.notifications = other.notifications;
     }
 
     public void clearLog() {
@@ -81,6 +84,10 @@ public class JIPipeProgressInfo implements Cancelable {
         } finally {
             stampedLock.unlock(stamp);
         }
+    }
+
+    public String getLogPrepend() {
+        return logPrepend;
     }
 
     public StatusUpdatedEventEmitter getStatusUpdatedEventEmitter() {
@@ -148,6 +155,14 @@ public class JIPipeProgressInfo implements Cancelable {
 
     public boolean isWithSpinner() {
         return withSpinner.get();
+    }
+
+    public void setNotifications(JIPipeNotificationInbox notifications) {
+        this.notifications = notifications;
+    }
+
+    public JIPipeNotificationInbox getNotifications() {
+        return notifications;
     }
 
     /**

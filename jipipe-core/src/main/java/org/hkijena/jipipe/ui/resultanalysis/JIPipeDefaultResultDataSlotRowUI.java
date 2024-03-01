@@ -236,7 +236,7 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
 
 
                 };
-                JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), runnable);
+                JIPipeRunExecuterUI.runInDialog(getWorkbench(), getWorkbench().getWindow(), runnable);
             } catch (Exception e) {
                 UIUtils.openErrorDialog(getWorkbench(), getWorkbench().getWindow(), e);
             }
@@ -273,7 +273,7 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
 
 
             };
-            JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), runnable);
+            JIPipeRunExecuterUI.runInDialog(getWorkbench(), getWorkbench().getWindow(), runnable);
         }
     }
 

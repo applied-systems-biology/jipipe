@@ -204,7 +204,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         setLayout(new BorderLayout());
 
         // Initialize JIPipe logger
-        JIPipeLogs.getInstance();
+        JIPipeRunnableLogsCollection.getInstance();
 
         documentTabPane = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Top);
         documentTabPane.setTabPanelBorder(BorderFactory.createEmptyBorder(12, 4, 12, 4));
@@ -785,14 +785,14 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
     private void archiveProjectAsDirectory() {
         Path directory = FileChooserSettings.saveDirectory(this, FileChooserSettings.LastDirectoryKey.Projects, "Archive project as directory");
         if (directory != null) {
-            JIPipeRunExecuterUI.runInDialog(this, new ArchiveProjectToDirectoryRun(getProject(), directory));
+            JIPipeRunExecuterUI.runInDialog(this, this, new ArchiveProjectToDirectoryRun(getProject(), directory));
         }
     }
 
     private void archiveProjectAsZIP() {
         Path file = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Archive project as ZIP", UIUtils.EXTENSION_FILTER_ZIP);
         if (file != null) {
-            JIPipeRunExecuterUI.runInDialog(this, new ArchiveProjectToZIPRun(getProject(), file));
+            JIPipeRunExecuterUI.runInDialog(this, this, new ArchiveProjectToZIPRun(getProject(), file));
         }
     }
 
@@ -829,10 +829,10 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         if (path != null) {
             if (Files.isRegularFile(path)) {
                 // Load into cache with a run
-                JIPipeRunExecuterUI.runInDialog(this, new LoadResultZipIntoCacheRun(this, project, path, true));
+                JIPipeRunExecuterUI.runInDialog(this, this, new LoadResultZipIntoCacheRun(this, project, path, true));
             } else {
                 // Load into cache with a run
-                JIPipeRunExecuterUI.runInDialog(this, new LoadResultDirectoryIntoCacheRun(this, project, path, true));
+                JIPipeRunExecuterUI.runInDialog(this, this, new LoadResultDirectoryIntoCacheRun(this, project, path, true));
             }
         }
     }

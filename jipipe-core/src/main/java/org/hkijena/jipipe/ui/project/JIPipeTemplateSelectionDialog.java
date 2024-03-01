@@ -111,7 +111,7 @@ public class JIPipeTemplateSelectionDialog extends JDialog implements JIPipeProj
     }
 
     private void downloadTemplates() {
-        JIPipeRunExecuterUI.runInDialog(this, new ProjectTemplateDownloaderRun(workbench));
+        JIPipeRunExecuterUI.runInDialog(workbench, this, new ProjectTemplateDownloaderRun(workbench));
     }
 
     private void refreshTemplateProjects() {

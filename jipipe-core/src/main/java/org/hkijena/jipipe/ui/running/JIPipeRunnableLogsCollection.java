@@ -16,6 +16,7 @@ package org.hkijena.jipipe.ui.running;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 
 import java.time.LocalDateTime;
@@ -23,20 +24,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class JIPipeLogs implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
-    private static JIPipeLogs INSTANCE;
-    private final List<LogEntry> logEntries = new ArrayList<>();
+public class JIPipeRunnableLogsCollection implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
+    private static JIPipeRunnableLogsCollection INSTANCE;
+    private final List<JIPipeRunnableLogEntry> logEntries = new ArrayList<>();
     private final LogEntryAddedEventEmitter logEntryAddedEventEmitter = new LogEntryAddedEventEmitter();
     private final LogClearedEventEmitter logClearedEventEmitter = new LogClearedEventEmitter();
 
-    public JIPipeLogs() {
+    public JIPipeRunnableLogsCollection() {
         JIPipeRunnerQueue.getInstance().getFinishedEventEmitter().subscribe(this);
         JIPipeRunnerQueue.getInstance().getInterruptedEventEmitter().subscribe(this);
     }
 
-    public static JIPipeLogs getInstance() {
+    public static JIPipeRunnableLogsCollection getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new JIPipeLogs();
+            INSTANCE = new JIPipeRunnableLogsCollection();
         }
         return INSTANCE;
     }
@@ -49,7 +50,7 @@ public class JIPipeLogs implements JIPipeRunnable.FinishedEventListener, JIPipeR
         return logClearedEventEmitter;
     }
 
-    public List<LogEntry> getLogEntries() {
+    public List<JIPipeRunnableLogEntry> getLogEntries() {
         return Collections.unmodifiableList(logEntries);
     }
 
@@ -58,7 +59,7 @@ public class JIPipeLogs implements JIPipeRunnable.FinishedEventListener, JIPipeR
         logClearedEventEmitter.emit(new LogClearedEvent(this));
     }
 
-    public void pushToLog(LogEntry entry) {
+    public void pushToLog(JIPipeRunnableLogEntry entry) {
         logEntries.add(entry);
         logEntryAddedEventEmitter.emit(new LogEntryAddedEvent(this, entry));
     }
@@ -69,7 +70,7 @@ public class JIPipeLogs implements JIPipeRunnable.FinishedEventListener, JIPipeR
             final RuntimeSettings runtimeSettings = RuntimeSettings.getInstance();
             if (logEntries.size() + 1 > runtimeSettings.getLogLimit())
                 logEntries.remove(0);
-            LogEntry entry = new LogEntry(run.getTaskLabel(), LocalDateTime.now(), log.toString(), success);
+            JIPipeRunnableLogEntry entry = new JIPipeRunnableLogEntry(run.getTaskLabel(), LocalDateTime.now(), log.toString(), new JIPipeNotificationInbox(run.getProgressInfo().getNotifications()), success);
             logEntries.add(entry);
             logEntryAddedEventEmitter.emit(new LogEntryAddedEvent(this, entry));
         }
@@ -94,14 +95,14 @@ public class JIPipeLogs implements JIPipeRunnable.FinishedEventListener, JIPipeR
     }
 
     public static class LogClearedEvent extends AbstractJIPipeEvent {
-        private final JIPipeLogs logs;
+        private final JIPipeRunnableLogsCollection logs;
 
-        public LogClearedEvent(JIPipeLogs logs) {
+        public LogClearedEvent(JIPipeRunnableLogsCollection logs) {
             super(logs);
             this.logs = logs;
         }
 
-        public JIPipeLogs getLogs() {
+        public JIPipeRunnableLogsCollection getLogs() {
             return logs;
         }
     }
@@ -115,20 +116,20 @@ public class JIPipeLogs implements JIPipeRunnable.FinishedEventListener, JIPipeR
     }
 
     public static class LogEntryAddedEvent extends AbstractJIPipeEvent {
-        private final JIPipeLogs logs;
-        private final LogEntry entry;
+        private final JIPipeRunnableLogsCollection logs;
+        private final JIPipeRunnableLogEntry entry;
 
-        public LogEntryAddedEvent(JIPipeLogs logs, LogEntry entry) {
+        public LogEntryAddedEvent(JIPipeRunnableLogsCollection logs, JIPipeRunnableLogEntry entry) {
             super(logs);
             this.logs = logs;
             this.entry = entry;
         }
 
-        public JIPipeLogs getLogs() {
+        public JIPipeRunnableLogsCollection getLogs() {
             return logs;
         }
 
-        public LogEntry getEntry() {
+        public JIPipeRunnableLogEntry getEntry() {
             return entry;
         }
     }
@@ -141,33 +142,4 @@ public class JIPipeLogs implements JIPipeRunnable.FinishedEventListener, JIPipeR
         }
     }
 
-    public static class LogEntry {
-        private final String name;
-        private final LocalDateTime dateTime;
-        private final String log;
-        private final boolean success;
-
-        public LogEntry(String name, LocalDateTime dateTime, String log, boolean success) {
-            this.name = name;
-            this.dateTime = dateTime;
-            this.log = log;
-            this.success = success;
-        }
-
-        public LocalDateTime getDateTime() {
-            return dateTime;
-        }
-
-        public String getLog() {
-            return log;
-        }
-
-        public boolean isSuccess() {
-            return success;
-        }
-
-        public String getName() {
-            return name;
-        }
-    }
 }

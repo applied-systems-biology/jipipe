@@ -53,7 +53,7 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel implements
 
     public JIPipeModernPluginManagerUI(JIPipeWorkbench workbench) {
         super(workbench);
-        this.pluginManager = new JIPipeModernPluginManager(this, messagePanel);
+        this.pluginManager = new JIPipeModernPluginManager(workbench, this, messagePanel);
 
         initialize();
 //        JIPipe.getInstance().getExtensionRegistry().getEventBus().register(this);

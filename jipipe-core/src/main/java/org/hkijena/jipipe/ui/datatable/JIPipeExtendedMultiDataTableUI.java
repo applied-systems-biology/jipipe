@@ -310,7 +310,7 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel impleme
                             String name = path.getFileName().toString();
                             JIPipeDataExporterRun run = new JIPipeDataExporterRun(dataTable.getData(modelRow, JIPipeData.class, new JIPipeProgressInfo()),
                                     directory, name);
-                            JIPipeRunExecuterUI.runInDialog(SwingUtilities.getWindowAncestor(this), run, new JIPipeRunnerQueue("Export"));
+                            JIPipeRunExecuterUI.runInDialog(getWorkbench(), SwingUtilities.getWindowAncestor(this), run, new JIPipeRunnerQueue("Export"));
                         }
                     }));
 
@@ -324,7 +324,7 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel impleme
                                 String name = path.getFileName().toString();
                                 JIPipeDataExporterRun run = new JIPipeDataExporterRun(dataAnnotation.getData(JIPipeData.class, new JIPipeProgressInfo()),
                                         directory, name);
-                                JIPipeRunExecuterUI.runInDialog(SwingUtilities.getWindowAncestor(this), run, new JIPipeRunnerQueue("Export"));
+                                JIPipeRunExecuterUI.runInDialog(getWorkbench(), SwingUtilities.getWindowAncestor(this), run, new JIPipeRunnerQueue("Export"));
                             }
                         }));
             }

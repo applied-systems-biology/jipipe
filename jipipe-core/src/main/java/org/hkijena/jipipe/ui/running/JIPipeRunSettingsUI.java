@@ -321,7 +321,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
     private void runNow() {
         removeAll();
         RuntimeSettings.getInstance().setDefaultRunThreads(run.getConfiguration().getNumThreads());
-        JIPipeRunExecuterUI executerUI = new JIPipeRunExecuterUI(run);
+        JIPipeRunExecuterUI executerUI = new JIPipeRunExecuterUI(getWorkbench(), run);
         add(executerUI, BorderLayout.CENTER);
         revalidate();
         repaint();

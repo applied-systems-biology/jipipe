@@ -196,7 +196,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
     }
 
     private void downloadTemplates() {
-        JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), new NodeTemplateDownloaderRun(getWorkbench()));
+        JIPipeRunExecuterUI.runInDialog(getWorkbench(), getWorkbench().getWindow(), new NodeTemplateDownloaderRun(getWorkbench()));
     }
 
     private void initializeManageMenu() {

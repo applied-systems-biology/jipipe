@@ -73,7 +73,7 @@ public class OmniposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);
         JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
         OmniposeEasyInstaller installer = new OmniposeEasyInstaller(workbench, parameterAccess);
-        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
+        JIPipeRunExecuterUI.runInDialog(workbench, workbench.getWindow(), installer);
     }
 
     private static void configureOmnipose(JIPipeWorkbench workbench) {

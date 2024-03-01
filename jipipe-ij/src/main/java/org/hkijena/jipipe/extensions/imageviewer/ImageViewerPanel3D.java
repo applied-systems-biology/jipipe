@@ -433,7 +433,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     private void saveRawImage() {
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Save as *.tif", UIUtils.EXTENSION_FILTER_TIFF);
         if (path != null) {
-            JIPipeRunExecuterUI.runInDialog(this, new RawImage2DExporterRun(getImagePlus(), path));
+            JIPipeRunExecuterUI.runInDialog(getWorkbench(), this, new RawImage2DExporterRun(getImagePlus(), path));
         }
     }
 

@@ -32,22 +32,27 @@ import org.hkijena.jipipe.api.grouping.JIPipeGraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithmIterationStepGenerationSettings;
 import org.hkijena.jipipe.api.nodes.infos.JIPipeEmptyNodeInfo;
+import org.hkijena.jipipe.api.notifications.JIPipeNotification;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.runtimepartitioning.RuntimePartitionReferenceParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.List;
 import java.util.jar.Attributes;
 
 public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGraphRunGCGraph.GCEventListener {
@@ -205,7 +210,21 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
         outer:
         for (JIPipeGraphNode graphNode : ImmutableList.copyOf(graph.getGraphNodes())) {
             if (graphNode instanceof JIPipeAlgorithm) {
-                if (!((JIPipeAlgorithm) graphNode).isEnabled() || ((JIPipeAlgorithm) graphNode).isSkipped()) {
+                JIPipeAlgorithm algorithm = (JIPipeAlgorithm) graphNode;
+                if (!(algorithm).isEnabled() || (algorithm).isSkipped()) {
+
+                    // Check if algorithm is within a looped partition where looping is enabled
+                    // They cannot be removed
+                    // NO! DONT DO THIS! QuickRun must ensure that the assignment is correct from the start
+//                    JIPipeRuntimePartition runtimePartition = getRuntimePartition(algorithm.getRuntimePartition());
+//                    if(runtimePartition.getIterationMode() != JIPipeGraphWrapperAlgorithm.IterationMode.PassThrough) {
+//                        if(configuration.isStoreToCache()) {
+//                            if(!runtimePartition.isForcePassThroughLoopIterationInCaching()) {
+//                                progressInfo.log("Keeping " + graphNode.getDisplayName() + " [caching, within looped partition]");
+//                                continue;
+//                            }
+//                        }
+//                    }
 
                     // Check if we need the algorithm in some way (cache access)
                     if (configuration.isLoadFromCache()) {
@@ -218,7 +237,6 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                                 }
                             }
                         }
-
                     }
 
                     progressInfo.log("Deleting " + graphNode.getDisplayName() + " [is skipped or disabled]");
@@ -229,6 +247,15 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                 graph.removeNode(graphNode, false);
             }
         }
+
+        // Turn off skipping for remaining
+        // Will interfere with loops otherwise
+        // NO! DONT DO THIS! QuickRun must ensure that the assignment is correct from the start
+//        for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
+//            if(graphNode instanceof JIPipeAlgorithm) {
+//                ((JIPipeAlgorithm) graphNode).setSkipped(false);
+//            }
+//        }
     }
 
     /**
@@ -381,7 +408,10 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
     }
 
     private void runIteratingPartitionNodeSet(JIPipeGraph graph, Set<JIPipeGraphNode> partitionNodeSet, JIPipeGraphRunGCGraph gcGraph, JIPipeRuntimePartition runtimePartition, JIPipeProgressInfo progressInfo) {
-        JIPipeGraph extracted = graph.extractShallow(partitionNodeSet, true, false);
+
+//        System.out.println("--> START NEW LOOP");
+
+        JIPipeGraph extracted = graph.extract(partitionNodeSet, true, false);
         JIPipeGraphWrapperAlgorithm graphWrapperAlgorithm = new JIPipeGraphWrapperAlgorithm(new JIPipeEmptyNodeInfo(), extracted);
 
         // Configure iterations
@@ -524,17 +554,19 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
         // Connected graph wrapper algorithm internally
         for (Map.Entry<JIPipeDataSlot, String> entry : inputMap.entrySet()) {
             // [Group input] out --> input slot
-            JIPipeOutputDataSlot outputSlot = graphWrapperAlgorithm.getGroupInput().getOutputSlot(entry.getValue());
-            JIPipeInputDataSlot inputSlot = (JIPipeInputDataSlot) entry.getKey();
-            progressInfo.log("Wrapped graph connect " + outputSlot.getDisplayName() + " >>> " + inputSlot.getDisplayName());
-            graphWrapperAlgorithm.getWrappedGraph().connect(outputSlot, inputSlot);
+            JIPipeOutputDataSlot thereOutputSlot = graphWrapperAlgorithm.getGroupInput().getOutputSlot(entry.getValue());
+            JIPipeInputDataSlot hereInputSlot = (JIPipeInputDataSlot) entry.getKey();
+            JIPipeDataSlot thereInputSlot = graphWrapperAlgorithm.getWrappedGraph().getEquivalentSlot(hereInputSlot);
+            progressInfo.log("Wrapped graph connect " + thereOutputSlot.getDisplayName() + " >>> " + thereInputSlot.getDisplayName());
+            graphWrapperAlgorithm.getWrappedGraph().connect(thereOutputSlot, thereInputSlot);
         }
         for (Map.Entry<JIPipeDataSlot, String> entry : outputMap.entrySet()) {
             // output slot --> [Group output] in
-            JIPipeInputDataSlot inputSlot = graphWrapperAlgorithm.getGroupOutput().getInputSlot(entry.getValue());
-            JIPipeOutputDataSlot outputSlot = (JIPipeOutputDataSlot) entry.getKey();
-            progressInfo.log("Wrapped graph connect " + outputSlot.getDisplayName() + " >>> " + inputSlot.getDisplayName());
-            graphWrapperAlgorithm.getWrappedGraph().connect(outputSlot, inputSlot);
+            JIPipeInputDataSlot thereInputSlot = graphWrapperAlgorithm.getGroupOutput().getInputSlot(entry.getValue());
+            JIPipeOutputDataSlot hereOutputSlot = (JIPipeOutputDataSlot) entry.getKey();
+            JIPipeDataSlot thereOutputSlot = graphWrapperAlgorithm.getWrappedGraph().getEquivalentSlot(hereOutputSlot);
+            progressInfo.log("Wrapped graph connect " + thereOutputSlot.getDisplayName() + " >>> " + thereInputSlot.getDisplayName());
+            graphWrapperAlgorithm.getWrappedGraph().connect(thereOutputSlot, thereInputSlot);
         }
 
         // Pull data into the original input slots
@@ -570,6 +602,8 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
 
             // GC the original
             originalInputSlot.clear();
+
+//            System.out.println("GWI: " + targetInputSlot);
         }
 
         // Execute the graph wrapper
@@ -590,6 +624,10 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
 
                 // Clean to prevent moving corrupted data out
                 graphWrapperAlgorithm.clearSlotData();
+
+                progressInfo.getNotifications().push(new JIPipeNotification(UUID.randomUUID().toString(), "Part of the pipeline failed",
+                        "Iteration step for partition " + project.getRuntimePartitions().getFullName(runtimePartition) + " failed. " +
+                                "The pipeline continued as setup within the runtime partition settings."));
             }
             else {
                 throw e;
@@ -633,6 +671,20 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
 
     private void exportFailedInputs(JIPipeGraph graph, Set<JIPipeGraphNode> partitionNodeSet, Map<UUID, Map<String, JIPipeDataTable>> inputs, JIPipeProgressInfo progressInfo) {
         Path outputDir = configuration.getOutputPath().resolve("_error").resolve(UUID.randomUUID().toString());
+
+        progressInfo.getNotifications().push(new JIPipeNotification(UUID.randomUUID().toString(), "Part of the pipeline failed",
+                "Iteration step for step " + progressInfo.getLogPrepend() + " failed. " +
+                        "The pipeline continued as setup within the runtime partition settings. " +
+                        "The inputs and graph were exported to " + outputDir,
+                new JIPipeNotificationAction("Open directory", "Opens the directory containing the inputs",
+                        UIUtils.getIconFromResources("actions/document-open-folder.png"), workbench -> {
+                    try {
+                        Desktop.getDesktop().open(outputDir.toFile());
+                    } catch (IOException e) {
+                        IJ.handleException(e);
+                    }
+                })));
+
         progressInfo.log("Target directory: " + outputDir);
         try {
             Files.createDirectories(outputDir);

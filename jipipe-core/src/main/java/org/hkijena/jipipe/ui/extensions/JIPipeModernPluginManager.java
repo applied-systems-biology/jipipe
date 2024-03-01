@@ -26,6 +26,8 @@ import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.components.MessagePanel;
 import org.hkijena.jipipe.ui.ijupdater.ConflictDialog;
 import org.hkijena.jipipe.ui.ijupdater.RefreshRepositoryRun;
@@ -40,10 +42,11 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.*;
 
-public class JIPipeModernPluginManager implements JIPipeExtensionRegistry.ScheduledActivateExtensionEventListener, JIPipeExtensionRegistry.ScheduledDeactivateExtensionEventListener, JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
+public class JIPipeModernPluginManager implements JIPipeWorkbenchAccess, JIPipeExtensionRegistry.ScheduledActivateExtensionEventListener, JIPipeExtensionRegistry.ScheduledDeactivateExtensionEventListener, JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
 
     private final UpdateSitesReadyEventEmitter updateSitesReadyEventEmitter = new UpdateSitesReadyEventEmitter();
     private final UpdateSitesFailedEventEmitter updateSitesFailedEventEmitter = new UpdateSitesFailedEventEmitter();
+    private final JIPipeWorkbench workbench;
     private final Component parent;
 
     private final MessagePanel messagePanel;
@@ -55,7 +58,8 @@ public class JIPipeModernPluginManager implements JIPipeExtensionRegistry.Schedu
     private FilesCollection updateSites;
     private boolean updateSitesApplied = false;
 
-    public JIPipeModernPluginManager(Component parent, MessagePanel messagePanel) {
+    public JIPipeModernPluginManager(JIPipeWorkbench workbench, Component parent, MessagePanel messagePanel) {
+        this.workbench = workbench;
         this.parent = parent;
         this.messagePanel = messagePanel;
         JIPipe.getInstance().getExtensionRegistry().getScheduledActivateExtensionEventEmitter().subscribeWeak(this);
@@ -64,6 +68,11 @@ public class JIPipeModernPluginManager implements JIPipeExtensionRegistry.Schedu
         JIPipeRunnerQueue.getInstance().getInterruptedEventEmitter().subscribeWeak(this);
 
         updateMessagePanel();
+    }
+
+    @Override
+    public JIPipeWorkbench getWorkbench() {
+        return workbench;
     }
 
     public UpdateSitesReadyEventEmitter getUpdateSitesReadyEventEmitter() {
@@ -247,7 +256,7 @@ public class JIPipeModernPluginManager implements JIPipeExtensionRegistry.Schedu
         if (JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(parent), "Do you really want to deactivate the update site '"
                 + extension.getUpdateSite(getUpdateSites()).getName() + "'? Please note that this will delete plugin files from the ImageJ directory.", "Deactivate update site", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             DeactivateAndApplyUpdateSiteRun run = new DeactivateAndApplyUpdateSiteRun(this, Collections.singletonList(extension.getUpdateSite(getUpdateSites())));
-            JIPipeRunExecuterUI.runInDialog(SwingUtilities.getWindowAncestor(parent), run);
+            JIPipeRunExecuterUI.runInDialog(workbench, SwingUtilities.getWindowAncestor(parent), run);
         }
     }
 
@@ -326,7 +335,7 @@ public class JIPipeModernPluginManager implements JIPipeExtensionRegistry.Schedu
             }
             if (!toActivate.isEmpty()) {
                 ActivateAndApplyUpdateSiteRun run = new ActivateAndApplyUpdateSiteRun(this, toActivate);
-                JIPipeRunExecuterUI.runInDialog(SwingUtilities.getWindowAncestor(parent), run);
+                JIPipeRunExecuterUI.runInDialog(workbench, SwingUtilities.getWindowAncestor(parent), run);
             }
         }
 
@@ -344,7 +353,7 @@ public class JIPipeModernPluginManager implements JIPipeExtensionRegistry.Schedu
         if (JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(parent), "Do you really want to activate the update site '"
                 + extension.getUpdateSite(getUpdateSites()).getName() + "'? Please note that you need an active internet connection.", "Activate update site", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             ActivateAndApplyUpdateSiteRun run = new ActivateAndApplyUpdateSiteRun(this, Collections.singletonList(extension.getUpdateSite(getUpdateSites())));
-            JIPipeRunExecuterUI.runInDialog(SwingUtilities.getWindowAncestor(parent), run);
+            JIPipeRunExecuterUI.runInDialog(workbench, SwingUtilities.getWindowAncestor(parent), run);
         }
     }
 

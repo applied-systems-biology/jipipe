@@ -86,7 +86,7 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);
         JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
         CellposeEasyInstaller installer = new CellposeEasyInstaller(workbench, parameterAccess);
-        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
+        JIPipeRunExecuterUI.runInDialog(workbench, workbench.getWindow(), installer);
     }
 
     private static void configureCellpose(JIPipeWorkbench workbench) {

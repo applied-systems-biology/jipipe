@@ -147,7 +147,7 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
 
                 JMenuItem item = new JMenuItem(installer.getName(), installer.getIcon());
                 item.setToolTipText(installer.getDescription());
-                item.addActionListener(e -> JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(),
+                item.addActionListener(e -> JIPipeRunExecuterUI.runInDialog(getWorkbench(), getWorkbench().getWindow(),
                         (JIPipeRunnable) ReflectionUtils.newInstance(installer.getInstallerClass(), getWorkbench(), getParameterAccess())));
                 configureMenu.add(item);
             }
@@ -169,7 +169,7 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
 
                     JMenuItem item = new JMenuItem(installer.getName(), installer.getIcon());
                     item.setToolTipText(installer.getDescription());
-                    item.addActionListener(e -> JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(),
+                    item.addActionListener(e -> JIPipeRunExecuterUI.runInDialog(getWorkbench(), getWorkbench().getWindow(),
                             (JIPipeRunnable) ReflectionUtils.newInstance(installer.getInstallerClass(), getWorkbench(), getParameterAccess())));
                     additionalEnvironmentsMenu.add(item);
                 }

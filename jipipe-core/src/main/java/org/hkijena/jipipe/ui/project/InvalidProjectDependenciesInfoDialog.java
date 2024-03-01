@@ -57,7 +57,7 @@ public class InvalidProjectDependenciesInfoDialog extends JDialog implements JIP
         this.dependencySet = dependencySet;
         this.missingUpdateSites = missingUpdateSites;
 
-        pluginManager = new JIPipeModernPluginManager(this, messagePanel);
+        pluginManager = new JIPipeModernPluginManager(workbench, this, messagePanel);
         initialize();
 
         pluginManager.getUpdateSitesReadyEventEmitter().subscribeWeak(this);

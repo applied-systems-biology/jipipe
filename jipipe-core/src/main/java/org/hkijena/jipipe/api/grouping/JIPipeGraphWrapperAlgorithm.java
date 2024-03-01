@@ -48,6 +48,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * An algorithm that wraps another algorithm graph
@@ -263,6 +264,7 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
                 // Iterate through own input slots and pass them to the equivalents in group input
                 for (JIPipeDataSlot inputSlot : getInputSlots()) {
                     JIPipeDataSlot groupInputSlot = copyGroupInput.getInputSlot(inputSlot.getName());
+//                    System.out.println("ROWS: " + iterationStep.getInputRows(inputSlot).stream().map(Object::toString).collect(Collectors.joining(", ")));
                     for (Integer row : iterationStep.getInputRows(inputSlot)) {
                         groupInputSlot.addData(inputSlot.getDataItemStore(row),
                                 inputSlot.getTextAnnotations(row),
@@ -272,6 +274,7 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
                                 inputSlot.getDataContext(row),
                                 batchProgress);
                     }
+//                    System.out.println("WGI " + groupInputSlot);
                 }
 
                 // Skip GC clearing for the group outputs
@@ -285,7 +288,9 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
                 // Copy into output
                 for (JIPipeDataSlot outputSlot : getOutputSlots()) {
                     JIPipeDataSlot groupOutputSlot = copyGroupOutput.getOutputSlot(outputSlot.getName());
+//                    System.out.println("WGO OUTPUT: " + groupOutputSlot);
                     outputSlot.addDataFromSlot(groupOutputSlot, progressInfo);
+//                    System.out.println("GW OUTPUT: " + outputSlot);
                 }
 
                 // Clear

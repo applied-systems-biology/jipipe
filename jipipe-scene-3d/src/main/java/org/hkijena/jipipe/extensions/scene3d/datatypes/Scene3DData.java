@@ -56,7 +56,7 @@ public class Scene3DData extends JIPipeSerializedJsonObjectData implements List<
         if (outputFile != null) {
             JIPipeRunnerQueue queue = new JIPipeRunnerQueue("Collada export");
             Scene3DToColladaExporter exporter = new Scene3DToColladaExporter(this, outputFile);
-            JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), exporter, queue);
+            JIPipeRunExecuterUI.runInDialog(workbench, workbench.getWindow(), exporter, queue);
         }
     }
 

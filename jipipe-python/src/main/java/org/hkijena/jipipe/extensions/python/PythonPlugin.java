@@ -71,7 +71,7 @@ public class PythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);
         JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-adapter-library");
         JIPipePythonAdapterLibraryEnvironmentInstaller installer = new JIPipePythonAdapterLibraryEnvironmentInstaller(workbench, parameterAccess);
-        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
+        JIPipeRunExecuterUI.runInDialog(workbench, workbench.getWindow(), installer);
     }
 
     private static void installPython(JIPipeWorkbench workbench) {
@@ -79,7 +79,7 @@ public class PythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);
         JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
         PortableEnvPythonInstaller installer = new PortableEnvPythonInstaller(workbench, parameterAccess);
-        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
+        JIPipeRunExecuterUI.runInDialog(workbench, workbench.getWindow(), installer);
     }
 
     private static void selectConda(JIPipeWorkbench workbench) {
@@ -87,7 +87,7 @@ public class PythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);
         JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
         SelectCondaEnvPythonInstaller installer = new SelectCondaEnvPythonInstaller(workbench, parameterAccess);
-        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
+        JIPipeRunExecuterUI.runInDialog(workbench, workbench.getWindow(), installer);
     }
 
     private static void easyInstallPython(JIPipeWorkbench workbench) {
@@ -95,7 +95,7 @@ public class PythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);
         JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
         PythonEasyInstaller installer = new PythonEasyInstaller(workbench, parameterAccess);
-        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
+        JIPipeRunExecuterUI.runInDialog(workbench, workbench.getWindow(), installer);
     }
 
     private static void easyInstallPythonAdapter(JIPipeWorkbench workbench) {
@@ -103,7 +103,7 @@ public class PythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);
         JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-adapter-library");
         JIPipePythonAdapterLibraryEnvironmentInstaller installer = new JIPipePythonAdapterLibraryEnvironmentInstaller(workbench, parameterAccess);
-        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
+        JIPipeRunExecuterUI.runInDialog(workbench, workbench.getWindow(), installer);
     }
 
     private static void openSettingsPage(JIPipeWorkbench workbench) {

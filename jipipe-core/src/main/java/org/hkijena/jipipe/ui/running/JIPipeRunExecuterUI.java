@@ -14,7 +14,10 @@
 package org.hkijena.jipipe.ui.running;
 
 import org.hkijena.jipipe.api.JIPipeRunnable;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.icons.JIPipeRunnerQueueThrobberIcon;
+import org.hkijena.jipipe.ui.notifications.GenericNotificationButton;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -23,7 +26,7 @@ import java.awt.*;
 /**
  * UI that executes an {@link JIPipeRunnable}
  */
-public class JIPipeRunExecuterUI extends JPanel implements JIPipeRunnable.StartedEventListener, JIPipeRunnable.InterruptedEventListener, JIPipeRunnable.ProgressEventListener, JIPipeRunnable.FinishedEventListener {
+public class JIPipeRunExecuterUI extends JIPipeWorkbenchPanel implements JIPipeRunnable.StartedEventListener, JIPipeRunnable.InterruptedEventListener, JIPipeRunnable.ProgressEventListener, JIPipeRunnable.FinishedEventListener {
     private final JIPipeRunnerQueue queue;
     private JIPipeRunnable run;
     private JProgressBar progressBar;
@@ -33,14 +36,16 @@ public class JIPipeRunExecuterUI extends JPanel implements JIPipeRunnable.Starte
     private JTextArea log;
     private JDialog dialog;
 
-    public JIPipeRunExecuterUI(JIPipeRunnable run) {
-        this(run, JIPipeRunnerQueue.getInstance());
+    public JIPipeRunExecuterUI(JIPipeWorkbench workbench, JIPipeRunnable run) {
+        this(workbench, run, JIPipeRunnerQueue.getInstance());
     }
 
     /**
-     * @param run The runnable
+     * @param workbench the workbench
+     * @param run       The runnable
      */
-    public JIPipeRunExecuterUI(JIPipeRunnable run, JIPipeRunnerQueue queue) {
+    public JIPipeRunExecuterUI(JIPipeWorkbench workbench, JIPipeRunnable run, JIPipeRunnerQueue queue) {
+        super(workbench);
         this.run = run;
         this.queue = queue;
         initialize();
@@ -50,15 +55,15 @@ public class JIPipeRunExecuterUI extends JPanel implements JIPipeRunnable.Starte
         queue.getFinishedEventEmitter().subscribeWeak(this);
     }
 
-    public static void runInDialog(Component parent, JIPipeRunnable run) {
-        runInDialog(parent, run, JIPipeRunnerQueue.getInstance());
+    public static void runInDialog(JIPipeWorkbench workbench, Component parent, JIPipeRunnable run) {
+        runInDialog(workbench, parent, run, JIPipeRunnerQueue.getInstance());
     }
 
-    public static void runInDialog(Component parent, JIPipeRunnable run, JIPipeRunnerQueue queue) {
+    public static void runInDialog(JIPipeWorkbench workbench, Component parent, JIPipeRunnable run, JIPipeRunnerQueue queue) {
         JDialog dialog = new JDialog();
         dialog.setTitle(run.getTaskLabel());
         dialog.setIconImage(UIUtils.getJIPipeIcon128());
-        JIPipeRunExecuterUI ui = new JIPipeRunExecuterUI(run, queue);
+        JIPipeRunExecuterUI ui = new JIPipeRunExecuterUI(workbench, run, queue);
         ui.setDialog(dialog);
         dialog.setContentPane(ui);
         dialog.pack();
@@ -100,6 +105,8 @@ public class JIPipeRunExecuterUI extends JPanel implements JIPipeRunnable.Starte
 
         buttonPanel.add(progressBar);
         buttonPanel.add(Box.createHorizontalStrut(16));
+
+        buttonPanel.add(new GenericNotificationButton(getWorkbench(), run.getProgressInfo().getNotifications()));
 
         cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
         cancelButton.addActionListener(e -> requestCancelRun());

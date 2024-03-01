@@ -61,7 +61,7 @@ public class MissingRegistrationUpdateSiteResolver extends JFrame implements JIP
         getContentPane().setLayout(new BorderLayout());
         initialize();
 
-        pluginManager = new JIPipeModernPluginManager(this, messagePanel);
+        pluginManager = new JIPipeModernPluginManager(this,this, messagePanel);
         pluginManager.getUpdateSitesReadyEventEmitter().subscribe(this);
         pluginManager.initializeUpdateSites();
 
@@ -124,7 +124,7 @@ public class MissingRegistrationUpdateSiteResolver extends JFrame implements JIP
             updateSiteSet.add(updateSite);
         }
         ActivateAndApplyUpdateSiteRun run = new ActivateAndApplyUpdateSiteRun(pluginManager, updateSiteSet);
-        JIPipeRunExecuterUI.runInDialog(this, run);
+        JIPipeRunExecuterUI.runInDialog(this, this, run);
     }
 
     @Override

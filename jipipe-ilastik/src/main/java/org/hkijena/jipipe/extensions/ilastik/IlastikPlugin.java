@@ -77,7 +77,7 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);
         JIPipeParameterAccess parameterAccess = tree.getParameters().get("environment");
         IlastikEasyInstaller installer = new IlastikEasyInstaller(workbench, parameterAccess);
-        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
+        JIPipeRunExecuterUI.runInDialog(workbench, workbench.getWindow(), installer);
     }
 
     private static void configureIlastik(JIPipeWorkbench workbench) {

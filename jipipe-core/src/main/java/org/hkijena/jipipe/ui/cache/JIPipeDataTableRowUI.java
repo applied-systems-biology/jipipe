@@ -268,7 +268,7 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
                 try {
                     Files.createDirectories(path);
                     JIPipeRunnable runnable = new ExportAsFolderRun(row, dataTable, path);
-                    JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), runnable);
+                    JIPipeRunExecuterUI.runInDialog(getWorkbench(), getWorkbench().getWindow(), runnable);
                 } catch (Exception e) {
                     UIUtils.openErrorDialog(getWorkbench(), getWorkbench().getWindow(), e);
                 }
@@ -285,7 +285,7 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
                             + dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "") + "/" + row);
             if (path != null) {
                 JIPipeRunnable runnable = new ExportToFolderRun(row, dataTable, path);
-                JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), runnable);
+                JIPipeRunExecuterUI.runInDialog(getWorkbench(), getWorkbench().getWindow(), runnable);
             }
         }
     }

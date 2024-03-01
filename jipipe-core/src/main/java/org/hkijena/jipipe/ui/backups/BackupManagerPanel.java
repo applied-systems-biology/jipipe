@@ -216,14 +216,14 @@ public class BackupManagerPanel extends JIPipeWorkbenchPanel implements JIPipeRu
     private void removeNamedBackups() {
         if(JOptionPane.showConfirmDialog(this, "Do you really want to remove all backups of projects that have a storage path?\n" +
                 "Please note that the tool will NOT check if the files are still present at the path.", "Remove backups with project file", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            JIPipeRunExecuterUI.runInDialog(this, new PruneBackupsRun(false, true), BACKUP_QUEUE);
+            JIPipeRunExecuterUI.runInDialog(getWorkbench(), this, new PruneBackupsRun(false, true), BACKUP_QUEUE);
         }
     }
 
     private void removeUnnamedBackups() {
         if(JOptionPane.showConfirmDialog(this, "Do you really want to remove all backups of projects that have NO storage path because they were never saved?\n" +
                 "It might be possible that some of the affected projects have been saved after the creation of the backup.", "Remove backups with project file", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            JIPipeRunExecuterUI.runInDialog(this, new PruneBackupsRun(true, false), BACKUP_QUEUE);
+            JIPipeRunExecuterUI.runInDialog(getWorkbench(), this, new PruneBackupsRun(true, false), BACKUP_QUEUE);
         }
     }
 

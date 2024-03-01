@@ -53,7 +53,8 @@ import org.hkijena.jipipe.ui.JIPipeProjectWindow;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.ijupdater.JIPipeProgressAdapter;
 import org.hkijena.jipipe.ui.registries.JIPipeCustomMenuRegistry;
-import org.hkijena.jipipe.ui.running.JIPipeLogs;
+import org.hkijena.jipipe.ui.running.JIPipeRunnableLogEntry;
+import org.hkijena.jipipe.ui.running.JIPipeRunnableLogsCollection;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -899,10 +900,10 @@ public class JIPipe extends AbstractService implements JIPipeService {
 
 
         // Push progress into log
-        JIPipeLogs.getInstance().pushToLog(new JIPipeLogs.LogEntry("JIPipe initialization",
+        JIPipeRunnableLogsCollection.getInstance().pushToLog(new JIPipeRunnableLogEntry("JIPipe initialization",
                 LocalDateTime.now(),
                 progressInfo.getLog().toString(),
-                true));
+                new JIPipeNotificationInbox(), true));
     }
 
     private void registerProjectTemplatesFromFileSystem() {

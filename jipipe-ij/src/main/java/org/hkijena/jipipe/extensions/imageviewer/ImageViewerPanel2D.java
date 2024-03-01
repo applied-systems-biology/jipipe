@@ -483,7 +483,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
     private void saveRawImage() {
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Save as *.tif", UIUtils.EXTENSION_FILTER_TIFF);
         if (path != null) {
-            JIPipeRunExecuterUI.runInDialog(this, new RawImage2DExporterRun(getImagePlus(), path), viewerRunnerQueue);
+            JIPipeRunExecuterUI.runInDialog(workbench, this, new RawImage2DExporterRun(getImagePlus(), path), viewerRunnerQueue);
         }
     }
 
@@ -579,7 +579,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
             String format = fileFormatEditor.getSelectedItem() + "";
             String baseName = StringUtils.makeFilesystemCompatible(baseNameEditor.getText());
             Stack2DExporterRun run = new Stack2DExporterRun(imageViewer, targetPath, baseName, format);
-            JIPipeRunExecuterUI.runInDialog(this, run, viewerRunnerQueue);
+            JIPipeRunExecuterUI.runInDialog(workbench, this, run, viewerRunnerQueue);
         }
     }
 
@@ -626,7 +626,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
                     animationTimer.getDelay(),
                     (AVICompression) compressionEditor.getSelectedItem(),
                     compressionQualityEditor.getValue());
-            JIPipeRunExecuterUI.runInDialog(this, run, viewerRunnerQueue);
+            JIPipeRunExecuterUI.runInDialog(workbench, this, run, viewerRunnerQueue);
         }
     }
 

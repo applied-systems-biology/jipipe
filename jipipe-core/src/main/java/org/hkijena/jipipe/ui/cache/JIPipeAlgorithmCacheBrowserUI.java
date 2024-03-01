@@ -231,7 +231,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel i
             }
             JIPipeDataTableToOutputExporterRun run = new JIPipeDataTableToOutputExporterRun(getWorkbench(), outputFolder,
                     new ArrayList<>(slotMap.values()), true, false);
-            JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), run);
+            JIPipeRunExecuterUI.runInDialog(getWorkbench(), getWorkbench().getWindow(), run);
         }
     }
 
@@ -314,7 +314,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel i
             }
         }
         JIPipeImportCachedSlotOutputRun run = new JIPipeImportCachedSlotOutputRun(getProjectWorkbench().getProject(), graphNode, inputFolder);
-        JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), run);
+        JIPipeRunExecuterUI.runInDialog(getWorkbench(), getWorkbench().getWindow(), run);
     }
 
     @Override

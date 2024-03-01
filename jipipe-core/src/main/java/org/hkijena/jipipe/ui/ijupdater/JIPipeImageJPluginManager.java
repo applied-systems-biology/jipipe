@@ -132,7 +132,7 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel implements J
     }
 
     private void enqueueRun(JIPipeRunnable runnable) {
-        JIPipeRunExecuterUI ui = new JIPipeRunExecuterUI(runnable);
+        JIPipeRunExecuterUI ui = new JIPipeRunExecuterUI(getWorkbench(), runnable);
         managerUI.setOptionPanelContent(null);
         managerUI.setMainPanelContent(ui);
         ui.startRun();

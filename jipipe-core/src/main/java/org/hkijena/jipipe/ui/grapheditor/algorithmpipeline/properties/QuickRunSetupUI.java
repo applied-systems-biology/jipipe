@@ -34,9 +34,7 @@ import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.quickrun.QuickRun;
 import org.hkijena.jipipe.ui.quickrun.QuickRunSettings;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultUI;
-import org.hkijena.jipipe.ui.running.JIPipeLogViewer;
-import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
-import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.ui.running.*;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -46,6 +44,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -334,7 +333,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel implements JIPi
         if (currentQuickRun != null) {
             DocumentTabPane.DocumentTab tab = getProjectWorkbench().getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_LOG);
             JIPipeLogViewer viewer = (JIPipeLogViewer) tab.getContent();
-            viewer.showLog(currentQuickRun.getProgressInfo().getLog().toString());
+            viewer.showLog(new JIPipeRunnableLogEntry("Run", LocalDateTime.now(), currentQuickRun.getProgressInfo().getLog().toString(), currentQuickRun.getProgressInfo().getNotifications(), true));
         } else {
             JOptionPane.showMessageDialog(this, "The log is unavailable for this run.", "Open log", JOptionPane.ERROR_MESSAGE);
         }
@@ -354,7 +353,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel implements JIPi
         showNextResults = showResults;
 
         removeAll();
-        JIPipeRunExecuterUI executerUI = new JIPipeRunExecuterUI(currentQuickRun);
+        JIPipeRunExecuterUI executerUI = new JIPipeRunExecuterUI(getWorkbench(), currentQuickRun);
         add(executerUI, BorderLayout.CENTER);
         revalidate();
         repaint();

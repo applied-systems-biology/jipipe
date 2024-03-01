@@ -21,7 +21,6 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeProjectMetadata;
-import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.JIPipeProjectTemplate;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
@@ -267,7 +266,7 @@ public class JIPipeProjectWindow extends JFrame {
                     });
                 }
             });
-            JIPipeRunExecuterUI.runInDialog(this, run);
+            JIPipeRunExecuterUI.runInDialog(projectUI, this, run);
         } else {
             try {
                 JIPipeValidationReport report = new JIPipeValidationReport();
@@ -426,7 +425,7 @@ public class JIPipeProjectWindow extends JFrame {
                     window.getProjectUI().getDocumentTabPane().switchToLastTab();
                 } else if (selectedOption == JOptionPane.NO_OPTION) {
                     // Load into cache with a run
-                    JIPipeRunExecuterUI.runInDialog(this, new LoadResultDirectoryIntoCacheRun(projectUI, project, path, true));
+                    JIPipeRunExecuterUI.runInDialog(projectUI, this, new LoadResultDirectoryIntoCacheRun(projectUI, project, path, true));
                 }
                 if (!notifications.isEmpty()) {
                     UIUtils.openNotificationsDialog(window.getProjectUI(), this, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.", true);
@@ -582,7 +581,7 @@ public class JIPipeProjectWindow extends JFrame {
             e.printStackTrace();
         }
         SaveProjectAndCacheToDirectoryRun run = new SaveProjectAndCacheToDirectoryRun(projectUI, project, directory, addAsRecentProject);
-        JIPipeRunExecuterUI.runInDialog(this, run);
+        JIPipeRunExecuterUI.runInDialog(projectUI, this, run);
     }
 
     /**
@@ -600,7 +599,7 @@ public class JIPipeProjectWindow extends JFrame {
             }
         }
         SaveProjectAndCacheToZipRun run = new SaveProjectAndCacheToZipRun(projectUI, project, file);
-        JIPipeRunExecuterUI.runInDialog(this, run);
+        JIPipeRunExecuterUI.runInDialog(projectUI, this, run);
     }
 
     public UUID getSessionId() {

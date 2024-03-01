@@ -335,7 +335,7 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel implements JIPipeP
     }
 
     private void downloadTemplates() {
-        JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), new ProjectTemplateDownloaderRun(getWorkbench()));
+        JIPipeRunExecuterUI.runInDialog(getWorkbench(), getWorkbench().getWindow(), new ProjectTemplateDownloaderRun(getWorkbench()));
     }
 
     private void initRecentProjects(DocumentTabPane tabPane) {

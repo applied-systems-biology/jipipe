@@ -17,6 +17,7 @@ import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
+import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -28,29 +29,28 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel implements JIPipeLogs.LogClearedEventListener, JIPipeLogs.LogEntryAddedEventListener {
-    private final JList<JIPipeLogs.LogEntry> logEntryJList = new JList<>();
-    private final JTextPane logReader = new JTextPane();
-    private JIPipeLogs.LogEntry currentlyDisplayedLog;
+public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel implements JIPipeRunnableLogsCollection.LogClearedEventListener, JIPipeRunnableLogsCollection.LogEntryAddedEventListener {
+    private final JList<JIPipeRunnableLogEntry> logEntryJList = new JList<>();
+    private JIPipeRunnableLogEntry currentlyDisplayedLog;
+    private AutoResizeSplitPane splitPane;
 
     public JIPipeLogViewer(JIPipeProjectWorkbench workbenchUI) {
         super(workbenchUI);
         initialize();
-        JIPipeLogs.getInstance().getLogClearedEventEmitter().subscribeWeak(this);
-        JIPipeLogs.getInstance().getLogEntryAddedEventEmitter().subscribeWeak(this);
+        JIPipeRunnableLogsCollection.getInstance().getLogClearedEventEmitter().subscribeWeak(this);
+        JIPipeRunnableLogsCollection.getInstance().getLogEntryAddedEventEmitter().subscribeWeak(this);
         updateEntryList();
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
-        logReader.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         logEntryJList.setCellRenderer(new LogEntryRenderer());
 
         // List panel
         JPanel leftPanel = new JPanel(new BorderLayout());
         leftPanel.add(new JScrollPane(logEntryJList), BorderLayout.CENTER);
         logEntryJList.addListSelectionListener(e -> {
-            JIPipeLogs.LogEntry selectedValue = logEntryJList.getSelectedValue();
+            JIPipeRunnableLogEntry selectedValue = logEntryJList.getSelectedValue();
             if (selectedValue != null) {
                 showLog(selectedValue);
             }
@@ -61,41 +61,25 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel implements JIPi
         leftPanel.add(leftToolbar, BorderLayout.NORTH);
 
         JButton clearButton = new JButton("Clear", UIUtils.getIconFromResources("actions/edit-clear.png"));
-        clearButton.addActionListener(e -> JIPipeLogs.getInstance().clear());
+        clearButton.addActionListener(e -> JIPipeRunnableLogsCollection.getInstance().clear());
         leftToolbar.add(clearButton);
 
-        // Viewer panel
-        JPanel rightPanel = new JPanel(new BorderLayout());
-        rightPanel.add(new JScrollPane(logReader), BorderLayout.CENTER);
-
-        JToolBar rightToolbar = new JToolBar();
-        rightToolbar.setFloatable(false);
-        rightPanel.add(rightToolbar, BorderLayout.NORTH);
-
-        JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/document-export.png"));
-        exportButton.addActionListener(e -> exportLog());
-        rightToolbar.add(exportButton);
-
-        JButton openInExternalToolButton = new JButton("Open log in external editor", UIUtils.getIconFromResources("actions/document-open-folder.png"));
-        openInExternalToolButton.addActionListener(e -> openLogInExternalTool());
-        rightToolbar.add(openInExternalToolButton);
-
         // Split pane
-        JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+        splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 leftPanel,
-                rightPanel, AutoResizeSplitPane.RATIO_1_TO_3);
+                new JPanel(),
+                AutoResizeSplitPane.RATIO_1_TO_3);
         add(splitPane, BorderLayout.CENTER);
     }
 
     @Override
-    public void onLogCleared(JIPipeLogs.LogClearedEvent event) {
-        logReader.setText("");
+    public void onLogCleared(JIPipeRunnableLogsCollection.LogClearedEvent event) {
         currentlyDisplayedLog = null;
         updateEntryList();
     }
 
     @Override
-    public void onLogEntryAdded(JIPipeLogs.LogEntryAddedEvent event) {
+    public void onLogEntryAdded(JIPipeRunnableLogsCollection.LogEntryAddedEvent event) {
         updateEntryList();
         if (currentlyDisplayedLog != null) {
             logEntryJList.setSelectedValue(currentlyDisplayedLog, true);
@@ -103,47 +87,20 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel implements JIPi
         }
     }
 
-    private void openLogInExternalTool() {
-        Path tempFile = RuntimeSettings.generateTempFile("log", ".txt");
-        try {
-            Files.write(tempFile, logReader.getText().getBytes(StandardCharsets.UTF_8));
-            Desktop.getDesktop().open(tempFile.toFile());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void exportLog() {
-        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export log", UIUtils.EXTENSION_FILTER_TXT);
-        if (path != null) {
-            try {
-                Files.write(path, logReader.getText().getBytes(StandardCharsets.UTF_8));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    public void showLog(String log) {
-        currentlyDisplayedLog = null;
-        logEntryJList.clearSelection();
-        logReader.setText(log);
-    }
-
     private void updateEntryList() {
-        DefaultListModel<JIPipeLogs.LogEntry> model = new DefaultListModel<>();
-        for (JIPipeLogs.LogEntry logEntry : JIPipeLogs.getInstance().getLogEntries()) {
+        DefaultListModel<JIPipeRunnableLogEntry> model = new DefaultListModel<>();
+        for (JIPipeRunnableLogEntry logEntry : JIPipeRunnableLogsCollection.getInstance().getLogEntries()) {
             model.add(0, logEntry);
         }
         logEntryJList.setModel(model);
     }
 
-    private void showLog(JIPipeLogs.LogEntry entry) {
+    public void showLog(JIPipeRunnableLogEntry entry) {
         currentlyDisplayedLog = entry;
-        logReader.setText(entry.getLog());
+        splitPane.setRightComponent(new JIPipeLogViewLogUI(getWorkbench(), entry));
     }
 
-    public static class LogEntryRenderer extends JPanel implements ListCellRenderer<JIPipeLogs.LogEntry> {
+    public static class LogEntryRenderer extends JPanel implements ListCellRenderer<JIPipeRunnableLogEntry> {
 
         private JLabel nameLabel;
         private JLabel timeLabel;
@@ -203,10 +160,20 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel implements JIPi
         }
 
         @Override
-        public Component getListCellRendererComponent(JList<? extends JIPipeLogs.LogEntry> list, JIPipeLogs.LogEntry value, int index, boolean isSelected, boolean cellHasFocus) {
+        public Component getListCellRendererComponent(JList<? extends JIPipeRunnableLogEntry> list, JIPipeRunnableLogEntry value, int index, boolean isSelected, boolean cellHasFocus) {
             nameLabel.setText(value.getName());
             timeLabel.setText(StringUtils.formatDateTime(value.getDateTime()));
-            successLabel.setText(value.isSuccess() ? "Successful" : "<html><span style=\"color: red;\">Failed</span></html>");
+            if(value.isSuccess()) {
+                if(value.getNotifications().isEmpty()) {
+                    successLabel.setText("Successful");
+                }
+                else {
+                    successLabel.setText( "<html><span style=\"color: #FF8C00;\">Successful (" + value.getNotifications().getNotifications().size() + " warnings) </span></html>");
+                }
+            }else {
+                successLabel.setText( "<html><span style=\"color: red;\">Failed</span></html>");
+            }
+
             if (isSelected) {
                 setBackground(UIManager.getColor("List.selectionBackground"));
             } else {

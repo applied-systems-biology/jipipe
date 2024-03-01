@@ -77,7 +77,7 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);
         JIPipeParameterAccess parameterAccess = tree.getParameters().get("r-environment");
         REnvInstaller installer = new REnvInstaller(workbench, parameterAccess);
-        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
+        JIPipeRunExecuterUI.runInDialog(workbench, workbench.getWindow(), installer);
     }
 
     private static void easyInstallR(JIPipeWorkbench workbench) {
@@ -85,7 +85,7 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);
         JIPipeParameterAccess parameterAccess = tree.getParameters().get("r-environment");
         REasyInstaller installer = new REasyInstaller(workbench, parameterAccess);
-        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
+        JIPipeRunExecuterUI.runInDialog(workbench, workbench.getWindow(), installer);
     }
 
     private static void configureR(JIPipeWorkbench workbench) {

@@ -16,10 +16,12 @@ package org.hkijena.jipipe.ui.quickrun;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
+import org.hkijena.jipipe.api.grouping.JIPipeGraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
+import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -98,11 +100,28 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
             for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
                 for (JIPipeDataSlot sourceSlot : run.getGraph().getInputIncomingSourceSlots(inputSlot)) {
                     JIPipeGraphNode predecessorNode = sourceSlot.getNode();
-                    if (handledNodes.contains(predecessorNode))
+                    if (handledNodes.contains(predecessorNode)) {
                         continue;
+                    }
                     handledNodes.add(predecessorNode);
-                    if (!predecessorNode.getInfo().isRunnable())
+                    if (!predecessorNode.getInfo().isRunnable()) {
                         continue;
+                    }
+
+                    // Check if we are in an iterating partition --> cache not available
+                    if(predecessorNode instanceof JIPipeAlgorithm) {
+                        JIPipeRuntimePartition runtimePartition = run.getRuntimePartition(((JIPipeAlgorithm) predecessorNode).getRuntimePartition());
+                        if(runtimePartition.getIterationMode() != JIPipeGraphWrapperAlgorithm.IterationMode.PassThrough) {
+                            if(!settings.isStoreToCache() || !runtimePartition.isForcePassThroughLoopIterationInCaching()) {
+                                // predecessor is in a loop condition --> don't access cache
+                                predecessors.add(predecessorNode);
+                                stack.push(predecessorNode);
+                                continue;
+                            }
+                        }
+                    }
+
+                    // Check the cache
                     JIPipeGraphNode projectPredecessorNode = project.getGraph().getEquivalentNode(predecessorNode);
                     Map<String, JIPipeDataTable> slotMap = project.getCache().query(projectPredecessorNode, projectPredecessorNode.getUUIDInParentGraph(), progressInfo);
 
@@ -239,6 +258,6 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
 
     @Override
     public String getTaskLabel() {
-        return "Quick run / Update cache";
+        return "Run";
     }
 }

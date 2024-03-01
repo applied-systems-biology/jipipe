@@ -57,7 +57,7 @@ public class PipelineRenderTool extends JIPipeMenuExtension {
                 ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION)) {
             Path path = FileChooserSettings.saveFile(getWorkbench().getWindow(), FileChooserSettings.LastDirectoryKey.External, getText(), UIUtils.EXTENSION_FILTER_PNG);
             if (path != null) {
-                JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), new RenderPipelineRun(project, path, settings));
+                JIPipeRunExecuterUI.runInDialog(getWorkbench(), getWorkbench().getWindow(), new RenderPipelineRun(project, path, settings));
             }
         }
     }

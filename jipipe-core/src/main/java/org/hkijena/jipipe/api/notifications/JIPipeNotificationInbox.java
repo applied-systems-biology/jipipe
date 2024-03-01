@@ -19,7 +19,11 @@ import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.extensions.settings.NotificationUISettings;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.locks.StampedLock;
 
 /**
  * A list of notifications that has not yet been reviewed
@@ -30,9 +34,16 @@ public class JIPipeNotificationInbox {
     private final DismissedEventEmitter dismissedEventEmitter = new DismissedEventEmitter();
     private final PushedEventEmitter pushedEventEmitter = new PushedEventEmitter();
     private final UpdatedEventEmitter updatedEventEmitter = new UpdatedEventEmitter();
+    private final StampedLock stampedLock = new StampedLock();
 
     public JIPipeNotificationInbox() {
 
+    }
+
+    public JIPipeNotificationInbox(JIPipeNotificationInbox other) {
+        for (JIPipeNotification notification : other.notifications) {
+            notifications.add(new JIPipeNotification(notification));
+        }
     }
 
     public static JIPipeNotificationInbox getInstance() {
@@ -57,7 +68,12 @@ public class JIPipeNotificationInbox {
 
     public void dismissAll() {
         ImmutableList<JIPipeNotification> copy = ImmutableList.copyOf(notifications);
-        notifications.clear();
+        long stamp = stampedLock.writeLock();
+        try {
+            notifications.clear();
+        } finally {
+            stampedLock.unlock(stamp);
+        }
         for (JIPipeNotification notification : copy) {
             dismissedEventEmitter.emit(new DismissedEvent(this, notification));
         }
@@ -65,14 +81,24 @@ public class JIPipeNotificationInbox {
     }
 
     public void push(JIPipeNotification notification) {
-        notification.setInbox(this);
-        notifications.add(notification);
+        long stamp = stampedLock.writeLock();
+        try {
+            notification.setInbox(this);
+            notifications.add(notification);
+        } finally {
+            stampedLock.unlock(stamp);
+        }
         pushedEventEmitter.emit(new PushedEvent(this, notification));
         updatedEventEmitter.emit(new UpdatedEvent(this));
     }
 
     public void dismiss(JIPipeNotification notification) {
-        notifications.remove(notification);
+        long stamp = stampedLock.writeLock();
+        try {
+            notifications.remove(notification);
+        } finally {
+            stampedLock.unlock(stamp);
+        }
         dismissedEventEmitter.emit(new DismissedEvent(this, notification));
         updatedEventEmitter.emit(new UpdatedEvent(this));
     }
@@ -82,7 +108,12 @@ public class JIPipeNotificationInbox {
     }
 
     public boolean isEmpty() {
-        return notifications.isEmpty();
+        long stamp = stampedLock.readLock();
+        try {
+            return notifications.isEmpty();
+        } finally {
+            stampedLock.unlock(stamp);
+        }
     }
 
     /**
@@ -98,16 +129,21 @@ public class JIPipeNotificationInbox {
 
     public boolean hasNotifications() {
         Set<String> blocked = new HashSet<>();
-        if(JIPipe.isInstantiated()) {
+        if (JIPipe.isInstantiated()) {
             NotificationUISettings settings = NotificationUISettings.getInstance();
-            if(settings != null) {
+            if (settings != null) {
                 blocked.addAll(settings.getBlockedNotifications());
             }
         }
-        for (JIPipeNotification notification : notifications) {
-            if(!blocked.contains(notification.getId())) {
-                return true;
+        long stamp = stampedLock.readLock();
+        try {
+            for (JIPipeNotification notification : notifications) {
+                if (!blocked.contains(notification.getId())) {
+                    return true;
+                }
             }
+        } finally {
+            stampedLock.unlock(stamp);
         }
         return false;
     }
