@@ -46,6 +46,7 @@ import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.*;
 import org.hkijena.jipipe.ui.grapheditor.nodefinder.JIPipeNodeFinderDialogUI;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
+import org.w3c.dom.css.Rect;
 
 import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
@@ -791,6 +792,9 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
 
             int slotWidth = (int) Math.round(slotState.getNativeWidth() * zoom);
 
+            // Save the highlight for later
+            slotState.setLastFillRect(new Rectangle(startX, getHeight() - realSlotHeight, slotWidth, realSlotHeight));
+
             // Draw highlight
             if (slotState == currentActiveArea && graphCanvasUI.currentToolAllowsConnectionDragging()) {
                 g2.setPaint(buttonFillColor);
@@ -878,6 +882,9 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
                 g2.setPaint(slotParametersFillColor);
                 g2.fillRect(startX, 0, slotWidth, realSlotHeight);
             }
+
+            // Save the highlight for later
+            slotState.setLastFillRect(new Rectangle(startX, 0, slotWidth, realSlotHeight));
 
             // Draw highlight
             if (slotState == currentActiveArea && graphCanvasUI.currentToolAllowsConnectionDragging()) {

@@ -51,6 +51,7 @@ import org.hkijena.jipipe.ui.grapheditor.general.layout.MSTGraphAutoLayoutMethod
 import org.hkijena.jipipe.ui.grapheditor.general.layout.SugiyamaGraphAutoLayoutMethod;
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.*;
 import org.hkijena.jipipe.ui.settings.JIPipeRuntimePartitionListEditor;
+import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -2599,112 +2600,140 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         if(edgeIds.isEmpty()) {
             return;
         }
-        if(edgeIds.size() == 1) {
-            DisplayedSlotEdge edge = edgeIds.keySet().iterator().next();
-            if(edge.getUIManhattanDistance() <= 2 * zoom * getViewMode().getGridHeight()) {
-                return;
-            }
-        }
+        g.setPaint(ModernMetalTheme.PRIMARY5);
 
+        for (JIPipeDataSlot dataSlot : highlightedEdges.keySet()) {
+            JIPipeGraphNodeUI nodeUI = nodeUIs.get(dataSlot.getNode());
+            if(nodeUI != null) {
+                JIPipeNodeUISlotActiveArea slotActiveArea = nodeUI.getSlotActiveArea(dataSlot);
+                int nodeX = nodeUI.getX();
+                int nodeY = nodeUI.getY();
+                if (slotActiveArea != null && slotActiveArea.getLastFillRect() != null) {
+                    Rectangle lastFillRect = slotActiveArea.getLastFillRect();
+                    int x = (int) Math.round(lastFillRect.x + 2 * zoom);
+                    int width = lastFillRect.width - (int) Math.round(2 * 2 * zoom);
+                    int height = (int) Math.round(2 * zoom);
+                    int arc = (int) Math.round(2 * zoom);
 
-        // Draw edges
-        for (JIPipeDataSlot currentSlot : highlightedEdges.keySet()) {
-            List<DisplayedSlotEdge> connectedSlots = highlightedEdges.get(currentSlot).stream().sorted(Comparator.comparing(DisplayedSlotEdge::getUIManhattanDistance)).collect(Collectors.toList());
-            JIPipeGraphNodeUI nodeUI = nodeUIs.get(currentSlot.getNode());
-
-            JIPipeNodeUISlotActiveArea slotActiveArea = nodeUI.getSlotActiveArea(currentSlot);
-            if (slotActiveArea != null && slotActiveArea.getZoomedHitArea() != null) {
-
-                final int baseHeight = 32;
-                final int baseIconSize = 16;
-                final int baseIconSpacing = 6;
-                int tooltipHeight = (int) Math.round(zoom * connectedSlots.size() * baseHeight);
-                int maxAvailableWidth = slotActiveArea.getZoomedHitArea().width;
-                int tooltipWidth = 0;
-                for (DisplayedSlotEdge slotEdge : connectedSlots) {
-                    // JIPipeDataSlot sourceSlot = slotEdge.source;
-                    int id = edgeIds.get(slotEdge);
-                    tooltipWidth = Math.max(tooltipWidth, slotFontMetrics.stringWidth(String.valueOf(id)) + (int) Math.round(zoom * (baseIconSize + baseIconSpacing) + zoom * 8));
-                }
-                tooltipWidth = Math.min(maxAvailableWidth, tooltipWidth);
-
-                // Generate tooltip
-                final int spacing = (int) Math.round(zoom * viewMode.getGridHeight() / 4.0);
-
-                int tooltipX, tooltipY;
-                Polygon tooltipPolygon;
-
-                tooltipX = nodeUI.getX() + slotActiveArea.getZoomedHitArea().x;
-
-                if (currentSlot.isInput()) {
-                    tooltipY = nodeUI.getY() - tooltipHeight - spacing - (int) Math.round(zoom * 4);
-
-                    tooltipPolygon = new Polygon(new int[]{tooltipX, tooltipX, tooltipX + tooltipWidth, tooltipX + tooltipWidth, tooltipX + tooltipWidth / 2 + spacing, tooltipX + tooltipWidth / 2, tooltipX + tooltipWidth / 2 - spacing},
-                            new int[]{tooltipY + tooltipHeight, tooltipY, tooltipY, tooltipY + tooltipHeight, tooltipY + tooltipHeight, tooltipY + tooltipHeight + spacing, tooltipY + tooltipHeight},
-                            7);
-                } else {
-                    tooltipY = nodeUI.getY() + nodeUI.getHeight() + (int) Math.round(zoom * 4) + spacing;
-
-                    tooltipPolygon = new Polygon(new int[]{tooltipX, tooltipX + tooltipWidth / 2 - spacing, tooltipX + tooltipWidth / 2, tooltipX + tooltipWidth / 2 + spacing, tooltipX + tooltipWidth, tooltipX + tooltipWidth, tooltipX},
-                            new int[]{tooltipY, tooltipY, tooltipY - spacing, tooltipY, tooltipY, tooltipY + tooltipHeight, tooltipY + tooltipHeight},
-                            7);
-                }
-
-
-                if(targetSlot != null) {
-                    JIPipeNodeInfo info = targetSlot.getNode().getInfo();
-                    g.setPaint(UIUtils.DARK_THEME ? info.getCategory().getDarkFillColor() : info.getCategory().getFillColor());
-                }
-                else {
-                    g.setPaint(smartEdgeSlotBackground);
-                }
-
-                g.setStroke(new BasicStroke(2));
-                g.fill(tooltipPolygon);
-                g.setPaint(nodeUI.getBorderColor());
-                g.draw(tooltipPolygon);
-
-                int startY = tooltipY;
-                int slotInfoHeight = (int) Math.round(zoom * baseHeight);
-
-                g.setPaint(smartEdgeSlotForeground);
-
-
-                for (DisplayedSlotEdge slotEdge : connectedSlots) {
-
-                    int id = edgeIds.get(slotEdge);
-
-                    // Draw icon
-                    Image icon;
-
-                    if(currentSlot.isInput()) {
-                        icon = JIPipe.getDataTypes().getIconFor(slotEdge.getSource().getAcceptedDataType()).getImage();
+                    if(dataSlot.isInput()) {
+                        int indicatorY =  (int) Math.round(2 * zoom);
+                        g.fillRoundRect(nodeX + x, nodeY + indicatorY, width, height, arc, arc);
                     }
                     else {
-                        icon = JIPipe.getDataTypes().getIconFor(slotEdge.getTarget().getAcceptedDataType()).getImage();
+                        int indicatorY =  (int) Math.round(nodeUI.getHeight() - 4 * zoom);
+                        g.fillRoundRect(nodeX + x, nodeY + indicatorY, width, height, arc, arc);
                     }
-
-                    int iconX = tooltipX + (int) Math.round(zoom * 3);
-                    int iconSize = (int) Math.round(baseIconSize * zoom);
-                    g.drawImage(icon, iconX, startY + slotInfoHeight / 2 - iconSize / 2, iconSize, iconSize, null);
-//                    g.setPaint(new Color(Color.HSBtoRGB(1.0f * id / (edgeIds.size()), 0.5f, 0.8f)));
-//                    g.fillOval(iconX, startY + slotInfoHeight / 2 - iconSize / 2, iconSize, iconSize);
-//                    g.setPaint(smartEdgeSlotForeground);
-
-                    // Draw text
-                    double centerY = startY + slotInfoHeight / 2.0 + (slotFontMetrics.getAscent() - slotFontMetrics.getDescent()) / 2.0;
-                    int textX = (int) (tooltipX + (int) Math.round(zoom * 2) + iconSize + baseIconSpacing * zoom);
-                    int slotTextY = (int) Math.round(centerY);
-
-                    g.setFont(smartEdgeTooltipSlotFont);
-                    g.drawString(String.valueOf(id), textX, slotTextY);
-
-                    startY += slotInfoHeight;
                 }
-
-
             }
         }
+
+
+//        if(edgeIds.size() == 1) {
+//            DisplayedSlotEdge edge = edgeIds.keySet().iterator().next();
+//            if(edge.getUIManhattanDistance() <= 2 * zoom * getViewMode().getGridHeight()) {
+//                return;
+//            }
+//        }
+//
+//
+//        // Draw edges
+//        for (JIPipeDataSlot currentSlot : highlightedEdges.keySet()) {
+//            List<DisplayedSlotEdge> connectedSlots = highlightedEdges.get(currentSlot).stream().sorted(Comparator.comparing(DisplayedSlotEdge::getUIManhattanDistance)).collect(Collectors.toList());
+//            JIPipeGraphNodeUI nodeUI = nodeUIs.get(currentSlot.getNode());
+//
+//            JIPipeNodeUISlotActiveArea slotActiveArea = nodeUI.getSlotActiveArea(currentSlot);
+//            if (slotActiveArea != null && slotActiveArea.getZoomedHitArea() != null) {
+//
+//                final int baseHeight = 32;
+//                final int baseIconSize = 16;
+//                final int baseIconSpacing = 6;
+//                int tooltipHeight = (int) Math.round(zoom * connectedSlots.size() * baseHeight);
+//                int maxAvailableWidth = slotActiveArea.getZoomedHitArea().width;
+//                int tooltipWidth = 0;
+//                for (DisplayedSlotEdge slotEdge : connectedSlots) {
+//                    // JIPipeDataSlot sourceSlot = slotEdge.source;
+//                    int id = edgeIds.get(slotEdge);
+//                    tooltipWidth = Math.max(tooltipWidth, slotFontMetrics.stringWidth(String.valueOf(id)) + (int) Math.round(zoom * (baseIconSize + baseIconSpacing) + zoom * 8));
+//                }
+//                tooltipWidth = Math.min(maxAvailableWidth, tooltipWidth);
+//
+//                // Generate tooltip
+//                final int spacing = (int) Math.round(zoom * viewMode.getGridHeight() / 4.0);
+//
+//                int tooltipX, tooltipY;
+//                Polygon tooltipPolygon;
+//
+//                tooltipX = nodeUI.getX() + slotActiveArea.getZoomedHitArea().x;
+//
+//                if (currentSlot.isInput()) {
+//                    tooltipY = nodeUI.getY() - tooltipHeight - spacing - (int) Math.round(zoom * 4);
+//
+//                    tooltipPolygon = new Polygon(new int[]{tooltipX, tooltipX, tooltipX + tooltipWidth, tooltipX + tooltipWidth, tooltipX + tooltipWidth / 2 + spacing, tooltipX + tooltipWidth / 2, tooltipX + tooltipWidth / 2 - spacing},
+//                            new int[]{tooltipY + tooltipHeight, tooltipY, tooltipY, tooltipY + tooltipHeight, tooltipY + tooltipHeight, tooltipY + tooltipHeight + spacing, tooltipY + tooltipHeight},
+//                            7);
+//                } else {
+//                    tooltipY = nodeUI.getY() + nodeUI.getHeight() + (int) Math.round(zoom * 4) + spacing;
+//
+//                    tooltipPolygon = new Polygon(new int[]{tooltipX, tooltipX + tooltipWidth / 2 - spacing, tooltipX + tooltipWidth / 2, tooltipX + tooltipWidth / 2 + spacing, tooltipX + tooltipWidth, tooltipX + tooltipWidth, tooltipX},
+//                            new int[]{tooltipY, tooltipY, tooltipY - spacing, tooltipY, tooltipY, tooltipY + tooltipHeight, tooltipY + tooltipHeight},
+//                            7);
+//                }
+//
+//
+//                if(targetSlot != null) {
+//                    JIPipeNodeInfo info = targetSlot.getNode().getInfo();
+//                    g.setPaint(UIUtils.DARK_THEME ? info.getCategory().getDarkFillColor() : info.getCategory().getFillColor());
+//                }
+//                else {
+//                    g.setPaint(smartEdgeSlotBackground);
+//                }
+//
+//                g.setStroke(new BasicStroke(2));
+//                g.fill(tooltipPolygon);
+//                g.setPaint(nodeUI.getBorderColor());
+//                g.draw(tooltipPolygon);
+//
+//                int startY = tooltipY;
+//                int slotInfoHeight = (int) Math.round(zoom * baseHeight);
+//
+//                g.setPaint(smartEdgeSlotForeground);
+//
+//
+//                for (DisplayedSlotEdge slotEdge : connectedSlots) {
+//
+//                    int id = edgeIds.get(slotEdge);
+//
+//                    // Draw icon
+//                    Image icon;
+//
+//                    if(currentSlot.isInput()) {
+//                        icon = JIPipe.getDataTypes().getIconFor(slotEdge.getSource().getAcceptedDataType()).getImage();
+//                    }
+//                    else {
+//                        icon = JIPipe.getDataTypes().getIconFor(slotEdge.getTarget().getAcceptedDataType()).getImage();
+//                    }
+//
+//                    int iconX = tooltipX + (int) Math.round(zoom * 3);
+//                    int iconSize = (int) Math.round(baseIconSize * zoom);
+//                    g.drawImage(icon, iconX, startY + slotInfoHeight / 2 - iconSize / 2, iconSize, iconSize, null);
+////                    g.setPaint(new Color(Color.HSBtoRGB(1.0f * id / (edgeIds.size()), 0.5f, 0.8f)));
+////                    g.fillOval(iconX, startY + slotInfoHeight / 2 - iconSize / 2, iconSize, iconSize);
+////                    g.setPaint(smartEdgeSlotForeground);
+//
+//                    // Draw text
+//                    double centerY = startY + slotInfoHeight / 2.0 + (slotFontMetrics.getAscent() - slotFontMetrics.getDescent()) / 2.0;
+//                    int textX = (int) (tooltipX + (int) Math.round(zoom * 2) + iconSize + baseIconSpacing * zoom);
+//                    int slotTextY = (int) Math.round(centerY);
+//
+//                    g.setFont(smartEdgeTooltipSlotFont);
+//                    g.drawString(String.valueOf(id), textX, slotTextY);
+//
+//                    startY += slotInfoHeight;
+//                }
+//
+//
+//            }
+//        }
 
     }
 

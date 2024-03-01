@@ -38,6 +38,7 @@ public class JIPipeNodeUISlotActiveArea extends JIPipeNodeUIActiveArea {
     private double nativeWidth;
 
     private Image icon;
+    private Rectangle lastFillRect;
 
     public JIPipeNodeUISlotActiveArea(JIPipeGraphNodeUI nodeUI, JIPipeSlotType slotType, String slotName, JIPipeDataSlot slot) {
         super(nodeUI, 100);
@@ -117,5 +118,13 @@ public class JIPipeNodeUISlotActiveArea extends JIPipeNodeUIActiveArea {
 
     public boolean isOutput() {
         return slotType == JIPipeSlotType.Output;
+    }
+
+    public void setLastFillRect(Rectangle lastFillRect) {
+        this.lastFillRect = lastFillRect;
+    }
+
+    public Rectangle getLastFillRect() {
+        return lastFillRect;
     }
 }
