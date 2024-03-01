@@ -440,7 +440,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                 break;
             default:
                 // We are in a main loop -> Decide from partition
-                graphWrapperAlgorithm.setContinueOnFailureExportFailedInputs(runtimePartition.getContinueOnFailureSettings().isExportFailedPartitionInputs() ?
+                graphWrapperAlgorithm.setContinueOnFailureExportFailedInputs(runtimePartition.getContinueOnFailureSettings().isExportFailedLoopInputs() ?
                         JIPipeGraphRunPartitionInheritedBoolean.Enable : JIPipeGraphRunPartitionInheritedBoolean.Disable);
 
                 break;
