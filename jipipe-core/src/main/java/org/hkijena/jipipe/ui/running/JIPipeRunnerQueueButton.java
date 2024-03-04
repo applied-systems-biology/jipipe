@@ -159,13 +159,13 @@ public class JIPipeRunnerQueueButton extends JButton implements JIPipeWorkbenchA
             menu.add(noTasksItem);
         }
 
-        if (workbench instanceof JIPipeProjectWorkbench && isOnGlobalRunnerQueue()) {
-            menu.addSeparator();
-            JMenuItem openLogsItem = new JMenuItem("Open logs", UIUtils.getIcon32FromResources("actions/rabbitvcs-show_log.png"));
-            openLogsItem.setMaximumSize(new Dimension(Short.MAX_VALUE, 48));
-            openLogsItem.addActionListener(e -> workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_LOG));
-            menu.add(openLogsItem);
-        }
+//        if (workbench instanceof JIPipeProjectWorkbench && isOnGlobalRunnerQueue()) {
+//            menu.addSeparator();
+//            JMenuItem openLogsItem = new JMenuItem("Open logs", UIUtils.getIcon32FromResources("actions/rabbitvcs-show_log.png"));
+//            openLogsItem.setMaximumSize(new Dimension(Short.MAX_VALUE, 48));
+//            openLogsItem.addActionListener(e -> workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_LOG));
+//            menu.add(openLogsItem);
+//        }
     }
 
     private boolean isOnGlobalRunnerQueue() {

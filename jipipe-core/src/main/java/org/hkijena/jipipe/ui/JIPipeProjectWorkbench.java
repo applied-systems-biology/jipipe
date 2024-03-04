@@ -625,6 +625,9 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         // Queue monitor
         menu.add(new JIPipeRunnerQueueButton(this));
 
+        // Logs button
+        menu.add(new JIPipeRunnableLogsButton(this));
+
         // "Run" entry
         JButton runProjectButton = new JButton("Run", UIUtils.getIconFromResources("actions/play.png"));
         runProjectButton.setToolTipText("Runs the whole pipeline");
@@ -836,43 +839,6 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
             }
         }
     }
-
-//    private void openManual() {
-//        Path imageJDir = Paths.get(Prefs.getImageJDir());
-//        if (!Files.isDirectory(imageJDir)) {
-//            try {
-//                Files.createDirectories(imageJDir);
-//            } catch (IOException e) {
-//                IJ.handleException(e);
-//            }
-//        }
-//        Path indexFile = imageJDir.resolve("jipipe").resolve("offline-manual").resolve("docs").resolve("index.html");
-//        DownloadOfflineManualRun run = new DownloadOfflineManualRun();
-//        if (!Files.exists(indexFile)) {
-//            if (JOptionPane.showConfirmDialog(this, "The manual needs to be downloaded, first." +
-//                            "\nDo you want to download it now?\n\n" +
-//                            "This needs to be only done once.\n\n" +
-//                            "URL: " + DownloadOfflineManualRun.DOWNLOAD_URL,
-//                    "Open manual",
-//                    JOptionPane.YES_NO_OPTION,
-//                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
-//                return;
-//            }
-//            JIPipeRunExecuterUI.runInDialog(getWindow(), run);
-//        }
-//        if (Files.exists(indexFile)) {
-//            try {
-//                Desktop.getDesktop().open(indexFile.toFile());
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        } else {
-//            JOptionPane.showMessageDialog(this,
-//                    "The manual does not exist!",
-//                    "Open manual",
-//                    JOptionPane.ERROR_MESSAGE);
-//        }
-//    }
 
     private void openProjectFolder() {
         if (getProject().getWorkDirectory() == null || !Files.isDirectory(getProject().getWorkDirectory())) {

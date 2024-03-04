@@ -29,7 +29,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel implements JIPipeRunnableLogsCollection.LogClearedEventListener, JIPipeRunnableLogsCollection.LogEntryAddedEventListener {
+public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel implements JIPipeRunnableLogsCollection.LogClearedEventListener, JIPipeRunnableLogsCollection.LogEntryAddedEventListener, JIPipeRunnableLogsCollection.LogUpdatedEventListener {
     private final JList<JIPipeRunnableLogEntry> logEntryJList = new JList<>();
     private JIPipeRunnableLogEntry currentlyDisplayedLog;
     private AutoResizeSplitPane splitPane;
@@ -39,6 +39,7 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel implements JIPi
         initialize();
         JIPipeRunnableLogsCollection.getInstance().getLogClearedEventEmitter().subscribeWeak(this);
         JIPipeRunnableLogsCollection.getInstance().getLogEntryAddedEventEmitter().subscribeWeak(this);
+        JIPipeRunnableLogsCollection.getInstance().getLogUpdatedEventEmitter().subscribeWeak(this);
         updateEntryList();
     }
 
@@ -63,6 +64,10 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel implements JIPi
         JButton clearButton = new JButton("Clear", UIUtils.getIconFromResources("actions/edit-clear.png"));
         clearButton.addActionListener(e -> JIPipeRunnableLogsCollection.getInstance().clear());
         leftToolbar.add(clearButton);
+
+        leftToolbar.add(UIUtils.createButton("Mark all as read",
+                UIUtils.getIconFromResources("actions/check-double.png"),
+                () -> JIPipeRunnableLogsCollection.getInstance().markAllAsRead()));
 
         // Split pane
         splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT,
@@ -98,6 +103,12 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel implements JIPi
     public void showLog(JIPipeRunnableLogEntry entry) {
         currentlyDisplayedLog = entry;
         splitPane.setRightComponent(new JIPipeLogViewLogUI(getWorkbench(), entry));
+        JIPipeRunnableLogsCollection.getInstance().markAsRead(entry);
+    }
+
+    @Override
+    public void onLogUpdated(JIPipeRunnableLogsCollection.LogUpdatedEvent event) {
+        logEntryJList.repaint(50);
     }
 
     public static class LogEntryRenderer extends JPanel implements ListCellRenderer<JIPipeRunnableLogEntry> {
@@ -118,7 +129,7 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel implements JIPi
 
             Insets border = new Insets(2, 4, 2, 2);
 
-            nameLabel = new JLabel(UIUtils.getIconFromResources("actions/show_log.png"));
+            nameLabel = new JLabel();
             add(nameLabel, new GridBagConstraints() {
                 {
                     gridx = 0;
@@ -165,20 +176,34 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel implements JIPi
             timeLabel.setText(StringUtils.formatDateTime(value.getDateTime()));
             if(value.isSuccess()) {
                 if(value.getNotifications().isEmpty()) {
+                    nameLabel.setIcon(UIUtils.getIconFromResources("emblems/emblem-rabbitvcs-normal.png"));
                     successLabel.setText("Successful");
                 }
                 else {
-                    successLabel.setText( "<html><span style=\"color: #FF8C00;\">Successful (" + value.getNotifications().getNotifications().size() + " warnings) </span></html>");
+                    nameLabel.setIcon(UIUtils.getIconFromResources("emblems/warning.png"));
+                    successLabel.setText( "Successful (" + value.getNotifications().getNotifications().size() + " warnings)");
                 }
             }else {
-                successLabel.setText( "<html><span style=\"color: red;\">Failed</span></html>");
+                nameLabel.setIcon(UIUtils.getIconFromResources("emblems/vcs-conflicting.png"));
+                successLabel.setText( "Failed");
             }
 
             if (isSelected) {
+                nameLabel.setForeground(UIManager.getColor("List.selectionForeground"));
                 setBackground(UIManager.getColor("List.selectionBackground"));
             } else {
+                if(value.isRead()) {
+                    nameLabel.setForeground(Color.LIGHT_GRAY);
+                }
+                else {
+                    nameLabel.setForeground(UIManager.getColor("List.selectionForeground"));
+                }
                 setBackground(UIManager.getColor("List.background"));
             }
+
+            timeLabel.setForeground(nameLabel.getForeground());
+            successLabel.setForeground(nameLabel.getForeground());
+
             return this;
         }
     }

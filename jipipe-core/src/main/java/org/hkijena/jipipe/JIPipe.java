@@ -904,6 +904,9 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 LocalDateTime.now(),
                 progressInfo.getLog().toString(),
                 new JIPipeNotificationInbox(), true));
+
+        // Mark log as read
+        JIPipeRunnableLogsCollection.getInstance().markAllAsRead();
     }
 
     private void registerProjectTemplatesFromFileSystem() {

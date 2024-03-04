@@ -23,6 +23,7 @@ public class JIPipeRunnableLogEntry {
     private final String log;
     private final JIPipeNotificationInbox notifications;
     private final boolean success;
+    private boolean read = false;
 
     public JIPipeRunnableLogEntry(String name, LocalDateTime dateTime, String log, JIPipeNotificationInbox notifications, boolean success) {
         this.name = name;
@@ -50,5 +51,13 @@ public class JIPipeRunnableLogEntry {
 
     public JIPipeNotificationInbox getNotifications() {
         return notifications;
+    }
+
+    public boolean isRead() {
+        return read;
+    }
+
+    public void setRead(boolean read) {
+        this.read = read;
     }
 }

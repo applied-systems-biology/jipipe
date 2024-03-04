@@ -29,6 +29,7 @@ public class JIPipeRunnableLogsCollection implements JIPipeRunnable.FinishedEven
     private final List<JIPipeRunnableLogEntry> logEntries = new ArrayList<>();
     private final LogEntryAddedEventEmitter logEntryAddedEventEmitter = new LogEntryAddedEventEmitter();
     private final LogClearedEventEmitter logClearedEventEmitter = new LogClearedEventEmitter();
+    private final LogUpdatedEventEmitter logUpdatedEventEmitter = new LogUpdatedEventEmitter();
 
     public JIPipeRunnableLogsCollection() {
         JIPipeRunnerQueue.getInstance().getFinishedEventEmitter().subscribe(this);
@@ -57,11 +58,13 @@ public class JIPipeRunnableLogsCollection implements JIPipeRunnable.FinishedEven
     public void clear() {
         logEntries.clear();
         logClearedEventEmitter.emit(new LogClearedEvent(this));
+        logUpdatedEventEmitter.emit(new LogUpdatedEvent(this));
     }
 
     public void pushToLog(JIPipeRunnableLogEntry entry) {
         logEntries.add(entry);
         logEntryAddedEventEmitter.emit(new LogEntryAddedEvent(this, entry));
+        logUpdatedEventEmitter.emit(new LogUpdatedEvent(this));
     }
 
     private void pushToLog(JIPipeRunnable run, boolean success) {
@@ -73,7 +76,20 @@ public class JIPipeRunnableLogsCollection implements JIPipeRunnable.FinishedEven
             JIPipeRunnableLogEntry entry = new JIPipeRunnableLogEntry(run.getTaskLabel(), LocalDateTime.now(), log.toString(), new JIPipeNotificationInbox(run.getProgressInfo().getNotifications()), success);
             logEntries.add(entry);
             logEntryAddedEventEmitter.emit(new LogEntryAddedEvent(this, entry));
+            logUpdatedEventEmitter.emit(new LogUpdatedEvent(this));
         }
+    }
+
+    public void markAllAsRead() {
+        for (JIPipeRunnableLogEntry logEntry : logEntries) {
+            logEntry.setRead(true);
+        }
+        logUpdatedEventEmitter.emit(new LogUpdatedEvent(this));
+    }
+
+    public void markAsRead(JIPipeRunnableLogEntry logEntry) {
+        logEntry.setRead(true);
+        logUpdatedEventEmitter.emit(new LogUpdatedEvent(this));
     }
 
     @Override
@@ -84,6 +100,10 @@ public class JIPipeRunnableLogsCollection implements JIPipeRunnable.FinishedEven
     @Override
     public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
         pushToLog(event.getRun(), false);
+    }
+
+    public LogUpdatedEventEmitter getLogUpdatedEventEmitter() {
+        return logUpdatedEventEmitter;
     }
 
     public interface LogClearedEventListener {
@@ -108,7 +128,6 @@ public class JIPipeRunnableLogsCollection implements JIPipeRunnable.FinishedEven
     }
 
     public static class LogClearedEventEmitter extends JIPipeEventEmitter<LogClearedEvent, LogClearedEventListener> {
-
         @Override
         protected void call(LogClearedEventListener logClearedEventListener, LogClearedEvent event) {
             logClearedEventListener.onLogCleared(event);
@@ -139,6 +158,31 @@ public class JIPipeRunnableLogsCollection implements JIPipeRunnable.FinishedEven
         @Override
         protected void call(LogEntryAddedEventListener logEntryAddedEventListener, LogEntryAddedEvent event) {
             logEntryAddedEventListener.onLogEntryAdded(event);
+        }
+    }
+
+    public static class LogUpdatedEvent extends AbstractJIPipeEvent {
+        private final JIPipeRunnableLogsCollection logs;
+
+        public LogUpdatedEvent(JIPipeRunnableLogsCollection logs) {
+            super(logs);
+            this.logs = logs;
+        }
+
+        public JIPipeRunnableLogsCollection getLogs() {
+            return logs;
+        }
+    }
+
+    public interface LogUpdatedEventListener {
+        void onLogUpdated(LogUpdatedEvent event);
+    }
+
+    public static class LogUpdatedEventEmitter extends JIPipeEventEmitter<LogUpdatedEvent, LogUpdatedEventListener> {
+
+        @Override
+        protected void call(LogUpdatedEventListener logUpdatedEventListener, LogUpdatedEvent event) {
+            logUpdatedEventListener.onLogUpdated(event);
         }
     }
 
