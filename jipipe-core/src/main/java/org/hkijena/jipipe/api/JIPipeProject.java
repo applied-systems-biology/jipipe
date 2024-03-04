@@ -105,28 +105,28 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
             JIPipeRuntimePartition fileSystemPartition = new JIPipeRuntimePartition();
             fileSystemPartition.setName("Filesystem");
             fileSystemPartition.setDescription(new HTMLText("Pre-defined partition useful for separating off filesystem operations"));
-            fileSystemPartition.setColor(new OptionalColorParameter(new Color(0xEFF6F1), true));
+            fileSystemPartition.setColor(new OptionalColorParameter(new Color(0x93C6A2), true));
             this.runtimePartitions.add(fileSystemPartition);
         }
         {
             JIPipeRuntimePartition statisticsPartition = new JIPipeRuntimePartition();
             statisticsPartition.setName("Statistics");
             statisticsPartition.setDescription(new HTMLText("Pre-defined partition useful for separating off statistics and postprocessing operations"));
-            statisticsPartition.setColor(new OptionalColorParameter(new Color(0xf5eff6), true));
+            statisticsPartition.setColor(new OptionalColorParameter(new Color(0xbd93c4), true));
             this.runtimePartitions.add(statisticsPartition);
         }
         {
             JIPipeRuntimePartition visualizationPartition = new JIPipeRuntimePartition();
             visualizationPartition.setName("Visualization");
             visualizationPartition.setDescription(new HTMLText("Pre-defined partition useful for separating off visualization and postprocessing operations"));
-            visualizationPartition.setColor(new OptionalColorParameter(new Color(0xeff5f6), true));
+            visualizationPartition.setColor(new OptionalColorParameter(new Color(0x93bdc4), true));
             this.runtimePartitions.add(visualizationPartition);
         }
         {
             JIPipeRuntimePartition postprocessingPartition = new JIPipeRuntimePartition();
             postprocessingPartition.setName("Postprocessing");
             postprocessingPartition.setDescription(new HTMLText("Pre-defined partition useful for separating off postprocessing operations"));
-            postprocessingPartition.setColor(new OptionalColorParameter(new Color(0xf6f4ef), true));
+            postprocessingPartition.setColor(new OptionalColorParameter(new Color(0xc4b693), true));
             this.runtimePartitions.add(postprocessingPartition);
         }
 

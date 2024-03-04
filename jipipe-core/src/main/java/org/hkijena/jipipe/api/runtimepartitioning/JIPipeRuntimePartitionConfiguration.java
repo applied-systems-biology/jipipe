@@ -76,8 +76,8 @@ public class JIPipeRuntimePartitionConfiguration {
         JIPipeRuntimePartition partition = new JIPipeRuntimePartition();
         partition.setName("Partition " + (extraRuntimePartitions.size() + 1));
 
-        final float baseSaturation = 1.2f / 100f;
-        final float baseValue = 98.04f / 100f;
+        final float baseSaturation = 25f / 100f;
+        final float baseValue = 77f / 100f;
 
         // Find a proper hue
         Set<Integer> usedHues = new HashSet<>();

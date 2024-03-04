@@ -122,6 +122,7 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
     private BufferedImage nodeBuffer;
     private boolean nodeBufferInvalid = true;
     private boolean buffered = true;
+    private Color partitionColor;
 
     /**
      * Creates a new UI
@@ -386,13 +387,13 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
             JIPipeRuntimePartition runtimePartition = ((JIPipeProjectWorkbench) getWorkbench()).getProject().getRuntimePartitions().get(partition);
             if (runtimePartition.getColor().isEnabled()) {
 //                this.nodeBorderColor = runtimePartition.getColor().getContent();
-                this.slotFillColor =  runtimePartition.getColor().getContent();
+                this.partitionColor =  runtimePartition.getColor().getContent();
             } else {
 //                this.nodeBorderColor = UIUtils.getBorderColorFor(node.getInfo());
-                this.slotFillColor = UIManager.getColor("Panel.background");
+                this.partitionColor = null;
             }
         } else {
-            this.slotFillColor = UIManager.getColor("Panel.background");
+            this.partitionColor = null;
 //            this.nodeBorderColor = UIUtils.getBorderColorFor(node.getInfo());
         }
 
@@ -1031,13 +1032,21 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
                 g2.setPaint(nodeBorderColor);
                 g2.drawOval((int) Math.round(startX + 3 * zoom), (int) Math.round(centerY - 8 * zoom), (int) Math.round(16 * zoom), (int) Math.round(16 * zoom));
 
-                // Draw icon
+                // Draw play button
                 g2.setPaint(COLOR_RUN_BUTTON_ICON);
                 g2.fillPolygon(new int[]{(int) Math.round(startX + (6 + 3) * zoom), (int) Math.round(startX + (13 + 3) * zoom), (int) Math.round(startX + (6 + 3) * zoom)},
                         new int[]{(int) Math.round(centerY - (5) * zoom), centerY, (int) Math.round(centerY + (5 + 1) * zoom)},
                         3);
 
                 startX += 22 * zoom;
+            }
+
+            // Draw partition
+            if(partitionColor != null) {
+                g2.setPaint(partitionColor);
+                g2.fillRoundRect( (int) Math.round(startX + 1 * zoom), (int) Math.round(centerY - 9 * zoom), (int) Math.round(20 * zoom), (int) Math.round(18 * zoom), 4, 4);
+                g2.setPaint(nodeBorderColor);
+                g2.drawRoundRect( (int) Math.round(startX + 1 * zoom), (int) Math.round(centerY - 9 * zoom), (int) Math.round(20 * zoom), (int) Math.round(18 * zoom), 4, 4);
             }
 
             // Draw icon

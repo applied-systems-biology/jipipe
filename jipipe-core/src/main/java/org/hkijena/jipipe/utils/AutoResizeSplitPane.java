@@ -131,15 +131,15 @@ public class AutoResizeSplitPane extends JSplitPane {
      */
     public static class DynamicSidebarRatio implements Ratio {
 
-        private boolean invert = false;
+        private boolean resizeLeftSidebar = false;
         private int preferredSidebarWidth = 700;
 
         public DynamicSidebarRatio() {
         }
 
-        public DynamicSidebarRatio(int preferredSidebarWidth, boolean invert) {
+        public DynamicSidebarRatio(int preferredSidebarWidth, boolean resizeLeftSidebar) {
             this.preferredSidebarWidth = preferredSidebarWidth;
-            this.invert = invert;
+            this.resizeLeftSidebar = resizeLeftSidebar;
         }
 
         @Override
@@ -150,16 +150,16 @@ public class AutoResizeSplitPane extends JSplitPane {
             }
             else {
                 double ratio = 1.0 * (availableWidth - preferredSidebarWidth) / availableWidth;
-                return invert ? 1.0 - ratio : ratio;
+                return resizeLeftSidebar ? 1.0 - ratio : ratio;
             }
         }
 
-        public boolean isInvert() {
-            return invert;
+        public boolean isResizeLeftSidebar() {
+            return resizeLeftSidebar;
         }
 
-        public void setInvert(boolean invert) {
-            this.invert = invert;
+        public void setResizeLeftSidebar(boolean resizeLeftSidebar) {
+            this.resizeLeftSidebar = resizeLeftSidebar;
         }
     }
 

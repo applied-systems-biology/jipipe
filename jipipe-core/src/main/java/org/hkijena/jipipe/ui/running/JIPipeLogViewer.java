@@ -73,7 +73,7 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel implements JIPi
         splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 leftPanel,
                 new JPanel(),
-                AutoResizeSplitPane.RATIO_1_TO_3);
+                new AutoResizeSplitPane.DynamicSidebarRatio(450, true));
         add(splitPane, BorderLayout.CENTER);
     }
 
@@ -104,6 +104,7 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel implements JIPi
         currentlyDisplayedLog = entry;
         splitPane.setRightComponent(new JIPipeLogViewLogUI(getWorkbench(), entry));
         JIPipeRunnableLogsCollection.getInstance().markAsRead(entry);
+        splitPane.applyRatio();
     }
 
     @Override
