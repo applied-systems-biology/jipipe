@@ -88,6 +88,15 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
         return parent;
     }
 
+    public JIPipeGraphRun getBaseRun() {
+        if(parent == null) {
+            return this;
+        }
+        else {
+            return parent.getBaseRun();
+        }
+    }
+
     @Override
     public String getTaskLabel() {
         return "Pipeline run";
@@ -413,6 +422,8 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
 
         JIPipeGraph extracted = graph.extract(partitionNodeSet, true, false);
         JIPipeGraphWrapperAlgorithm graphWrapperAlgorithm = new JIPipeGraphWrapperAlgorithm(new JIPipeEmptyNodeInfo(), extracted);
+        graphWrapperAlgorithm.getGroupInput().setRuntimePartition(new RuntimePartitionReferenceParameter(project.getRuntimePartitions().indexOf(runtimePartition)));
+        graphWrapperAlgorithm.getGroupOutput().setRuntimePartition(new RuntimePartitionReferenceParameter(project.getRuntimePartitions().indexOf(runtimePartition)));
 
         // Configure iterations
         graphWrapperAlgorithm.setIterationMode(runtimePartition.getIterationMode());
@@ -741,8 +752,40 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                     throw new NullPointerException("No candidate found! Are there cycles in the graph?");
                 }
 
+                if(isContinueOnFailure(runtimePartition) && isContinueOnFailureBackup(runtimePartition) && nextVertex instanceof JIPipeAlgorithm) {
+                    JIPipeAlgorithm algorithm = (JIPipeAlgorithm) nextVertex;
+                    UUID uuid = algorithm.getUUIDInParentGraph();
+                    // Backup pre execution if enabled
+                    // We back up the data if one of the inputs is sourced from another partition OR gathering is turned off
+                    boolean backup = false;
+                    for (JIPipeInputDataSlot inputSlot : algorithm.getInputSlots()) {
+                        if(inputSlot.isSkipDataGathering()) {
+                            backup = true;
+                            break;
+                        }
+                        if(!backup) {
+                            for (JIPipeGraphEdge edge : graph.getGraph().incomingEdgesOf(inputSlot)) {
+                                JIPipeDataSlot edgeSource = graph.getGraph().getEdgeSource(edge);
+                                if(!runtimePartitionEquals(edgeSource.getNode(), inputSlot.getNode())) {
+                                    backup = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if(backup) {
+                        progressInfo.log("Backing up inputs of " + algorithm.getDisplayName() + " [" + uuid + "]");
+                        Map<String, JIPipeDataTable> slotMap = new HashMap<>();
+                        for (JIPipeInputDataSlot inputSlot : algorithm.getInputSlots()) {
+                            JIPipeDataTable backupTable = new JIPipeDataTable(inputSlot, true, progressInfo);
+                            slotMap.put(inputSlot.getName(), backupTable);
+                        }
+                        continueOnErrorBackup.put(uuid, slotMap);
+                    }
+                }
+
                 // Execute operation & cleanup
-                runFlowGraphNode(nextVertex, dataFlowGraph, gcGraph, false, runtimePartition, continueOnErrorBackup, progressInfo);
+                runFlowGraphNode(nextVertex, dataFlowGraph, gcGraph, false, runtimePartition, progressInfo);
             }
         } catch (Throwable e) {
             if (progressInfo.isCancelled()) {
@@ -769,7 +812,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                     }
 
                     // Execute operation & cleanup
-                    runFlowGraphNode(nextVertex, dataFlowGraph, gcGraph, true, runtimePartition, null, progressInfo.resolve("Cleanup"));
+                    runFlowGraphNode(nextVertex, dataFlowGraph, gcGraph, true, runtimePartition, progressInfo.resolve("Cleanup"));
                 }
             } else {
                 throw e;
@@ -811,98 +854,13 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
     }
 
 
-    private void runFlowGraphNode(Object flowGraphNode, JIPipeGraphRunDataFlowGraph dataFlowGraph, JIPipeGraphRunGCGraph gcGraph, boolean skipWorkload, JIPipeRuntimePartition runtimePartition, Map<UUID, Map<String, JIPipeDataTable>> continueOnErrorBackup, JIPipeProgressInfo progressInfo) {
+    private void runFlowGraphNode(Object flowGraphNode, JIPipeGraphRunDataFlowGraph dataFlowGraph, JIPipeGraphRunGCGraph gcGraph, boolean skipWorkload, JIPipeRuntimePartition runtimePartition, JIPipeProgressInfo progressInfo) {
         if (flowGraphNode instanceof JIPipeInputDataSlot) {
-            progressInfo.log("+I " + ((JIPipeInputDataSlot) flowGraphNode).getDisplayName());
-
-            // Add data from incoming edges within graph
-            JIPipeInputDataSlot inputSlot = (JIPipeInputDataSlot) flowGraphNode;
-            Set<JIPipeGraphEdge> incomingEdges = graph.getGraph().incomingEdgesOf(inputSlot);
-
-            for (JIPipeGraphEdge graphEdge : incomingEdges) {
-
-                JIPipeDataSlot outputSlot = graph.getGraph().getEdgeSource(graphEdge);
-
-                if(!skipWorkload) {
-                    if (!inputSlot.isSkipDataGathering()) {
-                        inputSlot.addDataFromTable(outputSlot, progressInfo.resolve(outputSlot.getDisplayName() + " >>> " + inputSlot.getDisplayName()));
-
-                        // Put into the backup
-                        if(continueOnErrorBackup != null && isContinueOnFailure(runtimePartition) && isContinueOnFailureBackup(runtimePartition)) {
-                            JIPipeGraphNode inputSlotNode = inputSlot.getNode();
-                            UUID inputSlotNodeUUID = inputSlotNode.getUUIDInParentGraph();
-                            if (!runtimePartitionEquals(outputSlot.getNode(), inputSlotNode)) {
-                                Map<String, JIPipeDataTable> slotMap = continueOnErrorBackup.getOrDefault(inputSlotNodeUUID, null);
-                                if(slotMap == null) {
-                                    slotMap = new HashMap<>();
-                                    continueOnErrorBackup.put(inputSlotNodeUUID, slotMap);
-                                }
-                                JIPipeDataTable backupTable = slotMap.getOrDefault(inputSlotNode.getName(), null);
-                                if(backupTable == null) {
-                                    backupTable = new JIPipeDataTable();
-                                    slotMap.put(inputSlot.getName(), backupTable);
-                                }
-                                backupTable.addDataFromTable(outputSlot, progressInfo.resolve("Backup into " + inputSlot.getDisplayName()));
-                            }
-                        }
-
-                    } else {
-                        progressInfo.log("NOT copying " + outputSlot.getDisplayName() + " >>> " + inputSlot.getDisplayName() + " [data gathering disabled]");
-                    }
-                }
-
-                if (gcGraph != null) {
-                    gcGraph.removeOutputToInputEdge(outputSlot, inputSlot, progressInfo.resolve("GC"));
-                }
-            }
-
-            // Remove vertex
-            dataFlowGraph.removeVertex(flowGraphNode);
+            runInputFlowGraphNode(flowGraphNode, dataFlowGraph, gcGraph, skipWorkload, progressInfo);
         } else if (flowGraphNode instanceof JIPipeOutputDataSlot) {
-            JIPipeOutputDataSlot outputSlot = (JIPipeOutputDataSlot) flowGraphNode;
-            progressInfo.log("+O " + outputSlot.getDisplayName());
-            progressInfo.resolve(outputSlot.getNode().getDisplayName()).log("Contents of data slot " + outputSlot);
-
-            JIPipeOutputDataSlot outputDataSlot = (JIPipeOutputDataSlot) flowGraphNode;
-
-            if (gcGraph != null) {
-                gcGraph.removeNodeToOutputEdge(outputDataSlot, progressInfo.resolve("GC"));
-            }
-
-            // Remove vertex
-            dataFlowGraph.removeVertex(flowGraphNode);
+            runOutputFlowGraphNode(flowGraphNode, dataFlowGraph, gcGraph, progressInfo);
         } else if (flowGraphNode instanceof JIPipeAlgorithm) {
-            JIPipeAlgorithm algorithm = (JIPipeAlgorithm) flowGraphNode;
-            JIPipeProgressInfo algorithmProgress = progressInfo.resolve(algorithm.getDisplayName());
-            progressInfo.log("+N " + algorithm.getDisplayName());
-            algorithmProgress.log("Executing " + algorithm.getUUIDInParentGraph());
-
-
-            if(!skipWorkload) {
-                if (!tryLoadFromCache(algorithm, algorithmProgress)) {
-                    try {
-                        if (!algorithm.isSkipped() && algorithm.isEnabled() && algorithm.getInfo().isRunnable()) {
-                            algorithm.run(runContext, algorithmProgress);
-                        } else {
-                            algorithmProgress.log("Not runnable (skipped/disabled/node info not marked as runnable). Workload will not be executed!");
-                        }
-                    } catch (Exception e) {
-                        throw new JIPipeValidationRuntimeException(
-                                new GraphNodeValidationReportContext(algorithm),
-                                e,
-                                "An error occurred during processing",
-                                "On running the algorithm '" + algorithm.getDisplayName(),
-                                "Please follow the instructions for the other error messages.");
-                    }
-                }
-            }
-
-            if (gcGraph != null) {
-                gcGraph.removeInputToNodeEdge(algorithm, progressInfo.resolve("GC"));
-            }
-
-            // Remove vertex
-            dataFlowGraph.removeVertex(flowGraphNode);
+            runAlgorithmFlowGraphNode(flowGraphNode, dataFlowGraph, gcGraph, skipWorkload, progressInfo);
 
         } else {
             progressInfo.log("[!] Unsupported flow graph node type: " + flowGraphNode);
@@ -910,6 +868,82 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
             // Remove vertex
             dataFlowGraph.removeVertex(flowGraphNode);
         }
+    }
+
+    private void runAlgorithmFlowGraphNode(Object flowGraphNode, JIPipeGraphRunDataFlowGraph dataFlowGraph, JIPipeGraphRunGCGraph gcGraph, boolean skipWorkload, JIPipeProgressInfo progressInfo) {
+        JIPipeAlgorithm algorithm = (JIPipeAlgorithm) flowGraphNode;
+        JIPipeProgressInfo algorithmProgress = progressInfo.resolve(algorithm.getDisplayName());
+        progressInfo.log("+N " + algorithm.getDisplayName());
+        algorithmProgress.log("Executing " + algorithm.getUUIDInParentGraph());
+
+        if(!skipWorkload) {
+            if (!tryLoadFromCache(algorithm, algorithmProgress)) {
+                try {
+                    if (!algorithm.isSkipped() && algorithm.isEnabled() && algorithm.getInfo().isRunnable()) {
+                        algorithm.run(runContext, algorithmProgress);
+                    } else {
+                        algorithmProgress.log("Not runnable (skipped/disabled/node info not marked as runnable). Workload will not be executed!");
+                    }
+                } catch (Exception e) {
+                    throw new JIPipeValidationRuntimeException(
+                            new GraphNodeValidationReportContext(algorithm),
+                            e,
+                            "An error occurred during processing",
+                            "On running the algorithm '" + algorithm.getDisplayName(),
+                            "Please follow the instructions for the other error messages.");
+                }
+            }
+        }
+
+        if (gcGraph != null) {
+            gcGraph.removeInputToNodeEdge(algorithm, progressInfo.resolve("GC"));
+        }
+
+        // Remove vertex
+        dataFlowGraph.removeVertex(flowGraphNode);
+    }
+
+    private void runOutputFlowGraphNode(Object flowGraphNode, JIPipeGraphRunDataFlowGraph dataFlowGraph, JIPipeGraphRunGCGraph gcGraph, JIPipeProgressInfo progressInfo) {
+        JIPipeOutputDataSlot outputSlot = (JIPipeOutputDataSlot) flowGraphNode;
+        progressInfo.log("+O " + outputSlot.getDisplayName());
+        progressInfo.resolve(outputSlot.getNode().getDisplayName()).log("Contents of data slot " + outputSlot);
+
+        JIPipeOutputDataSlot outputDataSlot = (JIPipeOutputDataSlot) flowGraphNode;
+
+        if (gcGraph != null) {
+            gcGraph.removeNodeToOutputEdge(outputDataSlot, progressInfo.resolve("GC"));
+        }
+
+        // Remove vertex
+        dataFlowGraph.removeVertex(flowGraphNode);
+    }
+
+    private void runInputFlowGraphNode(Object flowGraphNode, JIPipeGraphRunDataFlowGraph dataFlowGraph, JIPipeGraphRunGCGraph gcGraph, boolean skipWorkload, JIPipeProgressInfo progressInfo) {
+        progressInfo.log("+I " + ((JIPipeInputDataSlot) flowGraphNode).getDisplayName());
+
+        // Add data from incoming edges within graph
+        JIPipeInputDataSlot inputSlot = (JIPipeInputDataSlot) flowGraphNode;
+        Set<JIPipeGraphEdge> incomingEdges = graph.getGraph().incomingEdgesOf(inputSlot);
+
+        for (JIPipeGraphEdge graphEdge : incomingEdges) {
+
+            JIPipeDataSlot outputSlot = graph.getGraph().getEdgeSource(graphEdge);
+
+            if(!skipWorkload) {
+                if (!inputSlot.isSkipDataGathering()) {
+                    inputSlot.addDataFromTable(outputSlot, progressInfo.resolve(outputSlot.getDisplayName() + " >>> " + inputSlot.getDisplayName()));
+                } else {
+                    progressInfo.log("NOT copying " + outputSlot.getDisplayName() + " >>> " + inputSlot.getDisplayName() + " [data gathering disabled]");
+                }
+            }
+
+            if (gcGraph != null) {
+                gcGraph.removeOutputToInputEdge(outputSlot, inputSlot, progressInfo.resolve("GC"));
+            }
+        }
+
+        // Remove vertex
+        dataFlowGraph.removeVertex(flowGraphNode);
     }
 
     /**

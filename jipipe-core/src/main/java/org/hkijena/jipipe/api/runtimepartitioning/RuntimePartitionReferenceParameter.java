@@ -24,6 +24,10 @@ public class RuntimePartitionReferenceParameter {
     public RuntimePartitionReferenceParameter() {
     }
 
+    public RuntimePartitionReferenceParameter(int index) {
+        this.index = index;
+    }
+
     public RuntimePartitionReferenceParameter(RuntimePartitionReferenceParameter other) {
         this.index = other.index;
     }

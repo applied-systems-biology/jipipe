@@ -263,7 +263,8 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
 
                 // Iterate through own input slots and pass them to the equivalents in group input
                 for (JIPipeDataSlot inputSlot : getInputSlots()) {
-                    JIPipeDataSlot groupInputSlot = copyGroupInput.getInputSlot(inputSlot.getName());
+                    JIPipeInputDataSlot groupInputSlot = copyGroupInput.getInputSlot(inputSlot.getName());
+                    groupInputSlot.setSkipDataGathering(true);
 //                    System.out.println("ROWS: " + iterationStep.getInputRows(inputSlot).stream().map(Object::toString).collect(Collectors.joining(", ")));
                     for (Integer row : iterationStep.getInputRows(inputSlot)) {
                         groupInputSlot.addData(inputSlot.getDataItemStore(row),
