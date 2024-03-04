@@ -696,6 +696,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                     }
                 })));
 
+        progressInfo = progressInfo.resolve("Export failed inputs");
         progressInfo.log("Target directory: " + outputDir);
         try {
             Files.createDirectories(outputDir);
@@ -800,7 +801,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                         "------------------------\n\n");
 
                 // Dump errored data
-                exportFailedInputs(graph, nodeFilter, continueOnErrorBackup, progressInfo.resolve("Export failed inputs"));
+                exportFailedInputs(graph, nodeFilter, continueOnErrorBackup, progressInfo);
 
                 // Cleanup
                 while (!dataFlowGraph.vertexSet().isEmpty()) {
