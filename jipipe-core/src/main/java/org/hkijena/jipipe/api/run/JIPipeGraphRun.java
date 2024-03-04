@@ -197,6 +197,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                             "Check if you can write to the output directory.");
                 }
 
+                progressInfo.log("\n\n------------------------");
                 progressInfo.log("Run ending at " + StringUtils.formatDateTime(LocalDateTime.now()));
                 progressInfo.log("\n--> Required " + StringUtils.formatDuration(System.currentTimeMillis() - startTime) + " to execute.\n");
 
@@ -209,6 +210,16 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                             "Either the path is invalid, or you have no permission to write to the disk, or the disk space is full",
                             "Check if you can write to the output directory.");
                 }
+
+                if(!progressInfo.getNotifications().isEmpty()) {
+                    progressInfo.log("\n");
+                    progressInfo.log("--> Graph run generated following reports:");
+                    for (JIPipeNotification notification : progressInfo.getNotifications().getNotifications()) {
+                        progressInfo.log("@" + StringUtils.formatDateTime(notification.getDateTime()) + "    " + notification.getHeading() + ": " + notification.getDescription());
+                    }
+                }
+
+                progressInfo.log("\n------------------------\n\n");
             }
         }
 
