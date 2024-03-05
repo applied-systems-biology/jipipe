@@ -35,10 +35,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
-import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
-import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
-import org.hkijena.jipipe.extensions.expressions.TableColumnSourceExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -269,6 +266,8 @@ public class SplitChannelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
             "By default, all columns starting with a '#' are selected. Use <code>column_name IN ARRAY(...)</code> to set a predefined list of columns.")
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(key = "column_name", name = "Column name", description = "The name of the currently processed column")
+    @JIPipeExpressionParameterSettings(hint = "per column")
     @JIPipeParameter(value = "annotation-column-filter", important = true, uiOrder = -99)
     public JIPipeExpressionParameter getAnnotationColumnFilter() {
         return annotationColumnFilter;
@@ -285,6 +284,8 @@ public class SplitChannelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
             "By default, all columns NOT starting with a '#' are selected. Use <code>column_name IN ARRAY(...)</code> to set a predefined list of columns.")
     @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(key = "column_name", name = "Column name", description = "The name of the currently processed column")
+    @JIPipeExpressionParameterSettings(hint = "per column")
     @JIPipeParameter(value = "channel-column-filter", uiOrder = -99, important = true)
     public JIPipeExpressionParameter getChannelColumnFilter() {
         return channelColumnFilter;
