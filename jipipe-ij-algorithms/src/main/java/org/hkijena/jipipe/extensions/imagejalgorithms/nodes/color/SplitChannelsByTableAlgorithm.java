@@ -148,6 +148,20 @@ public class SplitChannelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
             }
         }
 
+        if(targetRow == -1) {
+            if(ignoreMissingImages) {
+                progressInfo.log("Ignoring image without matching annotations");
+                return;
+            }
+            else {
+                throw new JIPipeValidationRuntimeException(new NullPointerException("Unable to find channel assignment!"),
+                        "Unable to find channel assignment!",
+                        "None of the assignments in the provided table match to the image",
+                        "Please review the table or enable 'Ignore missing images'.");
+            }
+        }
+
+
         Set<String> channelAssignmentColumnNames = table.getColumnNames().stream().filter(s -> {
             variablesMap.set("column_name", s);
             return channelColumnFilter.test(variablesMap);
@@ -160,7 +174,7 @@ public class SplitChannelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
                     continue;
                 }
                 else {
-                    throw new JIPipeValidationRuntimeException(new IndexOutOfBoundsException("Requested output slot " + outputSlotName + ", but only " + split.length + " channels are available."),
+                    throw new JIPipeValidationRuntimeException(new NullPointerException("Requested output slot " + outputSlotName + " was not found."),
                             "Could not find output slot with name " + outputSlotName,
                             "The node wants to output a channel to the slot '" + outputSlotName + "' but it is not present.",
                             "Please check if the slot is present. You can also enable 'Ignore missing outputs' to skip such occurrences silently.");
