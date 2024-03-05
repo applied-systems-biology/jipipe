@@ -34,6 +34,11 @@ public class JIPipePythonAdapterUpdateChecker extends AbstractJIPipeRunnable {
     }
 
     @Override
+    public boolean isLogSilent() {
+        return true;
+    }
+
+    @Override
     public void run() {
         JIPipeProgressInfo progressInfo = getProgressInfo();
         progressInfo.log("INFO: To disable this update check, uncheck Project > Application settings > Extensions > Python integration (adapter) > Automatically check for updates");

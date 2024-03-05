@@ -20,6 +20,8 @@ import org.hkijena.jipipe.ui.components.icons.AnimatedIcon;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class JIPipeRunnableLogsButton extends JButton implements JIPipeWorkbenchAccess, JIPipeRunnableLogsCollection.LogUpdatedEventListener {
     private final JIPipeWorkbench workbench;
@@ -42,7 +44,29 @@ public class JIPipeRunnableLogsButton extends JButton implements JIPipeWorkbench
         setIcon(UIUtils.getIconFromResources("actions/rabbitvcs-show_log.png"));
         UIUtils.setStandardButtonBorder(this);
         addActionListener(e -> openLogs());
+
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(SwingUtilities.isRightMouseButton(e)) {
+                    JPopupMenu menu = new JPopupMenu();
+                    menu.add(UIUtils.createMenuItem("Mark all as read", "Marks all entries as read", UIUtils.getIconFromResources("actions/check-double.png"), this::markAllAsRead));
+                    menu.add(UIUtils.createMenuItem("Clear", "Removes all entries", UIUtils.getIconFromResources("actions/edit-clear-history.png"), this::clear));
+                }
+            }
+
+            private void clear() {
+                JIPipeRunnableLogsCollection.getInstance().clear();
+            }
+
+            private void markAllAsRead() {
+                JIPipeRunnableLogsCollection.getInstance().markAllAsRead();
+            }
+
+        });
     }
+
+
 
     private void openLogs() {
         workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_LOG);

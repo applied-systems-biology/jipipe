@@ -75,6 +75,10 @@ public class JIPipeRunnableLogsCollection implements JIPipeRunnable.FinishedEven
                 logEntries.remove(0);
             JIPipeRunnableLogEntry entry = new JIPipeRunnableLogEntry(run.getTaskLabel(), LocalDateTime.now(), log.toString(), new JIPipeNotificationInbox(run.getProgressInfo().getNotifications()), success);
             logEntries.add(entry);
+            if(run.isLogSilent()) {
+                // Auto-mark as read
+                entry.setRead(true);
+            }
             logEntryAddedEventEmitter.emit(new LogEntryAddedEvent(this, entry));
             logUpdatedEventEmitter.emit(new LogUpdatedEvent(this));
         }

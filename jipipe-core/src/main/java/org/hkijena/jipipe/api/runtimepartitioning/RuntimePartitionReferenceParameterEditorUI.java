@@ -71,7 +71,7 @@ public class RuntimePartitionReferenceParameterEditorUI extends JIPipeParameterE
                         UIManager.getColor("Separator.foreground")),
                 BorderFactory.createEmptyBorder(4, 3, 4, 3)));
         configureButton.setOpaque(true);
-        configureButton.setToolTipText("Edit/select/install environment");
+        configureButton.setToolTipText("Edit/select/install partition");
         UIUtils.addReloadablePopupMenuToButton(configureButton, configureMenu, this::reloadConfigMenu);
         buttonPanel.add(configureButton);
     }

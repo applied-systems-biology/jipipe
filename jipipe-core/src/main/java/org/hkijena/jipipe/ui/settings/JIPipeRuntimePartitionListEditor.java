@@ -118,7 +118,8 @@ public class JIPipeRuntimePartitionListEditor extends JIPipeProjectWorkbenchPane
     }
 
     private void addNewItem() {
-        getProject().getRuntimePartitions().add();
+        JIPipeRuntimePartition runtimePartition = getProject().getRuntimePartitions().add();
+        editRuntimePartition(getWorkbench(), runtimePartition);
         refresh();
     }
 

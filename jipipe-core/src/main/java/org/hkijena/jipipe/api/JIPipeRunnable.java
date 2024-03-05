@@ -44,6 +44,14 @@ public interface JIPipeRunnable extends Runnable {
     String getTaskLabel();
 
     /**
+     * Determines if this run is being logged silently
+     * @return if logs are silent
+     */
+    default boolean isLogSilent() {
+        return false;
+    }
+
+    /**
      * Called when this runnable finishes
      *
      * @param event the event

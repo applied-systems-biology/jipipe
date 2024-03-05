@@ -113,6 +113,8 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     private static final int RESIZE_HANDLE_DISTANCE = 12;
     private static final int RESIZE_HANDLE_SIZE = 10;
     private static final Color COMMENT_EDGE_COLOR = new Color(194, 141, 0);
+    private static final Color COLOR_EDGE_DEFAULT = new Color(0x3E3E3E);
+    private static final Color COLOR_EDGE_CONVERT = new Color(0x2957C2);
     private final JIPipeWorkbench workbench;
     private final JIPipeGraphEditorUI graphEditorUI;
     private final ImageIcon cursorImage = UIUtils.getIconFromResources("actions/target.png");
@@ -1455,6 +1457,11 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                     item.setToolTipText("Partitions all selected nodes to '" + runtimePartitions.getFullName(runtimePartition) + "'");
                     partitionMenu.add(item);
                 }
+                partitionMenu.addSeparator();
+                partitionMenu.add(UIUtils.createMenuItem("Create new partition", "Creates a new partition", UIUtils.getIconFromResources("actions/add.png"), () -> {
+                    JIPipeRuntimePartition runtimePartition = project.getRuntimePartitions().add();
+                    JIPipeRuntimePartitionListEditor.editRuntimePartition(getWorkbench(), runtimePartition);
+                }));
                 menu.add(partitionMenu);
             }
 
@@ -2664,9 +2671,9 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             result = Color.getHSBColor(1.0f * multiColorIndex / multiColorMax, 0.45f, 0.65f);
         } else {
             if (JIPipeDatatypeRegistry.isTriviallyConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
-                result = Color.DARK_GRAY;
+                result = COLOR_EDGE_DEFAULT;
             else if (JIPipe.getDataTypes().isConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
-                result = Color.BLUE;
+                result = COLOR_EDGE_CONVERT;
             else
                 result = Color.RED;
         }
@@ -2697,7 +2704,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             PointRange.tighten(sourcePoint, targetPoint);
 
             g.setStroke(STROKE_SMART_EDGE);
-            g.setColor(Color.LIGHT_GRAY);
+            g.setPaint(getImprovedEdgeBackgroundPaint(source, target, sourcePoint, targetPoint, Color.LIGHT_GRAY));
             paintEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, false);
             return;
         }
@@ -2711,13 +2718,38 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             g.setColor(getEdgeColor(source, target, multicolor, multiColorIndex, multiColorMax));
             paintEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, enableArrows);
             g.setStroke(stroke);
-            g.setColor(improvedStrokeBackgroundColor);
+
+            g.setPaint(getImprovedEdgeBackgroundPaint(source, target, sourcePoint, targetPoint, improvedStrokeBackgroundColor));
             paintEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, enableArrows);
         } else {
             g.setStroke(stroke);
             g.setColor(getEdgeColor(source, target, multicolor, multiColorIndex, multiColorMax));
             paintEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, enableArrows);
         }
+    }
+
+    private Paint getImprovedEdgeBackgroundPaint(JIPipeDataSlot source, JIPipeDataSlot target, PointRange sourcePoint, PointRange targetPoint, Color defaultPaint) {
+        Paint strokePaint = defaultPaint;
+
+        if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+            if(source.getNode() instanceof JIPipeAlgorithm && target.getNode() instanceof JIPipeAlgorithm) {
+                JIPipeRuntimePartitionConfiguration runtimePartitions = ((JIPipeProjectWorkbench) getWorkbench()).getProject().getRuntimePartitions();
+                JIPipeAlgorithm sourceAlgorithm = (JIPipeAlgorithm) source.getNode();
+                JIPipeAlgorithm targetAlgorithm = (JIPipeAlgorithm) target.getNode();
+                JIPipeRuntimePartition sourcePartition = runtimePartitions.get(sourceAlgorithm.getRuntimePartition().getIndex());
+                JIPipeRuntimePartition targetPartition = runtimePartitions.get(targetAlgorithm.getRuntimePartition().getIndex());
+                if(sourcePartition != targetPartition) {
+                    strokePaint = new LinearGradientPaint(sourcePoint.center.x, sourcePoint.center.y,
+                            targetPoint.center.x, targetPoint.center.y,
+                            new float[] {0f, 1f},
+                            new Color[] { sourcePartition.getColor().getContentOrDefault(defaultPaint), targetPartition.getColor().getContentOrDefault(defaultPaint) });
+                }
+                else {
+                    strokePaint = sourcePartition.getColor().getContentOrDefault(defaultPaint);
+                }
+            }
+        }
+        return strokePaint;
     }
 
     private void paintOutsideEdges(Graphics2D g, boolean onlySelected, Color baseColor, Stroke stroke, Stroke borderStroke) {

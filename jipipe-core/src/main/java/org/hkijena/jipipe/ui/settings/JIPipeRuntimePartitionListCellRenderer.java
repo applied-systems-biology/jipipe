@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.settings;
 
+import org.hkijena.jipipe.api.grouping.JIPipeGraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartitionConfiguration;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
@@ -98,9 +99,15 @@ public class JIPipeRuntimePartitionListCellRenderer extends JPanel implements Li
             if(idx == 0) {
                 indicatorPanel.add(new JLabel(UIUtils.getIconFromResources("actions/lock.png")));
             }
-//            if(value.getOutputSettings().isExportHeavyData() || value.getOutputSettings().isExportLightweightData()) {
-//                indicatorPanel.add(new JLabel(UIUtils.getIconFromResources("actions/document-export.png")));
-//            }
+            if(value.getOutputSettings().isExportHeavyData() || value.getOutputSettings().isExportLightweightData()) {
+                indicatorPanel.add(new JLabel(UIUtils.getIconFromResources("actions/document-export.png")));
+            }
+            if(value.getIterationMode() == JIPipeGraphWrapperAlgorithm.IterationMode.IteratingDataBatch) {
+                indicatorPanel.add(new JLabel( UIUtils.getIconFromResources("actions/media-playlist-normal.png")));
+            }
+            if(value.getIterationMode() == JIPipeGraphWrapperAlgorithm.IterationMode.MergingDataBatch) {
+                indicatorPanel.add(new JLabel(UIUtils.getIconFromResources("actions/rabbitvcs-merge.png")));
+            }
         }
 
         if (isSelected) {
