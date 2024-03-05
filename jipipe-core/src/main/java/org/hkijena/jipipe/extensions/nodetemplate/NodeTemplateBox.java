@@ -13,8 +13,11 @@
 
 package org.hkijena.jipipe.extensions.nodetemplate;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
+import com.google.common.primitives.Ints;
+import ij.IJ;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeProject;
@@ -59,7 +62,6 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
     private final MarkdownReader documentationReader = new MarkdownReader(false);
     private final JToolBar toolBar = new JToolBar();
     private final boolean isDocked;
-
     private final JIPipeGraphCanvasUI canvasUI;
     private final Set<JIPipeGraphNode> nodesToAdd;
     private final JPopupMenu manageMenu = new JPopupMenu();
@@ -155,11 +157,21 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (SwingUtilities.isRightMouseButton(e)) {
+
                     int i = templateList.locationToIndex(e.getPoint());
                     if (i >= 0) {
-                        templateList.addSelectionInterval(i, i);
+                        if (templateList.getSelectedValuesList().isEmpty()) {
+                            templateList.addSelectionInterval(i, i);
+                        }
+                        else if(!Ints.contains(templateList.getSelectedIndices(), i)) {
+                            templateList.clearSelection();
+                            templateList.addSelectionInterval(i, i);
+                        }
                     }
+                    reloadManageMenu();
                     manageMenu.show(templateList, e.getX(), e.getY());
+                } else if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
+                    addSelectedTemplatesToPipeline();
                 }
             }
         });
@@ -173,21 +185,32 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
         JButton manageButton = new JButton("Manage", UIUtils.getIconFromResources("actions/wrench.png"));
         toolBar.add(manageButton);
 
-        if(nodesToAdd != null && !nodesToAdd.isEmpty() && canvasUI != null) {
+        if (nodesToAdd != null && !nodesToAdd.isEmpty() && canvasUI != null) {
             JButton addButton = new JButton("Create", UIUtils.getIconFromResources("actions/add.png"));
             addButton.addActionListener(e -> addTemplate());
             toolBar.add(addButton);
         }
 
-        UIUtils.addPopupMenuToButton(manageButton, manageMenu);
+        UIUtils.addReloadablePopupMenuToButton(manageButton, manageMenu, this::reloadManageMenu);
 
-        initializeManageMenu();
 
         if (isDocked) {
             JButton openWindowButton = new JButton(UIUtils.getIconFromResources("actions/open-in-new-window.png"));
             openWindowButton.setToolTipText("Open in new window");
             openWindowButton.addActionListener(e -> openNewToolBoxWindow(getWorkbench()));
             toolBar.add(openWindowButton);
+        }
+    }
+
+    private void addSelectedTemplatesToPipeline() {
+        if (canvasUI != null) {
+            for (JIPipeNodeTemplate nodeTemplate : templateList.getSelectedValuesList()) {
+                try {
+                    canvasUI.pasteNodes(nodeTemplate.getGraph());
+                } catch (JsonProcessingException e) {
+                    IJ.handleException(e);
+                }
+            }
         }
     }
 
@@ -199,10 +222,39 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
         JIPipeRunExecuterUI.runInDialog(getWorkbench(), getWorkbench().getWindow(), new NodeTemplateDownloaderRun(getWorkbench()));
     }
 
-    private void initializeManageMenu() {
-        JMenuItem refreshItem = new JMenuItem("Reload list", UIUtils.getIconFromResources("actions/view-refresh.png"));
-        refreshItem.addActionListener(e -> reloadTemplateList());
-        manageMenu.add(refreshItem);
+    private void reloadManageMenu() {
+
+        manageMenu.removeAll();
+
+        if (!templateList.getSelectedValuesList().isEmpty()) {
+            if (canvasUI != null) {
+                manageMenu.add(UIUtils.createMenuItem("Insert", "Adds the selected nodes to the pipeline", UIUtils.getIconFromResources("actions/add.png"), this::addSelectedTemplatesToPipeline));
+            }
+
+            JMenuItem editItem = new JMenuItem("Edit", UIUtils.getIconFromResources("actions/document-edit.png"));
+            editItem.addActionListener(e -> editSelected());
+            manageMenu.add(editItem);
+
+            if (project != null) {
+                JMenuItem copyToProjectItem = new JMenuItem("Copy to project", UIUtils.getIconFromResources("actions/edit-copy.png"));
+                copyToProjectItem.addActionListener(e -> copySelectionToProject());
+                manageMenu.add(copyToProjectItem);
+
+                JMenuItem copyToGlobalItem = new JMenuItem("Copy to global storage", UIUtils.getIconFromResources("actions/edit-copy.png"));
+                copyToGlobalItem.addActionListener(e -> copySelectionToGlobal());
+                manageMenu.add(copyToGlobalItem);
+            }
+
+            JMenuItem exportItem = new JMenuItem("Export", UIUtils.getIconFromResources("actions/document-export.png"));
+            exportItem.addActionListener(e -> exportTemplates());
+            manageMenu.add(exportItem);
+
+            JMenuItem deleteItem = new JMenuItem("Delete", UIUtils.getIconFromResources("actions/edit-delete.png"));
+            deleteItem.addActionListener(e -> deleteSelection());
+            manageMenu.add(deleteItem);
+        }
+
+        manageMenu.addSeparator();
 
         JMenuItem selectAllItem = new JMenuItem("Select all", UIUtils.getIconFromResources("actions/edit-select-all.png"));
         selectAllItem.addActionListener(e -> {
@@ -211,22 +263,6 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
             }
         });
         manageMenu.add(selectAllItem);
-
-        manageMenu.addSeparator();
-
-        JMenuItem editItem = new JMenuItem("Edit selected template", UIUtils.getIconFromResources("actions/document-edit.png"));
-        editItem.addActionListener(e -> editSelected());
-        manageMenu.add(editItem);
-
-        if (project != null) {
-            JMenuItem copyToProjectItem = new JMenuItem("Copy selection to project", UIUtils.getIconFromResources("actions/edit-copy.png"));
-            copyToProjectItem.addActionListener(e -> copySelectionToProject());
-            manageMenu.add(copyToProjectItem);
-
-            JMenuItem copyToGlobalItem = new JMenuItem("Copy selection to global storage", UIUtils.getIconFromResources("actions/edit-copy.png"));
-            copyToGlobalItem.addActionListener(e -> copySelectionToGlobal());
-            manageMenu.add(copyToGlobalItem);
-        }
 
         manageMenu.addSeparator();
 
@@ -240,15 +276,9 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
 
         manageMenu.addSeparator();
 
-        JMenuItem exportItem = new JMenuItem("Export selection to file", UIUtils.getIconFromResources("actions/document-export.png"));
-        exportItem.addActionListener(e -> exportTemplates());
-        manageMenu.add(exportItem);
-
-        manageMenu.addSeparator();
-
-        JMenuItem deleteItem = new JMenuItem("Delete selection", UIUtils.getIconFromResources("actions/edit-delete.png"));
-        deleteItem.addActionListener(e -> deleteSelection());
-        manageMenu.add(deleteItem);
+        JMenuItem refreshItem = new JMenuItem("Reload list", UIUtils.getIconFromResources("actions/view-refresh.png"));
+        refreshItem.addActionListener(e -> reloadTemplateList());
+        manageMenu.add(refreshItem);
     }
 
     private void editSelected() {

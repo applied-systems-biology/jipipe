@@ -22,7 +22,7 @@ import org.hkijena.jipipe.extensions.settings.NodeTemplateSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
-import org.hkijena.jipipe.ui.grapheditor.compartments.contextmenu.clipboard.clipboard.AlgorithmGraphPasteNodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -74,7 +74,7 @@ public class NodeTemplateMenu extends JMenu implements JIPipeWorkbenchAccess, No
 
     private void addTemplateIntoGraph(JIPipeNodeTemplate template) {
         try {
-            AlgorithmGraphPasteNodeUIContextAction.pasteNodes(graphEditorUI.getCanvasUI(), template.getData());
+            graphEditorUI.getCanvasUI().pasteNodes(template.getData());
         } catch (JsonProcessingException e) {
             IJ.handleException(e);
         }

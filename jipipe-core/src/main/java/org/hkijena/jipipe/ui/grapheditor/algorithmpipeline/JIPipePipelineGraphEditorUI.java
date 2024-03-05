@@ -385,7 +385,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
                 new NodeToolBox(getWorkbench(), true), DocumentTabPane.CloseMode.withoutCloseButton);
 
         bottomPanel.addTab("Templates", UIUtils.getIcon32FromResources("actions/star.png"),
-                new NodeTemplateBox(getWorkbench(), true, null, null), DocumentTabPane.CloseMode.withoutCloseButton);
+                new NodeTemplateBox(getWorkbench(), true, getCanvasUI(), null), DocumentTabPane.CloseMode.withoutCloseButton);
 
         bottomPanel.addTab("Bookmarks", UIUtils.getIcon32FromResources("actions/bookmarks.png"),
                 new BookmarkListPanel(getWorkbench(), getGraph(), this, null), DocumentTabPane.CloseMode.withoutCloseButton);

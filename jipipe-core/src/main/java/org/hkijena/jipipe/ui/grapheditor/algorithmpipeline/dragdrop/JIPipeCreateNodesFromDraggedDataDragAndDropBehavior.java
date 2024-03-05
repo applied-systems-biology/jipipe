@@ -21,7 +21,6 @@ import org.hkijena.jipipe.extensions.filesystem.datasources.PathListDataSource;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathList;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.grapheditor.compartments.contextmenu.clipboard.clipboard.AlgorithmGraphPasteNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphDragAndDropBehavior;
 
@@ -122,7 +121,7 @@ public class JIPipeCreateNodesFromDraggedDataDragAndDropBehavior implements JIPi
     private void processDrop(String text) {
         try {
             if (text != null) {
-                AlgorithmGraphPasteNodeUIContextAction.pasteNodes(canvas, text);
+                canvas.pasteNodes(text);
             }
         } catch (Exception e) {
             if (GraphEditorUISettings.getInstance().isNotifyInvalidDragAndDrop()) {

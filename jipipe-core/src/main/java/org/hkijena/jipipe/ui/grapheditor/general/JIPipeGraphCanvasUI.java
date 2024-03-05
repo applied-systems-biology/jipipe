@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.grapheditor.general;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.*;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
@@ -21,6 +22,7 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
@@ -33,6 +35,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNode;
+import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
@@ -58,6 +61,7 @@ import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.ScreenImage;
 import org.hkijena.jipipe.utils.ui.ScreenImageSVG;
 import org.jetbrains.annotations.NotNull;
@@ -204,6 +208,69 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
         initializeHotkeys();
         updateAssets();
+    }
+
+    public Map<UUID, JIPipeGraphNode> pasteNodes(String json) throws com.fasterxml.jackson.core.JsonProcessingException {
+        if (!JIPipeProjectWorkbench.canAddOrDeleteNodes(getWorkbench()))
+            return Collections.emptyMap();
+        JIPipeGraph graph = JsonUtils.getObjectMapper().readValue(json, JIPipeGraph.class);
+        if (graph.isEmpty()) {
+            throw new NullPointerException("Empty graph pasted.");
+        }
+
+        // Replace project compartment with IOInterface
+        for (JIPipeGraphNode node : ImmutableList.copyOf(graph.getGraphNodes())) {
+            if (node instanceof IOInterfaceAlgorithm && node.getCategory() instanceof InternalNodeTypeCategory) {
+                IOInterfaceAlgorithm replacement = new IOInterfaceAlgorithm((IOInterfaceAlgorithm) node);
+                replacement.setInfo(JIPipe.getNodes().getInfoById("io-interface"));
+                graph.replaceNode(node, replacement);
+            }
+            else if(node.getCategory() instanceof InternalNodeTypeCategory) {
+                // Don't paste internal nodes
+                graph.removeNode(node, false);
+            }
+        }
+
+        // Save the original locations (if available)
+        int minX = Integer.MAX_VALUE;
+        int minY = Integer.MAX_VALUE;
+        Map<JIPipeGraphNode, Point> originalLocations = new HashMap<>();
+        for (JIPipeGraphNode algorithm : graph.getGraphNodes()) {
+            String compartmentUUIDInGraphAsString = algorithm.getCompartmentUUIDInGraphAsString();
+            Point point = algorithm.getLocationWithin(compartmentUUIDInGraphAsString, getViewMode().name());
+            if (point != null) {
+                originalLocations.put(algorithm, point);
+                minX = Math.min(minX, point.x);
+                minY = Math.min(minY, point.y);
+            }
+        }
+        if (minX == Integer.MAX_VALUE)
+            minX = 0;
+        if (minY == Integer.MAX_VALUE)
+            minY = 0;
+
+        // Change the compartment
+        UUID compartment = getCompartment();
+        for (JIPipeGraphNode node : graph.getGraphNodes()) {
+            graph.setCompartment(node.getUUIDInParentGraph(), compartment);
+        }
+
+        // Update the location relative to the mouse
+        Point cursor = getGraphEditorCursor();
+        for (JIPipeGraphNode algorithm : graph.getGraphNodes()) {
+            Point original = originalLocations.getOrDefault(algorithm, null);
+            if (original != null) {
+                original.x = (int) (original.x - minX + (cursor.x / getZoom()) / getViewMode().getGridWidth());
+                original.y = (int) (original.y - minY + (cursor.y / getZoom()) / getViewMode().getGridHeight());
+                algorithm.setLocationWithin(compartment, original, getViewMode().name());
+            }
+        }
+
+        // Add to graph
+        if (getHistoryJournal() != null) {
+            getHistoryJournal().snapshotBeforePasteNodes(graph.getGraphNodes(), getCompartment());
+        }
+        return getGraph().mergeWith(graph);
     }
 
     public Stroke getStrokeHighlight() {
@@ -3439,6 +3506,10 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         if (getParent() != null)
             getParent().revalidate();
         graphCanvasUpdatedEventEmitter.emit(new GraphCanvasUpdatedEvent(this));
+    }
+
+    public Map<UUID, JIPipeGraphNode> pasteNodes(JIPipeGraph graph) throws JsonProcessingException {
+        return pasteNodes(JsonUtils.toJsonString(graph));
     }
 
     public interface NodeUISelectedEventListener {

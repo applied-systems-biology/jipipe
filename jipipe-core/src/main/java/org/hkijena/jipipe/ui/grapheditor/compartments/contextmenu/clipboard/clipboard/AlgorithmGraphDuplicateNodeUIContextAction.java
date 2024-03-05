@@ -39,7 +39,7 @@ public class AlgorithmGraphDuplicateNodeUIContextAction implements NodeUIContext
                 .extract(selection.stream().map(JIPipeGraphNodeUI::getNode).collect(Collectors.toSet()), true, true);
         try {
             String json = JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(copyGraph);
-            AlgorithmGraphPasteNodeUIContextAction.pasteNodes(canvasUI, json);
+            canvasUI.pasteNodes(json);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
