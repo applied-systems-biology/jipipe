@@ -23,7 +23,7 @@ public enum JIPipeDataSlotRole {
      */
     Data,
     /**
-     * The data table contains a parametric data, i.e., they might not be considered for data batch generation.
+     * The data table contains a parametric data, i.e., they might not be considered for iteration step generation.
      * Depending on the node, slots with this role are handled independently of the data role slots.
      */
     Parameters

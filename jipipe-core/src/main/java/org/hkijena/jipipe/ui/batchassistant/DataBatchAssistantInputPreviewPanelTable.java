@@ -123,7 +123,7 @@ public class DataBatchAssistantInputPreviewPanelTable extends JPanel {
 
         // Role information item
         if (inputSlot.getInfo().getRole() == JIPipeDataSlotRole.Parameters) {
-            ViewOnlyMenuItem roleInfoItem = new ViewOnlyMenuItem("<html>Parameter-like data<br><small>This slot contains parametric data that is not considered for data batch generation.</small></html>",
+            ViewOnlyMenuItem roleInfoItem = new ViewOnlyMenuItem("<html>Parameter-like data<br><small>This slot contains parametric data that is not considered for iteration step generation.</small></html>",
                     UIUtils.getIconFromResources("actions/wrench.png"));
             menu.add(roleInfoItem);
         }

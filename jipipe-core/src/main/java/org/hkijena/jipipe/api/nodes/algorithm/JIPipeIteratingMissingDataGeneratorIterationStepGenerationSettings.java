@@ -33,7 +33,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.Intege
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 /**
- * Groups data batch generation settings
+ * Groups iteration step generation settings
  */
 public class JIPipeIteratingMissingDataGeneratorIterationStepGenerationSettings extends AbstractJIPipeParameterCollection implements JIPipeIterationStepGenerationSettings {
     private JIPipeColumMatching columnMatching = JIPipeColumMatching.PrefixHashUnion;

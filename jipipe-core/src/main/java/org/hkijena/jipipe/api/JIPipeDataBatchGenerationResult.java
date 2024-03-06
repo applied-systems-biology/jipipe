@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import java.util.*;
 
 /**
- * Result of a data batch generation run
+ * Result of a iteration step generation run
  */
 public class JIPipeDataBatchGenerationResult {
     private List<JIPipeMultiIterationStep> iterationSteps = new ArrayList<>();

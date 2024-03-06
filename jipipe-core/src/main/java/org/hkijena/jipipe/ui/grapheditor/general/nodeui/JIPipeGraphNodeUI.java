@@ -1920,7 +1920,7 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
 
         // Role information item
         if (slot.getInfo().getRole() == JIPipeDataSlotRole.Parameters) {
-            ViewOnlyMenuItem roleInfoItem = new ViewOnlyMenuItem("<html>Parameter-like data<br><small>This slot contains parametric data that is not considered for data batch generation.</small></html>", UIUtils.getIconFromResources("actions/wrench.png"));
+            ViewOnlyMenuItem roleInfoItem = new ViewOnlyMenuItem("<html>Parameter-like data<br><small>This slot contains parametric data that is not considered for iteration step generation.</small></html>", UIUtils.getIconFromResources("actions/wrench.png"));
             menu.add(roleInfoItem);
         }
 

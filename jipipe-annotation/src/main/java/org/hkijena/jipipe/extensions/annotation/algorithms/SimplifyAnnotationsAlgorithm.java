@@ -39,7 +39,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@SetJIPipeDocumentation(name = "Simplify annotations", description = "Merges multiple annotations that are used for data batch generation into a single annotation. Deletes or downgrades annotations that were involved in the merge.")
+@SetJIPipeDocumentation(name = "Simplify annotations", description = "Merges multiple annotations that are used for iteration step generation into a single annotation. Deletes or downgrades annotations that were involved in the merge.")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
