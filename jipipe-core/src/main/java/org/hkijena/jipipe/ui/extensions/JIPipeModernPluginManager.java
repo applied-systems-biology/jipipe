@@ -314,6 +314,7 @@ public class JIPipeModernPluginManager implements JIPipeWorkbenchAccess, JIPipeE
                     missingDependencies,
                     missingUpdateSites);
             dialog.setModal(true);
+            dialog.pack();
             dialog.setSize(800, 600);
             dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(parent));
             dialog.setVisible(true);
