@@ -114,6 +114,9 @@ public class WorkbenchNotificationInboxUI extends JIPipeWorkbenchPanel implement
         notificationsPanel.addVerticalGlue();
         dismissedNotificationsPanel.addVerticalGlue();
         hiddenNotificationsPanel.addVerticalGlue();
+
+        revalidate();
+        repaint();
     }
 
     private void initialize() {

@@ -24,6 +24,8 @@ import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
@@ -54,6 +56,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.List;
 import java.util.jar.Attributes;
+import java.util.stream.Collectors;
 
 public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGraphRunGCGraph.GCEventListener {
 
@@ -694,8 +697,22 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
     private void exportFailedInputs(JIPipeGraph graph, Set<JIPipeGraphNode> partitionNodeSet, Map<UUID, Map<String, JIPipeDataTable>> inputs, JIPipeProgressInfo progressInfo) {
         Path outputDir = configuration.getOutputPath().resolve("_error").resolve(UUID.randomUUID().toString());
 
+        List<JIPipeTextAnnotation> annotations = new ArrayList<>();
+        for (Map.Entry<UUID, Map<String, JIPipeDataTable>> nodeEntry : inputs.entrySet()) {
+            for (JIPipeDataTable dataTable : nodeEntry.getValue().values()) {
+                annotations.addAll(dataTable.getAllTextAnnotations());
+            }
+        }
+        Map<String, String> annotationsStringMap = JIPipeTextAnnotation.annotationListToMap(annotations, JIPipeTextAnnotationMergeMode.Merge);
+        String annotationsInfo = "";
+        if(!annotationsStringMap.isEmpty()) {
+            annotationsInfo = "Associated annotations: " + annotationsStringMap.entrySet().stream().map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining(", ")) + ". ";
+        }
+
+
         progressInfo.getNotifications().push(new JIPipeNotification(UUID.randomUUID().toString(), "Part of the pipeline failed",
                 "Iteration step for step " + progressInfo.getLogPrepend() + " failed. " +
+                        annotationsInfo +
                         "The pipeline continued as setup within the runtime partition settings. " +
                         "The inputs and graph were exported to " + outputDir,
                 new JIPipeNotificationAction("Open directory", "Opens the directory containing the inputs",
@@ -1038,8 +1055,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                 storageProgress.log("NOT storing " + outputDataSlot.getDisplayName() + " [deactivated in config]");
             }
         }
-        if (configuration.isStoreToDisk() && !configuration.getDisableSaveToDiskNodes().contains(outputDataSlot.getNode().getUUIDInParentGraph()) && !outputDataSlot.isSkipExport()) {
-
+        if (configuration.isStoreToDisk() && !configuration.getDisableStoreToDiskNodes().contains(outputDataSlot.getNode().getUUIDInParentGraph()) && outputDataSlot.getInfo().isStoreToDisk() && !outputDataSlot.isSkipExport()) {
             JIPipeRuntimePartition runtimePartition = getRuntimePartition(((JIPipeAlgorithm) outputDataSlot.getNode()).getRuntimePartition());
 
             JIPipeDataTable filtered = outputDataSlot.filter((table, row) -> {

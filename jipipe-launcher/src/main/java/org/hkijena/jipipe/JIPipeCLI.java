@@ -222,7 +222,7 @@ public class JIPipeCLI {
         if (saveToDisk && saveToDiskOnlyCompartments) {
             for (JIPipeGraphNode graphNode : project.getGraph().getGraphNodes()) {
                 if (!(graphNode instanceof JIPipeCompartmentOutput)) {
-                    settings.getDisableSaveToDiskNodes().add(graphNode.getUUIDInParentGraph());
+                    settings.getDisableStoreToDiskNodes().add(graphNode.getUUIDInParentGraph());
                 }
             }
         }

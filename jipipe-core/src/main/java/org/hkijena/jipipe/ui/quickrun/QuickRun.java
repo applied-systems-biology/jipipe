@@ -84,7 +84,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
                     }
                 }
             }
-            configuration.setDisableSaveToDiskNodes(disabled);
+            configuration.setDisableStoreToDiskNodes(disabled);
             configuration.setDisableStoreToCacheNodes(disabled);
         }
     }

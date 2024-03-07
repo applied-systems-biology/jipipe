@@ -38,7 +38,7 @@ public class JIPipeGraphRunConfiguration extends AbstractJIPipeParameterCollecti
     private boolean silent = false;
     private boolean ignoreDeactivatedInputs = false;
     private Set<UUID> disableStoreToCacheNodes = new HashSet<>();
-    private Set<UUID> disableSaveToDiskNodes = new HashSet<>();
+    private Set<UUID> disableStoreToDiskNodes = new HashSet<>();
 
     private JIPipeGraphRunPartitionInheritedBoolean continueOnFailure = JIPipeGraphRunPartitionInheritedBoolean.InheritFromPartition;
     private JIPipeGraphRunPartitionInheritedBoolean continueOnFailureExportFailedInputs = JIPipeGraphRunPartitionInheritedBoolean.InheritFromPartition;
@@ -56,7 +56,7 @@ public class JIPipeGraphRunConfiguration extends AbstractJIPipeParameterCollecti
         this.silent = other.silent;
         this.ignoreDeactivatedInputs = other.ignoreDeactivatedInputs;
         this.disableStoreToCacheNodes = new HashSet<>(other.disableStoreToCacheNodes);
-        this.disableSaveToDiskNodes = new HashSet<>(other.disableSaveToDiskNodes);
+        this.disableStoreToDiskNodes = new HashSet<>(other.disableStoreToDiskNodes);
         this.continueOnFailureExportFailedInputs = other.continueOnFailureExportFailedInputs;
         this.continueOnFailure = other.continueOnFailure;
     }
@@ -168,12 +168,12 @@ public class JIPipeGraphRunConfiguration extends AbstractJIPipeParameterCollecti
      *
      * @return the set of nodes
      */
-    public Set<UUID> getDisableSaveToDiskNodes() {
-        return disableSaveToDiskNodes;
+    public Set<UUID> getDisableStoreToDiskNodes() {
+        return disableStoreToDiskNodes;
     }
 
-    public void setDisableSaveToDiskNodes(Set<UUID> disableSaveToDiskNodes) {
-        this.disableSaveToDiskNodes = disableSaveToDiskNodes;
+    public void setDisableStoreToDiskNodes(Set<UUID> disableStoreToDiskNodes) {
+        this.disableStoreToDiskNodes = disableStoreToDiskNodes;
     }
 
     public JIPipeGraphRunPartitionInheritedBoolean getContinueOnFailureExportFailedInputs() {

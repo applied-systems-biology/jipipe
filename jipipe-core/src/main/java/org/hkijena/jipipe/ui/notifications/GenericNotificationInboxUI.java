@@ -101,6 +101,9 @@ public class GenericNotificationInboxUI extends JIPipeWorkbenchPanel implements 
         notificationsPanel.addVerticalGlue();
         dismissedNotificationsPanel.addVerticalGlue();
         hiddenNotificationsPanel.addVerticalGlue();
+
+        revalidate();
+        repaint();
     }
 
     private void initialize() {
