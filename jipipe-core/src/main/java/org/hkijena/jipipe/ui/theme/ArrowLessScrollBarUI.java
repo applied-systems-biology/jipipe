@@ -29,7 +29,7 @@ public class ArrowLessScrollBarUI extends BasicScrollBarUI {
     @Override
     protected JButton createDecreaseButton(int orientation) {
         try {
-            if (JIPipe.getInstance() == null || GeneralUISettings.getInstance().getTheme().isModern())
+            if (JIPipe.getInstance() == null || GeneralUISettings.getInstance() == null || GeneralUISettings.getInstance().getTheme().isModern())
                 return createZeroButton();
             else
                 return super.createDecreaseButton(orientation);
@@ -41,7 +41,7 @@ public class ArrowLessScrollBarUI extends BasicScrollBarUI {
     @Override
     protected JButton createIncreaseButton(int orientation) {
         try {
-            if (JIPipe.getInstance() == null || GeneralUISettings.getInstance().getTheme().isModern())
+            if (JIPipe.getInstance() == null || GeneralUISettings.getInstance() == null || GeneralUISettings.getInstance().getTheme().isModern())
                 return createZeroButton();
             else
                 return super.createIncreaseButton(orientation);
