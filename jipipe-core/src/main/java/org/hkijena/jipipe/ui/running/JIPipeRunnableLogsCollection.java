@@ -71,7 +71,7 @@ public class JIPipeRunnableLogsCollection implements JIPipeRunnable.FinishedEven
         StringBuilder log = run.getProgressInfo().getLog();
         if (log != null && log.length() > 0) {
             final RuntimeSettings runtimeSettings = RuntimeSettings.getInstance();
-            if (logEntries.size() + 1 > runtimeSettings.getLogLimit())
+            if (runtimeSettings != null && logEntries.size() + 1 > runtimeSettings.getLogLimit())
                 logEntries.remove(0);
             JIPipeRunnableLogEntry entry = new JIPipeRunnableLogEntry(run.getTaskLabel(), LocalDateTime.now(), log.toString(), new JIPipeNotificationInbox(run.getProgressInfo().getNotifications()), success);
             logEntries.add(entry);
