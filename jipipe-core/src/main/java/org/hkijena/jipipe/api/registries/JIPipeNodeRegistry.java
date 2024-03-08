@@ -224,7 +224,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable, JIPipeService.Data
      * This method is only used internally.
      */
     public void installEvents() {
-        JIPipe.getInstance().getDatatypeRegisteredEventEmitter().subscribe(this);
+        jiPipe.getDatatypeRegisteredEventEmitter().subscribe(this);
     }
 
     /**

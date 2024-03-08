@@ -103,6 +103,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * Resource manager for core JIPipe
      */
     public static final JIPipeResourceManager RESOURCES = new JIPipeResourceManager(JIPipe.class, "org/hkijena/jipipe");
+    public static boolean PREVENT_DEFAULT_SERVICE_INIT = false;
     private static JIPipe instance;
     private static boolean IS_RESTARTING = false;
     private final JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
@@ -287,13 +288,13 @@ public class JIPipe extends AbstractService implements JIPipeService {
     /**
      * Create a new JIPipe using initializeLibNoImageJ, which is suitable for using limited functions from within non-ImageJ applications.
      * Avoids interacting with SciJava as much as possible.
-     * @param context  the context (create a new one if needed)
      * @param plugins list of plugins to load
      * @return the JIPipe instance
      */
-    public static JIPipe createLibNoImageJInstance(Context context, List<Class<? extends JIPipeJavaPlugin>> plugins) {
+    public static JIPipe createLibNoImageJInstance(List<Class<? extends JIPipeJavaPlugin>> plugins) {
+        PREVENT_DEFAULT_SERVICE_INIT = true;
         instance = new JIPipe();
-        instance.setContext(context);
+        instance.setContext(new Context());
         instance.initializeLibNoImageJ(plugins);
         return instance;
     }
@@ -702,6 +703,9 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * Initializes JIPipe. Uses the default extension settings and discards any detected issues.
      */
     public void initialize() {
+        if(PREVENT_DEFAULT_SERVICE_INIT) {
+            return;
+        }
         initialize(ExtensionSettings.getInstanceFromRaw(), new JIPipeRegistryIssues());
     }
 
