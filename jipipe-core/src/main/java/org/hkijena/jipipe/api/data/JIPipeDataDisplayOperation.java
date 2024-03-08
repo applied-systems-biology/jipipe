@@ -67,7 +67,9 @@ public interface JIPipeDataDisplayOperation extends JIPipeDataOperation {
             if (parameter != null && !Objects.equals(getId(), parameter.getValue())) {
                 parameter.setValue(getId());
                 DefaultResultImporterSettings.getInstance().setValue(dataTypeId, parameter);
-                JIPipe.getSettings().save();
+                if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+                    JIPipe.getSettings().save();
+                }
             }
         }
     }

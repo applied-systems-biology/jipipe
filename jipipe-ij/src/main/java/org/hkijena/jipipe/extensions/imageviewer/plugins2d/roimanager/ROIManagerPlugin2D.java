@@ -371,7 +371,9 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
             settings.getRoiDrawer().copyFrom(roiDrawer);
             settings.setRenderROIAsOverlay(renderROIAsOverlayViewMenuItem.getState());
             settings.setShowROI(displayROIViewMenuItem.getState());
-            JIPipe.getSettings().save();
+            if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+                JIPipe.getSettings().save();
+            }
         }
     }
 

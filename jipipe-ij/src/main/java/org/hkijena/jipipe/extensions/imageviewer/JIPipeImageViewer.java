@@ -211,7 +211,9 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
             JCheckBoxMenuItem autoSwitchToggle = new JCheckBoxMenuItem("Select automatically", settings.isAutoSwitch2D3DViewer());
             autoSwitchToggle.addActionListener(e -> {
                 settings.setAutoSwitch2D3DViewer(autoSwitchToggle.isSelected());
-                JIPipe.getSettings().save();
+                if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+                    JIPipe.getSettings().save();
+                }
             });
             switchModeMenu.add(autoSwitchToggle);
         });

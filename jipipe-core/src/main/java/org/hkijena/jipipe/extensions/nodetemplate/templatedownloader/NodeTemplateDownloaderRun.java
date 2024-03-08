@@ -117,7 +117,9 @@ public class NodeTemplateDownloaderRun implements JIPipeRunnable {
                     // Store globally
                     NodeTemplateSettings.getInstance().getNodeTemplates().addAll(templates);
                     NodeTemplateSettings.getInstance().emitParameterChangedEvent("node-templates");
-                    JIPipe.getSettings().save();
+                    if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+                        JIPipe.getSettings().save();
+                    }
                 }
                 NodeTemplateSettings.triggerRefreshedEvent();
             } catch (IOException e) {

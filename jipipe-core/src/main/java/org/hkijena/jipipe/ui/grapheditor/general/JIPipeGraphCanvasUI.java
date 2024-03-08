@@ -350,7 +350,9 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     public void setAutoMuteEdges(boolean autoMuteEdges) {
         this.autoMuteEdges = autoMuteEdges;
         settings.setAutoMuteEdgesEnabled(autoMuteEdges);
-        JIPipe.getSettings().save();
+        if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+            JIPipe.getSettings().save();
+        }
         repaint(50);
     }
 

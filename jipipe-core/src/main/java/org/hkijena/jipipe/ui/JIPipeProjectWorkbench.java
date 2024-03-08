@@ -730,7 +730,9 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         buttonPanel.add(cancelButton);
         JButton saveButton = new JButton("Save", UIUtils.getIconFromResources("actions/save.png"));
         saveButton.addActionListener(e -> {
-            JIPipe.getSettings().save();
+            if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+                JIPipe.getSettings().save();
+            }
             saved.set(true);
             dialog.setVisible(false);
         });

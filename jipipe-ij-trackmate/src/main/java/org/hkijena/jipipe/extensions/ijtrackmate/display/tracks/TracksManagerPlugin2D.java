@@ -282,7 +282,9 @@ public class TracksManagerPlugin2D extends JIPipeImageViewerPlugin2D {
             ImageViewerUITracksDisplaySettings settings = ImageViewerUITracksDisplaySettings.getInstance();
             settings.getTrackDrawer().copyFrom(trackDrawer);
             settings.setShowTracks(displayTracksViewMenuItem.getState());
-            JIPipe.getSettings().save();
+            if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+                JIPipe.getSettings().save();
+            }
         }
     }
 

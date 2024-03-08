@@ -483,7 +483,9 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         searchEnabledItem.setSelected(graphUISettings.getSearchSettings().isEnableSearch());
         searchEnabledItem.addActionListener(e -> {
             graphUISettings.getSearchSettings().setEnableSearch(searchEnabledItem.isSelected());
-            JIPipe.getInstance().getSettingsRegistry().save();
+            if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+                JIPipe.getInstance().getSettingsRegistry().save();
+            }
             nodeDatabaseSearchBox.setVisible(graphUISettings.getSearchSettings().isEnableSearch());
             menuBar.revalidate();
         });
@@ -493,7 +495,9 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         searchFindNewNodes.setSelected(graphUISettings.getSearchSettings().isSearchFindNewNodes());
         searchFindNewNodes.addActionListener(e -> {
             graphUISettings.getSearchSettings().setSearchFindNewNodes(searchFindNewNodes.isSelected());
-            JIPipe.getInstance().getSettingsRegistry().save();
+            if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+                JIPipe.getInstance().getSettingsRegistry().save();
+            }
             nodeDatabaseSearchBox.setAllowNew(searchFindNewNodes.isSelected());
         });
         searchMenu.add(searchFindNewNodes);
@@ -502,7 +506,9 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         searchFindExistingNodes.setSelected(graphUISettings.getSearchSettings().isSearchFindExistingNodes());
         searchFindExistingNodes.addActionListener(e -> {
             graphUISettings.getSearchSettings().setSearchFindExistingNodes(searchFindExistingNodes.isSelected());
-            JIPipe.getInstance().getSettingsRegistry().save();
+            if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+                JIPipe.getInstance().getSettingsRegistry().save();
+            }
             nodeDatabaseSearchBox.setAllowExisting(searchFindExistingNodes.isSelected());
         });
         searchMenu.add(searchFindExistingNodes);

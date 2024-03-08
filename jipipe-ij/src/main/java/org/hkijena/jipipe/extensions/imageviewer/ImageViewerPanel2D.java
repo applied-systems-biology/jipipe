@@ -231,7 +231,9 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         exportDisplayedScaleToggle.addActionListener(e -> {
             if (settings != null) {
                 settings.setExportAsDisplayed(exportDisplayedScaleToggle.getState());
-                JIPipe.getSettings().save();
+                if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+                    JIPipe.getSettings().save();
+                }
             }
         });
 
@@ -258,7 +260,9 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
             double fps = ((SpinnerNumberModel) animationFPSControl.getModel()).getNumber().doubleValue();
             if (settings != null) {
                 settings.setDefaultAnimationFPS(fps);
-                JIPipe.getSettings().save();
+                if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+                    JIPipe.getSettings().save();
+                }
             }
             stopAnimations();
             animationTimer.setDelay(Math.max(1, (int) (1000.0 / fps)));
@@ -438,7 +442,9 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         enableSideBarButton.addActionListener(e -> {
             if (settings != null) {
                 settings.setShowSideBar(enableSideBarButton.isSelected());
-                JIPipe.getSettings().save();
+                if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+                    JIPipe.getSettings().save();
+                }
             }
             updateSideBar();
         });
@@ -574,7 +580,9 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
                 null);
         if (response == JOptionPane.OK_OPTION) {
             FileChooserSettings.getInstance().setLastDataDirectory(exportPathEditor.getPath());
-            JIPipe.getSettings().save();
+            if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+                JIPipe.getSettings().save();
+            }
             Path targetPath = exportPathEditor.getPath();
             String format = fileFormatEditor.getSelectedItem() + "";
             String baseName = StringUtils.makeFilesystemCompatible(baseNameEditor.getText());

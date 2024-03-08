@@ -114,12 +114,16 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends JIPipeEn
             if (getParameterAccess() != null && generatedEnvironment != null) {
                 SwingUtilities.invokeLater(() -> {
                     writeEnvironmentToParameters(generatedEnvironment, getParameterAccess());
-                    JIPipe.getInstance().getSettingsRegistry().save();
+                    if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+                        JIPipe.getInstance().getSettingsRegistry().save();
+                    }
                 });
             }
         }
         progressInfo.setProgress(5);
-        JIPipe.getSettings().save();
+        if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+            JIPipe.getSettings().save();
+        }
         SwingUtilities.invokeLater(this::showFinishedDialog);
     }
 

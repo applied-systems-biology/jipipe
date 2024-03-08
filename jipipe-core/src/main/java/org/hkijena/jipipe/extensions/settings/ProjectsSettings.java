@@ -83,12 +83,16 @@ public class ProjectsSettings extends AbstractJIPipeParameterCollection {
         if (index == -1) {
             recentProjects.add(0, fileName);
             emitParameterChangedEvent("recent-projects");
-            JIPipe.getSettings().save();
+            if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+                JIPipe.getSettings().save();
+            }
         } else if (index != 0) {
             recentProjects.remove(index);
             recentProjects.add(0, fileName);
             emitParameterChangedEvent("recent-projects");
-            JIPipe.getSettings().save();
+            if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+                JIPipe.getSettings().save();
+            }
         }
     }
 

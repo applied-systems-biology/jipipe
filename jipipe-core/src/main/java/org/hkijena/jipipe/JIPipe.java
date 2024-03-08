@@ -103,9 +103,10 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * Resource manager for core JIPipe
      */
     public static final JIPipeResourceManager RESOURCES = new JIPipeResourceManager(JIPipe.class, "org/hkijena/jipipe");
-    public static boolean PREVENT_DEFAULT_SERVICE_INIT = false;
+    public static boolean NO_IMAGEJ = false;
     private static JIPipe instance;
     private static boolean IS_RESTARTING = false;
+    public static boolean NO_SETTINGS_AUTOSAVE = false;
     private final JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private final Set<String> registeredExtensionIds = new HashSet<>();
     private final List<JIPipeDependency> registeredExtensions = new ArrayList<>();
@@ -220,7 +221,9 @@ public class JIPipe extends AbstractService implements JIPipeService {
     public static void restartGUI() {
 
         // Save all settings first
-        getSettings().save();
+        if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+            getSettings().save();
+        }
 
         try {
             IS_RESTARTING = true;
@@ -292,7 +295,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * @return the JIPipe instance
      */
     public static JIPipe createLibNoImageJInstance(List<Class<? extends JIPipeJavaPlugin>> plugins) {
-        PREVENT_DEFAULT_SERVICE_INIT = true;
+        NO_IMAGEJ = true;
+        NO_SETTINGS_AUTOSAVE = true;
         instance = new JIPipe();
         instance.setContext(new Context());
         instance.initializeLibNoImageJ(plugins);
@@ -703,7 +707,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * Initializes JIPipe. Uses the default extension settings and discards any detected issues.
      */
     public void initialize() {
-        if(PREVENT_DEFAULT_SERVICE_INIT) {
+        if(NO_IMAGEJ) {
             return;
         }
         initialize(ExtensionSettings.getInstanceFromRaw(), new JIPipeRegistryIssues());
@@ -858,7 +862,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
         }
 
         // Save extension settings
-        if (preActivationScheduledSave) {
+        if (preActivationScheduledSave && !NO_SETTINGS_AUTOSAVE) {
             extensionRegistry.save();
         }
 
@@ -1498,7 +1502,9 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * @param exitCode the exit code
      */
     public static void exitLater(int exitCode) {
-        JIPipe.getSettings().save();
+        if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+            JIPipe.getSettings().save();
+        }
         Timer timer = new Timer(500, e -> {
 //            System.exit(exitCode);
             // Context introduces a shutdown hook that causes a deadlock

@@ -108,7 +108,9 @@ public class JIPipeProjectWindow extends JFrame {
                 if (StringUtils.isNullOrEmpty(id) || !JIPipe.getInstance().getProjectTemplateRegistry().getRegisteredTemplates().containsKey(id)) {
                     id = JIPipeProjectTemplate.getFallbackTemplateId();
                     ProjectsSettings.getInstance().getProjectTemplate().setValue(id);
-                    JIPipe.getInstance().getSettingsRegistry().save();
+                    if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+                        JIPipe.getInstance().getSettingsRegistry().save();
+                    }
                 }
                 JIPipeProjectTemplate template = JIPipe.getInstance().getProjectTemplateRegistry().getRegisteredTemplates().get(id);
                 JIPipeValidationReport report = new JIPipeValidationReport();

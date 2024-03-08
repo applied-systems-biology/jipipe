@@ -32,7 +32,6 @@ import org.hkijena.jipipe.extensions.parameters.library.references.IconRefParame
 import org.hkijena.jipipe.extensions.settings.NodeTemplateSettings;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -40,7 +39,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.net.URL;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Contains the JSON data of a node that can be created by a user for sharing
@@ -131,7 +129,9 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
                 // Store globally
                 NodeTemplateSettings.getInstance().getNodeTemplates().add(template);
                 NodeTemplateSettings.getInstance().emitParameterChangedEvent("node-templates");
-                JIPipe.getSettings().save();
+                if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+                    JIPipe.getSettings().save();
+                }
             } else {
                 // Store locally
                 canvasUI.getGraph().getProject().getMetadata().getNodeTemplates().add(template);

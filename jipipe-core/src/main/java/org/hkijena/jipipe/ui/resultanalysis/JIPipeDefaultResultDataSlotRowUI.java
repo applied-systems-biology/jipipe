@@ -308,7 +308,9 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
                 if (parameter != null && !Objects.equals(operation.getId(), parameter.getValue())) {
                     parameter.setValue(operation.getId());
                     DefaultResultImporterSettings.getInstance().setValue(dataTypeId, parameter);
-                    JIPipe.getSettings().save();
+                    if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+                        JIPipe.getSettings().save();
+                    }
                 }
             }
         }

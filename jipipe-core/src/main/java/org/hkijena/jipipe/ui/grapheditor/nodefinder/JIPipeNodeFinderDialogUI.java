@@ -69,10 +69,9 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
         initializeList();
 
         setIconImage(UIUtils.getJIPipeIcon128());
-        if(querySlot != null) {
+        if (querySlot != null) {
             setTitle("Find matching " + (querySlot.isInput() ? "source" : "target"));
-        }
-        else {
+        } else {
             setTitle("Find node");
         }
         pack();
@@ -91,7 +90,7 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
         nodeList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(SwingUtilities.isLeftMouseButton(e) || SwingUtilities.isRightMouseButton(e)) {
+                if (SwingUtilities.isLeftMouseButton(e) || SwingUtilities.isRightMouseButton(e)) {
                     onItemClicked(e);
                 }
             }
@@ -104,7 +103,7 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
 
     private void onItemClicked(MouseEvent e) {
         int index = nodeList.locationToIndex(e.getPoint());
-        if(index >= 0) {
+        if (index >= 0) {
             JIPipeNodeDatabaseEntry entry = nodeList.getModel().getElementAt(index);
             nodeList.setSelectedIndex(index);
             openEntryMenu(entry, e.getPoint());
@@ -113,43 +112,42 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
 
     private void openEntryMenu(JIPipeNodeDatabaseEntry entry, Point location) {
         JPopupMenu menu = new JPopupMenu();
-        if(!entry.exists()) {
+        if (!entry.exists()) {
             menu.add(UIUtils.createMenuItem("Add new to graph", "Adds the selected node", UIUtils.getIconFromResources("actions/node-add.png"), () -> addEntryToGraph(entry)));
         }
-        if(querySlot != null) {
-            if(querySlot.isInput()) {
-                if((!entry.getInputSlots().isEmpty() || entry.canAddOutputSlots()) && menu.getComponentCount() > 0) {
+        if (querySlot != null) {
+            if (querySlot.isInput()) {
+                if ((!entry.getInputSlots().isEmpty() || entry.canAddOutputSlots()) && menu.getComponentCount() > 0) {
                     menu.addSeparator();
                 }
                 for (Map.Entry<String, JIPipeDataSlotInfo> infoEntry : entry.getOutputSlots().entrySet()) {
-                    if(JIPipe.getDataTypes().isConvertible(infoEntry.getValue().getDataClass(), querySlot.getAcceptedDataType())) {
+                    if (JIPipe.getDataTypes().isConvertible(infoEntry.getValue().getDataClass(), querySlot.getAcceptedDataType())) {
                         menu.add(UIUtils.createMenuItem("Connect to " + infoEntry.getKey(),
                                 "Connect to the specified slot. Add the node if required.",
                                 JIPipe.getDataTypes().getIconFor(infoEntry.getValue().getDataClass()),
                                 () -> addAndConnectEntry(entry, infoEntry.getValue())));
                     }
                 }
-                if(entry.canAddOutputSlots()) {
+                if (entry.canAddOutputSlots()) {
                     menu.addSeparator();
                     menu.add(UIUtils.createMenuItem("Connect to new slot",
                             "Connect to a new slot. Add the node if required.",
                             UIUtils.getIconFromResources("actions/add.png"),
                             () -> addAndConnectEntry(entry, null)));
                 }
-            }
-            else {
-                if((!entry.getInputSlots().isEmpty() || entry.canAddInputSlots()) && menu.getComponentCount() > 0) {
+            } else {
+                if ((!entry.getInputSlots().isEmpty() || entry.canAddInputSlots()) && menu.getComponentCount() > 0) {
                     menu.addSeparator();
                 }
                 for (Map.Entry<String, JIPipeDataSlotInfo> infoEntry : entry.getInputSlots().entrySet()) {
-                    if(JIPipe.getDataTypes().isConvertible(querySlot.getAcceptedDataType(), infoEntry.getValue().getDataClass())) {
+                    if (JIPipe.getDataTypes().isConvertible(querySlot.getAcceptedDataType(), infoEntry.getValue().getDataClass())) {
                         menu.add(UIUtils.createMenuItem("Connect to " + infoEntry.getKey(),
                                 "Connect to the specified slot. Add the node if required.",
                                 JIPipe.getDataTypes().getIconFor(infoEntry.getValue().getDataClass()),
                                 () -> addAndConnectEntry(entry, infoEntry.getValue())));
                     }
                 }
-                if(entry.canAddInputSlots()) {
+                if (entry.canAddInputSlots()) {
                     menu.addSeparator();
                     menu.add(UIUtils.createMenuItem("Connect to new slot",
                             "Connect to a new slot. Add the node if required.",
@@ -165,37 +163,34 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
     private void addAndConnectEntry(JIPipeNodeDatabaseEntry entry, JIPipeDataSlotInfo slotInfo) {
         JIPipeGraphNodeUI nodeUI = entry.addToGraph(canvasUI);
         JIPipeGraphNode node = nodeUI.getNode();
-        if(querySlot != null) {
-            if(querySlot.isInput()) {
-                if(slotInfo != null) {
+        if (querySlot != null) {
+            if (querySlot.isInput()) {
+                if (slotInfo != null) {
                     JIPipeDataSlot targetSlot = node.getOutputSlot(slotInfo.getName());
-                    if(targetSlot != null) {
+                    if (targetSlot != null) {
                         canvasUI.getGraph().connect(targetSlot, querySlot);
                     }
-                }
-                else {
+                } else {
                     AddAlgorithmSlotPanel panel = AddAlgorithmSlotPanel.showDialog(SwingUtilities.getWindowAncestor(canvasUI),
                             canvasUI.getHistoryJournal(),
                             node,
                             JIPipeSlotType.Output);
-                    if(!panel.getAddedSlots().isEmpty()) {
+                    if (!panel.getAddedSlots().isEmpty()) {
                         canvasUI.getGraph().connect(panel.getAddedSlots().get(0), querySlot);
                     }
                 }
-            }
-            else {
-                if(slotInfo != null) {
+            } else {
+                if (slotInfo != null) {
                     JIPipeDataSlot targetSlot = node.getInputSlot(slotInfo.getName());
-                    if(targetSlot != null) {
+                    if (targetSlot != null) {
                         canvasUI.getGraph().connect(querySlot, targetSlot);
                     }
-                }
-                else {
+                } else {
                     AddAlgorithmSlotPanel panel = AddAlgorithmSlotPanel.showDialog(SwingUtilities.getWindowAncestor(canvasUI),
                             canvasUI.getHistoryJournal(),
                             node,
                             JIPipeSlotType.Input);
-                    if(!panel.getAddedSlots().isEmpty()) {
+                    if (!panel.getAddedSlots().isEmpty()) {
                         canvasUI.getGraph().connect(querySlot, panel.getAddedSlots().get(0));
                     }
                 }
@@ -217,7 +212,7 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
         toolbarPanel.setLayout(new BoxLayout(toolbarPanel, BoxLayout.Y_AXIS));
 
         // Info toolbar
-        if(querySlot != null) {
+        if (querySlot != null) {
             JIPipeGraphNode queryNode = querySlot.getNode();
             JToolBar infoToolbar = new JToolBar();
             infoToolbar.setFloatable(false);
@@ -246,19 +241,23 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
         searchField.getTextField().addActionListener(e -> openFirstEntryMenu());
         mainToolBar.add(searchField);
 
-        if(querySlot != null) {
+        if (querySlot != null) {
             findExistingNodesToggle.setText("Find existing");
             findExistingNodesToggle.setSelected(GraphEditorUISettings.getInstance().getAlgorithmFinderSettings().isSearchFindExistingNodes());
             createNodesToggle.setText("Create new");
             createNodesToggle.setSelected(GraphEditorUISettings.getInstance().getAlgorithmFinderSettings().isSearchFindNewNodes());
             findExistingNodesToggle.addActionListener(e -> {
                 GraphEditorUISettings.getInstance().getAlgorithmFinderSettings().setSearchFindExistingNodes(findExistingNodesToggle.isSelected());
-                JIPipe.getSettings().save();
+                if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
+                    JIPipe.getSettings().save();
+                }
                 reloadList();
             });
             createNodesToggle.addActionListener(e -> {
                 GraphEditorUISettings.getInstance().getAlgorithmFinderSettings().setSearchFindNewNodes(createNodesToggle.isSelected());
-                JIPipe.getSettings().save();
+                if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
+                    JIPipe.getSettings().save();
+                }
                 reloadList();
             });
             mainToolBar.add(findExistingNodesToggle);
@@ -272,7 +271,7 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
     }
 
     private void openFirstEntryMenu() {
-        if(nodeList.getModel().getSize() > 0) {
+        if (nodeList.getModel().getSize() > 0) {
             nodeList.setSelectedIndex(0);
             Point point = nodeList.indexToLocation(0);
             point.x += nodeList.getWidth() - 32;
@@ -305,34 +304,30 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
             JIPipeDataSlot querySlot = dialogUI.querySlot;
             DefaultListModel<JIPipeNodeDatabaseEntry> model = new DefaultListModel<>();
             JIPipeNodeDatabase nodeDatabase;
-            if(canvasUI.getWorkbench() instanceof JIPipeProjectWorkbench) {
+            if (canvasUI.getWorkbench() instanceof JIPipeProjectWorkbench) {
                 nodeDatabase = ((JIPipeProjectWorkbench) canvasUI.getWorkbench()).getNodeDatabase();
-            }
-            else {
+            } else {
                 nodeDatabase = JIPipeNodeDatabase.getInstance();
             }
             JIPipeNodeDatabaseRole role;
-            if(canvasUI.getWorkbench() instanceof JIPipeProjectWorkbench) {
-                if(canvasUI.getGraph() == ((JIPipeProjectWorkbench) canvasUI.getWorkbench()).getProject().getCompartmentGraph()) {
+            if (canvasUI.getWorkbench() instanceof JIPipeProjectWorkbench) {
+                if (canvasUI.getGraph() == ((JIPipeProjectWorkbench) canvasUI.getWorkbench()).getProject().getCompartmentGraph()) {
                     role = JIPipeNodeDatabaseRole.CompartmentNode;
-                }
-                else {
+                } else {
                     role = JIPipeNodeDatabaseRole.PipelineNode;
                 }
-            }
-            else {
+            } else {
                 role = JIPipeNodeDatabaseRole.PipelineNode;
             }
             boolean allowExisting, allowNew;
-            if(querySlot != null) {
+            if (querySlot != null) {
                 allowExisting = dialogUI.findExistingNodesToggle.isSelected();
                 allowNew = dialogUI.createNodesToggle.isSelected();
-            }
-            else {
+            } else {
                 allowExisting = false;
                 allowNew = true;
             }
-            if(querySlot != null) {
+            if (querySlot != null) {
                 for (JIPipeNodeDatabaseEntry entry : nodeDatabase.query(dialogUI.searchField.getText(),
                         role,
                         allowExisting,
@@ -340,19 +335,18 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
                         querySlot.getSlotType(),
                         querySlot.getInfo().getDataClass())) {
                     JIPipeGraphNode existingNode = null;
-                    if(entry instanceof ExistingPipelineNodeDatabaseEntry) {
+                    if (entry instanceof ExistingPipelineNodeDatabaseEntry) {
                         existingNode = ((ExistingPipelineNodeDatabaseEntry) entry).getGraphNode();
                     }
-                    if(entry instanceof ExistingCompartmentDatabaseEntry) {
+                    if (entry instanceof ExistingCompartmentDatabaseEntry) {
                         existingNode = ((ExistingCompartmentDatabaseEntry) entry).getCompartment();
                     }
-                    if(existingNode == querySlot.getNode()) {
+                    if (existingNode == querySlot.getNode()) {
                         continue;
                     }
                     model.addElement(entry);
                 }
-            }
-            else {
+            } else {
                 for (JIPipeNodeDatabaseEntry entry : nodeDatabase.query(dialogUI.searchField.getText(), role, allowExisting, allowNew)) {
                     model.addElement(entry);
                 }

@@ -289,7 +289,9 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         enableSideBarButton.addActionListener(e -> {
             if (settings != null) {
                 settings.setShowSideBar(enableSideBarButton.isSelected());
-                JIPipe.getSettings().save();
+                if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+                    JIPipe.getSettings().save();
+                }
             }
             updateSideBar();
         });
@@ -799,7 +801,9 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
             double fps = ((SpinnerNumberModel) animationFPSControl.getModel()).getNumber().doubleValue();
             if (settings != null) {
                 settings.setDefaultAnimationFPS(fps);
-                JIPipe.getSettings().save();
+                if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+                    JIPipe.getSettings().save();
+                }
             }
             stopAnimations();
             animationTimer.setDelay(Math.max(1, (int) (1000.0 / fps)));
