@@ -284,6 +284,20 @@ public class JIPipe extends AbstractService implements JIPipeService {
         return instance;
     }
 
+    /**
+     * Create a new JIPipe using initializeLibNoImageJ, which is suitable for using limited functions from within non-ImageJ applications.
+     * Avoids interacting with SciJava as much as possible.
+     * @param context  the context (create a new one if needed)
+     * @param plugins list of plugins to load
+     * @return the JIPipe instance
+     */
+    public static JIPipe createLibNoImageJInstance(Context context, List<Class<? extends JIPipeJavaPlugin>> plugins) {
+        instance = new JIPipe();
+        instance.setContext(context);
+        instance.initializeLibNoImageJ(plugins);
+        return instance;
+    }
+
     public static boolean isInstantiated() {
         return instance != null;
     }
@@ -591,6 +605,97 @@ public class JIPipe extends AbstractService implements JIPipeService {
 
     public List<JIPipeDependency> getFailedExtensions() {
         return Collections.unmodifiableList(failedExtensions);
+    }
+
+    /**
+     * Initializes JIPipe as part of a library with a custom initialization step
+     * No settings are loaded and SciJava services are not used.
+     * No dependency checking, init, and activation protection (plugins are initialized as-is in the given order)
+     * No validation is applied
+     *
+     * @param plugins the list of plugins to load
+     */
+    public void initializeLibNoImageJ(List<Class<? extends JIPipeJavaPlugin>> plugins) {
+        initializing = true;
+
+        progressInfo.setProgress(0, 5);
+        nodeRegistry.installEvents();
+        extensionRegistry.initialize(); // Init extension registry
+        extensionRegistry.load();
+        progressInfo.setProgress(1);
+        progressInfo.log("Pre-initialization phase ...");
+
+        List<JIPipeJavaPlugin> pluginInstances = new ArrayList<>();
+        for (Class<? extends JIPipeJavaPlugin> pluginClass : plugins) {
+            try {
+                JIPipeJavaPlugin extension = pluginClass.newInstance();
+                getContext().inject(extension);
+                extension.setRegistry(this);
+                if (extension instanceof AbstractService) {
+                    ((AbstractService) extension).setContext(getContext());
+                }
+
+                pluginInstances.add(extension);
+                extensionDiscoveredEventEmitter.emit(new ExtensionDiscoveredEvent(this, extension));
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        progressInfo.setProgress(2);
+        JIPipeProgressInfo registerFeaturesProgress = progressInfo.resolveAndLog("Register features");
+
+        for(JIPipeJavaPlugin extension : pluginInstances) {
+            extension.register(this, getContext(), registerFeaturesProgress.resolve(extension.getDependencyId()));
+            registeredExtensions.add(extension);
+            registeredExtensionIds.add(extension.getDependencyId());
+            extensionRegisteredEventEmitter.emit(new ExtensionRegisteredEvent(this, extension));
+        }
+
+        registerFeaturesProgress.log("Registering remaining " + nodeRegistry.getScheduledRegistrationTasks().size() + " features ...");
+        for (JIPipeNodeRegistrationTask task : nodeRegistry.getScheduledRegistrationTasks()) {
+            try {
+                task.register();
+            } catch (Throwable ex) {
+                logService.error("Could not register: " + task.toString() + " -> " + ex);
+                registerFeaturesProgress.log("Could not register: " + task + " -> " + ex);
+            }
+        }
+
+        // Create settings for default importers
+        createDefaultImporterSettings();
+        createDefaultCacheDisplaySettings();
+
+        // Required as the reload deletes the allowed values
+        updateDefaultImporterSettings();
+        updateDefaultCacheDisplaySettings();
+
+        // Postprocessing
+        progressInfo.setProgress(5);
+        JIPipeProgressInfo postprocessingProgress = progressInfo.resolveAndLog("Postprocessing");
+        for (JIPipeDependency extension : registeredExtensions) {
+            if (!failedExtensions.contains(extension) && extension instanceof JIPipeJavaPlugin) {
+                postprocessingProgress.log(extension.getDependencyId());
+                ((JIPipeJavaPlugin) extension).postprocess(postprocessingProgress);
+            }
+        }
+        postprocessingProgress.log("Converting display operations to import operations ...");
+        datatypeRegistry.convertDisplayOperationsToImportOperations();
+        postprocessingProgress.log("Registering examples ...");
+        nodeRegistry.executeScheduledRegisterExamples();
+        postprocessingProgress.log("Registering extension-provided templates ...");
+        nodeRegistry.executeScheduledRegisterTemplates();
+
+        initializing = false;
+
+        // Push progress into log
+        JIPipeRunnableLogsCollection.getInstance().pushToLog(new JIPipeRunnableLogEntry("JIPipe initialization",
+                LocalDateTime.now(),
+                progressInfo.getLog().toString(),
+                new JIPipeNotificationInbox(), true));
+
+        // Mark log as read
+        JIPipeRunnableLogsCollection.getInstance().markAllAsRead();
     }
 
     /**
