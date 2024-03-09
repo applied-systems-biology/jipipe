@@ -86,18 +86,27 @@ public class RuntimeSettings extends AbstractJIPipeParameterCollection {
      * @return a temporary directory
      */
     public static Path generateTempFile(String prefix, String suffix) {
-        OptionalPathParameter tempDirectory = getInstance().getTempDirectory();
-        if (tempDirectory.isEnabled()) {
-            try {
-                return Files.createTempFile(tempDirectory.getContent(), "JIPipe" + prefix, suffix);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
+        if (JIPipe.getInstance() == null || !JIPipe.getInstance().getSettingsRegistry().getRegisteredSheets().containsKey(ID)) {
             try {
                 return Files.createTempFile("JIPipe" + prefix, suffix);
             } catch (IOException e) {
                 throw new RuntimeException(e);
+            }
+        }
+        else {
+            OptionalPathParameter tempDirectory = getInstance().getTempDirectory();
+            if (tempDirectory.isEnabled()) {
+                try {
+                    return Files.createTempFile(tempDirectory.getContent(), "JIPipe" + prefix, suffix);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                try {
+                    return Files.createTempFile("JIPipe" + prefix, suffix);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }
