@@ -1335,7 +1335,6 @@ public class UIUtils {
     public static boolean showConfirmDialog(Component parent, String title, Dimension size, Component content) {
 
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent), title);
-        dialog.setSize(size);
         dialog.setLayout(new BorderLayout());
         dialog.add(content, BorderLayout.CENTER);
 
@@ -1364,6 +1363,8 @@ public class UIUtils {
         dialog.revalidate();
         dialog.repaint();
         dialog.setLocationRelativeTo(parent);
+        dialog.pack();
+        dialog.setSize(size);
         dialog.setModal(true);
         dialog.setVisible(true);
 
