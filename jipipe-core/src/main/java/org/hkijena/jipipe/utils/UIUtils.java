@@ -26,7 +26,6 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
@@ -45,7 +44,6 @@ import org.hkijena.jipipe.ui.components.window.AlwaysOnTopToggle;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.ui.notifications.GenericNotificationInboxUI;
-import org.hkijena.jipipe.ui.theme.DarkModernMetalTheme;
 import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
 import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -1332,6 +1330,44 @@ public class UIUtils {
             return new HTMLText(area.getHTML());
         }
         return null;
+    }
+
+    public static boolean showConfirmDialog(Component parent, String title, Dimension size, Component content) {
+
+        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent), title);
+        dialog.setSize(size);
+        dialog.setLayout(new BorderLayout());
+        dialog.add(content, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        buttonPanel.add(Box.createHorizontalGlue());
+
+        AtomicBoolean confirmation = new AtomicBoolean(false);
+
+        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        cancelButton.addActionListener(e -> {
+            confirmation.set(false);
+            dialog.setVisible(false);
+        });
+        buttonPanel.add(cancelButton);
+
+        JButton confirmButton = new JButton("OK", UIUtils.getIconFromResources("actions/ok.png"));
+        confirmButton.addActionListener(e -> {
+            confirmation.set(true);
+            dialog.setVisible(false);
+        });
+        buttonPanel.add(confirmButton);
+
+        dialog.add(buttonPanel, BorderLayout.SOUTH);
+
+        dialog.revalidate();
+        dialog.repaint();
+        dialog.setLocationRelativeTo(parent);
+        dialog.setModal(true);
+        dialog.setVisible(true);
+
+        return confirmation.get();
     }
 
     /**
