@@ -80,6 +80,44 @@ public class PathUtils {
         return result;
     }
 
+    public static void copyDirectory(Path sourcePath, Path targetPath, JIPipeProgressInfo progressInfo) {
+        // Copy the directory with progress logging
+        try {
+            Files.walkFileTree(sourcePath, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                    // Create the corresponding destination directory
+                    Path relativePath = sourcePath.relativize(dir);
+                    Path destinationDir = targetPath.resolve(relativePath);
+                    Files.createDirectories(destinationDir);
+
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    // Copy the file with attributes
+                    Path relativePath = sourcePath.relativize(file);
+                    Path destinationFile = targetPath.resolve(relativePath);
+
+                    progressInfo.log(file + " --> " + destinationFile);
+                    Files.copy(file, destinationFile, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
+
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+
+                    progressInfo.log("ERROR: Unable to process " + file);
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static void deleteDirectoryRecursively(Path path, JIPipeProgressInfo progressInfo) {
         FileVisitor<Path> visitor = new SimpleFileVisitor<Path>() {
             @Override
