@@ -96,6 +96,7 @@ public class FormPanel extends JXPanel {
     private final boolean documentationHasUI;
     private final List<GroupHeaderPanel> groupHeaderPanels = new ArrayList<>();
     private final JPanel staticContentPanel;
+    private final int flags;
     private int numRows = 0;
     private JScrollPane scrollPane;
     private boolean hasVerticalGlue;
@@ -117,6 +118,7 @@ public class FormPanel extends JXPanel {
      * @param flags    flags for this component
      */
     public FormPanel(MarkdownDocument document, int flags) {
+        this.flags = flags;
         setLayout(new BorderLayout());
         contentPanel.setLayout(new GridBagLayout());
 
@@ -434,6 +436,9 @@ public class FormPanel extends JXPanel {
      */
     public GroupHeaderPanel addGroupHeader(String text, Icon icon) {
         GroupHeaderPanel panel = new GroupHeaderPanel(text, icon, getGroupHeaderPanels().isEmpty() ? 8 : 32);
+        if((flags & TRANSPARENT_BACKGROUND) == TRANSPARENT_BACKGROUND) {
+            panel.setOpaque(false);
+        }
         GridBagConstraints gridBagConstraints = new GridBagConstraints() {
             {
                 anchor = GridBagConstraints.WEST;
@@ -462,6 +467,9 @@ public class FormPanel extends JXPanel {
      */
     public GroupHeaderPanel addGroupHeader(String text, String description, Icon icon) {
         GroupHeaderPanel panel = new GroupHeaderPanel(text, icon, getGroupHeaderPanels().isEmpty() ? 8 : 32);
+        if((flags & TRANSPARENT_BACKGROUND) == TRANSPARENT_BACKGROUND) {
+            panel.setOpaque(false);
+        }
         GridBagConstraints gridBagConstraints = new GridBagConstraints() {
             {
                 anchor = GridBagConstraints.WEST;
