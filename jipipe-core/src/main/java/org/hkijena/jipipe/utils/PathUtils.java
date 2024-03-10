@@ -340,6 +340,9 @@ public class PathUtils {
                         return false;
                     }
                 }
+                else {
+                    return true;
+                }
             } catch (IOException e) {
                 e.printStackTrace();
                 return false;
@@ -353,7 +356,6 @@ public class PathUtils {
             }
             return true;
         }
-        return false;
     }
 
     /**
