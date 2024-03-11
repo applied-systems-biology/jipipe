@@ -29,35 +29,52 @@ public class JIPipeResourceManager {
     private final Class<?> resourceClass;
     private final String basePath;
     private final String icons16BasePath;
-    private final String icons32BasePath;
+
     private final String darkIcons16BasePath;
+    private final String icons32BasePath;
     private final String darkIcons32BasePath;
+    private final String icons64BasePath;
+    private final String darkIcons64BasePath;
+    private final String icons128BasePath;
+    private final String darkIcons128BasePath;
     private final String templateBasePath;
     private final String schemaBasePath;
 
     private final Map<String, ImageIcon> icon16FromResourceCache = new HashMap<>();
-
     private final Map<String, ImageIcon> icon32FromResourceCache = new HashMap<>();
+    private final Map<String, ImageIcon> icon64FromResourceCache = new HashMap<>();
+    private final Map<String, ImageIcon> icon128FromResourceCache = new HashMap<>();
 
     /**
      * Creates a new instance
      *
-     * @param resourceClass       the class that acts as the base for accessing the resources. Should be in the same package as the extension
-     * @param basePath            absolute resource path to the resource root e.g. /org/hkijena/jipipe/extensions/myextension (must be consistent with the resource directory)
-     * @param icons16BasePath     resource path to the 16x16 icons
-     * @param icons32BasePath     resource path to the 32x32 icons
-     * @param darkIcons16BasePath resource path to the dark 16x16 icons (icons themselves are optional; the non-dark versions are automatically utilized if no dark version is available)
-     * @param darkIcons32BasePath resource path to the dark 32x32 icons (icons themselves are optional; the non-dark versions are automatically utilized if no dark version is available)
-     * @param templateBasePath    resource path to the template directory
-     * @param schemaBasePath      resource path to the schema directory
+     * @param resourceClass        the class that acts as the base for accessing the resources. Should be in the same package as the extension
+     * @param basePath             absolute resource path to the resource root e.g. /org/hkijena/jipipe/extensions/myextension (must be consistent with the resource directory)
+     * @param icons16BasePath      resource path to the 16x16 icons
+     * @param darkIcons16BasePath  resource path to the dark 16x16 icons (icons themselves are optional; the non-dark versions are automatically utilized if no dark version is available)
+     * @param icons32BasePath      resource path to the 32x32 icons
+     * @param darkIcons32BasePath  resource path to the dark 32x32 icons (icons themselves are optional; the non-dark versions are automatically utilized if no dark version is available)
+     * @param icons64BasePath  resource path to the 64x64 icons
+     * @param darkIcons64BasePath resource path to the dark 64x64 icons (icons themselves are optional; the non-dark versions are automatically utilized if no dark version is available)
+     * @param icons128BasePath resource path to the 128x128 icons
+     * @param darkIcons128BasePath resource path to the dark 128x128 icons (icons themselves are optional; the non-dark versions are automatically utilized if no dark version is available)
+     * @param templateBasePath     resource path to the template directory
+     * @param schemaBasePath       resource path to the schema directory
      */
-    public JIPipeResourceManager(Class<?> resourceClass, String basePath, String icons16BasePath, String icons32BasePath, String darkIcons16BasePath, String darkIcons32BasePath, String templateBasePath, String schemaBasePath) {
+    public JIPipeResourceManager(Class<?> resourceClass, String basePath, String icons16BasePath, String darkIcons16BasePath,
+                                 String icons32BasePath, String darkIcons32BasePath, String icons64BasePath,
+                                 String darkIcons64BasePath, String icons128BasePath, String darkIcons128BasePath,
+                                 String templateBasePath, String schemaBasePath) {
         this.resourceClass = resourceClass;
         this.basePath = formatBasePath(basePath);
         this.icons16BasePath = formatBasePath(icons16BasePath);
-        this.icons32BasePath = formatBasePath(icons32BasePath);
         this.darkIcons16BasePath = formatBasePath(darkIcons16BasePath);
+        this.icons32BasePath = formatBasePath(icons32BasePath);
         this.darkIcons32BasePath = formatBasePath(darkIcons32BasePath);
+        this.icons64BasePath = formatBasePath(icons64BasePath);
+        this.darkIcons64BasePath = formatBasePath(darkIcons64BasePath);
+        this.icons128BasePath = formatBasePath(icons128BasePath);
+        this.darkIcons128BasePath = formatBasePath(darkIcons128BasePath);
         this.templateBasePath = formatBasePath(templateBasePath);
         this.schemaBasePath = formatBasePath(schemaBasePath);
     }
@@ -80,9 +97,13 @@ public class JIPipeResourceManager {
         this.resourceClass = resourceClass;
         this.basePath = formatBasePath(basePath);
         this.icons16BasePath = formatBasePath(basePath + "/icons");
-        this.icons32BasePath = formatBasePath(basePath + "/icons-32");
         this.darkIcons16BasePath = formatBasePath(basePath + "/dark/icons");
+        this.icons32BasePath = formatBasePath(basePath + "/icons-32");
         this.darkIcons32BasePath = formatBasePath(basePath + "/dark/icons-32");
+        this.icons64BasePath = formatBasePath(basePath + "/icons-64");
+        this.darkIcons64BasePath = formatBasePath(basePath + "/dark/icons-64");
+        this.icons128BasePath = formatBasePath(basePath + "/icons-128");
+        this.darkIcons128BasePath = formatBasePath(basePath + "/dark/icons-128");
         this.templateBasePath = formatBasePath(basePath + "/templates");
         this.schemaBasePath = formatBasePath(basePath + "/schemas");
     }
@@ -149,6 +170,36 @@ public class JIPipeResourceManager {
     }
 
     /**
+     * Returns the URL of a 64x64 icon. Adapts to dark theme.
+     *
+     * @param iconName the icon name
+     * @return the URL or null if the icon does not exists
+     */
+    public URL getIcon64URLFromResources(String iconName) {
+        if (UIUtils.DARK_THEME) {
+            URL resource = resourceClass.getResource(darkIcons64BasePath + "/" + iconName);
+            if (resource != null)
+                return resource;
+        }
+        return resourceClass.getResource(icons64BasePath + "/" + iconName);
+    }
+
+    /**
+     * Returns the URL of a 128x128 icon. Adapts to dark theme.
+     *
+     * @param iconName the icon name
+     * @return the URL or null if the icon does not exists
+     */
+    public URL getIcon128URLFromResources(String iconName) {
+        if (UIUtils.DARK_THEME) {
+            URL resource = resourceClass.getResource(darkIcons128BasePath + "/" + iconName);
+            if (resource != null)
+                return resource;
+        }
+        return resourceClass.getResource(icons128BasePath + "/" + iconName);
+    }
+
+    /**
      * Returns an icon from JIPipe resources
      *
      * @param iconName relative to the icons/ plugin resource
@@ -180,6 +231,38 @@ public class JIPipeResourceManager {
         return icon;
     }
 
+    /**
+     * Returns an icon from JIPipe resources
+     *
+     * @param iconName relative to the icons/ plugin resource
+     * @return the icon instance
+     */
+    public ImageIcon getIcon64FromResources(String iconName) {
+        ImageIcon icon = icon64FromResourceCache.getOrDefault(iconName, null);
+        if (icon == null) {
+            URL url = getIcon64URLFromResources(iconName);
+            icon = new ImageIcon(url);
+            icon64FromResourceCache.put(iconName, icon);
+        }
+        return icon;
+    }
+
+    /**
+     * Returns an icon from JIPipe resources
+     *
+     * @param iconName relative to the icons/ plugin resource
+     * @return the icon instance
+     */
+    public ImageIcon getIcon128FromResources(String iconName) {
+        ImageIcon icon = icon128FromResourceCache.getOrDefault(iconName, null);
+        if (icon == null) {
+            URL url = getIcon128URLFromResources(iconName);
+            icon = new ImageIcon(url);
+            icon128FromResourceCache.put(iconName, icon);
+        }
+        return icon;
+    }
+
     public String getBasePath() {
         return basePath;
     }
@@ -206,6 +289,22 @@ public class JIPipeResourceManager {
 
     public String getSchemaBasePath() {
         return schemaBasePath;
+    }
+
+    public String getIcons64BasePath() {
+        return icons64BasePath;
+    }
+
+    public String getDarkIcons64BasePath() {
+        return darkIcons64BasePath;
+    }
+
+    public String getIcons128BasePath() {
+        return icons128BasePath;
+    }
+
+    public String getDarkIcons128BasePath() {
+        return darkIcons128BasePath;
     }
 
     /**
