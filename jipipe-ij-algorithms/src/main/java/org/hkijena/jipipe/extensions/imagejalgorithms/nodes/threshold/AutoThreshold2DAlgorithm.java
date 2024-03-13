@@ -224,7 +224,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
         this.thresholdAnnotationStrategy = thresholdAnnotationStrategy;
     }
 
-    @JIPipeParameter("method")
+    @JIPipeParameter(value = "method", important = true)
     @SetJIPipeDocumentation(name = "Method")
     public AutoThresholder.Method getMethod() {
         return method;
