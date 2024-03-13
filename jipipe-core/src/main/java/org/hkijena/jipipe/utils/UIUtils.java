@@ -1291,7 +1291,6 @@ public class UIUtils {
         area.setText(initialValue.getHtml());
 
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent), title);
-        dialog.setSize(1024, 768);
         dialog.setLayout(new BorderLayout());
         if (!StringUtils.isNullOrEmpty(message)) {
             dialog.add(new JLabel(message), BorderLayout.NORTH);
@@ -1320,8 +1319,8 @@ public class UIUtils {
 
         dialog.add(buttonPanel, BorderLayout.SOUTH);
 
-        dialog.revalidate();
-        dialog.repaint();
+        dialog.pack();
+        dialog.setSize(1024, 768);
         dialog.setLocationRelativeTo(parent);
         dialog.setModal(true);
         dialog.setVisible(true);
