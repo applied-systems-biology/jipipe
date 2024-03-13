@@ -156,11 +156,13 @@ public class JIPipeProjectReportUI extends JIPipeProjectWorkbenchPanel implement
             }
             if(reportSettings.isAddDescription() && !StringUtils.isNullOrEmpty(project.getMetadata().getDescription().getBody())) {
                 stringBuilder.append("<h2>Description</h2>");
-                stringBuilder.append(project.getMetadata().getDescription().getBody()
+                String body = project.getMetadata().getDescription().getBody()
                         .replace("<h1>", "<h3>")
                         .replace("<h2>", "<h4>")
                         .replace("</h1>", "</h3>")
-                        .replace("</h2>", "</h4>"));
+                        .replace("</h2>", "</h4>")
+                        .replace("\n", "");
+                stringBuilder.append(body);
                 stringBuilder.append(NEW_LINE);
             }
             if(reportSettings.isAddListOfUsedNodes()) {
