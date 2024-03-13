@@ -451,6 +451,8 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             zoomMenu.add(changeZoomItem);
         }
         zoomMenu.addSeparator();
+        zoomMenu.add(UIUtils.createMenuItem("Reset zoom", "Resets the zoom to 100%",
+                UIUtils.getIconFromResources("actions/edit-reset.png"), () -> canvasUI.setZoom(1)));
         JMenuItem changeZoomToItem = new JMenuItem("Set zoom value ...");
         changeZoomToItem.addActionListener(e -> {
             String zoomInput = JOptionPane.showInputDialog(this, "Please enter a new zoom value (in %)", (int) (canvasUI.getZoom() * 100) + "%");
