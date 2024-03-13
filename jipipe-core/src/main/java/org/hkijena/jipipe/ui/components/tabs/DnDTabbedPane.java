@@ -55,7 +55,7 @@ class DnDTabbedPane extends JTabbedPane {
         return tabPlacement == SwingConstants.TOP || tabPlacement == SwingConstants.BOTTOM;
     }
 
-    private void clickArrowButton(String actionKey) {
+    public void clickArrowButton(String actionKey) {
         JButton scrollForwardButton = null;
         JButton scrollBackwardButton = null;
         for (Component c : getComponents()) {

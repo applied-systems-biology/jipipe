@@ -654,6 +654,9 @@ public class DocumentTabPane extends JPanel implements Disposable {
      */
     public void switchToContent(Component content) {
         tabbedPane.setSelectedComponent(content);
+        revalidate();
+        repaint(50);
+        tabbedPane.clickArrowButton("scrollTabsBackwardAction");
     }
 
     /**
