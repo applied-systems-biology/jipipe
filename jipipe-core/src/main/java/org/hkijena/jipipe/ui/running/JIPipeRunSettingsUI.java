@@ -119,6 +119,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
         try {
             JIPipeGraphRunConfiguration settings = new JIPipeGraphRunConfiguration();
             settings.setOutputPath(RuntimeSettings.generateTempDirectory(""));
+            settings.setLoadFromCache(false);
             run = new JIPipeGraphRun(getProjectWorkbench().getProject(), settings);
         } catch (Exception e) {
             openError(e);
