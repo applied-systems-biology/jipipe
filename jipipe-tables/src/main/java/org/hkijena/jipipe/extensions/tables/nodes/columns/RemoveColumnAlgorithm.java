@@ -22,10 +22,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
-import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
-import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
+import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
@@ -82,6 +79,7 @@ public class RemoveColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Filters", description = "Filter expression that is used to find columns to be removed. ")
     @JIPipeParameter("filters")
+    @JIPipeExpressionParameterSettings(hint = "per column name (as value)")
     @JIPipeExpressionParameterVariable(key = "annotations", name = "Annotations map", description = "Map of text annotations")
     @JIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     public StringQueryExpression getFilters() {

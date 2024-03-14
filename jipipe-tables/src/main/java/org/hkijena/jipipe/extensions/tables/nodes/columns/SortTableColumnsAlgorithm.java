@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
 
@@ -31,7 +32,8 @@ import java.util.Comparator;
 /**
  * Algorithm that integrates columns
  */
-@SetJIPipeDocumentation(name = "Sort table columns", description = "Sorts the table columns")
+@SetJIPipeDocumentation(name = "Sort table columns", description = "Sorts the table columns. Also allows to provide a manual sorting.")
+@AddJIPipeNodeAlias(aliasName = "Reorder table columns")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
@@ -39,6 +41,7 @@ public class SortTableColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean useNaturalSortOrder = true;
     private boolean reverseSortOrder = false;
+    private StringList manualOrder = new StringList();
 
     /**
      * Creates a new instance
@@ -58,6 +61,7 @@ public class SortTableColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         super(other);
         this.useNaturalSortOrder = other.useNaturalSortOrder;
         this.reverseSortOrder = other.reverseSortOrder;
+        this.manualOrder = new StringList(other.manualOrder);
     }
 
     @Override
@@ -72,12 +76,31 @@ public class SortTableColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
         ArrayList<String> columnNames = new ArrayList<>(input.getColumnNames());
         columnNames.sort(comparator);
-        ResultsTableData output = new ResultsTableData();
+
+        ArrayList<String> orderedColumnNames = new StringList(manualOrder);
         for (String columnName : columnNames) {
+            if(!orderedColumnNames.contains(columnName)) {
+                orderedColumnNames.add(columnName);
+            }
+        }
+
+        ResultsTableData output = new ResultsTableData();
+        for (String columnName : orderedColumnNames) {
             output.addColumn(columnName, input.isStringColumn(columnName));
         }
         output.addRows(input);
         iterationStep.addOutputData(getFirstOutputSlot(), output, progressInfo);
+    }
+
+    @SetJIPipeDocumentation(name = "Manual order", description = "Columns are first sorted according to this manual order. All other columns will be sorted after this list.")
+    @JIPipeParameter("manual-order")
+    public StringList getManualOrder() {
+        return manualOrder;
+    }
+
+    @JIPipeParameter("manual-order")
+    public void setManualOrder(StringList manualOrder) {
+        this.manualOrder = manualOrder;
     }
 
     @SetJIPipeDocumentation(name = "Sort strings by natural order", description = "If enabled, strings are sorted by natural order (e.g. 1, 2, 15 100, ...). If disabled, " +
