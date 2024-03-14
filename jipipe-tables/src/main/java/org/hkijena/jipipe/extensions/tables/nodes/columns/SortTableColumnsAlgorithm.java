@@ -77,7 +77,12 @@ public class SortTableColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ArrayList<String> columnNames = new ArrayList<>(input.getColumnNames());
         columnNames.sort(comparator);
 
-        ArrayList<String> orderedColumnNames = new StringList(manualOrder);
+        ArrayList<String> orderedColumnNames = new ArrayList<>();
+        for (String columnName : manualOrder) {
+            if(columnNames.contains(columnName)) {
+                orderedColumnNames.add(columnName);
+            }
+        }
         for (String columnName : columnNames) {
             if(!orderedColumnNames.contains(columnName)) {
                 orderedColumnNames.add(columnName);
