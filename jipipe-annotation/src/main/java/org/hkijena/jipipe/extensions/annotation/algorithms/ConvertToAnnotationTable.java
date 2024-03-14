@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -37,6 +38,7 @@ import java.util.Set;
         "all annotations of the data row. You can also add a string representation of the data.")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeNodeAlias(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, aliasName = "Annotations to table")
+@AddJIPipeNodeAlias(nodeTypeCategory = AnnotationsNodeTypeCategory.class, aliasName = "Annotations to table")
 @AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = AnnotationTableData.class, slotName = "Output", create = true)
 public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {
@@ -49,7 +51,7 @@ public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {
      */
     public ConvertToAnnotationTable(JIPipeNodeInfo info) {
         super(info);
-        getDataBatchGenerationSettings().setColumnMatching(JIPipeColumMatching.MergeAll);
+//        getDataBatchGenerationSettings().setColumnMatching(JIPipeColumMatching.MergeAll);
     }
 
     /**
