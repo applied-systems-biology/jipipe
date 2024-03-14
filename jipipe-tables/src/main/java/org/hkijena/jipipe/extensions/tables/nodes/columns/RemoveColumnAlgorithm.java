@@ -29,7 +29,8 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
  * Algorithm that removes columns
  */
 @SetJIPipeDocumentation(name = "Remove table column", description = "Removes one or multiple columns by name")
-@ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
+@AddJIPipeNodeAlias(aliasName = "Filter table columns")
+@ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Filter")
 @AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class RemoveColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
