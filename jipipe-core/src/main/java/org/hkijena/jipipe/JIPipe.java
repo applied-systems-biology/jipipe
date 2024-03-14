@@ -997,7 +997,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
                         "You can ignore these or open the extension manager to activate the new extensions.\n\n" +
                         "For more information, please visit https://www.jipipe.org/installation/extensions/");
             }
-            notification.getActions().add(new JIPipeNotificationAction("Ignore", "Ignores the newly available extensions. You will not be warned again about them.", UIUtils.getIconFromResources("actions/archive-remove.png"), workbench -> {
+            notification.getActions().add(new JIPipeNotificationAction("Ignore", "Ignores the newly available extensions. You will not be warned again about them.",
+                    UIUtils.getIconFromResources("actions/filename-ignore-amarok.png"), workbench -> {
                 extensionRegistry.dismissNewExtensions();
             }));
             notification.getActions().add(new JIPipeNotificationAction("Open in extension manager",

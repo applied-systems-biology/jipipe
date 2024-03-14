@@ -220,7 +220,7 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel implements JIPipeP
         toolBar.add(openWebsiteButton);
         toolBar.add(Box.createHorizontalStrut(4));
 
-        JButton openCommunityButton = new JButton("Community", UIUtils.getIconFromResources("actions/im-irc.png"));
+        JButton openCommunityButton = new JButton("Community", UIUtils.getIconFromResources("actions/dialog-messages.png"));
         openCommunityButton.setAlignmentY(JComponent.BOTTOM_ALIGNMENT);
         openCommunityButton.setToolTipText("https://forum.image.sc/tag/jipipe");
         openCommunityButton.addActionListener(e -> UIUtils.openWebsite("https://forum.image.sc/tag/jipipe"));
