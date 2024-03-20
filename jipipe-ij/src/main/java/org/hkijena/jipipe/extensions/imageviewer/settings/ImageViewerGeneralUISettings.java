@@ -25,7 +25,7 @@ import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 public class ImageViewerGeneralUISettings extends AbstractJIPipeParameterCollection {
 
     public static String ID = "image-viewer-ui-general";
-    private boolean autoSwitch2D3DViewer = true;
+    private boolean autoSwitch2D3DViewer = false;
 
     public static ImageViewerGeneralUISettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, ImageViewerGeneralUISettings.class);

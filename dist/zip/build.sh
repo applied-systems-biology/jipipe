@@ -83,17 +83,17 @@ if [ ! -e "./dependencies/flexmark-ext-tables-0.62.2.jar" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/flexmark-ext-tables-0.62.2.jar https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark-ext-tables/0.62.2/flexmark-ext-tables-0.62.2.jar
 fi
-if [ ! -e "./dependencies/jackson-databind-2.12.5.jar" ]; then
+if [ ! -e "./dependencies/jackson-databind-2.14.2.jar" ]; then
 	mkdir -p "./dependencies"
-	wget -O ./dependencies/jackson-databind-2.12.5.jar https://maven.scijava.org/service/local/repositories/sonatype/content/com/fasterxml/jackson/core/jackson-databind/2.12.5/jackson-databind-2.12.5.jar
+	wget -O ./dependencies/jackson-databind-2.14.2.jar https://maven.scijava.org/service/local/repositories/sonatype/content/com/fasterxml/jackson/core/jackson-databind/2.14.2/jackson-databind-2.14.2.jar
 fi
-if [ ! -e "./dependencies/jackson-core-2.12.5.jar" ]; then
+if [ ! -e "./dependencies/jackson-core-2.14.2.jar" ]; then
 	mkdir -p "./dependencies"
-	wget -O ./dependencies/jackson-core-2.12.5.jar https://maven.scijava.org/service/local/repositories/sonatype/content/com/fasterxml/jackson/core/jackson-core/2.12.5/jackson-core-2.12.5.jar
+	wget -O ./dependencies/jackson-core-2.14.2.jar https://maven.scijava.org/service/local/repositories/sonatype/content/com/fasterxml/jackson/core/jackson-core/2.14.2/jackson-core-2.14.2.jar
 fi
-if [ ! -e "./dependencies/jackson-annotations-2.12.5.jar" ]; then
+if [ ! -e "./dependencies/jackson-annotations-2.14.2.jar" ]; then
 	mkdir -p "./dependencies"
-	wget -O ./dependencies/jackson-annotations-2.12.5.jar https://maven.scijava.org/service/local/repositories/sonatype/content/com/fasterxml/jackson/core/jackson-annotations/2.12.5/jackson-annotations-2.12.5.jar
+	wget -O ./dependencies/jackson-annotations-2.14.2.jar https://maven.scijava.org/service/local/repositories/sonatype/content/com/fasterxml/jackson/core/jackson-annotations/2.14.2/jackson-annotations-2.14.2.jar
 fi
 if [ ! -e "./dependencies/jgrapht-core-1.4.0.jar" ]; then
 	mkdir -p "./dependencies"
@@ -147,13 +147,13 @@ if [ ! -e "./dependencies/ij_ridge_detect-1.4.1.jar" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/ij_ridge_detect-1.4.1.jar https://maven.scijava.org/service/local/repositories/releases/content/de/biomedical-imaging/imagej/ij_ridge_detect/1.4.1/ij_ridge_detect-1.4.1.jar
 fi
-if [ ! -e "./dependencies/commons-compress-1.20.jar" ]; then
+if [ ! -e "./dependencies/commons-compress-1.23.0.jar" ]; then
 	mkdir -p "./dependencies"
-	wget -O ./dependencies/commons-compress-1.20.jar https://maven.scijava.org/service/local/repositories/central/content/org/apache/commons/commons-compress/1.20/commons-compress-1.20.jar
+	wget -O ./dependencies/commons-compress-1.23.0.jar https://maven.scijava.org/service/local/repositories/central/content/org/apache/commons/commons-compress/1.23.0/commons-compress-1.23.0.jar
 fi
-if [ ! -e "./dependencies/jackson-dataformat-yaml-2.12.5.jar" ]; then
+if [ ! -e "./dependencies/jackson-dataformat-yaml-2.14.2.jar" ]; then
 	mkdir -p "./dependencies"
-	wget -O ./dependencies/jackson-dataformat-yaml-2.12.5.jar https://maven.scijava.org/service/local/repositories/central/content/com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.12.5/jackson-dataformat-yaml-2.12.5.jar
+	wget -O ./dependencies/jackson-dataformat-yaml-2.14.2.jar https://maven.scijava.org/service/local/repositories/central/content/com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.14.2/jackson-dataformat-yaml-2.14.2.jar
 fi
 if [ ! -e "./dependencies/poi-5.2.0.jar" ]; then
 	mkdir -p "./dependencies"
