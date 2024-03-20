@@ -32,7 +32,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 /**
  * RGB colored 2D image
  */
-@SetJIPipeDocumentation(name = "2D image (RGB)", description = "A colored image (RGB colors)")
+@SetJIPipeDocumentation(name = "2D ImageJ image (RGB)", description = "A colored image (RGB colors)")
 @ConfigureJIPipeNode(menuPath = "Images\n2D\nColor")
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ColorProcessor.class, colorSpace = RGBColorSpace.class, pixelType = Integer.class, bitDepth = 24, numDimensions = 2)

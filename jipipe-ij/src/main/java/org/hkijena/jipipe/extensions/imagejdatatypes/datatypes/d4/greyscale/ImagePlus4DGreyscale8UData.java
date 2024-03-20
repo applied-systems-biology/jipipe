@@ -31,7 +31,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 /**
  * 8-bit greyscale 4D image
  */
-@SetJIPipeDocumentation(name = "4D image (8 bit)", description = "An 8-bit greyscale image")
+@SetJIPipeDocumentation(name = "4D ImageJ image (8 bit)", description = "An 8-bit greyscale image")
 @ConfigureJIPipeNode(menuPath = "Images\n4D\nGreyscale")
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ByteProcessor.class, colorSpace = GreyscaleColorSpace.class, pixelType = Byte.class, bitDepth = 8, numDimensions = 4)

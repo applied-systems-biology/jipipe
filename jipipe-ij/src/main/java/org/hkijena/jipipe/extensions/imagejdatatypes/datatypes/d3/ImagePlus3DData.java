@@ -27,7 +27,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 /**
  * 3D image
  */
-@SetJIPipeDocumentation(name = "3D image", description = "A 3D image")
+@SetJIPipeDocumentation(name = "3D ImageJ image", description = "A 3D image")
 @ConfigureJIPipeNode(menuPath = "Images\n3D")
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(numDimensions = 3)

@@ -31,7 +31,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 /**
  * Greyscale 3D image
  */
-@SetJIPipeDocumentation(name = "3D image (greyscale)", description = "A greyscale image")
+@SetJIPipeDocumentation(name = "3D ImageJ image (greyscale)", description = "A greyscale image")
 @ConfigureJIPipeNode(menuPath = "Images\n3D\nGreyscale")
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = FloatProcessor.class, colorSpace = GreyscaleColorSpace.class, pixelType = Float.class, bitDepth = 32, numDimensions = 3)

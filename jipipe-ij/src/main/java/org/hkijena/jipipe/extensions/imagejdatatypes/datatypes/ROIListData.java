@@ -72,7 +72,7 @@ import java.util.zip.ZipOutputStream;
 /**
  * Contains {@link Roi}
  */
-@SetJIPipeDocumentation(name = "ROI list", description = "Collection of ROI")
+@SetJIPipeDocumentation(name = "ImageJ 2D ROI list", description = "Collection of ROI")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains one file in *.roi or *.zip format. " +
         "*.roi is a single ImageJ ROI. *.zip contains multiple ImageJ ROI. Please note that if multiple *.roi/*.zip are present, only " +
         "one will be loaded.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/roi-list-data.schema.json")

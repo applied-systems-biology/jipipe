@@ -27,7 +27,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 /**
  * 4D image
  */
-@SetJIPipeDocumentation(name = "4D image", description = "A 4D image")
+@SetJIPipeDocumentation(name = "4D ImageJ image", description = "A 4D image")
 @ConfigureJIPipeNode(menuPath = "Images\n4D")
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(numDimensions = 4)

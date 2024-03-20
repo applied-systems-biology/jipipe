@@ -25,7 +25,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
 /**
  * 3D image in frequency space
  */
-@SetJIPipeDocumentation(name = "3D FFT Image")
+@SetJIPipeDocumentation(name = "3D ImageJ FFT Image")
 @ConfigureJIPipeNode(menuPath = "Images\nFFT")
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(numDimensions = 3)

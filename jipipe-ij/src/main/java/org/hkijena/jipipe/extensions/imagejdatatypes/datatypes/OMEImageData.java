@@ -79,7 +79,7 @@ import java.util.List;
 /**
  * Data that is a representation of all information saved in Bio-Formats
  */
-@SetJIPipeDocumentation(name = "OME Image", description = "Image that contains additional OME-XML metadata. " +
+@SetJIPipeDocumentation(name = "OME ImageJ Image", description = "Image that contains additional OME-XML metadata. " +
         "It can be converted into an image, a ROI list, or an XML text.")
 @LabelAsJIPipeHeavyData
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains one or multiple files in *.tif or *.ome.tif format. If OME TIFF is used, multiple tiff files can be present (due to the " +

@@ -31,7 +31,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 /**
  * Mask 5D image
  */
-@SetJIPipeDocumentation(name = "5D image (mask)", description = "An 8-bit binary image")
+@SetJIPipeDocumentation(name = "5D ImageJ image (mask)", description = "An 8-bit binary image")
 @ConfigureJIPipeNode(menuPath = "Images\n5D\nGreyscale")
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ByteProcessor.class, colorSpace = GreyscaleColorSpace.class, pixelType = Byte.class, bitDepth = 8, numDimensions = 5)

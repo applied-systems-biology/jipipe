@@ -33,7 +33,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
  * These image data types exist to address general processing solely based on bit-depth (e.g. process all 2D image planes).
  * Conversion works through {@link org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.ImplicitImageTypeConverter}
  */
-@SetJIPipeDocumentation(name = "Image (float)", description = "A 32-bit greyscale image")
+@SetJIPipeDocumentation(name = "ImageJ Image (float)", description = "A 32-bit greyscale image")
 @ConfigureJIPipeNode(menuPath = "Images\nGreyscale")
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = FloatProcessor.class, colorSpace = GreyscaleColorSpace.class, pixelType = Float.class, bitDepth = 32)

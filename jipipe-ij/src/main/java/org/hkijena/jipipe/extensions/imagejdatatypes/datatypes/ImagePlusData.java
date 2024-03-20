@@ -52,7 +52,7 @@ import java.util.*;
 /**
  * ImageJ image
  */
-@SetJIPipeDocumentation(name = "Image", description = "An ImageJ image")
+@SetJIPipeDocumentation(name = "ImageJ Image", description = "An ImageJ image")
 @LabelAsJIPipeHeavyData
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains one image file with one of following extensions: *.tif, *.tiff, *.png, *.jpeg, *.jpg, *.png. " +
         "We recommend the usage of TIFF.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/imageplus-data.schema.json")

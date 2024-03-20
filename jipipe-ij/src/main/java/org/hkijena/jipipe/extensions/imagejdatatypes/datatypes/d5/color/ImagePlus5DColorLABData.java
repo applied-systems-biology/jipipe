@@ -35,7 +35,7 @@ import java.awt.*;
 /**
  * RGB color 5D image
  */
-@SetJIPipeDocumentation(name = "5D image (LAB)", description = "A color image (LAB colors)")
+@SetJIPipeDocumentation(name = "5D ImageJ image (LAB)", description = "A color image (LAB colors)")
 @ConfigureJIPipeNode(menuPath = "Images\n5D\nColor")
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ColorProcessor.class, colorSpace = LABColorSpace.class, pixelType = Integer.class, bitDepth = 24, numDimensions = 5)

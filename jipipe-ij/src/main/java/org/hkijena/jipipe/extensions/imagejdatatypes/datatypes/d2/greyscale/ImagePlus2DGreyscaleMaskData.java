@@ -31,7 +31,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 /**
  * 8-bit mask 2D image
  */
-@SetJIPipeDocumentation(name = "2D image (mask)", description = "An 8-bit binary image")
+@SetJIPipeDocumentation(name = "2D ImageJ image (mask)", description = "An 8-bit binary image")
 @ConfigureJIPipeNode(menuPath = "Images\n2D\nGreyscale")
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ByteProcessor.class, colorSpace = GreyscaleColorSpace.class, pixelType = Byte.class, bitDepth = 8, numDimensions = 2)

@@ -32,7 +32,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 /**
  * RGB color 3D image
  */
-@SetJIPipeDocumentation(name = "3D image (RGB)", description = "A color image (RGB colors)")
+@SetJIPipeDocumentation(name = "3D ImageJ image (RGB)", description = "A color image (RGB colors)")
 @ConfigureJIPipeNode(menuPath = "Images\n3D\nColor")
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ColorProcessor.class, colorSpace = RGBColorSpace.class, pixelType = Integer.class, bitDepth = 24, numDimensions = 3)

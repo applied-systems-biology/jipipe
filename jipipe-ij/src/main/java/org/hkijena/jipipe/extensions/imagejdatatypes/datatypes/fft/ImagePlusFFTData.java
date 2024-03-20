@@ -39,7 +39,7 @@ import java.nio.file.Path;
 /**
  * Image in frequency space
  */
-@SetJIPipeDocumentation(name = "FFT Image")
+@SetJIPipeDocumentation(name = "ImageJ FFT Image")
 @ConfigureJIPipeNode(menuPath = "Images\nFFT")
 @LabelAsJIPipeHeavyData
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains two image files: fht.ome.tif / fht.tif and power_spectrum.ome.tif / power_spectrum.tif, as well as a file fht_info.json. Either the OME TIFF or TIFF " +

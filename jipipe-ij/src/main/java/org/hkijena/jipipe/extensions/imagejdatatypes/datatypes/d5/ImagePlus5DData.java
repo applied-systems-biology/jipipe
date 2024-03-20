@@ -27,7 +27,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 /**
  * 5D image
  */
-@SetJIPipeDocumentation(name = "5D image", description = "A 5D image")
+@SetJIPipeDocumentation(name = "5D ImageJ image", description = "A 5D image")
 @ConfigureJIPipeNode(menuPath = "Images\n5D")
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(numDimensions = 5)

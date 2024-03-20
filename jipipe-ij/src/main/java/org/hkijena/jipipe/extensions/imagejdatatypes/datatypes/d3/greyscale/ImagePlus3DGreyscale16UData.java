@@ -31,7 +31,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 /**
  * 16-bit greyscale 3D image
  */
-@SetJIPipeDocumentation(name = "3D image (16 bit)", description = "A 16-bit greyscale image")
+@SetJIPipeDocumentation(name = "3D ImageJ image (16 bit)", description = "A 16-bit greyscale image")
 @ConfigureJIPipeNode(menuPath = "Images\n3D\nGreyscale")
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ShortProcessor.class, colorSpace = GreyscaleColorSpace.class, pixelType = Short.class, bitDepth = 16, numDimensions = 3)

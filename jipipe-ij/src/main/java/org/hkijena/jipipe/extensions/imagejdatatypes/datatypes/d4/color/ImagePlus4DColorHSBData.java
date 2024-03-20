@@ -35,7 +35,7 @@ import java.awt.*;
 /**
  * RGB color 4D image
  */
-@SetJIPipeDocumentation(name = "4D image (HSB)", description = "A color image (HSB colors)")
+@SetJIPipeDocumentation(name = "4D ImageJ image (HSB)", description = "A color image (HSB colors)")
 @ConfigureJIPipeNode(menuPath = "Images\n4D\nColor")
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ColorProcessor.class, colorSpace = HSBColorSpace.class, pixelType = Integer.class, bitDepth = 24, numDimensions = 4)

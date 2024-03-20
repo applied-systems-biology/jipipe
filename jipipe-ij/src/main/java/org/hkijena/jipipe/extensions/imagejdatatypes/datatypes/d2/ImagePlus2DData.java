@@ -27,7 +27,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 /**
  * 2D image
  */
-@SetJIPipeDocumentation(name = "2D image", description = "A 2D image")
+@SetJIPipeDocumentation(name = "2D ImageJ image", description = "A 2D image")
 @ConfigureJIPipeNode(menuPath = "Images\n2D")
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(numDimensions = 2)
