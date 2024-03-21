@@ -28,6 +28,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
@@ -100,7 +101,7 @@ public class PathFromUserDataSource extends JIPipeSimpleIteratingAlgorithm {
         synchronized (lock) {
             SwingUtilities.invokeLater(() -> {
                 try {
-                    JIPipeWorkbench workbench = JIPipeWorkbench.tryFindWorkbench(getParentGraph(), new JIPipeDummyWorkbench());
+                    JIPipeWorkbench workbench = JIPipeProjectWorkbench.tryFindProjectWorkbench(getParentGraph(), new JIPipeDummyWorkbench());
                     if (multiple) {
                         pathList.addAll(FileChooserSettings.selectMulti(workbench.getWindow(),
                                 FileChooserSettings.LastDirectoryKey.Data,

@@ -36,6 +36,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import javax.swing.*;
@@ -141,7 +142,7 @@ public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgori
         synchronized (lock) {
             SwingUtilities.invokeLater(() -> {
                 try {
-                    JIPipeWorkbench workbench = JIPipeWorkbench.tryFindWorkbench(getParentGraph(), new JIPipeDummyWorkbench());
+                    JIPipeWorkbench workbench = JIPipeProjectWorkbench.tryFindProjectWorkbench(getParentGraph(), new JIPipeDummyWorkbench());
                     FormsDialog dialog = new FormsDialog(workbench, iterationSteps, formsSlot, "Tab");
                     dialog.setTitle(getName());
                     dialog.setSize(1024, 768);

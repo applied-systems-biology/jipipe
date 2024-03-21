@@ -44,6 +44,7 @@ import org.hkijena.jipipe.extensions.forms.ui.FormsDialog;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -171,7 +172,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
             synchronized (lock) {
                 SwingUtilities.invokeLater(() -> {
                     try {
-                        JIPipeWorkbench workbench = JIPipeWorkbench.tryFindWorkbench(getParentGraph(), new JIPipeDummyWorkbench());
+                        JIPipeWorkbench workbench = JIPipeProjectWorkbench.tryFindProjectWorkbench(getParentGraph(), new JIPipeDummyWorkbench());
                         FormsDialog dialog = new FormsDialog(workbench, iterationStepList, formsSlot, tabAnnotation);
                         dialog.setTitle(getName());
                         dialog.setSize(1024, 768);

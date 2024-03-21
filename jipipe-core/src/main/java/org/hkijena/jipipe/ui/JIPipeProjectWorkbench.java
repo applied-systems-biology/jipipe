@@ -86,7 +86,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * UI around an {@link JIPipeProject}
  */
-public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, JIPipeProject.CompartmentRemovedEventListener, JIPipeService.ExtensionRegisteredEventListener {
+public class JIPipeProjectWorkbench extends JPanel implements JIPipeDesktopWorkbench, JIPipeProject.CompartmentRemovedEventListener, JIPipeService.ExtensionRegisteredEventListener {
 
     public static final String TAB_INTRODUCTION = "INTRODUCTION";
     public static final String TAB_LICENSE = "LICENSE";
@@ -144,6 +144,29 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         JIPipeRunQueueNotifier.install();
     }
 
+    /**
+     * Attempts to find a workbench
+     *
+     * @param graph  the graph
+     * @param orElse if no workbench could be found
+     * @return the workbench
+     */
+    public static JIPipeProjectWorkbench tryFindProjectWorkbench(JIPipeGraph graph, JIPipeWorkbench orElse) {
+        JIPipeProject project = graph.getAttachment(JIPipeProject.class);
+        if (project != null) {
+            JIPipeProjectWindow window = JIPipeProjectWindow.getWindowFor(project);
+            if (window != null) {
+                return window.getProjectUI();
+            }
+        }
+        if(orElse instanceof JIPipeProjectWorkbench) {
+            return (JIPipeProjectWorkbench) orElse;
+        }
+        else {
+            return null;
+        }
+    }
+
     public JIPipeNodeDatabase getNodeDatabase() {
         return nodeDatabase;
     }
@@ -152,8 +175,9 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         if (workbench instanceof JIPipeProjectWorkbench) {
             JIPipeProject project = ((JIPipeProjectWorkbench) workbench).getProject();
             if (project.getMetadata().getPermissions().isPreventAddingDeletingNodes()) {
-                JOptionPane.showMessageDialog(workbench.getWindow(), "Deleting nodes & compartments is disabled for this project. " +
-                        "\n\nIf this is not intentional, change this setting in Project > Project settings > Prevent adding/deleting nodes");
+                workbench.showMessageDialog("Deleting nodes & compartments is disabled for this project. " +
+                        "\n\nIf this is not intentional, change this setting in Project > Project settings > Prevent adding/deleting nodes",
+                        "Permissions denied");
                 return false;
             }
         }
@@ -164,8 +188,9 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         if (workbench instanceof JIPipeProjectWorkbench) {
             JIPipeProject project = ((JIPipeProjectWorkbench) workbench).getProject();
             if (project.getMetadata().getPermissions().isPreventModifyingSlots()) {
-                JOptionPane.showMessageDialog(workbench.getWindow(), "Modifying slots is disabled for this project. " +
-                        "\n\nIf this is not intentional, change this setting in Project > Project settings > Prevent modifying slots");
+                workbench.showMessageDialog("Modifying slots is disabled for this project. " +
+                        "\n\nIf this is not intentional, change this setting in Project > Project settings > Prevent modifying slots",
+                        "Permissions denied");
                 return false;
             }
         }
@@ -993,12 +1018,10 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         return context;
     }
 
-    @Override
     public boolean isProjectModified() {
         return projectModified;
     }
 
-    @Override
     public void setProjectModified(boolean projectModified) {
         if (this.projectModified != projectModified) {
             this.projectModified = projectModified;
@@ -1009,6 +1032,16 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
     @Override
     public JIPipeNotificationInbox getNotificationInbox() {
         return notificationInbox;
+    }
+
+    @Override
+    public void showMessageDialog(String message, String title) {
+        JOptionPane.showMessageDialog(getWindow(), message, title, JOptionPane.PLAIN_MESSAGE);
+    }
+
+    @Override
+    public void showErrorDialog(String message, String title) {
+        JOptionPane.showMessageDialog(getWindow(), message, title, JOptionPane.ERROR_MESSAGE);
     }
 
     public void unload() {
