@@ -1,4 +1,0 @@
-{
-  "activated-extensions" : [ "org.hkijena.jipipe:annotations", "org.hkijena.jipipe:table-operations", "org.hkijena.jipipe:multi-parameters-algorithms", "org.hkijena.jipipe:forms", "org.hkijena.jipipe:imagej-algorithms", "org.hkijena.jipipe:strings", "org.hkijena.jipipe:imagej2", "org.hkijena.jipipe:utils", "org.hkijena.jipipe:imagej-integration", "org.hkijena.jipipe:r", "org.hkijena.jipipe:filesystem", "org.hkijena.jipipe:plots", "org.hkijena.jipipe:tools", "org.hkijena.jipipe:python" ],
-  "silenced-extensions" : [ ]
-}

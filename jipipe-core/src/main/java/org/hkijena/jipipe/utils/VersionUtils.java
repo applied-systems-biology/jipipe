@@ -33,7 +33,7 @@ public class VersionUtils {
      * @return the version string or '3.0.0' if none is available
      */
     public static String getJIPipeVersion() {
-        return StringUtils.orElse(CorePlugin.class.getPackage().getImplementationVersion(), "3.0.0");
+        return StringUtils.orElse(CorePlugin.class.getPackage().getImplementationVersion(), "4.0.0");
     }
 
     /**

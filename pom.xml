@@ -15,7 +15,7 @@ See the LICENSE file provided with this code for the full license.
     <packaging>pom</packaging>
     <groupId>org.hkijena</groupId>
     <artifactId>pom-jipipe</artifactId>
-    <version>3.0.1-SNAPSHOT</version>
+    <version>4.0.0-SNAPSHOT</version>
     <name>jipipe</name>
     <description>JIPipe</description>
     <url>https://www.jipipe.org/</url>
@@ -199,6 +199,16 @@ See the LICENSE file provided with this code for the full license.
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-desktop</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-cli</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-python</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -336,7 +346,7 @@ See the LICENSE file provided with this code for the full license.
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <license.licenseName>bsd_2</license.licenseName>
+        <license.licenseName>mit</license.licenseName>
         <license.copyrightOwners>N/A</license.copyrightOwners>
         <license.projectName>JIPipe</license.projectName>
         <releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
@@ -347,32 +357,33 @@ See the LICENSE file provided with this code for the full license.
 
     <modules>
         <module>jipipe-core</module>
-        <module>jipipe-plots</module>
-        <module>jipipe-python</module>
-        <module>jipipe-ij</module>
-        <module>jipipe-ij2</module>
-        <module>jipipe-ij-omero</module>
-        <module>jipipe-ij-algorithms</module>
-        <module>jipipe-ij-multi-template-matching</module>
-        <module>jipipe-ij-filaments</module>
-        <module>jipipe-annotation</module>
-        <module>jipipe-filesystem</module>
-        <module>jipipe-tables</module>
-        <module>jipipe-multiparameters</module>
-        <module>jipipe-clij</module>
-        <module>jipipe-strings</module>
-        <module>jipipe-utils</module>
-        <module>jipipe-forms</module>
-        <module>jipipe-r</module>
-        <module>jipipe-cellpose</module>
-        <module>jipipe-omnipose</module>
-        <module>jipipe-ij-weka</module>
-        <module>jipipe-ij-trackmate</module>
-        <module>jipipe-ij-3d</module>
-        <module>jipipe-scene-3d</module>
-        <module>jipipe-ilastik</module>
-        <module>jipipe-imp</module>
-        <module>jipipe-launcher</module>
+        <module>jipipe-desktop</module>
+        <module>jipipe-cli</module>
+        <module>plugins/jipipe-plots</module>
+        <module>plugins/jipipe-python</module>
+        <module>plugins/jipipe-ij</module>
+        <module>plugins/jipipe-ij2</module>
+        <module>plugins/jipipe-ij-omero</module>
+        <module>plugins/jipipe-ij-algorithms</module>
+        <module>plugins/jipipe-ij-multi-template-matching</module>
+        <module>plugins/jipipe-ij-filaments</module>
+        <module>plugins/jipipe-annotation</module>
+        <module>plugins/jipipe-filesystem</module>
+        <module>plugins/jipipe-tables</module>
+        <module>plugins/jipipe-multiparameters</module>
+        <module>plugins/jipipe-clij</module>
+        <module>plugins/jipipe-strings</module>
+        <module>plugins/jipipe-utils</module>
+        <module>plugins/jipipe-forms</module>
+        <module>plugins/jipipe-r</module>
+        <module>plugins/jipipe-cellpose</module>
+        <module>plugins/jipipe-omnipose</module>
+        <module>plugins/jipipe-ij-weka</module>
+        <module>plugins/jipipe-ij-trackmate</module>
+        <module>plugins/jipipe-ij-3d</module>
+        <module>plugins/jipipe-scene-3d</module>
+        <module>plugins/jipipe-ilastik</module>
+        <module>plugins/jipipe-imp</module>
     </modules>
 
     <build>
