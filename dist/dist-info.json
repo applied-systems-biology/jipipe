@@ -57,6 +57,8 @@
   },
   "jipipe-modules": [
     "jipipe-core",
+    "jipipe-desktop",
+    "jipipe-cli",
     "jipipe-clij",
     "jipipe-multiparameters",
     "jipipe-filesystem",
@@ -80,8 +82,7 @@
     "jipipe-cellpose",
     "jipipe-omnipose",
     "jipipe-scene-3d",
-    "jipipe-imp",
-    "jipipe-launcher"
+    "jipipe-imp"
   ],
   "jipipe-version": "3.0.0"
 }

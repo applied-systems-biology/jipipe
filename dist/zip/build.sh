@@ -226,9 +226,11 @@ fi
 
 rm -r package
 mkdir package
-for component in jipipe-core jipipe-clij jipipe-multiparameters jipipe-filesystem jipipe-ij jipipe-ij2 jipipe-ij-omero jipipe-ij-algorithms jipipe-ij-weka jipipe-ij-multi-template-matching jipipe-ij-trackmate jipipe-ij-3d jipipe-ij-filaments jipipe-python jipipe-plots jipipe-tables jipipe-annotation jipipe-utils jipipe-strings jipipe-forms jipipe-r jipipe-cellpose jipipe-omnipose jipipe-scene-3d jipipe-imp jipipe-launcher; do
+for component in jipipe-core jipipe-desktop jipipe-cli jipipe-clij jipipe-multiparameters jipipe-filesystem jipipe-ij jipipe-ij2 jipipe-ij-omero jipipe-ij-algorithms jipipe-ij-weka jipipe-ij-multi-template-matching jipipe-ij-trackmate jipipe-ij-3d jipipe-ij-filaments jipipe-python jipipe-plots jipipe-tables jipipe-annotation jipipe-utils jipipe-strings jipipe-forms jipipe-r jipipe-cellpose jipipe-omnipose jipipe-scene-3d jipipe-imp; do
 	cp -v ../../$component/target/$component-$JIPIPE_VERSION-SNAPSHOT.jar package/$component-$JIPIPE_VERSION.jar
 	cp -v ../../$component/target/$component-$JIPIPE_VERSION.jar package/$component-$JIPIPE_VERSION.jar
+	cp -v ../../plugins/$component/target/$component-$JIPIPE_VERSION-SNAPSHOT.jar package/$component-$JIPIPE_VERSION.jar
+	cp -v ../../plugins/$component/target/$component-$JIPIPE_VERSION.jar package/$component-$JIPIPE_VERSION.jar
 done
 
 cp -rv ./dependencies ./package/dependencies
