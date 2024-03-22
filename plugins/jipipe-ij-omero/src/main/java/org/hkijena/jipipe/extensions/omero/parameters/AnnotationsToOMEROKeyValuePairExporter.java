@@ -96,16 +96,16 @@ public class AnnotationsToOMEROKeyValuePairExporter extends AbstractJIPipeParame
     }
 
     public void createKeyValuePairs(Map<String, String> target, Collection<JIPipeTextAnnotation> annotations) {
-        if(enabled) {
+        if (enabled) {
             JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
             for (JIPipeTextAnnotation annotation : annotations) {
-               variables.set("key", annotation.getName());
-               variables.set("value", annotation.getValue());
-               if(filter.test(variables)) {
-                   String key = keyValuePairKey.evaluateToString(variables);
-                   String value = keyValuePairValue.evaluateToString(variables);
-                   target.put(key, value);
-               }
+                variables.set("key", annotation.getName());
+                variables.set("value", annotation.getValue());
+                if (filter.test(variables)) {
+                    String key = keyValuePairKey.evaluateToString(variables);
+                    String value = keyValuePairValue.evaluateToString(variables);
+                    target.put(key, value);
+                }
             }
         }
     }

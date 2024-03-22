@@ -13,11 +13,11 @@
 
 package org.hkijena.jipipe.extensions.forms.algorithms.generators;
 
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.extensions.forms.algorithms.SimpleFormGeneratorAlgorithm;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;

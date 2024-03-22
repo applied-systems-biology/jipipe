@@ -17,10 +17,10 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.Blitter;
 import ij.process.ByteProcessor;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2D;
-import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.events.*;
@@ -130,7 +130,7 @@ public class PencilMaskDrawer2DTool extends MaskDrawer2DTool implements MouseCli
     }
 
     @Override
-    public void initializeSettingsPanel(FormPanel formPanel) {
+    public void initializeSettingsPanel(JIPipeDesktopFormPanel formPanel) {
         formPanel.addToForm(pencilShapeSelection, new JLabel("Pencil type"), null);
         formPanel.addToForm(pencilSizeXSpinner, new JLabel("Pencil width"), null);
         JPanel sizeYPanel = new JPanel(new BorderLayout());

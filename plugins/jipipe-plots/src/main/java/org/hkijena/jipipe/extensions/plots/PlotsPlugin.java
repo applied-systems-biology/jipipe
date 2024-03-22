@@ -31,7 +31,7 @@ import org.hkijena.jipipe.extensions.plots.datatypes.*;
 import org.hkijena.jipipe.extensions.plots.nodes.PlotTables2AlgorithmInfo;
 import org.hkijena.jipipe.extensions.plots.nodes.PlotTablesAlgorithm;
 import org.hkijena.jipipe.extensions.plots.parameters.UIPlotDataSeriesColumnEnum;
-import org.hkijena.jipipe.extensions.plots.parameters.UIPlotDataSeriesColumnEnumParameterEditorUI;
+import org.hkijena.jipipe.extensions.plots.parameters.UIPlotDataSeriesColumnEnumDesktopParameterEditorUI;
 import org.hkijena.jipipe.extensions.plots.ui.resultanalysis.OpenPlotInJIPipeDataOperation;
 import org.hkijena.jipipe.extensions.plots.ui.resultanalysis.PlotDataSlotPreview;
 import org.hkijena.jipipe.extensions.plots.utils.ColorMap;
@@ -96,7 +96,7 @@ public class PlotsPlugin extends JIPipePrepackagedDefaultJavaPlugin implements J
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
 
         // Register extension so users can create plots
-        registerMenuExtension(NewPlotJIPipeMenuExtension.class);
+        registerMenuExtension(NewPlotJIPipeDesktopMenuExtension.class);
 
         // Register parameter types
         registerEnumParameterType("plot-color-map", ColorMap.class, "Color map", "Determines how plot elements are colored");
@@ -201,7 +201,7 @@ public class PlotsPlugin extends JIPipePrepackagedDefaultJavaPlugin implements J
                 c -> c,
                 "Data column",
                 "A data column to be plot",
-                UIPlotDataSeriesColumnEnumParameterEditorUI.class);
+                UIPlotDataSeriesColumnEnumDesktopParameterEditorUI.class);
     }
 
     private void tryRegisterPlotCreatorNode(String datatypeId) {

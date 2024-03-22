@@ -20,12 +20,16 @@ import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.extensions.core.CorePlugin;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
@@ -40,9 +44,6 @@ import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesE
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.processes.ProcessEnvironment;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.ProcessUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -76,13 +77,13 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         IlastikSettings settings = IlastikSettings.getInstance();
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);
         JIPipeParameterAccess parameterAccess = tree.getParameters().get("environment");
-        IlastikEasyInstaller installer = new IlastikEasyInstaller(workbench, parameterAccess);
-        JIPipeRunExecuterUI.runInDialog(workbench, workbench.getWindow(), installer);
+        IlastikEasyInstaller installer = new IlastikEasyInstaller(((JIPipeDesktopWorkbench) workbench), parameterAccess);
+        JIPipeDesktopRunExecuterUI.runInDialog((JIPipeDesktopWorkbench) workbench, ((JIPipeDesktopWorkbench) workbench).getWindow(), installer);
     }
 
     private static void configureIlastik(JIPipeWorkbench workbench) {
-        if(workbench instanceof JIPipeProjectWorkbench) {
-            ((JIPipeProjectWorkbench) workbench).openApplicationSettings("/Extensions/Ilastik");
+        if (workbench instanceof JIPipeDesktopProjectWorkbench) {
+            ((JIPipeDesktopProjectWorkbench) workbench).openApplicationSettings("/Extensions/Ilastik");
         }
     }
 
@@ -103,6 +104,40 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                     UIUtils.getIconFromResources("actions/configure.png"),
                     IlastikPlugin::configureIlastik));
             inbox.push(notification);
+        }
+    }
+
+    /**
+     * Runs Ilastik
+     *
+     * @param environment  the environment. can be null (then the {@link IlastikSettings} environment is taken)
+     * @param parameters   the cli parameters
+     * @param progressInfo the progress info
+     * @param detached     if the process is launched detached
+     */
+    public static void runIlastik(ProcessEnvironment environment, List<String> parameters, JIPipeProgressInfo progressInfo, boolean detached) {
+        if (environment == null) {
+            environment = IlastikSettings.getInstance().getEnvironment();
+        }
+
+        // CLI
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
+        variables.set("cli_parameters", parameters);
+
+        // Environment variables
+        Map<String, String> environmentVariables = new HashMap<>();
+        if (IlastikSettings.getInstance().getMaxThreads() > 0) {
+            environmentVariables.put("LAZYFLOW_THREADS", String.valueOf(IlastikSettings.getInstance().getMaxThreads()));
+        }
+        environmentVariables.put("LAZYFLOW_TOTAL_RAM_MB", String.valueOf(Math.max(256, IlastikSettings.getInstance().getMaxMemory())));
+        environmentVariables.put("LANG", "en_US.UTF-8");
+        environmentVariables.put("LC_ALL", "en_US.UTF-8");
+        environmentVariables.put("LC_CTYPE", "en_US.UTF-8");
+
+        if (detached) {
+            ProcessUtils.launchProcess(environment, variables, environmentVariables, false, progressInfo);
+        } else {
+            ProcessUtils.runProcess(environment, variables, environmentVariables, false, progressInfo);
         }
     }
 
@@ -312,7 +347,7 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 UIUtils.getIconFromResources("actions/plugins.png"),
                 new IlastikSettings());
         registerEnvironmentInstaller(ProcessEnvironment.class, IlastikEasyInstaller.class, UIUtils.getIconFromResources("emblems/vcs-normal.png"));
-        registerMenuExtension(RunIlastikMenuExtension.class);
+        registerMenuExtension(RunIlastikDesktopMenuExtension.class);
         registerDatatype("ilastik-model", IlastikModelData.class, RESOURCES.getIcon16URLFromResources("ilastik-model.png"));
 
         registerEnumParameterType("ilastik-project-validation-mode",
@@ -331,39 +366,5 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public void postprocess(JIPipeProgressInfo progressInfo) {
         createMissingIlastikNotificationIfNeeded(JIPipeNotificationInbox.getInstance());
-    }
-
-    /**
-     * Runs Ilastik
-     * @param environment the environment. can be null (then the {@link IlastikSettings} environment is taken)
-     * @param parameters the cli parameters
-     * @param progressInfo the progress info
-     * @param detached if the process is launched detached
-     */
-    public static void runIlastik(ProcessEnvironment environment, List<String> parameters, JIPipeProgressInfo progressInfo, boolean detached) {
-        if(environment == null) {
-            environment = IlastikSettings.getInstance().getEnvironment();
-        }
-
-        // CLI
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.set("cli_parameters", parameters);
-
-        // Environment variables
-        Map<String, String> environmentVariables = new HashMap<>();
-        if (IlastikSettings.getInstance().getMaxThreads() > 0) {
-            environmentVariables.put("LAZYFLOW_THREADS", String.valueOf(IlastikSettings.getInstance().getMaxThreads()));
-        }
-        environmentVariables.put("LAZYFLOW_TOTAL_RAM_MB", String.valueOf(Math.max(256, IlastikSettings.getInstance().getMaxMemory())));
-        environmentVariables.put("LANG", "en_US.UTF-8");
-        environmentVariables.put("LC_ALL", "en_US.UTF-8");
-        environmentVariables.put("LC_CTYPE", "en_US.UTF-8");
-
-        if(detached) {
-            ProcessUtils.launchProcess(environment, variables, environmentVariables, false, progressInfo);
-        }
-        else {
-            ProcessUtils.runProcess(environment, variables, environmentVariables, false, progressInfo);
-        }
     }
 }

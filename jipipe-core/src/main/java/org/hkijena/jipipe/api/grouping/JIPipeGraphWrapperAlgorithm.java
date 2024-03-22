@@ -22,7 +22,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
@@ -32,6 +31,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettings;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStepGenerator;
+import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
 import org.hkijena.jipipe.api.run.JIPipeGraphRunPartitionInheritedBoolean;
@@ -48,7 +48,6 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * An algorithm that wraps another algorithm graph
@@ -173,14 +172,13 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
         return continueOnFailure;
     }
 
-    public void setContinueOnFailure(JIPipeGraphRunPartitionInheritedBoolean continueOnFailure) {
-        this.continueOnFailure = continueOnFailure;
-    }
-
     public JIPipeGraphRunPartitionInheritedBoolean getContinueOnFailure() {
         return continueOnFailure;
     }
 
+    public void setContinueOnFailure(JIPipeGraphRunPartitionInheritedBoolean continueOnFailure) {
+        this.continueOnFailure = continueOnFailure;
+    }
 
     /**
      * Gets the graphs' input node
@@ -312,7 +310,7 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
         if (progressInfo.isCancelled()) {
             throw e;
         }
-        if(continueOnFailure == JIPipeGraphRunPartitionInheritedBoolean.Enable) {
+        if (continueOnFailure == JIPipeGraphRunPartitionInheritedBoolean.Enable) {
             progressInfo.log("\n\n------------------------\n" +
                     "Wrapped graph execution FAILED!\n" +
                     "Message: " + e.getMessage() + "\n" +
@@ -321,13 +319,13 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
                     "------------------------\n\n");
             return;
         }
-        if(continueOnFailure == JIPipeGraphRunPartitionInheritedBoolean.Disable) {
+        if (continueOnFailure == JIPipeGraphRunPartitionInheritedBoolean.Disable) {
             throw e;
         }
-        if(continueOnFailure == JIPipeGraphRunPartitionInheritedBoolean.InheritFromPartition) {
+        if (continueOnFailure == JIPipeGraphRunPartitionInheritedBoolean.InheritFromPartition) {
             // We kill it in this case
             JIPipeRuntimePartition runtimePartition = runContext.getGraphRun().getRuntimePartition(getRuntimePartition());
-            if(runtimePartition.getContinueOnFailureSettings().isContinueOnFailure()) {
+            if (runtimePartition.getContinueOnFailureSettings().isContinueOnFailure()) {
                 progressInfo.log("\n\n------------------------\n" +
                         "Wrapped graph execution FAILED!\n" +
                         "Message: " + e.getMessage() + "\n" +
@@ -335,8 +333,7 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
                         "CONTINUING AS REQUESTED (Inherited)!\n" +
                         "------------------------\n\n");
                 return;
-            }
-            else {
+            } else {
                 throw e;
             }
         }
@@ -427,10 +424,6 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
     @Override
     public JIPipeIterationStepGenerationSettings getGenerationSettingsInterface() {
         return batchGenerationSettings;
-    }
-
-    public void setBatchGenerationSettings(JIPipeMergingAlgorithmIterationStepGenerationSettings batchGenerationSettings) {
-        this.batchGenerationSettings = batchGenerationSettings;
     }
 
     @Override
@@ -553,6 +546,10 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
 
     public JIPipeMergingAlgorithmIterationStepGenerationSettings getBatchGenerationSettings() {
         return batchGenerationSettings;
+    }
+
+    public void setBatchGenerationSettings(JIPipeMergingAlgorithmIterationStepGenerationSettings batchGenerationSettings) {
+        this.batchGenerationSettings = batchGenerationSettings;
     }
 
     public IterationMode getIterationMode() {

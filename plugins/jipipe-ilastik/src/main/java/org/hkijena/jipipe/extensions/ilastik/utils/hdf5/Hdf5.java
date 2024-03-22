@@ -44,6 +44,10 @@ import java.util.stream.IntStream;
 import static org.hkijena.jipipe.extensions.ilastik.utils.ImgUtils.*;
 
 public final class Hdf5 {
+    private Hdf5() {
+        throw new AssertionError();
+    }
+
     /**
      * Return descriptions of supported datasets in an HDF5 file, sorted by their paths.
      */
@@ -306,9 +310,5 @@ public final class Hdf5 {
         CellImg<T, A> cellImg = new CellImg<>(factory, grid, imgOfCells, new Fraction());
         type.linkImglib2Type(cellImg);
         return cellImg;
-    }
-
-    private Hdf5() {
-        throw new AssertionError();
     }
 }

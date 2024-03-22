@@ -15,9 +15,9 @@ package org.hkijena.jipipe.extensions.imageviewer.plugins2d;
 
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2D;
-import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -39,7 +39,7 @@ public class PixelInfoPlugin2D extends GeneralImageViewerPanelPlugin2D implement
     }
 
     @Override
-    public void initializeSettingsPanel(FormPanel formPanel) {
+    public void initializeSettingsPanel(JIPipeDesktopFormPanel formPanel) {
         formPanel.addWideToForm(pixelInfoLabel, null);
     }
 

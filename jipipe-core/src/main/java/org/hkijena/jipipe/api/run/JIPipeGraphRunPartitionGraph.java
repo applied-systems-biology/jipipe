@@ -26,12 +26,12 @@ import org.jgrapht.graph.DirectedAcyclicGraph;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class JIPipeGraphRunPartitionGraph extends DirectedAcyclicGraph<Set<JIPipeGraphNode>, DefaultEdge> {
     private final JIPipeGraphRun graphRun;
+
     public JIPipeGraphRunPartitionGraph(JIPipeGraphRun graphRun) {
         super(DefaultEdge.class);
         this.graphRun = graphRun;

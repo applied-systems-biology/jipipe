@@ -19,7 +19,11 @@ import ij.gui.ImageWindow;
 import ij.measure.Calibration;
 import ij.util.Tools;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
+import org.hkijena.jipipe.desktop.app.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.plugins2d.*;
@@ -27,8 +31,6 @@ import org.hkijena.jipipe.extensions.imageviewer.plugins2d.maskdrawer.Measuremen
 import org.hkijena.jipipe.extensions.imageviewer.plugins2d.roimanager.ROIManagerPlugin2D;
 import org.hkijena.jipipe.extensions.imageviewer.plugins3d.*;
 import org.hkijena.jipipe.extensions.imageviewer.settings.ImageViewerGeneralUISettings;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Disposable;
@@ -39,7 +41,7 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.*;
 
-public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, Disposable {
+public class JIPipeImageViewer extends JPanel implements JIPipeDesktopWorkbenchAccess, Disposable {
 
     public static final List<Class<? extends JIPipeImageViewerPlugin>> DEFAULT_PLUGINS = new ArrayList<>(Arrays.asList(CalibrationPlugin2D.class,
             PixelInfoPlugin2D.class,
@@ -58,7 +60,7 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
             AnnotationInfoPlugin3D.class));
     private static final Set<JIPipeImageViewer> OPEN_PANELS = new HashSet<>();
     private static JIPipeImageViewer ACTIVE_PANEL = null;
-    private final JIPipeWorkbench workbench;
+    private final JIPipeDesktopWorkbench workbench;
     private final Map<Class<?>, Object> contextObjects;
     private final JToolBar toolBar = new JToolBar();
 
@@ -86,9 +88,9 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
     /**
      * Initializes a new image viewer
      *
-     * @param workbench the workbench. Use {@link org.hkijena.jipipe.ui.JIPipeDummyWorkbench} if you do not have access to one.
+     * @param workbench the workbench. Use {@link JIPipeDummyWorkbench} if you do not have access to one.
      */
-    public JIPipeImageViewer(JIPipeWorkbench workbench, List<Class<? extends JIPipeImageViewerPlugin>> pluginTypes, Map<Class<?>, Object> contextObjects) {
+    public JIPipeImageViewer(JIPipeDesktopWorkbench workbench, List<Class<? extends JIPipeImageViewerPlugin>> pluginTypes, Map<Class<?>, Object> contextObjects) {
         this.workbench = workbench;
         this.contextObjects = contextObjects;
         imageViewerPanel2D = new ImageViewerPanel2D(this);
@@ -128,7 +130,7 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
      * @param title     the title
      * @return the panel
      */
-    public static JIPipeImageViewer showImage(JIPipeWorkbench workbench, ImagePlus image, String title) {
+    public static JIPipeImageViewer showImage(JIPipeDesktopWorkbench workbench, ImagePlus image, String title) {
         JIPipeImageViewer dataDisplay = new JIPipeImageViewer(workbench,
                 Arrays.asList(CalibrationPlugin2D.class,
                         PixelInfoPlugin2D.class,
@@ -211,7 +213,7 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
             JCheckBoxMenuItem autoSwitchToggle = new JCheckBoxMenuItem("Select automatically", settings.isAutoSwitch2D3DViewer());
             autoSwitchToggle.addActionListener(e -> {
                 settings.setAutoSwitch2D3DViewer(autoSwitchToggle.isSelected());
-                if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+                if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
                     JIPipe.getSettings().save();
                 }
             });
@@ -332,6 +334,10 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
 
     public List<JIPipeImageViewerPlugin3D> getPlugins3D() {
         return Collections.unmodifiableList(plugins3D);
+    }
+
+    public JIPipeDesktopWorkbench getDesktopWorkbench() {
+        return workbench;
     }
 
     @Override

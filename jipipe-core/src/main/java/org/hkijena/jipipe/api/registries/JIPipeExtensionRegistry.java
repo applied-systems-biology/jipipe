@@ -78,9 +78,9 @@ public class JIPipeExtensionRegistry {
         for (JIPipeDependency dependency : dependencies) {
             boolean found = false;
             for (JIPipeDependency registeredExtension : JIPipe.getInstance().getRegisteredExtensions()) {
-                if(registeredExtension.getDependencyId().equals(dependency.getDependencyId())) {
+                if (registeredExtension.getDependencyId().equals(dependency.getDependencyId())) {
                     // Check version
-                    if(VersionUtils.compareVersions(registeredExtension.getDependencyVersion(), dependency.getDependencyVersion()) >= 0) {
+                    if (VersionUtils.compareVersions(registeredExtension.getDependencyVersion(), dependency.getDependencyVersion()) >= 0) {
                         found = true;
                     }
                 }
@@ -183,7 +183,7 @@ public class JIPipeExtensionRegistry {
 
     public void dismissNewExtensions() {
         settings.getSilencedExtensions().addAll(getNewExtensions());
-        if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+        if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
             save();
         }
     }
@@ -255,7 +255,7 @@ public class JIPipeExtensionRegistry {
             settings.getActivatedExtensions().add(s);
             settings.getSilencedExtensions().add(s); // That the user is not warned by it
         }
-        if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+        if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
             save();
         }
         for (String s : ids) {
@@ -274,7 +274,7 @@ public class JIPipeExtensionRegistry {
             settings.getActivatedExtensions().remove(s);
             settings.getSilencedExtensions().add(s); // That the user is not warned by it
         }
-        if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+        if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
             save();
         }
         for (String s : ids) {

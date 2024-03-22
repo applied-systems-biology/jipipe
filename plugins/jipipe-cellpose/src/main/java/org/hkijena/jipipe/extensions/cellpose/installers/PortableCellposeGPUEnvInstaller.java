@@ -14,12 +14,12 @@
 package org.hkijena.jipipe.extensions.cellpose.installers;
 
 import org.apache.commons.lang3.SystemUtils;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;

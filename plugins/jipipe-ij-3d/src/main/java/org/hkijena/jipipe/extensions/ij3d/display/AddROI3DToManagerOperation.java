@@ -18,8 +18,8 @@ import mcib_plugins.tools.RoiManager3D_2;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -27,7 +27,7 @@ import javax.swing.*;
 
 public class AddROI3DToManagerOperation implements JIPipeDataDisplayOperation {
     @Override
-    public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
+    public void display(JIPipeData data, String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
         RoiManager3D_2 manager3D = null;
         boolean multiple = Prefs.get("RoiManager3D-Options_UseMultiple.boolean", false);
         if (!multiple) {

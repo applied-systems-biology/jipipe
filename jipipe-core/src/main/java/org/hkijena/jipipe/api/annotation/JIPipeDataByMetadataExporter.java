@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.api.annotation;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadata;

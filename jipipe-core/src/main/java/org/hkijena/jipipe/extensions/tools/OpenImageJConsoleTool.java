@@ -13,22 +13,23 @@
 
 package org.hkijena.jipipe.extensions.tools;
 
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
-import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
-import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
+import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.ui.UIService;
 import org.scijava.ui.UserInterface;
 import org.scijava.ui.swing.console.SwingConsolePane;
 
-public class OpenImageJConsoleTool extends JIPipeMenuExtension {
+public class OpenImageJConsoleTool extends JIPipeDesktopMenuExtension {
     /**
      * Creates a new instance
      *
      * @param workbench workbench the extension is attached to
      */
-    public OpenImageJConsoleTool(JIPipeWorkbench workbench) {
+    public OpenImageJConsoleTool(JIPipeDesktopWorkbench workbench) {
         super(workbench);
         setText("Open console");
         setToolTipText("Opens the stdout/stderr console.");
@@ -37,16 +38,16 @@ public class OpenImageJConsoleTool extends JIPipeMenuExtension {
     }
 
     private void showImageJ() {
-        UIService uiService = getWorkbench().getContext().getService(UIService.class);
+        UIService uiService = getDesktopWorkbench().getContext().getService(UIService.class);
         final UserInterface ui = uiService.getDefaultUI();
         if (ui != null && ui.getConsolePane() != null) {
             ui.show();
         } else {
-            SwingConsolePane swingConsolePane = new SwingConsolePane(getWorkbench().getContext());
-            getWorkbench().getDocumentTabPane().addTab("Console",
+            SwingConsolePane swingConsolePane = new SwingConsolePane(getDesktopWorkbench().getContext());
+            getDesktopWorkbench().getDocumentTabPane().addTab("Console",
                     UIUtils.getIconFromResources("actions/akonadiconsole.png"),
                     swingConsolePane.getComponent(),
-                    DocumentTabPane.CloseMode.withSilentCloseButton);
+                    JIPipeDesktopTabPane.CloseMode.withSilentCloseButton);
         }
     }
 

@@ -54,9 +54,9 @@ public class JIPipeResourceManager {
      * @param darkIcons16BasePath  resource path to the dark 16x16 icons (icons themselves are optional; the non-dark versions are automatically utilized if no dark version is available)
      * @param icons32BasePath      resource path to the 32x32 icons
      * @param darkIcons32BasePath  resource path to the dark 32x32 icons (icons themselves are optional; the non-dark versions are automatically utilized if no dark version is available)
-     * @param icons64BasePath  resource path to the 64x64 icons
-     * @param darkIcons64BasePath resource path to the dark 64x64 icons (icons themselves are optional; the non-dark versions are automatically utilized if no dark version is available)
-     * @param icons128BasePath resource path to the 128x128 icons
+     * @param icons64BasePath      resource path to the 64x64 icons
+     * @param darkIcons64BasePath  resource path to the dark 64x64 icons (icons themselves are optional; the non-dark versions are automatically utilized if no dark version is available)
+     * @param icons128BasePath     resource path to the 128x128 icons
      * @param darkIcons128BasePath resource path to the dark 128x128 icons (icons themselves are optional; the non-dark versions are automatically utilized if no dark version is available)
      * @param templateBasePath     resource path to the template directory
      * @param schemaBasePath       resource path to the schema directory

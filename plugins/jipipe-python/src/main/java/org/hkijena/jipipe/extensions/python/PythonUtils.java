@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.extensions.python;
 
 import org.apache.commons.exec.*;
-import org.apache.commons.text.WordUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.apache.commons.text.WordUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -24,9 +24,9 @@ import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadata;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
-import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;

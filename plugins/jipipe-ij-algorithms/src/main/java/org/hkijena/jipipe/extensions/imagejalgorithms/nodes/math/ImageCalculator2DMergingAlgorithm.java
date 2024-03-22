@@ -79,7 +79,7 @@ public class ImageCalculator2DMergingAlgorithm extends JIPipeMergingAlgorithm {
             operands.add(data.getImage());
         }
 
-        if(operands.isEmpty()) {
+        if (operands.isEmpty()) {
             return;
         }
 
@@ -102,15 +102,14 @@ public class ImageCalculator2DMergingAlgorithm extends JIPipeMergingAlgorithm {
 
         ImagePlus result;
 
-        if(operands.size() > 1) {
+        if (operands.size() > 1) {
             result = operands.get(0);
             for (int i = 1; i < operands.size(); i++) {
                 progressInfo.resolveAndLog("Merging", i - 1, operands.size() - 1);
                 ImageCalculator calculator = new ImageCalculator();
                 result = calculator.run(operation.getId() + " stack create", result, operands.get(i));
             }
-        }
-        else {
+        } else {
             result = operands.get(0);
         }
 

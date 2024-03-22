@@ -20,11 +20,15 @@ import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.extensions.core.CorePlugin;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsPlugin;
@@ -38,9 +42,6 @@ import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.python.PythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonPlugin;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
@@ -72,13 +73,13 @@ public class OmniposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         OmniposeSettings settings = OmniposeSettings.getInstance();
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);
         JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
-        OmniposeEasyInstaller installer = new OmniposeEasyInstaller(workbench, parameterAccess);
-        JIPipeRunExecuterUI.runInDialog(workbench, workbench.getWindow(), installer);
+        OmniposeEasyInstaller installer = new OmniposeEasyInstaller((JIPipeDesktopWorkbench) workbench, parameterAccess);
+        JIPipeDesktopRunExecuterUI.runInDialog((JIPipeDesktopWorkbench) workbench, ((JIPipeDesktopWorkbench) workbench).getWindow(), installer);
     }
 
     private static void configureOmnipose(JIPipeWorkbench workbench) {
-        if(workbench instanceof JIPipeProjectWorkbench) {
-            ((JIPipeProjectWorkbench) workbench).openApplicationSettings("/Extensions/Omnipose");
+        if (workbench instanceof JIPipeDesktopProjectWorkbench) {
+            ((JIPipeDesktopProjectWorkbench) workbench).openApplicationSettings("/Extensions/Omnipose");
         }
     }
 

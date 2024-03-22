@@ -16,9 +16,9 @@ package org.hkijena.jipipe.extensions.utils.display;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
-import org.hkijena.jipipe.ui.JIPipeProjectWindow;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -26,9 +26,9 @@ import java.nio.file.Path;
 
 public class ImportJIPipeProjectDataOperation implements JIPipeDataDisplayOperation {
     @Override
-    public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
+    public void display(JIPipeData data, String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
         Path folderPath = ((PathData) data).toPath();
-        JIPipeProjectWindow window = (JIPipeProjectWindow) workbench.getWindow();
+        JIPipeDesktopProjectWindow window = (JIPipeDesktopProjectWindow) desktopWorkbench.getWindow();
         window.openProject(folderPath, false);
     }
 

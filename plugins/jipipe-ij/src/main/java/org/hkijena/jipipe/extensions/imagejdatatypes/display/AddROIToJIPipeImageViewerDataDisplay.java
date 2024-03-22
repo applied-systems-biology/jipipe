@@ -16,9 +16,9 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.display;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopComponentListCellRenderer;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.renderers.ComponentListCellRenderer;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.ListSelectionMode;
 
@@ -31,10 +31,10 @@ import java.util.List;
 
 public class AddROIToJIPipeImageViewerDataDisplay implements JIPipeDataDisplayOperation {
     @Override
-    public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
+    public void display(JIPipeData data, String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
         List<JIPipeImageViewer> viewerPanels = new ArrayList<>(JIPipeImageViewer.getOpenViewerPanels());
         if (viewerPanels.isEmpty()) {
-            JOptionPane.showMessageDialog(workbench.getWindow(), "There are no active JIPipe image viewers.", "Add to image viewer", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(desktopWorkbench.getWindow(), "There are no active JIPipe image viewers.", "Add to image viewer", JOptionPane.ERROR_MESSAGE);
             return;
         }
         viewerPanels.sort(Comparator.comparing(Component::getName));
@@ -42,12 +42,12 @@ public class AddROIToJIPipeImageViewerDataDisplay implements JIPipeDataDisplayOp
             viewerPanels.remove(JIPipeImageViewer.getActiveViewerPanel());
             viewerPanels.add(0, JIPipeImageViewer.getActiveViewerPanel());
         }
-        List<JIPipeImageViewer> selected = UIUtils.getSelectionByDialog(workbench.getWindow(),
+        List<JIPipeImageViewer> selected = UIUtils.getSelectionByDialog(desktopWorkbench.getWindow(),
                 viewerPanels,
                 Collections.singleton(viewerPanels.get(0)),
                 "Add to image viewer",
                 "Please select one or multiple image viewers.",
-                new ComponentListCellRenderer<>(UIUtils.getIconFromResources("actions/window.png")),
+                new JIPipeDesktopComponentListCellRenderer<>(UIUtils.getIconFromResources("actions/window.png")),
                 ListSelectionMode.MultipleInterval);
         for (JIPipeImageViewer viewerPanel : selected) {
             viewerPanel.addOverlay(data);

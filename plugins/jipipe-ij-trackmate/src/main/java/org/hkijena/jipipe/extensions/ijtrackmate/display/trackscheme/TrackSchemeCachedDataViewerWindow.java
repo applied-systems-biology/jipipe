@@ -19,26 +19,26 @@ import fiji.plugin.trackmate.visualization.trackscheme.TrackScheme;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheDataViewerWindow;
+import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCachedDataViewerAnnotationInfoPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFlexContentPanel;
+import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
-import org.hkijena.jipipe.ui.cache.JIPipeCachedDataViewerAnnotationInfoPanel;
-import org.hkijena.jipipe.ui.components.FlexContentPanel;
-import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class TrackSchemeCachedDataViewerWindow extends JIPipeCacheDataViewerWindow {
-    private final JIPipeCachedDataViewerAnnotationInfoPanel annotationInfoPanel;
+public class TrackSchemeCachedDataViewerWindow extends JIPipeDesktopCacheDataViewerWindow {
+    private final JIPipeDesktopCachedDataViewerAnnotationInfoPanel annotationInfoPanel;
     private final DisplaySettings displaySettings = new DisplaySettings();
 
-    private final FlexContentPanel flexContentPanel = new FlexContentPanel();
+    private final JIPipeDesktopFlexContentPanel flexContentPanel = new JIPipeDesktopFlexContentPanel();
 
-    public TrackSchemeCachedDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
+    public TrackSchemeCachedDataViewerWindow(JIPipeDesktopWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
         super(workbench, dataSource, displayName);
-        this.annotationInfoPanel = new JIPipeCachedDataViewerAnnotationInfoPanel(workbench);
+        this.annotationInfoPanel = new JIPipeDesktopCachedDataViewerAnnotationInfoPanel(workbench);
         initialize();
         reloadDisplayedData();
     }
@@ -51,7 +51,7 @@ public class TrackSchemeCachedDataViewerWindow extends JIPipeCacheDataViewerWind
         flexContentPanel.getSideBar().addTab("Annotations",
                 UIUtils.getIconFromResources("data-types/annotation.png"),
                 annotationInfoPanel,
-                DocumentTabPane.CloseMode.withoutCloseButton);
+                JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
     }
 
     @Override

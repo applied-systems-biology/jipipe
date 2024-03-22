@@ -15,9 +15,9 @@ package org.hkijena.jipipe.api.data;
 
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -29,15 +29,16 @@ import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
-import org.hkijena.jipipe.api.data.thumbnails.*;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeGridThumbnailData;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.api.data.utils.JIPipeWeakDataReferenceData;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.datatable.JIPipeDesktopExtendedDataTableUI;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.IntegerAndIntegerPairParameter;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.datatable.JIPipeExtendedDataTableUI;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.WeakStore;
@@ -54,7 +55,6 @@ import java.util.List;
 import java.util.*;
 import java.util.concurrent.locks.StampedLock;
 import java.util.function.BiPredicate;
-import java.util.function.Predicate;
 
 @SetJIPipeDocumentation(name = "Data table", description = "A table of data")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Stores a data table in the standard JIPipe format (data-table.json plus numeric slot folders)",
@@ -391,14 +391,6 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     }
 
     /**
-     * Return the info about the slot's data type
-     * @return the info
-     */
-    public JIPipeDataInfo getAcceptedDataTypeInfo() {
-        return JIPipeDataInfo.getInstance(acceptedDataType);
-    }
-
-    /**
      * Sets the accepted slot type
      * Please note that this method can cause issues when running the graph
      *
@@ -406,6 +398,15 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      */
     public void setAcceptedDataType(Class<? extends JIPipeData> slotDataType) {
         acceptedDataType = slotDataType;
+    }
+
+    /**
+     * Return the info about the slot's data type
+     *
+     * @return the info
+     */
+    public JIPipeDataInfo getAcceptedDataTypeInfo() {
+        return JIPipeDataInfo.getInstance(acceptedDataType);
     }
 
     /**
@@ -1500,7 +1501,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
             for (ArrayList<JIPipeDataItemStore> list : dataAnnotationsArrays.values()) {
                 for (int i = 0; i < list.size(); i++) {
                     JIPipeDataItemStore dataItemStore = list.get(i);
-                    if(dataItemStore != null) {
+                    if (dataItemStore != null) {
                         try {
                             dataItemStore.removeUser(this);
                             if (dataItemStore.canClose())
@@ -1541,13 +1542,14 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
 
     /**
      * Creates a new instance that contains the filtered items.
+     *
      * @param predicate the predicate (the current table, row index)
      * @return filtered table
      */
     public JIPipeDataTable filter(BiPredicate<JIPipeDataTable, Integer> predicate) {
         List<Integer> rows = new ArrayList<>();
         for (int i = 0; i < dataArray.size(); i++) {
-            if(predicate.test(this, i)) {
+            if (predicate.test(this, i)) {
                 rows.add(i);
             }
         }
@@ -1704,15 +1706,15 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        JIPipeExtendedDataTableUI tableUI = new JIPipeExtendedDataTableUI(workbench, new WeakStore<>(this), true);
+    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
+        JIPipeDesktopExtendedDataTableUI tableUI = new JIPipeDesktopExtendedDataTableUI(desktopWorkbench, new WeakStore<>(this), true);
         JFrame frame = new JFrame(displayName);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setIconImage(UIUtils.getJIPipeIcon128());
         frame.setContentPane(tableUI);
         frame.pack();
         frame.setSize(800, 600);
-        frame.setLocationRelativeTo(workbench.getWindow());
+        frame.setLocationRelativeTo(desktopWorkbench.getWindow());
         frame.setVisible(true);
     }
 
@@ -1794,6 +1796,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
 
     /**
      * Returns Information about the true data type that is stored at given row
+     *
      * @param row the row
      * @return the data type info (true type stored in the table)
      */

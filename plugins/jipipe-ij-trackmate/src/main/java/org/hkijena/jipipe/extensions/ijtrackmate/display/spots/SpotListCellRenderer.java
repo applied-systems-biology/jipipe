@@ -19,9 +19,9 @@ import fiji.plugin.trackmate.gui.displaysettings.DisplaySettings;
 import fiji.plugin.trackmate.visualization.FeatureColorGenerator;
 import fiji.plugin.trackmate.visualization.UniformSpotColorGenerator;
 import ij.measure.Calibration;
+import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopColorIcon;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.SpotDrawer;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackMateUtils;
-import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -32,7 +32,7 @@ import java.text.DecimalFormat;
 public class SpotListCellRenderer extends JPanel implements ListCellRenderer<Spot> {
 
     private final SpotsManagerPlugin2D spotsManagerPlugin;
-    private final SolidColorIcon strokeFillPreview = new SolidColorIcon(16, 16);
+    private final SolidJIPipeDesktopColorIcon strokeFillPreview = new SolidJIPipeDesktopColorIcon(16, 16);
     private final JLabel iconLabel = new JLabel();
     private final JLabel nameLabel = new JLabel();
     private final JLabel infoLabel = new JLabel();

@@ -23,18 +23,15 @@ import loci.plugins.in.ImporterOptions;
 import loci.plugins.util.WindowTools;
 import ome.xml.meta.OMEXMLMetadata;
 import ome.xml.model.enums.DimensionOrder;
-import org.hkijena.jipipe.api.AddJIPipeCitation;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.ConfigureJIPipeNode;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
@@ -45,7 +42,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIHandler;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.IntegerList;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.library.roi.RectangleList;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -179,7 +175,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
                 }
                 if (seriesAnnotation.isEnabled()) {
                     if (image.getProperties().containsKey("Series")) {
-                        seriesAnnotation.addAnnotationIfEnabled(annotations, StringUtils.orElse(((Number)image.getProperties().get("Series")).intValue() + 1, "1"));
+                        seriesAnnotation.addAnnotationIfEnabled(annotations, StringUtils.orElse(((Number) image.getProperties().get("Series")).intValue() + 1, "1"));
                     } else {
                         seriesAnnotation.addAnnotationIfEnabled(annotations, "1");
                     }

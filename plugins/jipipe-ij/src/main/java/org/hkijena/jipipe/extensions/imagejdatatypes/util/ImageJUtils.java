@@ -81,8 +81,7 @@ public class ImageJUtils {
         try {
             processor.setRoi(source);
             return processor.crop();
-        }
-        finally {
+        } finally {
             processor.setRoi((Roi) null);
         }
     }
@@ -2187,7 +2186,7 @@ public class ImageJUtils {
         int fontSize = font.getSize();
         ip.setFont(new Font(font.getName(), font.getStyle(), fontSize));
         int stringWidth = ip.getStringWidth(label);
-        final int x,y;
+        final int x, y;
         int m = drawBackground ? 1 : 0;
         int fsc = Math.max(fontSize / 2, 6);
         FontMetrics metrics = ip.getFontMetrics();

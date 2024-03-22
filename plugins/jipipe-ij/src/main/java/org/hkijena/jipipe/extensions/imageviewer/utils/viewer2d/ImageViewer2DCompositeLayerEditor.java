@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.extensions.imageviewer.utils.viewer2d;
 
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageBlendMode;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel2D;
-import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -65,7 +65,7 @@ public class ImageViewer2DCompositeLayerEditor extends JPanel {
         add(priorityControlsPanel, BorderLayout.WEST);
 
         // Form panel
-        FormPanel formPanel = new FormPanel(FormPanel.NONE);
+        JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.NONE);
         formPanel.addToForm(opacitySlider, new JLabel("Opacity"));
         formPanel.addToForm(blendModeSelection, new JLabel("Blending"));
 

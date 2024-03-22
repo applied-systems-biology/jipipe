@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.extensions.imageviewer.plugins3d;
 
 import ij.ImagePlus;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
-import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -26,7 +26,7 @@ public class AnimationSpeedPlugin3D extends GeneralImageViewerPanelPlugin3D {
     }
 
     @Override
-    public void initializeSettingsPanel(FormPanel formPanel) {
+    public void initializeSettingsPanel(JIPipeDesktopFormPanel formPanel) {
         ImagePlus image = getCurrentImagePlus();
         if (image != null && image.getNFrames() > 1) {
             formPanel.addGroupHeader("Animation", UIUtils.getIconFromResources("actions/filmgrain.png"));

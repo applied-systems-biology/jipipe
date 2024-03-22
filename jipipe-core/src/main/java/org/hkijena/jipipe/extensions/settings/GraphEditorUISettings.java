@@ -18,18 +18,18 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
-import org.hkijena.jipipe.ui.grapheditor.general.layout.GraphAutoLayout;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.layout.JIPipepGraphAutoLayoutMethod;
 
 /**
- * All settings for {@link JIPipeGraphEditorUI}
+ * All settings for {@link JIPipeDesktopGraphEditorUI}
  */
 public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
 
     public static String ID = "graph-editor-ui";
     private final SearchSettings searchSettings = new SearchSettings();
     private final AlgorithmFinderSettings algorithmFinderSettings = new AlgorithmFinderSettings();
-    private GraphAutoLayout autoLayout = GraphAutoLayout.MST;
+    private JIPipepGraphAutoLayoutMethod autoLayout = JIPipepGraphAutoLayoutMethod.MST;
     private boolean switchPanningDirection = false;
     private boolean askOnDeleteNode = true;
     private boolean askOnDeleteCompartment = true;
@@ -232,12 +232,12 @@ public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
     @SetJIPipeDocumentation(name = "Auto-layout method",
             description = "Determines which method is used to applly auto-layout.")
     @JIPipeParameter("auto-layout-method")
-    public GraphAutoLayout getAutoLayout() {
+    public JIPipepGraphAutoLayoutMethod getAutoLayout() {
         return autoLayout;
     }
 
     @JIPipeParameter("auto-layout-method")
-    public void setAutoLayout(GraphAutoLayout autoLayout) {
+    public void setAutoLayout(JIPipepGraphAutoLayoutMethod autoLayout) {
         this.autoLayout = autoLayout;
     }
 

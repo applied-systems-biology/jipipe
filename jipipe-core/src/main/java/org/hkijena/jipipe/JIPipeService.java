@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.registries.*;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
-import org.hkijena.jipipe.ui.registries.JIPipeCustomMenuRegistry;
+import org.hkijena.jipipe.desktop.api.registries.JIPipeCustomMenuRegistry;
 import org.scijava.service.Service;
 
 import java.util.List;

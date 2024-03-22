@@ -13,10 +13,10 @@
 
 package org.hkijena.jipipe.extensions.python.installers;
 
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 @SetJIPipeDocumentation(name = "Install Python 3", description = "Installs Python 3")
 public class PortableEnvPythonInstaller extends BasicPortableEnvPythonInstaller {

@@ -15,14 +15,14 @@ package org.hkijena.jipipe.extensions.clij2.ui;
 
 import net.haesleinhuepf.clij.converters.CLIJConverterService;
 import net.haesleinhuepf.clij2.CLIJ2;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopImageFrameComponent;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.extensions.clij2.CLIJSettings;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.components.ImageFrame;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
-import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.SizeFitMode;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -36,7 +36,7 @@ import java.util.HashMap;
 /**
  * Graphical control panel for CLIJ
  */
-public class CLIJControlPanel extends JIPipeWorkbenchPanel {
+public class CLIJControlPanel extends JIPipeDesktopWorkbenchPanel {
 
     private final JTextField openCLInfo = UIUtils.makeReadonlyBorderlessTextField("N/A");
     private final JTextField gpuModel = UIUtils.makeReadonlyBorderlessTextField("N/A");
@@ -47,7 +47,7 @@ public class CLIJControlPanel extends JIPipeWorkbenchPanel {
     /**
      * @param workbench the workbench
      */
-    public CLIJControlPanel(JIPipeWorkbench workbench) {
+    public CLIJControlPanel(JIPipeDesktopWorkbench workbench) {
         super(workbench);
         initialize();
         refresh();
@@ -55,12 +55,12 @@ public class CLIJControlPanel extends JIPipeWorkbenchPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        MarkdownReader documentation = new MarkdownReader(false, MarkdownDocument.fromPluginResource("extensions/clij2/introduction.md", new HashMap<>()));
+        JIPipeDesktopMarkdownReader documentation = new JIPipeDesktopMarkdownReader(false, MarkdownText.fromPluginResource("extensions/clij2/introduction.md", new HashMap<>()));
         documentation.getScrollPane().setBorder(null);
-        ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(),
+        JIPipeDesktopParameterPanel parameterPanel = new JIPipeDesktopParameterPanel(getDesktopWorkbench(),
                 CLIJSettings.getInstance(),
                 null,
-                ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.DOCUMENTATION_BELOW);
+                JIPipeDesktopParameterPanel.WITH_SCROLLING | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterPanel.DOCUMENTATION_BELOW);
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 documentation,
                 parameterPanel);
@@ -80,7 +80,7 @@ public class CLIJControlPanel extends JIPipeWorkbenchPanel {
 
     private void initializeHeaderPanel() {
         JPanel headerPanel;
-        headerPanel = new ImageFrame(UIUtils.getHeaderPanelBackground(), false, SizeFitMode.FitHeight, false);
+        headerPanel = new JIPipeDesktopImageFrameComponent(UIUtils.getHeaderPanelBackground(), false, SizeFitMode.FitHeight, false);
         headerPanel.setLayout(new BorderLayout());
         headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.DARK_GRAY));
         headerPanel.setPreferredSize(new Dimension(headerPanel.getPreferredSize().width, 200));
@@ -88,7 +88,7 @@ public class CLIJControlPanel extends JIPipeWorkbenchPanel {
         logo.setBorder(BorderFactory.createEmptyBorder(0, 32, 0, 0));
         headerPanel.add(logo, BorderLayout.WEST);
 
-        FormPanel technicalInfo = new FormPanel(null, FormPanel.NONE);
+        JIPipeDesktopFormPanel technicalInfo = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.NONE);
         technicalInfo.setOpaque(false);
         technicalInfo.getContentPanel().setOpaque(false);
 
@@ -112,7 +112,7 @@ public class CLIJControlPanel extends JIPipeWorkbenchPanel {
             gpuModel.setText(clij2.getGPUName());
             gpuMemory.setText(clij2.getCLIJ().getGPUMemoryInBytes() / 1024 / 1024 + " MB");
             clearMemoryButton.setEnabled(true);
-            CLIJConverterService clijConverterService = getWorkbench().getContext().getService(CLIJConverterService.class);
+            CLIJConverterService clijConverterService = getDesktopWorkbench().getContext().getService(CLIJConverterService.class);
             if (clijConverterService.getCLIJ() == clij2.getCLIJ()) {
                 readyLabel.setText("Ready");
                 readyLabel.setIcon(UIUtils.getIconFromResources("emblems/vcs-normal.png"));
@@ -177,17 +177,17 @@ public class CLIJControlPanel extends JIPipeWorkbenchPanel {
     }
 
     private void clearMemory() {
-        getWorkbench().sendStatusBarText("Cleared all images from GPU memory. Please note that this can break running analyses and cached items.");
+        getDesktopWorkbench().sendStatusBarText("Cleared all images from GPU memory. Please note that this can break running analyses and cached items.");
         CLIJ2.getInstance().clear();
-        JOptionPane.showMessageDialog(getWorkbench().getWindow(), "Memory cleared. Please clear all cached data if it contains GPU images.");
+        JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(), "Memory cleared. Please clear all cached data if it contains GPU images.");
     }
 
     private void reinitializeCLIJ() {
         try {
-            CLIJSettings.initializeCLIJ(getWorkbench().getContext(), true);
-            getWorkbench().sendStatusBarText("Re-initialized GPU.");
+            CLIJSettings.initializeCLIJ(getDesktopWorkbench().getContext(), true);
+            getDesktopWorkbench().sendStatusBarText("Re-initialized GPU.");
         } catch (Exception e) {
-            UIUtils.openErrorDialog(getWorkbench(), this, e);
+            UIUtils.openErrorDialog(getDesktopWorkbench(), this, e);
         } finally {
             refresh();
         }

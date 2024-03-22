@@ -16,8 +16,8 @@ package org.hkijena.jipipe.extensions.python.adapter;
 import org.apache.commons.lang3.StringUtils;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.environments.EasyInstallExternalEnvironmentInstallerPackage;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.desktop.api.environments.JIPipeDesktopEasyInstallExternalEnvironmentInstallerPackage;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.python.PythonPlugin;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -60,7 +60,7 @@ public class JIPipePythonAdapterUpdateChecker extends AbstractJIPipeRunnable {
         Path easyInstallVersionFile = currentEnvironment.getAbsoluteLibraryDirectory().getParent().resolve("jipipe-easyinstall-package.json");
         if (Files.isRegularFile(easyInstallVersionFile)) {
             try {
-                EasyInstallExternalEnvironmentInstallerPackage installerPackage = JsonUtils.readFromFile(easyInstallVersionFile, EasyInstallExternalEnvironmentInstallerPackage.class);
+                JIPipeDesktopEasyInstallExternalEnvironmentInstallerPackage installerPackage = JsonUtils.readFromFile(easyInstallVersionFile, JIPipeDesktopEasyInstallExternalEnvironmentInstallerPackage.class);
                 if (StringUtils.isNotBlank(installerPackage.getVersion())) {
                     currentVersion = installerPackage.getVersion();
                 }
@@ -101,13 +101,13 @@ public class JIPipePythonAdapterUpdateChecker extends AbstractJIPipeRunnable {
 
 
         StringList repositories = PythonAdapterExtensionSettings.getInstance().getEasyInstallerRepositories();
-        List<EasyInstallExternalEnvironmentInstallerPackage> packages = EasyInstallExternalEnvironmentInstallerPackage.loadFromURLs(repositories, progressInfo);
+        List<JIPipeDesktopEasyInstallExternalEnvironmentInstallerPackage> packages = JIPipeDesktopEasyInstallExternalEnvironmentInstallerPackage.loadFromURLs(repositories, progressInfo);
 
         // Compare versions
-        EasyInstallExternalEnvironmentInstallerPackage update = null;
+        JIPipeDesktopEasyInstallExternalEnvironmentInstallerPackage update = null;
         String updateVersion = currentVersion;
 
-        for (EasyInstallExternalEnvironmentInstallerPackage installerPackage : packages) {
+        for (JIPipeDesktopEasyInstallExternalEnvironmentInstallerPackage installerPackage : packages) {
             if (org.hkijena.jipipe.utils.StringUtils.compareVersions(updateVersion, installerPackage.getVersion()) < 0) {
                 updateVersion = installerPackage.getVersion();
                 update = installerPackage;

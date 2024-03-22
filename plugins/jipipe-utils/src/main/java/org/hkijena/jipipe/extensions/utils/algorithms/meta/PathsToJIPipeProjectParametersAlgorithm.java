@@ -15,38 +15,44 @@ package org.hkijena.jipipe.extensions.utils.algorithms.meta;
 
 import com.google.common.collect.ImmutableList;
 import ij.IJ;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.project.JIPipeProjectInfoParameters;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterTreeUI;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.extensions.parameters.library.graph.InputSlotMapParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.ParameterTreeUI;
-import org.hkijena.jipipe.ui.settings.JIPipeProjectInfoParameters;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.*;
 
 @SetJIPipeDocumentation(name = "Paths to JIPipe project parameters", description = "Stores the incoming paths into parameters. This node supports path and string parameters.")
@@ -98,7 +104,8 @@ public class PathsToJIPipeProjectParametersAlgorithm extends JIPipeIteratingAlgo
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/jipipe.png")
     @SetJIPipeDocumentation(name = "Load parameters from project", description = "Loads parameters from a project file")
     public void importParametersFromProject(JIPipeWorkbench workbench) {
-        Path projectFile = FileChooserSettings.openFile(workbench.getWindow(), FileChooserSettings.LastDirectoryKey.Projects, "Import JIPipe project", UIUtils.EXTENSION_FILTER_JIP);
+        Window window = ((JIPipeDesktopWorkbench) workbench).getWindow();
+        Path projectFile = FileChooserSettings.openFile(window, FileChooserSettings.LastDirectoryKey.Projects, "Import JIPipe project", UIUtils.EXTENSION_FILTER_JIP);
         if (projectFile != null) {
             try {
                 JIPipeProject project = JIPipeProject.loadProject(projectFile, new UnspecifiedValidationReportContext(), new JIPipeValidationReport(), new JIPipeNotificationInbox());
@@ -112,10 +119,10 @@ public class PathsToJIPipeProjectParametersAlgorithm extends JIPipeIteratingAlgo
                 }
                 tree.removeParameterByKey("exported-parameters");
                 if (tree.getParameters().isEmpty()) {
-                    JOptionPane.showMessageDialog(workbench.getWindow(), "No compatible parameters found. Please add string or path parameters to the list of project-wide parameters.", "Import parameters", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(window, "No compatible parameters found. Please add string or path parameters to the list of project-wide parameters.", "Import parameters", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                List<Object> objects = ParameterTreeUI.showPickerDialog(workbench.getWindow(), tree, "Select parameters to import");
+                List<Object> objects = JIPipeDesktopParameterTreeUI.showPickerDialog(window, tree, "Select parameters to import");
                 if (objects.isEmpty())
                     return;
                 JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();

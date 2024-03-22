@@ -16,11 +16,11 @@ package org.hkijena.jipipe.extensions.imageviewer.utils;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.LUT;
+import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopColorIcon;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.LUTData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -41,7 +41,7 @@ import java.util.List;
 public abstract class ImageViewerOpacityLUTEditor extends JPanel implements ThumbListener {
     private final JIPipeImageViewer imageViewerPanel;
     private final int targetChannel;
-    private final SolidColorIcon changeColorButtonDisplayedColor = new SolidColorIcon(16, 16);
+    private final SolidJIPipeDesktopColorIcon changeColorButtonDisplayedColor = new SolidJIPipeDesktopColorIcon(16, 16);
 
     /**
      * The multi-thumb slider to use for the gradient stops

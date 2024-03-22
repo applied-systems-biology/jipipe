@@ -18,19 +18,20 @@ import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.LogOutputStream;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.lang3.SystemUtils;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalPathParameter;
 import org.hkijena.jipipe.extensions.r.REnvironment;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
-import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ProcessUtils;
 import org.hkijena.jipipe.utils.WebUtils;
@@ -44,7 +45,7 @@ import java.nio.file.Paths;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @SetJIPipeDocumentation(name = "Install R", description = "Downloads and installs R")
-public class REnvInstaller extends ExternalEnvironmentInstaller {
+public class REnvInstaller extends JIPipeExternalEnvironmentInstaller {
 
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private Configuration configuration = new Configuration();
@@ -92,7 +93,7 @@ public class REnvInstaller extends ExternalEnvironmentInstaller {
             SwingUtilities.invokeLater(() -> {
 
                 if (!SystemUtils.IS_OS_WINDOWS) {
-                    JOptionPane.showMessageDialog(getWorkbench().getWindow(), "We are sorry, but there is unfortunately no " +
+                    JOptionPane.showMessageDialog(((JIPipeDesktopWorkbench) getWorkbench()).getWindow(), "We are sorry, but there is unfortunately no " +
                                     "precompiled package for Linux or Mac. Please install R manually and change the file paths.",
                             "Unsupported operating system",
                             JOptionPane.ERROR_MESSAGE);
@@ -104,10 +105,10 @@ public class REnvInstaller extends ExternalEnvironmentInstaller {
                     return;
                 }
 
-                boolean result = ParameterPanel.showDialog(getWorkbench(), configuration, new MarkdownDocument("# Install R\n\n" +
+                boolean result = JIPipeDesktopParameterPanel.showDialog((JIPipeDesktopWorkbench) getWorkbench(), configuration, new MarkdownText("# Install R\n\n" +
                                 "Please review the settings on the left-hand side. Click OK to install R.\n\n" +
                                 "For more information, please visit this page: https://cloud.r-project.org/bin/windows/base/"), "Download & install R",
-                        ParameterPanel.NO_GROUP_HEADERS | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING);
+                        JIPipeDesktopParameterPanel.NO_GROUP_HEADERS | JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterPanel.WITH_SCROLLING);
                 userCancelled.set(!result);
                 windowOpened.set(false);
                 synchronized (lock) {

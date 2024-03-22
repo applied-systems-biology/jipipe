@@ -46,11 +46,11 @@ import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeFastThumbnail;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeTextThumbnailData;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.tables.ConvertingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.IntegratingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.TableColumnReference;
 import org.hkijena.jipipe.extensions.tables.display.CachedTableViewerWindow;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -781,7 +781,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
     public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         try {
             Path path = PathUtils.ensureExtension(storage.getFileSystemPath().resolve(name), ".csv");
-            if(Files.isRegularFile(path)) {
+            if (Files.isRegularFile(path)) {
                 Files.delete(path);
             }
             table.saveAs(path.toString());
@@ -832,8 +832,8 @@ public class ResultsTableData implements JIPipeData, TableModel {
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        CachedTableViewerWindow window = new CachedTableViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName, true);
+    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
+        CachedTableViewerWindow window = new CachedTableViewerWindow(desktopWorkbench, JIPipeDataTableDataSource.wrap(this, source), displayName, true);
         window.setVisible(true);
         SwingUtilities.invokeLater(window::reloadDisplayedData);
     }

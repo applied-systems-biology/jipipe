@@ -64,6 +64,7 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
     private boolean forceReflection = false;
 
     private JIPipeParameterTree parent;
+
     public JIPipeParameterTree() {
     }
 
@@ -79,27 +80,27 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
     }
 
     /**
-     * Gets the tree assigned as parent. This is used for tracing the owner of parameters.
-     * @return the parent. can be null.
-     */
-    public JIPipeParameterTree getParent() {
-        return parent;
-    }
-
-    /**
-     * Sets the parent of this tree. This is used for tracing the owner of parameters.
-     * @param parent the parent. can be null.
-     */
-    public void setParent(JIPipeParameterTree parent) {
-        this.parent = parent;
-    }
-
-    /**
      * Creates a new dummy tree for a single access
+     *
      * @param access the access
      */
     public JIPipeParameterTree(JIPipeParameterAccess access) {
         this(createDummyCollectionFromAccess(access));
+    }
+
+    /**
+     * Creates a new instance with a predefined root parameter
+     *
+     * @param rootParameter the root parameter
+     * @param flags         additional flags
+     */
+    public JIPipeParameterTree(JIPipeParameterCollection rootParameter, int flags) {
+        this.root = new Node(null, rootParameter);
+        this.nodeMap.put(rootParameter, root);
+        this.ignoreReflectionParameters = (flags & IGNORE_REFLECTION) == IGNORE_REFLECTION;
+        this.ignoreCustomParameters = (flags & IGNORE_CUSTOM) == IGNORE_CUSTOM;
+        this.forceReflection = (flags & FORCE_REFLECTION) == FORCE_REFLECTION;
+        merge(rootParameter, root);
     }
 
     private static JIPipeCustomParameterCollection createDummyCollectionFromAccess(JIPipeParameterAccess access) {
@@ -134,21 +135,6 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
     }
 
     /**
-     * Creates a new instance with a predefined root parameter
-     *
-     * @param rootParameter the root parameter
-     * @param flags         additional flags
-     */
-    public JIPipeParameterTree(JIPipeParameterCollection rootParameter, int flags) {
-        this.root = new Node(null, rootParameter);
-        this.nodeMap.put(rootParameter, root);
-        this.ignoreReflectionParameters = (flags & IGNORE_REFLECTION) == IGNORE_REFLECTION;
-        this.ignoreCustomParameters = (flags & IGNORE_CUSTOM) == IGNORE_CUSTOM;
-        this.forceReflection = (flags & FORCE_REFLECTION) == FORCE_REFLECTION;
-        merge(rootParameter, root);
-    }
-
-    /**
      * Accesses the parameters of a collection
      *
      * @param collection the collection
@@ -156,6 +142,24 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
      */
     public static Map<String, JIPipeParameterAccess> getParameters(JIPipeParameterCollection collection) {
         return (new JIPipeParameterTree(collection)).getParameters();
+    }
+
+    /**
+     * Gets the tree assigned as parent. This is used for tracing the owner of parameters.
+     *
+     * @return the parent. can be null.
+     */
+    public JIPipeParameterTree getParent() {
+        return parent;
+    }
+
+    /**
+     * Sets the parent of this tree. This is used for tracing the owner of parameters.
+     *
+     * @param parent the parent. can be null.
+     */
+    public void setParent(JIPipeParameterTree parent) {
+        this.parent = parent;
     }
 
     /**
@@ -307,7 +311,7 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
         // Add parameters of this source. Sub-parameters are excluded
         for (Map.Entry<String, GetterSetterPair> entry : getterSetterPairs.entrySet()) {
             GetterSetterPair pair = entry.getValue();
-            if(pair == null || pair.getFieldClass() == null) {
+            if (pair == null || pair.getFieldClass() == null) {
                 throw new NullPointerException("Reflection parameter for " + source + ": parameter '" + entry.getKey() + "' is null or has no field class");
             }
             boolean isSubParameter = JIPipeParameterCollection.class.isAssignableFrom(pair.getFieldClass()) && pair.setter == null;

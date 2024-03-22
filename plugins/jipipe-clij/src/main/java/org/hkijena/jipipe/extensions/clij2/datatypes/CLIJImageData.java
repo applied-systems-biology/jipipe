@@ -16,9 +16,9 @@ package org.hkijena.jipipe.extensions.clij2.datatypes;
 import ij.ImagePlus;
 import net.haesleinhuepf.clij.clearcl.ClearCLBuffer;
 import net.haesleinhuepf.clij2.CLIJ2;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
@@ -26,11 +26,11 @@ import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.clij2.CLIJSettings;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedImagePlusDataViewerWindow;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import javax.swing.*;
 import java.awt.*;
@@ -102,8 +102,8 @@ public class CLIJImageData implements JIPipeData {
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        CachedImagePlusDataViewerWindow window = new CachedImagePlusDataViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
+    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
+        CachedImagePlusDataViewerWindow window = new CachedImagePlusDataViewerWindow(desktopWorkbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
         window.setCustomDataLoader(new CLIJImageViewerCustomDataLoader());
         window.setVisible(true);
         SwingUtilities.invokeLater(window::reloadDisplayedData);

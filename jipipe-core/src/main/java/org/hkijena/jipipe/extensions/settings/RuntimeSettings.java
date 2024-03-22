@@ -92,8 +92,7 @@ public class RuntimeSettings extends AbstractJIPipeParameterCollection {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }
-        else {
+        } else {
             OptionalPathParameter tempDirectory = getInstance().getTempDirectory();
             if (tempDirectory.isEnabled()) {
                 try {

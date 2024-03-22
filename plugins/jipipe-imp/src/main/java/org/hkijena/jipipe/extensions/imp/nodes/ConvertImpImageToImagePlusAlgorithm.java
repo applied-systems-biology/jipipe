@@ -28,10 +28,10 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imp.datatypes.ImpImageData;
 import org.hkijena.jipipe.extensions.imp.utils.ImpImageUtils;
-import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
 
 import java.awt.*;
@@ -46,7 +46,7 @@ public class ConvertImpImageToImagePlusAlgorithm extends JIPipeSimpleIteratingAl
     private boolean createCheckerboard = true;
     private int checkerboardSize = 10;
     private Color checkerboardColor1 = Color.WHITE;
-    private Color checkerboardColor2 = ModernMetalTheme.GRAY;
+    private Color checkerboardColor2 = JIPipeDesktopModernMetalTheme.GRAY;
 
     public ConvertImpImageToImagePlusAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -66,10 +66,9 @@ public class ConvertImpImageToImagePlusAlgorithm extends JIPipeSimpleIteratingAl
         ImageStack stack = new ImageStack(inputData.getWidth(), inputData.getHeight(), inputData.getSize());
         ImpImageUtils.forEachIndexedZCTSlice(inputData, (ip, index) -> {
             BufferedImage image;
-            if(createCheckerboard) {
+            if (createCheckerboard) {
                 image = BufferedImageUtils.convertAlphaToCheckerboard(ip, checkerboardSize, checkerboardColor1, checkerboardColor2);
-            }
-            else {
+            } else {
                 image = ip;
             }
             ColorProcessor processor = new ColorProcessor(image);

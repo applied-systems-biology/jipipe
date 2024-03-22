@@ -18,12 +18,13 @@ import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeRunnable;
+import org.hkijena.jipipe.api.run.JIPipeRunnable;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.settings.NodeTemplateSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.WebUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -38,18 +39,18 @@ import java.util.*;
 
 public class NodeTemplateDownloaderRun implements JIPipeRunnable {
 
-    private final JIPipeWorkbench workbench;
+    private final JIPipeDesktopWorkbench workbench;
     private final List<NodeTemplateDownloaderPackage> availablePackages = new ArrayList<>();
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private Set<NodeTemplateDownloaderPackage> targetPackages = new HashSet<>();
 
     private boolean toProject = false;
 
-    public NodeTemplateDownloaderRun(JIPipeWorkbench workbench) {
+    public NodeTemplateDownloaderRun(JIPipeDesktopWorkbench workbench) {
         this.workbench = workbench;
     }
 
-    public JIPipeWorkbench getWorkbench() {
+    public JIPipeDesktopWorkbench getWorkbench() {
         return workbench;
     }
 
@@ -110,14 +111,14 @@ public class NodeTemplateDownloaderRun implements JIPipeRunnable {
                     template.setSource(targetPackage.getUrl());
                     templates.add(template);
                 }
-                if (workbench instanceof JIPipeProjectWorkbench && toProject) {
-                    ((JIPipeProjectWorkbench) workbench).getProject().getMetadata().getNodeTemplates().addAll(templates);
-                    ((JIPipeProjectWorkbench) workbench).getProject().getMetadata().emitParameterChangedEvent("node-templates");
+                if (workbench instanceof JIPipeDesktopProjectWorkbench && toProject) {
+                    ((JIPipeDesktopProjectWorkbench) workbench).getProject().getMetadata().getNodeTemplates().addAll(templates);
+                    ((JIPipeDesktopProjectWorkbench) workbench).getProject().getMetadata().emitParameterChangedEvent("node-templates");
                 } else {
                     // Store globally
                     NodeTemplateSettings.getInstance().getNodeTemplates().addAll(templates);
                     NodeTemplateSettings.getInstance().emitParameterChangedEvent("node-templates");
-                    if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+                    if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
                         JIPipe.getSettings().save();
                     }
                 }

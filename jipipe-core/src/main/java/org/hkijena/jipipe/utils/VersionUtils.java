@@ -38,12 +38,13 @@ public class VersionUtils {
 
     /**
      * Similar to {@link StringUtils} compareVersions, but supports the 'Development' version
+     *
      * @param version1 the first version
      * @param version2 the second version
      * @return -1 if version1 is less than version2. 1 if version2 is less than version1. 0 if equal
      */
     public static int compareVersions(String version1, String version2) {
-        if("Development".equalsIgnoreCase(version1) || "Development".equalsIgnoreCase(version2)) {
+        if ("Development".equalsIgnoreCase(version1) || "Development".equalsIgnoreCase(version2)) {
             return 0;
         }
         return StringUtils.compareVersions(version1, version2);

@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 
 /**
  * Generates numbers from 0 to row count
@@ -88,7 +88,7 @@ public class ZeroTableColumn implements TableColumn {
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
+    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
 
     }
 }

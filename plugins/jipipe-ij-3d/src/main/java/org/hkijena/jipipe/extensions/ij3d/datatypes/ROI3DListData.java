@@ -23,16 +23,17 @@ import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 import mcib3d.geom.*;
 import mcib3d.image3d.ImageHandler;
-import org.hkijena.jipipe.api.LabelAsJIPipeCommonData;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.LabelAsJIPipeCommonData;
+import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.extensions.ij3d.display.CachedROIList3DDataViewerWindow;
 import org.hkijena.jipipe.extensions.ij3d.utils.ExtendedObject3DVoxels;
@@ -41,7 +42,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.BitDepth;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UnclosableInputStream;
 import org.hkijena.jipipe.utils.UnclosableOutputStream;
@@ -123,8 +123,8 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        CachedROIList3DDataViewerWindow window = new CachedROIList3DDataViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
+    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
+        CachedROIList3DDataViewerWindow window = new CachedROIList3DDataViewerWindow(desktopWorkbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
         window.reloadDisplayedData();
         window.setVisible(true);
         SwingUtilities.invokeLater(() -> window.getImageViewer().switchTo3D());

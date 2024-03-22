@@ -13,20 +13,20 @@
 
 package org.hkijena.jipipe.extensions.dev;
 
-import ij.WindowManager;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.settings.BackupSettings;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
-import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
+import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.utils.UIUtils;
 
-public class TriggerBackupAllTool extends JIPipeMenuExtension {
+public class TriggerBackupAllTool extends JIPipeDesktopMenuExtension {
     /**
      * Creates a new instance
      *
      * @param workbench workbench the extension is attached to
      */
-    public TriggerBackupAllTool(JIPipeWorkbench workbench) {
+    public TriggerBackupAllTool(JIPipeDesktopWorkbench workbench) {
         super(workbench);
         setText("Backup all open windows now");
         setToolTipText("Triggers the backup function for all open JIPipe windows");

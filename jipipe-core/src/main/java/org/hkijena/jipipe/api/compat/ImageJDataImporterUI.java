@@ -13,20 +13,21 @@
 
 package org.hkijena.jipipe.api.compat;
 
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 
 /**
  * User interface around a {@link ImageJDataImportOperation}
  */
-public class ImageJDataImporterUI extends JIPipeWorkbenchPanel {
+public class ImageJDataImporterUI extends JIPipeDesktopWorkbenchPanel {
     private final ImageJDataImportOperation importer;
 
     /**
-     * @param importer the importer
+     * @param desktopWorkbench the workbench
+     * @param importer         the importer
      */
-    public ImageJDataImporterUI(JIPipeWorkbench workbench, ImageJDataImportOperation importer) {
-        super(workbench);
+    public ImageJDataImporterUI(JIPipeDesktopWorkbench desktopWorkbench, ImageJDataImportOperation importer) {
+        super(desktopWorkbench);
         this.importer = importer;
     }
 

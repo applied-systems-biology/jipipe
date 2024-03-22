@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
+import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
 
 import java.util.Collection;
 import java.util.Set;
@@ -73,11 +73,11 @@ public class TooltipUtils {
         return getAlgorithmTooltip(info, true);
     }
 
-    public static MarkdownDocument getAlgorithmDocumentation(JIPipeNodeInfo info) {
+    public static MarkdownText getAlgorithmDocumentation(JIPipeNodeInfo info) {
         StringBuilder builder = new StringBuilder();
         builder.append("# ").append(info.getName()).append("\n\n");
 
-        if(info.isDeprecated()) {
+        if (info.isDeprecated()) {
             builder.append("**This node is deprecated**\n\n");
         }
 
@@ -144,15 +144,15 @@ public class TooltipUtils {
             builder.append("</table>");
         }
 
-        return new MarkdownDocument(builder.toString());
+        return new MarkdownText(builder.toString());
     }
 
-    public static MarkdownDocument getAlgorithmDocumentation(JIPipeGraphNode node) {
+    public static MarkdownText getAlgorithmDocumentation(JIPipeGraphNode node) {
         JIPipeNodeInfo info = node.getInfo();
         StringBuilder builder = new StringBuilder();
         builder.append("<h1>").append(info.getName()).append("</h1>\n\n");
 
-        if(node.getInfo().isDeprecated()) {
+        if (node.getInfo().isDeprecated()) {
             builder.append("**This node is deprecated**\n\n");
         }
 
@@ -228,7 +228,7 @@ public class TooltipUtils {
             builder.append("</table>");
         }
 
-        return new MarkdownDocument(builder.toString());
+        return new MarkdownText(builder.toString());
     }
 
     /**
@@ -243,7 +243,7 @@ public class TooltipUtils {
         builder.append("<html>");
         if (withTitle)
             builder.append("<u><strong>").append(info.getName()).append("</strong></u><br/>");
-        if(info.isDeprecated())
+        if (info.isDeprecated())
             builder.append("<u><i>This node is deprecated</i></u><br/>");
 
         if (!info.getAliases().isEmpty()) {
@@ -364,7 +364,7 @@ public class TooltipUtils {
         builder.append("<html>");
         if (withTitle)
             builder.append("<p style=\"margin-bottom:10px;\"><u><strong>").append(node.getName()).append("</strong></u></p><br/><br/>");
-        if(node.getInfo().isDeprecated())
+        if (node.getInfo().isDeprecated())
             builder.append("<u><i>This node is deprecated</i></u><br/>");
 
         // Write description

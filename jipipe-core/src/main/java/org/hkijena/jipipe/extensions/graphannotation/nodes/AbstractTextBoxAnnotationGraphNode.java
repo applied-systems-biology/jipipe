@@ -22,7 +22,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.FontFamilyPar
 import org.hkijena.jipipe.extensions.parameters.library.primitives.FontStyleParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeAnnotationGraphNodeUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopAnnotationGraphNodeUI;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
@@ -135,7 +135,7 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
     }
 
     @Override
-    public void paintNode(Graphics2D g2, JIPipeAnnotationGraphNodeUI nodeUI, double zoom) {
+    public void paintNode(Graphics2D g2, JIPipeDesktopAnnotationGraphNodeUI nodeUI, double zoom) {
 
         updateAssetsIfNeeded(g2, nodeUI, zoom);
 
@@ -302,9 +302,9 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
 
     }
 
-    protected abstract void paintShape(Graphics2D g2, JIPipeAnnotationGraphNodeUI nodeUI, double zoom);
+    protected abstract void paintShape(Graphics2D g2, JIPipeDesktopAnnotationGraphNodeUI nodeUI, double zoom);
 
-    private void updateAssetsIfNeeded(Graphics2D g2, JIPipeAnnotationGraphNodeUI nodeUI, double zoom) {
+    private void updateAssetsIfNeeded(Graphics2D g2, JIPipeDesktopAnnotationGraphNodeUI nodeUI, double zoom) {
         if (!Objects.equals(renderedContentRaw, textContent) || !Objects.equals(renderedTitleRaw, textTitle) || renderedZoom != zoom || renderedGridWidth != getGridWidth() || renderedGridHeight != getGridHeight()) {
 
             int finalBorderThickness = (int) Math.max(1, getBorderThickness() * zoom);

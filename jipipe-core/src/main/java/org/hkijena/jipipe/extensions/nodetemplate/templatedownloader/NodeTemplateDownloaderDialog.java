@@ -15,8 +15,8 @@ package org.hkijena.jipipe.extensions.nodetemplate.templatedownloader;
 
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.extensions.settings.NodeTemplateSettings;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.components.FormPanel;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 public class NodeTemplateDownloaderDialog extends JDialog {
     private final NodeTemplateDownloaderRun installer;
 
-    private final FormPanel formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
+    private final JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.WITH_SCROLLING);
 
     private final Set<NodeTemplateDownloaderPackage> targetPackages = new HashSet<>();
 
@@ -64,8 +64,8 @@ public class NodeTemplateDownloaderDialog extends JDialog {
         for (JIPipeNodeTemplate nodeTemplate : NodeTemplateSettings.getInstance().getNodeTemplates()) {
             allSources.add(StringUtils.orElse(nodeTemplate.getSource(), JIPipeNodeTemplate.SOURCE_USER));
         }
-        if (installer.getWorkbench() instanceof JIPipeProjectWorkbench) {
-            for (JIPipeNodeTemplate nodeTemplate : ((JIPipeProjectWorkbench) installer.getWorkbench()).getProject().getMetadata().getNodeTemplates()) {
+        if (installer.getWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
+            for (JIPipeNodeTemplate nodeTemplate : ((JIPipeDesktopProjectWorkbench) installer.getWorkbench()).getProject().getMetadata().getNodeTemplates()) {
                 allSources.add(StringUtils.orElse(nodeTemplate.getSource(), JIPipeNodeTemplate.SOURCE_USER));
             }
         }

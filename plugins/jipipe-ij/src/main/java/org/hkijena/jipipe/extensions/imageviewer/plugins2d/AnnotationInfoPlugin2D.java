@@ -13,11 +13,11 @@
 
 package org.hkijena.jipipe.extensions.imageviewer.plugins2d;
 
+import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheDataViewerWindow;
+import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCachedDataViewerAnnotationInfoPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPlugin2D;
-import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
-import org.hkijena.jipipe.ui.cache.JIPipeCachedDataViewerAnnotationInfoPanel;
-import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -28,13 +28,13 @@ import javax.swing.*;
  */
 public class AnnotationInfoPlugin2D extends JIPipeImageViewerPlugin2D {
 
-    private final JIPipeCacheDataViewerWindow cacheDataViewerWindow;
-    private final JIPipeCachedDataViewerAnnotationInfoPanel infoPanel;
+    private final JIPipeDesktopCacheDataViewerWindow cacheDataViewerWindow;
+    private final JIPipeDesktopCachedDataViewerAnnotationInfoPanel infoPanel;
 
     public AnnotationInfoPlugin2D(JIPipeImageViewer viewerPanel) {
         super(viewerPanel);
-        this.cacheDataViewerWindow = viewerPanel.getContextObject(JIPipeCacheDataViewerWindow.class);
-        this.infoPanel = new JIPipeCachedDataViewerAnnotationInfoPanel(cacheDataViewerWindow.getWorkbench());
+        this.cacheDataViewerWindow = viewerPanel.getContextObject(JIPipeDesktopCacheDataViewerWindow.class);
+        this.infoPanel = new JIPipeDesktopCachedDataViewerAnnotationInfoPanel(cacheDataViewerWindow.getWorkbench());
     }
 
     @Override
@@ -48,7 +48,7 @@ public class AnnotationInfoPlugin2D extends JIPipeImageViewerPlugin2D {
     }
 
     @Override
-    public void initializeSettingsPanel(FormPanel formPanel) {
+    public void initializeSettingsPanel(JIPipeDesktopFormPanel formPanel) {
         formPanel.addVerticalGlue(infoPanel, null);
     }
 
@@ -61,7 +61,7 @@ public class AnnotationInfoPlugin2D extends JIPipeImageViewerPlugin2D {
         }
     }
 
-    public JIPipeCacheDataViewerWindow getCacheDataViewerWindow() {
+    public JIPipeDesktopCacheDataViewerWindow getCacheDataViewerWindow() {
         return cacheDataViewerWindow;
     }
 }

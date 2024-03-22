@@ -15,10 +15,10 @@ package org.hkijena.jipipe.extensions.imageviewer.plugins3d;
 
 import ij.ImagePlus;
 import ij3d.Content;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerOpacityLUTEditor;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.ImageViewer3DOpacityLUTEditor;
-import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -48,7 +48,7 @@ public class OpacityManagerPlugin3D extends GeneralImageViewerPanelPlugin3D {
     }
 
     @Override
-    public void initializeSettingsPanel(FormPanel formPanel) {
+    public void initializeSettingsPanel(JIPipeDesktopFormPanel formPanel) {
         if (getCurrentImagePlus() == null) {
             return;
         }

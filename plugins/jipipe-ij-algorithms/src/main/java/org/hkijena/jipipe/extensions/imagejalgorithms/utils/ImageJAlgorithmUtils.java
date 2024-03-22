@@ -516,7 +516,7 @@ public class ImageJAlgorithmUtils {
             }
             target.setValueAt(roi1Center.distance(roi2Center), row, columnPrefix + "DistanceCenter");
         }
-        if(ROI2DRelationMeasurement.includes(measurements, ROI2DRelationMeasurement.PolygonDistanceStats)) {
+        if (ROI2DRelationMeasurement.includes(measurements, ROI2DRelationMeasurement.PolygonDistanceStats)) {
             FloatPolygon roi1p = roi1.getFloatPolygon();
             FloatPolygon roi2p = roi2.getFloatPolygon();
             TDoubleList distances = new TDoubleArrayList();
@@ -528,12 +528,12 @@ public class ImageJAlgorithmUtils {
                     float x2 = roi2p.xpoints[j];
                     float y2 = roi2p.ypoints[j];
                     double d = Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2);
-                    if(d < sd) {
+                    if (d < sd) {
                         sd = d;
                     }
                 }
 
-                if(!Double.isInfinite(sd)) {
+                if (!Double.isInfinite(sd)) {
                     distances.add(Math.sqrt(sd));
                 }
             }
@@ -543,7 +543,7 @@ public class ImageJAlgorithmUtils {
             double max = Double.NEGATIVE_INFINITY;
             double avg = Double.NaN;
             double sum = 0;
-            if(arr.length > 0) {
+            if (arr.length > 0) {
                 for (int i = 0; i < arr.length; i++) {
                     sum += arr[i];
                     min = Math.min(arr[i], min);

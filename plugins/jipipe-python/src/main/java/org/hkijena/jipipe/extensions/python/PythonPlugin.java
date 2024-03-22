@@ -18,12 +18,17 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
@@ -32,10 +37,6 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringLi
 import org.hkijena.jipipe.extensions.python.adapter.*;
 import org.hkijena.jipipe.extensions.python.algorithms.*;
 import org.hkijena.jipipe.extensions.python.installers.*;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
-import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -66,55 +67,31 @@ public class PythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         getMetadata().setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("thumbnails/python.png")));
     }
 
-    private static void installPythonAdapterLibrary(JIPipeWorkbench workbench) {
-        PythonExtensionSettings settings = PythonExtensionSettings.getInstance();
-        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
-        JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-adapter-library");
-        JIPipePythonAdapterLibraryEnvironmentInstaller installer = new JIPipePythonAdapterLibraryEnvironmentInstaller(workbench, parameterAccess);
-        JIPipeRunExecuterUI.runInDialog(workbench, workbench.getWindow(), installer);
-    }
-
-    private static void installPython(JIPipeWorkbench workbench) {
-        PythonExtensionSettings settings = PythonExtensionSettings.getInstance();
-        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
-        JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
-        PortableEnvPythonInstaller installer = new PortableEnvPythonInstaller(workbench, parameterAccess);
-        JIPipeRunExecuterUI.runInDialog(workbench, workbench.getWindow(), installer);
-    }
-
-    private static void selectConda(JIPipeWorkbench workbench) {
-        PythonExtensionSettings settings = PythonExtensionSettings.getInstance();
-        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
-        JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
-        SelectCondaEnvPythonInstaller installer = new SelectCondaEnvPythonInstaller(workbench, parameterAccess);
-        JIPipeRunExecuterUI.runInDialog(workbench, workbench.getWindow(), installer);
-    }
-
     private static void easyInstallPython(JIPipeWorkbench workbench) {
         PythonExtensionSettings settings = PythonExtensionSettings.getInstance();
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);
         JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
-        PythonEasyInstaller installer = new PythonEasyInstaller(workbench, parameterAccess);
-        JIPipeRunExecuterUI.runInDialog(workbench, workbench.getWindow(), installer);
+        PythonEasyInstaller installer = new PythonEasyInstaller((JIPipeDesktopWorkbench) workbench, parameterAccess);
+        JIPipeDesktopRunExecuterUI.runInDialog((JIPipeDesktopWorkbench) workbench, ((JIPipeDesktopWorkbench) workbench).getWindow(), installer);
     }
 
     private static void easyInstallPythonAdapter(JIPipeWorkbench workbench) {
         PythonAdapterExtensionSettings settings = PythonAdapterExtensionSettings.getInstance();
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);
         JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-adapter-library");
-        JIPipePythonAdapterLibraryEnvironmentInstaller installer = new JIPipePythonAdapterLibraryEnvironmentInstaller(workbench, parameterAccess);
-        JIPipeRunExecuterUI.runInDialog(workbench, workbench.getWindow(), installer);
+        JIPipePythonAdapterLibraryEnvironmentInstaller installer = new JIPipePythonAdapterLibraryEnvironmentInstaller((JIPipeDesktopWorkbench) workbench, parameterAccess);
+        JIPipeDesktopRunExecuterUI.runInDialog((JIPipeDesktopWorkbench) workbench, ((JIPipeDesktopWorkbench) workbench).getWindow(), installer);
     }
 
     private static void openSettingsPage(JIPipeWorkbench workbench) {
-        if(workbench instanceof JIPipeProjectWorkbench) {
-            ((JIPipeProjectWorkbench) workbench).openApplicationSettings("/Extensions/Python integration");
+        if (workbench instanceof JIPipeDesktopProjectWorkbench) {
+            ((JIPipeDesktopProjectWorkbench) workbench).openApplicationSettings("/Extensions/Python integration");
         }
     }
 
     private static void openAdapterSettingsPage(JIPipeWorkbench workbench) {
-        if(workbench instanceof JIPipeProjectWorkbench) {
-            ((JIPipeProjectWorkbench) workbench).openApplicationSettings("/Extensions/Python integration (adapter)");
+        if (workbench instanceof JIPipeDesktopProjectWorkbench) {
+            ((JIPipeDesktopProjectWorkbench) workbench).openApplicationSettings("/Extensions/Python integration (adapter)");
         }
     }
 
@@ -274,7 +251,7 @@ public class PythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         createMissingPythonNotificationIfNeeded(JIPipeNotificationInbox.getInstance());
         createMissingLibJIPipePythonNotificationIfNeeded(JIPipeNotificationInbox.getInstance());
         if (PythonAdapterExtensionSettings.getInstance().isCheckForUpdates()) {
-            JIPipeRunnerQueue.getInstance().enqueue(new JIPipePythonAdapterUpdateChecker());
+            JIPipeRunnableQueue.getInstance().enqueue(new JIPipePythonAdapterUpdateChecker());
         }
     }
 

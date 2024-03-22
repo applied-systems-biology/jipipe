@@ -14,14 +14,14 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.resultanalysis.JIPipeAsyncResultDataSlotPreview;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
+import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopAsyncResultDataSlotPreview;
 
 import javax.swing.*;
 
-public class ImageDataPreview extends JIPipeAsyncResultDataSlotPreview {
+public class ImageDataPreview extends JIPipeDesktopAsyncResultDataSlotPreview {
 
 
     /**
@@ -33,7 +33,7 @@ public class ImageDataPreview extends JIPipeAsyncResultDataSlotPreview {
      * @param row            the row
      * @param dataAnnotation optional data annotation
      */
-    public ImageDataPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, JIPipeExportedDataAnnotation dataAnnotation) {
+    public ImageDataPreview(JIPipeDesktopProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, JIPipeExportedDataAnnotation dataAnnotation) {
         super(workbench, table, slot, row, dataAnnotation);
     }
 }

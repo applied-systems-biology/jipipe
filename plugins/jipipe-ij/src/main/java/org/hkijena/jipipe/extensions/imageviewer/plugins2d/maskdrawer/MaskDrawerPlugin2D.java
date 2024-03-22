@@ -29,6 +29,12 @@ import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopColorChooserButton;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopColorIcon;
+import org.hkijena.jipipe.desktop.commons.components.ribbon.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
@@ -39,12 +45,6 @@ import org.hkijena.jipipe.extensions.imageviewer.utils.viewer2d.ImageViewerPanel
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2DTool;
 import org.hkijena.jipipe.extensions.parameters.library.ranges.*;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
-import org.hkijena.jipipe.ui.components.ColorChooserButton;
-import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
-import org.hkijena.jipipe.ui.components.ribbon.*;
-import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -73,21 +73,21 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D implements Ima
     private final Map<MaskColor, JToggleButton> colorSelectionButtons = new HashMap<>();
     private final JCheckBox showGuidesToggle = new JCheckBox("Show guide lines", true);
     private final MouseMaskDrawer2DTool mouseTool = new MouseMaskDrawer2DTool(this);
-    private final Ribbon ribbon = new Ribbon(3);
+    private final JIPipeDesktopRibbon ribbon = new JIPipeDesktopRibbon(3);
     private final List<MaskDrawer2DTool> registeredTools = new ArrayList<>();
-    private final FormPanel toolSettingsPanel = new FormPanel(FormPanel.NONE);
+    private final JIPipeDesktopFormPanel toolSettingsPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.NONE);
     private final MaskChangedEventEmitter maskChangedEventEmitter = new MaskChangedEventEmitter();
     private ImagePlus mask;
     private ImageProcessor currentMaskSlice;
     private BufferedImage currentMaskSlicePreview;
     private MaskColor currentColor = MaskColor.Foreground;
     private MaskDrawer2DTool currentTool;
-    private ColorChooserButton highlightColorButton;
-    private ColorChooserButton maskColorButton;
+    private JIPipeDesktopColorChooserButton highlightColorButton;
+    private JIPipeDesktopColorChooserButton maskColorButton;
     private Color highlightColor = new Color(255, 255, 0, 128);
     private Color maskColor = new Color(255, 0, 0, 128);
     private Function<ImagePlus, ImagePlus> maskGenerator;
-    private SmallButtonAction exportToRoiManagerAction;
+    private JIPipeDesktopSmallButtonRibbonAction exportToRoiManagerAction;
     private boolean drawCurrentMaskSlicePreview;
 
     public MaskDrawerPlugin2D(JIPipeImageViewer viewerPanel) {
@@ -110,10 +110,10 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D implements Ima
     }
 
     public void installTool(MaskDrawer2DTool tool) {
-        Ribbon.Task task = ribbon.getOrCreateTask("Draw");
-        Ribbon.Band band = task.getOrCreateBand("Tools");
+        JIPipeDesktopRibbon.Task task = ribbon.getOrCreateTask("Draw");
+        JIPipeDesktopRibbon.Band band = task.getOrCreateBand("Tools");
         if (tool instanceof MouseMaskDrawer2DTool) {
-            LargeToggleButtonAction action = new LargeToggleButtonAction(tool.getName(), tool.getDescription(), tool.getIcon());
+            JIPipeDesktopLargeToggleButtonRibbonAction action = new JIPipeDesktopLargeToggleButtonRibbonAction(tool.getName(), tool.getDescription(), tool.getIcon());
             action.addActionListener(e -> {
                 if (action.getState()) {
                     getViewerPanel2D().getCanvas().setTool(tool);
@@ -122,7 +122,7 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D implements Ima
             tool.addToggleButton(action.getButton(), getViewerPanel2D().getCanvas());
             band.add(action);
         } else {
-            SmallToggleButtonAction action = new SmallToggleButtonAction(tool.getName(), tool.getDescription(), tool.getIcon());
+            JIPipeDesktopSmallToggleButtonRibbonAction action = new JIPipeDesktopSmallToggleButtonRibbonAction(tool.getName(), tool.getDescription(), tool.getIcon());
             action.addActionListener(e -> {
                 if (action.getState()) {
                     getViewerPanel2D().getCanvas().setTool(tool);
@@ -138,13 +138,13 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D implements Ima
 
     private void initialize() {
         // Create highlight color selection
-        highlightColorButton = new ColorChooserButton("Change highlight color");
+        highlightColorButton = new JIPipeDesktopColorChooserButton("Change highlight color");
         highlightColorButton.setUpdateWithHexCode(true);
         highlightColorButton.setSelectedColor(highlightColor);
         highlightColorButton.getColorChosenEventEmitter().subscribeLambda((emitter, event) -> setHighlightColor(event.getColor()));
 
         // Create mask color selection
-        maskColorButton = new ColorChooserButton("Change mask color");
+        maskColorButton = new JIPipeDesktopColorChooserButton("Change mask color");
         maskColorButton.setUpdateWithHexCode(true);
         maskColorButton.setSelectedColor(maskColor);
         maskColorButton.getColorChosenEventEmitter().subscribeLambda((emitter, event) -> setMaskColor(event.getColor()));
@@ -159,7 +159,7 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D implements Ima
                 colorButtonGroup,
                 "255",
                 "Sets the currently drawn color to foreground (255)",
-                new SolidColorIcon(16, 16, Color.WHITE, Color.DARK_GRAY),
+                new SolidJIPipeDesktopColorIcon(16, 16, Color.WHITE, Color.DARK_GRAY),
                 this::getCurrentColor,
                 this::setCurrentColor);
         addSelectionButton(MaskColor.Background,
@@ -168,7 +168,7 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D implements Ima
                 colorButtonGroup,
                 "0",
                 "Sets the currently drawn color to background (0)",
-                new SolidColorIcon(16, 16, Color.BLACK, Color.DARK_GRAY),
+                new SolidJIPipeDesktopColorIcon(16, 16, Color.BLACK, Color.DARK_GRAY),
                 this::getCurrentColor,
                 this::setCurrentColor);
 
@@ -184,21 +184,21 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D implements Ima
         ribbon.addTask("Draw").addBand("Tools");
 
         // View menu
-        Ribbon.Task viewTask = ribbon.addTask("View");
-        Ribbon.Band viewColorsBand = viewTask.addBand("Colors");
-        Ribbon.Band viewTweaksBand = viewTask.addBand("Tweaks");
+        JIPipeDesktopRibbon.Task viewTask = ribbon.addTask("View");
+        JIPipeDesktopRibbon.Band viewColorsBand = viewTask.addBand("Colors");
+        JIPipeDesktopRibbon.Band viewTweaksBand = viewTask.addBand("Tweaks");
 
         maskColorButton.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         highlightColorButton.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        viewColorsBand.add(new Ribbon.Action(Arrays.asList(new JLabel("Mask color"), maskColorButton), 1, new Insets(2, 2, 2, 2)));
-        viewColorsBand.add(new Ribbon.Action(Arrays.asList(new JLabel("Highlight color"), highlightColorButton), 1, new Insets(2, 2, 2, 2)));
+        viewColorsBand.add(new JIPipeDesktopRibbon.Action(Arrays.asList(new JLabel("Mask color"), maskColorButton), 1, new Insets(2, 2, 2, 2)));
+        viewColorsBand.add(new JIPipeDesktopRibbon.Action(Arrays.asList(new JLabel("Highlight color"), highlightColorButton), 1, new Insets(2, 2, 2, 2)));
 
-        viewTweaksBand.add(new Ribbon.Action(showGuidesToggle, 1, new Insets(2, 2, 2, 2)));
+        viewTweaksBand.add(new JIPipeDesktopRibbon.Action(showGuidesToggle, 1, new Insets(2, 2, 2, 2)));
 
         // Modify menu
-        Ribbon.Task modifyTask = ribbon.addTask("Modify");
-        Ribbon.Band modifyMaskBand = modifyTask.addBand("Mask");
-        modifyMaskBand.add(new LargeButtonAction("Process ...", "Apply a morphological operation", UIUtils.getIcon32FromResources("actions/configure.png"),
+        JIPipeDesktopRibbon.Task modifyTask = ribbon.addTask("Modify");
+        JIPipeDesktopRibbon.Band modifyMaskBand = modifyTask.addBand("Mask");
+        modifyMaskBand.add(new JIPipeDesktopLargeButtonRibbonAction("Process ...", "Apply a morphological operation", UIUtils.getIcon32FromResources("actions/configure.png"),
                 UIUtils.createMenuItem("Invert", "Inverts the mask", UIUtils.getIconFromResources("actions/object-inverse.png"), this::applyInvert),
                 null,
                 UIUtils.createMenuItem("Watershed", "Applies a distance transform watershed", UIUtils.getIconFromResources("actions/object-tweak-randomize.png"), this::applyWatershed),
@@ -207,17 +207,17 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D implements Ima
                 UIUtils.createMenuItem("Erosion", "Applies a 3x3 morphological erosion", UIUtils.getIconFromResources("actions/object-tweak-paint.png"), this::applyErode),
                 UIUtils.createMenuItem("Opening", "Applies a 3x3 morphological opening", UIUtils.getIconFromResources("actions/object-tweak-paint.png"), this::applyOpen),
                 UIUtils.createMenuItem("Closing", "Applies a 3x3 morphological closing", UIUtils.getIconFromResources("actions/object-tweak-paint.png"), this::applyClose)));
-        modifyMaskBand.add(new SmallButtonAction("Copy to ...", "Copies the current slice to another position", UIUtils.getIconFromResources("actions/edit-duplicate.png"), this::copySlice));
-        modifyMaskBand.add(new SmallButtonAction("Clear", "Sets the whole mask to zero", UIUtils.getIconFromResources("actions/tool_color_eraser.png"), this::clearCurrentMask));
+        modifyMaskBand.add(new JIPipeDesktopSmallButtonRibbonAction("Copy to ...", "Copies the current slice to another position", UIUtils.getIconFromResources("actions/edit-duplicate.png"), this::copySlice));
+        modifyMaskBand.add(new JIPipeDesktopSmallButtonRibbonAction("Clear", "Sets the whole mask to zero", UIUtils.getIconFromResources("actions/tool_color_eraser.png"), this::clearCurrentMask));
 
         // Import/Export menu
-        Ribbon.Task importExportTask = ribbon.addTask("Import/Export");
-        Ribbon.Band fileImportExportBand = importExportTask.addBand("Mask");
+        JIPipeDesktopRibbon.Task importExportTask = ribbon.addTask("Import/Export");
+        JIPipeDesktopRibbon.Band fileImportExportBand = importExportTask.addBand("Mask");
 
-        fileImportExportBand.add(new SmallButtonAction("Import mask", "Imports the mask slice from a *.tif file", UIUtils.getIconFromResources("actions/document-import.png"), this::importMask));
-        fileImportExportBand.add(new SmallButtonAction("Export mask", "Exports the mask slice to a *.tif file", UIUtils.getIconFromResources("actions/document-export.png"), this::exportMask));
+        fileImportExportBand.add(new JIPipeDesktopSmallButtonRibbonAction("Import mask", "Imports the mask slice from a *.tif file", UIUtils.getIconFromResources("actions/document-import.png"), this::importMask));
+        fileImportExportBand.add(new JIPipeDesktopSmallButtonRibbonAction("Export mask", "Exports the mask slice to a *.tif file", UIUtils.getIconFromResources("actions/document-export.png"), this::exportMask));
 
-        exportToRoiManagerAction = new SmallButtonAction("To ROI", "Exports the mask to the ROI manager", UIUtils.getIconFromResources("data-types/roi.png"), this::addToROIManager);
+        exportToRoiManagerAction = new JIPipeDesktopSmallButtonRibbonAction("To ROI", "Exports the mask to the ROI manager", UIUtils.getIconFromResources("data-types/roi.png"), this::addToROIManager);
         fileImportExportBand.add(exportToRoiManagerAction);
     }
 
@@ -441,7 +441,7 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D implements Ima
     }
 
     @Override
-    public void initializeSettingsPanel(FormPanel formPanel) {
+    public void initializeSettingsPanel(JIPipeDesktopFormPanel formPanel) {
         if (getCurrentImagePlus() == null) {
             return;
         }
@@ -454,7 +454,7 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D implements Ima
         currentTool.initializeSettingsPanel(formPanel);
     }
 
-    public Ribbon getRibbon() {
+    public JIPipeDesktopRibbon getRibbon() {
         return ribbon;
     }
 
@@ -551,10 +551,10 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D implements Ima
             ((JIPipeMutableParameterAccess) parameterCollection.get("t")).setHidden(true);
         }
 
-        ParameterPanel parameterPanel = new ParameterPanel(new JIPipeDummyWorkbench(),
+        JIPipeDesktopParameterPanel parameterPanel = new JIPipeDesktopParameterPanel(new JIPipeDesktopDummyWorkbench(),
                 parameterCollection,
                 null,
-                FormPanel.WITH_DOCUMENTATION | FormPanel.WITH_SCROLLING);
+                JIPipeDesktopFormPanel.WITH_DOCUMENTATION | JIPipeDesktopFormPanel.WITH_SCROLLING);
 
         AtomicBoolean canceled = new AtomicBoolean(true);
 

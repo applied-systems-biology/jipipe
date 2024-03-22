@@ -72,6 +72,7 @@ public class JIPipeCustomExpressionVariablesParameter extends JIPipeDynamicParam
 
     /**
      * Writes the parameter values to variables with default configuration
+     *
      * @param variables the target
      */
     public void writeToVariables(JIPipeExpressionVariablesMap variables) {

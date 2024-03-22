@@ -14,9 +14,10 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.io;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.compat.ImageJDataImportOperation;
@@ -24,12 +25,15 @@ import org.hkijena.jipipe.api.compat.ImageJDataImporterUI;
 import org.hkijena.jipipe.api.compat.ImageJImportParameters;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.AddJIPipeNodeAlias;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -37,8 +41,8 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.parameters.library.references.ImageJDataImporterRef;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import javax.swing.*;
@@ -93,7 +97,7 @@ public class RunImageJImporterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/configure.png")
     public void setImporterParametersFromUI(JIPipeWorkbench parent) {
         if (importerType.getInstance() == null) {
-            JOptionPane.showMessageDialog(parent.getWindow(),
+            JOptionPane.showMessageDialog(((JIPipeDesktopWorkbench) parent).getWindow(),
                     "Please select an importer type, first!",
                     "Set import parameters",
                     JOptionPane.ERROR_MESSAGE);
@@ -102,7 +106,7 @@ public class RunImageJImporterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImageJDataImportOperation operation = new ImageJDataImportOperation(importerType.getInstance());
         this.importParameters.copyTo(operation);
         ImageJDataImporterUI ui = JIPipe.getImageJAdapters().createUIForImportOperation(parent, operation);
-        if (JOptionPane.showConfirmDialog(parent.getWindow(), ui, "Set import parameters", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+        if (JOptionPane.showConfirmDialog(((JIPipeDesktopWorkbench) parent).getWindow(), ui, "Set import parameters", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
             operation.copyTo(this.importParameters);
             emitParameterUIChangedEvent();
         }

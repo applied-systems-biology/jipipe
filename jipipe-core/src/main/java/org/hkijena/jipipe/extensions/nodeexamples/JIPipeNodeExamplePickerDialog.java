@@ -14,11 +14,11 @@
 package org.hkijena.jipipe.extensions.nodeexamples;
 
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
-import org.hkijena.jipipe.ui.components.pickers.PickerDialog;
+import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopPickerDialog;
 
 import java.awt.*;
 
-public class JIPipeNodeExamplePickerDialog extends PickerDialog<JIPipeNodeExample> {
+public class JIPipeNodeExamplePickerDialog extends JIPipeDesktopPickerDialog<JIPipeNodeExample> {
 
     public JIPipeNodeExamplePickerDialog(Window parent) {
         super(parent);

@@ -39,6 +39,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
+import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.registries.*;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
@@ -49,13 +50,13 @@ import org.hkijena.jipipe.extensions.nodetemplate.NodeTemplatesRefreshedEventEmi
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataDisplayOperationIdEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataImportOperationIdEnumParameter;
 import org.hkijena.jipipe.extensions.settings.*;
-import org.hkijena.jipipe.ui.JIPipeProjectWindow;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.ijupdater.JIPipeProgressAdapter;
-import org.hkijena.jipipe.ui.registries.JIPipeCustomMenuRegistry;
-import org.hkijena.jipipe.ui.running.JIPipeRunnableLogEntry;
-import org.hkijena.jipipe.ui.running.JIPipeRunnableLogsCollection;
-import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
+import org.hkijena.jipipe.desktop.commons.ijupdater.JIPipeDesktopImageJUpdaterProgressAdapter;
+import org.hkijena.jipipe.desktop.api.registries.JIPipeCustomMenuRegistry;
+import org.hkijena.jipipe.api.run.JIPipeRunnableLogEntry;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableLogsCollection;
+import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Context;
@@ -104,9 +105,9 @@ public class JIPipe extends AbstractService implements JIPipeService {
      */
     public static final JIPipeResourceManager RESOURCES = new JIPipeResourceManager(JIPipe.class, "org/hkijena/jipipe");
     public static boolean NO_IMAGEJ = false;
+    public static boolean NO_SETTINGS_AUTOSAVE = false;
     private static JIPipe instance;
     private static boolean IS_RESTARTING = false;
-    public static boolean NO_SETTINGS_AUTOSAVE = false;
     private final JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private final Set<String> registeredExtensionIds = new HashSet<>();
     private final List<JIPipeDependency> registeredExtensions = new ArrayList<>();
@@ -221,14 +222,14 @@ public class JIPipe extends AbstractService implements JIPipeService {
     public static void restartGUI() {
 
         // Save all settings first
-        if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+        if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
             getSettings().save();
         }
 
         try {
             IS_RESTARTING = true;
             // Kill all JIPipe windows
-            for (JIPipeProjectWindow openWindow : JIPipeProjectWindow.getOpenWindows()) {
+            for (JIPipeDesktopProjectWindow openWindow : JIPipeDesktopProjectWindow.getOpenWindows()) {
                 openWindow.dispose();
             }
             // Set the instance to null
@@ -291,6 +292,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
     /**
      * Create a new JIPipe using initializeLibNoImageJ, which is suitable for using limited functions from within non-ImageJ applications.
      * Avoids interacting with SciJava as much as possible.
+     *
      * @param plugins list of plugins to load
      * @return the JIPipe instance
      */
@@ -408,7 +410,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * @param project      the project
      * @param outputFolder the output folder
      * @param threads      the number of threads (set to zero for using the default value)
-     * @return the future result. You have to check the {@link JIPipeRunnerQueue} to see if the run is finished.
+     * @return the future result. You have to check the {@link JIPipeRunnableQueue} to see if the run is finished.
      */
     public static JIPipeGraphRun enqueueProject(JIPipeProject project, Path outputFolder, int threads) {
         JIPipeGraphRunConfiguration settings = new JIPipeGraphRunConfiguration();
@@ -416,7 +418,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
         if (threads > 0)
             settings.setNumThreads(threads);
         JIPipeGraphRun run = new JIPipeGraphRun(project, settings);
-        JIPipeRunnerQueue.getInstance().enqueue(run);
+        JIPipeRunnableQueue.getInstance().enqueue(run);
         return run;
     }
 
@@ -426,11 +428,11 @@ public class JIPipe extends AbstractService implements JIPipeService {
      *
      * @param project  the project
      * @param settings settings for the run
-     * @return the future result. You have to check the {@link JIPipeRunnerQueue} to see if the run is finished.
+     * @return the future result. You have to check the {@link JIPipeRunnableQueue} to see if the run is finished.
      */
     public static JIPipeGraphRun enqueueProject(JIPipeProject project, JIPipeGraphRunConfiguration settings) {
         JIPipeGraphRun run = new JIPipeGraphRun(project, settings);
-        JIPipeRunnerQueue.getInstance().enqueue(run);
+        JIPipeRunnableQueue.getInstance().enqueue(run);
         return run;
     }
 
@@ -556,6 +558,49 @@ public class JIPipe extends AbstractService implements JIPipeService {
         return false;
     }
 
+    /**
+     * Gets the JIPipe user-writable directory.
+     * Can be overwritten by setting the JIPIPE_USER_DIR environment variable to deploy JIPipe into a read-only environment
+     *
+     * @return the JIPipe user directory
+     */
+    public static Path getJIPipeUserDir() {
+        String environmentVar = System.getenv().getOrDefault("JIPIPE_USER_DIR", null);
+        if (environmentVar != null) {
+            return Paths.get(environmentVar);
+        } else {
+            Path imageJDir = Paths.get(Prefs.getImageJDir());
+            if (!imageJDir.isAbsolute())
+                imageJDir = imageJDir.toAbsolutePath();
+            if (!Files.isDirectory(imageJDir)) {
+                try {
+                    Files.createDirectories(imageJDir);
+                } catch (IOException e) {
+                    IJ.handleException(e);
+                }
+            }
+            return imageJDir;
+        }
+    }
+
+    /**
+     * Exits the Java application in 500ms
+     * Prevents the lockup of Java under certain circumstances
+     *
+     * @param exitCode the exit code
+     */
+    public static void exitLater(int exitCode) {
+        if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
+            JIPipe.getSettings().save();
+        }
+        Timer timer = new Timer(500, e -> {
+//            System.exit(exitCode);
+            // Context introduces a shutdown hook that causes a deadlock
+            Runtime.getRuntime().halt(exitCode);
+        });
+        timer.start();
+    }
+
     public NodeTemplatesRefreshedEventEmitter getNodeTemplatesRefreshedEventEmitter() {
         return nodeTemplatesRefreshedEventEmitter;
     }
@@ -650,7 +695,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
         progressInfo.setProgress(2);
         JIPipeProgressInfo registerFeaturesProgress = progressInfo.resolveAndLog("Register features");
 
-        for(JIPipeJavaPlugin extension : pluginInstances) {
+        for (JIPipeJavaPlugin extension : pluginInstances) {
             extension.register(this, getContext(), registerFeaturesProgress.resolve(extension.getDependencyId()));
             registeredExtensions.add(extension);
             registeredExtensionIds.add(extension.getDependencyId());
@@ -694,20 +739,20 @@ public class JIPipe extends AbstractService implements JIPipeService {
         initializing = false;
 
         // Push progress into log
-        JIPipeRunnableLogsCollection.getInstance().pushToLog(new JIPipeRunnableLogEntry("JIPipe initialization",
+        JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(new JIPipeRunnableLogEntry("JIPipe initialization",
                 LocalDateTime.now(),
                 progressInfo.getLog().toString(),
                 new JIPipeNotificationInbox(), true));
 
         // Mark log as read
-        JIPipeRunnableLogsCollection.getInstance().markAllAsRead();
+        JIPipeDesktopRunnableLogsCollection.getInstance().markAllAsRead();
     }
 
     /**
      * Initializes JIPipe. Uses the default extension settings and discards any detected issues.
      */
     public void initialize() {
-        if(NO_IMAGEJ) {
+        if (NO_IMAGEJ) {
             return;
         }
         initialize(ExtensionSettings.getInstanceFromRaw(), new JIPipeRegistryIssues());
@@ -778,7 +823,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
             impliedLoadedJavaExtensionsChanged = false;
             for (JIPipeJavaExtensionInitializationInfo initializationInfo : allJavaExtensionsByID.values()) {
                 JIPipeJavaPlugin extension = initializationInfo.getInstance();
-                if(extension == null) {
+                if (extension == null) {
                     continue;
                 }
                 if (extension.isCoreExtension() || extensionRegistry.getStartupExtensions().contains(extension.getDependencyId()) || impliedLoadedJavaExtensions.contains(extension.getDependencyId())) {
@@ -811,7 +856,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
             IJ.showProgress(i + 1, allJavaExtensionsList.size());
             JIPipeJavaPlugin extension = initializationInfo.getInstance();
 
-            if(extension == null) {
+            if (extension == null) {
                 continue;
             }
             try {
@@ -871,7 +916,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
         for (int i = 0; i < allJavaExtensionsList.size(); i++) {
             JIPipeJavaExtensionInitializationInfo initializationInfo = allJavaExtensionsList.get(i);
 
-            if(!initializationInfo.isLoaded()) {
+            if (!initializationInfo.isLoaded()) {
                 registerFeaturesProgress.log("Skipping (deactivated in extension manager or is refusing to activate)");
                 continue;
             }
@@ -924,12 +969,12 @@ public class JIPipe extends AbstractService implements JIPipeService {
         if (extensionSettings.isValidateImageJDependencies()) {
             List<JIPipeDependency> loadedJavaExtensions = new ArrayList<>();
             for (JIPipeJavaExtensionInitializationInfo initializationInfo : allJavaExtensionsList) {
-                if(initializationInfo.isLoaded()) {
+                if (initializationInfo.isLoaded()) {
                     loadedJavaExtensions.add(initializationInfo.getInstance());
                 }
             }
             JIPipeProgressInfo dependencyProgress = progressInfo.resolve("ImageJ dependencies").detachProgress();
-            checkUpdateSites(issues, loadedJavaExtensions, new JIPipeProgressAdapter(dependencyProgress), dependencyProgress);
+            checkUpdateSites(issues, loadedJavaExtensions, new JIPipeDesktopImageJUpdaterProgressAdapter(dependencyProgress), dependencyProgress);
         }
 
         // Create settings for default importers
@@ -1007,20 +1052,22 @@ public class JIPipe extends AbstractService implements JIPipeService {
                     JIPipeNotificationAction.Style.Success,
                     workbench -> {
                         extensionRegistry.dismissNewExtensions();
-                        workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_PLUGIN_MANAGER);
+                        if (workbench instanceof JIPipeDesktopProjectWorkbench) {
+                            ((JIPipeDesktopProjectWorkbench) workbench).getDocumentTabPane().selectSingletonTab(JIPipeDesktopProjectWorkbench.TAB_PLUGIN_MANAGER);
+                        }
                     }));
             JIPipeNotificationInbox.getInstance().push(notification);
         }
 
 
         // Push progress into log
-        JIPipeRunnableLogsCollection.getInstance().pushToLog(new JIPipeRunnableLogEntry("JIPipe initialization",
+        JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(new JIPipeRunnableLogEntry("JIPipe initialization",
                 LocalDateTime.now(),
                 progressInfo.getLog().toString(),
                 new JIPipeNotificationInbox(), true));
 
         // Mark log as read
-        JIPipeRunnableLogsCollection.getInstance().markAllAsRead();
+        JIPipeDesktopRunnableLogsCollection.getInstance().markAllAsRead();
     }
 
     private void registerProjectTemplatesFromFileSystem() {
@@ -1470,47 +1517,5 @@ public class JIPipe extends AbstractService implements JIPipeService {
     @Override
     public JIPipeUtilityRegistry getUtilityRegistry() {
         return utilityRegistry;
-    }
-
-    /**
-     * Gets the JIPipe user-writable directory.
-     * Can be overwritten by setting the JIPIPE_USER_DIR environment variable to deploy JIPipe into a read-only environment
-     * @return the JIPipe user directory
-     */
-    public static Path getJIPipeUserDir() {
-        String environmentVar = System.getenv().getOrDefault("JIPIPE_USER_DIR", null);
-        if(environmentVar != null) {
-            return Paths.get(environmentVar);
-        }
-        else {
-            Path imageJDir = Paths.get(Prefs.getImageJDir());
-            if (!imageJDir.isAbsolute())
-                imageJDir = imageJDir.toAbsolutePath();
-            if (!Files.isDirectory(imageJDir)) {
-                try {
-                    Files.createDirectories(imageJDir);
-                } catch (IOException e) {
-                    IJ.handleException(e);
-                }
-            }
-            return imageJDir;
-        }
-    }
-
-    /**
-     * Exits the Java application in 500ms
-     * Prevents the lockup of Java under certain circumstances
-     * @param exitCode the exit code
-     */
-    public static void exitLater(int exitCode) {
-        if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
-            JIPipe.getSettings().save();
-        }
-        Timer timer = new Timer(500, e -> {
-//            System.exit(exitCode);
-            // Context introduces a shutdown hook that causes a deadlock
-            Runtime.getRuntime().halt(exitCode);
-        });
-        timer.start();
     }
 }

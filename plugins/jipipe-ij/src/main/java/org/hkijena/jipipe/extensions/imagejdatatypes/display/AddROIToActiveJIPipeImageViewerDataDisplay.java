@@ -16,18 +16,18 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.display;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 
 public class AddROIToActiveJIPipeImageViewerDataDisplay implements JIPipeDataDisplayOperation {
     @Override
-    public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
+    public void display(JIPipeData data, String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
         JIPipeImageViewer viewerPanel = JIPipeImageViewer.getActiveViewerPanel();
         if (viewerPanel == null) {
-            JOptionPane.showMessageDialog(workbench.getWindow(), "There is no active JIPipe image viewer.", "Add to active image viewer", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(desktopWorkbench.getWindow(), "There is no active JIPipe image viewer.", "Add to active image viewer", JOptionPane.ERROR_MESSAGE);
         } else {
             viewerPanel.addOverlay(data);
         }

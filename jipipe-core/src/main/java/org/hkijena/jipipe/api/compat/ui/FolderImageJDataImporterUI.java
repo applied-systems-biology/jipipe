@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.api.compat.ui;
 
 import org.hkijena.jipipe.api.compat.ImageJDataImportOperation;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.PathType;
 
 public class FolderImageJDataImporterUI extends AbstractPathImageJDataImporterUI {
@@ -22,7 +22,7 @@ public class FolderImageJDataImporterUI extends AbstractPathImageJDataImporterUI
      * @param workbench the workbench
      * @param importer  the importer
      */
-    public FolderImageJDataImporterUI(JIPipeWorkbench workbench, ImageJDataImportOperation importer) {
+    public FolderImageJDataImporterUI(JIPipeDesktopWorkbench workbench, ImageJDataImportOperation importer) {
         super(workbench, importer);
     }
 

@@ -60,7 +60,7 @@ public class EdgeMaskParameter extends AbstractJIPipeParameterCollection {
         Set<FilamentEdge> matched = new HashSet<>();
         for (FilamentEdge filamentEdge : edgeSet) {
             FilamentEdgeVariablesInfo.writeToVariables(graph, filamentEdge, variables, "");
-            if(filter.test(variables)) {
+            if (filter.test(variables)) {
                 matched.add(filamentEdge);
             }
         }

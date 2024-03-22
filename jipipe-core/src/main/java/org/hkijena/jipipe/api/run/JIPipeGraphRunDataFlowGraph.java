@@ -45,7 +45,7 @@ public class JIPipeGraphRunDataFlowGraph extends DefaultDirectedWeightedGraph<Ob
     public JIPipeGraphRunDataFlowGraph() {
         super(DefaultWeightedEdge.class);
     }
-    
+
     public JIPipeGraphRunDataFlowGraph(JIPipeGraph graph, Set<JIPipeGraphNode> nodeFilter) {
         super(DefaultWeightedEdge.class);
         addGraph(graph, nodeFilter);
@@ -69,14 +69,13 @@ public class JIPipeGraphRunDataFlowGraph extends DefaultDirectedWeightedGraph<Ob
                 // Inputs
                 for (JIPipeGraphEdge graphEdge : graph.getGraph().incomingEdgesOf(inputSlot)) {
                     int weight;
-                    if(JIPipeDataInfo.getInstance(inputSlot.getAcceptedDataType()).isHeavy()) {
+                    if (JIPipeDataInfo.getInstance(inputSlot.getAcceptedDataType()).isHeavy()) {
                         weight = DATA_FLOW_WEIGHT_HEAVY;
-                    }
-                    else {
+                    } else {
                         weight = DATA_FLOW_WEIGHT_LIGHT;
                     }
                     JIPipeDataSlot edgeSource = graph.getGraph().getEdgeSource(graphEdge);
-                    if(containsVertex(edgeSource)) {
+                    if (containsVertex(edgeSource)) {
                         setEdgeWeight(addEdge(edgeSource, inputSlot), weight);
                     }
                 }
@@ -84,10 +83,9 @@ public class JIPipeGraphRunDataFlowGraph extends DefaultDirectedWeightedGraph<Ob
             for (JIPipeOutputDataSlot outputSlot : graphNode.getOutputSlots()) {
                 // Edge from the node (weight by data)
                 int weight;
-                if(JIPipeDataInfo.getInstance(outputSlot.getAcceptedDataType()).isHeavy()) {
+                if (JIPipeDataInfo.getInstance(outputSlot.getAcceptedDataType()).isHeavy()) {
                     weight = DATA_FLOW_WEIGHT_HEAVY;
-                }
-                else {
+                } else {
                     weight = DATA_FLOW_WEIGHT_LIGHT;
                 }
                 setEdgeWeight(addEdge(graphNode, outputSlot), weight);
@@ -107,7 +105,7 @@ public class JIPipeGraphRunDataFlowGraph extends DefaultDirectedWeightedGraph<Ob
     public List<Object> getNextVertices() {
         List<Object> result = new ArrayList<>();
         for (Object vertex : vertexSet()) {
-            if(inDegreeOf(vertex) == 0) {
+            if (inDegreeOf(vertex) == 0) {
                 result.add(vertex);
             }
         }
@@ -124,7 +122,7 @@ public class JIPipeGraphRunDataFlowGraph extends DefaultDirectedWeightedGraph<Ob
         for (Object candidate : candidates) {
             for (Object endpoint : endpoints) {
                 GraphPath<Object, DefaultWeightedEdge> path = dijkstraShortestPath.getPath(candidate, endpoint);
-                if(path != null) {
+                if (path != null) {
                     double weight = path.getWeight();
                     if (weight < bestWeight) {
                         bestCandidate = candidate;

@@ -45,6 +45,10 @@ public final class ImgUtils {
      */
     public static final String DEFAULT_STRING_AXES = "xyczt";
 
+    private ImgUtils() {
+        throw new AssertionError();
+    }
+
     /**
      * Convert axes from {@link #DEFAULT_AXES}
      * to string with chars from {@link #DEFAULT_STRING_AXES}.
@@ -322,9 +326,5 @@ public final class ImgUtils {
         Img<UnsignedByteType> multiChannelImg = ImgView.wrap(Converters.argbChannels(img));
         axes.add(Axes.CHANNEL);
         return new ImgPlus<>(multiChannelImg, img.getName(), axes.toArray(new AxisType[0]));
-    }
-
-    private ImgUtils() {
-        throw new AssertionError();
     }
 }

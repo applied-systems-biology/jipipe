@@ -21,6 +21,15 @@ import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueueButton;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPathEditorComponent;
+import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.*;
 import org.hkijena.jipipe.extensions.imageviewer.runs.RawImage2DExporterRun;
@@ -29,14 +38,6 @@ import org.hkijena.jipipe.extensions.imageviewer.runs.Video2DExporterRun;
 import org.hkijena.jipipe.extensions.imageviewer.settings.ImageViewer2DUISettings;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2D;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
-import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.components.PathEditor;
-import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
-import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
-import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
-import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueButton;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
 
@@ -50,7 +51,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
 
-public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess {
+public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbenchAccess {
 
     private final JIPipeImageViewer imageViewer;
     private final JButton zoomStatusButton = new JButton();
@@ -68,13 +69,13 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
     private final JSpinner animationFPSControl = new JSpinner(new SpinnerNumberModel(24, 0.01, 1000, 0.1));
     private final JToolBar toolBar = new JToolBar();
     private final JToggleButton enableSideBarButton = new JToggleButton();
-    private final DocumentTabPane tabPane = new DocumentTabPane(false, DocumentTabPane.TabPlacement.Right);
-    private final Map<String, FormPanel> formPanels = new HashMap<>();
-    private final JIPipeWorkbench workbench;
+    private final JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(false, JIPipeDesktopTabPane.TabPlacement.Right);
+    private final Map<String, JIPipeDesktopFormPanel> formPanels = new HashMap<>();
+    private final JIPipeDesktopWorkbench workbench;
     private final JCheckBoxMenuItem exportDisplayedScaleToggle = new JCheckBoxMenuItem("Export as displayed", true);
     private final Map<ImageSliceIndex, ImageStatistics> statisticsMap = new HashMap<>();
     private final JPanel viewerPanel = new JPanel(new BorderLayout());
-    private final JIPipeRunnerQueue viewerRunnerQueue = new JIPipeRunnerQueue("Image Viewer 2D");
+    private final JIPipeRunnableQueue viewerRunnerQueue = new JIPipeRunnableQueue("Image Viewer 2D");
     private final List<CompositeLayer> orderedCompositeBlendLayers = new ArrayList<>();
     private final Map<Integer, CompositeLayer> compositeBlendLayers = new HashMap<>();
     private ImagePlusData image;
@@ -82,14 +83,14 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
     private ImageCanvas exportDummyCanvas;
     private ImageProcessor currentSlice;
     private ImageViewerPanelCanvas2D canvas;
-    private FormPanel bottomPanel;
+    private JIPipeDesktopFormPanel bottomPanel;
     private long lastTimeZoomed;
     //    private int rotation = 0;
     private JMenuItem exportAllSlicesItem;
     private JMenuItem exportMovieItem;
     private Component currentContentPanel;
-    private boolean isUpdatingSliders = false;    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
-    private JScrollPane canvasScrollPane;
+    private boolean isUpdatingSliders = false;
+    private JScrollPane canvasScrollPane;    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
     private boolean composite;
     /**
      * Initializes a new image viewer
@@ -98,7 +99,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
      */
     public ImageViewerPanel2D(JIPipeImageViewer imageViewer) {
         this.imageViewer = imageViewer;
-        this.workbench = imageViewer.getWorkbench();
+        this.workbench = imageViewer.getDesktopWorkbench();
         if (JIPipe.getInstance() != null) {
             settings = ImageViewer2DUISettings.getInstance();
         } else {
@@ -125,8 +126,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         slider.setValue(newIndex);
     }
 
-    @Override
-    public JIPipeWorkbench getWorkbench() {
+    public JIPipeDesktopWorkbench getDesktopWorkbench() {
         return workbench;
     }
 
@@ -136,6 +136,10 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
 
     public List<CompositeLayer> getOrderedCompositeBlendLayers() {
         return Collections.unmodifiableList(orderedCompositeBlendLayers);
+    }
+
+    public Map<Integer, CompositeLayer> getCompositeBlendLayers() {
+        return Collections.unmodifiableMap(compositeBlendLayers);
     }
 
 
@@ -148,10 +152,6 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
 //            refreshSlice();
 //        }
 //    }
-
-    public Map<Integer, CompositeLayer> getCompositeBlendLayers() {
-        return Collections.unmodifiableMap(compositeBlendLayers);
-    }
 
     public void dispose() {
         try {
@@ -166,7 +166,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         }
     }
 
-    public JIPipeRunnerQueue getViewerRunnerQueue() {
+    public JIPipeRunnableQueue getViewerRunnerQueue() {
         return viewerRunnerQueue;
     }
 
@@ -205,12 +205,12 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         statusBar.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, UIManager.getColor("MenuBar.borderColor")));
         viewerPanel.add(statusBar, BorderLayout.SOUTH);
 
-        JIPipeRunnerQueueButton runnerQueueUI = new JIPipeRunnerQueueButton(getWorkbench(), viewerRunnerQueue);
+        JIPipeDesktopRunnableQueueButton runnerQueueUI = new JIPipeDesktopRunnableQueueButton(getDesktopWorkbench(), viewerRunnerQueue);
         runnerQueueUI.makeFlat();
         statusBar.add(runnerQueueUI);
 
         // Bottom panel (sliders)
-        bottomPanel = new FormPanel(null, FormPanel.NONE);
+        bottomPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.NONE);
         add(bottomPanel, BorderLayout.SOUTH);
 
         // Register slider events
@@ -231,7 +231,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         exportDisplayedScaleToggle.addActionListener(e -> {
             if (settings != null) {
                 settings.setExportAsDisplayed(exportDisplayedScaleToggle.getState());
-                if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+                if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
                     JIPipe.getSettings().save();
                 }
             }
@@ -260,7 +260,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
             double fps = ((SpinnerNumberModel) animationFPSControl.getModel()).getNumber().doubleValue();
             if (settings != null) {
                 settings.setDefaultAnimationFPS(fps);
-                if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+                if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
                     JIPipe.getSettings().save();
                 }
             }
@@ -442,7 +442,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         enableSideBarButton.addActionListener(e -> {
             if (settings != null) {
                 settings.setShowSideBar(enableSideBarButton.isSelected());
-                if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+                if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
                     JIPipe.getSettings().save();
                 }
             }
@@ -489,7 +489,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
     private void saveRawImage() {
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Save as *.tif", UIUtils.EXTENSION_FILTER_TIFF);
         if (path != null) {
-            JIPipeRunExecuterUI.runInDialog(workbench, this, new RawImage2DExporterRun(getImagePlus(), path), viewerRunnerQueue);
+            JIPipeDesktopRunExecuterUI.runInDialog(workbench, this, new RawImage2DExporterRun(getImagePlus(), path), viewerRunnerQueue);
         }
     }
 
@@ -558,8 +558,8 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
     }
 
     public void exportAllSlicesToPNG() {
-        FormPanel formPanel = new FormPanel(null, FormPanel.NONE);
-        PathEditor exportPathEditor = new PathEditor(PathIOMode.Open, PathType.DirectoriesOnly);
+        JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.NONE);
+        JIPipeDesktopPathEditorComponent exportPathEditor = new JIPipeDesktopPathEditorComponent(PathIOMode.Open, PathType.DirectoriesOnly);
         exportPathEditor.setPath(FileChooserSettings.getInstance().getLastDataDirectory());
         formPanel.addToForm(exportPathEditor, new JLabel("Target directory"), null);
 
@@ -580,14 +580,14 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
                 null);
         if (response == JOptionPane.OK_OPTION) {
             FileChooserSettings.getInstance().setLastDataDirectory(exportPathEditor.getPath());
-            if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+            if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
                 JIPipe.getSettings().save();
             }
             Path targetPath = exportPathEditor.getPath();
             String format = fileFormatEditor.getSelectedItem() + "";
             String baseName = StringUtils.makeFilesystemCompatible(baseNameEditor.getText());
             Stack2DExporterRun run = new Stack2DExporterRun(imageViewer, targetPath, baseName, format);
-            JIPipeRunExecuterUI.runInDialog(workbench, this, run, viewerRunnerQueue);
+            JIPipeDesktopRunExecuterUI.runInDialog(workbench, this, run, viewerRunnerQueue);
         }
     }
 
@@ -597,7 +597,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
             return;
         }
 
-        FormPanel formPanel = new FormPanel(null, FormPanel.NONE);
+        JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.NONE);
         List<HyperstackDimension> availableDimensions = new ArrayList<>();
         if (image.getNFrames() > 1)
             availableDimensions.add(HyperstackDimension.Frame);
@@ -634,7 +634,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
                     animationTimer.getDelay(),
                     (AVICompression) compressionEditor.getSelectedItem(),
                     compressionQualityEditor.getValue());
-            JIPipeRunExecuterUI.runInDialog(workbench, this, run, viewerRunnerQueue);
+            JIPipeDesktopRunExecuterUI.runInDialog(workbench, this, run, viewerRunnerQueue);
         }
     }
 
@@ -731,26 +731,26 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
 
     public void refreshFormPanel() {
         Map<String, Integer> scrollValues = new HashMap<>();
-        for (Map.Entry<String, FormPanel> entry : formPanels.entrySet()) {
+        for (Map.Entry<String, JIPipeDesktopFormPanel> entry : formPanels.entrySet()) {
             scrollValues.put(entry.getKey(), entry.getValue().getScrollPane().getVerticalScrollBar().getValue());
             entry.getValue().clear();
         }
         for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
-            FormPanel formPanel = formPanels.getOrDefault(plugin.getCategory(), null);
+            JIPipeDesktopFormPanel formPanel = formPanels.getOrDefault(plugin.getCategory(), null);
             if (formPanel == null) {
-                formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
+                formPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.WITH_SCROLLING);
                 formPanels.put(plugin.getCategory(), formPanel);
-                FormPanel finalFormPanel = formPanel;
+                JIPipeDesktopFormPanel finalFormPanel = formPanel;
                 tabPane.registerSingletonTab(plugin.getCategory(),
                         plugin.getCategory(),
                         plugin.getCategoryIcon(),
                         () -> finalFormPanel,
-                        DocumentTabPane.CloseMode.withoutCloseButton,
-                        DocumentTabPane.SingletonTabMode.Present);
+                        JIPipeDesktopTabPane.CloseMode.withoutCloseButton,
+                        JIPipeDesktopTabPane.SingletonTabMode.Present);
             }
             plugin.initializeSettingsPanel(formPanel);
         }
-        for (Map.Entry<String, FormPanel> entry : formPanels.entrySet()) {
+        for (Map.Entry<String, JIPipeDesktopFormPanel> entry : formPanels.entrySet()) {
             if (!entry.getValue().isHasVerticalGlue()) {
                 entry.getValue().addVerticalGlue();
             }
@@ -1014,6 +1014,11 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
                 uploadSliceToCanvas();
             }
         }
+    }
+
+    @Override
+    public JIPipeWorkbench getWorkbench() {
+        return workbench;
     }
 
     public static class CompositeLayer extends ImageBlendLayer {

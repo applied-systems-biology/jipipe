@@ -24,8 +24,8 @@ import ij.gui.EllipseRoi;
 import ij.gui.Line;
 import ij.gui.Roi;
 import mcib3d.image3d.ImageHandler;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
@@ -34,6 +34,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeImageThumbnailData;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3D;
@@ -49,7 +50,6 @@ import org.hkijena.jipipe.extensions.scene3d.model.Scene3DGroupNode;
 import org.hkijena.jipipe.extensions.scene3d.model.geometries.Scene3DLineGeometry;
 import org.hkijena.jipipe.extensions.scene3d.model.geometries.Scene3DSphereGeometry;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -172,8 +172,8 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        CachedFilamentsDataViewerWindow window = new CachedFilamentsDataViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
+    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
+        CachedFilamentsDataViewerWindow window = new CachedFilamentsDataViewerWindow(desktopWorkbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
         window.setVisible(true);
         SwingUtilities.invokeLater(window::reloadDisplayedData);
     }

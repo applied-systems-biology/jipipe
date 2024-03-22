@@ -14,18 +14,21 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.math;
 
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.*;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
@@ -114,6 +117,7 @@ public class ApplyMathExpression2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.transformation = transformation;
 
     }
+
     @Override
     public boolean isEnableDefaultCustomExpressionVariables() {
         return true;

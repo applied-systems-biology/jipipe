@@ -16,7 +16,7 @@ package org.hkijena.jipipe.api;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.scijava.Cancelable;
 
@@ -149,20 +149,20 @@ public class JIPipeProgressInfo implements Cancelable {
         logToStdOut.set(value);
     }
 
-    public void setWithSpinner(boolean b) {
-        withSpinner.set(b);
-    }
-
     public boolean isWithSpinner() {
         return withSpinner.get();
     }
 
-    public void setNotifications(JIPipeNotificationInbox notifications) {
-        this.notifications = notifications;
+    public void setWithSpinner(boolean b) {
+        withSpinner.set(b);
     }
 
     public JIPipeNotificationInbox getNotifications() {
         return notifications;
+    }
+
+    public void setNotifications(JIPipeNotificationInbox notifications) {
+        this.notifications = notifications;
     }
 
     /**
@@ -178,7 +178,7 @@ public class JIPipeProgressInfo implements Cancelable {
             }
             log.append("<").append(progress).append("/").append(maxProgress).append("> ");
 
-            if(withSpinner.get()) {
+            if (withSpinner.get()) {
                 log.append(SPINNER_1[numLines.get() % SPINNER_1.length]).append(" ");
             }
 

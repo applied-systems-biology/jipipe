@@ -319,14 +319,14 @@ public class JIPipeMultiIterationStep implements JIPipeIterationStep, Comparable
 
     /**
      * Creates a context for new data that inherits direct predecessors from this data batch's input
+     *
      * @return the new context
      */
     public JIPipeDataContext createNewContext() {
         JIPipeMutableDataContext context;
-        if(node != null) {
+        if (node != null) {
             context = new JIPipeMutableDataContext(node);
-        }
-        else {
+        } else {
             context = new JIPipeMutableDataContext();
         }
         for (Map.Entry<JIPipeDataSlot, Set<Integer>> entry : inputSlotRows.entrySet()) {
@@ -413,7 +413,7 @@ public class JIPipeMultiIterationStep implements JIPipeIterationStep, Comparable
      * @param slotName              Slot name
      * @param data                  Added data
      * @param additionalAnnotations Annotations that are added additionally to the merged ones
-     * @param progressInfo the progress info
+     * @param progressInfo          the progress info
      */
     public void addOutputData(String slotName, JIPipeDataItemStore data, List<JIPipeTextAnnotation> additionalAnnotations, JIPipeProgressInfo progressInfo) {
         addOutputData(node.getOutputSlot(slotName), data, additionalAnnotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
@@ -439,7 +439,7 @@ public class JIPipeMultiIterationStep implements JIPipeIterationStep, Comparable
      * @param slotName              Slot name
      * @param data                  Added data
      * @param additionalAnnotations Annotations that are added additionally to the merged ones
-     * @param progressInfo the progress info
+     * @param progressInfo          the progress info
      */
     public void addOutputData(String slotName, JIPipeDataItemStore data, JIPipeTextAnnotationMergeMode annotationMergeStrategy, List<JIPipeTextAnnotation> additionalAnnotations, JIPipeProgressInfo progressInfo) {
         addOutputData(node.getOutputSlot(slotName), data, additionalAnnotations, annotationMergeStrategy, progressInfo);
@@ -563,7 +563,7 @@ public class JIPipeMultiIterationStep implements JIPipeIterationStep, Comparable
      * @param data                  Added data
      * @param additionalAnnotations Annotations that are added additionally to the merged ones
      * @param mergeStrategy         how annotations should be merged
-     * @param progressInfo the progress info
+     * @param progressInfo          the progress info
      */
     public void addOutputData(JIPipeOutputDataSlot slot, JIPipeDataItemStore data, List<JIPipeTextAnnotation> additionalAnnotations, JIPipeTextAnnotationMergeMode mergeStrategy, JIPipeProgressInfo progressInfo) {
         if (slot.getNode() != node)
@@ -723,7 +723,7 @@ public class JIPipeMultiIterationStep implements JIPipeIterationStep, Comparable
     @Override
     public Set<Integer> getInputSlotRowIndices(String slotName) {
         for (Map.Entry<JIPipeDataSlot, Set<Integer>> entry : inputSlotRows.entrySet()) {
-            if(slotName.equals(entry.getKey().getName())) {
+            if (slotName.equals(entry.getKey().getName())) {
                 return entry.getValue();
             }
         }

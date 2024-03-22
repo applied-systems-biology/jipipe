@@ -31,15 +31,16 @@ public class WeightedTokens {
 
     /**
      * Adds a text to tokenize
-     * @param text the text
+     *
+     * @param text   the text
      * @param weight the weight
      */
     public void add(String text, int weight) {
-        if(StringUtils.isNullOrEmpty(text))
+        if (StringUtils.isNullOrEmpty(text))
             return;
         text = text.toLowerCase().replace('\n', ' ');
         for (String s : text.split(" ")) {
-            if(!StringUtils.isNullOrEmpty(s)) {
+            if (!StringUtils.isNullOrEmpty(s)) {
                 tokens.add(s);
                 weights.add(weight);
             }
@@ -53,6 +54,7 @@ public class WeightedTokens {
     public int getWeight(int index) {
         return weights.get(index);
     }
+
     public int size() {
         return tokens.size();
     }

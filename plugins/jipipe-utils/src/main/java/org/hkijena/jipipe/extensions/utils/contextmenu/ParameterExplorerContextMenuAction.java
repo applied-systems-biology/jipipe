@@ -13,10 +13,10 @@
 
 package org.hkijena.jipipe.extensions.utils.contextmenu;
 
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.NodeUIContextAction;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
-import org.hkijena.jipipe.ui.parameters.ParameterExplorerWindow;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
+import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterExplorerWindow;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -24,15 +24,15 @@ import java.util.Set;
 
 public class ParameterExplorerContextMenuAction implements NodeUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeGraphNodeUI> selection) {
+    public boolean matches(Set<JIPipeDesktopGraphNodeUI> selection) {
         return selection.size() == 1;
     }
 
     @Override
-    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeGraphNodeUI> selection) {
-        ParameterExplorerWindow window = new ParameterExplorerWindow(canvasUI.getWorkbench(), selection.iterator().next().getNode());
+    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
+        JIPipeDesktopParameterExplorerWindow window = new JIPipeDesktopParameterExplorerWindow(canvasUI.getDesktopWorkbench(), selection.iterator().next().getNode());
         window.setSize(1024, 768);
-        window.setLocationRelativeTo(canvasUI.getWorkbench().getWindow());
+        window.setLocationRelativeTo(canvasUI.getDesktopWorkbench().getWindow());
         window.setVisible(true);
     }
 

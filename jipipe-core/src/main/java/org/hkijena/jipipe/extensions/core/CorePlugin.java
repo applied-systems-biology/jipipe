@@ -39,7 +39,7 @@ import org.hkijena.jipipe.extensions.core.data.DefaultDataDisplayOperation;
 import org.hkijena.jipipe.extensions.core.data.OpenContainingFolderDataImportOperation;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
@@ -140,7 +140,7 @@ public class CorePlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Data annotation merge strategy",
                 "Determines how data annotations are merged.");
         registerEnumParameterType("theme",
-                JIPipeUITheme.class,
+                JIPipeDesktopUITheme.class,
                 "Theme",
                 "A theme for the JIPipe GUI");
         registerEnumParameterType("jipipe:graph-run-partition-inherited-boolean",

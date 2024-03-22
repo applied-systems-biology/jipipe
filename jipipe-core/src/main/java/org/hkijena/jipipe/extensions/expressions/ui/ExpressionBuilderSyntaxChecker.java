@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.expressions.ui;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.ui.components.DocumentChangeListener;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -47,7 +47,7 @@ public class ExpressionBuilderSyntaxChecker extends JPanel {
     }
 
     private void initialize() {
-        expressionEditor.getDocument().addDocumentListener(new DocumentChangeListener() {
+        expressionEditor.getDocument().addDocumentListener(new JIPipeDesktopDocumentChangeListener() {
             @Override
             public void changed(DocumentEvent documentEvent) {
                 updateStatus();

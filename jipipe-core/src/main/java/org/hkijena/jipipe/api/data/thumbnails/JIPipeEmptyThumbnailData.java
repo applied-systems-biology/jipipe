@@ -13,15 +13,15 @@
 
 package org.hkijena.jipipe.api.data.thumbnails;
 
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 
 import javax.swing.*;
 import java.awt.*;
@@ -36,6 +36,10 @@ public class JIPipeEmptyThumbnailData implements JIPipeThumbnailData {
 
     }
 
+    public static JIPipeEmptyThumbnailData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return new JIPipeEmptyThumbnailData();
+    }
+
     @Override
     public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
 
@@ -47,7 +51,7 @@ public class JIPipeEmptyThumbnailData implements JIPipeThumbnailData {
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
+    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
 
     }
 
@@ -69,9 +73,5 @@ public class JIPipeEmptyThumbnailData implements JIPipeThumbnailData {
     @Override
     public int getHeight() {
         return 0;
-    }
-
-    public static JIPipeEmptyThumbnailData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        return new JIPipeEmptyThumbnailData();
     }
 }

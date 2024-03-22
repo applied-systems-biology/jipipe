@@ -15,8 +15,8 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.compat;
 
 import ij.ImagePlus;
 import ij.WindowManager;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.compat.ImageJDataExporter;
 import org.hkijena.jipipe.api.compat.ImageJExportParameters;
 import org.hkijena.jipipe.api.data.JIPipeData;

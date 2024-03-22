@@ -13,7 +13,9 @@
 
 package org.hkijena.jipipe.api.parameters;
 
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.lang.annotation.ElementType;
@@ -22,10 +24,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An additional action (usually UI action) that is attached to the {@link org.hkijena.jipipe.ui.parameters.ParameterPanel}.
+ * An additional action (usually UI action) that is attached to the {@link JIPipeDesktopParameterPanel}.
  * Annotate a method with this annotation to make it accessible to the UI.
  * Use {@link SetJIPipeDocumentation} to add additional information.
- * The method should take a {@link org.hkijena.jipipe.ui.JIPipeWorkbench} instance as parameter
+ * The method should take a {@link JIPipeWorkbench} instance as parameter
  * <p>
  * JIPipe 1.74.0: Info - If you intend to create examples for your nodes, create a node template, export it into the plugin resources, and register the resource folder as example directory. We do not recommend anymore to utilize context actions as way to distribute examples.
  */

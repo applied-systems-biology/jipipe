@@ -16,9 +16,9 @@ package org.hkijena.jipipe.api.nodes;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeFunctionallyComparable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
@@ -48,11 +48,11 @@ import java.util.Objects;
  * Please prefer to use this class or its derivatives if you write your algorithms.
  */
 public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
+    private final JIPipeCustomExpressionVariablesParameter customExpressionVariables;
     private boolean enabled = true;
     private boolean skipped = false;
     private boolean passThrough = false;
     private RuntimePartitionReferenceParameter runtimePartition = new RuntimePartitionReferenceParameter();
-    private final JIPipeCustomExpressionVariablesParameter customExpressionVariables;
 
     /**
      * Initializes a new node type instance and sets a custom slot configuration
@@ -108,7 +108,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
     /**
      * Runs the pass through. Override this for custom implementations if you want
      *
-     * @param runContext the context of the running operation
+     * @param runContext   the context of the running operation
      * @param progressInfo the progress
      */
     protected void runPassThrough(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
@@ -149,6 +149,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
      * Used internally to mark an algorithm as (not) executed without triggering isFunctionallyEquals()
      * Affects {@link JIPipeGraph}'s getDeactivatedNodes
      * This is not serialized, but copied
+     *
      * @return if the node should be skipped in the next runs
      */
     public boolean isSkipped() {
@@ -159,6 +160,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
      * Used internally to mark an algorithm as (not) executed without triggering isFunctionallyEquals()
      * Affects {@link JIPipeGraph}'s getDeactivatedNodes
      * This is not serialized, but copied
+     *
      * @param skipped if the node should be skipped in the next runs
      */
     public void setSkipped(boolean skipped) {
@@ -213,9 +215,9 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
     protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
         super.onDeserialized(node, issues, notifications);
 
-        if(isEnableDefaultCustomExpressionVariables() && customExpressionVariables.getParameters().isEmpty()) {
+        if (isEnableDefaultCustomExpressionVariables() && customExpressionVariables.getParameters().isEmpty()) {
 
-            if("ij1-roi-filter-statistics".equals(getInfo().getId())) {
+            if ("ij1-roi-filter-statistics".equals(getInfo().getId())) {
                 System.out.println();
             }
 
@@ -237,7 +239,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
     }
 
     private void deserializeLegacyCustomExpressionVariables(JsonNode node, String jsonPropertyKey) throws IOException {
-        if(node.has(jsonPropertyKey)) {
+        if (node.has(jsonPropertyKey)) {
             JIPipeDynamicParameterCollection value = JsonUtils.getObjectMapper().readerFor(JIPipeCustomExpressionVariablesParameter.class).readValue(node.get(jsonPropertyKey));
             for (Map.Entry<String, JIPipeParameterAccess> entry : value.getParameters().entrySet()) {
                 customExpressionVariables.addParameter((JIPipeMutableParameterAccess) entry.getValue());
@@ -248,6 +250,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
 
     /**
      * Returns true if the default custom expression variables are shown in the UI
+     *
      * @return if the custom expression variables are shown in the UI
      */
     public boolean isEnableDefaultCustomExpressionVariables() {
@@ -259,7 +262,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
         if (ParameterUtils.isHiddenLocalParameter(tree, access, "jipipe:algorithm:enabled", "jipipe:algorithm:pass-through", "jipipe:algorithm:runtime-partition")) {
             return false;
         }
-        if(access.getSource() == this && "jipipe:algorithm:pass-through".equals(access.getKey()) && !canPassThrough()) {
+        if (access.getSource() == this && "jipipe:algorithm:pass-through".equals(access.getKey()) && !canPassThrough()) {
             return false;
         }
         return super.isParameterUIVisible(tree, access);
@@ -267,7 +270,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
-        if(subParameter == customExpressionVariables) {
+        if (subParameter == customExpressionVariables) {
             return isEnableDefaultCustomExpressionVariables();
         }
         return super.isParameterUIVisible(tree, subParameter);

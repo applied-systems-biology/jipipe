@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.core.data;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -30,7 +30,7 @@ public class OpenTextInJIPipeDataOperation implements JIPipeDataDisplayOperation
     }
 
     @Override
-    public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
+    public void display(JIPipeData data, String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
 
     }
 

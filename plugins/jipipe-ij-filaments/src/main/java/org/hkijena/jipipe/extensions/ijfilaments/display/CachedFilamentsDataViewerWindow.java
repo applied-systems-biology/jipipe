@@ -18,18 +18,18 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.BitDepth;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerCacheDataViewerWindow;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPlugin;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import java.util.List;
 import java.util.Map;
 
 public class CachedFilamentsDataViewerWindow extends JIPipeImageViewerCacheDataViewerWindow {
 
-    public CachedFilamentsDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
+    public CachedFilamentsDataViewerWindow(JIPipeDesktopWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
         super(workbench, dataSource, displayName);
     }
 

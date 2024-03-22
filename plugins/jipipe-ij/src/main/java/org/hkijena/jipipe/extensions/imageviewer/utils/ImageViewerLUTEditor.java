@@ -16,14 +16,14 @@ package org.hkijena.jipipe.extensions.imageviewer.utils;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.LUT;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPickEnumValueDialog;
+import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopColorIcon;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.LUTData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMap;
 import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMapEnumItemInfo;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.ui.components.PickEnumValueDialog;
-import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -45,7 +45,7 @@ import java.util.List;
 public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListener {
     private final JIPipeImageViewer imageViewerPanel;
     private final int targetChannel;
-    private final SolidColorIcon changeColorButtonDisplayedColor = new SolidColorIcon(16, 16);
+    private final SolidJIPipeDesktopColorIcon changeColorButtonDisplayedColor = new SolidJIPipeDesktopColorIcon(16, 16);
     private ColorMap lastColorMap = ColorMap.viridis;
     /**
      * The multi-thumb slider to use for the gradient stops
@@ -323,7 +323,7 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
     }
 
     private void pickColorsFromColorMap() {
-        Object selected = PickEnumValueDialog.showDialog(this, Arrays.asList(ColorMap.values()), new ColorMapEnumItemInfo(), lastColorMap, "Select LUT");
+        Object selected = JIPipeDesktopPickEnumValueDialog.showDialog(this, Arrays.asList(ColorMap.values()), new ColorMapEnumItemInfo(), lastColorMap, "Select LUT");
         if (selected instanceof ColorMap) {
             lastColorMap = (ColorMap) selected;
             importLUT(((ColorMap) selected).toLUT(), true);

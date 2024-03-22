@@ -219,7 +219,7 @@ public class OMEROGateway implements AutoCloseable {
         Map<String, TagAnnotationData> knownTags = getKnownTags(context);
         for (String tag : tags) {
             TagAnnotationData tagAnnotationData = knownTags.getOrDefault(tag, null);
-            if(tagAnnotationData == null) {
+            if (tagAnnotationData == null) {
                 tagAnnotationData = new TagAnnotationData(tag);
             }
             dataManagerFacility.attachAnnotation(context, tagAnnotationData, data);

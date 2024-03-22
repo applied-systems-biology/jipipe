@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.api.data.thumbnails;
 
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 
@@ -29,7 +29,8 @@ public interface JIPipeThumbnailData extends JIPipeData {
 
     /**
      * Creates a Swing component that represents the thumbnail
-     * @param width the requested width of the swing component
+     *
+     * @param width  the requested width of the swing component
      * @param height the requested height of the swing component
      * @return the component
      */
@@ -37,6 +38,7 @@ public interface JIPipeThumbnailData extends JIPipeData {
 
     /**
      * Returns true if the thumbnail data has a specific size
+     *
      * @return if the thumbnail data has a specific size
      */
     boolean hasSize();
@@ -44,6 +46,7 @@ public interface JIPipeThumbnailData extends JIPipeData {
     /**
      * The width if hasSize() is true
      * Otherwise, will return 0
+     *
      * @return the width or 0
      */
     int getWidth();
@@ -51,6 +54,7 @@ public interface JIPipeThumbnailData extends JIPipeData {
     /**
      * The height if hasSize() is true
      * Otherwise, will return 0
+     *
      * @return the height or 0
      */
     int getHeight();

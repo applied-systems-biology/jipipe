@@ -20,9 +20,9 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import org.apache.commons.io.FilenameUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -32,11 +32,14 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSingleIterationAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSingleIterationAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -155,11 +158,11 @@ public class IlastikObjectClassificationAlgorithm extends JIPipeSingleIterationA
             exportSources.add("Blockwise Object Predictions");
         if (outputParameters.outputBlockwiseObjectProbabilities)
             exportSources.add("Blockwise Object Probabilities");
-        if(outputParameters.outputPixelProbabilities)
+        if (outputParameters.outputPixelProbabilities)
             exportSources.add("Pixel Probabilities");
 
         // If the user only requests features
-        if(outputParameters.outputFeatures && exportSources.isEmpty()) {
+        if (outputParameters.outputFeatures && exportSources.isEmpty()) {
             exportSources.add("Object Predictions");
         }
 
@@ -181,8 +184,8 @@ public class IlastikObjectClassificationAlgorithm extends JIPipeSingleIterationA
             if (projectValidationMode != IlastikProjectValidationMode.Ignore) {
                 for (String projectType : PROJECT_TYPES) {
                     exportProgress.log("Checking if " + exportedPath + " supports project type '" + projectType + "'");
-                    if(!IlastikUtils.projectSupports(exportedPath, projectType)) {
-                        if(projectValidationMode == IlastikProjectValidationMode.CrashOnError) {
+                    if (!IlastikUtils.projectSupports(exportedPath, projectType)) {
+                        if (projectValidationMode == IlastikProjectValidationMode.CrashOnError) {
                             throw new JIPipeValidationRuntimeException(new GraphNodeValidationReportContext(this),
                                     new IllegalArgumentException("Project does not support '" + projectType + "'"),
                                     "Provided project is not supported by '" + getInfo().getName() + "'!",
@@ -233,7 +236,7 @@ public class IlastikObjectClassificationAlgorithm extends JIPipeSingleIterationA
                 args.add("--output_filename_format=" + modelResultPath + "/{result_type}__{nickname}.tiff");
                 args.add("--output_axis_order=" + axes);
                 args.add("--input_axes=" + axes);
-                if(modelIndex == 0 && outputParameters.outputFeatures) {
+                if (modelIndex == 0 && outputParameters.outputFeatures) {
                     // Special handling for the features table
                     args.add("--table_filename=" + modelResultPath + "/features__{nickname}.csv");
                 }
@@ -255,7 +258,7 @@ public class IlastikObjectClassificationAlgorithm extends JIPipeSingleIterationA
                     JIPipeDataContext newContext = JIPipeDataContext.create(this, exportedImageContexts.get(imageIndex), exportedModelContexts.get(modelIndex));
 
                     JIPipeDataSlot outputImageSlot = getOutputSlot(exportSource);
-                    if(outputImageSlot != null) {
+                    if (outputImageSlot != null) {
                         Path outputImagePath = modelResultPath.resolve(exportSource + "__" + FilenameUtils.removeExtension(inputImagePath.getFileName().toString()) + ".h5");
                         exportSourceProgress.log("Extracting result: " + outputImagePath);
 
@@ -273,7 +276,7 @@ public class IlastikObjectClassificationAlgorithm extends JIPipeSingleIterationA
                     }
 
                     // Extract features
-                    if(modelIndex == 0 && outputParameters.outputFeatures) {
+                    if (modelIndex == 0 && outputParameters.outputFeatures) {
                         Path tablePath = modelResultPath.resolve("features__" + inputImagePath.getFileName().toString() + ".csv");
                         exportSourceProgress.log("Extracting result: " + tablePath);
                         ResultsTableData tableData = ResultsTableData.fromCSV(tablePath);
@@ -374,6 +377,7 @@ public class IlastikObjectClassificationAlgorithm extends JIPipeSingleIterationA
         private boolean outputBlockwiseObjectProbabilities = false;
         private boolean outputPixelProbabilities = false;
         private boolean outputFeatures = false;
+
         public OutputParameters() {
         }
 

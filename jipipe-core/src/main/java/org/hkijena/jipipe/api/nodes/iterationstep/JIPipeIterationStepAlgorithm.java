@@ -45,10 +45,10 @@ public interface JIPipeIterationStepAlgorithm {
      * Generates data batches.
      * This is a dry-run function that should never throw errors
      *
-     * @deprecated use generateDataBatchesGenerationResult
      * @param slots        the data slots
      * @param progressInfo the progress
      * @return the batches
+     * @deprecated use generateDataBatchesGenerationResult
      */
     @Deprecated
     default List<JIPipeMultiIterationStep> generateDataBatchesDryRun(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {

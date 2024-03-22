@@ -262,7 +262,7 @@ public class JIPipeExpressionEvaluator extends ExpressionEvaluator {
                 }
                 continue;
             }
-            if(expressionEscape > 0 && c == '{') {
+            if (expressionEscape > 0 && c == '{') {
                 ++expressionEscape;
             }
             if (expressionEscape > 0 && c == '}') {
@@ -272,8 +272,7 @@ public class JIPipeExpressionEvaluator extends ExpressionEvaluator {
                     String escaped = "\"" + escapeString(buffer.toString()) + "\"";
                     tokens.add(escaped);
                     buffer.setLength(0);
-                }
-                else {
+                } else {
                     buffer.append(c);
                 }
                 continue;

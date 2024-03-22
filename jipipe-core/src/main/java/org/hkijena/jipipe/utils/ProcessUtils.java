@@ -17,11 +17,12 @@ import com.sun.jna.Pointer;
 import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.WinNT;
 import org.apache.commons.exec.*;
-import org.apache.commons.text.WordUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.apache.commons.text.WordUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
+import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.extensions.processes.ProcessEnvironment;
@@ -432,8 +433,8 @@ public class ProcessUtils {
     }
 
     /**
-     * A watchdog that monitors a sub-process of a {@link org.hkijena.jipipe.api.JIPipeRunnable}
-     * and watches for the {@link org.hkijena.jipipe.api.JIPipeRunnable} to be cancelled.
+     * A watchdog that monitors a sub-process of a {@link JIPipeRunnable}
+     * and watches for the {@link JIPipeRunnable} to be cancelled.
      * Based on {@link Watchdog}
      */
     public static class RunCancellationWatchdog implements Runnable {

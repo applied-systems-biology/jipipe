@@ -38,6 +38,7 @@ import java.util.Set;
 public class JIPipeGraphRunGCGraph extends DefaultDirectedGraph<Object, DefaultEdge> {
 
     private final GCEventEmitter gcEventEmitter = new GCEventEmitter();
+
     public JIPipeGraphRunGCGraph() {
         super(DefaultEdge.class);
     }
@@ -64,7 +65,7 @@ public class JIPipeGraphRunGCGraph extends DefaultDirectedGraph<Object, DefaultE
                 // Inputs
                 for (JIPipeGraphEdge graphEdge : graph.getGraph().incomingEdgesOf(inputSlot)) {
                     JIPipeDataSlot edgeSource = graph.getGraph().getEdgeSource(graphEdge);
-                    if(containsVertex(edgeSource)) {
+                    if (containsVertex(edgeSource)) {
                         addEdge(edgeSource, inputSlot);
                     }
                 }
@@ -82,34 +83,33 @@ public class JIPipeGraphRunGCGraph extends DefaultDirectedGraph<Object, DefaultE
 
     /**
      * Removes a connection from the targeted output slot to the input, which will free up the output slot at some point
-     * @param outputSlot the output slot
-     * @param inputSlot the input slot
+     *
+     * @param outputSlot   the output slot
+     * @param inputSlot    the input slot
      * @param progressInfo the progress info
      */
     public void removeOutputToInputEdge(JIPipeDataSlot outputSlot, JIPipeInputDataSlot inputSlot, JIPipeProgressInfo progressInfo) {
-        if(containsEdge(outputSlot, inputSlot)) {
+        if (containsEdge(outputSlot, inputSlot)) {
             removeEdge(outputSlot, inputSlot);
             progressInfo.log("Removed O-I edge " + outputSlot.getDisplayName() + " >>> " + inputSlot.getDisplayName());
             gc(progressInfo);
-        }
-        else {
+        } else {
             progressInfo.log("[!] Unable to remove non-existing O-I edge " + outputSlot.getDisplayName() + " >>> " + inputSlot.getDisplayName());
         }
     }
 
     public void removeNodeToOutputEdge(JIPipeOutputDataSlot outputDataSlot, JIPipeProgressInfo progressInfo) {
-        if(containsEdge(outputDataSlot.getNode(), outputDataSlot)) {
+        if (containsEdge(outputDataSlot.getNode(), outputDataSlot)) {
             removeEdge(outputDataSlot.getNode(), outputDataSlot);
             progressInfo.log("Removed N-O edge " + outputDataSlot.getNode().getDisplayName() + " >>> " + outputDataSlot.getDisplayName());
             gc(progressInfo);
-        }
-        else {
+        } else {
             progressInfo.log("[!] Unable to remove non-existing N-O edge " + outputDataSlot.getNode().getDisplayName() + " >>> " + outputDataSlot.getDisplayName());
         }
     }
 
     public void removeInputToNodeEdge(JIPipeAlgorithm algorithm, JIPipeProgressInfo progressInfo) {
-        if(containsVertex(algorithm)) {
+        if (containsVertex(algorithm)) {
             for (JIPipeInputDataSlot inputSlot : algorithm.getInputSlots()) {
                 if (containsEdge(inputSlot, algorithm)) {
                     removeEdge(inputSlot, algorithm);
@@ -119,8 +119,7 @@ public class JIPipeGraphRunGCGraph extends DefaultDirectedGraph<Object, DefaultE
                 }
             }
             gc(progressInfo);
-        }
-        else {
+        } else {
             progressInfo.log("[!] Unable to remove input edges from algorithm " + algorithm.getDisplayName());
         }
 
@@ -129,32 +128,28 @@ public class JIPipeGraphRunGCGraph extends DefaultDirectedGraph<Object, DefaultE
     public void gc(JIPipeProgressInfo progressInfo) {
         List<Object> toCleanup = new ArrayList<>();
         for (Object vertex : vertexSet()) {
-            if(degreeOf(vertex) == 0) {
+            if (degreeOf(vertex) == 0) {
                 toCleanup.add(vertex);
             }
         }
         for (Object vertex : toCleanup) {
-            if(vertex instanceof JIPipeGraphNode) {
+            if (vertex instanceof JIPipeGraphNode) {
                 progressInfo.log("-N Unregistering " + ((JIPipeGraphNode) vertex).getDisplayName());
                 removeVertex(vertex);
-            }
-            else if(vertex instanceof JIPipeInputDataSlot) {
+            } else if (vertex instanceof JIPipeInputDataSlot) {
                 progressInfo.log("-I Clearing " + ((JIPipeInputDataSlot) vertex).getDisplayName());
                 ((JIPipeInputDataSlot) vertex).clear();
                 removeVertex(vertex);
-            }
-            else if(vertex instanceof JIPipeOutputDataSlot) {
+            } else if (vertex instanceof JIPipeOutputDataSlot) {
                 progressInfo.log("-O Clearing " + ((JIPipeOutputDataSlot) vertex).getDisplayName());
                 removeVertex(vertex);
                 gcEventEmitter.emit(new GCEvent(this, (JIPipeOutputDataSlot) vertex));
-                if(!((JIPipeOutputDataSlot) vertex).isSkipGC()) {
+                if (!((JIPipeOutputDataSlot) vertex).isSkipGC()) {
                     ((JIPipeOutputDataSlot) vertex).clear();
-                }
-                else {
+                } else {
                     progressInfo.log("--> Clearing was prevented [skip GC]");
                 }
-            }
-            else {
+            } else {
                 progressInfo.log("-? [!] Unregistering UNKNOWN " + vertex);
                 removeVertex(vertex);
             }

@@ -18,13 +18,13 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
+import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
-import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -96,7 +96,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
      * @return the window
      */
     public static JFrame openAuthorInfoWindow(Component parent, Collection<JIPipeAuthorMetadata> authors, JIPipeAuthorMetadata targetAuthor) {
-        DocumentTabPane tabPane = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Top);
+        JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.TabPlacement.Top);
         for (JIPipeAuthorMetadata author : authors) {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("<h1>").append(HtmlEscapers.htmlEscaper().escape(author.toString())).append("</h1>");
@@ -125,8 +125,8 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
                 stringBuilder.append("<br/><br/>");
                 stringBuilder.append(author.getCustomText().getBody());
             }
-            MarkdownReader reader = new MarkdownReader(false, new MarkdownDocument(stringBuilder.toString()));
-            tabPane.addTab(author.toString(), UIUtils.getIconFromResources("actions/im-user.png"), reader, DocumentTabPane.CloseMode.withoutCloseButton);
+            JIPipeDesktopMarkdownReader reader = new JIPipeDesktopMarkdownReader(false, new MarkdownText(stringBuilder.toString()));
+            tabPane.addTab(author.toString(), UIUtils.getIconFromResources("actions/im-user.png"), reader, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
             if (author == targetAuthor) {
                 tabPane.switchToLastTab();
             }

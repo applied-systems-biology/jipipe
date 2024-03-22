@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.utils.JIPipeSerializedParameterCollectionData;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 
 @SetJIPipeDocumentation(name = "IJ2 Shape", description = "An ImageJ2 shape generator")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "This is a generic data type. The storage folder is empty.",
@@ -27,7 +27,7 @@ public abstract class ImageJ2ShapeData extends JIPipeSerializedParameterCollecti
 
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
+    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
         // TODO implement
     }
 

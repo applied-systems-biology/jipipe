@@ -19,15 +19,16 @@ import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.database.*;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
-import org.hkijena.jipipe.ui.components.renderers.JIPipeNodeDatabaseEntryListCellRenderer;
-import org.hkijena.jipipe.ui.components.search.SearchTextField;
-import org.hkijena.jipipe.ui.components.window.AlwaysOnTopToggle;
-import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
+import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
+import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopNodeDatabaseEntryListCellRenderer;
+import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
+import org.hkijena.jipipe.desktop.commons.components.window.JIPipeDesktopAlwaysOnTopToggle;
+import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -35,34 +36,29 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 
-public class NodeToolBox extends JIPipeWorkbenchPanel {
+public class NodeToolBox extends JIPipeDesktopWorkbenchPanel {
 
-    private final MarkdownReader documentationReader = new MarkdownReader(false);
+    private final JIPipeDesktopMarkdownReader documentationReader = new JIPipeDesktopMarkdownReader(false);
     private final JToolBar toolBar = new JToolBar();
     private final boolean isDocked;
-    private JList<JIPipeNodeDatabaseEntry> algorithmList;
-    private SearchTextField searchField;
     private final JIPipeNodeDatabase database;
-    private final JIPipeRunnerQueue queue = new JIPipeRunnerQueue("Node toolbox");
+    private final JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Node toolbox");
+    private JList<JIPipeNodeDatabaseEntry> algorithmList;
+    private JIPipeDesktopSearchTextField searchField;
 
-    public NodeToolBox(JIPipeWorkbench workbench, boolean isDocked) {
+    public NodeToolBox(JIPipeDesktopWorkbench workbench, boolean isDocked) {
         super(workbench);
         this.isDocked = isDocked;
-        this.database = workbench instanceof JIPipeProjectWorkbench ?
-                ((JIPipeProjectWorkbench) workbench).getNodeDatabase() : JIPipeNodeDatabase.getInstance();
+        this.database = workbench instanceof JIPipeDesktopProjectWorkbench ?
+                ((JIPipeDesktopProjectWorkbench) workbench).getNodeDatabase() : JIPipeNodeDatabase.getInstance();
         initialize();
         reloadAlgorithmList();
     }
 
-    private void reloadAlgorithmList() {
-        queue.cancelAll();
-        queue.enqueue(new ReloadListRun(this));
-    }
-
-    public static void openNewToolBoxWindow(JIPipeWorkbench workbench, Component parent) {
+    public static void openNewToolBoxWindow(JIPipeDesktopWorkbench workbench, Component parent) {
         NodeToolBox toolBox = new NodeToolBox(workbench, false);
         JFrame window = new JFrame();
-        toolBox.getToolBar().add(new AlwaysOnTopToggle(window));
+        toolBox.getToolBar().add(new JIPipeDesktopAlwaysOnTopToggle(window));
         window.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         window.setAlwaysOnTop(true);
         window.setTitle("Available nodes");
@@ -74,6 +70,11 @@ public class NodeToolBox extends JIPipeWorkbenchPanel {
         window.setVisible(true);
     }
 
+    private void reloadAlgorithmList() {
+        queue.cancelAll();
+        queue.enqueue(new ReloadListRun(this));
+    }
+
     public JToolBar getToolBar() {
         return toolBar;
     }
@@ -83,14 +84,14 @@ public class NodeToolBox extends JIPipeWorkbenchPanel {
 
         add(toolBar, BorderLayout.NORTH);
 
-        searchField = new SearchTextField();
+        searchField = new JIPipeDesktopSearchTextField();
         searchField.addActionListener(e -> reloadAlgorithmList());
         toolBar.add(searchField);
 
         if (isDocked) {
             JButton openWindowButton = new JButton(UIUtils.getIconFromResources("actions/open-in-new-window.png"));
             openWindowButton.setToolTipText("Open in new window");
-            openWindowButton.addActionListener(e -> openNewToolBoxWindow(getWorkbench(), SwingUtilities.getWindowAncestor(this)));
+            openWindowButton.addActionListener(e -> openNewToolBoxWindow(getDesktopWorkbench(), SwingUtilities.getWindowAncestor(this)));
             toolBar.add(openWindowButton);
         }
 
@@ -98,7 +99,7 @@ public class NodeToolBox extends JIPipeWorkbenchPanel {
         algorithmList.setToolTipText("Drag one or multiple entries from the list into the graph to create nodes.");
         algorithmList.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         algorithmList.setBorder(UIUtils.createControlBorder());
-        algorithmList.setCellRenderer(new JIPipeNodeDatabaseEntryListCellRenderer());
+        algorithmList.setCellRenderer(new JIPipeDesktopNodeDatabaseEntryListCellRenderer());
         algorithmList.setModel(new DefaultListModel<>());
         algorithmList.addListSelectionListener(e -> {
             if (algorithmList.getSelectedValue() instanceof CreateNewNodeByInfoDatabaseEntry) {
@@ -149,9 +150,9 @@ public class NodeToolBox extends JIPipeWorkbenchPanel {
             }
             builder.append("</table>\n\n");
 
-            documentationReader.setDocument(new MarkdownDocument(builder.toString()));
+            documentationReader.setDocument(new MarkdownText(builder.toString()));
         } else {
-            documentationReader.setDocument(new MarkdownDocument(""));
+            documentationReader.setDocument(new MarkdownText(""));
         }
     }
 
@@ -185,9 +186,9 @@ public class NodeToolBox extends JIPipeWorkbenchPanel {
             }
             builder.append("</table>\n\n");
 
-            documentationReader.setDocument(new MarkdownDocument(builder.toString()));
+            documentationReader.setDocument(new MarkdownText(builder.toString()));
         } else {
-            documentationReader.setDocument(new MarkdownDocument(""));
+            documentationReader.setDocument(new MarkdownText(""));
         }
     }
 

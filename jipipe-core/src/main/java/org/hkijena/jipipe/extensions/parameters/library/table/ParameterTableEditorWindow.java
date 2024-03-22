@@ -16,19 +16,19 @@ package org.hkijena.jipipe.extensions.parameters.library.table;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.parameters.*;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.AddParameterDialog;
-import org.hkijena.jipipe.ui.components.FlexContentPanel;
-import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.components.ParameterTreeUI;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.ribbon.LargeButtonAction;
-import org.hkijena.jipipe.ui.components.ribbon.Ribbon;
-import org.hkijena.jipipe.ui.components.ribbon.SmallButtonAction;
-import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
-import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
-import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopAddParameterDialog;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFlexContentPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterTreeUI;
+import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeButtonRibbonAction;
+import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
+import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
+import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 
 public class ParameterTableEditorWindow extends JFrame {
     private static final Map<ParameterTable, ParameterTableEditorWindow> OPEN_WINDOWS = new HashMap<>();
-    private final JIPipeWorkbench workbench;
+    private final JIPipeDesktopWorkbench desktopWorkbench;
     private final JIPipeParameterAccess parameterAccess;
     private final ParameterTable parameterTable;
     private final JLabel emptyColumnsLabel = new JLabel("<html><strong>This table has no columns</strong><br/>Import a parameter type from an existing node or define a new column.</html>",
@@ -51,10 +51,10 @@ public class ParameterTableEditorWindow extends JFrame {
     private final JLabel emptyRowsLabel = new JLabel("<html><strong>This table has no rows</strong><br/>Click the 'Add' button insert rows.</html>",
             UIUtils.getIcon32FromResources("info.png"), JLabel.LEFT);
     private JXTable table;
-    private FormPanel palettePanel;
+    private JIPipeDesktopFormPanel palettePanel;
 
-    private ParameterTableEditorWindow(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess, ParameterTable parameterTable) {
-        this.workbench = workbench;
+    private ParameterTableEditorWindow(JIPipeDesktopWorkbench desktopWorkbench, JIPipeParameterAccess parameterAccess, ParameterTable parameterTable) {
+        this.desktopWorkbench = desktopWorkbench;
         this.parameterAccess = parameterAccess;
         this.parameterTable = parameterTable;
         setIconImage(UIUtils.getJIPipeIcon128());
@@ -69,7 +69,7 @@ public class ParameterTableEditorWindow extends JFrame {
         reload();
     }
 
-    public static ParameterTableEditorWindow getInstance(JIPipeWorkbench workbench, Component parent, JIPipeParameterAccess parameterAccess, ParameterTable parameterTable) {
+    public static ParameterTableEditorWindow getInstance(JIPipeDesktopWorkbench workbench, Component parent, JIPipeParameterAccess parameterAccess, ParameterTable parameterTable) {
         ParameterTableEditorWindow window = OPEN_WINDOWS.getOrDefault(parameterTable, null);
         if (window == null) {
             window = new ParameterTableEditorWindow(workbench, parameterAccess, parameterTable);
@@ -92,13 +92,13 @@ public class ParameterTableEditorWindow extends JFrame {
 
     private void initialize() {
         getContentPane().setLayout(new BorderLayout());
-        FlexContentPanel contentPanel = new FlexContentPanel();
+        JIPipeDesktopFlexContentPanel contentPanel = new JIPipeDesktopFlexContentPanel();
         getContentPane().add(contentPanel, BorderLayout.CENTER);
 
         // Create palette panel and add to sidebar
-        palettePanel = new FormPanel(MarkdownDocument.fromPluginResource("documentation/documentation-parameter-table.md", new HashMap<>()),
-                FormPanel.WITH_DOCUMENTATION | FormPanel.WITH_SCROLLING | FormPanel.DOCUMENTATION_BELOW);
-        contentPanel.getSideBar().addTab("Edit value", UIUtils.getIconFromResources("actions/edit.png"), palettePanel, DocumentTabPane.CloseMode.withoutCloseButton);
+        palettePanel = new JIPipeDesktopFormPanel(MarkdownText.fromPluginResource("documentation/documentation-parameter-table.md", new HashMap<>()),
+                JIPipeDesktopFormPanel.WITH_DOCUMENTATION | JIPipeDesktopFormPanel.WITH_SCROLLING | JIPipeDesktopFormPanel.DOCUMENTATION_BELOW);
+        contentPanel.getSideBar().addTab("Edit value", UIUtils.getIconFromResources("actions/edit.png"), palettePanel, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
 
         // Init info labels
         emptyRowsLabel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
@@ -120,25 +120,25 @@ public class ParameterTableEditorWindow extends JFrame {
         initializeRibbon(contentPanel.getRibbon());
     }
 
-    private void initializeRibbon(Ribbon ribbon) {
-        Ribbon.Task tableTask = ribbon.addTask("Table");
-        Ribbon.Band selectBand = tableTask.addBand("Select");
-        Ribbon.Band columnBand = tableTask.addBand("Parameter types (columns)");
-        Ribbon.Band rowBand = tableTask.addBand("Parameter sets (rows)");
+    private void initializeRibbon(JIPipeDesktopRibbon ribbon) {
+        JIPipeDesktopRibbon.Task tableTask = ribbon.addTask("Table");
+        JIPipeDesktopRibbon.Band selectBand = tableTask.addBand("Select");
+        JIPipeDesktopRibbon.Band columnBand = tableTask.addBand("Parameter types (columns)");
+        JIPipeDesktopRibbon.Band rowBand = tableTask.addBand("Parameter sets (rows)");
 
         // Select
-        selectBand.add(new LargeButtonAction("Whole column", "Selects the whole column", UIUtils.getIcon32FromResources("actions/stock_select-column.png"), this::selectWholeColumn));
-        selectBand.add(new LargeButtonAction("Whole row", "Selects the whole row", UIUtils.getIcon32FromResources("actions/stock_select-row.png"), this::selectWholeRow));
+        selectBand.add(new JIPipeDesktopLargeButtonRibbonAction("Whole column", "Selects the whole column", UIUtils.getIcon32FromResources("actions/stock_select-column.png"), this::selectWholeColumn));
+        selectBand.add(new JIPipeDesktopLargeButtonRibbonAction("Whole row", "Selects the whole row", UIUtils.getIcon32FromResources("actions/stock_select-row.png"), this::selectWholeRow));
 
         // Columns
-        columnBand.add(new LargeButtonAction("Import from node", "Imports a parameter setting from an existing node", UIUtils.getIcon32FromResources("actions/gtk-color-picker.png"), this::importColumnFromAlgorithm));
-        columnBand.add(new SmallButtonAction("Define ...", "Defines a parameter type from scratch", UIUtils.getIconFromResources("actions/add.png"), this::addCustomColumn));
-        columnBand.add(new SmallButtonAction("Delete", "Deletes the selected columns", UIUtils.getIconFromResources("actions/delete.png"), this::removeSelectedColumns));
+        columnBand.add(new JIPipeDesktopLargeButtonRibbonAction("Import from node", "Imports a parameter setting from an existing node", UIUtils.getIcon32FromResources("actions/gtk-color-picker.png"), this::importColumnFromAlgorithm));
+        columnBand.add(new JIPipeDesktopSmallButtonRibbonAction("Define ...", "Defines a parameter type from scratch", UIUtils.getIconFromResources("actions/add.png"), this::addCustomColumn));
+        columnBand.add(new JIPipeDesktopSmallButtonRibbonAction("Delete", "Deletes the selected columns", UIUtils.getIconFromResources("actions/delete.png"), this::removeSelectedColumns));
 
         // Rows
-        rowBand.add(new LargeButtonAction("Add", "Adds a new parameter set/row into the table", UIUtils.getIcon32FromResources("actions/add.png"), this::addRow));
+        rowBand.add(new JIPipeDesktopLargeButtonRibbonAction("Add", "Adds a new parameter set/row into the table", UIUtils.getIcon32FromResources("actions/add.png"), this::addRow));
         {
-            LargeButtonAction action = new LargeButtonAction("Generate", "Generates new rows", UIUtils.getIcon32FromResources("actions/insert-math-expression.png"));
+            JIPipeDesktopLargeButtonRibbonAction action = new JIPipeDesktopLargeButtonRibbonAction("Generate", "Generates new rows", UIUtils.getIcon32FromResources("actions/insert-math-expression.png"));
             JPopupMenu menu = new JPopupMenu();
             UIUtils.addReloadablePopupMenuToButton(action.getButton(), menu, () -> {
                 int[] selectedColumns = getSelectedColumns(true);
@@ -147,7 +147,7 @@ public class ParameterTableEditorWindow extends JFrame {
             rowBand.add(action);
         }
         {
-            SmallButtonAction action = new SmallButtonAction("Replace", "Replaces the selected values by generated values", UIUtils.getIconFromResources("actions/edit.png"));
+            JIPipeDesktopSmallButtonRibbonAction action = new JIPipeDesktopSmallButtonRibbonAction("Replace", "Replaces the selected values by generated values", UIUtils.getIconFromResources("actions/edit.png"));
             JPopupMenu menu = new JPopupMenu();
             UIUtils.addReloadablePopupMenuToButton(action.getButton(), menu, () -> {
                 menu.removeAll();
@@ -158,7 +158,7 @@ public class ParameterTableEditorWindow extends JFrame {
             });
             rowBand.add(action);
         }
-        rowBand.add(new SmallButtonAction("Delete", "Deletes the selected rows", UIUtils.getIconFromResources("actions/delete.png"), this::removeSelectedRows));
+        rowBand.add(new JIPipeDesktopSmallButtonRibbonAction("Delete", "Deletes the selected rows", UIUtils.getIconFromResources("actions/delete.png"), this::removeSelectedRows));
 
         ribbon.rebuildRibbon();
     }
@@ -187,8 +187,8 @@ public class ParameterTableEditorWindow extends JFrame {
                     palettePanel.addGroupHeader("Edit parameter", UIUtils.getIconFromResources("actions/document-edit.png"));
                     ParameterTableCellAccess access = new ParameterTableCellAccess(getParameterAccess(), parameterTable,
                             selectedRows[0], selectedColumns[0]);
-                    JIPipeParameterEditorUI editor = JIPipe.getParameterTypes().createEditorFor(getWorkbench(), new JIPipeParameterTree(access), access);
-                    palettePanel.addWideToForm(editor, ParameterPanel.generateParameterDocumentation(access, null));
+                    JIPipeDesktopParameterEditorUI editor = JIPipe.getParameterTypes().createEditorFor(getDesktopWorkbench(), new JIPipeParameterTree(access), access);
+                    palettePanel.addWideToForm(editor, JIPipeDesktopParameterPanel.generateParameterDocumentation(access, null));
                 } else {
                     palettePanel.addGroupHeader("Edit multiple parameters", UIUtils.getIconFromResources("actions/document-edit.png"));
                     List<JIPipeParameterAccess> accessList = new ArrayList<>();
@@ -197,15 +197,15 @@ public class ParameterTableEditorWindow extends JFrame {
                                 row, selectedColumns[0]));
                     }
                     JIPipeMultiParameterAccess multiParameterAccess = new JIPipeMultiParameterAccess(accessList);
-                    JIPipeParameterEditorUI editor = JIPipe.getParameterTypes().createEditorFor(getWorkbench(), new JIPipeParameterTree(multiParameterAccess), multiParameterAccess);
-                    palettePanel.addWideToForm(editor, ParameterPanel.generateParameterDocumentation(multiParameterAccess, null));
+                    JIPipeDesktopParameterEditorUI editor = JIPipe.getParameterTypes().createEditorFor(getDesktopWorkbench(), new JIPipeParameterTree(multiParameterAccess), multiParameterAccess);
+                    palettePanel.addWideToForm(editor, JIPipeDesktopParameterPanel.generateParameterDocumentation(multiParameterAccess, null));
                 }
 
                 JTextField keyInfo = UIUtils.makeReadonlyBorderlessTextField(parameterTable.getColumnInfo(selectedColumns[0]).getKey());
                 keyInfo.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
                 JLabel keyInfoLabel = new JLabel("Will be written into");
                 keyInfoLabel.setIcon(UIUtils.getIconFromResources("actions/dialog-xml-editor.png"));
-                palettePanel.addToForm(keyInfo, keyInfoLabel, new MarkdownDocument(String.format("This column will have the unique ID <code>%s</code> " +
+                palettePanel.addToForm(keyInfo, keyInfoLabel, new MarkdownText(String.format("This column will have the unique ID <code>%s</code> " +
                                 "and will replace the parameter of given identifier if used in a parameter input slot.",
                         parameterTable.getColumnInfo(selectedColumns[0]).getKey())));
             }
@@ -266,7 +266,7 @@ public class ParameterTableEditorWindow extends JFrame {
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
-        List<?> generatedObjects = generator.generate(getWorkbench(), this, parameterTable.getColumnInfo(columnIndex).getFieldClass());
+        List<?> generatedObjects = generator.generate(getDesktopWorkbench(), this, parameterTable.getColumnInfo(columnIndex).getFieldClass());
         if (generatedObjects != null) {
             if (generatedObjects.isEmpty()) {
                 JOptionPane.showMessageDialog(this,
@@ -318,7 +318,7 @@ public class ParameterTableEditorWindow extends JFrame {
     }
 
     private void generateNewRows(int columnIndex, JIPipeParameterGenerator generator) {
-        List<?> generatedObjects = generator.generate(getWorkbench(), this, parameterTable.getColumnInfo(columnIndex).getFieldClass());
+        List<?> generatedObjects = generator.generate(getDesktopWorkbench(), this, parameterTable.getColumnInfo(columnIndex).getFieldClass());
         if (generatedObjects != null) {
             if (generatedObjects.isEmpty()) {
                 JOptionPane.showMessageDialog(this,
@@ -336,11 +336,11 @@ public class ParameterTableEditorWindow extends JFrame {
     }
 
     private void importColumnFromAlgorithm() {
-        if (getWorkbench() instanceof JIPipeProjectWorkbench) {
-            JIPipeGraph graph = ((JIPipeProjectWorkbench) getWorkbench()).getProject().getGraph();
+        if (getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
+            JIPipeGraph graph = ((JIPipeDesktopProjectWorkbench) getDesktopWorkbench()).getProject().getGraph();
             JIPipeParameterTree globalTree = graph.getParameterTree(false, null);
 
-            List<Object> importedParameters = ParameterTreeUI.showPickerDialog(getWorkbench().getWindow(), globalTree, "Import parameter");
+            List<Object> importedParameters = JIPipeDesktopParameterTreeUI.showPickerDialog(getDesktopWorkbench().getWindow(), globalTree, "Import parameter");
             for (Object importedParameter : importedParameters) {
                 if (importedParameter instanceof JIPipeParameterAccess) {
                     JIPipeParameterTree.Node node = globalTree.getSourceNode(((JIPipeParameterAccess) importedParameter).getSource());
@@ -383,7 +383,7 @@ public class ParameterTableEditorWindow extends JFrame {
         JIPipeDynamicParameterCollection collection = new JIPipeDynamicParameterCollection();
         collection.setAllowedTypes(JIPipe.getParameterTypes()
                 .getRegisteredParameters().values().stream().map(JIPipeParameterTypeInfo::getFieldClass).collect(Collectors.toSet()));
-        AddParameterDialog.showDialog(workbench, this, collection);
+        JIPipeDesktopAddParameterDialog.showDialog(desktopWorkbench, this, collection);
         for (Map.Entry<String, JIPipeParameterAccess> entry : collection.getParameters().entrySet()) {
             if (parameterTable.containsColumn(entry.getKey()))
                 continue;
@@ -398,7 +398,7 @@ public class ParameterTableEditorWindow extends JFrame {
     }
 
     private void removeSelectedRows() {
-        if(JOptionPane.showConfirmDialog(this, "Do you really want to delete the selected ROW(S)?", "Delete row(s)", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+        if (JOptionPane.showConfirmDialog(this, "Do you really want to delete the selected ROW(S)?", "Delete row(s)", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             int[] selectedRows = getSelectedRows(true);
             table.setModel(new DefaultTableModel());
             for (int i = selectedRows.length - 1; i >= 0; --i) {
@@ -409,7 +409,7 @@ public class ParameterTableEditorWindow extends JFrame {
     }
 
     private void removeSelectedColumns() {
-        if(JOptionPane.showConfirmDialog(this, "Do you really want to delete the selected COLUMN(S)?\n" +
+        if (JOptionPane.showConfirmDialog(this, "Do you really want to delete the selected COLUMN(S)?\n" +
                 "All settings for the parameter will be gone!", "Delete column(s)", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             int[] selectedColumns = getSelectedColumns(true);
             table.setModel(new DefaultTableModel());
@@ -484,8 +484,8 @@ public class ParameterTableEditorWindow extends JFrame {
 //        currentPaletteGroup.add(Box.createVerticalStrut(8));
     }
 
-    private FormPanel.GroupHeaderPanel addPaletteGroup(String name, Icon icon) {
-        FormPanel.GroupHeaderPanel groupHeaderPanel = palettePanel.addGroupHeader(name, icon);
+    private JIPipeDesktopFormPanel.GroupHeaderPanel addPaletteGroup(String name, Icon icon) {
+        JIPipeDesktopFormPanel.GroupHeaderPanel groupHeaderPanel = palettePanel.addGroupHeader(name, icon);
 //        currentPaletteGroup = new JPanel(new GridLayout(5,2));
 //        currentPaletteGroup.setLayout(new ModifiedFlowLayout(FlowLayout.LEFT));
 //        currentPaletteGroup.setMinimumSize(new Dimension(50,50));
@@ -501,7 +501,7 @@ public class ParameterTableEditorWindow extends JFrame {
         return parameterAccess;
     }
 
-    public JIPipeWorkbench getWorkbench() {
-        return workbench;
+    public JIPipeDesktopWorkbench getDesktopWorkbench() {
+        return desktopWorkbench;
     }
 }

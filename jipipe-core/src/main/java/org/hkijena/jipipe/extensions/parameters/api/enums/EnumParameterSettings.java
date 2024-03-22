@@ -17,7 +17,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Settings for {@link EnumParameterEditorUI}
+ * Settings for {@link EnumDesktopParameterEditorUI}
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface EnumParameterSettings {
@@ -29,7 +29,7 @@ public @interface EnumParameterSettings {
     Class<? extends EnumItemInfo> itemInfo() default DefaultEnumItemInfo.class;
 
     /**
-     * If enabled, the {@link EnumParameterEditorUI} will display a button with the enum value that opens a window for searching
+     * If enabled, the {@link EnumDesktopParameterEditorUI} will display a button with the enum value that opens a window for searching
      *
      * @return if the enum items should be searchable
      */

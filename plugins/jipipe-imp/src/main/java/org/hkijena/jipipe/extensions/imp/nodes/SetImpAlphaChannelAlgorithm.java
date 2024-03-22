@@ -24,15 +24,12 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imp.datatypes.ImpImageData;
 import org.hkijena.jipipe.extensions.imp.utils.ImpImageDataBuilder;
 import org.hkijena.jipipe.extensions.imp.utils.ImpImageUtils;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
 
 import java.awt.image.BufferedImage;
-import java.util.HashMap;
-import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Set alpha channel from mask", description = "Sets the alpha channel of an IMP image from a mask")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "IMP")

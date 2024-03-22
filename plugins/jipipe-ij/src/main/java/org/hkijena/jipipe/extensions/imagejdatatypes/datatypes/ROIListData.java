@@ -31,9 +31,9 @@ import ij.plugin.filter.Filler;
 import ij.plugin.frame.RoiManager;
 import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.LabelAsJIPipeCommonData;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
@@ -45,6 +45,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedROIListDataViewerWindow;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.*;
@@ -52,7 +53,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatistic
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Margin;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -651,8 +651,8 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        CachedROIListDataViewerWindow window = new CachedROIListDataViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
+    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
+        CachedROIListDataViewerWindow window = new CachedROIListDataViewerWindow(desktopWorkbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
         window.reloadDisplayedData();
         window.setVisible(true);
     }

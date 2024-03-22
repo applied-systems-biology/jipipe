@@ -16,15 +16,18 @@ package org.hkijena.jipipe.extensions.imagej2;
 import net.imagej.ops.Op;
 import net.imagej.ops.OpInfo;
 import net.imagej.ops.OpService;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -133,8 +136,7 @@ public class ImageJ2OpNode extends JIPipeIteratingAlgorithm {
             if (getModuleNodeInfo().hasParameterDataOutputSlot()) {
                 iterationStep.addOutputData(getModuleNodeInfo().getOrCreateParameterDataOutputSlot().slotName(), moduleOutputParameters, progressInfo);
             }
-        }
-        finally {
+        } finally {
             for (Map.Entry<ModuleItem<?>, Object> entry : moduleItemDefaults.entrySet()) {
                 ModuleItem item = entry.getKey();
                 item.setValue(referenceModuleInstance, entry.getValue());

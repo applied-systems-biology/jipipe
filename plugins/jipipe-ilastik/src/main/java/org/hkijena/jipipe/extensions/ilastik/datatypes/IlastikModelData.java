@@ -14,19 +14,19 @@
 package org.hkijena.jipipe.extensions.ilastik.datatypes;
 
 import ij.IJ;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopGenericNotificationInboxUI;
 import org.hkijena.jipipe.extensions.ilastik.IlastikPlugin;
 import org.hkijena.jipipe.extensions.ilastik.IlastikSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.notifications.GenericNotificationInboxUI;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -46,6 +46,7 @@ public class IlastikModelData implements JIPipeData {
 
     private final byte[] data;
     private final String name;
+
     public IlastikModelData(Path file) {
         this.name = file.getFileName().toString();
         try {
@@ -67,7 +68,7 @@ public class IlastikModelData implements JIPipeData {
 
     public static IlastikModelData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         Path file = PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".ilp");
-        if(file == null) {
+        if (file == null) {
             throw new RuntimeException("Unable to find *.ilp file in " + storage.getFileSystemPath());
         }
         progressInfo.log("Importing *.ilp from " + file);
@@ -87,7 +88,7 @@ public class IlastikModelData implements JIPipeData {
         if (!forceName)
             name = this.name;
         try {
-            if(StringUtils.isNullOrEmpty(name))
+            if (StringUtils.isNullOrEmpty(name))
                 name = "project";
             Files.write(storage.getFileSystemPath().resolve(PathUtils.ensureExtension(Paths.get(name), ".ilp")), data);
         } catch (IOException e) {
@@ -101,34 +102,32 @@ public class IlastikModelData implements JIPipeData {
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        if(IlastikSettings.environmentSettingsAreValid()) {
+    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
+        if (IlastikSettings.environmentSettingsAreValid()) {
 
             // Export project to a tmp file
             Path outputFile = RuntimeSettings.generateTempFile("ilastik", ".ilp");
             try {
                 Files.write(outputFile, data, StandardOpenOption.CREATE);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 IJ.handleException(e);
             }
 
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             progressInfo.setLogToStdOut(true);
-            workbench.sendStatusBarText("Launching Ilastik ...");
+            desktopWorkbench.sendStatusBarText("Launching Ilastik ...");
             IlastikPlugin.runIlastik(null, Collections.singletonList(outputFile.toString()), progressInfo, true);
-        }
-        else {
+        } else {
             JIPipeNotificationInbox inbox = new JIPipeNotificationInbox();
             IlastikPlugin.createMissingIlastikNotificationIfNeeded(inbox);
-            GenericNotificationInboxUI ui = new GenericNotificationInboxUI(workbench, inbox);
+            JIPipeDesktopGenericNotificationInboxUI ui = new JIPipeDesktopGenericNotificationInboxUI(desktopWorkbench, inbox);
             JFrame dialog = new JFrame();
             dialog.setTitle("View Ilastik project");
             dialog.setContentPane(ui);
             dialog.setIconImage(UIUtils.getJIPipeIcon128());
             dialog.pack();
-            dialog.setSize(800,600);
-            dialog.setLocationRelativeTo(workbench.getWindow());
+            dialog.setSize(800, 600);
+            dialog.setLocationRelativeTo(desktopWorkbench.getWindow());
             dialog.setVisible(true);
         }
     }

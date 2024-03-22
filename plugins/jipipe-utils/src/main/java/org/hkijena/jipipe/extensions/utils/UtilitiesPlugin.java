@@ -20,7 +20,7 @@ import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
-import org.hkijena.jipipe.api.grouping.NodeGroup;
+import org.hkijena.jipipe.api.grouping.JIPipeNodeGroup;
 import org.hkijena.jipipe.api.nodes.infos.JIPipeJavaNodeInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.extensions.core.CorePlugin;
@@ -104,7 +104,7 @@ public class UtilitiesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("data-table-push-annotations", PushDataTableAnnotations.class, UIUtils.getIconURLFromResources("actions/document-import.png"));
 
         registerNodeType("io-interface", IOInterfaceAlgorithm.class, UIUtils.getIconURLFromResources("devices/knemo-wireless-transmit-receive.png"));
-        registerNodeType("node-group", NodeGroup.class, UIUtils.getIconURLFromResources("actions/object-group.png"));
+        registerNodeType("node-group", JIPipeNodeGroup.class, UIUtils.getIconURLFromResources("actions/object-group.png"));
         registerNodeType("converter", ConverterAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-refresh.png"));
         registerNodeType("sort-rows-by-annotation", SortRowsByAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("actions/sort-name.png"));
         registerNodeType("sort-rows-by-expression", SortRowsByExpressionAlgorithm.class, UIUtils.getIconURLFromResources("actions/sort-name.png"));

@@ -28,50 +28,10 @@ import java.util.Set;
 public interface JIPipeDataContext {
 
     /**
-     * Gets the ID of the context
-     * @return the ID
-     */
-    @JsonGetter("id")
-    String getId();
-
-    /**
-     * The ID of the creator of this context
-     * @return the source
-     */
-    @JsonSetter("source")
-    String getSource();
-
-    /**
-     * Gets the known predecessors
-     * @return the predecessors
-     */
-    @JsonGetter("predecessors")
-    Set<String> getPredecessors();
-
-    /**
-     * Returns a new context that contains the current one as predecessor
-     * @param source the unique source ID
-     * @return the new context
-     */
-    default JIPipeDataContext branch(String source) {
-        JIPipeMutableDataContext context = new JIPipeMutableDataContext(source);
-        context.addPredecessor(this);
-        return context;
-    }
-
-    /**
-     * Returns a new context that contains the current one as predecessor
-     * @param source the node as source
-     * @return the new context
-     */
-    default JIPipeDataContext branch(JIPipeGraphNode source) {
-        return branch(source.getUUIDInParentGraph().toString());
-    }
-
-    /**
      * Creates a new data context
-     * @param source the source
-     * @param predecessors  the predecessors
+     *
+     * @param source       the source
+     * @param predecessors the predecessors
      * @return the new context
      */
     static JIPipeDataContext create(String source, JIPipeDataContext... predecessors) {
@@ -84,8 +44,9 @@ public interface JIPipeDataContext {
 
     /**
      * Creates a new data context
-     * @param graphNode the source
-     * @param predecessors  the predecessors
+     *
+     * @param graphNode    the source
+     * @param predecessors the predecessors
      * @return the new context
      */
     static JIPipeDataContext create(JIPipeGraphNode graphNode, JIPipeDataContext... predecessors) {
@@ -94,6 +55,52 @@ public interface JIPipeDataContext {
             context.addPredecessor(predecessor);
         }
         return context;
+    }
+
+    /**
+     * Gets the ID of the context
+     *
+     * @return the ID
+     */
+    @JsonGetter("id")
+    String getId();
+
+    /**
+     * The ID of the creator of this context
+     *
+     * @return the source
+     */
+    @JsonSetter("source")
+    String getSource();
+
+    /**
+     * Gets the known predecessors
+     *
+     * @return the predecessors
+     */
+    @JsonGetter("predecessors")
+    Set<String> getPredecessors();
+
+    /**
+     * Returns a new context that contains the current one as predecessor
+     *
+     * @param source the unique source ID
+     * @return the new context
+     */
+    default JIPipeDataContext branch(String source) {
+        JIPipeMutableDataContext context = new JIPipeMutableDataContext(source);
+        context.addPredecessor(this);
+        return context;
+    }
+
+    /**
+     * Returns a new context that contains the current one as predecessor
+     *
+     * @param source the node as source
+     * @return the new context
+     */
+    default JIPipeDataContext branch(JIPipeGraphNode source) {
+        return branch(source.getUUIDInParentGraph().toString());
     }
 
 }

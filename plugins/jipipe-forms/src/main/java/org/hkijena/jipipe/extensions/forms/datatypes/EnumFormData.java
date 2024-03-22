@@ -16,8 +16,9 @@ package org.hkijena.jipipe.extensions.forms.datatypes;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
@@ -33,7 +34,6 @@ import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameter;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.DynamicStringEnumParameter;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;

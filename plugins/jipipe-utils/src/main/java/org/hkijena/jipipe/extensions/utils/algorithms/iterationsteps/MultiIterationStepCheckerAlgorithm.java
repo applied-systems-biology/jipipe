@@ -13,17 +13,17 @@
 
 package org.hkijena.jipipe.extensions.utils.algorithms.iterationsteps;
 
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeNodeAlias;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeIOSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.AddJIPipeNodeAlias;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
@@ -49,6 +49,7 @@ public class MultiIterationStepCheckerAlgorithm extends JIPipeMergingAlgorithm {
     private boolean keepOriginalAnnotations = true;
     private JIPipeExpressionParameter filter = new JIPipeExpressionParameter();
     private OptionalTextAnnotationNameParameter iterationStepIndexAnnotation = new OptionalTextAnnotationNameParameter("Iteration step", false);
+
     public MultiIterationStepCheckerAlgorithm(JIPipeNodeInfo info) {
         super(info, new JIPipeIOSlotConfiguration());
     }
@@ -67,7 +68,7 @@ public class MultiIterationStepCheckerAlgorithm extends JIPipeMergingAlgorithm {
             variables.putAnnotations(iterationStep.getMergedTextAnnotations());
             variables.set("iteration_step_index", iterationContext.getCurrentIterationStepIndex());
             variables.set("num_iteration_steps", iterationContext.getNumIterationSteps());
-            if(!filter.test(variables)) {
+            if (!filter.test(variables)) {
                 progressInfo.log("Iteration step filtered out. Skipping.");
                 return;
             }
@@ -76,10 +77,9 @@ public class MultiIterationStepCheckerAlgorithm extends JIPipeMergingAlgorithm {
             for (int row : iterationStep.getInputRows(inputSlot)) {
                 JIPipeData inputData = inputSlot.getData(row, JIPipeData.class, progressInfo);
                 List<JIPipeTextAnnotation> annotationList;
-                if(keepOriginalAnnotations) {
+                if (keepOriginalAnnotations) {
                     annotationList = new ArrayList<>(inputSlot.getTextAnnotations(row));
-                }
-                else {
+                } else {
                     annotationList = new ArrayList<>(iterationStep.getMergedTextAnnotations().values());
                 }
                 iterationStepIndexAnnotation.addAnnotationIfEnabled(annotationList, String.valueOf(iterationContext.getCurrentIterationStepIndex()));

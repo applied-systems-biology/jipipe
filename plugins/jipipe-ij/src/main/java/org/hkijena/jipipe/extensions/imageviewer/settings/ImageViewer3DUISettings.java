@@ -17,11 +17,11 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.Image3DRendererSettings;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 
 /**
- * All settings for {@link JIPipeGraphEditorUI}
+ * All settings for {@link JIPipeDesktopGraphEditorUI}
  */
 public class ImageViewer3DUISettings extends AbstractJIPipeParameterCollection {
 

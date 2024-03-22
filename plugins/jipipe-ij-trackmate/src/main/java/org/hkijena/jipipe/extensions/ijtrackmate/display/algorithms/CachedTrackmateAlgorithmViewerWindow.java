@@ -18,10 +18,10 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheDataViewerWindow;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotDetectorData;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotTrackerData;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.ui.swing.script.EditorPane;
 
@@ -31,13 +31,13 @@ import java.awt.*;
 /**
  * Cached viewer for
  */
-public class CachedTrackmateAlgorithmViewerWindow extends JIPipeCacheDataViewerWindow {
+public class CachedTrackmateAlgorithmViewerWindow extends JIPipeDesktopCacheDataViewerWindow {
 
     private JToolBar toolBar = new JToolBar();
     private EditorPane textArea;
     private JLabel errorLabel;
 
-    public CachedTrackmateAlgorithmViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoading) {
+    public CachedTrackmateAlgorithmViewerWindow(JIPipeDesktopWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoading) {
         super(workbench, dataSource, displayName);
         initialize();
         if (!deferLoading)

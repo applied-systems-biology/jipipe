@@ -16,12 +16,12 @@ package org.hkijena.jipipe.desktop;
 import net.imagej.ImageJ;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeGUICommand;
-import org.hkijena.jipipe.ui.JIPipeJsonExtensionWindow;
-import org.hkijena.jipipe.ui.JIPipeProjectWindow;
-import org.hkijena.jipipe.ui.events.WindowClosedEvent;
-import org.hkijena.jipipe.ui.events.WindowClosedEventListener;
-import org.hkijena.jipipe.ui.events.WindowOpenedEvent;
-import org.hkijena.jipipe.ui.events.WindowOpenedEventListener;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
+import org.hkijena.jipipe.desktop.commons.events.WindowClosedEvent;
+import org.hkijena.jipipe.desktop.commons.events.WindowClosedEventListener;
+import org.hkijena.jipipe.desktop.commons.events.WindowOpenedEvent;
+import org.hkijena.jipipe.desktop.commons.events.WindowOpenedEventListener;
+import org.hkijena.jipipe.desktop.jsonextensionbuilder.JIPipeDesktopJsonExtensionWindow;
 
 import javax.swing.*;
 
@@ -37,17 +37,17 @@ public class JIPipeDesktopMain {
 
     public static class WindowWatcher implements WindowOpenedEventListener, WindowClosedEventListener {
         public WindowWatcher() {
-            JIPipeProjectWindow.WINDOW_OPENED_EVENT_EMITTER.subscribe(this);
-            JIPipeProjectWindow.WINDOW_CLOSED_EVENT_EMITTER.subscribe(this);
-            JIPipeJsonExtensionWindow.WINDOW_OPENED_EVENT_EMITTER.subscribe(this);
-            JIPipeJsonExtensionWindow.WINDOW_CLOSED_EVENT_EMITTER.subscribe(this);
+            JIPipeDesktopProjectWindow.WINDOW_OPENED_EVENT_EMITTER.subscribe(this);
+            JIPipeDesktopProjectWindow.WINDOW_CLOSED_EVENT_EMITTER.subscribe(this);
+            JIPipeDesktopJsonExtensionWindow.WINDOW_OPENED_EVENT_EMITTER.subscribe(this);
+            JIPipeDesktopJsonExtensionWindow.WINDOW_CLOSED_EVENT_EMITTER.subscribe(this);
         }
 
         @Override
         public void onWindowClosed(WindowClosedEvent event) {
             int windowsOpen = 0;
-            windowsOpen += JIPipeProjectWindow.getOpenWindows().size();
-            windowsOpen += JIPipeJsonExtensionWindow.getOpenWindows().size();
+            windowsOpen += JIPipeDesktopProjectWindow.getOpenWindows().size();
+            windowsOpen += JIPipeDesktopJsonExtensionWindow.getOpenWindows().size();
 
             if (windowsOpen == 0 && !JIPipe.isRestarting()) {
                 JIPipe.exitLater(0);

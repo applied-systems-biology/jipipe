@@ -32,10 +32,52 @@ import java.util.stream.Collectors;
 
 public class HDF5DatasetEntryProvider implements DatasetEntryProvider {
     private final LogService logService;
-    static class InvalidAxisTagsException extends RuntimeException {}
 
     public HDF5DatasetEntryProvider(LogService logService) {
         this.logService = logService;
+    }
+
+    private static String makeVerboseName(String internalPath, HDF5DataSetInformation dsInfo) {
+        String shape = Arrays.stream(dsInfo.getDimensions())
+                .mapToObj(String::valueOf)
+                .collect(Collectors.joining(", "));
+
+        String dtype = Hdf5Utils.getTypeInfo(dsInfo);
+        return String.format("%s: (%s) %s", internalPath, shape, dtype);
+    }
+
+    private static String defaultAxisOrder(int rank) {
+        // Uses ilastik default axis order,
+        // see https://github.com/ilastik/ilastik/blob/a1bb868b0a8d43ac3c89e681cc89d43be9591ff7/lazyflow/utility/helpers.py#L107
+        switch (rank) {
+            case 5:
+                return "tzyxc";
+            case 4:
+                return "zyxc";
+            case 3:
+                return "zyx";
+            default:
+                return "yx";
+        }
+    }
+
+    private static String parseAxisTags(String jsonString) throws InvalidAxisTagsException {
+        try {
+            JSONObject axisObject = new JSONObject(jsonString);
+            JSONArray axesArray = axisObject.getJSONArray("axes");
+            StringBuilder axisTags = new StringBuilder();
+
+            for (int i = 0; i < axesArray.length(); i++) {
+                JSONObject axisEntry = axesArray.getJSONObject(i);
+                String axisTag = axisEntry.getString("key");
+
+                axisTags.append(axisTag);
+            }
+
+            return axisTags.toString();
+        } catch (JSONException e) {
+            throw new InvalidAxisTagsException();
+        }
     }
 
     @Override
@@ -66,30 +108,6 @@ public class HDF5DatasetEntryProvider implements DatasetEntryProvider {
         return new DatasetEntry(internalPath, dsRank, axisTags, makeVerboseName(internalPath, hdf5DatasetInfo));
     }
 
-    private static String makeVerboseName(String internalPath, HDF5DataSetInformation dsInfo) {
-        String shape = Arrays.stream(dsInfo.getDimensions())
-                .mapToObj(String::valueOf)
-                .collect(Collectors.joining(", "));
-
-        String dtype = Hdf5Utils.getTypeInfo(dsInfo);
-        return String.format("%s: (%s) %s", internalPath, shape, dtype);
-    }
-
-    private static String defaultAxisOrder(int rank) {
-        // Uses ilastik default axis order,
-        // see https://github.com/ilastik/ilastik/blob/a1bb868b0a8d43ac3c89e681cc89d43be9591ff7/lazyflow/utility/helpers.py#L107
-        switch (rank) {
-            case 5:
-                return "tzyxc";
-            case 4:
-                return "zyxc";
-            case 3:
-                return "zyx";
-            default:
-                return "yx";
-        }
-    }
-
     private List<DatasetEntry> findAvailableDatasets(String path, String intenalPath) {
         List<DatasetEntry> result = new ArrayList<>();
         logService.info("Trying to open: " + path);
@@ -116,23 +134,7 @@ public class HDF5DatasetEntryProvider implements DatasetEntryProvider {
         return result;
     }
 
-    private static String parseAxisTags(String jsonString) throws InvalidAxisTagsException {
-        try {
-            JSONObject axisObject = new JSONObject(jsonString);
-            JSONArray axesArray = axisObject.getJSONArray("axes");
-            StringBuilder axisTags = new StringBuilder();
-
-            for (int i = 0; i < axesArray.length(); i++) {
-                JSONObject axisEntry = axesArray.getJSONObject(i);
-                String axisTag = axisEntry.getString("key");
-
-                axisTags.append(axisTag);
-            }
-
-            return axisTags.toString();
-        } catch (JSONException e) {
-            throw new InvalidAxisTagsException();
-        }
+    static class InvalidAxisTagsException extends RuntimeException {
     }
 
 }

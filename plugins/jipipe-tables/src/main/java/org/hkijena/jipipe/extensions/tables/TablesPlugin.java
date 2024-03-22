@@ -54,11 +54,11 @@ import org.hkijena.jipipe.extensions.tables.nodes.transform.TableToHistogramAlgo
 import org.hkijena.jipipe.extensions.tables.nodes.transform.UnMeltTableAlgorithm;
 import org.hkijena.jipipe.extensions.tables.operations.converting.*;
 import org.hkijena.jipipe.extensions.tables.operations.integrating.*;
-import org.hkijena.jipipe.extensions.tables.parameters.ResultsTableDataParameterEditorUI;
+import org.hkijena.jipipe.extensions.tables.parameters.ResultsTableDataDesktopParameterEditorUI;
 import org.hkijena.jipipe.extensions.tables.parameters.collections.*;
 import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnConversionParameter;
+import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnGeneratorDesktopParameterEditorUI;
 import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnGeneratorParameter;
-import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnGeneratorParameterEditorUI;
 import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnIntegrationParameter;
 import org.hkijena.jipipe.extensions.tables.parameters.processors.*;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
@@ -126,7 +126,7 @@ public class TablesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         // Register generating data sources
         registerColumnSources();
-        registerMenuExtension(NewTableJIPipeMenuExtension.class);
+        registerMenuExtension(NewTableJIPipeDesktopMenuExtension.class);
         registerColumnOperations();
 
         registerParameters();
@@ -219,7 +219,7 @@ public class TablesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 p -> new TableColumnGeneratorParameter((TableColumnGeneratorParameter) p),
                 "Column generator",
                 "Defines a column generator",
-                TableColumnGeneratorParameterEditorUI.class);
+                TableColumnGeneratorDesktopParameterEditorUI.class);
         registerParameterType("results-table",
                 ResultsTableData.class,
                 ResultsTableDataList.class,
@@ -227,7 +227,7 @@ public class TablesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 null,
                 "Results table",
                 "A table",
-                ResultsTableDataParameterEditorUI.class);
+                ResultsTableDataDesktopParameterEditorUI.class);
 
         // Operators
         registerParameterType("integrating-table-column-operator", TableColumnIntegrationParameter.class, "Column integration operation", "Operation that integrates columns");

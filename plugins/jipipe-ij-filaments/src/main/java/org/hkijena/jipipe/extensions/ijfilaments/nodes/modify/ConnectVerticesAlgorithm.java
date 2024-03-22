@@ -15,13 +15,13 @@ package org.hkijena.jipipe.extensions.ijfilaments.nodes.modify;
 
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
@@ -60,6 +60,7 @@ import java.util.stream.Collectors;
 @AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", optional = true, create = true)
 public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
+    private final VertexMaskParameter vertexMask;
     private boolean connectAcrossC = false;
     private boolean connectAcrossT = false;
     private boolean requireDirection = false;
@@ -69,7 +70,6 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
     private JIPipeExpressionParameter scoringFunction = new JIPipeExpressionParameter("0");
     private OptionalIntegerParameter limitConnections = new OptionalIntegerParameter(false, 1);
     private boolean enforceEdgesWithinMask = true;
-    private final VertexMaskParameter vertexMask;
 
     public ConnectVerticesAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -279,7 +279,7 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
                 }
             }
 
-            if(requireDirection && !hasDirection) {
+            if (requireDirection && !hasDirection) {
                 continue;
             }
 
@@ -305,7 +305,7 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
                     if (!connectAcrossT && current.getNonSpatialLocation().getFrame() != other.getNonSpatialLocation().getFrame()) {
                         continue;
                     }
-                    if(progressInfo.isCancelled()) {
+                    if (progressInfo.isCancelled()) {
                         return;
                     }
 
@@ -346,7 +346,7 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
                         }
                     }
 
-                    if(progressInfo.isCancelled()) {
+                    if (progressInfo.isCancelled()) {
                         return;
                     }
 
@@ -420,7 +420,7 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
         Map<FilamentVertex, Integer> connectionCount = new HashMap<>();
         for (EdgeCandidate candidate : candidates.stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList())) {
 
-            if(progressInfo.isCancelled()) {
+            if (progressInfo.isCancelled()) {
                 return;
             }
 
@@ -437,7 +437,7 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
 
             // Connect
             FilamentEdge edge = outputData.addEdge(candidate.source, candidate.target);
-            if(edge != null) {
+            if (edge != null) {
                 if (newEdgeColor.isEnabled())
                     edge.setColor(newEdgeColor.getContent());
             }

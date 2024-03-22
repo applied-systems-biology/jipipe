@@ -13,15 +13,21 @@
 
 package org.hkijena.jipipe.extensions.ijfilaments.nodes.modify;
 
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.*;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
@@ -39,6 +45,7 @@ import java.util.Map;
 @AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
 public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
+    private final VertexMaskParameter vertexMask;
     private JIPipeExpressionParameter centroidX = new JIPipeExpressionParameter("default");
     private JIPipeExpressionParameter centroidY = new JIPipeExpressionParameter("default");
     private JIPipeExpressionParameter centroidZ = new JIPipeExpressionParameter("default");
@@ -49,8 +56,6 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
     private JIPipeExpressionParameter physicalSizeX = new JIPipeExpressionParameter("default");
     private JIPipeExpressionParameter physicalSizeY = new JIPipeExpressionParameter("default");
     private JIPipeExpressionParameter physicalSizeZ = new JIPipeExpressionParameter("default");
-
-    private final VertexMaskParameter vertexMask;
 
     public ChangeFilamentVertexPropertiesAlgorithm(JIPipeNodeInfo info) {
         super(info);

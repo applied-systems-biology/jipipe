@@ -17,27 +17,30 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import ij.IJ;
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSingleIterationAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSingleIterationAlgorithm;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.extensions.cellpose.CellposePlugin;
 import org.hkijena.jipipe.extensions.cellpose.CellposeModel;
+import org.hkijena.jipipe.extensions.cellpose.CellposePlugin;
 import org.hkijena.jipipe.extensions.cellpose.CellposeSettings;
 import org.hkijena.jipipe.extensions.cellpose.CellposeUtils;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellposeModelData;
@@ -48,8 +51,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.Imag
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -67,18 +70,18 @@ import java.util.stream.Collectors;
  */
 @SetJIPipeDocumentation(name = "Cellpose (Deprecated)", description =
         "Runs Cellpose on the input image. This node supports both segmentation in 3D and executing " +
-        "Cellpose for each 2D image plane. " +
-        "This node can generate a multitude of outputs, although only ROI is activated by default. " +
-        "Go to the 'Outputs' parameter section to enable the other outputs." +
-        "<ul>" +
-        "<li><b>Labels:</b> A grayscale image where each connected component is assigned a unique value. " +
-        "Please note that ImageJ will run into issues if too many objects are present and the labels are saved in int32. ImageJ would load them as float32.</li>" +
-        "<li><b>Flows:</b> An RGB image that indicates the flow of each pixel. Convert it to HSB to extract information.</li>" +
-        "<li><b>Probabilities:</b> An image indicating the probabilities for each pixel.</li>" +
-        "<li><b>Styles:</b> A vector summarizing each image.</li>" +
-        "<li><b>ROI:</b> ROI of the segmented areas.</li>" +
-        "</ul>" +
-        "Please note that you need to setup a valid Python environment with Cellpose installed. You can find the setting in Project &gt; Application settings &gt; Extensions &gt; Cellpose.")
+                "Cellpose for each 2D image plane. " +
+                "This node can generate a multitude of outputs, although only ROI is activated by default. " +
+                "Go to the 'Outputs' parameter section to enable the other outputs." +
+                "<ul>" +
+                "<li><b>Labels:</b> A grayscale image where each connected component is assigned a unique value. " +
+                "Please note that ImageJ will run into issues if too many objects are present and the labels are saved in int32. ImageJ would load them as float32.</li>" +
+                "<li><b>Flows:</b> An RGB image that indicates the flow of each pixel. Convert it to HSB to extract information.</li>" +
+                "<li><b>Probabilities:</b> An image indicating the probabilities for each pixel.</li>" +
+                "<li><b>Styles:</b> A vector summarizing each image.</li>" +
+                "<li><b>ROI:</b> ROI of the segmented areas.</li>" +
+                "</ul>" +
+                "Please note that you need to setup a valid Python environment with Cellpose installed. You can find the setting in Project &gt; Application settings &gt; Extensions &gt; Cellpose.")
 @AddJIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Labels")
 @AddJIPipeOutputSlot(value = ImagePlus3DColorRGBData.class, slotName = "Flows")
@@ -199,13 +202,13 @@ public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
             }
         }
     }
+
     @Override
     public void getExternalEnvironments(List<JIPipeEnvironment> target) {
         super.getExternalEnvironments(target);
-        if(overrideEnvironment.isEnabled()) {
+        if (overrideEnvironment.isEnabled()) {
             target.add(overrideEnvironment.getContent());
-        }
-        else {
+        } else {
             target.add(CellposeSettings.getInstance().getPythonEnvironment());
         }
     }

@@ -30,12 +30,12 @@ import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeImageThumbnailData;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedImagePlusDataViewerWindow;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imp.utils.ImpImageDataImageViewerCustomLoader;
 import org.hkijena.jipipe.extensions.imp.utils.ImpImageUtils;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -47,8 +47,8 @@ import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -88,14 +88,14 @@ public class ImpImageData implements JIPipeData {
             this.images.set(entry.getKey().zeroSliceIndexToOneStackIndex(numChannels, numSlices, numFrames) - 1, entry.getValue());
         }
 
-        if(images.size() != numSlices * numFrames * numChannels) {
+        if (images.size() != numSlices * numFrames * numChannels) {
             throw new IllegalArgumentException("Wrong hyperstack dimensions!");
         }
-        if(images.isEmpty()) {
+        if (images.isEmpty()) {
             throw new IllegalArgumentException("Empty image!");
         }
         for (BufferedImage image : this.images) {
-            if(image == null) {
+            if (image == null) {
                 throw new NullPointerException("Not all slice indices are present!");
             }
         }
@@ -133,10 +133,10 @@ public class ImpImageData implements JIPipeData {
         this.numChannels = numChannels;
         this.width = ImpImageUtils.findWidth(images);
         this.height = ImpImageUtils.findHeight(images);
-        if(images.size() != numSlices * numFrames * numChannels) {
+        if (images.size() != numSlices * numFrames * numChannels) {
             throw new IllegalArgumentException("Wrong hyperstack dimensions!");
         }
-        if(images.isEmpty()) {
+        if (images.isEmpty()) {
             throw new IllegalArgumentException("Empty image!");
         }
     }
@@ -151,6 +151,50 @@ public class ImpImageData implements JIPipeData {
         this.numSlices = other.numSlices;
         this.numFrames = other.numFrames;
         this.numChannels = other.numChannels;
+    }
+
+    public static ImpImageData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+
+        List<Path> targetFiles = PathUtils.findFilesByExtensionIn(storage.getFileSystemPath(), ".tif", ".tiff", ".png", ".jpg", ".jpeg", ".bmp");
+        if (targetFiles.isEmpty()) {
+            throw new JIPipeValidationRuntimeException(
+                    new FileNotFoundException("Unable to find file in location '" + storage + "'"),
+                    "Could not find a compatible image file in '" + storage + "'!",
+                    "JIPipe needs to load the image from a folder, but it could not find any matching file.",
+                    "Please contact the JIPipe developers about this issue.");
+        }
+
+        if (targetFiles.size() == 1) {
+            try {
+                return new ImpImageData(ImageIO.read(targetFiles.get(0).toFile()));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            Map<ImageSliceIndex, BufferedImage> imageMap = new HashMap<>();
+            Pattern p = Pattern.compile("\\d+");
+
+            for (Path targetFile : targetFiles) {
+                String fileName = targetFile.getFileName().toString();
+                String[] components = fileName.split("-");
+                String lastComponent = components[components.length - 1].split("\\.")[0];
+
+                List<Integer> coordinates = new ArrayList<>();
+                Matcher matcher = p.matcher(lastComponent);
+                while (matcher.find()) {
+                    coordinates.add(Integer.parseInt(matcher.group()));
+                }
+
+                try {
+                    BufferedImage image = ImageIO.read(targetFile.toFile());
+                    imageMap.put(new ImageSliceIndex(coordinates.get(0), coordinates.get(1), coordinates.get(2)), image);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            return new ImpImageData(imageMap);
+        }
+
     }
 
     public List<BufferedImage> getImages() {
@@ -171,7 +215,7 @@ public class ImpImageData implements JIPipeData {
 
     @Override
     public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
-        if(images.size() == 1) {
+        if (images.size() == 1) {
             String fileName = StringUtils.orElse(name, "image");
             Path outputPath = PathUtils.ensureExtension(storage.getFileSystemPath().resolve(fileName), ".png");
             try {
@@ -179,8 +223,7 @@ public class ImpImageData implements JIPipeData {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }
-        else {
+        } else {
             ImpImageUtils.forEachIndexedZCTSlice(this, (ip, index) -> {
                 String fileName = StringUtils.orElse(name, "image") + "-z" + index.getZ() + "c" + index.getC() + "t" + index.getT();
                 Path outputPath = PathUtils.ensureExtension(storage.getFileSystemPath().resolve(fileName), ".png");
@@ -207,8 +250,8 @@ public class ImpImageData implements JIPipeData {
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        CachedImagePlusDataViewerWindow window = new CachedImagePlusDataViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
+    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
+        CachedImagePlusDataViewerWindow window = new CachedImagePlusDataViewerWindow(desktopWorkbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
         window.setCustomDataLoader(new ImpImageDataImageViewerCustomLoader());
         window.setVisible(true);
         SwingUtilities.invokeLater(window::reloadDisplayedData);
@@ -226,51 +269,6 @@ public class ImpImageData implements JIPipeData {
         return new JIPipeImageThumbnailData(BufferedImageUtils.convertAlphaToCheckerboard(scaledInstance, 10));
     }
 
-    public static ImpImageData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-
-        List<Path> targetFiles = PathUtils.findFilesByExtensionIn(storage.getFileSystemPath(), ".tif", ".tiff", ".png", ".jpg", ".jpeg", ".bmp");
-        if (targetFiles.isEmpty()) {
-            throw new JIPipeValidationRuntimeException(
-                    new FileNotFoundException("Unable to find file in location '" + storage + "'"),
-                    "Could not find a compatible image file in '" + storage + "'!",
-                    "JIPipe needs to load the image from a folder, but it could not find any matching file.",
-                    "Please contact the JIPipe developers about this issue.");
-        }
-
-        if(targetFiles.size() == 1) {
-            try {
-                return new ImpImageData(ImageIO.read(targetFiles.get(0).toFile()));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        else {
-            Map<ImageSliceIndex, BufferedImage> imageMap = new HashMap<>();
-            Pattern p = Pattern.compile("\\d+");
-
-            for (Path targetFile : targetFiles) {
-                String fileName = targetFile.getFileName().toString();
-                String[] components = fileName.split("-");
-                String lastComponent= components[components.length - 1].split("\\.")[0];
-
-                List<Integer> coordinates = new ArrayList<>();
-                Matcher matcher = p.matcher(lastComponent);
-                while(matcher.find()) {
-                    coordinates.add(Integer.parseInt(matcher.group()));
-                }
-
-                try {
-                    BufferedImage image = ImageIO.read(targetFile.toFile());
-                    imageMap.put(new ImageSliceIndex(coordinates.get(0), coordinates.get(1), coordinates.get(2)), image);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            return new ImpImageData(imageMap);
-        }
-
-    }
-
     public ImageSliceIndex getSliceIndex(int index) {
         int t = index / (numChannels * numSlices);
         int z = (index / numChannels) % numSlices;
@@ -282,13 +280,12 @@ public class ImpImageData implements JIPipeData {
         ImageStack stack = new ImageStack(width, height, numChannels * numFrames * numSlices);
         for (int i = 0; i < images.size(); i++) {
             ColorProcessor processor;
-            if(createCheckerboard) {
+            if (createCheckerboard) {
                 processor = new ColorProcessor(BufferedImageUtils.convertAlphaToCheckerboard(images.get(i), 10));
-            }
-            else {
+            } else {
                 processor = new ColorProcessor(images.get(i));
             }
-            stack.setProcessor(processor,getSliceIndex(i).zeroSliceIndexToOneStackIndex(numChannels, numSlices, numFrames) );
+            stack.setProcessor(processor, getSliceIndex(i).zeroSliceIndexToOneStackIndex(numChannels, numSlices, numFrames));
         }
         return new ImagePlus("Image", stack);
     }
@@ -315,7 +312,7 @@ public class ImpImageData implements JIPipeData {
     }
 
     public BufferedImage getImageOrExpand(int c, int z, int t) {
-        return getImage(ImageJUtils.zeroSliceIndexToOneStackIndex(Math.min(c, numChannels -1),
+        return getImage(ImageJUtils.zeroSliceIndexToOneStackIndex(Math.min(c, numChannels - 1),
                 Math.min(z, numSlices - 1),
                 Math.min(t, numFrames - 1),
                 numChannels,

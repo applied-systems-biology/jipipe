@@ -13,21 +13,22 @@
 
 package org.hkijena.jipipe.extensions.python.installers;
 
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonEnvironmentType;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
-import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 
@@ -37,7 +38,7 @@ import java.nio.file.Paths;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @SetJIPipeDocumentation(name = "Select existing system Python ...", description = "Chooses an existing system Python (not a virtual environment)")
-public class SelectSystemPythonInstaller extends ExternalEnvironmentInstaller {
+public class SelectSystemPythonInstaller extends JIPipeExternalEnvironmentInstaller {
 
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private PythonEnvironment generatedEnvironment;
@@ -89,9 +90,9 @@ public class SelectSystemPythonInstaller extends ExternalEnvironmentInstaller {
         progressInfo.log("Waiting for user input ...");
         synchronized (lock) {
             SwingUtilities.invokeLater(() -> {
-                boolean result = ParameterPanel.showDialog(getWorkbench(), configuration, new MarkdownDocument("# System Python\n\n" +
+                boolean result = JIPipeDesktopParameterPanel.showDialog((JIPipeDesktopWorkbench) getWorkbench(), configuration, new MarkdownText("# System Python\n\n" +
                                 "Please choose the Python executable file and click OK."), "Select system Python",
-                        ParameterPanel.NO_GROUP_HEADERS | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING);
+                        JIPipeDesktopParameterPanel.NO_GROUP_HEADERS | JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterPanel.WITH_SCROLLING);
                 userCancelled.set(!result);
                 windowOpened.set(false);
                 synchronized (lock) {

@@ -18,20 +18,26 @@ import omero.gateway.SecurityContext;
 import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.model.ProjectData;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSingleIterationAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSingleIterationAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.extensions.expressions.*;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.omero.OMEROCredentialsEnvironment;
 import org.hkijena.jipipe.extensions.omero.OMEROSettings;
@@ -70,14 +76,13 @@ public class OMEROListProjectsAlgorithm extends JIPipeSingleIterationAlgorithm {
         progressInfo.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
 
         try (OMEROGateway gateway = new OMEROGateway(credentials, progressInfo)) {
-            if(getFirstInputSlot().getRowCount() > 0) {
+            if (getFirstInputSlot().getRowCount() > 0) {
                 for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
                     JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("OMERO group", row, getFirstInputSlot().getRowCount());
                     long groupId = getFirstInputSlot().getData(row, OMEROGroupReferenceData.class, rowProgress).getGroupId();
                     processGroupId(rowProgress, groupId, gateway, row, environment);
                 }
-            }
-            else {
+            } else {
                 JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("OMERO default group (" + gateway.getUser().getGroupId() + ")");
                 long groupId = gateway.getUser().getGroupId();
                 processGroupId(rowProgress, groupId, gateway, -1, environment);
@@ -90,14 +95,14 @@ public class OMEROListProjectsAlgorithm extends JIPipeSingleIterationAlgorithm {
         try {
             for (ProjectData project : gateway.getBrowseFacility().getProjects(context)) {
                 JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-                if(row >= 0) {
+                if (row >= 0) {
                     variables.putAnnotations(getFirstInputSlot().getTextAnnotations(row));
                 }
                 variables.put("name", project.getName());
                 variables.put("id", project.getId());
                 variables.put("kv_pairs", OMEROUtils.getKeyValuePairs(gateway.getMetadataFacility(), context, project));
                 variables.put("tags", new ArrayList<>(OMEROUtils.getTags(gateway.getMetadataFacility(), context, project)));
-                if(filters.test(variables)) {
+                if (filters.test(variables)) {
                     getFirstOutputSlot().addData(new OMEROProjectReferenceData(project, environment), JIPipeDataContext.create(this), progressInfo);
                 }
             }

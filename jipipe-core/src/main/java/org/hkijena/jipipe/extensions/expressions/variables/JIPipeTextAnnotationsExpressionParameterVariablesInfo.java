@@ -28,7 +28,7 @@ public class JIPipeTextAnnotationsExpressionParameterVariablesInfo implements Ex
     @Override
     public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         Map<UUID, Map<String, JIPipeDataTable>> predecessorNodeCache = ExpressionParameterVariablesInfo.findPredecessorNodeCache(parameterTree, parameterAccess);
-        if(!predecessorNodeCache.isEmpty()) {
+        if (!predecessorNodeCache.isEmpty()) {
             Set<JIPipeExpressionParameterVariableInfo> variables = new HashSet<>();
             variables.add(JIPipeExpressionParameterVariableInfo.ANNOTATIONS_VARIABLE);
             for (Map.Entry<UUID, Map<String, JIPipeDataTable>> uuidMapEntry : predecessorNodeCache.entrySet()) {
@@ -42,8 +42,7 @@ public class JIPipeTextAnnotationsExpressionParameterVariablesInfo implements Ex
             }
 
             return variables;
-        }
-        else {
+        } else {
             return Collections.singleton(JIPipeExpressionParameterVariableInfo.ANNOTATIONS_VARIABLE);
         }
     }

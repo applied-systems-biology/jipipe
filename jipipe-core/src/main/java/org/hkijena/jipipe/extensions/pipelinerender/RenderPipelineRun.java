@@ -17,18 +17,19 @@ import com.google.common.collect.ImmutableList;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.JIPipeRunnable;
+import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.history.JIPipeDummyGraphHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
-import org.hkijena.jipipe.ui.components.renderers.DropShadowRenderer;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDummyWorkbench;
+import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopDropShadowRenderer;
+import org.hkijena.jipipe.desktop.app.grapheditor.JIPipeGraphViewMode;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.ui.ScreenImage;
 
@@ -197,7 +198,7 @@ public class RenderPipelineRun implements JIPipeRunnable {
         int shadowSize = 5 * scaleFactor;
         int shadowShiftLeft = 3 * scaleFactor;
         int shadowShiftRight = 8 * scaleFactor;
-        DropShadowRenderer dropShadowRenderer = new DropShadowRenderer(Color.BLACK,
+        JIPipeDesktopDropShadowRenderer dropShadowRenderer = new JIPipeDesktopDropShadowRenderer(Color.BLACK,
                 5 * scaleFactor,
                 0.3f,
                 shadowSize,
@@ -380,12 +381,12 @@ public class RenderPipelineRun implements JIPipeRunnable {
     private void calculateCompartmentBounds(JIPipeGraph compartmentGraph, Map<UUID, Rectangle> compartmentBounds) {
         try {
             SwingUtilities.invokeAndWait(() -> {
-                JIPipeGraphCanvasUI canvasUI = new JIPipeGraphCanvasUI(new JIPipeDummyWorkbench(), null, compartmentGraph, null, new JIPipeDummyGraphHistoryJournal());
+                JIPipeDesktopGraphCanvasUI canvasUI = new JIPipeDesktopGraphCanvasUI(new JIPipeDesktopDummyWorkbench(), null, compartmentGraph, null, new JIPipeDummyGraphHistoryJournal());
                 canvasUI.setRenderCursor(false);
                 canvasUI.revalidate();
                 canvasUI.crop(false);
                 canvasUI.revalidate();
-                for (Map.Entry<JIPipeGraphNode, JIPipeGraphNodeUI> entry : canvasUI.getNodeUIs().entrySet()) {
+                for (Map.Entry<JIPipeGraphNode, JIPipeDesktopGraphNodeUI> entry : canvasUI.getNodeUIs().entrySet()) {
                     compartmentBounds.put(entry.getKey().getUUIDInParentGraph(), entry.getValue().getBounds());
                 }
             });
@@ -408,7 +409,7 @@ public class RenderPipelineRun implements JIPipeRunnable {
         BufferedImage[] result = new BufferedImage[1];
         try {
             SwingUtilities.invokeAndWait(() -> {
-                JIPipeGraphCanvasUI canvasUI = new JIPipeGraphCanvasUI(new JIPipeDummyWorkbench(), null, copyGraph, compartment, new JIPipeDummyGraphHistoryJournal());
+                JIPipeDesktopGraphCanvasUI canvasUI = new JIPipeDesktopGraphCanvasUI(new JIPipeDesktopDummyWorkbench(), null, copyGraph, compartment, new JIPipeDummyGraphHistoryJournal());
                 canvasUI.setRenderCursor(false);
                 canvasUI.setRenderOutsideEdges(false);
                 canvasUI.revalidate();

@@ -17,9 +17,9 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -57,12 +57,12 @@ public class LabelsToMaskAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 inputImage.getNChannels(),
                 inputImage.getNSlices(),
                 inputImage.getNFrames());
-        ImageJUtils.forEachIndexedZCTSlice(inputImage, (labelIp, index ) -> {
+        ImageJUtils.forEachIndexedZCTSlice(inputImage, (labelIp, index) -> {
             ImageProcessor maskIp = ImageJUtils.getSliceZero(outputImage, index);
             for (int y = 0; y < labelIp.getHeight(); y++) {
                 for (int x = 0; x < labelIp.getWidth(); x++) {
-                    if(labelIp.getf(x, y) > 0) {
-                        maskIp.setf(x,y, 255);
+                    if (labelIp.getf(x, y) > 0) {
+                        maskIp.setf(x, y, 255);
                     }
                 }
             }

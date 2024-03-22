@@ -14,23 +14,24 @@
 package org.hkijena.jipipe.extensions.python.installers;
 
 import org.apache.commons.lang3.SystemUtils;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionEvaluator;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonEnvironmentType;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
-import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 
@@ -40,7 +41,7 @@ import java.nio.file.Paths;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @SetJIPipeDocumentation(name = "Select existing Python virtual environment ...", description = "Chooses an existing Python virtual environment")
-public class SelectVirtualEnvPythonInstaller extends ExternalEnvironmentInstaller {
+public class SelectVirtualEnvPythonInstaller extends JIPipeExternalEnvironmentInstaller {
 
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private PythonEnvironment generatedEnvironment;
@@ -83,9 +84,9 @@ public class SelectVirtualEnvPythonInstaller extends ExternalEnvironmentInstalle
         progressInfo.log("Waiting for user input ...");
         synchronized (lock) {
             SwingUtilities.invokeLater(() -> {
-                boolean result = ParameterPanel.showDialog(getWorkbench(), configuration, new MarkdownDocument("# Python virtual environment\n\n" +
+                boolean result = JIPipeDesktopParameterPanel.showDialog((JIPipeDesktopWorkbench) getWorkbench(), configuration, new MarkdownText("# Python virtual environment\n\n" +
                                 "Please choose the directory that contains the virtual environment."), "Select Python virtual environment",
-                        ParameterPanel.NO_GROUP_HEADERS | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING);
+                        JIPipeDesktopParameterPanel.NO_GROUP_HEADERS | JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterPanel.WITH_SCROLLING);
                 userCancelled.set(!result);
                 windowOpened.set(false);
                 synchronized (lock) {

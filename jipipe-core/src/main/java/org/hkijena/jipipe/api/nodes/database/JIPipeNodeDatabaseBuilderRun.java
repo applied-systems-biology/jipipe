@@ -46,12 +46,12 @@ public class JIPipeNodeDatabaseBuilderRun extends AbstractJIPipeRunnable {
         JIPipeNodeRegistry nodeRegistry = JIPipe.getNodes();
         List<JIPipeNodeDatabaseEntry> newEntries = new ArrayList<>();
 
-        if(CACHED_GLOBAL_ENTRIES == null) {
+        if (CACHED_GLOBAL_ENTRIES == null) {
             CACHED_GLOBAL_ENTRIES = new ArrayList<>();
             // Add creation of nodes by info
             for (Map.Entry<String, JIPipeNodeInfo> entry : nodeRegistry.getRegisteredNodeInfos().entrySet()) {
                 JIPipeNodeInfo nodeInfo = entry.getValue();
-                if(nodeInfo.isHidden() || nodeInfo.getCategory() instanceof InternalNodeTypeCategory) {
+                if (nodeInfo.isHidden() || nodeInfo.getCategory() instanceof InternalNodeTypeCategory) {
                     continue;
                 }
                 {
@@ -68,12 +68,11 @@ public class JIPipeNodeDatabaseBuilderRun extends AbstractJIPipeRunnable {
                     CACHED_GLOBAL_ENTRIES.add(newEntry);
                 }
             }
-        }
-        else {
+        } else {
             newEntries.addAll(CACHED_GLOBAL_ENTRIES);
         }
 
-        if(database.getProject() != null) {
+        if (database.getProject() != null) {
             // Add existing nodes
             for (JIPipeGraphNode graphNode : database.getProject().getGraph().getGraphNodes()) {
                 newEntries.add(new ExistingPipelineNodeDatabaseEntry("existing-pipeline-node:" + graphNode.getUUIDInParentGraph(), graphNode));

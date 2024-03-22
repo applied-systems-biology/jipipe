@@ -32,6 +32,18 @@ public class GridCoordinates implements Iterable<GridCoordinates.Block> {
     private final long[] gridDims;
     private final int[] blockDims;
 
+    public GridCoordinates(CellGrid grid) {
+        Objects.requireNonNull(grid);
+        imageDims = grid.getImgDimensions();
+        gridDims = grid.getGridDimensions();
+        blockDims = grid.getCellDimensions();
+    }
+
+    @Override
+    public Iterator<Block> iterator() {
+        return new EntryIterator();
+    }
+
     /**
      * Container for block offset and block dimensions.
      */
@@ -74,17 +86,5 @@ public class GridCoordinates implements Iterable<GridCoordinates.Block> {
 
             return new Block(offset, dims);
         }
-    }
-
-    public GridCoordinates(CellGrid grid) {
-        Objects.requireNonNull(grid);
-        imageDims = grid.getImgDimensions();
-        gridDims = grid.getGridDimensions();
-        blockDims = grid.getCellDimensions();
-    }
-
-    @Override
-    public Iterator<Block> iterator() {
-        return new EntryIterator();
     }
 }

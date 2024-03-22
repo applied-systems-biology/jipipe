@@ -18,10 +18,10 @@ import ij.ImagePlus;
 import ij.measure.ResultsTable;
 import ij.plugin.filter.ParticleAnalyzer;
 import ij.plugin.frame.RoiManager;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.imageviewer.plugins2d.roimanager.ROIManagerPlugin2D;
-import org.hkijena.jipipe.ui.components.FormPanel;
 
 import java.util.Arrays;
 
@@ -45,7 +45,7 @@ public class MaskToROIDrawerPlugin2D extends MaskDrawerPlugin2D {
     }
 
     @Override
-    public void initializeSettingsPanel(FormPanel formPanel) {
+    public void initializeSettingsPanel(JIPipeDesktopFormPanel formPanel) {
         super.initializeSettingsPanel(formPanel);
 
         // TODO

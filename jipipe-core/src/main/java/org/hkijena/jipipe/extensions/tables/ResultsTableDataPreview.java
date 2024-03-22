@@ -16,12 +16,12 @@ package org.hkijena.jipipe.extensions.tables;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.resultanalysis.JIPipeAsyncResultDataSlotPreview;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
+import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopAsyncResultDataSlotPreview;
 
 import javax.swing.*;
 
-public class ResultsTableDataPreview extends JIPipeAsyncResultDataSlotPreview {
+public class ResultsTableDataPreview extends JIPipeDesktopAsyncResultDataSlotPreview {
 
     /**
      * Creates a new renderer
@@ -32,7 +32,7 @@ public class ResultsTableDataPreview extends JIPipeAsyncResultDataSlotPreview {
      * @param row            the row
      * @param dataAnnotation optional data annotation
      */
-    public ResultsTableDataPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, JIPipeExportedDataAnnotation dataAnnotation) {
+    public ResultsTableDataPreview(JIPipeDesktopProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, JIPipeExportedDataAnnotation dataAnnotation) {
         super(workbench, table, slot, row, dataAnnotation);
     }
 }

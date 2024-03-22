@@ -21,17 +21,17 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.batchassistant.JIPipeDesktopDataBatchBrowserUI;
+import org.hkijena.jipipe.desktop.app.datatable.JIPipeDesktopSimpleDataBatchTableUI;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopUserFriendlyErrorUI;
+import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopColorIcon;
+import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.extensions.forms.FormsPlugin;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.forms.datatypes.ParameterFormData;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.batchassistant.DataBatchBrowserUI;
-import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
-import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
-import org.hkijena.jipipe.ui.datatable.JIPipeSimpleDataBatchTableUI;
+import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
@@ -45,29 +45,29 @@ import java.util.*;
 
 public class FormsDialog extends JFrame {
     private static final String TAB_ISSUES_DETECTED = "Issues detected";
-    private final JIPipeWorkbench workbench;
+    private final JIPipeDesktopWorkbench workbench;
     private final String tabAnnotation;
     private final List<JIPipeMultiIterationStep> iterationStepList;
     private final List<JIPipeDataSlot> iterationStepForms = new ArrayList<>();
     private final JIPipeDataSlot originalForms;
-    private final DocumentTabPane tabPane = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Top);
+    private final JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.TabPlacement.Top);
     private final List<DataBatchStatus> iterationStepStatuses = new ArrayList<>();
-    private final JLabel unvisitedLabel = new JLabel(new SolidColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorUnvisited()));
-    private final JLabel visitedLabel = new JLabel(new SolidColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorVisited()));
-    private final JLabel invalidLabel = new JLabel(new SolidColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorInvalid()));
+    private final JLabel unvisitedLabel = new JLabel(new SolidJIPipeDesktopColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorUnvisited()));
+    private final JLabel visitedLabel = new JLabel(new SolidJIPipeDesktopColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorVisited()));
+    private final JLabel invalidLabel = new JLabel(new SolidJIPipeDesktopColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorInvalid()));
     private final JToggleButton visitedButton = new JToggleButton("Reviewed", UIUtils.getIconFromResources("actions/eye.png"));
-    private final MarkdownDocument documentation;
+    private final MarkdownText documentation;
     private boolean cancelled = false;
-    private JIPipeSimpleDataBatchTableUI iterationStepTableUI;
+    private JIPipeDesktopSimpleDataBatchTableUI iterationStepTableUI;
     private String lastTab = "";
 
-    public FormsDialog(JIPipeWorkbench workbench, List<JIPipeMultiIterationStep> iterationStepList, JIPipeDataSlot originalForms, String tabAnnotation) {
+    public FormsDialog(JIPipeDesktopWorkbench workbench, List<JIPipeMultiIterationStep> iterationStepList, JIPipeDataSlot originalForms, String tabAnnotation) {
         this.originalForms = originalForms;
         setIconImage(UIUtils.getJIPipeIcon128());
         this.workbench = workbench;
         this.iterationStepList = iterationStepList;
         this.tabAnnotation = tabAnnotation;
-        this.documentation = MarkdownDocument.fromResourceURL(FormsPlugin.class.getResource("/org/hkijena/jipipe/extensions/forms/form-dialog-documentation.md"),
+        this.documentation = MarkdownText.fromResourceURL(FormsPlugin.class.getResource("/org/hkijena/jipipe/extensions/forms/form-dialog-documentation.md"),
                 true, new HashMap<>());
 
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
@@ -177,7 +177,7 @@ public class FormsDialog extends JFrame {
     private void initialize() {
         JPanel contentPanel = new JPanel(new BorderLayout());
 
-        iterationStepTableUI = new JIPipeSimpleDataBatchTableUI(iterationStepList);
+        iterationStepTableUI = new JIPipeDesktopSimpleDataBatchTableUI(iterationStepList);
         iterationStepTableUI.getTable().setDefaultRenderer(Integer.class, new DataBatchStatusTableCellRenderer(iterationStepStatuses));
         iterationStepTableUI.getTable().setDefaultRenderer(String.class, new DataBatchStatusTableCellRenderer(iterationStepStatuses));
         JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, iterationStepTableUI, tabPane, AutoResizeSplitPane.RATIO_1_TO_3);
@@ -227,8 +227,8 @@ public class FormsDialog extends JFrame {
         // Create preview tab
         tabPane.addTab("View data",
                 UIUtils.getIconFromResources("actions/zoom.png"),
-                new DataBatchBrowserUI(getWorkbench(), iterationStepList.get(selectedRow)),
-                DocumentTabPane.CloseMode.withoutCloseButton,
+                new JIPipeDesktopDataBatchBrowserUI(getWorkbench(), iterationStepList.get(selectedRow)),
+                JIPipeDesktopTabPane.CloseMode.withoutCloseButton,
                 false);
 
         // If invalid, create report
@@ -236,13 +236,13 @@ public class FormsDialog extends JFrame {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             JIPipeValidationReport report = getReportForDataBatch(selectedRow, progressInfo);
             if (!report.isValid()) {
-                UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(workbench, null, UserFriendlyErrorUI.WITH_SCROLLING);
+                JIPipeDesktopUserFriendlyErrorUI errorUI = new JIPipeDesktopUserFriendlyErrorUI(workbench, null, JIPipeDesktopUserFriendlyErrorUI.WITH_SCROLLING);
                 errorUI.displayErrors(report);
                 errorUI.addVerticalGlue();
                 tabPane.addTab(TAB_ISSUES_DETECTED,
                         UIUtils.getIconFromResources("actions/dialog-warning.png"),
                         errorUI,
-                        DocumentTabPane.CloseMode.withSilentCloseButton,
+                        JIPipeDesktopTabPane.CloseMode.withSilentCloseButton,
                         false);
             }
         }
@@ -260,21 +260,21 @@ public class FormsDialog extends JFrame {
             }
             rowList.add(row);
         }
-        Map<String, FormPanel> formPanelsForTab = new HashMap<>();
+        Map<String, JIPipeDesktopFormPanel> formPanelsForTab = new HashMap<>();
         for (Map.Entry<String, List<Integer>> entry : groupedByTabName.entrySet()) {
             String tab = entry.getKey();
             for (Integer row : entry.getValue()) {
                 FormData formData = formsForRow.getData(row, FormData.class, progressInfo);
                 if (formData instanceof ParameterFormData) {
                     // Add to form panel
-                    FormPanel formPanel = formPanelsForTab.getOrDefault(tab, null);
+                    JIPipeDesktopFormPanel formPanel = formPanelsForTab.getOrDefault(tab, null);
                     if (formPanel == null) {
-                        formPanel = new FormPanel(documentation,
-                                FormPanel.WITH_DOCUMENTATION | FormPanel.DOCUMENTATION_BELOW | FormPanel.WITH_SCROLLING);
+                        formPanel = new JIPipeDesktopFormPanel(documentation,
+                                JIPipeDesktopFormPanel.WITH_DOCUMENTATION | JIPipeDesktopFormPanel.DOCUMENTATION_BELOW | JIPipeDesktopFormPanel.WITH_SCROLLING);
                         tabPane.addTab(tab,
                                 UIUtils.getIconFromResources("actions/settings.png"),
                                 formPanel,
-                                DocumentTabPane.CloseMode.withoutCloseButton,
+                                JIPipeDesktopTabPane.CloseMode.withoutCloseButton,
                                 false);
                         formPanelsForTab.put(tab, formPanel);
                     }
@@ -292,12 +292,12 @@ public class FormsDialog extends JFrame {
                     tabPane.addTab(tab,
                             UIUtils.getIconFromResources("actions/settings.png"),
                             formData.getEditor(getWorkbench()),
-                            DocumentTabPane.CloseMode.withoutCloseButton,
+                            JIPipeDesktopTabPane.CloseMode.withoutCloseButton,
                             false);
                 }
             }
         }
-        for (Map.Entry<String, FormPanel> entry : formPanelsForTab.entrySet()) {
+        for (Map.Entry<String, JIPipeDesktopFormPanel> entry : formPanelsForTab.entrySet()) {
             entry.getValue().addVerticalGlue();
         }
 
@@ -678,7 +678,7 @@ public class FormsDialog extends JFrame {
         return cancelled;
     }
 
-    public JIPipeWorkbench getWorkbench() {
+    public JIPipeDesktopWorkbench getWorkbench() {
         return workbench;
     }
 

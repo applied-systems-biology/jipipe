@@ -29,6 +29,8 @@ import java.util.Map;
 
 public class Hdf5Utils {
     private static final Map<String, NativeType<?>> H5_TO_IMGLIB2_TYPE;
+    private static final long BLOCK_SIZE_2D = 128;
+    private static final long BLOCK_SIZE_3D = 32;
 
     static {
         Map<String, NativeType<?>> map = new HashMap<>();
@@ -39,9 +41,6 @@ public class Hdf5Utils {
         map.put("uint64", new UnsignedLongType());
         H5_TO_IMGLIB2_TYPE = Collections.unmodifiableMap(map);
     }
-
-    private static final long BLOCK_SIZE_2D = 128;
-    private static final long BLOCK_SIZE_3D = 32;
 
     public static <T extends NativeType<T>> T getNativeType(String dtype) {
         @SuppressWarnings("unchecked")

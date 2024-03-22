@@ -19,19 +19,25 @@ import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.model.DatasetData;
 import omero.gateway.model.ImageData;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSingleIterationAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSingleIterationAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.extensions.expressions.*;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.omero.OMEROCredentialsEnvironment;
 import org.hkijena.jipipe.extensions.omero.OMEROSettings;
@@ -41,7 +47,7 @@ import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;
 import org.hkijena.jipipe.extensions.omero.util.OMEROGateway;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
 
-import java.util.*;
+import java.util.ArrayList;
 
 @SetJIPipeDocumentation(name = "List OMERO images", description = "Returns the ID(s) of images(s) according to search criteria. Requires project IDs as input.")
 @AddJIPipeInputSlot(value = OMERODatasetReferenceData.class, slotName = "Datasets", create = true)
@@ -84,8 +90,8 @@ public class OMEROListImagesAlgorithm extends JIPipeSingleIterationAlgorithm {
                         variables.put("id", imageData.getId());
                         variables.put("kv_pairs", OMEROUtils.getKeyValuePairs(gateway.getMetadataFacility(), context, imageData));
                         variables.put("tags", new ArrayList<>(OMEROUtils.getTags(gateway.getMetadataFacility(), context, imageData)));
-                        if(filters.test(variables)) {
-                            getFirstOutputSlot().addData(new OMEROImageReferenceData(imageData, environment), getFirstInputSlot().getDataContext(row).branch(this),rowProgress);
+                        if (filters.test(variables)) {
+                            getFirstOutputSlot().addData(new OMEROImageReferenceData(imageData, environment), getFirstInputSlot().getDataContext(row).branch(this), rowProgress);
                         }
                     }
                 }

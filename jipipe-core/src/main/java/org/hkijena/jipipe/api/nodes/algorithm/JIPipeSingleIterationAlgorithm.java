@@ -14,10 +14,10 @@
 package org.hkijena.jipipe.api.nodes.algorithm;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
+import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -130,8 +130,8 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
      * A pass-through variant for merging algorithms.
      * Passes the data batch to the single output
      *
-     * @param progressInfo progress info
-     * @param iterationStep    the data batch
+     * @param progressInfo  progress info
+     * @param iterationStep the data batch
      */
     protected void runPassThrough(JIPipeProgressInfo progressInfo, JIPipeMultiIterationStep iterationStep) {
         progressInfo.log("Passing trough (via dynamic pass-through)");
@@ -248,7 +248,7 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
      *
      * @param iterationStep    The data interface
      * @param iterationContext The iteration context
-     * @param runContext the run context
+     * @param runContext       the run context
      * @param progressInfo     the progress from the run
      */
     protected abstract void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo);

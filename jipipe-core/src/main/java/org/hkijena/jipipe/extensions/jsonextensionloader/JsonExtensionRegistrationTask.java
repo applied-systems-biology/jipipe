@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJsonPlugin;
-import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.validation.*;
 
 import java.nio.file.Path;

@@ -13,21 +13,21 @@
 
 package org.hkijena.jipipe.extensions.forms.datatypes;
 
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
+import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
 
 import javax.swing.*;
 
 /**
- * {@link FormData} that is put into a {@link org.hkijena.jipipe.ui.components.FormPanel}
+ * {@link FormData} that is put into a {@link JIPipeDesktopFormPanel}
  */
 public abstract class ParameterFormData extends FormData {
     private String name = "Form";
@@ -45,20 +45,20 @@ public abstract class ParameterFormData extends FormData {
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        FormPanel formPanel = new FormPanel(new MarkdownDocument("This is a preview of the form."),
-                FormPanel.WITH_DOCUMENTATION | FormPanel.WITH_SCROLLING | FormPanel.DOCUMENTATION_BELOW);
+    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
+        JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(new MarkdownText("This is a preview of the form."),
+                JIPipeDesktopFormPanel.WITH_DOCUMENTATION | JIPipeDesktopFormPanel.WITH_SCROLLING | JIPipeDesktopFormPanel.DOCUMENTATION_BELOW);
         ParameterFormData duplicate = (ParameterFormData) duplicate(new JIPipeProgressInfo());
         if (isShowName()) {
-            formPanel.addToForm(duplicate.getEditor(workbench), new JLabel(getName()), description.toMarkdown());
+            formPanel.addToForm(duplicate.getEditor(desktopWorkbench), new JLabel(getName()), description.toMarkdown());
         } else {
-            formPanel.addWideToForm(duplicate.getEditor(workbench), description.toMarkdown());
+            formPanel.addWideToForm(duplicate.getEditor(desktopWorkbench), description.toMarkdown());
         }
         formPanel.addVerticalGlue();
         JFrame frame = new JFrame("Preview: " + JIPipeDataInfo.getInstance(getClass()).getName());
         frame.setContentPane(formPanel);
         frame.setSize(640, 480);
-        frame.setLocationRelativeTo(workbench.getWindow());
+        frame.setLocationRelativeTo(desktopWorkbench.getWindow());
         frame.setVisible(true);
     }
 

@@ -16,23 +16,24 @@ package org.hkijena.jipipe.extensions.tables.display;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
-import org.hkijena.jipipe.ui.cache.JIPipeCachedDataViewerAnnotationInfoPanel;
-import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
-import org.hkijena.jipipe.ui.tableeditor.TableEditor;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheDataViewerWindow;
+import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCachedDataViewerAnnotationInfoPanel;
+import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 
-public class CachedTableViewerWindow extends JIPipeCacheDataViewerWindow {
+public class CachedTableViewerWindow extends JIPipeDesktopCacheDataViewerWindow {
 
-    private TableEditor tableEditor;
+    private JIPipeDesktopTableEditor tableEditor;
     private JLabel errorLabel;
-    private JIPipeCachedDataViewerAnnotationInfoPanel annotationInfoPanel;
+    private JIPipeDesktopCachedDataViewerAnnotationInfoPanel annotationInfoPanel;
 
-    public CachedTableViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoading) {
+    public CachedTableViewerWindow(JIPipeDesktopWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoading) {
         super(workbench, dataSource, displayName);
         initialize();
         if (!deferLoading)
@@ -40,15 +41,15 @@ public class CachedTableViewerWindow extends JIPipeCacheDataViewerWindow {
     }
 
     private void initialize() {
-        tableEditor = new TableEditor(getWorkbench(), new ResultsTableData());
+        tableEditor = new JIPipeDesktopTableEditor(getWorkbench(), new ResultsTableData());
         errorLabel = new JLabel(UIUtils.getIconFromResources("emblems/no-data.png"));
         tableEditor.getToolBar().add(errorLabel, 0);
 
-        annotationInfoPanel = new JIPipeCachedDataViewerAnnotationInfoPanel(getWorkbench());
+        annotationInfoPanel = new JIPipeDesktopCachedDataViewerAnnotationInfoPanel(getWorkbench());
         tableEditor.getSideBar().addTab("Annotations",
                 UIUtils.getIconFromResources("data-types/annotation.png"),
                 annotationInfoPanel,
-                DocumentTabPane.CloseMode.withoutCloseButton);
+                JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
 
         setContentPane(tableEditor);
     }

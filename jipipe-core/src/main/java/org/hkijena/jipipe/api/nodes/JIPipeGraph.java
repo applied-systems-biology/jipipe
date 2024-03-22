@@ -27,7 +27,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeFunctionallyComparable;
 import org.hkijena.jipipe.api.JIPipeGraphType;
-import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
@@ -42,6 +41,7 @@ import org.hkijena.jipipe.api.nodes.infos.JIPipeJavaNodeInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeSlotValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
@@ -1268,7 +1268,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
     /**
      * Returns DIRECT predecessor algorithms of an algorithm
      *
-     * @param target    the target algorithm
+     * @param target the target algorithm
      * @return predecessors in topological order
      */
     public List<JIPipeGraphNode> getDirectPredecessorNodes(JIPipeGraphNode target) {
@@ -1996,17 +1996,17 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
      *
      * @param stringBuilder the string builder
      * @param compartment   the targeted compartment (null to target all compartments)
-     * @param nodeIndices map of node indices. used for sharing node IDs. can be null.
+     * @param nodeIndices   map of node indices. used for sharing node IDs. can be null.
      * @param headingLevel  the heading level
      */
     public void getTextDescription(StringBuilder stringBuilder, UUID compartment, Map<UUID, Integer> nodeIndices, int headingLevel) {
-        if(nodeIndices == null) {
+        if (nodeIndices == null) {
             nodeIndices = new HashMap<>();
         }
         for (JIPipeGraphNode node : traverse()) {
-            if((compartment == null || node.isVisibleIn(compartment)) && (node instanceof JIPipeAlgorithm)) {
+            if ((compartment == null || node.isVisibleIn(compartment)) && (node instanceof JIPipeAlgorithm)) {
                 Integer index = nodeIndices.getOrDefault(node.getUUIDInParentGraph(), null);
-                if(index == null) {
+                if (index == null) {
                     index = nodeIndices.size() + 1;
                     nodeIndices.put(node.getUUIDInParentGraph(), index);
                 }
@@ -2015,18 +2015,17 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 for (JIPipeInputDataSlot inputSlot : node.getInputSlots()) {
                     for (JIPipeDataSlot sourceSlot : getInputIncomingSourceSlots(inputSlot)) {
                         int sourceNodeIndex = nodeIndices.getOrDefault(sourceSlot.getNode().getUUIDInParentGraph(), -1);
-                        if(sourceNodeIndex != -1) {
+                        if (sourceNodeIndex != -1) {
                             stringBuilder.append("<li>").append("Input \"").append(inputSlot.getName()).append("\" of node #").append(index).append(" receives data from output \"")
                                     .append(sourceSlot.getName()).append("\" of node #").append(sourceNodeIndex).append("</li>\n");
                         }
                     }
                 }
                 stringBuilder.append("</ul>");
-                if(node instanceof JIPipeGraphWrapperAlgorithm) {
+                if (node instanceof JIPipeGraphWrapperAlgorithm) {
                     stringBuilder.append("<ul><li>This node contains a sub-graph. The \"Group Input\" and \"Group Output\" nodes contained in the graph are internally connected to the inputs and outputs of this node.</li></ul>");
                     ((JIPipeGraphWrapperAlgorithm) node).getWrappedGraph().getTextDescription(stringBuilder, null, nodeIndices, headingLevel);
-                }
-                else {
+                } else {
                     node.getTextDescription(stringBuilder);
                 }
             }
@@ -2035,7 +2034,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
 
     public <T extends JIPipeGraphNode> T findFirstNodeOfType(Class<T> klass) {
         for (JIPipeGraphNode graphNode : getGraphNodes()) {
-            if(klass.isAssignableFrom(graphNode.getClass())) {
+            if (klass.isAssignableFrom(graphNode.getClass())) {
                 return (T) graphNode;
             }
         }

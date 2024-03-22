@@ -370,7 +370,7 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
         double vx = V.getX();
         double vy = V.getY();
         double vz = V.getZ();
-        int iterations = (int)(len * magnification);
+        int iterations = (int) (len * magnification);
         for (int i = 0; i < iterations; i++) {
             double perc = 1.0 * i / iterations;
             double rad = (rad0 + perc * (rad1 - rad0));

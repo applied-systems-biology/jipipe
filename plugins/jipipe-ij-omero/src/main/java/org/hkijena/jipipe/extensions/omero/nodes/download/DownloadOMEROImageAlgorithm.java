@@ -25,16 +25,19 @@ import omero.gateway.SecurityContext;
 import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.model.ImageData;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -64,12 +67,12 @@ import java.util.List;
 @AddJIPipeInputSlot(value = OMEROImageReferenceData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = OMEImageData.class, slotName = "Output", create = true)
 public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
-    private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
-    private OptionalTextAnnotationNameParameter titleAnnotation = new OptionalTextAnnotationNameParameter("Image title", true);
-    private OptionalTextAnnotationNameParameter idAnnotation = new OptionalTextAnnotationNameParameter("#OMERO:Image_ID", true);
     private final ImageImportParameters imageImportParameters;
     private final OMEROKeyValuePairToAnnotationImporter keyValuePairToAnnotationImporter;
     private final OMEROTagToAnnotationImporter tagToAnnotationImporter;
+    private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
+    private OptionalTextAnnotationNameParameter titleAnnotation = new OptionalTextAnnotationNameParameter("Image title", true);
+    private OptionalTextAnnotationNameParameter idAnnotation = new OptionalTextAnnotationNameParameter("#OMERO:Image_ID", true);
 
 
     public DownloadOMEROImageAlgorithm(JIPipeNodeInfo info) {
@@ -102,7 +105,7 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         LoginCredentials lc = environment.toLoginCredentials();
 
         // Get gateway and fine the appropriate group for the image
-        try(OMEROGateway gateway = new OMEROGateway(environment.toLoginCredentials(), progressInfo)) {
+        try (OMEROGateway gateway = new OMEROGateway(environment.toLoginCredentials(), progressInfo)) {
             ImageData imageData = gateway.getImage(imageReferenceData.getImageId(), -1);
             if (imageData == null) {
                 throw new RuntimeException("Unable to find image with ID=" + imageReferenceData.getImageId());
@@ -187,7 +190,7 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                     if (titleAnnotation.isEnabled()) {
                         annotations.add(new JIPipeTextAnnotation(titleAnnotation.getContent(), image.getTitle()));
                     }
-                    if(idAnnotation.isEnabled()) {
+                    if (idAnnotation.isEnabled()) {
                         annotations.add(new JIPipeTextAnnotation(idAnnotation.getContent(), String.valueOf(imageReferenceData.getImageId())));
                     }
 

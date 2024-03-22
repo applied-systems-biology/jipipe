@@ -18,7 +18,6 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 public class ImageJImageToImpImageDataTypeConverter implements JIPipeDataConverter {
     @Override
@@ -33,7 +32,7 @@ public class ImageJImageToImpImageDataTypeConverter implements JIPipeDataConvert
 
     @Override
     public JIPipeData convert(JIPipeData input, JIPipeProgressInfo progressInfo) {
-        ImagePlus img = ((ImagePlusData)input).getImage();
+        ImagePlus img = ((ImagePlusData) input).getImage();
         return new ImpImageData(img);
     }
 }

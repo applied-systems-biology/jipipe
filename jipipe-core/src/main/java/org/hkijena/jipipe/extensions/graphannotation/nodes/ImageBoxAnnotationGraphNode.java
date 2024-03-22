@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeAnnotationGraphNodeUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopAnnotationGraphNodeUI;
 import org.hkijena.jipipe.utils.SizeFitMode;
 
 import java.awt.*;
@@ -52,7 +52,7 @@ public class ImageBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphN
     }
 
     @Override
-    protected void paintShape(Graphics2D g2, JIPipeAnnotationGraphNodeUI nodeUI, double zoom) {
+    protected void paintShape(Graphics2D g2, JIPipeDesktopAnnotationGraphNodeUI nodeUI, double zoom) {
         int nodeWidth = nodeUI.getWidth();
         int nodeHeight = nodeUI.getHeight();
         if (imageParameters.backgroundColor.isEnabled()) {

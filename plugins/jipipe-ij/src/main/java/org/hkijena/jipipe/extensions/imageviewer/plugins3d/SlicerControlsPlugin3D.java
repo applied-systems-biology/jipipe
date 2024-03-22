@@ -18,18 +18,18 @@ import ij3d.Content;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.run.JIPipeRunnable;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPlugin3D;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.Image3DRenderType;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
-import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import orthoslice.MultiOrthoGroup;
@@ -43,12 +43,12 @@ import java.util.List;
 
 public class SlicerControlsPlugin3D extends JIPipeImageViewerPlugin3D implements JIPipeParameterCollection.ParameterChangedEventListener {
 
-    private final FormPanel orthoSliceEditor = new FormPanel(FormPanel.NONE);
+    private final JIPipeDesktopFormPanel orthoSliceEditor = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.NONE);
 
-    private final ParameterPanel multiOrthoSliceEditor;
+    private final JIPipeDesktopParameterPanel multiOrthoSliceEditor;
 
     private final MultiOrthoSlicerSettings multiOrthoSlicerSettings = new MultiOrthoSlicerSettings();
-    private FormPanel.GroupHeaderPanel groupHeaderPanel;
+    private JIPipeDesktopFormPanel.GroupHeaderPanel groupHeaderPanel;
 
     private OrthoSliderPanel[] orthoSliderPanels;
     private boolean isUpdatingSliders;
@@ -57,7 +57,7 @@ public class SlicerControlsPlugin3D extends JIPipeImageViewerPlugin3D implements
 
     public SlicerControlsPlugin3D(JIPipeImageViewer viewerPanel) {
         super(viewerPanel);
-        this.multiOrthoSliceEditor = new ParameterPanel(viewerPanel.getWorkbench(), multiOrthoSlicerSettings, null, ParameterPanel.NO_GROUP_HEADERS);
+        this.multiOrthoSliceEditor = new JIPipeDesktopParameterPanel(viewerPanel.getDesktopWorkbench(), multiOrthoSlicerSettings, null, JIPipeDesktopParameterPanel.NO_GROUP_HEADERS);
         initializeOrthoSliceEditor();
         initializeMultiOrthoSliceEditor();
     }
@@ -163,7 +163,7 @@ public class SlicerControlsPlugin3D extends JIPipeImageViewerPlugin3D implements
     }
 
     @Override
-    public void initializeSettingsPanel(FormPanel formPanel) {
+    public void initializeSettingsPanel(JIPipeDesktopFormPanel formPanel) {
         groupHeaderPanel = formPanel.addGroupHeader("Ortho-slicer", UIUtils.getIconFromResources("actions/layer-visible-off.png"));
 
         formPanel.addWideToForm(orthoSliceEditor);
@@ -274,7 +274,7 @@ public class SlicerControlsPlugin3D extends JIPipeImageViewerPlugin3D implements
             slider.setMaximum(maximum);
         }
 
-        public void addToForm(FormPanel target) {
+        public void addToForm(JIPipeDesktopFormPanel target) {
 
             // configure slider
             slider.setMajorTickSpacing(10);

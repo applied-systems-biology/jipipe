@@ -14,14 +14,13 @@
 package org.hkijena.jipipe.extensions.settings;
 
 import ij.IJ;
-import ij.Prefs;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.backups.JIPipeProjectBackupSessionInfo;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalPathParameter;
-import org.hkijena.jipipe.ui.JIPipeProjectWindow;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -30,7 +29,6 @@ import javax.swing.Timer;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -64,7 +62,7 @@ public class BackupSettings extends AbstractJIPipeParameterCollection {
         return targetDirectory;
     }
 
-    public void backup(JIPipeProjectWindow window) {
+    public void backup(JIPipeDesktopProjectWindow window) {
         String name = "untitled";
         if (window.getProjectSavePath() != null) {
             name = window.getProjectSavePath().getFileName().toString();
@@ -117,8 +115,8 @@ public class BackupSettings extends AbstractJIPipeParameterCollection {
     }
 
     public void backupAll() {
-        for (JIPipeProjectWindow window : JIPipeProjectWindow.getOpenWindows()) {
-            if(window.isVisible()) {
+        for (JIPipeDesktopProjectWindow window : JIPipeDesktopProjectWindow.getOpenWindows()) {
+            if (window.isVisible()) {
                 backup(window);
             }
         }

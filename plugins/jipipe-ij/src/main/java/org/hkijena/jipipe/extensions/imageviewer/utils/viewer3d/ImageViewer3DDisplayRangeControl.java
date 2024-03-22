@@ -15,9 +15,9 @@ package org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d;
 
 import ij.ImagePlus;
 import ij.process.ImageStatistics;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.plugins3d.CalibrationPlugin3D;
-import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXMultiThumbSlider;
@@ -30,7 +30,6 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
-import java.util.Optional;
 
 public class ImageViewer3DDisplayRangeControl extends JPanel implements ThumbListener {
 
@@ -281,7 +280,7 @@ public class ImageViewer3DDisplayRangeControl extends JPanel implements ThumbLis
 
     public static class TrackRenderer extends JComponent implements org.jdesktop.swingx.multislider.TrackRenderer {
 
-        public static final Color COLOR_SELECTED = ModernMetalTheme.PRIMARY5;
+        public static final Color COLOR_SELECTED = JIPipeDesktopModernMetalTheme.PRIMARY5;
         public static final Color COLOR_UNSELECTED = UIManager.getColor("Button.borderColor");
         private final ImageViewer3DDisplayRangeControl displayRangeControl;
         private JXMultiThumbSlider<DisplayRangeStop> slider;

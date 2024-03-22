@@ -17,11 +17,11 @@ import gnu.trove.map.TObjectDoubleMap;
 import gnu.trove.map.hash.TObjectDoubleHashMap;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -33,7 +33,7 @@ import java.util.*;
 public class JIPipeNodeDatabase {
 
     private static JIPipeNodeDatabase INSTANCE;
-    private final JIPipeRunnerQueue queue = new JIPipeRunnerQueue("Node database");
+    private final JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Node database");
     private final JIPipeProject project;
     private final JIPipeNodeDatabaseUpdater updater;
     private List<JIPipeNodeDatabaseEntry> entries = new ArrayList<>();
@@ -50,17 +50,18 @@ public class JIPipeNodeDatabase {
 
     /**
      * Converts a list of texts into word tokens
+     *
      * @param texts the texts
      * @return the tokens
      */
     public static List<String> buildTokens(List<String> texts) {
         List<String> tokens = new ArrayList<>();
         for (String text_ : texts) {
-            if(StringUtils.isNullOrEmpty(text_))
+            if (StringUtils.isNullOrEmpty(text_))
                 continue;
             String text = text_.toLowerCase().replace('\n', ' ');
             for (String s : text.split(" ")) {
-                if(!StringUtils.isNullOrEmpty(s)) {
+                if (!StringUtils.isNullOrEmpty(s)) {
                     tokens.add(s);
                 }
             }
@@ -68,20 +69,41 @@ public class JIPipeNodeDatabase {
         return tokens;
     }
 
+    public static double weight(double x, double xMax) {
+        return Math.exp(-Math.pow(x / xMax, 2));
+    }
+
+    public static int dataTypeDistance(Class<? extends JIPipeData> from, Class<? extends JIPipeData> to) {
+        if (from == to) {
+            return 0;
+        } else if (to.isAssignableFrom(from)) {
+            return ReflectionUtils.getClassDistance(to, from);
+        } else {
+            return JIPipe.getDataTypes().getConversionDistance(from, to) * 5; // Weight these higher
+        }
+    }
+
+    public static synchronized JIPipeNodeDatabase getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new JIPipeNodeDatabase();
+        }
+        return INSTANCE;
+    }
+
     public void rebuildImmediately() {
         queue.cancelAll();
         queue.enqueue(new JIPipeNodeDatabaseBuilderRun(this));
-    }
-
-    public synchronized void setEntries(List<JIPipeNodeDatabaseEntry> entries) {
-        this.entries = entries;
     }
 
     public List<JIPipeNodeDatabaseEntry> getEntries() {
         return entries;
     }
 
-    public JIPipeRunnerQueue getQueue() {
+    public synchronized void setEntries(List<JIPipeNodeDatabaseEntry> entries) {
+        this.entries = entries;
+    }
+
+    public JIPipeRunnableQueue getQueue() {
         return queue;
     }
 
@@ -93,24 +115,8 @@ public class JIPipeNodeDatabase {
         return updater;
     }
 
-    public static double weight(double x, double xMax) {
-        return Math.exp(-Math.pow(x/xMax, 2));
-    }
-
-    public static int dataTypeDistance(Class<? extends JIPipeData> from, Class<? extends JIPipeData> to) {
-        if(from == to) {
-            return 0;
-        }
-        else if(to.isAssignableFrom(from)) {
-            return ReflectionUtils.getClassDistance(to, from);
-        }
-        else {
-            return JIPipe.getDataTypes().getConversionDistance(from, to) * 5; // Weight these higher
-        }
-    }
-
     public double queryTextRanking(JIPipeNodeDatabaseEntry entry, String text, List<String> textTokens) {
-        if(textTokens.isEmpty())
+        if (textTokens.isEmpty())
             return Double.POSITIVE_INFINITY;
         double rank = 0;
         WeightedTokens tokens = entry.getTokens();
@@ -124,10 +130,10 @@ public class JIPipeNodeDatabase {
                 String token = tokens.getToken(j);
                 int distance = LevenshteinDistance.getDefaultInstance().apply(textToken, token);
                 double tokenWeight = tokens.getWeight(j) - j / 100.0;
-                if(distance >= 0) {
+                if (distance >= 0) {
                     double distanceWeight = 1.0 - (1.0 * distance / Math.max(token.length(), textToken.length()));
                     double distanceTokenWeight = distanceWeight * tokenWeight;
-                    if(distanceTokenWeight > bestDistanceTokenWeight) {
+                    if (distanceTokenWeight > bestDistanceTokenWeight) {
                         bestDistanceTokenWeight = distanceTokenWeight;
                     }
                 }
@@ -136,7 +142,7 @@ public class JIPipeNodeDatabase {
         }
 
         // rank exact name matching
-        if(entry.getName().toLowerCase().startsWith(text.toLowerCase())) {
+        if (entry.getName().toLowerCase().startsWith(text.toLowerCase())) {
             rank *= 1.2 + text.length() / 10.0;
         }
 
@@ -148,17 +154,17 @@ public class JIPipeNodeDatabase {
         List<JIPipeNodeDatabaseEntry> result = new ArrayList<>();
         TObjectDoubleMap<JIPipeNodeDatabaseEntry> rankMap = new TObjectDoubleHashMap<>();
         for (JIPipeNodeDatabaseEntry entry : entries) {
-            if(entry.getRole() != role)
+            if (entry.getRole() != role)
                 continue;
-            if(entry.exists() && !allowExisting)
+            if (entry.exists() && !allowExisting)
                 continue;
-            if(!entry.exists() && !allowNew)
+            if (!entry.exists() && !allowNew)
                 continue;
             result.add(entry);
 
 
             double ranking = queryTextRanking(entry, text, textTokens);
-            if(entry.isDeprecated()) {
+            if (entry.isDeprecated()) {
                 ranking *= 0.8;
             }
 
@@ -173,39 +179,38 @@ public class JIPipeNodeDatabase {
         List<JIPipeNodeDatabaseEntry> result = new ArrayList<>();
         TObjectDoubleMap<JIPipeNodeDatabaseEntry> rankMap = new TObjectDoubleHashMap<>();
         for (JIPipeNodeDatabaseEntry entry : entries) {
-            if(entry.getRole() != role)
+            if (entry.getRole() != role)
                 continue;
-            if(entry.exists() && !allowExisting)
+            if (entry.exists() && !allowExisting)
                 continue;
-            if(!entry.exists() && !allowNew)
+            if (!entry.exists() && !allowNew)
                 continue;
 
             int bestConversionDistance = Integer.MAX_VALUE;
-            if(targetSlotType == JIPipeSlotType.Input) {
+            if (targetSlotType == JIPipeSlotType.Input) {
                 for (Map.Entry<String, JIPipeDataSlotInfo> slotInfoEntry : entry.getOutputSlots().entrySet()) {
                     int conversionDistance = dataTypeDistance(slotInfoEntry.getValue().getDataClass(), targetDataType);
-                    if(conversionDistance >= 0 && conversionDistance < bestConversionDistance) {
+                    if (conversionDistance >= 0 && conversionDistance < bestConversionDistance) {
                         bestConversionDistance = conversionDistance;
                     }
                 }
-            }
-            else {
+            } else {
                 for (Map.Entry<String, JIPipeDataSlotInfo> slotInfoEntry : entry.getInputSlots().entrySet()) {
                     int conversionDistance = dataTypeDistance(targetDataType, slotInfoEntry.getValue().getDataClass());
-                    if(conversionDistance >= 0 && conversionDistance < bestConversionDistance) {
+                    if (conversionDistance >= 0 && conversionDistance < bestConversionDistance) {
                         bestConversionDistance = conversionDistance;
                     }
                 }
             }
 
-            if(bestConversionDistance == Integer.MAX_VALUE) {
+            if (bestConversionDistance == Integer.MAX_VALUE) {
                 continue;
             }
 
             double textRanking = queryTextRanking(entry, text, textTokens);
             double dataTypeRanking = -weight(bestConversionDistance, 5);
             double ranking = textTokens.isEmpty() ? dataTypeRanking : textRanking;
-            if(entry.isDeprecated()) {
+            if (entry.isDeprecated()) {
                 ranking *= 0.8;
             }
 
@@ -214,12 +219,5 @@ public class JIPipeNodeDatabase {
         }
         result.sort(Comparator.comparing(rankMap::get));
         return result;
-    }
-
-    public static synchronized JIPipeNodeDatabase getInstance() {
-        if(INSTANCE == null) {
-            INSTANCE = new JIPipeNodeDatabase();
-        }
-        return INSTANCE;
     }
 }

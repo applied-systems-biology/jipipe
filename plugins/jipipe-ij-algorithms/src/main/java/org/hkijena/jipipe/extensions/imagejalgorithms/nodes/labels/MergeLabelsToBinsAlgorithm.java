@@ -21,13 +21,13 @@ import gnu.trove.map.hash.TFloatIntHashMap;
 import gnu.trove.set.TFloatSet;
 import gnu.trove.set.hash.TFloatHashSet;
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -73,10 +73,9 @@ public class MergeLabelsToBinsAlgorithm extends JIPipeIteratingAlgorithm {
         ImageJUtils.forEachIndexedZCTSlice(outputImage, (ip, index) -> {
             float[] pixels = (float[]) ip.getPixels();
 
-            if(equalizeFrequencies) {
+            if (equalizeFrequencies) {
                 equalizedBinning(pixels);
-            }
-            else {
+            } else {
                 uniformBinning(pixels);
             }
         }, progressInfo);
@@ -95,7 +94,7 @@ public class MergeLabelsToBinsAlgorithm extends JIPipeIteratingAlgorithm {
             ++numValues;
         }
 
-        if(numValues == 0)
+        if (numValues == 0)
             return;
 
         // Binning
@@ -105,22 +104,20 @@ public class MergeLabelsToBinsAlgorithm extends JIPipeIteratingAlgorithm {
         List<TFloatSet> bins = new ArrayList<>();
         bins.add(new TFloatHashSet());
         float[] keys = counts.keys();
-        if(sortOrder == SortOrder.Ascending) {
+        if (sortOrder == SortOrder.Ascending) {
             Arrays.sort(keys);
-        }
-        else {
+        } else {
             Floats.sortDescending(keys);
         }
 
         for (float key : keys) {
             int count = counts.get(key);
-            if(currentBinNum + count > numPerBin && currentBinNum > 0) {
+            if (currentBinNum + count > numPerBin && currentBinNum > 0) {
                 // Shift to next bin
                 currentBinNum = count;
                 bins.add(new TFloatHashSet());
                 bins.get(bins.size() - 1).add(key);
-            }
-            else {
+            } else {
                 // Add to current bin
                 bins.get(bins.size() - 1).add(key);
                 currentBinNum += count;
@@ -139,7 +136,7 @@ public class MergeLabelsToBinsAlgorithm extends JIPipeIteratingAlgorithm {
         // Apply
         for (int i = 0; i < pixels.length; i++) {
             float value = pixels[i];
-            if(excludeZero && value == 0) {
+            if (excludeZero && value == 0) {
                 continue;
             }
             value = pixelMap.get(value);
@@ -153,13 +150,13 @@ public class MergeLabelsToBinsAlgorithm extends JIPipeIteratingAlgorithm {
 
         for (int i = 0; i < pixels.length; i++) {
             float value = pixels[i];
-            if(excludeZero && value == 0)
+            if (excludeZero && value == 0)
                 continue;
             max = Math.max(value, max);
             min = Math.min(value, min);
         }
 
-        if(max == min || Float.isInfinite(max)) {
+        if (max == min || Float.isInfinite(max)) {
             // Do nothing
             return;
         }

@@ -28,10 +28,9 @@ public class OptionalOMEROCredentialsEnvironment extends OptionalParameter<OMERO
 
     @Override
     public OMEROCredentialsEnvironment getContentOrDefault(OMEROCredentialsEnvironment defaultValue) {
-        if(getContent() != null && getContent().generateValidityReport(new UnspecifiedValidationReportContext()).isValid()) {
+        if (getContent() != null && getContent().generateValidityReport(new UnspecifiedValidationReportContext()).isValid()) {
             return getContent();
-        }
-        else {
+        } else {
             return defaultValue;
         }
     }

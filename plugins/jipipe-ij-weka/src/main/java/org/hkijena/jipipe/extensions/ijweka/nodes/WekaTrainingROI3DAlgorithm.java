@@ -15,17 +15,20 @@ package org.hkijena.jipipe.extensions.ijweka.nodes;
 
 import ij.ImagePlus;
 import ij.gui.Roi;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -51,7 +54,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@SetJIPipeDocumentation(name = "Train Weka model from ROI (3D)", description = "Trains a Weka model on 3D image data. The inputs are ROI that are assigned to the classes and trained on the input image."+
+@SetJIPipeDocumentation(name = "Train Weka model from ROI (3D)", description = "Trains a Weka model on 3D image data. The inputs are ROI that are assigned to the classes and trained on the input image." +
         "Can only train on a single image. Please convert ROI to labels/masks and use the appropriate nodes if you want to train on multiple images.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
 @AddJIPipeInputSlot(value = ImagePlus3DData.class, slotName = "Image", description = "Image on which the training should be applied", create = true)

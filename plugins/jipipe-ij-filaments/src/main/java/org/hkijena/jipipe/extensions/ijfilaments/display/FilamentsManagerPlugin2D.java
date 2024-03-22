@@ -19,6 +19,12 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
+import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
+import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
+import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallToggleButtonRibbonAction;
 import org.hkijena.jipipe.extensions.ijfilaments.FilamentsPlugin;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.extensions.ijfilaments.settings.ImageViewerUIFilamentDisplaySettings;
@@ -28,15 +34,9 @@ import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentsDrawer;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPlugin2D;
+import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.ribbon.Ribbon;
-import org.hkijena.jipipe.ui.components.ribbon.SmallButtonAction;
-import org.hkijena.jipipe.ui.components.ribbon.SmallToggleButtonAction;
-import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jgrapht.alg.connectivity.ConnectivityInspector;
 
@@ -52,10 +52,10 @@ import java.util.stream.Collectors;
 
 public class FilamentsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     private final JList<Filaments3DData> filamentsListControl = new JList<>();
-    private final SmallToggleButtonAction displayFilamentsViewMenuItem = new SmallToggleButtonAction("Display filaments", "Determines whether filaments are displayed", UIUtils.getIconFromResources("actions/eye.png"));
+    private final JIPipeDesktopSmallToggleButtonRibbonAction displayFilamentsViewMenuItem = new JIPipeDesktopSmallToggleButtonRibbonAction("Display filaments", "Determines whether filaments are displayed", UIUtils.getIconFromResources("actions/eye.png"));
     private final List<SelectionContextPanel> selectionContextPanels = new ArrayList<>();
     private final JPanel selectionContentPanelUI = new JPanel();
-    private final Ribbon ribbon = new Ribbon(3);
+    private final JIPipeDesktopRibbon ribbon = new JIPipeDesktopRibbon(3);
     private List<Filaments3DData> filamentsList = new ArrayList<>();
     private FilamentsDrawer filamentsDrawer = new FilamentsDrawer();
     private FilamentListCellRenderer filamentListCellRenderer;
@@ -98,43 +98,43 @@ public class FilamentsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
         {
             displayFilamentsViewMenuItem.addActionListener(this::uploadSliceToCanvas);
 
-            Ribbon.Task viewTask = ribbon.getOrCreateTask("View");
-            Ribbon.Band generalBand = viewTask.addBand("General");
-            Ribbon.Band visualizationBand = viewTask.addBand("Visualization");
+            JIPipeDesktopRibbon.Task viewTask = ribbon.getOrCreateTask("View");
+            JIPipeDesktopRibbon.Band generalBand = viewTask.addBand("General");
+            JIPipeDesktopRibbon.Band visualizationBand = viewTask.addBand("Visualization");
 
             generalBand.add(displayFilamentsViewMenuItem);
 
-            visualizationBand.add(new SmallButtonAction("More settings ...", "Opens a dialog where all available visualization settings can be changed", UIUtils.getIconFromResources("actions/configure.png"), this::openDrawingSettings));
-            visualizationBand.add(new SmallButtonAction("Save settings", "Saves the current settings as default", UIUtils.getIconFromResources("actions/save.png"), this::saveDefaults));
+            visualizationBand.add(new JIPipeDesktopSmallButtonRibbonAction("More settings ...", "Opens a dialog where all available visualization settings can be changed", UIUtils.getIconFromResources("actions/configure.png"), this::openDrawingSettings));
+            visualizationBand.add(new JIPipeDesktopSmallButtonRibbonAction("Save settings", "Saves the current settings as default", UIUtils.getIconFromResources("actions/save.png"), this::saveDefaults));
         }
         {
-            Ribbon.Task selectionTask = ribbon.addTask("Selection");
-            Ribbon.Band generalBand = selectionTask.addBand("General");
-            Ribbon.Band modifyBand = selectionTask.addBand("Modify");
-            Ribbon.Band measureBand = selectionTask.addBand("Measure");
+            JIPipeDesktopRibbon.Task selectionTask = ribbon.addTask("Selection");
+            JIPipeDesktopRibbon.Band generalBand = selectionTask.addBand("General");
+            JIPipeDesktopRibbon.Band modifyBand = selectionTask.addBand("Modify");
+            JIPipeDesktopRibbon.Band measureBand = selectionTask.addBand("Measure");
 
-            generalBand.add(new SmallButtonAction("Select all", "Selects all filaments", UIUtils.getIconFromResources("actions/edit-select-all.png"), this::selectAll));
-            generalBand.add(new SmallButtonAction("Clear selection", "Deselects all filaments", UIUtils.getIconFromResources("actions/edit-select-none.png"), this::selectNone));
-            generalBand.add(new SmallButtonAction("Invert selection", "Inverts the current selection", UIUtils.getIconFromResources("actions/edit-select-none.png"), this::invertSelection));
+            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Select all", "Selects all filaments", UIUtils.getIconFromResources("actions/edit-select-all.png"), this::selectAll));
+            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Clear selection", "Deselects all filaments", UIUtils.getIconFromResources("actions/edit-select-none.png"), this::selectNone));
+            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Invert selection", "Inverts the current selection", UIUtils.getIconFromResources("actions/edit-select-none.png"), this::invertSelection));
 
-            modifyBand.add(new SmallButtonAction("Delete", "Deletes the selected filaments", UIUtils.getIconFromResources("actions/delete.png"), () -> removeSelectedSpots(false)));
+            modifyBand.add(new JIPipeDesktopSmallButtonRibbonAction("Delete", "Deletes the selected filaments", UIUtils.getIconFromResources("actions/delete.png"), () -> removeSelectedSpots(false)));
 
-            SmallButtonAction measureAction = new SmallButtonAction("Measure", "Measures the filaments and displays the results as table", UIUtils.getIconFromResources("actions/statistics.png"), this::measureSelectedFilaments);
+            JIPipeDesktopSmallButtonRibbonAction measureAction = new JIPipeDesktopSmallButtonRibbonAction("Measure", "Measures the filaments and displays the results as table", UIUtils.getIconFromResources("actions/statistics.png"), this::measureSelectedFilaments);
             measureBand.add(measureAction);
         }
         {
-            Ribbon.Task importExportTask = ribbon.addTask("Import/Export");
-            Ribbon.Band fileBand = importExportTask.addBand("File");
+            JIPipeDesktopRibbon.Task importExportTask = ribbon.addTask("Import/Export");
+            JIPipeDesktopRibbon.Band fileBand = importExportTask.addBand("File");
 
-            fileBand.add(new SmallButtonAction("Import from file", "Imports filaments from a file", UIUtils.getIconFromResources("actions/fileopen.png"), this::importFilamentsFromFile));
-            fileBand.add(new SmallButtonAction("Export to file", "Exports filaments to a file", UIUtils.getIconFromResources("actions/save.png"), this::exportFilamentsToFile));
+            fileBand.add(new JIPipeDesktopSmallButtonRibbonAction("Import from file", "Imports filaments from a file", UIUtils.getIconFromResources("actions/fileopen.png"), this::importFilamentsFromFile));
+            fileBand.add(new JIPipeDesktopSmallButtonRibbonAction("Export to file", "Exports filaments to a file", UIUtils.getIconFromResources("actions/save.png"), this::exportFilamentsToFile));
         }
     }
 
     private void measureSelectedFilaments() {
         Filaments3DData selected = getSelectedFilamentsOrAll("Measure filaments", "Please select which filaments should be measured");
         ResultsTableData measurements = selected.measureComponents();
-        TableEditor.openWindow(getViewerPanel().getWorkbench(), measurements, "Measurements");
+        JIPipeDesktopTableEditor.openWindow(getViewerPanel().getDesktopWorkbench(), measurements, "Measurements");
     }
 
     private void selectAll() {
@@ -228,14 +228,14 @@ public class FilamentsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
             ImageViewerUIFilamentDisplaySettings settings = ImageViewerUIFilamentDisplaySettings.getInstance();
             settings.getFilamentDrawer().copyFrom(filamentsDrawer);
             settings.setShowFilaments(displayFilamentsViewMenuItem.getState());
-            if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+            if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
                 JIPipe.getSettings().save();
             }
         }
     }
 
     private void openDrawingSettings() {
-        ParameterPanel.showDialog(getWorkbench(), getViewerPanel(), filamentsDrawer, new MarkdownDocument("# Filaments display settings\n\nPlease use the settings on the left to modify how filaments are visualized."), "Filaments display settings", ParameterPanel.DEFAULT_DIALOG_FLAGS);
+        JIPipeDesktopParameterPanel.showDialog(getDesktopWorkbench(), getViewerPanel(), filamentsDrawer, new MarkdownText("# Filaments display settings\n\nPlease use the settings on the left to modify how filaments are visualized."), "Filaments display settings", JIPipeDesktopParameterPanel.DEFAULT_DIALOG_FLAGS);
         uploadSliceToCanvas();
     }
 
@@ -357,7 +357,7 @@ public class FilamentsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     }
 
     @Override
-    public void initializeSettingsPanel(FormPanel formPanel) {
+    public void initializeSettingsPanel(JIPipeDesktopFormPanel formPanel) {
         super.initializeSettingsPanel(formPanel);
         formPanel.addVerticalGlue(mainPanel, null);
     }

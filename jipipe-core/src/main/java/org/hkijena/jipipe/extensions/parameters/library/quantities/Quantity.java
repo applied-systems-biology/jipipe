@@ -103,6 +103,7 @@ public class Quantity {
 
     private double value;
     private String unit;
+
     public Quantity() {
     }
 

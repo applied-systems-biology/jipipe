@@ -15,9 +15,9 @@ package org.hkijena.jipipe.extensions.imageviewer.plugins2d.maskdrawer;
 
 import ij.measure.Calibration;
 import ij.process.ImageProcessor;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2D;
-import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.events.*;
 
@@ -70,7 +70,7 @@ public class EllipseMaskDrawer2DTool extends MaskDrawer2DTool implements MouseCl
     }
 
     @Override
-    public void initializeSettingsPanel(FormPanel formPanel) {
+    public void initializeSettingsPanel(JIPipeDesktopFormPanel formPanel) {
         formPanel.addToForm(startFromCenterToggle, new JLabel(), null);
         formPanel.addToForm(squareToggle, new JLabel(), null);
         formPanel.addToForm(fillToggle, new JLabel(), null);

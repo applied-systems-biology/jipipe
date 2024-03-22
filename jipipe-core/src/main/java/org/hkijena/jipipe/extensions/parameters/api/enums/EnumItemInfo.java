@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.parameters.api.enums;
 import javax.swing.*;
 
 /**
- * Used by {@link EnumParameterEditorUI} to extract icons and other information for its enum value
+ * Used by {@link EnumDesktopParameterEditorUI} to extract icons and other information for its enum value
  */
 public interface EnumItemInfo {
 

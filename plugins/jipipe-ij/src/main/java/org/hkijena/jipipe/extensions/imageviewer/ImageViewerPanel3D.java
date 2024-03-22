@@ -25,7 +25,17 @@ import ij3d.UniverseListener;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
-import org.hkijena.jipipe.api.JIPipeRunnable;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.api.run.JIPipeRunnable;
+import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueueButton;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.icons.NewThrobberIcon;
+import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
@@ -40,17 +50,8 @@ import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.SnapshotSettings
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.StandardView;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.universe.CustomImage3DUniverse;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.universe.CustomInteractiveBehavior;
+import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
-import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.components.icons.NewThrobberIcon;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
-import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
-import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
-import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueButton;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -75,7 +76,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
 
-public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess, Disposable, UniverseListener, ComponentListener, JIPipeRunnable.FinishedEventListener {
+public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbenchAccess, Disposable, UniverseListener, ComponentListener, JIPipeRunnable.FinishedEventListener {
     private final JIPipeImageViewer imageViewer;
     private final ImageViewer3DUISettings settings;
     private final JPanel rendererStatusPanel = new JPanel(new BorderLayout());
@@ -84,11 +85,11 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     private final JPanel viewerCanvasPanel = new JPanel(new BorderLayout());
     private final JToolBar toolBar = new JToolBar();
     private final JToggleButton enableSideBarButton = new JToggleButton();
-    private final DocumentTabPane tabPane = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Right);
+    private final JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.TabPlacement.Right);
     private final NewThrobberIcon initializationThrobberIcon = new NewThrobberIcon(this);
     private final Timer rebuildImageLaterTimer;
-    private final Map<String, FormPanel> formPanels = new HashMap<>();
-    private final JIPipeRunnerQueue viewerRunnerQueue = new JIPipeRunnerQueue("3D viewer");
+    private final Map<String, JIPipeDesktopFormPanel> formPanels = new HashMap<>();
+    private final JIPipeRunnableQueue viewerRunnerQueue = new JIPipeRunnableQueue("3D viewer");
     private final Image3DRendererSettings image3DRendererSettings = new Image3DRendererSettings();
     private final JLabel renderInfoLabel = new JLabel("No image",
             UIUtils.getIconFromResources("devices/video-display.png"), JLabel.LEFT);
@@ -107,8 +108,8 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     private int currentImageContentsResamplingFactor;
     private ImageStatistics imageStatistics;
     private boolean isUpdatingSliders = false;
-    private FormPanel bottomPanel;
-    private UpdateLutAndCalibrationRun currentUpdateCalibrationRun;    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
+    private JIPipeDesktopFormPanel bottomPanel;
+    private UpdateLutAndCalibrationRun currentUpdateCalibrationRun;
     public ImageViewerPanel3D(JIPipeImageViewer imageViewer) {
         this.imageViewer = imageViewer;
         if (JIPipe.getInstance() != null) {
@@ -127,7 +128,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         viewerRunnerQueue.getFinishedEventEmitter().subscribeWeak(this);
         image3DRendererSettings.getParameterChangedEventEmitter().subscribeLambda((emitter, event) -> rebuildImageLater());
         addComponentListener(this);
-    }
+    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
 
     public static GraphicsConfiguration getBestConfigurationOnSameDevice(Window frame) {
 
@@ -219,7 +220,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         statusBar.setFloatable(false);
         viewerPanel.add(statusBar, BorderLayout.SOUTH);
 
-        JIPipeRunnerQueueButton runnerQueueUI = new JIPipeRunnerQueueButton(getWorkbench(), viewerRunnerQueue);
+        JIPipeDesktopRunnableQueueButton runnerQueueUI = new JIPipeDesktopRunnableQueueButton(getDesktopWorkbench(), viewerRunnerQueue);
         runnerQueueUI.makeFlat();
         statusBar.add(runnerQueueUI);
         statusBar.add(Box.createHorizontalGlue());
@@ -242,7 +243,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
         JPopupMenu.setDefaultLightWeightPopupEnabled(false);
 
-        bottomPanel = new FormPanel(null, FormPanel.NONE);
+        bottomPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.NONE);
         add(bottomPanel, BorderLayout.SOUTH);
 
         initializeToolbar();
@@ -289,7 +290,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         enableSideBarButton.addActionListener(e -> {
             if (settings != null) {
                 settings.setShowSideBar(enableSideBarButton.isSelected());
-                if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+                if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
                     JIPipe.getSettings().save();
                 }
             }
@@ -401,7 +402,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
                 snapshotSettings.setWidth(canvas.getWidth());
                 snapshotSettings.setHeight(canvas.getHeight());
 
-                if (ParameterPanel.showDialog(getWorkbench(), this, snapshotSettings, new MarkdownDocument(), "Create snapshot", ParameterPanel.WITH_SCROLLING)) {
+                if (JIPipeDesktopParameterPanel.showDialog(getDesktopWorkbench(), this, snapshotSettings, new MarkdownText(), "Create snapshot", JIPipeDesktopParameterPanel.WITH_SCROLLING)) {
                     ImagePlus imagePlus = universe.takeSnapshot(snapshotSettings.getWidth(), snapshotSettings.getHeight());
                     BufferedImage image = BufferedImageUtils.copyBufferedImageToARGB(imagePlus.getBufferedImage());
                     try {
@@ -422,7 +423,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
             snapshotSettings.setWidth(canvas.getWidth());
             snapshotSettings.setHeight(canvas.getHeight());
 
-            if (ParameterPanel.showDialog(getWorkbench(), this, snapshotSettings, new MarkdownDocument(), "Create snapshot", ParameterPanel.WITH_SCROLLING)) {
+            if (JIPipeDesktopParameterPanel.showDialog(getDesktopWorkbench(), this, snapshotSettings, new MarkdownText(), "Create snapshot", JIPipeDesktopParameterPanel.WITH_SCROLLING)) {
                 ImagePlus imagePlus = universe.takeSnapshot(snapshotSettings.getWidth(), snapshotSettings.getHeight());
                 BufferedImage image = BufferedImageUtils.copyBufferedImageToARGB(imagePlus.getBufferedImage());
                 CopyImageToClipboard copyImageToClipboard = new CopyImageToClipboard();
@@ -435,12 +436,16 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     private void saveRawImage() {
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Save as *.tif", UIUtils.EXTENSION_FILTER_TIFF);
         if (path != null) {
-            JIPipeRunExecuterUI.runInDialog(getWorkbench(), this, new RawImage2DExporterRun(getImagePlus(), path));
+            JIPipeDesktopRunExecuterUI.runInDialog(getDesktopWorkbench(), this, new RawImage2DExporterRun(getImagePlus(), path));
         }
     }
 
     public JToolBar getToolBar() {
         return toolBar;
+    }
+
+    public JIPipeDesktopWorkbench getDesktopWorkbench() {
+        return imageViewer.getDesktopWorkbench();
     }
 
     @Override
@@ -481,7 +486,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         refreshFormPanel();
     }
 
-    public JIPipeRunnerQueue getViewerRunnerQueue() {
+    public JIPipeRunnableQueue getViewerRunnerQueue() {
         return viewerRunnerQueue;
     }
 
@@ -509,26 +514,26 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
     public void refreshFormPanel() {
         Map<String, Integer> scrollValues = new HashMap<>();
-        for (Map.Entry<String, FormPanel> entry : formPanels.entrySet()) {
+        for (Map.Entry<String, JIPipeDesktopFormPanel> entry : formPanels.entrySet()) {
             scrollValues.put(entry.getKey(), entry.getValue().getScrollPane().getVerticalScrollBar().getValue());
             entry.getValue().clear();
         }
         for (JIPipeImageViewerPlugin3D plugin : imageViewer.getPlugins3D()) {
-            FormPanel formPanel = formPanels.getOrDefault(plugin.getCategory(), null);
+            JIPipeDesktopFormPanel formPanel = formPanels.getOrDefault(plugin.getCategory(), null);
             if (formPanel == null) {
-                formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
+                formPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.WITH_SCROLLING);
                 formPanels.put(plugin.getCategory(), formPanel);
-                FormPanel finalFormPanel = formPanel;
+                JIPipeDesktopFormPanel finalFormPanel = formPanel;
                 tabPane.registerSingletonTab(plugin.getCategory(),
                         plugin.getCategory(),
                         plugin.getCategoryIcon(),
                         () -> finalFormPanel,
-                        DocumentTabPane.CloseMode.withoutCloseButton,
-                        DocumentTabPane.SingletonTabMode.Present);
+                        JIPipeDesktopTabPane.CloseMode.withoutCloseButton,
+                        JIPipeDesktopTabPane.SingletonTabMode.Present);
             }
             plugin.initializeSettingsPanel(formPanel);
         }
-        for (Map.Entry<String, FormPanel> entry : formPanels.entrySet()) {
+        for (Map.Entry<String, JIPipeDesktopFormPanel> entry : formPanels.entrySet()) {
             if (!entry.getValue().isHasVerticalGlue()) {
                 entry.getValue().addVerticalGlue();
             }
@@ -801,7 +806,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
             double fps = ((SpinnerNumberModel) animationFPSControl.getModel()).getNumber().doubleValue();
             if (settings != null) {
                 settings.setDefaultAnimationFPS(fps);
-                if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+                if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
                     JIPipe.getSettings().save();
                 }
             }

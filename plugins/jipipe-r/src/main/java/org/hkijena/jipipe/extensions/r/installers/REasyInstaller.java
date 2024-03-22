@@ -15,15 +15,15 @@ package org.hkijena.jipipe.extensions.r.installers;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.environments.EasyInstallExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.desktop.api.environments.JIPipeDesktopEasyInstallExternalEnvironmentInstaller;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.api.optional.OptionalParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.r.OptionalREnvironment;
 import org.hkijena.jipipe.extensions.r.REnvironment;
 import org.hkijena.jipipe.extensions.r.RExtensionSettings;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import java.io.IOException;
@@ -32,12 +32,12 @@ import java.nio.file.Path;
 import java.util.List;
 
 @SetJIPipeDocumentation(name = "Install R (EasyInstaller)", description = "Downloads a pre-packaged version of R")
-public class REasyInstaller extends EasyInstallExternalEnvironmentInstaller<REnvironment> {
+public class REasyInstaller extends JIPipeDesktopEasyInstallExternalEnvironmentInstaller<REnvironment> {
     /**
      * @param workbench       the workbench
      * @param parameterAccess the parameter access that will receive the generated environment
      */
-    public REasyInstaller(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
+    public REasyInstaller(JIPipeDesktopWorkbench workbench, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterAccess);
     }
 

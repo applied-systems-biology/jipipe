@@ -14,33 +14,38 @@
 package org.hkijena.jipipe.extensions.utils.algorithms.meta;
 
 import ij.IJ;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopProjectOutputTreePanel;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.utils.datatypes.JIPipeOutputData;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.JIPipeProjectOutputTreePanel;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+import java.awt.*;
 import java.nio.file.Path;
 
 @SetJIPipeDocumentation(name = "Get JIPipe slot folder", description = "Extracts a slot output folder from a JIPipe output. Use the 'Set output slot' button to select the correct parameters.")
@@ -113,14 +118,15 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/jipipe.png")
     @SetJIPipeDocumentation(name = "Set output slot", description = "Loads parameters from a project file")
     public void importParametersFromProject(JIPipeWorkbench workbench) {
-        Path projectFile = FileChooserSettings.openFile(workbench.getWindow(), FileChooserSettings.LastDirectoryKey.Projects, "Import JIPipe project", UIUtils.EXTENSION_FILTER_JIP);
+        Window window = ((JIPipeDesktopWorkbench) workbench).getWindow();
+        Path projectFile = FileChooserSettings.openFile(window, FileChooserSettings.LastDirectoryKey.Projects, "Import JIPipe project", UIUtils.EXTENSION_FILTER_JIP);
         if (projectFile != null) {
             try {
                 JIPipeProject project = JIPipeProject.loadProject(projectFile, new UnspecifiedValidationReportContext(), new JIPipeValidationReport(), new JIPipeNotificationInbox());
-                JIPipeProjectOutputTreePanel panel = new JIPipeProjectOutputTreePanel(project);
+                JIPipeDesktopProjectOutputTreePanel panel = new JIPipeDesktopProjectOutputTreePanel(project);
                 panel.setBorder(UIUtils.createControlBorder());
                 int result = JOptionPane.showOptionDialog(
-                        workbench.getWindow(),
+                        window,
                         new Object[]{panel},
                         "Select slot",
                         JOptionPane.OK_CANCEL_OPTION,
@@ -138,10 +144,10 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
                             ParameterUtils.setParameter(this, "compartment-id",
                                     slot.getNode().getProjectCompartment().getAliasIdInParentGraph());
                         } else {
-                            JOptionPane.showMessageDialog(workbench.getWindow(), "Please select a slot", "Error", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(window, "Please select a slot", "Error", JOptionPane.ERROR_MESSAGE);
                         }
                     } else {
-                        JOptionPane.showMessageDialog(workbench.getWindow(), "Please select a slot", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(window, "Please select a slot", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             } catch (Exception e) {

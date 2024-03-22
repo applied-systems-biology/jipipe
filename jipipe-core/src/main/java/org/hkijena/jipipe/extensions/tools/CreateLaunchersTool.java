@@ -18,9 +18,10 @@ import ij.Prefs;
 import mslinks.ShellLink;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
-import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
+import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -36,13 +37,13 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.NoSuchElementException;
 
-public class CreateLaunchersTool extends JIPipeMenuExtension {
+public class CreateLaunchersTool extends JIPipeDesktopMenuExtension {
     /**
      * Creates a new instance
      *
      * @param workbench workbench the extension is attached to
      */
-    public CreateLaunchersTool(JIPipeWorkbench workbench) {
+    public CreateLaunchersTool(JIPipeDesktopWorkbench workbench) {
         super(workbench);
         setText("Create launchers");
         setToolTipText("Creates files that can open JIPipe directly (without ImageJ)");
@@ -76,7 +77,7 @@ public class CreateLaunchersTool extends JIPipeMenuExtension {
         else if (SystemUtils.IS_OS_MAC_OSX)
             createOSXLauncher(imageJDir);
         else
-            JOptionPane.showMessageDialog(getWorkbench().getWindow(), "Your operating system is not supported!", "Create launcher", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(), "Your operating system is not supported!", "Create launcher", JOptionPane.ERROR_MESSAGE);
     }
 
     private void createOSXLauncher(Path imageJDir) {
@@ -87,7 +88,7 @@ public class CreateLaunchersTool extends JIPipeMenuExtension {
         } catch (FileNotFoundException e) {
             IJ.handleException(e);
         }
-        getWorkbench().sendStatusBarText("Created start-jipipe-osx.sh in the application directory.");
+        getDesktopWorkbench().sendStatusBarText("Created start-jipipe-osx.sh in the application directory.");
     }
 
     private void createWindowsLauncher(Path imageJDir) {
@@ -95,7 +96,7 @@ public class CreateLaunchersTool extends JIPipeMenuExtension {
         try {
             imageJExecutable = Files.list(imageJDir).filter(p -> Files.isRegularFile(p) && p.getFileName().toString().startsWith("ImageJ") && p.getFileName().toString().endsWith(".exe")).findFirst().get();
         } catch (IOException | NoSuchElementException e) {
-            JOptionPane.showMessageDialog(getWorkbench().getWindow(), "Could not find ImageJ executable!", "Create launcher", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(), "Could not find ImageJ executable!", "Create launcher", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -117,12 +118,12 @@ public class CreateLaunchersTool extends JIPipeMenuExtension {
         link.getHeader().setIconIndex(0);
         try {
             link.saveTo(imageJDir.resolve("JIPipe.lnk").toString());
-            getWorkbench().sendStatusBarText("Created JIPipe shortcut in the application directory.");
+            getDesktopWorkbench().sendStatusBarText("Created JIPipe shortcut in the application directory.");
         } catch (IOException e) {
             IJ.handleException(e);
             return;
         }
-        if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(),
+        if (JOptionPane.showConfirmDialog(getDesktopWorkbench().getWindow(),
                 "The launcher was created. Do you want to copy it to the desktop?",
                 "Create launchers",
                 JOptionPane.YES_NO_OPTION,
@@ -131,7 +132,7 @@ public class CreateLaunchersTool extends JIPipeMenuExtension {
             Path desktopDirectory = FileSystemView.getFileSystemView().getHomeDirectory().toPath();
             try {
                 link.saveTo(desktopDirectory.resolve("JIPipe.lnk").toString());
-                getWorkbench().sendStatusBarText("Created JIPipe shortcut on the desktop.");
+                getDesktopWorkbench().sendStatusBarText("Created JIPipe shortcut on the desktop.");
             } catch (IOException e) {
                 IJ.handleException(e);
             }
@@ -153,8 +154,8 @@ public class CreateLaunchersTool extends JIPipeMenuExtension {
         } catch (IOException e) {
             IJ.handleException(e);
         }
-        getWorkbench().sendStatusBarText("Created start-jipipe-linux.sh in the application directory.");
-        if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(),
+        getDesktopWorkbench().sendStatusBarText("Created start-jipipe-linux.sh in the application directory.");
+        if (JOptionPane.showConfirmDialog(getDesktopWorkbench().getWindow(),
                 "The launcher was created. Do you want to add a entry into the application menu?",
                 "Create launchers",
                 JOptionPane.YES_NO_OPTION,
@@ -191,7 +192,7 @@ public class CreateLaunchersTool extends JIPipeMenuExtension {
                 writer.println("StartupNotify=true");
                 writer.println("Type=Application");
                 writer.println("Categories=Science;");
-                getWorkbench().sendStatusBarText("Created jipipe.desktop in " + applicationsDirectory);
+                getDesktopWorkbench().sendStatusBarText("Created jipipe.desktop in " + applicationsDirectory);
             } catch (FileNotFoundException e) {
                 IJ.handleException(e);
             }

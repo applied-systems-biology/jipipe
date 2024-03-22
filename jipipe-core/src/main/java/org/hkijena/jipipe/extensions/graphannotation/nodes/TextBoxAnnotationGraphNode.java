@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.nodes.categories.GraphAnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeAnnotationGraphNodeUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopAnnotationGraphNodeUI;
 
 import java.awt.*;
 
@@ -49,7 +49,7 @@ public class TextBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphNo
     }
 
     @Override
-    protected void paintShape(Graphics2D g2, JIPipeAnnotationGraphNodeUI nodeUI, double zoom) {
+    protected void paintShape(Graphics2D g2, JIPipeDesktopAnnotationGraphNodeUI nodeUI, double zoom) {
         int nodeWidth = nodeUI.getWidth();
         int nodeHeight = nodeUI.getHeight();
         if (shapeParameters.fillColor.isEnabled()) {

@@ -27,62 +27,62 @@ import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollectionVisibilities;
 import org.hkijena.jipipe.api.runtimepartitioning.RuntimePartitionReferenceParameter;
-import org.hkijena.jipipe.api.runtimepartitioning.RuntimePartitionReferenceParameterEditorUI;
+import org.hkijena.jipipe.api.runtimepartitioning.RuntimePartitionReferenceDesktopParameterEditorUI;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.extensions.expressions.NumericFunctionExpression;
-import org.hkijena.jipipe.extensions.nodetemplate.JIPipeNodeTemplateParameterEditorUI;
+import org.hkijena.jipipe.extensions.nodetemplate.JIPipeNodeTemplateDesktopParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
-import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.api.collections.ListDesktopParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.api.enums.*;
 import org.hkijena.jipipe.extensions.parameters.api.functions.FunctionParameter;
-import org.hkijena.jipipe.extensions.parameters.api.functions.FunctionParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.api.functions.FunctionDesktopParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.api.functions.StringPatternExtractionFunction;
 import org.hkijena.jipipe.extensions.parameters.api.matrix.Matrix2D;
-import org.hkijena.jipipe.extensions.parameters.api.matrix.Matrix2DParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.api.matrix.Matrix2DDesktopParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.api.optional.OptionalParameter;
-import org.hkijena.jipipe.extensions.parameters.api.optional.OptionalParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.api.optional.OptionalDesktopParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameter;
-import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.api.pairs.PairDesktopParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.api.scripts.ScriptParameter;
-import org.hkijena.jipipe.extensions.parameters.api.scripts.ScriptParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.api.scripts.ScriptDesktopParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.auth.PasswordParameter;
-import org.hkijena.jipipe.extensions.parameters.library.auth.PasswordParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.library.auth.PasswordDesktopParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
-import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionListEditorUI;
+import org.hkijena.jipipe.extensions.parameters.library.collections.DesktopParameterCollectionListEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.colors.*;
-import org.hkijena.jipipe.extensions.parameters.library.editors.JIPipeParameterCollectionVisibilitiesParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.library.editors.JIPipeParameterCollectionVisibilitiesDesktopParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.*;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
-import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.library.images.ImageDesktopParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.*;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLTextParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLTextDesktopParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.matrix.Matrix2DFloat;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.*;
 import org.hkijena.jipipe.extensions.parameters.library.patterns.StringPatternExtraction;
-import org.hkijena.jipipe.extensions.parameters.library.patterns.StringPatternExtractionParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.library.patterns.StringPatternExtractionDesktopParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.*;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.*;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.*;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRangeParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRangeDesktopParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.quantities.OptionalQuantity;
 import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
-import org.hkijena.jipipe.extensions.parameters.library.quantities.QuantityParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.library.quantities.QuantityDesktopParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.ranges.FloatNumberRangeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.ranges.IntNumberRangeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.ranges.NumberRangeParameter;
-import org.hkijena.jipipe.extensions.parameters.library.ranges.NumberRangeParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.library.ranges.NumberRangeDesktopParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.references.*;
 import org.hkijena.jipipe.extensions.parameters.library.roi.*;
 import org.hkijena.jipipe.extensions.parameters.library.scripts.ImageJMacro;
 import org.hkijena.jipipe.extensions.parameters.library.scripts.PythonScript;
 import org.hkijena.jipipe.extensions.parameters.library.table.ParameterTable;
-import org.hkijena.jipipe.extensions.parameters.library.table.ParameterTableEditorUI;
+import org.hkijena.jipipe.extensions.parameters.library.table.DesktopParameterTableEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.util.LogicalOperation;
 import org.hkijena.jipipe.extensions.parameters.library.util.SortOrder;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
-import org.hkijena.jipipe.ui.grapheditor.general.layout.GraphAutoLayout;
+import org.hkijena.jipipe.desktop.app.grapheditor.JIPipeGraphViewMode;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.layout.JIPipepGraphAutoLayoutMethod;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.SizeFitMode;
@@ -125,7 +125,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         // Fallback editor for any parameter collection
-        registerParameterEditor(JIPipeParameterCollection.class, JIPipeParameterCollectionParameterEditorUI.class);
+        registerParameterEditor(JIPipeParameterCollection.class, JIPipeParameterCollectionDesktopParameterEditorUI.class);
         registerParameterType("jipipe:imagej-update-site",
                 JIPipeImageJUpdateSiteDependency.class,
                 JIPipeImageJUpdateSiteDependency.List.class,
@@ -158,22 +158,22 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
         registerQuantityParameters();
         registerImageParameters();
 
-        registerMenuExtension(ParameterTesterJIPipeMenuExtension.class);
-        registerMenuExtension(ExpressionTesterJIPipeMenuExtension.class);
+        registerMenuExtension(ParameterTesterJIPipeDesktopMenuExtension.class);
+        registerMenuExtension(ExpressionTesterJIPipeDesktopMenuExtension.class);
     }
 
     private void registerImageParameters() {
-        registerParameterType("image", ImageParameter.class, "Image", "An image", ImageParameterEditorUI.class);
+        registerParameterType("image", ImageParameter.class, "Image", "An image", ImageDesktopParameterEditorUI.class);
     }
 
     private void registerQuantityParameters() {
-        registerParameterType("quantity", Quantity.class, "Quantity", "A value with a unit", QuantityParameterEditorUI.class);
+        registerParameterType("quantity", Quantity.class, "Quantity", "A value with a unit", QuantityDesktopParameterEditorUI.class);
         registerParameterType("optional-quantity", OptionalQuantity.class, "Optional quantity", "A value with a unit");
         registerEnumParameterType("quantity-image-unit", Quantity.LengthUnit.class, "Length unit", "A length unit");
     }
 
     private void registerRangeParameters() {
-        registerParameterEditor(NumberRangeParameter.class, NumberRangeParameterEditorUI.class);
+        registerParameterEditor(NumberRangeParameter.class, NumberRangeDesktopParameterEditorUI.class);
         registerParameterType("number-range-float",
                 FloatNumberRangeParameter.class,
                 null,
@@ -196,7 +196,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
         atmf.putMapping("text/ijm", "org.scijava.ui.swing.script.highliters.ImageJMacroTokenMaker");
         atmf.putMapping("text/x-python", "org.fife.ui.rsyntaxtextarea.modes.PythonTokenMaker");
 
-        registerParameterEditor(ScriptParameter.class, ScriptParameterEditorUI.class);
+        registerParameterEditor(ScriptParameter.class, ScriptDesktopParameterEditorUI.class);
         registerParameterType("ij-macro-code",
                 ImageJMacro.class,
                 null,
@@ -221,11 +221,11 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 null,
                 "String pattern extraction",
                 "Allows to extract a string from another string",
-                StringPatternExtractionParameterEditorUI.class);
+                StringPatternExtractionDesktopParameterEditorUI.class);
     }
 
     private void registerFunctionParameters() {
-        registerParameterEditor(FunctionParameter.class, FunctionParameterEditorUI.class);
+        registerParameterEditor(FunctionParameter.class, FunctionDesktopParameterEditorUI.class);
         registerParameterType("jipipe-trait:string-pattern-extraction:jipipe-trait:function",
                 StringPatternExtractionFunction.class,
                 StringPatternExtractionFunction.List.class,
@@ -254,7 +254,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
 
     private void registerMatrixParameters() {
         // Matrix parameters
-        registerParameterEditor(Matrix2D.class, Matrix2DParameterEditorUI.class);
+        registerParameterEditor(Matrix2D.class, Matrix2DDesktopParameterEditorUI.class);
         registerParameterType("matrix2d-float",
                 Matrix2DFloat.class,
                 Matrix2DFloat::new,
@@ -266,13 +266,13 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
 
     private void registerCollectionParameters() {
         // Collection parameters
-        registerParameterEditor(ListParameter.class, ListParameterEditorUI.class);
+        registerParameterEditor(ListParameter.class, ListDesktopParameterEditorUI.class);
 
         registerParameterType("parameter-collection-list",
                 ParameterCollectionList.class,
                 "Parameter collection list",
                 "A list of parameter collections",
-                ParameterCollectionListEditorUI.class);
+                DesktopParameterCollectionListEditorUI.class);
     }
 
     private void registerMiscParameters() {
@@ -283,14 +283,14 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 v -> new JIPipeParameterCollectionVisibilities((JIPipeParameterCollectionVisibilities) v),
                 "Parameter visibilities",
                 "Determines which parameters are visible to users",
-                JIPipeParameterCollectionVisibilitiesParameterEditorUI.class);
+                JIPipeParameterCollectionVisibilitiesDesktopParameterEditorUI.class);
         registerParameterType("parameter-table",
                 ParameterTable.class,
                 ParameterTable::new,
                 t -> new ParameterTable((ParameterTable) t),
                 "Parameter table",
                 "A table that contains parameters",
-                ParameterTableEditorUI.class);
+                DesktopParameterTableEditorUI.class);
         registerParameterType("int-modification",
                 NumericFunctionExpression.class,
                 NumericFunctionExpression::new,
@@ -305,7 +305,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 null,
                 "Margin",
                 "Defines a rectangular area within a region",
-                MarginParameterEditorUI.class);
+                MarginDesktopParameterEditorUI.class);
         registerParameterType("fixed-margin",
                 FixedMargin.class,
                 FixedMargin.List.class,
@@ -313,7 +313,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 null,
                 "Margin (fixed size)",
                 "Places fixed-size objects into an area",
-                FixedMarginEditorUI.class);
+                FixedMarginEditorUIDesktop.class);
         registerParameterType("inner-margin",
                 InnerMargin.class,
                 InnerMargin.List.class,
@@ -321,19 +321,19 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 null,
                 "Margin (inner)",
                 "An inner margin (left, top, right, bottom)",
-                InnerMarginEditorUI.class);
+                InnerMarginEditorUIDesktop.class);
         registerParameterType("anchor",
                 Anchor.class,
                 null,
                 null,
                 "Anchor",
                 "An anchor to a position within a rectangle",
-                AnchorParameterEditorUI.class);
+                AnchorDesktopParameterEditorUI.class);
     }
 
     private void registerOptionalParameters() {
         // Optional parameters
-        registerParameterEditor(OptionalParameter.class, OptionalParameterEditorUI.class);
+        registerParameterEditor(OptionalParameter.class, OptionalDesktopParameterEditorUI.class);
         registerParameterType("optional-boolean",
                 OptionalBooleanParameter.class,
                 OptionalBooleanParameter::new,
@@ -443,8 +443,8 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
 
     private void registerEnumParameters() {
         // Enum-like parameters
-        registerParameterEditor(DynamicEnumParameter.class, DynamicEnumParameterEditorUI.class);
-        registerParameterEditor(DynamicSetParameter.class, DynamicSetParameterEditorUI.class);
+        registerParameterEditor(DynamicEnumParameter.class, DynamicEnumDesktopParameterEditorUI.class);
+        registerParameterEditor(DynamicSetParameter.class, DynamicSetDesktopParameterEditorUI.class);
         registerParameterType("string-enum",
                 DynamicStringEnumParameter.class,
                 DynamicStringEnumParameter::new,
@@ -496,7 +496,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 "Graph editor view mode",
                 "Determines how the graphs are displayed");
         registerEnumParameterType("jipipe:ui:graph-editor-auto-layout",
-                GraphAutoLayout.class,
+                JIPipepGraphAutoLayoutMethod.class,
                 "Graph auto layout",
                 "Determines which method is used to apply graph auto-layout");
 
@@ -526,7 +526,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
 
     private void registerPairParameters() {
         // Pair-like parameters
-        registerParameterEditor(PairParameter.class, PairParameterEditorUI.class);
+        registerParameterEditor(PairParameter.class, PairDesktopParameterEditorUI.class);
         registerParameterType("string-query-expression:string:pair",
                 StringQueryExpressionAndStringPairParameter.class,
                 StringQueryExpressionAndStringPairParameter.List.class,
@@ -596,7 +596,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                         "[range];[range];... with range being an integer or [from]-[to]. [from] and [to] are inclusive borders. Negative numbers must be " +
                         "encased with (brackets). [from] and [to] can be in inverse order, generating numbers in inverse order. Spaces are ignored. " +
                         "Example: 0-10;5;3-(-1)",
-                IntegerRangeParameterEditorUI.class);
+                IntegerRangeDesktopParameterEditorUI.class);
         registerParameterType("integer-range:int:pair",
                 IntRangeAndIntegerPairParameter.class,
                 IntRangeAndIntegerPairParameter.List.class,
@@ -618,7 +618,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 r -> new JIPipeDataInfoRef((JIPipeDataInfoRef) r),
                 "Data type",
                 "Reference to a data type",
-                JIPipeDataInfoRefParameterEditorUI.class);
+                JIPipeDataInfoRefDesktopParameterEditorUI.class);
         registerParameterType("optional-data-type",
                 OptionalDataInfoRefParameter.class,
                 null,
@@ -632,7 +632,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 r -> new JIPipeNodeInfoRef((JIPipeNodeInfoRef) r),
                 "Algorithm type",
                 "Reference to an algorithm type",
-                JIPipeNodeInfoRefParameterEditorUI.class);
+                JIPipeNodeInfoRefDesktopParameterEditorUI.class);
         registerParameterType("optional-node-type",
                 OptionalNodeInfoRefParameter.class,
                 null,
@@ -644,32 +644,32 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 ImageJDataImporterRef.class,
                 "ImageJ importer",
                 "Operation that import data from ImageJ",
-                ImageJDataImporterRefParameterEditorUI.class);
+                ImageJDataImporterRefDesktopParameterEditorUI.class);
         registerParameterType("imagej-exporter",
                 ImageJDataExporterRef.class,
                 "ImageJ exporter",
                 "Operation that exports data into ImageJ",
-                ImageJDataExporterRefParameterEditorUI.class);
+                ImageJDataExporterRefDesktopParameterEditorUI.class);
         registerParameterType("imagej-importer-configurable",
                 ImageJDataImportOperationRef.class,
                 "ImageJ importer (configurable)",
                 "Operation that import data from ImageJ",
-                ImageJDataImportOperationRefParameterEditorUI.class);
+                ImageJDataImportOperationRefDesktopParameterEditorUI.class);
         registerParameterType("imagej-exporter-configurable",
                 ImageJDataExportOperationRef.class,
                 "ImageJ exporter (configurable)",
                 "Operation that exports data into ImageJ",
-                ImageJDataExportOperationRefParameterEditorUI.class);
+                ImageJDataExportOperationRefDesktopParameterEditorUI.class);
         registerParameterType("parameter-type",
                 JIPipeParameterTypeInfoRef.class,
                 "Parameter type",
                 "A parameter type",
-                JIPipeParameterTypeInfoRefParameterEditorUI.class);
+                JIPipeParameterTypeInfoRefDesktopParameterEditorUI.class);
         registerParameterType("runtime-partition-reference",
                 RuntimePartitionReferenceParameter.class,
                 "Runtime partition",
                 "A reference to a project runtime partition",
-                RuntimePartitionReferenceParameterEditorUI.class);
+                RuntimePartitionReferenceDesktopParameterEditorUI.class);
 
         // Icon types
         registerParameterType("algorithm-type-icon",
@@ -678,7 +678,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 r -> new IconRef((IconRef) r),
                 "Algorithm type icon",
                 "Reference to an algorithm type icon",
-                IconRefParameterEditorUI.class);
+                IconRefDesktopParameterEditorUI.class);
 
         // Metadata
         registerParameterType("author",
@@ -688,7 +688,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 null,
                 "Author",
                 "An author with affiliations",
-                JIPipeAuthorMetadataParameterEditorUI.class);
+                JIPipeAuthorMetadataDesktopParameterEditorUI.class);
 
         // Node templates
         registerParameterType("node-template",
@@ -698,7 +698,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 null,
                 "Node template",
                 "Stores a copy of a node",
-                JIPipeNodeTemplateParameterEditorUI.class);
+                JIPipeNodeTemplateDesktopParameterEditorUI.class);
 
         // File chooser
         registerParameterType("file-chooser-bookmark",
@@ -713,14 +713,14 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
 
     private void registerCommonJavaTypes() {
         // Register other common Java classes
-        registerParameterEditor(Enum.class, EnumParameterEditorUI.class);
-        registerParameterType("string", String.class, StringList.class, () -> "", s -> s, "String", "A text value", StringParameterEditorUI.class);
-        registerParameterType("password", PasswordParameter.class, null, null, "Password", "A password", PasswordParameterEditorUI.class);
-        registerParameterType("path", Path.class, PathList.class, () -> Paths.get(""), p -> p, "Filesystem path", "A path", FilePathParameterEditorUI.class);
-        registerParameterType("file", File.class, () -> new File(""), f -> f, "Filesystem path", "A path", FileParameterEditorUI.class);
-        registerParameterType("color", Color.class, () -> Color.WHITE, c -> c, "Color", "A color", ColorParameterEditorUI.class);
+        registerParameterEditor(Enum.class, EnumDesktopParameterEditorUI.class);
+        registerParameterType("string", String.class, StringList.class, () -> "", s -> s, "String", "A text value", StringDesktopParameterEditorUI.class);
+        registerParameterType("password", PasswordParameter.class, null, null, "Password", "A password", PasswordDesktopParameterEditorUI.class);
+        registerParameterType("path", Path.class, PathList.class, () -> Paths.get(""), p -> p, "Filesystem path", "A path", FilePathDesktopParameterEditorUI.class);
+        registerParameterType("file", File.class, () -> new File(""), f -> f, "Filesystem path", "A path", FileDesktopParameterEditorUI.class);
+        registerParameterType("color", Color.class, () -> Color.WHITE, c -> c, "Color", "A color", ColorDesktopParameterEditorUI.class);
         registerParameterType("color-list", ColorListParameter.class, "Color list", "A list of colors");
-        registerParameterType("rectangle", Rectangle.class, RectangleList.class, Rectangle::new, o -> new Rectangle((Rectangle) o), "Rectangle", "A rectangle", RectangleParameterEditorUI.class);
+        registerParameterType("rectangle", Rectangle.class, RectangleList.class, Rectangle::new, o -> new Rectangle((Rectangle) o), "Rectangle", "A rectangle", RectangleDesktopParameterEditorUI.class);
         registerColorJsonSerializer();
         registerRectangleJsonSerializer();
         // Compound types
@@ -730,14 +730,14 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 null,
                 "String/Double",
                 "An object that can either hold a string or double.",
-                StringOrDoubleParameterEditorUI.class);
+                StringOrDoubleDesktopParameterEditorUI.class);
         registerParameterType("html-text",
                 HTMLText.class,
                 null,
                 null,
                 "HTML text",
                 "A formatted text",
-                HTMLTextParameterEditorUI.class);
+                HTMLTextDesktopParameterEditorUI.class);
         registerEnumParameterType("path-io-mode",
                 PathIOMode.class,
                 "Path I/O mode",
@@ -750,22 +750,22 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
 
     private void registerPrimitives() {
         // Register boolean
-        registerParameterType(new BooleanPrimitiveParameterTypeInfo(), BooleanParameterEditorUI.class);
-        registerParameterType(new BooleanParameterTypeInfo(), BooleanParameterEditorUI.class);
+        registerParameterType(new BooleanPrimitiveParameterTypeInfo(), BooleanDesktopParameterEditorUI.class);
+        registerParameterType(new BooleanParameterTypeInfo(), BooleanDesktopParameterEditorUI.class);
 
         // Register numbers
-        registerParameterType(new BytePrimitiveParameterTypeInfo(), NumberParameterEditorUI.class);
-        registerParameterType(new ShortPrimitiveParameterTypeInfo(), NumberParameterEditorUI.class);
-        registerParameterType(new IntPrimitiveParameterTypeInfo(), NumberParameterEditorUI.class);
-        registerParameterType(new LongPrimitiveParameterTypeInfo(), NumberParameterEditorUI.class);
-        registerParameterType(new FloatPrimitiveParameterTypeInfo(), NumberParameterEditorUI.class);
-        registerParameterType(new DoublePrimitiveParameterTypeInfo(), NumberParameterEditorUI.class);
-        registerParameterType(new ByteParameterTypeInfo(), NumberParameterEditorUI.class);
-        registerParameterType(new ShortParameterTypeInfo(), NumberParameterEditorUI.class);
-        registerParameterType(new IntParameterTypeInfo(), IntegerList.class, NumberParameterEditorUI.class);
-        registerParameterType(new LongParameterTypeInfo(), LongList.class, NumberParameterEditorUI.class);
-        registerParameterType(new FloatParameterTypeInfo(), FloatList.class, NumberParameterEditorUI.class);
-        registerParameterType(new DoubleParameterTypeInfo(), DoubleList.class, NumberParameterEditorUI.class);
+        registerParameterType(new BytePrimitiveParameterTypeInfo(), NumberDesktopParameterEditorUI.class);
+        registerParameterType(new ShortPrimitiveParameterTypeInfo(), NumberDesktopParameterEditorUI.class);
+        registerParameterType(new IntPrimitiveParameterTypeInfo(), NumberDesktopParameterEditorUI.class);
+        registerParameterType(new LongPrimitiveParameterTypeInfo(), NumberDesktopParameterEditorUI.class);
+        registerParameterType(new FloatPrimitiveParameterTypeInfo(), NumberDesktopParameterEditorUI.class);
+        registerParameterType(new DoublePrimitiveParameterTypeInfo(), NumberDesktopParameterEditorUI.class);
+        registerParameterType(new ByteParameterTypeInfo(), NumberDesktopParameterEditorUI.class);
+        registerParameterType(new ShortParameterTypeInfo(), NumberDesktopParameterEditorUI.class);
+        registerParameterType(new IntParameterTypeInfo(), IntegerList.class, NumberDesktopParameterEditorUI.class);
+        registerParameterType(new LongParameterTypeInfo(), LongList.class, NumberDesktopParameterEditorUI.class);
+        registerParameterType(new FloatParameterTypeInfo(), FloatList.class, NumberDesktopParameterEditorUI.class);
+        registerParameterType(new DoubleParameterTypeInfo(), DoubleList.class, NumberDesktopParameterEditorUI.class);
     }
 
     private void registerColorJsonSerializer() {

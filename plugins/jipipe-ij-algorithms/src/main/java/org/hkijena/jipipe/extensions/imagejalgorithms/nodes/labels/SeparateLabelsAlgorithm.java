@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.labels;
 
-import ij.IJ;
 import ij.ImagePlus;
 import inra.ijpb.label.LabelImages;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -64,8 +63,8 @@ public class SeparateLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             final int label = allLabels[i];
             ImagePlus result = img.duplicate();
             result.setTitle(img.getTitle() + " label=" + label);
-            ImageJUtils.forEachIndexedZCTSlice(result, (ip, index ) -> {
-                ImageJAlgorithmUtils.removeLabelsExcept(ip, new int[] { label });
+            ImageJUtils.forEachIndexedZCTSlice(result, (ip, index) -> {
+                ImageJAlgorithmUtils.removeLabelsExcept(ip, new int[]{label});
             }, labelProgress);
             result.copyScale(img);
             List<JIPipeTextAnnotation> annotationList = new ArrayList<>();

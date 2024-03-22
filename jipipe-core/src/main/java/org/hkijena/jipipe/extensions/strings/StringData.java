@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;
@@ -74,8 +74,8 @@ public class StringData implements JIPipeData {
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        CachedTextViewerWindow window = new CachedTextViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName, true);
+    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
+        CachedTextViewerWindow window = new CachedTextViewerWindow(desktopWorkbench, JIPipeDataTableDataSource.wrap(this, source), displayName, true);
         window.setVisible(true);
         SwingUtilities.invokeLater(window::reloadDisplayedData);
     }

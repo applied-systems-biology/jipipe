@@ -13,20 +13,21 @@
 
 package org.hkijena.jipipe.extensions.pipelinerender;
 
-import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
-import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
-import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
-import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
+import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import java.nio.file.Path;
 
-public class PipelineRenderTool extends JIPipeMenuExtension {
+public class PipelineRenderTool extends JIPipeDesktopMenuExtension {
 
     private static final RenderPipelineRunSettings LAST_SETTINGS = new RenderPipelineRunSettings();
 
@@ -35,7 +36,7 @@ public class PipelineRenderTool extends JIPipeMenuExtension {
      *
      * @param workbench workbench the extension is attached to
      */
-    public PipelineRenderTool(JIPipeWorkbench workbench) {
+    public PipelineRenderTool(JIPipeDesktopWorkbench workbench) {
         super(workbench);
         setText("Export whole pipeline as *.png");
         setToolTipText("Rebuilds the node alias IDs for all nodes. This can help if the " +
@@ -45,19 +46,19 @@ public class PipelineRenderTool extends JIPipeMenuExtension {
     }
 
     private void runRenderTool() {
-        JIPipeProject project = ((JIPipeProjectWorkbench) getWorkbench()).getProject();
-        MarkdownDocument document = new MarkdownDocument("# " + getText() + "\n\n" +
+        JIPipeProject project = ((JIPipeDesktopProjectWorkbench) getDesktopWorkbench()).getProject();
+        MarkdownText document = new MarkdownText("# " + getText() + "\n\n" +
                 "Please check if you organized your compartments as compact as possible, to minimize computational load of generating a full resolution pipeline.");
         RenderPipelineRunSettings settings = LAST_SETTINGS;
 
-        if (ParameterPanel.showDialog(getWorkbench(),
+        if (JIPipeDesktopParameterPanel.showDialog(getDesktopWorkbench(),
                 settings,
                 document,
                 getText(),
-                ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION)) {
-            Path path = FileChooserSettings.saveFile(getWorkbench().getWindow(), FileChooserSettings.LastDirectoryKey.External, getText(), UIUtils.EXTENSION_FILTER_PNG);
+                JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterPanel.WITH_SCROLLING | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION)) {
+            Path path = FileChooserSettings.saveFile(getDesktopWorkbench().getWindow(), FileChooserSettings.LastDirectoryKey.External, getText(), UIUtils.EXTENSION_FILTER_PNG);
             if (path != null) {
-                JIPipeRunExecuterUI.runInDialog(getWorkbench(), getWorkbench().getWindow(), new RenderPipelineRun(project, path, settings));
+                JIPipeDesktopRunExecuterUI.runInDialog(getDesktopWorkbench(), getDesktopWorkbench().getWindow(), new RenderPipelineRun(project, path, settings));
             }
         }
     }

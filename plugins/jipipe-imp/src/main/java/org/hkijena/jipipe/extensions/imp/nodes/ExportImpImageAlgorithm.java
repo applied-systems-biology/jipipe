@@ -13,8 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imp.nodes;
 
-import ij.IJ;
-import ij.ImagePlus;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -25,14 +23,8 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.DataExportExpressionParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.AVICompression;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imp.datatypes.ImpImageData;
 import org.hkijena.jipipe.extensions.imp.datatypes.ImpImageOutputFormat;
 import org.hkijena.jipipe.extensions.imp.utils.ImpImageUtils;
@@ -83,7 +75,7 @@ public class ExportImpImageAlgorithm extends JIPipeIteratingAlgorithm {
                 iterationStep.getInputRow(getFirstInputSlot()),
                 new ArrayList<>(iterationStep.getMergedTextAnnotations().values()));
 
-        if(inputData.isHyperstack()) {
+        if (inputData.isHyperstack()) {
             ImpImageUtils.forEachIndexedZCTSlice(inputData, (ip, index) -> {
                 Path outputFile = outputPath.getParent().resolve(outputPath.getFileName().toString() + "-z" + index.getZ() + "c" + index.getC() + "t" + index.getT());
                 outputFile = PathUtils.ensureExtension(outputFile, fileFormat.getExtension(), fileFormat.getExtensions());
@@ -98,8 +90,7 @@ public class ExportImpImageAlgorithm extends JIPipeIteratingAlgorithm {
 
                 iterationStep.addOutputData(getFirstOutputSlot(), new FileData(outputFile), progressInfo);
             }, progressInfo);
-        }
-        else {
+        } else {
             BufferedImage image = inputData.getImage(0);
             Path outputFile = PathUtils.ensureExtension(outputPath, fileFormat.getExtension(), fileFormat.getExtensions());
             progressInfo.log("Saving to " + outputFile);

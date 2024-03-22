@@ -51,9 +51,9 @@ public class AnnotationsToOMEROTagExporter extends AbstractJIPipeParameterCollec
     }
 
     public void createTags(Set<String> target, Collection<JIPipeTextAnnotation> annotations) {
-        if(tagListAnnotation.isEnabled()) {
+        if (tagListAnnotation.isEnabled()) {
             for (JIPipeTextAnnotation annotation : annotations) {
-                if(Objects.equals(tagListAnnotation.getContent(), annotation.getName())) {
+                if (Objects.equals(tagListAnnotation.getContent(), annotation.getName())) {
                     try {
                         JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(annotation.getValue());
                         createTags(target, node);
@@ -66,15 +66,13 @@ public class AnnotationsToOMEROTagExporter extends AbstractJIPipeParameterCollec
     }
 
     private void createTags(Set<String> target, JsonNode node) {
-        if(node.isArray()) {
+        if (node.isArray()) {
             for (JsonNode child : ImmutableList.copyOf(node.elements())) {
                 createTags(target, child);
             }
-        }
-        else if(node.isTextual()) {
+        } else if (node.isTextual()) {
             target.add(node.textValue());
-        }
-        else if(node.isNumber()) {
+        } else if (node.isNumber()) {
             target.add(String.valueOf(node.doubleValue()));
         }
 //        else {

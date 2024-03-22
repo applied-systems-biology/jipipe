@@ -13,15 +13,15 @@
 
 package org.hkijena.jipipe.extensions.forms.datatypes;
 
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.FormPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import java.awt.*;
@@ -52,7 +52,7 @@ public class GroupHeaderFormData extends ParameterFormData {
 
     @Override
     public Component getEditor(JIPipeWorkbench workbench) {
-        FormPanel.GroupHeaderPanel panel = new FormPanel.GroupHeaderPanel(getName(), UIUtils.getIconFromResources("actions/configure.png"), 8);
+        JIPipeDesktopFormPanel.GroupHeaderPanel panel = new JIPipeDesktopFormPanel.GroupHeaderPanel(getName(), UIUtils.getIconFromResources("actions/configure.png"), 8);
         panel.setDescription(getDescription().getHtml());
         return panel;
     }

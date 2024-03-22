@@ -99,6 +99,7 @@ public class JIPipeExpressionVariablesMap extends HashMap<String, Object> {
 
     /**
      * Puts custom expression parameters (with default settings)
+     *
      * @param customExpressionVariablesParameter the parameter
      * @return this
      */

@@ -20,21 +20,22 @@ import com.google.common.primitives.Ints;
 import ij.IJ;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
-import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.nodetemplate.templatedownloader.NodeTemplateDownloaderRun;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.NodeTemplateSettings;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
-import org.hkijena.jipipe.ui.components.search.SearchTextField;
-import org.hkijena.jipipe.ui.components.window.AlwaysOnTopToggle;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
+import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
+import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
+import org.hkijena.jipipe.desktop.commons.components.window.JIPipeDesktopAlwaysOnTopToggle;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
@@ -55,26 +56,26 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplatesRefreshedEventListener {
+public class NodeTemplateBox extends JIPipeDesktopWorkbenchPanel implements NodeTemplatesRefreshedEventListener {
 
     private final JIPipeProject project;
     private final Set<JIPipeNodeTemplate> projectTemplateList = new HashSet<>();
-    private final MarkdownReader documentationReader = new MarkdownReader(false);
+    private final JIPipeDesktopMarkdownReader documentationReader = new JIPipeDesktopMarkdownReader(false);
     private final JToolBar toolBar = new JToolBar();
     private final boolean isDocked;
-    private final JIPipeGraphCanvasUI canvasUI;
+    private final JIPipeDesktopGraphCanvasUI canvasUI;
     private final Set<JIPipeGraphNode> nodesToAdd;
     private final JPopupMenu manageMenu = new JPopupMenu();
     private JList<JIPipeNodeTemplate> templateList;
-    private SearchTextField searchField;
+    private JIPipeDesktopSearchTextField searchField;
 
-    public NodeTemplateBox(JIPipeWorkbench workbench, boolean isDocked, JIPipeGraphCanvasUI canvasUI, Set<JIPipeGraphNode> nodesToAdd) {
+    public NodeTemplateBox(JIPipeDesktopWorkbench workbench, boolean isDocked, JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeGraphNode> nodesToAdd) {
         super(workbench);
         this.isDocked = isDocked;
         this.canvasUI = canvasUI;
         this.nodesToAdd = nodesToAdd;
-        if (workbench instanceof JIPipeProjectWorkbench) {
-            this.project = ((JIPipeProjectWorkbench) workbench).getProject();
+        if (workbench instanceof JIPipeDesktopProjectWorkbench) {
+            this.project = ((JIPipeDesktopProjectWorkbench) workbench).getProject();
         } else {
             this.project = null;
         }
@@ -83,10 +84,10 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
         JIPipe.getInstance().getNodeTemplatesRefreshedEventEmitter().subscribeWeak(this);
     }
 
-    public static void openNewToolBoxWindow(JIPipeWorkbench workbench) {
+    public static void openNewToolBoxWindow(JIPipeDesktopWorkbench workbench) {
         NodeTemplateBox toolBox = new NodeTemplateBox(workbench, false, null, null);
         JFrame window = new JFrame();
-        toolBox.getToolBar().add(new AlwaysOnTopToggle(window));
+        toolBox.getToolBar().add(new JIPipeDesktopAlwaysOnTopToggle(window));
         window.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         window.setAlwaysOnTop(true);
         window.setTitle("Node templates");
@@ -140,7 +141,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
         setLayout(new BorderLayout());
         add(toolBar, BorderLayout.NORTH);
 
-        searchField = new SearchTextField();
+        searchField = new JIPipeDesktopSearchTextField();
         searchField.addActionListener(e -> reloadTemplateList());
         toolBar.add(searchField);
 
@@ -162,8 +163,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
                     if (i >= 0) {
                         if (templateList.getSelectedValuesList().isEmpty()) {
                             templateList.addSelectionInterval(i, i);
-                        }
-                        else if(!Ints.contains(templateList.getSelectedIndices(), i)) {
+                        } else if (!Ints.contains(templateList.getSelectedIndices(), i)) {
                             templateList.clearSelection();
                             templateList.addSelectionInterval(i, i);
                         }
@@ -197,7 +197,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
         if (isDocked) {
             JButton openWindowButton = new JButton(UIUtils.getIconFromResources("actions/open-in-new-window.png"));
             openWindowButton.setToolTipText("Open in new window");
-            openWindowButton.addActionListener(e -> openNewToolBoxWindow(getWorkbench()));
+            openWindowButton.addActionListener(e -> openNewToolBoxWindow(getDesktopWorkbench()));
             toolBar.add(openWindowButton);
         }
     }
@@ -219,7 +219,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
     }
 
     private void downloadTemplates() {
-        JIPipeRunExecuterUI.runInDialog(getWorkbench(), getWorkbench().getWindow(), new NodeTemplateDownloaderRun(getWorkbench()));
+        JIPipeDesktopRunExecuterUI.runInDialog(getDesktopWorkbench(), getDesktopWorkbench().getWindow(), new NodeTemplateDownloaderRun(getDesktopWorkbench()));
     }
 
     private void reloadManageMenu() {
@@ -292,8 +292,8 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
             return;
         }
         JIPipeNodeTemplate copy = new JIPipeNodeTemplate(template);
-        if (ParameterPanel.showDialog(getWorkbench(), copy, new MarkdownDocument("# Node templates\n\nUse this user interface to modify node templates."), "Edit template",
-                ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_DOCUMENTATION)) {
+        if (JIPipeDesktopParameterPanel.showDialog(getDesktopWorkbench(), copy, new MarkdownText("# Node templates\n\nUse this user interface to modify node templates."), "Edit template",
+                JIPipeDesktopParameterPanel.WITH_SCROLLING | JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION)) {
             template.copyFrom(copy);
             template.setSource(JIPipeNodeTemplate.SOURCE_USER);
             if (project != null) {
@@ -314,7 +314,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
             try {
                 Files.write(path, JsonUtils.toPrettyJsonString(templateList.getSelectedValuesList()).getBytes(StandardCharsets.UTF_8));
             } catch (IOException e) {
-                UIUtils.openErrorDialog(getWorkbench(), this, e);
+                UIUtils.openErrorDialog(getDesktopWorkbench(), this, e);
             }
         }
     }
@@ -360,7 +360,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
                 }
                 NodeTemplateSettings.triggerRefreshedEvent();
             } catch (Exception e) {
-                UIUtils.openErrorDialog(getWorkbench(), this, e);
+                UIUtils.openErrorDialog(getDesktopWorkbench(), this, e);
             }
         }
     }
@@ -490,9 +490,9 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
 
     private void selectNodeTemplate(JIPipeNodeTemplate template) {
         if (template != null) {
-            documentationReader.setDocument(new MarkdownDocument("# " + template.getName() + "\n\n" + TooltipUtils.getAlgorithmTooltip(template, false)));
+            documentationReader.setDocument(new MarkdownText("# " + template.getName() + "\n\n" + TooltipUtils.getAlgorithmTooltip(template, false)));
         } else
-            documentationReader.setDocument(new MarkdownDocument(""));
+            documentationReader.setDocument(new MarkdownText(""));
     }
 
     private List<JIPipeNodeTemplate> getFilteredAndSortedInfos() {

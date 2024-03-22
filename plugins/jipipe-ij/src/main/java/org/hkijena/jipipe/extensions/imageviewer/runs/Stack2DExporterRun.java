@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.imageviewer.runs;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeRunnable;
+import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.utils.StringUtils;
 

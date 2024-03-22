@@ -17,16 +17,16 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
 
 import java.awt.*;
 
 /**
  * UI that shows all parameter types
  */
-public class ParameterUITester extends JIPipeWorkbenchPanel {
+public class ParameterUITester extends JIPipeDesktopWorkbenchPanel {
 
     private JIPipeDynamicParameterCollection parameterCollection;
 
@@ -35,7 +35,7 @@ public class ParameterUITester extends JIPipeWorkbenchPanel {
      *
      * @param workbench the workbench
      */
-    public ParameterUITester(JIPipeWorkbench workbench) {
+    public ParameterUITester(JIPipeDesktopWorkbench workbench) {
         super(workbench);
         initializeParameters();
         initialize();
@@ -43,10 +43,10 @@ public class ParameterUITester extends JIPipeWorkbenchPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        ParameterPanel panel = new ParameterPanel(getWorkbench(),
+        JIPipeDesktopParameterPanel panel = new JIPipeDesktopParameterPanel(getDesktopWorkbench(),
                 parameterCollection,
                 null,
-                ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_SEARCH_BAR);
+                JIPipeDesktopParameterPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterPanel.WITH_SCROLLING | JIPipeDesktopParameterPanel.WITH_SEARCH_BAR);
         add(panel, BorderLayout.CENTER);
     }
 

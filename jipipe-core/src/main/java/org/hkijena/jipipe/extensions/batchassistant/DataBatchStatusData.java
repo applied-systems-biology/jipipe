@@ -26,9 +26,9 @@ import org.hkijena.jipipe.api.data.thumbnails.JIPipeIconLabelThumbnailData;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.api.data.utils.JIPipeSerializedJsonObjectData;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.FormPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
@@ -79,12 +79,12 @@ public class DataBatchStatusData extends JIPipeSerializedJsonObjectData {
 
     @Override
     public JIPipeThumbnailData createThumbnail(int width, int height, JIPipeProgressInfo progressInfo) {
-        return  new JIPipeIconLabelThumbnailData(getStatusMessage(), isStatusValid() ? "emblems/vcs-normal.png" : "emblems/warning.png");
+        return new JIPipeIconLabelThumbnailData(getStatusMessage(), isStatusValid() ? "emblems/vcs-normal.png" : "emblems/warning.png");
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        FormPanel formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
+    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
+        JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.WITH_SCROLLING);
 
         formPanel.addGroupHeader(getStatusMessage(), UIUtils.getIconFromResources(isStatusValid() ? "emblems/vcs-normal.png" : "emblems/warning.png"));
         JXTable table = new JXTable(new ResultsTableData(getPerSlotStatus()));
@@ -99,7 +99,7 @@ public class DataBatchStatusData extends JIPipeSerializedJsonObjectData {
         frame.setTitle("Data batch status");
         frame.pack();
         frame.setSize(new Dimension(800, 600));
-        frame.setLocationRelativeTo(workbench.getWindow());
+        frame.setLocationRelativeTo(desktopWorkbench.getWindow());
         frame.setVisible(true);
     }
 

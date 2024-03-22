@@ -32,7 +32,7 @@ public class GetParentDirectoryFunction extends ExpressionFunction {
     @Override
     public Object evaluate(List<Object> parameters, JIPipeExpressionVariablesMap variables) {
         String pathString = StringUtils.nullToEmpty(parameters.get(0));
-        int N = parameters.size() > 1 ? (int)StringUtils.parseDouble(StringUtils.orElse(parameters.get(1), "1")) : 1;
+        int N = parameters.size() > 1 ? (int) StringUtils.parseDouble(StringUtils.orElse(parameters.get(1), "1")) : 1;
         Path path = Paths.get(pathString);
         for (int i = 0; i < N; i++) {
             path = path.getParent();
@@ -44,8 +44,7 @@ public class GetParentDirectoryFunction extends ExpressionFunction {
     public ParameterInfo getParameterInfo(int index) {
         if (index == 0) {
             return new ParameterInfo("Path", "String that contains the path", String.class);
-        }
-        else if(index == 1) {
+        } else if (index == 1) {
             return new ParameterInfo("N", "Selects the Nth parent", Number.class);
         }
         return null;

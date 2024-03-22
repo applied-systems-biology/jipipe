@@ -27,12 +27,8 @@ import omero.gateway.SecurityContext;
 import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.model.ImageData;
-import omero.gateway.model.MapAnnotationData;
-import omero.gateway.model.TagAnnotationData;
-import omero.model.NamedValue;
 import omero.model.Pixels;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -110,7 +106,7 @@ public class OMEROImageUploader implements AutoCloseable {
             }
         }
 
-        if(!tags.isEmpty()) {
+        if (!tags.isEmpty()) {
             progressInfo.log("Attaching tags ...");
 
             for (Long uploadedImage : uploadedImages) {

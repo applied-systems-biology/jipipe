@@ -18,8 +18,8 @@ import ij.measure.Calibration;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 
 import java.util.Collection;

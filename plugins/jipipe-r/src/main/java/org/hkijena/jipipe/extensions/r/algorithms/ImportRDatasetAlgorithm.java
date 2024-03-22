@@ -14,17 +14,17 @@
 package org.hkijena.jipipe.extensions.r.algorithms;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
-import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
-import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -33,8 +33,8 @@ import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportConte
 import org.hkijena.jipipe.extensions.parameters.api.enums.EnumItemInfo;
 import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterSettings;
 import org.hkijena.jipipe.extensions.r.OptionalREnvironment;
-import org.hkijena.jipipe.extensions.r.RPlugin;
 import org.hkijena.jipipe.extensions.r.RExtensionSettings;
+import org.hkijena.jipipe.extensions.r.RPlugin;
 import org.hkijena.jipipe.extensions.r.RUtils;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -81,10 +81,9 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     public void getExternalEnvironments(List<JIPipeEnvironment> target) {
         super.getExternalEnvironments(target);
-        if(overrideEnvironment.isEnabled()) {
+        if (overrideEnvironment.isEnabled()) {
             target.add(overrideEnvironment.getContent());
-        }
-        else {
+        } else {
             target.add(RExtensionSettings.getInstance().getEnvironment());
         }
     }

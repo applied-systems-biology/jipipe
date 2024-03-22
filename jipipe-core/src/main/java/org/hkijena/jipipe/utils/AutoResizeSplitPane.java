@@ -144,11 +144,10 @@ public class AutoResizeSplitPane extends JSplitPane {
 
         @Override
         public Double apply(Integer availableWidth) {
-            if(availableWidth <= preferredSidebarWidth * 2) {
+            if (availableWidth <= preferredSidebarWidth * 2) {
                 // Very small width -> 1:1 ratio
                 return RATIO_1_TO_1;
-            }
-            else {
+            } else {
                 double ratio = 1.0 * (availableWidth - preferredSidebarWidth) / availableWidth;
                 return resizeLeftSidebar ? 1.0 - ratio : ratio;
             }

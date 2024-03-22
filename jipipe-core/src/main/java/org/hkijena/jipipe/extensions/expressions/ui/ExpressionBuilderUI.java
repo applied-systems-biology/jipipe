@@ -22,10 +22,10 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
-import org.hkijena.jipipe.ui.components.search.SearchTextField;
-import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
+import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
+import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
+import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -52,14 +52,14 @@ public class ExpressionBuilderUI extends JPanel {
     public static final Color COLOR_STRING = new Color(0xe80da5);
     private static final EntryRankingFunction RANKING_FUNCTION = new EntryRankingFunction();
     private static final Function<Object, String> ENTRY_TO_STRING_FUNCTION = new EntryToStringFunction();
-    private final SearchTextField searchField = new SearchTextField();
+    private final JIPipeDesktopSearchTextField searchField = new JIPipeDesktopSearchTextField();
     private final JIPipeExpressionEvaluatorSyntaxTokenMaker tokenMaker = new JIPipeExpressionEvaluatorSyntaxTokenMaker();
     private final Set<JIPipeExpressionParameterVariableInfo> variables;
     private final JList<Object> commandPaletteList = new JList<>();
     private final List<ExpressionOperatorEntry> operatorEntryList;
     private final List<ExpressionConstantEntry> constantEntryList;
+    private final JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.TabPlacement.Top);
     private RSyntaxTextArea expressionEditor;
-    private final DocumentTabPane tabPane = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Top);
     private ExpressionBuilderInserterUI lastVariableInserter;
 
     public ExpressionBuilderUI(String expression, Set<JIPipeExpressionParameterVariableInfo> variables) {
@@ -147,8 +147,8 @@ public class ExpressionBuilderUI extends JPanel {
         tabPane.registerSingletonTab("DOCUMENTATION",
                 "Info",
                 UIUtils.getIconFromResources("actions/help-info.png"),
-                () -> new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/expression-editor.md", Collections.emptyMap())),
-                DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Selected);
+                () -> new JIPipeDesktopMarkdownReader(false, MarkdownText.fromPluginResource("documentation/expression-editor.md", Collections.emptyMap())),
+                JIPipeDesktopTabPane.CloseMode.withoutCloseButton, JIPipeDesktopTabPane.SingletonTabMode.Selected);
 
         JPanel contentPanel = new JPanel(new BorderLayout(4, 16));
         TokenMakerFactory tokenMakerFactory = new TokenMakerFactory() {
@@ -245,13 +245,13 @@ public class ExpressionBuilderUI extends JPanel {
             // Variables and constants will share one tab -> Will re-open
             if (value instanceof JIPipeExpressionParameterVariableInfo || value instanceof ExpressionConstantEntry) {
                 if (lastVariableInserter != null) {
-                    DocumentTabPane.DocumentTab tab = tabPane.getTabContainingContent(lastVariableInserter);
+                    JIPipeDesktopTabPane.DocumentTab tab = tabPane.getTabContainingContent(lastVariableInserter);
                     tabPane.forceCloseTab(tab);
                 }
             } else {
                 // Find another tab with the same content, but without parameters
-                DocumentTabPane.DocumentTab existing = null;
-                for (DocumentTabPane.DocumentTab tab : tabPane.getTabs()) {
+                JIPipeDesktopTabPane.DocumentTab existing = null;
+                for (JIPipeDesktopTabPane.DocumentTab tab : tabPane.getTabs()) {
                     if (tab.getContent() instanceof ExpressionBuilderInserterUI) {
                         ExpressionBuilderInserterUI inserterUI = (ExpressionBuilderInserterUI) tab.getContent();
                         if (!inserterUI.parametersWereEdited()) {
@@ -288,7 +288,7 @@ public class ExpressionBuilderUI extends JPanel {
             tabPane.addTab(title,
                     icon,
                     inserterUI,
-                    DocumentTabPane.CloseMode.withSilentCloseButton,
+                    JIPipeDesktopTabPane.CloseMode.withSilentCloseButton,
                     false);
             tabPane.switchToLastTab();
         }

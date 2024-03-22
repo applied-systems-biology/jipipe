@@ -16,16 +16,16 @@ package org.hkijena.jipipe.extensions.omero.datatypes;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import omero.gateway.model.AnnotationData;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.omero.OMEROCredentialsEnvironment;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -77,6 +77,7 @@ public class OMEROAnnotationReferenceData implements JIPipeData {
     public void setAnnotationId(long annotationId) {
         this.annotationId = annotationId;
     }
+
     @JsonGetter("name")
     public String getName() {
         return name;
@@ -113,17 +114,16 @@ public class OMEROAnnotationReferenceData implements JIPipeData {
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        if(!StringUtils.isNullOrEmpty(url)) {
+    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
+        if (!StringUtils.isNullOrEmpty(url)) {
             try {
                 Desktop.getDesktop().browse(URI.create(url));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }
-        else {
-            JOptionPane.showMessageDialog(workbench.getWindow(), "The OMERO annotation with ID=" + annotationId + " is not associated to a webclient URL. " +
-                    "Please configure the OMERO default credentials or 'Override OMERO credentials' with a URL to the webclient.",
+        } else {
+            JOptionPane.showMessageDialog(desktopWorkbench.getWindow(), "The OMERO annotation with ID=" + annotationId + " is not associated to a webclient URL. " +
+                            "Please configure the OMERO default credentials or 'Override OMERO credentials' with a URL to the webclient.",
                     "Display OMERO project",
                     JOptionPane.ERROR_MESSAGE);
         }
@@ -131,10 +131,9 @@ public class OMEROAnnotationReferenceData implements JIPipeData {
 
     @Override
     public String toString() {
-        if(StringUtils.isNullOrEmpty(name)) {
+        if (StringUtils.isNullOrEmpty(name)) {
             return "OMERO annotation ID=" + annotationId;
-        }
-        else {
+        } else {
             return "OMERO annotation '" + name + "' [ID=" + annotationId + "]";
         }
     }

@@ -16,21 +16,22 @@ package org.hkijena.jipipe.extensions.python.installers;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.lang3.SystemUtils;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalPathParameter;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
-import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.ArchiveUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ProcessUtils;
@@ -48,7 +49,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @SetJIPipeDocumentation(name = "Install Python 3", description = "Installs Python 3")
-public class BasicPortableEnvPythonInstaller extends ExternalEnvironmentInstaller {
+public class BasicPortableEnvPythonInstaller extends JIPipeExternalEnvironmentInstaller {
 
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private Configuration configuration = new Configuration();
@@ -250,13 +251,13 @@ public class BasicPortableEnvPythonInstaller extends ExternalEnvironmentInstalle
         progressInfo.log("Waiting for user input ...");
         synchronized (lock) {
             SwingUtilities.invokeLater(() -> {
-                boolean result = ParameterPanel.showDialog(getWorkbench(), configuration, new MarkdownDocument("# Install Python\n\n" +
+                boolean result = JIPipeDesktopParameterPanel.showDialog((JIPipeDesktopWorkbench) getWorkbench(), configuration, new MarkdownText("# Install Python\n\n" +
                                 "Please review the settings on the left-hand side. Click OK to download the Python distribution and install it.\n\n" +
                                 "You have to agree to the following licenses: https://python-build-standalone.readthedocs.io/en/latest/running.html#licensing"), "Download & install Python",
-                        ParameterPanel.NO_GROUP_HEADERS | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING);
+                        JIPipeDesktopParameterPanel.NO_GROUP_HEADERS | JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterPanel.WITH_SCROLLING);
                 Path installationPath = PathUtils.relativeJIPipeUserDirToAbsolute(getConfiguration().getInstallationPath());
                 if (result && Files.exists(installationPath)) {
-                    if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(), "The directory " + installationPath
+                    if (JOptionPane.showConfirmDialog(((JIPipeDesktopWorkbench) getWorkbench()).getWindow(), "The directory " + installationPath
                             + " already exists. Do you want to overwrite it?", getTaskLabel(), JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
                         result = false;
                     }

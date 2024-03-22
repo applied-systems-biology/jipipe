@@ -23,10 +23,10 @@ import ij.plugin.frame.RoiManager;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Margin;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -42,7 +42,7 @@ public class AddToROIManagerDataDisplay implements JIPipeDataDisplayOperation {
     }
 
     @Override
-    public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
+    public void display(JIPipeData data, String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
         ROIListData rois = (ROIListData) data;
         Map<Optional<ImagePlus>, ROIListData> byImage = rois.groupByReferenceImage();
 
@@ -66,7 +66,7 @@ public class AddToROIManagerDataDisplay implements JIPipeDataDisplayOperation {
         margin.getHeight().ensureExactValue(false);
 
         if (roiManager.getCount() > 0) {
-            int result = JOptionPane.showOptionDialog(workbench.getWindow(),
+            int result = JOptionPane.showOptionDialog(desktopWorkbench.getWindow(),
                     "The current ROI manager already contains ROI. What should be done?",
                     "Show ROI",
                     JOptionPane.YES_NO_CANCEL_OPTION,

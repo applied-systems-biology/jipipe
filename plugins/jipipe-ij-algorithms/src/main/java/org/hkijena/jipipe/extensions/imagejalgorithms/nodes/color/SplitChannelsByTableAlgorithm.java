@@ -25,22 +25,22 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
-import org.hkijena.jipipe.extensions.expressions.*;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.extensions.parameters.library.graph.OutputSlotMapParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
@@ -98,107 +98,6 @@ public class SplitChannelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
         this.ignoreMissingOutputs = other.ignoreMissingOutputs;
     }
 
-    @Override
-    public boolean supportsParallelization() {
-        return true;
-    }
-
-    @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ImagePlus imp = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
-        ResultsTableData table = iterationStep.getInputData("Table", ResultsTableData.class, progressInfo);
-
-        ImagePlus[] split = splitByChannel(imp);
-
-        JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap();
-        variablesMap.putAnnotations(iterationStep.getMergedTextAnnotations());
-        variablesMap.putCustomVariables(getDefaultCustomExpressionVariables());
-
-        // Match annotations
-        int targetRow = -1;
-        if(table.getRowCount() == 1 && ignoreAnnotationColumnsOnTrivialMatch) {
-            progressInfo.log("Trivial annotations match to row=0");
-            targetRow = 0;
-        }
-        else {
-            // Select columns of interest
-            Set<String> columnNames = table.getColumnNames().stream().filter(s -> {
-                variablesMap.set("column_name", s);
-                return annotationColumnFilter.test(variablesMap);
-            }).collect(Collectors.toSet());
-
-            // Get original annotations
-            Map<String, String> imageAnnotations = JIPipeTextAnnotation.annotationListToMap(iterationStep.getOriginalTextAnnotations("Image"),
-                    JIPipeTextAnnotationMergeMode.OverwriteExisting);
-
-            outer: for (int i = 0; i < table.getRowCount(); i++) {
-                for (String columnName : columnNames) {
-                   if(!Objects.equals(table.getValueAsString(i, columnName), imageAnnotations.getOrDefault(columnName, ""))) {
-                       continue outer;
-                   }
-                }
-
-                // Match detected
-                progressInfo.log("Matched annotations to row=" + i);
-                targetRow = i;
-                break;
-            }
-        }
-
-        if(targetRow == -1) {
-            if(ignoreMissingImages) {
-                progressInfo.log("Ignoring image without matching annotations");
-                return;
-            }
-            else {
-                throw new JIPipeValidationRuntimeException(new NullPointerException("Unable to find channel assignment!"),
-                        "Unable to find channel assignment!",
-                        "None of the assignments in the provided table match to the image",
-                        "Please review the table or enable 'Ignore missing images'.");
-            }
-        }
-
-
-        Set<String> channelAssignmentColumnNames = table.getColumnNames().stream().filter(s -> {
-            variablesMap.set("column_name", s);
-            return channelColumnFilter.test(variablesMap);
-        }).collect(Collectors.toSet());
-
-        for (String outputSlotName : channelAssignmentColumnNames) {
-            if(getOutputSlot(outputSlotName) == null) {
-                if(ignoreMissingOutputs) {
-                    progressInfo.log("Ignoring missing output slot " + outputSlotName);
-                    continue;
-                }
-                else {
-                    throw new JIPipeValidationRuntimeException(new NullPointerException("Requested output slot " + outputSlotName + " was not found."),
-                            "Could not find output slot with name " + outputSlotName,
-                            "The node wants to output a channel to the slot '" + outputSlotName + "' but it is not present.",
-                            "Please check if the slot is present. You can also enable 'Ignore missing outputs' to skip such occurrences silently.");
-                }
-            }
-
-            int channelIndex = (int) table.getValueAsDouble(targetRow, outputSlotName);
-            if(channelIndex < 0 || channelIndex >= split.length) {
-                if (ignoreMissingChannels) {
-                    progressInfo.log("Ignoring missing channel index " + channelIndex);
-                    continue;
-                } else {
-                    throw new JIPipeValidationRuntimeException(new IndexOutOfBoundsException("Requested channel " + channelIndex + ", but only " + split.length + " channels are available."),
-                            "Could not find channel with index " + channelIndex,
-                            "You requested that the input channel " + channelIndex + " should be assigned to slot '" + outputSlotName + "', but there are only " + split.length + " channels available.",
-                            "Please check if the index is correct. The first channel index is zero. You can also enable 'Ignore missing channels' to skip such occurrences silently.");
-                }
-            }
-
-            List<JIPipeTextAnnotation> annotations = new ArrayList<>();
-            channelIndexAnnotation.addAnnotationIfEnabled(annotations, channelIndex + "");
-            channelNameAnnotation.addAnnotationIfEnabled(annotations, outputSlotName);
-
-            iterationStep.addOutputData(outputSlotName, new ImagePlusData(split[channelIndex]), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
-        }
-    }
-
     private static ImagePlus[] splitByChannel(ImagePlus imp) {
         ImagePlus[] split;
         if (!imp.isComposite() && imp.getType() != ImagePlus.COLOR_RGB) {
@@ -219,6 +118,105 @@ public class SplitChannelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
             split = new ImagePlus[]{rImp, gImp, bImp};
         }
         return split;
+    }
+
+    @Override
+    public boolean supportsParallelization() {
+        return true;
+    }
+
+    @Override
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus imp = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
+        ResultsTableData table = iterationStep.getInputData("Table", ResultsTableData.class, progressInfo);
+
+        ImagePlus[] split = splitByChannel(imp);
+
+        JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap();
+        variablesMap.putAnnotations(iterationStep.getMergedTextAnnotations());
+        variablesMap.putCustomVariables(getDefaultCustomExpressionVariables());
+
+        // Match annotations
+        int targetRow = -1;
+        if (table.getRowCount() == 1 && ignoreAnnotationColumnsOnTrivialMatch) {
+            progressInfo.log("Trivial annotations match to row=0");
+            targetRow = 0;
+        } else {
+            // Select columns of interest
+            Set<String> columnNames = table.getColumnNames().stream().filter(s -> {
+                variablesMap.set("column_name", s);
+                return annotationColumnFilter.test(variablesMap);
+            }).collect(Collectors.toSet());
+
+            // Get original annotations
+            Map<String, String> imageAnnotations = JIPipeTextAnnotation.annotationListToMap(iterationStep.getOriginalTextAnnotations("Image"),
+                    JIPipeTextAnnotationMergeMode.OverwriteExisting);
+
+            outer:
+            for (int i = 0; i < table.getRowCount(); i++) {
+                for (String columnName : columnNames) {
+                    if (!Objects.equals(table.getValueAsString(i, columnName), imageAnnotations.getOrDefault(columnName, ""))) {
+                        continue outer;
+                    }
+                }
+
+                // Match detected
+                progressInfo.log("Matched annotations to row=" + i);
+                targetRow = i;
+                break;
+            }
+        }
+
+        if (targetRow == -1) {
+            if (ignoreMissingImages) {
+                progressInfo.log("Ignoring image without matching annotations");
+                return;
+            } else {
+                throw new JIPipeValidationRuntimeException(new NullPointerException("Unable to find channel assignment!"),
+                        "Unable to find channel assignment!",
+                        "None of the assignments in the provided table match to the image",
+                        "Please review the table or enable 'Ignore missing images'.");
+            }
+        }
+
+
+        Set<String> channelAssignmentColumnNames = table.getColumnNames().stream().filter(s -> {
+            variablesMap.set("column_name", s);
+            return channelColumnFilter.test(variablesMap);
+        }).collect(Collectors.toSet());
+
+        for (String outputSlotName : channelAssignmentColumnNames) {
+            if (getOutputSlot(outputSlotName) == null) {
+                if (ignoreMissingOutputs) {
+                    progressInfo.log("Ignoring missing output slot " + outputSlotName);
+                    continue;
+                } else {
+                    throw new JIPipeValidationRuntimeException(new NullPointerException("Requested output slot " + outputSlotName + " was not found."),
+                            "Could not find output slot with name " + outputSlotName,
+                            "The node wants to output a channel to the slot '" + outputSlotName + "' but it is not present.",
+                            "Please check if the slot is present. You can also enable 'Ignore missing outputs' to skip such occurrences silently.");
+                }
+            }
+
+            int channelIndex = (int) table.getValueAsDouble(targetRow, outputSlotName);
+            if (channelIndex < 0 || channelIndex >= split.length) {
+                if (ignoreMissingChannels) {
+                    progressInfo.log("Ignoring missing channel index " + channelIndex);
+                    continue;
+                } else {
+                    throw new JIPipeValidationRuntimeException(new IndexOutOfBoundsException("Requested channel " + channelIndex + ", but only " + split.length + " channels are available."),
+                            "Could not find channel with index " + channelIndex,
+                            "You requested that the input channel " + channelIndex + " should be assigned to slot '" + outputSlotName + "', but there are only " + split.length + " channels available.",
+                            "Please check if the index is correct. The first channel index is zero. You can also enable 'Ignore missing channels' to skip such occurrences silently.");
+                }
+            }
+
+            List<JIPipeTextAnnotation> annotations = new ArrayList<>();
+            channelIndexAnnotation.addAnnotationIfEnabled(annotations, channelIndex + "");
+            channelNameAnnotation.addAnnotationIfEnabled(annotations, outputSlotName);
+
+            iterationStep.addOutputData(outputSlotName, new ImagePlusData(split[channelIndex]), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+        }
     }
 
     @Override

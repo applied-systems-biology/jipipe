@@ -22,20 +22,20 @@ import ij.gui.EllipseRoi;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
 import org.apache.commons.lang3.Range;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeImageThumbnailData;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.ijtrackmate.display.spots.CachedSpotCollectionDataViewerWindow;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMap;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import javax.swing.*;
 import java.awt.*;
@@ -196,8 +196,8 @@ public class SpotsCollectionData extends ModelData {
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        CachedSpotCollectionDataViewerWindow window = new CachedSpotCollectionDataViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
+    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
+        CachedSpotCollectionDataViewerWindow window = new CachedSpotCollectionDataViewerWindow(desktopWorkbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
         window.setVisible(true);
         SwingUtilities.invokeLater(window::reloadDisplayedData);
     }

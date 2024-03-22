@@ -16,8 +16,8 @@ package org.hkijena.jipipe.api.data;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -231,11 +231,11 @@ public interface JIPipeData extends Closeable, AutoCloseable {
      * The UI can handle multiple of such operations via {@link JIPipeDataDisplayOperation} that can be registered separately.
      * This item will always be shown as "Default" in the list of operations.
      *
-     * @param displayName a name that can be used
-     * @param workbench   the workbench
-     * @param source      optional source of the data. Can be null or any kind of data type (e.g. {@link JIPipeDataSlot})
+     * @param displayName      a name that can be used
+     * @param desktopWorkbench the workbench
+     * @param source           optional source of the data. Can be null or any kind of data type (e.g. {@link JIPipeDataSlot})
      */
-    void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source);
+    void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source);
 
     /**
      * This function generates a preview component for usage within the GUI
@@ -253,9 +253,10 @@ public interface JIPipeData extends Closeable, AutoCloseable {
     /**
      * This function generates a thumbnail for this data
      * Can return null
-     * @param width the width
-     * @param height the height
-     * @param progressInfo  the progress info
+     *
+     * @param width        the width
+     * @param height       the height
+     * @param progressInfo the progress info
      * @return the thumbnail or null
      */
     default JIPipeThumbnailData createThumbnail(int width, int height, JIPipeProgressInfo progressInfo) {
@@ -293,7 +294,7 @@ public interface JIPipeData extends Closeable, AutoCloseable {
             Dimension size = sizes.get(i);
             progressInfo.resolveAndLog(size.width + "x" + size.height, i, sizes.size());
             JIPipeThumbnailData thumbnail = createThumbnail(size.width, size.height, progressInfo);
-            if(thumbnail == null)
+            if (thumbnail == null)
                 continue;
             Component component = thumbnail.renderToComponent(size.width, size.height);
             if (component == null)

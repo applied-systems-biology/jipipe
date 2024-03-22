@@ -19,20 +19,20 @@ import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeService;
-import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
+import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopDefaultResultDataSlotPreview;
+import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopDefaultResultDataSlotRowUI;
+import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultDataSlotPreview;
+import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultDataSlotRowUI;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.resultanalysis.JIPipeDefaultResultDataSlotPreview;
-import org.hkijena.jipipe.ui.resultanalysis.JIPipeDefaultResultDataSlotRowUI;
-import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreview;
-import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotRowUI;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jgrapht.Graph;
@@ -56,8 +56,8 @@ public class JIPipeDatatypeRegistry {
     private final Map<String, Map<String, JIPipeDataImportOperation>> registeredImportOperations = new HashMap<>();
     private final Map<Class<? extends JIPipeData>, URL> iconsURLs = new HashMap<>();
     private final Map<Class<? extends JIPipeData>, ImageIcon> iconInstances = new HashMap<>();
-    private final Map<Class<? extends JIPipeData>, Class<? extends JIPipeResultDataSlotRowUI>> resultUIs = new HashMap<>();
-    private final Map<Class<? extends JIPipeData>, Class<? extends JIPipeResultDataSlotPreview>> resultTableCellUIs = new HashMap<>();
+    private final Map<Class<? extends JIPipeData>, Class<? extends JIPipeDesktopResultDataSlotRowUI>> resultUIs = new HashMap<>();
+    private final Map<Class<? extends JIPipeData>, Class<? extends JIPipeDesktopResultDataSlotPreview>> resultTableCellUIs = new HashMap<>();
     private final Set<String> hiddenDataTypeIds = new HashSet<>();
     private final Map<String, JIPipeDependency> registeredDatatypeSources = new HashMap<>();
     private final Graph<JIPipeDataInfo, DataConverterEdge> conversionGraph = new DefaultDirectedGraph<>(DataConverterEdge.class);
@@ -233,7 +233,7 @@ public class JIPipeDatatypeRegistry {
      */
     public void register(String id, Class<? extends JIPipeData> klass, JIPipeDependency source) {
 
-        if(registeredDataTypes.containsKey(id) && klass != registeredDataTypes.get(id)) {
+        if (registeredDataTypes.containsKey(id) && klass != registeredDataTypes.get(id)) {
             throw new IllegalArgumentException("CONFLICTING DATA TYPE ID REGISTRATION!!! Data type ID=" + id + " already exists and is assigned to " + registeredDataTypes.get(id) + ", but " + source + " tried to register the ID to " + klass);
         }
 
@@ -479,7 +479,7 @@ public class JIPipeDatatypeRegistry {
      * @param klass   data class
      * @param uiClass slot ui
      */
-    public void registerResultSlotUI(Class<? extends JIPipeData> klass, Class<? extends JIPipeResultDataSlotRowUI> uiClass) {
+    public void registerResultSlotUI(Class<? extends JIPipeData> klass, Class<? extends JIPipeDesktopResultDataSlotRowUI> uiClass) {
         resultUIs.put(klass, uiClass);
         getJIPipe().getProgressInfo().log("Registered result slot UI for data type " + klass + " UIClass=" + uiClass);
     }
@@ -490,7 +490,7 @@ public class JIPipeDatatypeRegistry {
      * @param klass    data class
      * @param renderer cell renderer
      */
-    public void registerResultTableCellUI(Class<? extends JIPipeData> klass, Class<? extends JIPipeResultDataSlotPreview> renderer) {
+    public void registerResultTableCellUI(Class<? extends JIPipeData> klass, Class<? extends JIPipeDesktopResultDataSlotPreview> renderer) {
         resultTableCellUIs.put(klass, renderer);
         getJIPipe().getProgressInfo().log("Registered result table cell UI for data type " + klass + " RendererClass=" + renderer);
     }
@@ -513,18 +513,18 @@ public class JIPipeDatatypeRegistry {
      * @param row         table row
      * @return slot UI
      */
-    public JIPipeResultDataSlotRowUI getUIForResultSlot(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeDataTableMetadataRow row) {
+    public JIPipeDesktopResultDataSlotRowUI getUIForResultSlot(JIPipeDesktopProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeDataTableMetadataRow row) {
         Class<? extends JIPipeData> dataClass = getById(row.getTrueDataType());
-        Class<? extends JIPipeResultDataSlotRowUI> uiClass = resultUIs.getOrDefault(dataClass, null);
+        Class<? extends JIPipeDesktopResultDataSlotRowUI> uiClass = resultUIs.getOrDefault(dataClass, null);
         if (uiClass != null) {
             try {
-                return ConstructorUtils.getMatchingAccessibleConstructor(uiClass, JIPipeProjectWorkbench.class, JIPipeDataSlot.class, JIPipeDataTableMetadataRow.class)
+                return ConstructorUtils.getMatchingAccessibleConstructor(uiClass, JIPipeDesktopProjectWorkbench.class, JIPipeDataSlot.class, JIPipeDataTableMetadataRow.class)
                         .newInstance(workbenchUI, slot, row);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
         } else {
-            return new JIPipeDefaultResultDataSlotRowUI(workbenchUI, slot, row);
+            return new JIPipeDesktopDefaultResultDataSlotRowUI(workbenchUI, slot, row);
         }
     }
 
@@ -538,23 +538,23 @@ public class JIPipeDatatypeRegistry {
      * @param dataAnnotation the data annotation (optional)
      * @return cell renderer
      */
-    public JIPipeResultDataSlotPreview getCellRendererFor(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, JIPipeExportedDataAnnotation dataAnnotation) {
+    public JIPipeDesktopResultDataSlotPreview getCellRendererFor(JIPipeDesktopProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, JIPipeExportedDataAnnotation dataAnnotation) {
         Class<? extends JIPipeData> dataClass = getById(row.getTrueDataType());
         if (GeneralDataSettings.getInstance().isGenerateResultPreviews()) {
-            Class<? extends JIPipeResultDataSlotPreview> rendererClass = resultTableCellUIs.getOrDefault(dataClass, null);
+            Class<? extends JIPipeDesktopResultDataSlotPreview> rendererClass = resultTableCellUIs.getOrDefault(dataClass, null);
             if (rendererClass != null) {
                 try {
-                    return rendererClass.getConstructor(JIPipeProjectWorkbench.class, JTable.class, JIPipeDataSlot.class, JIPipeDataTableMetadataRow.class, JIPipeExportedDataAnnotation.class)
+                    return rendererClass.getConstructor(JIPipeDesktopProjectWorkbench.class, JTable.class, JIPipeDataSlot.class, JIPipeDataTableMetadataRow.class, JIPipeExportedDataAnnotation.class)
                             .newInstance(workbench, table, slot, row, dataAnnotation);
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                          NoSuchMethodException e) {
                     throw new RuntimeException(e);
                 }
             } else {
-                return new JIPipeDefaultResultDataSlotPreview(workbench, table, slot, row, dataAnnotation);
+                return new JIPipeDesktopDefaultResultDataSlotPreview(workbench, table, slot, row, dataAnnotation);
             }
         } else {
-            return new JIPipeDefaultResultDataSlotPreview(workbench, table, slot, row, dataAnnotation);
+            return new JIPipeDesktopDefaultResultDataSlotPreview(workbench, table, slot, row, dataAnnotation);
         }
     }
 

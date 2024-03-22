@@ -31,7 +31,7 @@ import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageToImagePlusDataConverter;
 import org.hkijena.jipipe.extensions.clij2.datatypes.ImagePlusDataToCLIJImageDataConverter;
 import org.hkijena.jipipe.extensions.clij2.parameters.OpenCLKernelScript;
-import org.hkijena.jipipe.extensions.clij2.ui.CLIJControlPanelJIPipeMenuExtension;
+import org.hkijena.jipipe.extensions.clij2.ui.CLIJControlPanelJIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.extensions.core.CorePlugin;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.extensions.imagejdatatypes.compat.ImagePlusWindowImageJImporterUI;
@@ -242,7 +242,7 @@ public class CLIJPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Extensions",
                 UIUtils.getIconFromResources("actions/plugins.png"),
                 new CLIJSettings());
-        registerMenuExtension(CLIJControlPanelJIPipeMenuExtension.class);
+        registerMenuExtension(CLIJControlPanelJIPipeDesktopMenuExtension.class);
 
         registerNodeExamplesFromResources(RESOURCES, "examples");
     }

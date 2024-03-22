@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.forms;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
@@ -23,6 +24,8 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
@@ -32,8 +35,6 @@ import org.hkijena.jipipe.extensions.imageviewer.plugins2d.CalibrationPlugin2D;
 import org.hkijena.jipipe.extensions.imageviewer.plugins2d.LUTManagerPlugin2D;
 import org.hkijena.jipipe.extensions.imageviewer.plugins2d.PixelInfoPlugin2D;
 import org.hkijena.jipipe.extensions.imageviewer.plugins2d.maskdrawer.MaskDrawerPlugin2D;
-import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -58,7 +59,7 @@ public class MaskDrawerFormData extends FormData {
     }
 
     private void initializeImageViewer() {
-        imageViewerPanel = new JIPipeImageViewer(new JIPipeDummyWorkbench(),
+        imageViewerPanel = new JIPipeImageViewer(new JIPipeDesktopDummyWorkbench(),
                 Arrays.asList(CalibrationPlugin2D.class,
                         PixelInfoPlugin2D.class,
                         LUTManagerPlugin2D.class,
@@ -137,7 +138,7 @@ public class MaskDrawerFormData extends FormData {
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
+    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
 
     }
 

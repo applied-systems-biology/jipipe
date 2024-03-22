@@ -21,12 +21,11 @@ import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
-import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
+import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -36,14 +35,14 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.UUID;
 
-public class ExportNodeSignatureJsonsTool extends JIPipeMenuExtension {
+public class ExportNodeSignatureJsonsTool extends JIPipeDesktopMenuExtension {
 
     /**
      * Creates a new instance
      *
      * @param workbench workbench the extension is attached to
      */
-    public ExportNodeSignatureJsonsTool(JIPipeWorkbench workbench) {
+    public ExportNodeSignatureJsonsTool(JIPipeDesktopWorkbench workbench) {
         super(workbench);
         setText("Export all node signatures JSON");
         setToolTipText("Exports all available as JSON describing the functionality.");
@@ -52,8 +51,8 @@ public class ExportNodeSignatureJsonsTool extends JIPipeMenuExtension {
     }
 
     private void runExportTool() {
-        Path outputDirectory = FileChooserSettings.saveDirectory(getWorkbench().getWindow(), FileChooserSettings.LastDirectoryKey.External, "Output directory");
-        if(outputDirectory != null) {
+        Path outputDirectory = FileChooserSettings.saveDirectory(getDesktopWorkbench().getWindow(), FileChooserSettings.LastDirectoryKey.External, "Output directory");
+        if (outputDirectory != null) {
             for (Map.Entry<String, JIPipeNodeInfo> entry : JIPipe.getNodes().getRegisteredNodeInfos().entrySet()) {
                 JIPipeGraphNode instance = entry.getValue().newInstance();
                 System.out.println("Export " + entry.getKey());
@@ -73,7 +72,7 @@ public class ExportNodeSignatureJsonsTool extends JIPipeMenuExtension {
                 for (JIPipeInputDataSlot inputSlot : instance.getInputSlots()) {
                     JIPipeDataInfo dataInfo = JIPipeDataInfo.getInstance(inputSlot.getAcceptedDataType());
                     inputSlotConfig.set(inputSlot.getName(), new TextNode("The node has an input slot '" + inputSlot.getName() + "' that receives data of type ID '" +
-                           dataInfo.getId() + "' (" + dataInfo.getName() + ")" + ". " + StringUtils.nullToEmpty(inputSlot.getInfo().getDescription())));
+                            dataInfo.getId() + "' (" + dataInfo.getName() + ")" + ". " + StringUtils.nullToEmpty(inputSlot.getInfo().getDescription())));
                 }
                 for (JIPipeOutputDataSlot outputSlot : instance.getOutputSlots()) {
                     JIPipeDataInfo dataInfo = JIPipeDataInfo.getInstance(outputSlot.getAcceptedDataType());
@@ -89,7 +88,7 @@ public class ExportNodeSignatureJsonsTool extends JIPipeMenuExtension {
                 output.set("edges", JsonUtils.getObjectMapper().createArrayNode());
                 JsonUtils.saveToFile(output, outputDirectory.resolve(fileName));
             }
-            JOptionPane.showMessageDialog(getWorkbench().getWindow(), "OK", getText(), JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(), "OK", getText(), JOptionPane.INFORMATION_MESSAGE);
         }
     }
 

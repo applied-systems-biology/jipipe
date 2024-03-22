@@ -16,15 +16,18 @@ package org.hkijena.jipipe.api.nodes.algorithm;
 import com.google.common.primitives.Ints;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
+import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeParallelizedAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -256,7 +259,7 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
      *
      * @param iterationStep    The data interface
      * @param iterationContext The iteration context
-     * @param runContext the run context
+     * @param runContext       the run context
      * @param progressInfo     the progress info from the run
      */
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
@@ -307,10 +310,10 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
     /**
      * Generates data and puts the output into the specified output slot
      *
-     * @param iterationStep    the data batch
-     * @param inputSlot    the input slot that should be generated. Please note that it does not contain any data for this batch.
-     * @param outputSlot   the output slot where data should be put.
-     * @param progressInfo the progress info
+     * @param iterationStep the data batch
+     * @param inputSlot     the input slot that should be generated. Please note that it does not contain any data for this batch.
+     * @param outputSlot    the output slot where data should be put.
+     * @param progressInfo  the progress info
      */
     protected abstract void runGenerator(JIPipeMultiIterationStep iterationStep, JIPipeInputDataSlot inputSlot, JIPipeOutputDataSlot outputSlot, JIPipeProgressInfo progressInfo);
 

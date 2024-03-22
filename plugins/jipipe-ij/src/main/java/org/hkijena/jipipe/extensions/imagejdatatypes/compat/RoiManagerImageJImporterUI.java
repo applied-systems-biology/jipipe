@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.compat;
 
 import org.hkijena.jipipe.api.compat.ImageJDataImportOperation;
 import org.hkijena.jipipe.api.compat.ImageJDataImporterUI;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,7 +28,7 @@ public class RoiManagerImageJImporterUI extends ImageJDataImporterUI {
      * @param workbench the workbench
      * @param importer  the importer
      */
-    public RoiManagerImageJImporterUI(JIPipeWorkbench workbench, ImageJDataImportOperation importer) {
+    public RoiManagerImageJImporterUI(JIPipeDesktopWorkbench workbench, ImageJDataImportOperation importer) {
         super(workbench, importer);
         initialize();
     }

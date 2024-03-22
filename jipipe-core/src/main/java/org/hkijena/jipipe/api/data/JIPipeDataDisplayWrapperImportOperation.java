@@ -15,13 +15,13 @@ package org.hkijena.jipipe.api.data;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.api.run.JIPipeRunnable;
+import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.scijava.Disposable;
 
 import javax.swing.*;
@@ -42,9 +42,9 @@ public class JIPipeDataDisplayWrapperImportOperation implements JIPipeDataImport
     }
 
     @Override
-    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench, JIPipeProgressInfo progressInfo) {
+    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeDesktopWorkbench workbench, JIPipeProgressInfo progressInfo) {
         ImportDataRun run = new ImportDataRun(rowStorageFolder, slot.getAcceptedDataType(), row);
-        JIPipeRunnerQueue.getInstance().getFinishedEventEmitter().subscribeLambdaOnce((emitter, event) -> {
+        JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribeLambdaOnce((emitter, event) -> {
             if (event.getRun() == run) {
                 JIPipeDataTable outputTable = run.getOutputTable();
                 run.setOutputTable(null);
@@ -53,7 +53,7 @@ public class JIPipeDataDisplayWrapperImportOperation implements JIPipeDataImport
                 data.display(displayName, workbench, dataSource);
             }
         });
-        JIPipeRunnerQueue.getInstance().enqueue(run);
+        JIPipeRunnableQueue.getInstance().enqueue(run);
         return null;
     }
 

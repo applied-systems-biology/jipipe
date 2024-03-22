@@ -18,21 +18,22 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
-import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 
 import javax.swing.*;
 import java.lang.ref.WeakReference;
 
 public class JIPipeThumbnailGenerationQueue {
     private static JIPipeThumbnailGenerationQueue INSTANCE;
-    private final JIPipeRunnerQueue runnerQueue = new JIPipeRunnerQueue("Thumbnails");
+    private final JIPipeRunnableQueue runnerQueue = new JIPipeRunnableQueue("Thumbnails");
     private final ThumbnailGeneratedEventEmitter thumbnailGeneratedEventEmitter = new ThumbnailGeneratedEventEmitter();
 
     public JIPipeThumbnailGenerationQueue() {
 
     }
+
     public static synchronized JIPipeThumbnailGenerationQueue getInstance() {
-        if(INSTANCE == null) {
+        if (INSTANCE == null) {
             INSTANCE = new JIPipeThumbnailGenerationQueue();
         }
         return INSTANCE;
@@ -47,8 +48,8 @@ public class JIPipeThumbnailGenerationQueue {
         ThumbnailGenerationRun run = new ThumbnailGenerationRun(this, dataItemStore, width, height);
 
         JIPipeData data = dataItemStore.get();
-        if(data != null) {
-            if(data.getClass().getAnnotation(JIPipeFastThumbnail.class) != null) {
+        if (data != null) {
+            if (data.getClass().getAnnotation(JIPipeFastThumbnail.class) != null) {
                 // Schedule using Swing
                 SwingUtilities.invokeLater(run);
                 return;
@@ -59,8 +60,12 @@ public class JIPipeThumbnailGenerationQueue {
         runnerQueue.enqueue(run);
     }
 
-    public JIPipeRunnerQueue getRunnerQueue() {
+    public JIPipeRunnableQueue getRunnerQueue() {
         return runnerQueue;
+    }
+
+    public interface ThumbnailGeneratedEventListener {
+        void onThumbnailGenerated(ThumbnailGeneratedEvent event);
     }
 
     public static class ThumbnailGenerationRun extends AbstractJIPipeRunnable {
@@ -84,9 +89,9 @@ public class JIPipeThumbnailGenerationQueue {
         @Override
         public void run() {
             JIPipeDataItemStore dataItemStore = dataStoreReference.get();
-            if(dataItemStore != null) {
+            if (dataItemStore != null) {
                 JIPipeData data = dataItemStore.get();
-                if(data != null) {
+                if (data != null) {
                     JIPipeThumbnailData thumbnail = data.createThumbnail(width, height, getProgressInfo());
                     dataItemStore.setThumbnail(thumbnail);
                     queue.thumbnailGeneratedEventEmitter.emit(new ThumbnailGeneratedEvent(dataItemStore));
@@ -113,6 +118,7 @@ public class JIPipeThumbnailGenerationQueue {
 
     public static class ThumbnailGeneratedEvent extends AbstractJIPipeEvent {
         private final WeakReference<JIPipeDataItemStore> storeReference;
+
         public ThumbnailGeneratedEvent(JIPipeDataItemStore source) {
             super(new WeakReference<>(source));
             this.storeReference = new WeakReference<>(source);
@@ -121,10 +127,6 @@ public class JIPipeThumbnailGenerationQueue {
         public JIPipeDataItemStore getStore() {
             return storeReference.get();
         }
-    }
-
-    public interface ThumbnailGeneratedEventListener {
-        void onThumbnailGenerated(ThumbnailGeneratedEvent event);
     }
 
     public static class ThumbnailGeneratedEventEmitter extends JIPipeEventEmitter<ThumbnailGeneratedEvent, ThumbnailGeneratedEventListener> {

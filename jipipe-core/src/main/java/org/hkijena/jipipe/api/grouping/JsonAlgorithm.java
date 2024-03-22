@@ -52,13 +52,13 @@ public class JsonAlgorithm extends JIPipeGraphWrapperAlgorithm implements JIPipe
     }
 
     /**
-     * Replaces the targeted algorithm by a {@link NodeGroup}
+     * Replaces the targeted algorithm by a {@link JIPipeNodeGroup}
      *
      * @param algorithm the algorithm
      */
     public static void unpackToNodeGroup(JsonAlgorithm algorithm) {
         JIPipeGraph graph = algorithm.getParentGraph();
-        NodeGroup group = JIPipe.createNode("node-group");
+        JIPipeNodeGroup group = JIPipe.createNode("node-group");
         group.setCustomName(algorithm.getName());
         group.setCustomDescription(algorithm.getCustomDescription());
         group.setEnabled(algorithm.isEnabled());

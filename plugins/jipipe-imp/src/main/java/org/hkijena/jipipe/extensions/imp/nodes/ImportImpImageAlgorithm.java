@@ -29,9 +29,7 @@ import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.imp.datatypes.ImpImageData;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.nio.file.Path;
 
 @SetJIPipeDocumentation(name = "Import IMP image", description = "Imports an image via the Image Manipulation Pipeline.")

@@ -29,7 +29,7 @@ public class TextBoxAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeToo
     @Override
     protected TextBoxAnnotationGraphNode createAndConfigureNode(Point firstPoint, Point secondPoint) {
         TextBoxAnnotationGraphNode node = super.createAndConfigureNode(firstPoint, secondPoint);
-        String title = JOptionPane.showInputDialog(getWorkbench().getWindow(), "Please input the title:", "Create text box", JOptionPane.PLAIN_MESSAGE);
+        String title = JOptionPane.showInputDialog(getDesktopWorkbench().getWindow(), "Please input the title:", "Create text box", JOptionPane.PLAIN_MESSAGE);
         if (!StringUtils.isNullOrEmpty(title)) {
             node.setTextTitle(title);
         }

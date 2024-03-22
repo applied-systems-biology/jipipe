@@ -56,11 +56,11 @@ public interface ImageJ2ModuleIO extends Service {
     /**
      * Transfers data from JIPipe into the module
      *
-     * @param node         the JIPipe node
-     * @param iterationStep    the data batch
-     * @param moduleItem   the module item
-     * @param module       the module
-     * @param progressInfo the progress info
+     * @param node          the JIPipe node
+     * @param iterationStep the data batch
+     * @param moduleItem    the module item
+     * @param module        the module
+     * @param progressInfo  the progress info
      * @return if successful
      */
     boolean transferFromJIPipe(ImageJ2OpNode node, JIPipeSingleIterationStep iterationStep, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo);
@@ -69,7 +69,7 @@ public interface ImageJ2ModuleIO extends Service {
      * Transfers data from JIPipe from the module
      *
      * @param node                   the JIPipe node
-     * @param iterationStep              the data batch
+     * @param iterationStep          the data batch
      * @param moduleOutputParameters the module output parameters
      * @param moduleItem             the module item
      * @param module                 the module

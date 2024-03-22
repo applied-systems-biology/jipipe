@@ -45,8 +45,7 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
         long stamp = stampedLock.writeLock();
         try {
             subscribers.add(subscriber);
-        }
-        finally {
+        } finally {
             stampedLock.unlock(stamp);
         }
     }
@@ -58,8 +57,7 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
         long stamp = stampedLock.writeLock();
         try {
             subscribers.remove(subscriber);
-        }
-        finally {
+        } finally {
             stampedLock.unlock(stamp);
         }
     }
@@ -102,9 +100,8 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
         long stamp = stampedLock.readLock();
         List<Subscriber<Event, Listener>> subscribers_;
         try {
-           subscribers_ = ImmutableList.copyOf(subscribers);
-        }
-        finally {
+            subscribers_ = ImmutableList.copyOf(subscribers);
+        } finally {
             stampedLock.unlock(stamp);
         }
         for (Subscriber<Event, Listener> subscriber : subscribers_) {
@@ -132,8 +129,7 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
         long stamp = stampedLock.writeLock();
         try {
             subscribers.removeIf(l -> !l.isPresent());
-        }
-        finally {
+        } finally {
             stampedLock.unlock(stamp);
         }
     }

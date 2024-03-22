@@ -14,18 +14,19 @@
 package org.hkijena.jipipe.extensions.tools;
 
 import ij.ImageJ;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
-import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
+import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 
-public class OpenImageJTool extends JIPipeMenuExtension {
+public class OpenImageJTool extends JIPipeDesktopMenuExtension {
     /**
      * Creates a new instance
      *
      * @param workbench workbench the extension is attached to
      */
-    public OpenImageJTool(JIPipeWorkbench workbench) {
+    public OpenImageJTool(JIPipeDesktopWorkbench workbench) {
         super(workbench);
         setText("Open ImageJ");
         setToolTipText("Opens ImageJ (useful if you started JIPipe outside of ImageJ).");

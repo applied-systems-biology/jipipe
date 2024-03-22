@@ -18,7 +18,7 @@ import ij.ImageStack;
 import ij.plugin.filter.AVI_Writer;
 import ij.process.ColorProcessor;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeRunnable;
+import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;

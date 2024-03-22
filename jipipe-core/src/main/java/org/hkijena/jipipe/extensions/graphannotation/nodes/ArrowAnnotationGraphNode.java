@@ -19,8 +19,8 @@ import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.GraphAnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeAnnotationGraphNodeUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopAnnotationGraphNodeUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 
 import java.awt.*;
 import java.util.Set;
@@ -161,7 +161,7 @@ public class ArrowAnnotationGraphNode extends JIPipeAnnotationGraphNode {
     }
 
     @Override
-    public void paintNode(Graphics2D g2, JIPipeAnnotationGraphNodeUI nodeUI, double zoom) {
+    public void paintNode(Graphics2D g2, JIPipeDesktopAnnotationGraphNodeUI nodeUI, double zoom) {
         int finalThickness = (int) Math.max(1, zoom * lineThickness);
         int finalArrowSize = (int) (zoom * arrowSize);
         double w = nodeUI.getWidth() - finalThickness * 2;
@@ -190,7 +190,7 @@ public class ArrowAnnotationGraphNode extends JIPipeAnnotationGraphNode {
     }
 
     @Override
-    public void paintMinimap(Graphics2D graphics2D, int x, int y, int width, int height, BasicStroke defaultStroke, BasicStroke selectedStroke, Set<JIPipeGraphNodeUI> selection) {
+    public void paintMinimap(Graphics2D graphics2D, int x, int y, int width, int height, BasicStroke defaultStroke, BasicStroke selectedStroke, Set<JIPipeDesktopGraphNodeUI> selection) {
         double[] lineCoordinates = calculateLineCoordinates(width, height);
         int x0 = (int) lineCoordinates[0];
         int y0 = (int) lineCoordinates[1];

@@ -402,10 +402,9 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
         StringBuilder stringBuilder = new StringBuilder();
         boolean first = true;
         for (Map.Entry<String, JIPipeParameterAccess> entry : getParameters().entrySet()) {
-            if(!first) {
+            if (!first) {
                 stringBuilder.append(", ");
-            }
-            else {
+            } else {
                 first = false;
             }
             stringBuilder.append(entry.getKey()).append(" = ").append(JIPipeCustomTextDescriptionParameter.getTextDescriptionOf(entry.getValue().get(Object.class)));

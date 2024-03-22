@@ -25,6 +25,12 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
+import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
+import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallToggleButtonRibbonAction;
 import org.hkijena.jipipe.extensions.ijtrackmate.TrackMatePlugin;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.MeasureSpotsNode;
@@ -34,15 +40,9 @@ import org.hkijena.jipipe.extensions.ijtrackmate.utils.SpotDrawer;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPlugin2D;
+import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.ribbon.Ribbon;
-import org.hkijena.jipipe.ui.components.ribbon.SmallButtonAction;
-import org.hkijena.jipipe.ui.components.ribbon.SmallToggleButtonAction;
-import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -58,11 +58,11 @@ import java.util.stream.Collectors;
 
 public class SpotsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     private final JList<Spot> spotsListControl = new JList<>();
-    private final SmallToggleButtonAction displaySpotsViewMenuItem = new SmallToggleButtonAction("Display spots", "Determines whether spots are displayed", UIUtils.getIconFromResources("actions/eye.png"));
-    private final SmallToggleButtonAction displayLabelsViewMenuItem = new SmallToggleButtonAction("Display labels", "Determines whether spot labels are displayed", UIUtils.getIconFromResources("actions/tag.png"));
+    private final JIPipeDesktopSmallToggleButtonRibbonAction displaySpotsViewMenuItem = new JIPipeDesktopSmallToggleButtonRibbonAction("Display spots", "Determines whether spots are displayed", UIUtils.getIconFromResources("actions/eye.png"));
+    private final JIPipeDesktopSmallToggleButtonRibbonAction displayLabelsViewMenuItem = new JIPipeDesktopSmallToggleButtonRibbonAction("Display labels", "Determines whether spot labels are displayed", UIUtils.getIconFromResources("actions/tag.png"));
     private final List<SelectionContextPanel> selectionContextPanels = new ArrayList<>();
     private final JPanel selectionContentPanelUI = new JPanel();
-    private final Ribbon ribbon = new Ribbon(3);
+    private final JIPipeDesktopRibbon ribbon = new JIPipeDesktopRibbon(3);
     private SpotsCollectionData spotsCollection;
     private SpotDrawer spotDrawer = new SpotDrawer();
     private SpotListCellRenderer spotsListCellRenderer;
@@ -106,14 +106,14 @@ public class SpotsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
             displaySpotsViewMenuItem.addActionListener(this::uploadSliceToCanvas);
 
 
-            Ribbon.Task viewTask = ribbon.getOrCreateTask("View");
-            Ribbon.Band generalBand = viewTask.addBand("General");
-            Ribbon.Band visualizationBand = viewTask.addBand("Visualization");
+            JIPipeDesktopRibbon.Task viewTask = ribbon.getOrCreateTask("View");
+            JIPipeDesktopRibbon.Band generalBand = viewTask.addBand("General");
+            JIPipeDesktopRibbon.Band visualizationBand = viewTask.addBand("Visualization");
 
             generalBand.add(displaySpotsViewMenuItem);
             generalBand.add(displayLabelsViewMenuItem);
 
-            SmallButtonAction colorButton = new SmallButtonAction("Color by ...", "Allows to change how spots are colored", UIUtils.getIconFromResources("actions/colors-rgb.png"));
+            JIPipeDesktopSmallButtonRibbonAction colorButton = new JIPipeDesktopSmallButtonRibbonAction("Color by ...", "Allows to change how spots are colored", UIUtils.getIconFromResources("actions/colors-rgb.png"));
             visualizationBand.add(colorButton);
             {
                 JPopupMenu colorByMenu = UIUtils.addPopupMenuToButton(colorButton.getButton());
@@ -131,7 +131,7 @@ public class SpotsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
                 });
             }
 
-            SmallButtonAction labelButton = new SmallButtonAction("Set label to ...", "Allows to change how spots are labeled", UIUtils.getIconFromResources("actions/colors-rgb.png"));
+            JIPipeDesktopSmallButtonRibbonAction labelButton = new JIPipeDesktopSmallButtonRibbonAction("Set label to ...", "Allows to change how spots are labeled", UIUtils.getIconFromResources("actions/colors-rgb.png"));
             visualizationBand.add(labelButton);
             {
                 JPopupMenu setLabelMenu = UIUtils.addPopupMenuToButton(labelButton.getButton());
@@ -155,37 +155,37 @@ public class SpotsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
                     setLabelMenu.add(setLabelMenuEntry);
                 });
             }
-            visualizationBand.add(new Ribbon.Action(new JPanel(), 1, new Insets(2, 2, 2, 2)));
+            visualizationBand.add(new JIPipeDesktopRibbon.Action(new JPanel(), 1, new Insets(2, 2, 2, 2)));
 
-            visualizationBand.add(new SmallButtonAction("More settings ...", "Opens a dialog where all available visualization settings can be changed", UIUtils.getIconFromResources("actions/configure.png"), this::openDrawingSettings));
-            visualizationBand.add(new SmallButtonAction("Save settings", "Saves the current settings as default", UIUtils.getIconFromResources("actions/save.png"), this::saveDefaults));
+            visualizationBand.add(new JIPipeDesktopSmallButtonRibbonAction("More settings ...", "Opens a dialog where all available visualization settings can be changed", UIUtils.getIconFromResources("actions/configure.png"), this::openDrawingSettings));
+            visualizationBand.add(new JIPipeDesktopSmallButtonRibbonAction("Save settings", "Saves the current settings as default", UIUtils.getIconFromResources("actions/save.png"), this::saveDefaults));
         }
         {
-            Ribbon.Task selectionTask = ribbon.addTask("Selection");
-            Ribbon.Band generalBand = selectionTask.addBand("General");
-            Ribbon.Band modifyBand = selectionTask.addBand("Modify");
-            Ribbon.Band measureBand = selectionTask.addBand("Measure");
+            JIPipeDesktopRibbon.Task selectionTask = ribbon.addTask("Selection");
+            JIPipeDesktopRibbon.Band generalBand = selectionTask.addBand("General");
+            JIPipeDesktopRibbon.Band modifyBand = selectionTask.addBand("Modify");
+            JIPipeDesktopRibbon.Band measureBand = selectionTask.addBand("Measure");
 
 //            ROIPickerTool pickerTool = new ROIPickerTool(this);
 //            LargeToggleButtonAction pickerToggle = new LargeToggleButtonAction("Pick", "Allows to select ROI via the mouse", UIUtils.getIcon32FromResources("actions/followmouse.png"));
 //            pickerTool.addToggleButton(pickerToggle.getButton(), getViewerPanel().getCanvas());
 //            generalBand.add(pickerToggle);
 
-            generalBand.add(new SmallButtonAction("Select all", "Selects all spots", UIUtils.getIconFromResources("actions/edit-select-all.png"), this::selectAll));
-            generalBand.add(new SmallButtonAction("Clear selection", "Deselects all spots", UIUtils.getIconFromResources("actions/edit-select-none.png"), this::selectNone));
-            generalBand.add(new SmallButtonAction("Invert selection", "Inverts the current selection", UIUtils.getIconFromResources("actions/edit-select-none.png"), this::invertSelection));
+            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Select all", "Selects all spots", UIUtils.getIconFromResources("actions/edit-select-all.png"), this::selectAll));
+            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Clear selection", "Deselects all spots", UIUtils.getIconFromResources("actions/edit-select-none.png"), this::selectNone));
+            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Invert selection", "Inverts the current selection", UIUtils.getIconFromResources("actions/edit-select-none.png"), this::invertSelection));
 
-            modifyBand.add(new SmallButtonAction("Delete", "Deletes the selected spots", UIUtils.getIconFromResources("actions/delete.png"), () -> removeSelectedSpots(false)));
+            modifyBand.add(new JIPipeDesktopSmallButtonRibbonAction("Delete", "Deletes the selected spots", UIUtils.getIconFromResources("actions/delete.png"), () -> removeSelectedSpots(false)));
 
-            SmallButtonAction measureAction = new SmallButtonAction("Measure", "Measures the spots and displays the results as table", UIUtils.getIconFromResources("actions/statistics.png"), this::measureSelectedSpots);
+            JIPipeDesktopSmallButtonRibbonAction measureAction = new JIPipeDesktopSmallButtonRibbonAction("Measure", "Measures the spots and displays the results as table", UIUtils.getIconFromResources("actions/statistics.png"), this::measureSelectedSpots);
             measureBand.add(measureAction);
         }
         {
-            Ribbon.Task importExportTask = ribbon.addTask("Import/Export");
-            Ribbon.Band fileBand = importExportTask.addBand("File");
+            JIPipeDesktopRibbon.Task importExportTask = ribbon.addTask("Import/Export");
+            JIPipeDesktopRibbon.Band fileBand = importExportTask.addBand("File");
 
-            fileBand.add(new SmallButtonAction("Import from file", "Imports spots from a file", UIUtils.getIconFromResources("actions/fileopen.png"), this::importSpotsFromFile));
-            fileBand.add(new SmallButtonAction("Export to file", "Exports ROI to a file", UIUtils.getIconFromResources("actions/save.png"), this::exportSpotsToFile));
+            fileBand.add(new JIPipeDesktopSmallButtonRibbonAction("Import from file", "Imports spots from a file", UIUtils.getIconFromResources("actions/fileopen.png"), this::importSpotsFromFile));
+            fileBand.add(new JIPipeDesktopSmallButtonRibbonAction("Export to file", "Exports ROI to a file", UIUtils.getIconFromResources("actions/save.png"), this::exportSpotsToFile));
         }
     }
 
@@ -197,7 +197,7 @@ public class SpotsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
         node.getFirstInputSlot().addData(selected, progressInfo);
         node.run(new JIPipeGraphNodeRunContext(), progressInfo);
         ResultsTableData measurements = node.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
-        TableEditor.openWindow(getViewerPanel().getWorkbench(), measurements, "Measurements");
+        JIPipeDesktopTableEditor.openWindow(getViewerPanel().getDesktopWorkbench(), measurements, "Measurements");
     }
 
     private void selectAll() {
@@ -288,14 +288,14 @@ public class SpotsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
             ImageViewerUISpotsDisplaySettings settings = ImageViewerUISpotsDisplaySettings.getInstance();
             settings.getSpotDrawer().copyFrom(spotDrawer);
             settings.setShowSpots(displaySpotsViewMenuItem.getState());
-            if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+            if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
                 JIPipe.getSettings().save();
             }
         }
     }
 
     private void openDrawingSettings() {
-        ParameterPanel.showDialog(getWorkbench(), getViewerPanel(), spotDrawer, new MarkdownDocument("# Spots display settings\n\nPlease use the settings on the left to modify how spots are visualized."), "Spots display settings", ParameterPanel.DEFAULT_DIALOG_FLAGS);
+        JIPipeDesktopParameterPanel.showDialog(getDesktopWorkbench(), getViewerPanel(), spotDrawer, new MarkdownText("# Spots display settings\n\nPlease use the settings on the left to modify how spots are visualized."), "Spots display settings", JIPipeDesktopParameterPanel.DEFAULT_DIALOG_FLAGS);
         uploadSliceToCanvas();
     }
 
@@ -389,7 +389,7 @@ public class SpotsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     }
 
     @Override
-    public void initializeSettingsPanel(FormPanel formPanel) {
+    public void initializeSettingsPanel(JIPipeDesktopFormPanel formPanel) {
         super.initializeSettingsPanel(formPanel);
         formPanel.addVerticalGlue(mainPanel, null);
     }

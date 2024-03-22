@@ -36,13 +36,13 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.parameters.library.colors.ColorListParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.extensions.plots.CachedPlotViewerWindow;
 import org.hkijena.jipipe.extensions.plots.utils.ColorMap;
 import org.hkijena.jipipe.extensions.plots.utils.ColorMapSupplier;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -193,8 +193,8 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        CachedPlotViewerWindow window = new CachedPlotViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName, true);
+    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
+        CachedPlotViewerWindow window = new CachedPlotViewerWindow(desktopWorkbench, JIPipeDataTableDataSource.wrap(this, source), displayName, true);
         window.setVisible(true);
         SwingUtilities.invokeLater(window::reloadDisplayedData);
     }

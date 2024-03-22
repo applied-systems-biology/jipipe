@@ -15,16 +15,16 @@ package org.hkijena.jipipe.extensions.ilastik.installers;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.environments.EasyInstallExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.desktop.api.environments.JIPipeDesktopEasyInstallExternalEnvironmentInstaller;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.ilastik.IlastikSettings;
 import org.hkijena.jipipe.extensions.parameters.api.optional.OptionalParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.processes.OptionalProcessEnvironment;
 import org.hkijena.jipipe.extensions.processes.ProcessEnvironment;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import java.io.IOException;
@@ -34,12 +34,12 @@ import java.util.List;
 
 @SetJIPipeDocumentation(name = "Install Ilastik (EasyInstaller)", description = "Downloads a pre-packaged version of Ilastik")
 @ExternalEnvironmentInfo(category = "Ilastik")
-public class IlastikEasyInstaller extends EasyInstallExternalEnvironmentInstaller<ProcessEnvironment> {
+public class IlastikEasyInstaller extends JIPipeDesktopEasyInstallExternalEnvironmentInstaller<ProcessEnvironment> {
     /**
      * @param workbench       the workbench
      * @param parameterAccess the parameter access that will receive the generated environment
      */
-    public IlastikEasyInstaller(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
+    public IlastikEasyInstaller(JIPipeDesktopWorkbench workbench, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterAccess);
     }
 
@@ -104,7 +104,7 @@ public class IlastikEasyInstaller extends EasyInstallExternalEnvironmentInstalle
         if (SystemUtils.IS_OS_WINDOWS) {
             environment.setExecutablePathWindows(getRelativeIlastikDir().resolve("ilastik.exe"));
             environment.setArguments(new JIPipeExpressionParameter("cli_parameters"));
-        } else if(SystemUtils.IS_OS_LINUX) {
+        } else if (SystemUtils.IS_OS_LINUX) {
             environment.setExecutablePathLinux(getRelativeIlastikDir().resolve("run_ilastik.sh"));
             environment.setArguments(new JIPipeExpressionParameter("cli_parameters"));
         } else {

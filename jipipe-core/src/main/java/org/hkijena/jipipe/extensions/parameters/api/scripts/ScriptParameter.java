@@ -129,6 +129,7 @@ public abstract class ScriptParameter {
 
     /**
      * Returns the default extension for this script
+     *
      * @return the default extension (including the dot)
      */
     public abstract String getExtension();

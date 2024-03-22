@@ -18,8 +18,9 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheDataViewerWindow;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.ui.swing.script.EditorPane;
 
@@ -29,13 +30,13 @@ import java.awt.*;
 /**
  * Cached viewer for
  */
-public class CachedTextViewerWindow extends JIPipeCacheDataViewerWindow {
+public class CachedTextViewerWindow extends JIPipeDesktopCacheDataViewerWindow {
 
-    private JToolBar toolBar = new JToolBar();
+    private final JToolBar toolBar = new JToolBar();
     private EditorPane textArea;
     private JLabel errorLabel;
 
-    public CachedTextViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoading) {
+    public CachedTextViewerWindow(JIPipeDesktopWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoading) {
         super(workbench, dataSource, displayName);
         initialize();
         if (!deferLoading)

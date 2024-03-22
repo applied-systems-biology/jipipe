@@ -13,14 +13,14 @@
 
 package org.hkijena.jipipe.extensions.cellpose.datatypes;
 
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;
@@ -94,8 +94,8 @@ public class CellposeSizeModelData implements JIPipeData {
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        JOptionPane.showMessageDialog(workbench.getWindow(), "Visualizing the model is currently not supported.",
+    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
+        JOptionPane.showMessageDialog(desktopWorkbench.getWindow(), "Visualizing the model is currently not supported.",
                 "Show Cellpose size model", JOptionPane.ERROR_MESSAGE);
     }
 

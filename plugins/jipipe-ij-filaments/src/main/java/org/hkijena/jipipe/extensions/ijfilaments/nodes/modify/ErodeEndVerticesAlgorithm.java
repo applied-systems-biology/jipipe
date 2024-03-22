@@ -13,13 +13,13 @@
 
 package org.hkijena.jipipe.extensions.ijfilaments.nodes.modify;
 
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
@@ -39,8 +39,8 @@ import java.util.Set;
 @AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
 public class ErodeEndVerticesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private int iterations = 1;
     private final VertexMaskParameter vertexMask;
+    private int iterations = 1;
 
     public ErodeEndVerticesAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -66,8 +66,8 @@ public class ErodeEndVerticesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             JIPipeProgressInfo iterationProgress = progressInfo.resolveAndLog("Iteration", i, iterations);
             Set<FilamentVertex> toDelete = new HashSet<>();
             for (FilamentVertex vertex : vertexMask.filter(graph, graph.vertexSet(), variables)) {
-                if(graph.degreeOf(vertex) == 1) {
-                   toDelete.add(vertex);
+                if (graph.degreeOf(vertex) == 1) {
+                    toDelete.add(vertex);
                 }
             }
 

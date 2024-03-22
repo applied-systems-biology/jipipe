@@ -17,9 +17,9 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentInstaller;
 import org.hkijena.jipipe.utils.DocumentationUtils;
 
 import javax.swing.*;
@@ -61,7 +61,7 @@ public class JIPipeExternalEnvironmentRegistry {
      * @param installerClass   the installer
      * @param icon             icon for the installer
      */
-    public void registerInstaller(Class<? extends JIPipeEnvironment> environmentClass, Class<? extends ExternalEnvironmentInstaller> installerClass, Icon icon) {
+    public void registerInstaller(Class<? extends JIPipeEnvironment> environmentClass, Class<? extends JIPipeExternalEnvironmentInstaller> installerClass, Icon icon) {
         installers.put(environmentClass, new InstallerEntry(installerClass, icon));
         getJIPipe().getProgressInfo().log("Registered environment installer for " + environmentClass + " with installer class " + installerClass);
     }
@@ -118,12 +118,12 @@ public class JIPipeExternalEnvironmentRegistry {
      * An entry describing an installer
      */
     public static class InstallerEntry {
-        private final Class<? extends ExternalEnvironmentInstaller> installerClass;
+        private final Class<? extends JIPipeExternalEnvironmentInstaller> installerClass;
         private final String name;
         private final String description;
         private final Icon icon;
 
-        public InstallerEntry(Class<? extends ExternalEnvironmentInstaller> installerClass, Icon icon) {
+        public InstallerEntry(Class<? extends JIPipeExternalEnvironmentInstaller> installerClass, Icon icon) {
             this.installerClass = installerClass;
             this.icon = icon;
             SetJIPipeDocumentation documentation = installerClass.getAnnotation(SetJIPipeDocumentation.class);
@@ -136,7 +136,7 @@ public class JIPipeExternalEnvironmentRegistry {
             }
         }
 
-        public Class<? extends ExternalEnvironmentInstaller> getInstallerClass() {
+        public Class<? extends JIPipeExternalEnvironmentInstaller> getInstallerClass() {
             return installerClass;
         }
 

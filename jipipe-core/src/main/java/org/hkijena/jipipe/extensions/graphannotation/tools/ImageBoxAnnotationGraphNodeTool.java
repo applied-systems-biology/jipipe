@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNodeTool;
 import org.hkijena.jipipe.extensions.graphannotation.nodes.ImageBoxAnnotationGraphNode;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
+import org.hkijena.jipipe.desktop.app.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -38,7 +38,7 @@ public class ImageBoxAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeTo
     @Override
     protected ImageBoxAnnotationGraphNode createAndConfigureNode(Point firstPoint, Point secondPoint) {
         ImageBoxAnnotationGraphNode node = super.createAndConfigureNode(firstPoint, secondPoint);
-        Path path = FileChooserSettings.openFile(getWorkbench().getWindow(),
+        Path path = FileChooserSettings.openFile(getDesktopWorkbench().getWindow(),
                 FileChooserSettings.LastDirectoryKey.External,
                 "Open image",
                 UIUtils.EXTENSION_FILTER_IMAGEIO_IMAGES);

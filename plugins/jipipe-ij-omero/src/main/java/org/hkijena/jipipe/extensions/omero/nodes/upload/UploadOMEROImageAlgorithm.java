@@ -20,15 +20,18 @@ import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.model.DatasetData;
 import omero.gateway.model.ImageData;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -56,11 +59,10 @@ import java.util.*;
 @AddJIPipeInputSlot(value = OMERODatasetReferenceData.class, slotName = "Target dataset", create = true, description = "The data set where the image(s) will be stored")
 @AddJIPipeOutputSlot(value = OMEROImageReferenceData.class, slotName = "Images", create = true, description = "Reference to the uploaded image(s)")
 public class UploadOMEROImageAlgorithm extends JIPipeIteratingAlgorithm {
-    private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
-    private DataExportExpressionParameter fileNameGenerator = new DataExportExpressionParameter("auto_file_name");
-
     private final AnnotationsToOMEROKeyValuePairExporter keyValuePairExporter;
     private final AnnotationsToOMEROTagExporter tagExporter;
+    private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
+    private DataExportExpressionParameter fileNameGenerator = new DataExportExpressionParameter("auto_file_name");
 
     public UploadOMEROImageAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -88,10 +90,9 @@ public class UploadOMEROImageAlgorithm extends JIPipeIteratingAlgorithm {
         // Export image
         Path tmpDirectory = getNewScratch();
         String fileName;
-        if(StringUtils.isNullOrEmpty(fileNameGenerator.getExpression())) {
+        if (StringUtils.isNullOrEmpty(fileNameGenerator.getExpression())) {
             fileName = "unnamed";
-        }
-        else {
+        } else {
             Path outputPath = fileNameGenerator.generatePath(tmpDirectory,
                     getProjectDirectory(),
                     getProjectDataDirs(),
@@ -109,13 +110,13 @@ public class UploadOMEROImageAlgorithm extends JIPipeIteratingAlgorithm {
         Map<String, String> kvPairs = new HashMap<>();
 
         keyValuePairExporter.createKeyValuePairs(kvPairs, iterationStep.getMergedTextAnnotations().values());
-        tagExporter.createTags(tags,  iterationStep.getMergedTextAnnotations().values());
+        tagExporter.createTags(tags, iterationStep.getMergedTextAnnotations().values());
 
         // Upload to OMERO
         OMEROCredentialsEnvironment environment = overrideCredentials.getContentOrDefault(OMEROSettings.getInstance().getDefaultCredentials());
         LoginCredentials credentials = environment.toLoginCredentials();
 
-        try(OMEROGateway gateway = new OMEROGateway(credentials, progressInfo)) {
+        try (OMEROGateway gateway = new OMEROGateway(credentials, progressInfo)) {
             DatasetData datasetData = gateway.getDataset(datasetId, -1);
             SecurityContext context = new SecurityContext(datasetData.getGroupId());
             try (OMEROImageUploader uploader = new OMEROImageUploader(credentials, environment.getEmail(), datasetId, context, progressInfo)) {

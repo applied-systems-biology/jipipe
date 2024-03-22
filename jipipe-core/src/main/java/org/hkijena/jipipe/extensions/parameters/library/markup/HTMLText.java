@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.text.WordUtils;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -28,7 +27,7 @@ import java.util.Objects;
 @JsonDeserialize(using = HTMLText.Deserializer.class)
 @JsonSerialize(using = HTMLText.Serializer.class)
 public class HTMLText {
-    private String html;
+    private final String html;
     private String body;
 
     public HTMLText() {
@@ -117,8 +116,8 @@ public class HTMLText {
         return html;
     }
 
-    public MarkdownDocument toMarkdown() {
-        return new MarkdownDocument(getBody());
+    public MarkdownText toMarkdown() {
+        return new MarkdownText(getBody());
     }
 
     public static class Deserializer extends JsonDeserializer<HTMLText> {

@@ -13,13 +13,13 @@
 
 package org.hkijena.jipipe.api.data.serialization;
 
-import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.project.JIPipeProject;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;

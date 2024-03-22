@@ -59,7 +59,6 @@ public class ImpPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
 
-
     @Override
     public StringList getDependencyCitations() {
         return new StringList();

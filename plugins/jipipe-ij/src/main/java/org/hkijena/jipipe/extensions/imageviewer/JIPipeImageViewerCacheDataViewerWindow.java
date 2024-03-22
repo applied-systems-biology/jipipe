@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.extensions.imageviewer;
 
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheDataViewerWindow;
 
 import javax.swing.*;
 import java.awt.event.WindowEvent;
@@ -26,13 +26,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A {@link JIPipeCacheDataViewerWindow} that contains a {@link JIPipeImageViewer}
+ * A {@link JIPipeDesktopCacheDataViewerWindow} that contains a {@link JIPipeImageViewer}
  */
-public abstract class JIPipeImageViewerCacheDataViewerWindow extends JIPipeCacheDataViewerWindow implements WindowListener {
+public abstract class JIPipeImageViewerCacheDataViewerWindow extends JIPipeDesktopCacheDataViewerWindow implements WindowListener {
     private JIPipeImageViewer imageViewer;
     private boolean fitImageTriggered;
 
-    public JIPipeImageViewerCacheDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
+    public JIPipeImageViewerCacheDataViewerWindow(JIPipeDesktopWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
         super(workbench, dataSource, displayName);
         initialize();
         addWindowListener(this);
@@ -57,7 +57,7 @@ public abstract class JIPipeImageViewerCacheDataViewerWindow extends JIPipeCache
      */
     protected void initializePlugins(List<Class<? extends JIPipeImageViewerPlugin>> plugins, Map<Class<?>, Object> contextObjects) {
         plugins.addAll(JIPipeImageViewer.DEFAULT_PLUGINS);
-        contextObjects.put(JIPipeCacheDataViewerWindow.class, this);
+        contextObjects.put(JIPipeDesktopCacheDataViewerWindow.class, this);
         contextObjects.put(JIPipeImageViewerCacheDataViewerWindow.class, this);
     }
 

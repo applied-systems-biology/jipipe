@@ -15,18 +15,18 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.tools;
 
 import loci.plugins.config.ConfigWindow;
 import loci.plugins.util.WindowTools;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
-import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
+import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
+import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 
-public class BioFormatsConfigTool extends JIPipeMenuExtension {
+public class BioFormatsConfigTool extends JIPipeDesktopMenuExtension {
     /**
      * Creates a new instance
      *
      * @param workbench workbench the extension is attached to
      */
-    public BioFormatsConfigTool(JIPipeWorkbench workbench) {
+    public BioFormatsConfigTool(JIPipeDesktopWorkbench workbench) {
         super(workbench);
         setText("Configure Bio-Formats");
         setToolTipText("Opens the Bio-Formats configuration tool.");

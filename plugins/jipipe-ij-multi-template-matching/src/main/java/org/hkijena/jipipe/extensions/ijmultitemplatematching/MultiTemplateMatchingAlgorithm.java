@@ -19,22 +19,25 @@ import ij.gui.ShapeRoi;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -46,8 +49,6 @@ import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInf
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.references.OptionalDataInfoRefParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.python.core.PyList;
@@ -452,12 +453,12 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         JSpinner startAngle = new JSpinner(new SpinnerNumberModel(0, Integer.MIN_VALUE, Integer.MAX_VALUE, 1));
         JSpinner endAngle = new JSpinner(new SpinnerNumberModel(360, Integer.MIN_VALUE, Integer.MAX_VALUE, 1));
         JSpinner angleStep = new JSpinner(new SpinnerNumberModel(90, 1, Integer.MAX_VALUE, 1));
-        FormPanel formPanel = new FormPanel(null, FormPanel.NONE);
+        JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.NONE);
         formPanel.addToForm(startAngle, new JLabel("Start angle"), null);
         formPanel.addToForm(endAngle, new JLabel("End angle"), null);
         formPanel.addToForm(angleStep, new JLabel("Increment"), null);
         int result = JOptionPane.showOptionDialog(
-                workbench.getWindow(),
+                ((JIPipeDesktopWorkbench) workbench).getWindow(),
                 new Object[]{formPanel},
                 "Generate angles",
                 JOptionPane.OK_CANCEL_OPTION,
@@ -469,7 +470,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
             int endAngleValue = ((SpinnerNumberModel) endAngle.getModel()).getNumber().intValue();
             int step = ((SpinnerNumberModel) angleStep.getModel()).getNumber().intValue();
             if (endAngleValue < startAngleValue) {
-                JOptionPane.showMessageDialog(workbench.getWindow(),
+                JOptionPane.showMessageDialog(((JIPipeDesktopWorkbench) workbench).getWindow(),
                         "The start angle must be less than the end angle!",
                         "Generate angles",
                         JOptionPane.ERROR_MESSAGE);

@@ -14,9 +14,9 @@
 package org.hkijena.jipipe.utils;
 
 import com.google.common.html.HtmlEscapers;
-import org.apache.commons.text.WordUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.apache.commons.text.WordUtils;
 
 import java.awt.*;
 import java.net.URL;
@@ -38,10 +38,9 @@ public class StringUtils {
     }
 
     public static String formatPluralS(int count, String labelSingular) {
-        if(count == 1) {
+        if (count == 1) {
             return count + " " + labelSingular;
-        }
-        else {
+        } else {
             return count + " " + labelSingular + "s";
         }
     }

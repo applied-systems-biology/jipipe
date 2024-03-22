@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.FileChooserBookmarkList;
-import org.hkijena.jipipe.ui.components.AdvancedFileChooser;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopAdvancedFileChooser;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 
@@ -104,7 +104,7 @@ public class FileChooserSettings extends AbstractJIPipeParameterCollection {
                 return null;
             }
         } else {
-            AdvancedFileChooser fileChooser = new AdvancedFileChooser(currentPath.toFile());
+            JIPipeDesktopAdvancedFileChooser fileChooser = new JIPipeDesktopAdvancedFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             if (extensionFilters.length > 0) {
@@ -197,7 +197,7 @@ public class FileChooserSettings extends AbstractJIPipeParameterCollection {
                 return null;
             }
         } else {
-            AdvancedFileChooser fileChooser = new AdvancedFileChooser(currentPath.toFile());
+            JIPipeDesktopAdvancedFileChooser fileChooser = new JIPipeDesktopAdvancedFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             if (extensionFilters.length > 0) {
@@ -252,7 +252,7 @@ public class FileChooserSettings extends AbstractJIPipeParameterCollection {
                 return null;
             }
         } else {
-            AdvancedFileChooser fileChooser = new AdvancedFileChooser(currentPath.toFile());
+            JIPipeDesktopAdvancedFileChooser fileChooser = new JIPipeDesktopAdvancedFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
             if (fileChooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
@@ -288,7 +288,7 @@ public class FileChooserSettings extends AbstractJIPipeParameterCollection {
                 return null;
             }
         } else {
-            AdvancedFileChooser fileChooser = new AdvancedFileChooser(currentPath.toFile());
+            JIPipeDesktopAdvancedFileChooser fileChooser = new JIPipeDesktopAdvancedFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
             if (fileChooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION) {
@@ -324,7 +324,7 @@ public class FileChooserSettings extends AbstractJIPipeParameterCollection {
                 return null;
             }
         } else {
-            AdvancedFileChooser fileChooser = new AdvancedFileChooser(currentPath.toFile());
+            JIPipeDesktopAdvancedFileChooser fileChooser = new JIPipeDesktopAdvancedFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             if (fileChooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
@@ -360,7 +360,7 @@ public class FileChooserSettings extends AbstractJIPipeParameterCollection {
                 return null;
             }
         } else {
-            AdvancedFileChooser fileChooser = new AdvancedFileChooser(currentPath.toFile());
+            JIPipeDesktopAdvancedFileChooser fileChooser = new JIPipeDesktopAdvancedFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             if (fileChooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION) {
@@ -408,7 +408,7 @@ public class FileChooserSettings extends AbstractJIPipeParameterCollection {
                 return Collections.emptyList();
             }
         } else {
-            AdvancedFileChooser fileChooser = new AdvancedFileChooser(currentPath.toFile());
+            JIPipeDesktopAdvancedFileChooser fileChooser = new JIPipeDesktopAdvancedFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setMultiSelectionEnabled(true);
             if (fileChooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
@@ -447,7 +447,7 @@ public class FileChooserSettings extends AbstractJIPipeParameterCollection {
                 return Collections.emptyList();
             }
         } else {
-            AdvancedFileChooser fileChooser = new AdvancedFileChooser(currentPath.toFile());
+            JIPipeDesktopAdvancedFileChooser fileChooser = new JIPipeDesktopAdvancedFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setMultiSelectionEnabled(true);
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -487,7 +487,7 @@ public class FileChooserSettings extends AbstractJIPipeParameterCollection {
                 return Collections.emptyList();
             }
         } else {
-            AdvancedFileChooser fileChooser = new AdvancedFileChooser(currentPath.toFile());
+            JIPipeDesktopAdvancedFileChooser fileChooser = new JIPipeDesktopAdvancedFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setMultiSelectionEnabled(true);
             fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
@@ -671,7 +671,7 @@ public class FileChooserSettings extends AbstractJIPipeParameterCollection {
                 setLastParametersDirectory(lastDirectory);
                 break;
         }
-        if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+        if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
             JIPipe.getSettings().save();
         }
     }

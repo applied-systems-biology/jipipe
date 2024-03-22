@@ -16,12 +16,12 @@ package org.hkijena.jipipe.extensions.filesystem.resultanalysis;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
+import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultDataSlotPreview;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreview;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;
@@ -32,7 +32,7 @@ import java.nio.file.Path;
 /**
  * Renders filesystem data as table cell
  */
-public class FilesystemDataSlotPreview extends JIPipeResultDataSlotPreview {
+public class FilesystemDataSlotPreview extends JIPipeDesktopResultDataSlotPreview {
 
     private final JLabel label = new JLabel();
 
@@ -45,7 +45,7 @@ public class FilesystemDataSlotPreview extends JIPipeResultDataSlotPreview {
      * @param row            the row
      * @param dataAnnotation optional data annotation
      */
-    public FilesystemDataSlotPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, JIPipeExportedDataAnnotation dataAnnotation) {
+    public FilesystemDataSlotPreview(JIPipeDesktopProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, JIPipeExportedDataAnnotation dataAnnotation) {
         super(workbench, table, slot, row, dataAnnotation);
         initialize();
     }

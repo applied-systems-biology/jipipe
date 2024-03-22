@@ -153,7 +153,7 @@ public class OMEROCredentialsEnvironment extends JIPipeEnvironment {
 
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
-        if(StringUtils.isNullOrEmpty(userName) || StringUtils.isNullOrEmpty(host) || StringUtils.isNullOrEmpty(email)) {
+        if (StringUtils.isNullOrEmpty(userName) || StringUtils.isNullOrEmpty(host) || StringUtils.isNullOrEmpty(email)) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     reportContext,
                     "Invalid OMERO credentials",

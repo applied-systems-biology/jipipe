@@ -17,10 +17,10 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.NodeUIContextAction;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -30,9 +30,9 @@ import java.util.Set;
 
 public class LoadExampleContextMenuAction implements NodeUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeGraphNodeUI> selection) {
+    public boolean matches(Set<JIPipeDesktopGraphNodeUI> selection) {
         if (selection.size() == 1) {
-            JIPipeGraphNodeUI nodeUI = selection.iterator().next();
+            JIPipeDesktopGraphNodeUI nodeUI = selection.iterator().next();
             if (!(nodeUI.getNode() instanceof JIPipeAlgorithm)) {
                 return false;
             }
@@ -41,10 +41,10 @@ public class LoadExampleContextMenuAction implements NodeUIContextAction {
         return false;
     }
 
-    private List<JIPipeNodeExample> getExamples(JIPipeGraphNodeUI nodeUI) {
+    private List<JIPipeNodeExample> getExamples(JIPipeDesktopGraphNodeUI nodeUI) {
         List<JIPipeNodeExample> result;
-        if (nodeUI.getGraphCanvasUI().getWorkbench() instanceof JIPipeProjectWorkbench) {
-            result = ((JIPipeProjectWorkbench) nodeUI.getGraphCanvasUI().getWorkbench()).getProject().getNodeExamples(nodeUI.getNode().getInfo().getId());
+        if (nodeUI.getGraphCanvasUI().getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
+            result = ((JIPipeDesktopProjectWorkbench) nodeUI.getGraphCanvasUI().getDesktopWorkbench()).getProject().getNodeExamples(nodeUI.getNode().getInfo().getId());
         } else {
             result = new ArrayList<>(JIPipe.getNodes().getNodeExamples(nodeUI.getNode().getInfo().getId()));
         }
@@ -52,17 +52,17 @@ public class LoadExampleContextMenuAction implements NodeUIContextAction {
     }
 
     @Override
-    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeGraphNodeUI> selection) {
-        JIPipeGraphNodeUI nodeUI = selection.iterator().next();
+    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
+        JIPipeDesktopGraphNodeUI nodeUI = selection.iterator().next();
         JIPipeGraphNode node = nodeUI.getNode();
-        JIPipeNodeExamplePickerDialog pickerDialog = new JIPipeNodeExamplePickerDialog(canvasUI.getWorkbench().getWindow());
+        JIPipeNodeExamplePickerDialog pickerDialog = new JIPipeNodeExamplePickerDialog(canvasUI.getDesktopWorkbench().getWindow());
         pickerDialog.setTitle("Load example");
         List<JIPipeNodeExample> nodeExamples = getExamples(nodeUI);
         pickerDialog.setAvailableItems(nodeExamples);
         JIPipeNodeExample example = pickerDialog.showDialog();
         if (example != null) {
             ((JIPipeAlgorithm) node).loadExample(example);
-            canvasUI.getWorkbench().sendStatusBarText("Loaded example '" + example.getNodeTemplate().getName() + "' into " + node.getDisplayName());
+            canvasUI.getDesktopWorkbench().sendStatusBarText("Loaded example '" + example.getNodeTemplate().getName() + "' into " + node.getDisplayName());
         }
     }
 

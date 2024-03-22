@@ -61,6 +61,13 @@ public enum DatasetType {
      */
     private final NativeType<?> imglib2Type;
 
+    DatasetType(boolean integral, int size, boolean signed, NativeType<?> imglib2Type) {
+        this.integral = integral;
+        this.size = size;
+        this.signed = signed;
+        this.imglib2Type = imglib2Type;
+    }
+
     /**
      * Get dataset type from imglib2 type, if possible.
      */
@@ -89,13 +96,6 @@ public enum DatasetType {
         return Arrays.stream(values())
                 .filter(dt -> dt.integral == integral && dt.size == size && dt.signed == signed)
                 .findFirst();
-    }
-
-    DatasetType(boolean integral, int size, boolean signed, NativeType<?> imglib2Type) {
-        this.integral = integral;
-        this.size = size;
-        this.signed = signed;
-        this.imglib2Type = imglib2Type;
     }
 
     /**

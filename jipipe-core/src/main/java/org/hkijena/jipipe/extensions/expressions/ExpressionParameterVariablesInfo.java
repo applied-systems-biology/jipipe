@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.expressions;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -31,33 +31,25 @@ import java.util.UUID;
  */
 public interface ExpressionParameterVariablesInfo {
     /**
-     * Returns the list of known variables for the user interface.
-     *
-     * @param parameterTree the parameter tree that contains the access. can be null.
-     * @param parameterAccess the parameter access that holds the {@link AbstractExpressionParameter} instance. can be null.
-     * @return the set of variables
-     */
-    Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess);
-
-    /**
      * Helper method that attempts to find the underlying graph node of a parameter access and returns its cache if available
-     * @param parameterTree the parameter tree. can be null.
+     *
+     * @param parameterTree   the parameter tree. can be null.
      * @param parameterAccess the parameter access. can be null.
      * @return the graph node caches (by predecessor node UUIDs) or an empty map
      */
     static Map<UUID, Map<String, JIPipeDataTable>> findPredecessorNodeCache(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         JIPipeGraphNode node = ExpressionParameterVariablesInfo.findNode(parameterTree, parameterAccess);
         Map<UUID, Map<String, JIPipeDataTable>> result = new HashMap<>();
-        if(node != null) {
+        if (node != null) {
             JIPipeProject project = node.getParentGraph().getProject();
-            if(project != null) {
+            if (project != null) {
                 // Remap to project node
                 JIPipeGraph graph = project.getGraph();
                 node = graph.getNodeByUUID(node.getUUIDInParentGraph());
-                if(node != null) {
+                if (node != null) {
                     for (JIPipeGraphNode predecessorNode : graph.getDirectPredecessorNodes(node)) {
                         Map<String, JIPipeDataTable> cache = project.getCache().query(predecessorNode, predecessorNode.getUUIDInParentGraph(), new JIPipeProgressInfo());
-                        if(!cache.isEmpty()) {
+                        if (!cache.isEmpty()) {
                             result.put(predecessorNode.getUUIDInParentGraph(), cache);
                         }
                     }
@@ -69,33 +61,34 @@ public interface ExpressionParameterVariablesInfo {
 
     /**
      * Helper method that attempts to find the underlying graph node of a parameter access
-     * @param parameterTree the parameter tree. can be null.
+     *
+     * @param parameterTree   the parameter tree. can be null.
      * @param parameterAccess the parameter access. can be null.
      * @return the graph node or null
      */
     static JIPipeGraphNode findNode(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        if(parameterAccess != null) {
+        if (parameterAccess != null) {
             if (parameterAccess.getSource() instanceof JIPipeGraphNode) {
                 return (JIPipeGraphNode) parameterAccess.getSource();
             }
         }
-        if(parameterTree != null && parameterAccess != null && parameterAccess.getSource() != null) {
+        if (parameterTree != null && parameterAccess != null && parameterAccess.getSource() != null) {
             JIPipeParameterTree.Node node = parameterTree.getSourceNode(parameterAccess.getSource());
-            while(node != null) {
-                if(node.getCollection() instanceof JIPipeGraphNode) {
+            while (node != null) {
+                if (node.getCollection() instanceof JIPipeGraphNode) {
                     return (JIPipeGraphNode) node.getCollection();
                 }
                 node = node.getParent();
             }
         }
-        if(parameterTree != null && parameterTree.getRoot() != null && parameterTree.getRoot().getCollection() instanceof JIPipeGraphNode) {
+        if (parameterTree != null && parameterTree.getRoot() != null && parameterTree.getRoot().getCollection() instanceof JIPipeGraphNode) {
             return (JIPipeGraphNode) parameterTree.getRoot().getCollection();
         }
-        if(parameterTree != null) {
+        if (parameterTree != null) {
             // Look in the parent tree
             parameterTree = parameterTree.getParent();
             while (parameterTree != null) {
-                if(parameterTree.getRoot() != null && parameterTree.getRoot().getCollection() instanceof JIPipeGraphNode) {
+                if (parameterTree.getRoot() != null && parameterTree.getRoot().getCollection() instanceof JIPipeGraphNode) {
                     return (JIPipeGraphNode) parameterTree.getRoot().getCollection();
                 }
                 parameterTree = parameterTree.getParent();
@@ -103,4 +96,13 @@ public interface ExpressionParameterVariablesInfo {
         }
         return null;
     }
+
+    /**
+     * Returns the list of known variables for the user interface.
+     *
+     * @param parameterTree   the parameter tree that contains the access. can be null.
+     * @param parameterAccess the parameter access that holds the {@link AbstractExpressionParameter} instance. can be null.
+     * @return the set of variables
+     */
+    Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess);
 }

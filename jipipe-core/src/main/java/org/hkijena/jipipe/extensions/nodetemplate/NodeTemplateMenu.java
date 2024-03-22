@@ -17,29 +17,30 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import ij.IJ;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
-import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.extensions.settings.NodeTemplateSettings;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.api.JIPipeWorkbenchAccess;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.util.*;
 
-public class NodeTemplateMenu extends JMenu implements JIPipeWorkbenchAccess, NodeTemplatesRefreshedEventListener {
-    private final JIPipeWorkbench workbench;
-    private final JIPipeGraphEditorUI graphEditorUI;
+public class NodeTemplateMenu extends JMenu implements JIPipeDesktopWorkbenchAccess, NodeTemplatesRefreshedEventListener {
+    private final JIPipeDesktopWorkbench workbench;
+    private final JIPipeDesktopGraphEditorUI graphEditorUI;
     private final JIPipeProject project;
 
-    public NodeTemplateMenu(JIPipeWorkbench workbench, JIPipeGraphEditorUI graphEditorUI) {
+    public NodeTemplateMenu(JIPipeDesktopWorkbench workbench, JIPipeDesktopGraphEditorUI graphEditorUI) {
         this.workbench = workbench;
         this.graphEditorUI = graphEditorUI;
-        if (workbench instanceof JIPipeProjectWorkbench) {
-            this.project = ((JIPipeProjectWorkbench) workbench).getProject();
+        if (workbench instanceof JIPipeDesktopProjectWorkbench) {
+            this.project = workbench.getProject();
         } else {
             this.project = null;
         }
@@ -80,13 +81,17 @@ public class NodeTemplateMenu extends JMenu implements JIPipeWorkbenchAccess, No
         }
     }
 
-    @Override
-    public JIPipeWorkbench getWorkbench() {
+    public JIPipeDesktopWorkbench getDesktopWorkbench() {
         return workbench;
     }
 
     @Override
     public void onJIPipeNodeTemplatesRefreshed(NodeTemplatesRefreshedEvent event) {
         reloadTemplateList();
+    }
+
+    @Override
+    public JIPipeWorkbench getWorkbench() {
+        return workbench;
     }
 }

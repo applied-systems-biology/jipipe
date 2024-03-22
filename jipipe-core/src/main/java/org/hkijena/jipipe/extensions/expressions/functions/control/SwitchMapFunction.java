@@ -34,13 +34,12 @@ public class SwitchMapFunction extends ExpressionFunction {
         Object input = parameters.get(0);
         for (int i = 1; i < parameters.size(); i++) {
             Object parameter = parameters.get(i);
-            if(parameter instanceof List) {
+            if (parameter instanceof List) {
                 List<Object> pair = (List<Object>) parameter;
-                if(Objects.equals(pair.get(0), input)) {
+                if (Objects.equals(pair.get(0), input)) {
                     return pair.get(1);
                 }
-            }
-            else {
+            } else {
                 return parameter;
             }
         }

@@ -21,18 +21,18 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
+import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeButtonRibbonAction;
+import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
+import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
-import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.components.ribbon.LargeButtonAction;
-import org.hkijena.jipipe.ui.components.ribbon.Ribbon;
-import org.hkijena.jipipe.ui.components.ribbon.SmallButtonAction;
-import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
@@ -49,7 +49,7 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D implements Mas
 
     public static final Settings SETTINGS = new Settings();
     private final JCheckBox autoMeasureToggle = new JCheckBox("Measure on changes");
-    private JXTable table = new JXTable();
+    private final JXTable table = new JXTable();
     private ResultsTableData lastMeasurements;
 
     public MeasurementDrawerPlugin2D(JIPipeImageViewer viewerPanel) {
@@ -70,7 +70,7 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D implements Mas
     }
 
     @Override
-    public void initializeSettingsPanel(FormPanel formPanel) {
+    public void initializeSettingsPanel(JIPipeDesktopFormPanel formPanel) {
         super.initializeSettingsPanel(formPanel);
 
         // Add the measurement table
@@ -80,7 +80,7 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D implements Mas
     private void showSettings() {
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(getViewerPanel()));
         dialog.setTitle("Measurement settings");
-        dialog.setContentPane(new ParameterPanel(new JIPipeDummyWorkbench(), SETTINGS, null, FormPanel.WITH_SCROLLING));
+        dialog.setContentPane(new JIPipeDesktopParameterPanel(new JIPipeDesktopDummyWorkbench(), SETTINGS, null, JIPipeDesktopFormPanel.WITH_SCROLLING));
         UIUtils.addEscapeListener(dialog);
         dialog.setSize(640, 480);
         dialog.setLocationRelativeTo(getViewerPanel());
@@ -93,18 +93,18 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D implements Mas
     }
 
     private void initialize() {
-        Ribbon.Task measureTask = getRibbon().addTask("Measure");
+        JIPipeDesktopRibbon.Task measureTask = getRibbon().addTask("Measure");
         getRibbon().reorderTasks(Arrays.asList("Draw", "Measure"));
 
-        Ribbon.Band generalBand = measureTask.addBand("General");
-        generalBand.add(new LargeButtonAction("Measure", "Measures the image/mask now", UIUtils.getIcon32FromResources("actions/statistics.png"), this::measureCurrentMask));
-        generalBand.add(new SmallButtonAction("Settings ...", "Opens the settings for the measurement tool", UIUtils.getIconFromResources("actions/configure.png"), this::showSettings));
-        generalBand.add(new Ribbon.Action(autoMeasureToggle, 1, new Insets(2, 2, 2, 2)));
+        JIPipeDesktopRibbon.Band generalBand = measureTask.addBand("General");
+        generalBand.add(new JIPipeDesktopLargeButtonRibbonAction("Measure", "Measures the image/mask now", UIUtils.getIcon32FromResources("actions/statistics.png"), this::measureCurrentMask));
+        generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Settings ...", "Opens the settings for the measurement tool", UIUtils.getIconFromResources("actions/configure.png"), this::showSettings));
+        generalBand.add(new JIPipeDesktopRibbon.Action(autoMeasureToggle, 1, new Insets(2, 2, 2, 2)));
 
-        Ribbon.Task importExportTask = getRibbon().getOrCreateTask("Import/Export");
-        Ribbon.Band importExportMeasurementsBand = importExportTask.addBand("Measurements");
-        importExportMeasurementsBand.add(new SmallButtonAction("Export to file", "Exports the measurements to *.csv/*.xlsx", UIUtils.getIconFromResources("actions/save.png"), this::exportMeasurementsToFile));
-        importExportMeasurementsBand.add(new SmallButtonAction("Open in editor", "Opens the measurements in a table editor", UIUtils.getIconFromResources("actions/open-in-new-window.png"), this::exportMeasurementsToEditor));
+        JIPipeDesktopRibbon.Task importExportTask = getRibbon().getOrCreateTask("Import/Export");
+        JIPipeDesktopRibbon.Band importExportMeasurementsBand = importExportTask.addBand("Measurements");
+        importExportMeasurementsBand.add(new JIPipeDesktopSmallButtonRibbonAction("Export to file", "Exports the measurements to *.csv/*.xlsx", UIUtils.getIconFromResources("actions/save.png"), this::exportMeasurementsToFile));
+        importExportMeasurementsBand.add(new JIPipeDesktopSmallButtonRibbonAction("Open in editor", "Opens the measurements in a table editor", UIUtils.getIconFromResources("actions/open-in-new-window.png"), this::exportMeasurementsToEditor));
 
         autoMeasureToggle.setSelected(true);
 //        table.setBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 3));
@@ -114,7 +114,7 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D implements Mas
         if (lastMeasurements == null) {
             return;
         }
-        TableEditor.openWindow(getWorkbench(), new ResultsTableData(lastMeasurements), "Measurements");
+        JIPipeDesktopTableEditor.openWindow(getDesktopWorkbench(), new ResultsTableData(lastMeasurements), "Measurements");
     }
 
     private void exportMeasurementsToFile() {

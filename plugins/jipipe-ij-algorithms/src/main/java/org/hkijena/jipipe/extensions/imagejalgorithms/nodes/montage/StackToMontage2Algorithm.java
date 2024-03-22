@@ -14,9 +14,9 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.montage;
 
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -29,10 +29,10 @@ import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariab
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.Image5DSliceIndexExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.extensions.imagejalgorithms.utils.MontageCreator;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejalgorithms.utils.MontageCreator;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -76,11 +76,10 @@ public class StackToMontage2Algorithm extends JIPipeIteratingAlgorithm {
             variables.putAnnotations(iterationStep.getMergedTextAnnotations());
             Image5DSliceIndexExpressionParameterVariablesInfo.apply(variables, stack, index);
 
-            if(sliceFilter.test(variables)) {
+            if (sliceFilter.test(variables)) {
                 ImagePlus imp = new ImagePlus("Slice", ip);
                 inputEntries.add(new MontageCreator.InputEntry(imp, Collections.emptyList(), variables));
-            }
-            else {
+            } else {
                 progressInfo.log("Skipped slice " + index + " (filter)");
             }
         }, progressInfo);

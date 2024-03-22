@@ -14,16 +14,17 @@
 package org.hkijena.jipipe.extensions.imageviewer;
 
 import ij.ImagePlus;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
-import org.hkijena.jipipe.ui.components.FormPanel;
 import org.scijava.Disposable;
 
 import javax.swing.*;
 
-public abstract class JIPipeImageViewerPlugin implements JIPipeWorkbenchAccess, Disposable {
+public abstract class JIPipeImageViewerPlugin implements JIPipeDesktopWorkbenchAccess, Disposable {
     private final JIPipeImageViewer viewerPanel;
 
     public JIPipeImageViewerPlugin(JIPipeImageViewer viewerPanel) {
@@ -40,6 +41,10 @@ public abstract class JIPipeImageViewerPlugin implements JIPipeWorkbenchAccess, 
 
     public ImagePlusData getCurrentImage() {
         return viewerPanel.getImage();
+    }
+
+    public JIPipeDesktopWorkbench getDesktopWorkbench() {
+        return getViewerPanel().getDesktopWorkbench();
     }
 
     @Override
@@ -68,7 +73,7 @@ public abstract class JIPipeImageViewerPlugin implements JIPipeWorkbenchAccess, 
      *
      * @param formPanel the form panel
      */
-    public void initializeSettingsPanel(FormPanel formPanel) {
+    public void initializeSettingsPanel(JIPipeDesktopFormPanel formPanel) {
 
     }
 

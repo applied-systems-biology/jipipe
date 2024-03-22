@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.api.registries;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionEvaluator;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionEvaluator;
 import org.hkijena.jipipe.extensions.tables.ColumnOperation;
 
 import java.util.Collections;

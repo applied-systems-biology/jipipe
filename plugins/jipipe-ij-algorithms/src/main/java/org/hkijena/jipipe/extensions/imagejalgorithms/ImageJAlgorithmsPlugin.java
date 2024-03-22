@@ -565,7 +565,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerEnumParameterType("ij1-export-image-to-web:file-format", ExportImageAlgorithm.FileFormat.class, "File format", "Exported file format.");
         registerEnumParameterType("ij1-export-table:file-format", ExportTableAlgorithm.FileFormat.class, "File format", "Exported file format.");
         registerParameterType("ome-accessor-type", OMEAccessorTypeEnumParameter.class, "OME metadata key", "Metadata from OME");
-        registerParameterType("ome-accessor", OMEAccessorParameter.class, "OME metadata query", "Queries metadata from OME", OMEAccessorParameterEditorUI.class);
+        registerParameterType("ome-accessor", OMEAccessorParameter.class, "OME metadata query", "Queries metadata from OME", OMEAccessorDesktopParameterEditorUI.class);
 
         registerIOAlgorithms();
         registerBlurAlgorithms();

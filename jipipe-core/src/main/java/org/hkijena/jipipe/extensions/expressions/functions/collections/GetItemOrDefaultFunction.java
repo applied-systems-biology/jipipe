@@ -67,8 +67,7 @@ public class GetItemOrDefaultFunction extends ExpressionFunction {
             } else {
                 throw new UnsupportedOperationException("Element access does not support " + target);
             }
-        }
-        catch (Throwable e) {
+        } catch (Throwable e) {
             return parameters.get(2);
         }
     }

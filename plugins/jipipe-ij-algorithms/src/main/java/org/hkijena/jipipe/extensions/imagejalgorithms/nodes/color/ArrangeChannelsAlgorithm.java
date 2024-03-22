@@ -19,15 +19,16 @@ import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import ij.ImagePlus;
 import ij.plugin.ChannelArranger;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -35,13 +36,13 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.IntegerAndIntegerPairParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
@@ -199,7 +200,7 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @SetJIPipeDocumentation(name = "Simple reorder", description = "Allows you to input the reordering like in ImageJ.")
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/imagej.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/imagej.png")
     public void setToExample(JIPipeWorkbench parent) {
-        String reordering = JOptionPane.showInputDialog(parent.getWindow(),
+        String reordering = JOptionPane.showInputDialog(((JIPipeDesktopWorkbench) parent).getWindow(),
                 "Please put in the list of numbers how the channels should be re-ordered. " +
                         "For example '1,2,3'.\n\nPlease note that the first channel index is one (like in ImageJ).\nThe 'Channel reordering' " +
                         "parameter indexes channels starting from zero.",
@@ -209,7 +210,7 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         IntegerRange range = new IntegerRange(reordering);
         List<Integer> channelIndices = range.tryGetIntegers(0, 0, new JIPipeExpressionVariablesMap());
         if (channelIndices == null || channelIndices.isEmpty() || channelIndices.stream().anyMatch(i -> i <= 0)) {
-            JOptionPane.showMessageDialog(parent.getWindow(), "Invalid channel indices. Please provide a comma separated list of positive numbers.");
+            JOptionPane.showMessageDialog(((JIPipeDesktopWorkbench) parent).getWindow(), "Invalid channel indices. Please provide a comma separated list of positive numbers.");
             return;
         }
         channelReordering.clear();

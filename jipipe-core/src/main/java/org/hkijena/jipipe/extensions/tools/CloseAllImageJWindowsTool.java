@@ -14,18 +14,19 @@
 package org.hkijena.jipipe.extensions.tools;
 
 import ij.WindowManager;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
-import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
+import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 
-public class CloseAllImageJWindowsTool extends JIPipeMenuExtension {
+public class CloseAllImageJWindowsTool extends JIPipeDesktopMenuExtension {
     /**
      * Creates a new instance
      *
      * @param workbench workbench the extension is attached to
      */
-    public CloseAllImageJWindowsTool(JIPipeWorkbench workbench) {
+    public CloseAllImageJWindowsTool(JIPipeDesktopWorkbench workbench) {
         super(workbench);
         setText("Close all ImageJ windows");
         setToolTipText("Closes all open ImageJ-related windows.");

@@ -16,14 +16,17 @@ package org.hkijena.jipipe.extensions.ilastik.nodes;
 import ij.ImagePlus;
 import net.imagej.ImgPlus;
 import net.imglib2.img.display.imagej.ImageJFunctions;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
@@ -46,9 +49,9 @@ import static org.hkijena.jipipe.extensions.ilastik.utils.ImgUtils.DEFAULT_AXES;
 @AddJIPipeInputSlot(value = FileData.class, slotName = "HDF5 File", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
 public class ImportIlastikHDF5ImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+    private final CalibrationParameters calibrationParameters;
     private JIPipeExpressionParameter hdf5Path = new JIPipeExpressionParameter("\"exported_data\"");
     private String axes = ImgUtils.toStringAxes(DEFAULT_AXES);
-    private final CalibrationParameters calibrationParameters;
 
     public ImportIlastikHDF5ImageAlgorithm(JIPipeNodeInfo info) {
         super(info);

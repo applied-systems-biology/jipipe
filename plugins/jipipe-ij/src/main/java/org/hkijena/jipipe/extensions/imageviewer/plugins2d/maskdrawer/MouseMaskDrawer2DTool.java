@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.imageviewer.plugins2d.maskdrawer;
 
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2D;
-import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -61,7 +61,7 @@ public class MouseMaskDrawer2DTool extends MaskDrawer2DTool {
         return false;
     }
 
-    private void addAlgorithmButton(FormPanel formPanel, String name, String description, Icon icon, Runnable function) {
+    private void addAlgorithmButton(JIPipeDesktopFormPanel formPanel, String name, String description, Icon icon, Runnable function) {
         JButton button = new JButton(name, icon);
         button.setHorizontalAlignment(SwingConstants.LEFT);
         button.setToolTipText(description);

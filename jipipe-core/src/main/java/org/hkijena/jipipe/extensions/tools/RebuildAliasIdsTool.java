@@ -13,19 +13,20 @@
 
 package org.hkijena.jipipe.extensions.tools;
 
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
-import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
+import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 
-public class RebuildAliasIdsTool extends JIPipeMenuExtension {
+public class RebuildAliasIdsTool extends JIPipeDesktopMenuExtension {
     /**
      * Creates a new instance
      *
      * @param workbench workbench the extension is attached to
      */
-    public RebuildAliasIdsTool(JIPipeWorkbench workbench) {
+    public RebuildAliasIdsTool(JIPipeDesktopWorkbench workbench) {
         super(workbench);
         setText("Force rebuild alias IDs");
         setToolTipText("Rebuilds the node alias IDs for all nodes. This can help if the " +
@@ -35,7 +36,7 @@ public class RebuildAliasIdsTool extends JIPipeMenuExtension {
     }
 
     private void rebuildIds() {
-        JIPipeProjectWorkbench workbench = (JIPipeProjectWorkbench) getWorkbench();
+        JIPipeDesktopProjectWorkbench workbench = (JIPipeDesktopProjectWorkbench) getDesktopWorkbench();
         workbench.getProject().rebuildAliasIds(true);
         workbench.sendStatusBarText("Rebuilt alias IDs");
     }

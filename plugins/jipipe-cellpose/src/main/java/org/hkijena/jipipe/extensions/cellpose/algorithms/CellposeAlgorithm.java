@@ -19,25 +19,28 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSingleIterationAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSingleIterationAlgorithm;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.extensions.cellpose.CellposePlugin;
 import org.hkijena.jipipe.extensions.cellpose.CellposeModel;
+import org.hkijena.jipipe.extensions.cellpose.CellposePlugin;
 import org.hkijena.jipipe.extensions.cellpose.CellposeSettings;
 import org.hkijena.jipipe.extensions.cellpose.CellposeUtils;
 import org.hkijena.jipipe.extensions.cellpose.algorithms.deprecated.CellposeAlgorithm_Old;
@@ -50,8 +53,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -158,10 +161,9 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
     @Override
     public void getExternalEnvironments(List<JIPipeEnvironment> target) {
         super.getExternalEnvironments(target);
-        if(overrideEnvironment.isEnabled()) {
+        if (overrideEnvironment.isEnabled()) {
             target.add(overrideEnvironment.getContent());
-        }
-        else {
+        } else {
             target.add(CellposeSettings.getInstance().getPythonEnvironment());
         }
     }
@@ -295,7 +297,7 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         if (!runWith2D.isEmpty()) {
             List<String> arguments = new ArrayList<>();
             arguments.add(npyExtractorScript.toString());
-            if(!segmentationOutputSettings.isOutputROI())
+            if (!segmentationOutputSettings.isOutputROI())
                 arguments.add("--skip-roi");
             arguments.add(io2DPath.toString());
             arguments.add(io2DPath.toString());
@@ -305,7 +307,7 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         if (!runWith3D.isEmpty()) {
             List<String> arguments = new ArrayList<>();
             arguments.add(npyExtractorScript.toString());
-            if(!segmentationOutputSettings.isOutputROI())
+            if (!segmentationOutputSettings.isOutputROI())
                 arguments.add("--skip-roi");
             arguments.add(io3DPath.toString());
             arguments.add(io3DPath.toString());

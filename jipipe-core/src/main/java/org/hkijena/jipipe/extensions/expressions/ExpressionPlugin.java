@@ -37,7 +37,7 @@ import org.hkijena.jipipe.extensions.expressions.functions.string.*;
 import org.hkijena.jipipe.extensions.expressions.functions.util.PrintFunction;
 import org.hkijena.jipipe.extensions.expressions.functions.variables.*;
 import org.hkijena.jipipe.extensions.expressions.functions.vector.*;
-import org.hkijena.jipipe.extensions.expressions.ui.JIPipeExpressionParameterEditorUI;
+import org.hkijena.jipipe.extensions.expressions.ui.JIPipeExpressionDesktopParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.scijava.Context;
@@ -74,8 +74,8 @@ public class ExpressionPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 null,
                 "Expression",
                 "A mathematical or conditional logic expression",
-                JIPipeExpressionParameterEditorUI.class);
-        registerParameterEditor(JIPipeExpressionParameter.class, JIPipeExpressionParameterEditorUI.class);
+                JIPipeExpressionDesktopParameterEditorUI.class);
+        registerParameterEditor(JIPipeExpressionParameter.class, JIPipeExpressionDesktopParameterEditorUI.class);
         registerParameterType("optional-expression",
                 OptionalJIPipeExpressionParameter.class,
                 "Optional expression",
@@ -97,35 +97,35 @@ public class ExpressionPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 null,
                 "Annotation query expression",
                 "An expression that is used to filter annotations",
-                JIPipeExpressionParameterEditorUI.class);
+                JIPipeExpressionDesktopParameterEditorUI.class);
         registerParameterType("data-annotation-query-expression",
                 DataAnnotationQueryExpression.class,
                 null,
                 null,
                 "Data annotation query expression",
                 "An expression that is used to filter annotations",
-                JIPipeExpressionParameterEditorUI.class);
+                JIPipeExpressionDesktopParameterEditorUI.class);
         registerParameterType("string-query-expression",
                 StringQueryExpression.class,
                 null,
                 null,
                 "String query expression",
                 "An expression that is used to filter strings",
-                JIPipeExpressionParameterEditorUI.class);
+                JIPipeExpressionDesktopParameterEditorUI.class);
         registerParameterType("table-cell-value-query-expression",
                 TableCellValueQueryExpression.class,
                 null,
                 null,
                 "Table cell value query expression",
                 "An expression that tests for table cells",
-                JIPipeExpressionParameterEditorUI.class);
+                JIPipeExpressionDesktopParameterEditorUI.class);
         registerParameterType("path-query-expression",
                 PathQueryExpression.class,
                 null,
                 null,
                 "Path query expression",
                 "An expression that is used to filter paths",
-                JIPipeExpressionParameterEditorUI.class);
+                JIPipeExpressionDesktopParameterEditorUI.class);
         registerParameterType("named-string-query-expression",
                 NamedStringQueryExpression.class,
                 NamedStringQueryExpression.List.class,
@@ -140,14 +140,14 @@ public class ExpressionPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 null,
                 "String map query expression",
                 "An expression that is used to query string-string key value pairs",
-                JIPipeExpressionParameterEditorUI.class);
+                JIPipeExpressionDesktopParameterEditorUI.class);
         registerParameterType("annotation-generator-expression",
                 AnnotationGeneratorExpression.class,
                 null,
                 null,
                 "Annotation generator expression",
                 "An expression that is used to generate annotations",
-                JIPipeExpressionParameterEditorUI.class);
+                JIPipeExpressionDesktopParameterEditorUI.class);
         registerParameterType("named-annotation-generator-expression",
                 NamedTextAnnotationGeneratorExpression.class,
                 NamedTextAnnotationGeneratorExpression.List.class,

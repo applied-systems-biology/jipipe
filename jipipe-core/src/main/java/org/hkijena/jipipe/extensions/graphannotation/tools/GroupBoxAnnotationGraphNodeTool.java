@@ -30,7 +30,7 @@ public class GroupBoxAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeTo
     protected GroupBoxAnnotationGraphNode createAndConfigureNode(Point firstPoint, Point secondPoint) {
         GroupBoxAnnotationGraphNode node = super.createAndConfigureNode(firstPoint, secondPoint);
 
-        String title = JOptionPane.showInputDialog(getWorkbench().getWindow(), "Please input the title:", "Create group box", JOptionPane.PLAIN_MESSAGE);
+        String title = JOptionPane.showInputDialog(getDesktopWorkbench().getWindow(), "Please input the title:", "Create group box", JOptionPane.PLAIN_MESSAGE);
         if (!StringUtils.isNullOrEmpty(title)) {
             node.setTextTitle(title);
         }

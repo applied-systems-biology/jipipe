@@ -18,10 +18,10 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUISlotActiveArea;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.triggers.JIPipeDesktopGraphNodeUISlotActiveArea;
 import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -35,10 +35,10 @@ import java.util.UUID;
 
 public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorTool {
 
-    private JIPipeGraphEditorUI graphEditorUI;
-    private JIPipeNodeUISlotActiveArea currentRewireDragSource;
+    private JIPipeDesktopGraphEditorUI graphEditorUI;
+    private JIPipeDesktopGraphNodeUISlotActiveArea currentRewireDragSource;
 
-    private JIPipeNodeUISlotActiveArea currentRewireDragTarget;
+    private JIPipeDesktopGraphNodeUISlotActiveArea currentRewireDragTarget;
 
     @Override
     public String getName() {
@@ -61,17 +61,17 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
     }
 
     @Override
-    public JIPipeGraphEditorUI getGraphEditor() {
+    public JIPipeDesktopGraphEditorUI getGraphEditor() {
         return graphEditorUI;
     }
 
     @Override
-    public void setGraphEditor(JIPipeGraphEditorUI graphEditorUI) {
+    public void setGraphEditor(JIPipeDesktopGraphEditorUI graphEditorUI) {
         this.graphEditorUI = graphEditorUI;
     }
 
     @Override
-    public boolean supports(JIPipeGraphEditorUI graphEditorUI) {
+    public boolean supports(JIPipeDesktopGraphEditorUI graphEditorUI) {
         return graphEditorUI.getGraph().getAttachment(JIPipeGraphType.class) != JIPipeGraphType.ProjectCompartments;
     }
 
@@ -116,7 +116,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
             if (currentRewireDragSource.isInput()) {
                 for (JIPipeDataSlot inputIncomingSourceSlot : graph.getInputIncomingSourceSlots(currentRewireDragSource.getSlot())) {
                     // The slot is an output
-                    JIPipeGraphNodeUI nodeUI = graphEditorUI.getCanvasUI().getNodeUIs().get(inputIncomingSourceSlot.getNode());
+                    JIPipeDesktopGraphNodeUI nodeUI = graphEditorUI.getCanvasUI().getNodeUIs().get(inputIncomingSourceSlot.getNode());
                     if (nodeUI != null) {
                         PointRange slotLocation = nodeUI.getSlotLocation(inputIncomingSourceSlot);
                         slotLocation.add(nodeUI.getLocation());
@@ -126,7 +126,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
             } else {
                 for (JIPipeDataSlot outputOutgoingTargetSlot : graph.getOutputOutgoingTargetSlots(currentRewireDragSource.getSlot())) {
                     // The slot is an input
-                    JIPipeGraphNodeUI nodeUI = graphEditorUI.getCanvasUI().getNodeUIs().get(outputOutgoingTargetSlot.getNode());
+                    JIPipeDesktopGraphNodeUI nodeUI = graphEditorUI.getCanvasUI().getNodeUIs().get(outputOutgoingTargetSlot.getNode());
                     if (nodeUI != null) {
                         PointRange slotLocation = nodeUI.getSlotLocation(outputOutgoingTargetSlot);
                         slotLocation.add(nodeUI.getLocation());
@@ -140,7 +140,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
     private void paintRewireEdge(Graphics2D g, PointRange sourcePoint, Point mousePosition) {
         PointRange targetPoint = null;
         if (currentRewireDragTarget != null) {
-            JIPipeGraphNodeUI nodeUI = graphEditorUI.getCanvasUI().getNodeUIs().get(currentRewireDragTarget.getSlot().getNode());
+            JIPipeDesktopGraphNodeUI nodeUI = graphEditorUI.getCanvasUI().getNodeUIs().get(currentRewireDragTarget.getSlot().getNode());
             PointRange slotLocation = nodeUI.getSlotLocation(currentRewireDragTarget.getSlot());
             slotLocation.add(nodeUI.getLocation());
             targetPoint = slotLocation;
@@ -166,9 +166,9 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
     @Override
     public void mousePressed(MouseEvent e) {
         if (SwingUtilities.isLeftMouseButton(e)) {
-            JIPipeGraphNodeUI nodeUI = graphEditorUI.getCanvasUI().pickNodeUI(e);
+            JIPipeDesktopGraphNodeUI nodeUI = graphEditorUI.getCanvasUI().pickNodeUI(e);
             if (nodeUI != null) {
-                JIPipeNodeUISlotActiveArea slot = nodeUI.pickSlotAtMousePosition(e);
+                JIPipeDesktopGraphNodeUISlotActiveArea slot = nodeUI.pickSlotAtMousePosition(e);
                 setCurrentRewireDragSource(slot);
                 e.consume();
             }
@@ -178,9 +178,9 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
     @Override
     public void mouseReleased(MouseEvent e) {
         if (SwingUtilities.isLeftMouseButton(e) && currentRewireDragSource != null) {
-            JIPipeGraphNodeUI nodeUI = graphEditorUI.getCanvasUI().pickNodeUI(e);
+            JIPipeDesktopGraphNodeUI nodeUI = graphEditorUI.getCanvasUI().pickNodeUI(e);
             if (nodeUI != null) {
-                JIPipeNodeUISlotActiveArea target = nodeUI.pickSlotAtMousePosition(e);
+                JIPipeDesktopGraphNodeUISlotActiveArea target = nodeUI.pickSlotAtMousePosition(e);
                 if (target != null) {
                     currentRewireDragTarget = target;
                 }
@@ -191,7 +191,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
         setCurrentRewireDragSource(null);
     }
 
-    private void rewire(JIPipeNodeUISlotActiveArea source, JIPipeNodeUISlotActiveArea target) {
+    private void rewire(JIPipeDesktopGraphNodeUISlotActiveArea source, JIPipeDesktopGraphNodeUISlotActiveArea target) {
         if (source == null || target == null) {
             return;
         }
@@ -201,7 +201,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
         if (source.isInput() != target.isInput()) {
             return;
         }
-        JIPipeGraphCanvasUI graphCanvasUI = graphEditorUI.getCanvasUI();
+        JIPipeDesktopGraphCanvasUI graphCanvasUI = graphEditorUI.getCanvasUI();
         JIPipeDataSlot currentSlot = currentRewireDragSource.getSlot();
         UUID compartment = graphEditorUI.getCompartment();
         Set<JIPipeDataSlot> enabledConnections;
@@ -316,7 +316,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
     public void mouseDragged(MouseEvent e) {
         if (currentRewireDragSource != null) {
 
-            JIPipeGraphNodeUI nodeUI = graphEditorUI.getCanvasUI().pickNodeUI(e);
+            JIPipeDesktopGraphNodeUI nodeUI = graphEditorUI.getCanvasUI().pickNodeUI(e);
             if (nodeUI != null) {
                 // Advanced dragging behavior
                 boolean snapped = false;
@@ -328,7 +328,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
                     if (nodeUI.getNode().getOutputSlots().size() == 1) {
                         if (!nodeUI.getOutputSlotMap().values().isEmpty()) {
                             // Auto snap to output
-                            JIPipeNodeUISlotActiveArea slotUI = nodeUI.getOutputSlotMap().values().iterator().next();
+                            JIPipeDesktopGraphNodeUISlotActiveArea slotUI = nodeUI.getOutputSlotMap().values().iterator().next();
                             setCurrentRewireDragTarget(slotUI);
                             snapped = true;
                         }
@@ -337,7 +337,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
                     if (nodeUI.getNode().getInputSlots().size() == 1) {
                         // Auto snap to input
                         if (!nodeUI.getInputSlotMap().values().isEmpty()) {
-                            JIPipeNodeUISlotActiveArea slotUI = nodeUI.getInputSlotMap().values().iterator().next();
+                            JIPipeDesktopGraphNodeUISlotActiveArea slotUI = nodeUI.getInputSlotMap().values().iterator().next();
                             setCurrentRewireDragTarget(slotUI);
                             snapped = true;
                         }
@@ -348,7 +348,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
                 Sticky snap: Stay in last snapped position if we were in it before
                  */
                 if (currentRewireDragTarget != null && currentRewireDragTarget.getNodeUI() == nodeUI) {
-                    JIPipeNodeUISlotActiveArea slotState = nodeUI.pickSlotAtMousePosition(e);
+                    JIPipeDesktopGraphNodeUISlotActiveArea slotState = nodeUI.pickSlotAtMousePosition(e);
                     if (slotState != null && slotState.getSlot().isInput() == currentRewireDragSource.getSlot().isInput()) {
                         setCurrentRewireDragTarget(slotState);
                     }
@@ -359,7 +359,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
                 Default: Snap exactly to input/output
                  */
                 if (!snapped) {
-                    JIPipeNodeUISlotActiveArea slotState = nodeUI.pickSlotAtMousePosition(e);
+                    JIPipeDesktopGraphNodeUISlotActiveArea slotState = nodeUI.pickSlotAtMousePosition(e);
                     if (slotState != null && slotState.getSlot().isInput() == currentRewireDragSource.getSlot().isInput()) {
                         setCurrentRewireDragTarget(slotState);
                     } else {
@@ -391,20 +391,20 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
         }
     }
 
-    public JIPipeNodeUISlotActiveArea getCurrentRewireDragTarget() {
+    public JIPipeDesktopGraphNodeUISlotActiveArea getCurrentRewireDragTarget() {
         return currentRewireDragTarget;
     }
 
-    public void setCurrentRewireDragTarget(JIPipeNodeUISlotActiveArea currentRewireDragTarget) {
+    public void setCurrentRewireDragTarget(JIPipeDesktopGraphNodeUISlotActiveArea currentRewireDragTarget) {
         this.currentRewireDragTarget = currentRewireDragTarget;
         graphEditorUI.getCanvasUI().repaint(50);
     }
 
-    public JIPipeNodeUISlotActiveArea getCurrentRewireDragSource() {
+    public JIPipeDesktopGraphNodeUISlotActiveArea getCurrentRewireDragSource() {
         return currentRewireDragSource;
     }
 
-    public void setCurrentRewireDragSource(JIPipeNodeUISlotActiveArea currentRewireDragSource) {
+    public void setCurrentRewireDragSource(JIPipeDesktopGraphNodeUISlotActiveArea currentRewireDragSource) {
         this.currentRewireDragSource = currentRewireDragSource;
         if (currentRewireDragSource == null) {
             this.currentRewireDragTarget = null;

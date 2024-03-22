@@ -13,14 +13,14 @@
 
 package org.hkijena.jipipe.extensions.tables.nodes.columns;
 
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -79,12 +79,12 @@ public class SortTableColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         ArrayList<String> orderedColumnNames = new ArrayList<>();
         for (String columnName : manualOrder) {
-            if(columnNames.contains(columnName)) {
+            if (columnNames.contains(columnName)) {
                 orderedColumnNames.add(columnName);
             }
         }
         for (String columnName : columnNames) {
-            if(!orderedColumnNames.contains(columnName)) {
+            if (!orderedColumnNames.contains(columnName)) {
                 orderedColumnNames.add(columnName);
             }
         }

@@ -14,18 +14,18 @@
 package org.hkijena.jipipe.extensions.plots.nodes;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -35,12 +35,12 @@ import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportConte
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataParameterSettings;
+import org.hkijena.jipipe.extensions.plots.JIPipePlotDataClassFilter;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotColumn;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotDataSeries;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotMetadata;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.ui.plotbuilder.PlotDataClassFilter;
 import org.scijava.Priority;
 
 import java.util.*;
@@ -154,7 +154,7 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Plot type", description = "The type of plot to be generated.")
     @JIPipeParameter(value = "plot-type", priority = Priority.HIGH, important = true)
-    @JIPipeDataParameterSettings(dataBaseClass = PlotData.class, dataClassFilter = PlotDataClassFilter.class)
+    @JIPipeDataParameterSettings(dataBaseClass = PlotData.class, dataClassFilter = JIPipePlotDataClassFilter.class)
     public JIPipeDataInfoRef getPlotType() {
         if (plotType == null) {
             plotType = new JIPipeDataInfoRef();

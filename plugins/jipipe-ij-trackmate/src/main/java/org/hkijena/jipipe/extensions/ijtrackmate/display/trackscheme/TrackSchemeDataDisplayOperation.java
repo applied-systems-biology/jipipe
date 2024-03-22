@@ -17,15 +17,15 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.ijtrackmate.TrackMatePlugin;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import javax.swing.*;
 
 public class TrackSchemeDataDisplayOperation implements JIPipeDataDisplayOperation {
     @Override
-    public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        TrackSchemeCachedDataViewerWindow window = new TrackSchemeCachedDataViewerWindow(workbench, JIPipeDataTableDataSource.wrap(data, source), displayName);
+    public void display(JIPipeData data, String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
+        TrackSchemeCachedDataViewerWindow window = new TrackSchemeCachedDataViewerWindow(desktopWorkbench, JIPipeDataTableDataSource.wrap(data, source), displayName);
         window.setVisible(true);
     }
 

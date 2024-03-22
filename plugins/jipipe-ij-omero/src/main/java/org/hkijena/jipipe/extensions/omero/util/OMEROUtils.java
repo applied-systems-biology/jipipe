@@ -185,15 +185,15 @@ public class OMEROUtils {
     }
 
     public static String tryGetWebClientURL(String webclientUrl, String type, long id) {
-        if(!StringUtils.isNullOrEmpty(webclientUrl)) {
+        if (!StringUtils.isNullOrEmpty(webclientUrl)) {
             webclientUrl = webclientUrl.trim().toLowerCase();
-            if(StringUtils.isNullOrEmpty(webclientUrl)) {
+            if (StringUtils.isNullOrEmpty(webclientUrl)) {
                 return null;
             }
-            if(!webclientUrl.endsWith("/")) {
+            if (!webclientUrl.endsWith("/")) {
                 webclientUrl += "/";
             }
-            if(!webclientUrl.endsWith("/webclient/")) {
+            if (!webclientUrl.endsWith("/webclient/")) {
                 webclientUrl += "webclient/";
             }
             return webclientUrl + "?show=" + type + "-" + id;

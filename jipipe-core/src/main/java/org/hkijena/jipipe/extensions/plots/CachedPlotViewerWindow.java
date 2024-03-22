@@ -16,23 +16,24 @@ package org.hkijena.jipipe.extensions.plots;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
-import org.hkijena.jipipe.ui.cache.JIPipeCachedDataViewerAnnotationInfoPanel;
-import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
-import org.hkijena.jipipe.ui.plotbuilder.PlotEditor;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheDataViewerWindow;
+import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCachedDataViewerAnnotationInfoPanel;
+import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.desktop.app.ploteditor.JIPipeDesktopPlotEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 
-public class CachedPlotViewerWindow extends JIPipeCacheDataViewerWindow {
+public class CachedPlotViewerWindow extends JIPipeDesktopCacheDataViewerWindow {
 
-    private PlotEditor plotEditor;
+    private JIPipeDesktopPlotEditorUI plotEditor;
     private JLabel errorLabel;
-    private JIPipeCachedDataViewerAnnotationInfoPanel annotationInfoPanel;
+    private JIPipeDesktopCachedDataViewerAnnotationInfoPanel annotationInfoPanel;
 
-    public CachedPlotViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoading) {
+    public CachedPlotViewerWindow(JIPipeDesktopWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoading) {
         super(workbench, dataSource, displayName);
         initialize();
         if (!deferLoading)
@@ -40,15 +41,15 @@ public class CachedPlotViewerWindow extends JIPipeCacheDataViewerWindow {
     }
 
     private void initialize() {
-        plotEditor = new PlotEditor(getWorkbench());
+        plotEditor = new JIPipeDesktopPlotEditorUI(getWorkbench());
         errorLabel = new JLabel(UIUtils.getIconFromResources("emblems/no-data.png"));
         plotEditor.getToolBar().add(errorLabel, 0);
 
-        annotationInfoPanel = new JIPipeCachedDataViewerAnnotationInfoPanel(getWorkbench());
+        annotationInfoPanel = new JIPipeDesktopCachedDataViewerAnnotationInfoPanel(getWorkbench());
         plotEditor.getSideBar().addTab("Annotations",
                 UIUtils.getIconFromResources("data-types/annotation.png"),
                 annotationInfoPanel,
-                DocumentTabPane.CloseMode.withoutCloseButton);
+                JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
 
         setContentPane(plotEditor);
     }

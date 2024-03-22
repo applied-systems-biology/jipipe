@@ -13,8 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imp.utils;
 
-import ij.ImagePlus;
-import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imp.datatypes.ImpImageData;
@@ -46,7 +44,7 @@ public class ImpImageUtils {
     public static int findWidth(Collection<BufferedImage> images) {
         int width = 0;
         for (BufferedImage image : images) {
-            if(width != 0 && width != image.getWidth() ) {
+            if (width != 0 && width != image.getWidth()) {
                 throw new IllegalArgumentException("Inconsistent image width!");
             }
             width = image.getWidth();
@@ -57,7 +55,7 @@ public class ImpImageUtils {
     public static int findHeight(Collection<BufferedImage> images) {
         int height = 0;
         for (BufferedImage image : images) {
-            if(height != 0 && height != image.getHeight() ) {
+            if (height != 0 && height != image.getHeight()) {
                 throw new IllegalArgumentException("Inconsistent image height!");
             }
             height = image.getHeight();

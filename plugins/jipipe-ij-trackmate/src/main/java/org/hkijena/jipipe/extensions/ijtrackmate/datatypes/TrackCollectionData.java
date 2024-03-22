@@ -23,19 +23,19 @@ import ij.gui.EllipseRoi;
 import ij.gui.ImageCanvas;
 import ij.gui.Roi;
 import org.apache.commons.lang3.Range;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeImageThumbnailData;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.ijtrackmate.display.tracks.CachedTracksCollectionDataViewerWindow;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.JIPipeLogger;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
 import javax.swing.*;
@@ -125,8 +125,8 @@ public class TrackCollectionData extends SpotsCollectionData {
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        CachedTracksCollectionDataViewerWindow window = new CachedTracksCollectionDataViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
+    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
+        CachedTracksCollectionDataViewerWindow window = new CachedTracksCollectionDataViewerWindow(desktopWorkbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
         window.setVisible(true);
         SwingUtilities.invokeLater(window::reloadDisplayedData);
     }

@@ -17,8 +17,8 @@ import ij.ImagePlus;
 import ij.WindowManager;
 import org.hkijena.jipipe.api.compat.ImageJDataImportOperation;
 import org.hkijena.jipipe.api.compat.ImageJDataImporterUI;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.DocumentChangeListener;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -37,7 +37,7 @@ public class ImagePlusWindowImageJImporterUI extends ImageJDataImporterUI {
     /**
      * @param importer the importer
      */
-    public ImagePlusWindowImageJImporterUI(JIPipeWorkbench workbench, ImageJDataImportOperation importer) {
+    public ImagePlusWindowImageJImporterUI(JIPipeDesktopWorkbench workbench, ImageJDataImportOperation importer) {
         super(workbench, importer);
         initialize();
         reloadList();
@@ -50,7 +50,7 @@ public class ImagePlusWindowImageJImporterUI extends ImageJDataImporterUI {
         imageSelection.setEditable(true);
         imageSelection.addItemListener(e -> onImageSelected());
         JTextComponent editorComponent = (JTextComponent) imageSelection.getEditor().getEditorComponent();
-        editorComponent.getDocument().addDocumentListener(new DocumentChangeListener() {
+        editorComponent.getDocument().addDocumentListener(new JIPipeDesktopDocumentChangeListener() {
             @Override
             public void changed(DocumentEvent documentEvent) {
                 onImageSelected();

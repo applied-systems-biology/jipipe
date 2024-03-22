@@ -17,16 +17,16 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;
@@ -59,7 +59,18 @@ public class JIPipeImageThumbnailData implements JIPipeThumbnailData {
         this.image = other.image;
     }
 
-
+    public static JIPipeImageThumbnailData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        Path targetFile = PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".tif", ".tiff", ".png", ".jpg", ".jpeg", ".bmp");
+        progressInfo.log("ImageJ import " + targetFile);
+        ImagePlus outputImage = null;
+        if (targetFile != null) {
+            outputImage = IJ.openImage(targetFile.toString());
+        }
+        if (outputImage == null) {
+            outputImage = IJ.createImage("empty", 16, 16, 1, 24);
+        }
+        return new JIPipeImageThumbnailData(outputImage);
+    }
 
     @Override
     public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
@@ -73,7 +84,7 @@ public class JIPipeImageThumbnailData implements JIPipeThumbnailData {
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
+    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
 
     }
 
@@ -99,18 +110,5 @@ public class JIPipeImageThumbnailData implements JIPipeThumbnailData {
 
     public ImagePlus getImage() {
         return image;
-    }
-
-    public static JIPipeImageThumbnailData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        Path targetFile = PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".tif", ".tiff", ".png", ".jpg", ".jpeg", ".bmp");
-        progressInfo.log("ImageJ import " + targetFile);
-        ImagePlus outputImage = null;
-        if(targetFile != null) {
-            outputImage = IJ.openImage(targetFile.toString());
-        }
-        if(outputImage == null) {
-            outputImage = IJ.createImage("empty", 16,16,1,24);
-        }
-        return new JIPipeImageThumbnailData(outputImage);
     }
 }

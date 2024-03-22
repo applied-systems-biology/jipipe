@@ -20,14 +20,17 @@ import gnu.trove.map.TDoubleIntMap;
 import gnu.trove.map.hash.TDoubleIntHashMap;
 import gnu.trove.set.TDoubleSet;
 import gnu.trove.set.hash.TDoubleHashSet;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
@@ -142,12 +145,12 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 TDoubleList values = new TDoubleArrayList();
                 for (int i = 0; i < sortedUniqueFilteredInputColumnValues.size(); i++) {
                     double value = sortedUniqueFilteredInputColumnValues.get(i);
-                    if(value >= currentStart && value <= currentEnd && !usedSortedUniqueFilteredInputColumnValues.contains(value)) {
+                    if (value >= currentStart && value <= currentEnd && !usedSortedUniqueFilteredInputColumnValues.contains(value)) {
                         values.add(value);
                         usedSortedUniqueFilteredInputColumnValues.add(value);
                     }
                 }
-                if(!values.isEmpty()) {
+                if (!values.isEmpty()) {
                     generatedBins.add(values);
                 }
                 currentStart += binWidth;
@@ -178,14 +181,14 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
 
         // Cumulative
-        if(cumulative) {
+        if (cumulative) {
             for (int i = 1; i < binCounts.length; i++) {
                 binCounts[i] += binCounts[i - 1];
             }
         }
 
         // Normalize
-        if(normalize) {
+        if (normalize) {
             double max = Doubles.max(binCounts);
             for (int i = 0; i < binCounts.length; i++) {
                 binCounts[i] = binCounts[i] / max;

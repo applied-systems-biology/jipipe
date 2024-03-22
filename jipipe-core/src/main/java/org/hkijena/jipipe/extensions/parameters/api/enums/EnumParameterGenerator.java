@@ -16,8 +16,9 @@ package org.hkijena.jipipe.extensions.parameters.api.enums;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.DefaultJIPipeParameterGenerator;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.DynamicStringSetParameter;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class EnumParameterGenerator extends DefaultJIPipeParameterGenerator {
     private DynamicStringSetParameter generatedValues = new DynamicStringSetParameter();
 
     @Override
-    public <T> List<T> generate(JIPipeWorkbench workbench, Component parent, Class<T> klass) {
+    public <T> List<T> generate(JIPipeDesktopWorkbench workbench, Component parent, Class<T> klass) {
         // Set to enum properties before generating
         T[] enumConstants = klass.getEnumConstants();
         List<String> allowedValues = new ArrayList<>();

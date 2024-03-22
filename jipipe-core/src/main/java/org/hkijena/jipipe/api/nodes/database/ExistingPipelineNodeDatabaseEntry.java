@@ -13,22 +13,26 @@
 
 package org.hkijena.jipipe.api.nodes.database;
 
-import org.hkijena.jipipe.api.compartments.datatypes.JIPipeCompartmentOutputData;
-import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
+import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.jsoup.Jsoup;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
-public class ExistingPipelineNodeDatabaseEntry implements JIPipeNodeDatabaseEntry{
+public class ExistingPipelineNodeDatabaseEntry implements JIPipeNodeDatabaseEntry {
     private final String id;
     private final JIPipeGraphNode graphNode;
     private final WeightedTokens tokens = new WeightedTokens();
@@ -80,7 +84,7 @@ public class ExistingPipelineNodeDatabaseEntry implements JIPipeNodeDatabaseEntr
 
     @Override
     public HTMLText getDescription() {
-        if(!StringUtils.isNullOrEmpty(graphNode.getCustomDescription().getBody()))
+        if (!StringUtils.isNullOrEmpty(graphNode.getCustomDescription().getBody()))
             return graphNode.getCustomDescription();
         else
             return graphNode.getInfo().getDescription();
@@ -131,17 +135,16 @@ public class ExistingPipelineNodeDatabaseEntry implements JIPipeNodeDatabaseEntr
     }
 
     @Override
-    public JIPipeGraphNodeUI addToGraph(JIPipeGraphCanvasUI canvasUI) {
+    public JIPipeDesktopGraphNodeUI addToGraph(JIPipeDesktopGraphCanvasUI canvasUI) {
         return canvasUI.getNodeUIs().get(graphNode);
     }
 
     @Override
     public String getCategory() {
         UUID uuid = graphNode.getCompartmentUUIDInParentGraph();
-        if(uuid == null) {
+        if (uuid == null) {
             return "Nodes";
-        }
-        else {
+        } else {
             return "Compartments\n" + graphNode.getCompartmentDisplayName();
         }
     }

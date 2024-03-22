@@ -14,18 +14,21 @@
 package org.hkijena.jipipe.extensions.ijfilaments.nodes.modify;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.*;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.extensions.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
@@ -45,8 +48,8 @@ import java.util.Set;
 @AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
 public class GrowEndVerticesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private int iterations = 1;
     private final VertexMaskParameter vertexMask;
+    private int iterations = 1;
     private JIPipeExpressionParameter azimuthExpression = new JIPipeExpressionParameter("default");
     private JIPipeExpressionParameter attitudeExpression = new JIPipeExpressionParameter("default");
     private JIPipeExpressionParameter distanceExpression = new JIPipeExpressionParameter("5");
@@ -113,8 +116,8 @@ public class GrowEndVerticesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             JIPipeProgressInfo iterationProgress = progressInfo.resolveAndLog("Iteration", i, iterations);
             Set<FilamentVertex> toProcess = new HashSet<>();
             for (FilamentVertex vertex : vertexMask.filter(graph, graph.vertexSet(), variables)) {
-                if(graph.degreeOf(vertex) == 1) {
-                   toProcess.add(vertex);
+                if (graph.degreeOf(vertex) == 1) {
+                    toProcess.add(vertex);
                 }
             }
 
@@ -129,7 +132,7 @@ public class GrowEndVerticesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 FilamentEdge edge = graph.edgesOf(vertex).iterator().next();
                 source = graph.getEdgeSource(edge);
                 target = graph.getEdgeTarget(edge);
-                if(source == vertex) {
+                if (source == vertex) {
                     source = target;
                     target = vertex;
                 }

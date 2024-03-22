@@ -13,8 +13,9 @@
 
 package org.hkijena.jipipe.extensions.imageviewer;
 
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -22,11 +23,11 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.Collections;
 
-public class JIPipeImageViewerWindow extends JFrame implements WindowListener, JIPipeWorkbenchAccess {
-    private final JIPipeWorkbench workbench;
+public class JIPipeImageViewerWindow extends JFrame implements WindowListener, JIPipeDesktopWorkbenchAccess {
+    private final JIPipeDesktopWorkbench workbench;
     private final JIPipeImageViewer viewerPanel;
 
-    public JIPipeImageViewerWindow(JIPipeWorkbench workbench) {
+    public JIPipeImageViewerWindow(JIPipeDesktopWorkbench workbench) {
         this.workbench = workbench;
         this.viewerPanel = new JIPipeImageViewer(workbench, JIPipeImageViewer.DEFAULT_PLUGINS, Collections.emptyMap());
         initialize();
@@ -34,7 +35,7 @@ public class JIPipeImageViewerWindow extends JFrame implements WindowListener, J
 
     public JIPipeImageViewerWindow(JIPipeImageViewer panel) {
         this.viewerPanel = panel;
-        this.workbench = panel.getWorkbench();
+        this.workbench = panel.getDesktopWorkbench();
         initialize();
     }
 
@@ -94,6 +95,10 @@ public class JIPipeImageViewerWindow extends JFrame implements WindowListener, J
     @Override
     public void windowDeactivated(WindowEvent e) {
 
+    }
+
+    public JIPipeDesktopWorkbench getDesktopWorkbench() {
+        return workbench;
     }
 
     @Override

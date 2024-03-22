@@ -16,8 +16,8 @@ package org.hkijena.jipipe.extensions.ijtrackmate.datatypes;
 import com.fasterxml.jackson.databind.JsonNode;
 import fiji.plugin.trackmate.detection.SpotDetectorFactory;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
@@ -25,9 +25,9 @@ import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.ijtrackmate.display.algorithms.CachedTrackmateAlgorithmViewerWindow;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackMateUtils;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.InstantiableException;
@@ -115,8 +115,8 @@ public class SpotDetectorData implements JIPipeData {
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        CachedTrackmateAlgorithmViewerWindow window = new CachedTrackmateAlgorithmViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName, true);
+    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
+        CachedTrackmateAlgorithmViewerWindow window = new CachedTrackmateAlgorithmViewerWindow(desktopWorkbench, JIPipeDataTableDataSource.wrap(this, source), displayName, true);
         window.setVisible(true);
         SwingUtilities.invokeLater(window::reloadDisplayedData);
     }

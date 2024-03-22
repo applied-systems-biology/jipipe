@@ -13,23 +13,24 @@
 
 package org.hkijena.jipipe.extensions.filesystem.datasources;
 
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
-import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
-import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 
@@ -101,15 +102,15 @@ public class PathFromUserDataSource extends JIPipeSimpleIteratingAlgorithm {
         synchronized (lock) {
             SwingUtilities.invokeLater(() -> {
                 try {
-                    JIPipeWorkbench workbench = JIPipeProjectWorkbench.tryFindProjectWorkbench(getParentGraph(), new JIPipeDummyWorkbench());
+                    JIPipeWorkbench workbench = JIPipeDesktopProjectWorkbench.tryFindProjectWorkbench(getParentGraph(), new JIPipeDummyWorkbench());
                     if (multiple) {
-                        pathList.addAll(FileChooserSettings.selectMulti(workbench.getWindow(),
+                        pathList.addAll(FileChooserSettings.selectMulti(((JIPipeDesktopWorkbench) workbench).getWindow(),
                                 FileChooserSettings.LastDirectoryKey.Data,
                                 getDisplayName(),
                                 pathIOMode,
                                 pathType));
                     } else {
-                        Path path = FileChooserSettings.selectSingle(workbench.getWindow(),
+                        Path path = FileChooserSettings.selectSingle(((JIPipeDesktopWorkbench) workbench).getWindow(),
                                 FileChooserSettings.LastDirectoryKey.Data,
                                 getDisplayName(),
                                 pathIOMode,

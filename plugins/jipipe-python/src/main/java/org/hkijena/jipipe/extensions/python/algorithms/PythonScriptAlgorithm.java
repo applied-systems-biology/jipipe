@@ -14,9 +14,9 @@
 package org.hkijena.jipipe.extensions.python.algorithms;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
@@ -34,8 +34,8 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.library.scripts.PythonScript;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
-import org.hkijena.jipipe.extensions.python.PythonPlugin;
 import org.hkijena.jipipe.extensions.python.PythonExtensionSettings;
+import org.hkijena.jipipe.extensions.python.PythonPlugin;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.extensions.python.adapter.PythonAdapterExtensionSettings;
 import org.hkijena.jipipe.utils.scripting.JythonUtils;
@@ -112,14 +112,14 @@ public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
     @Override
     public void getExternalEnvironments(List<JIPipeEnvironment> target) {
         super.getExternalEnvironments(target);
-        if(overrideEnvironment.isEnabled()) {
+        if (overrideEnvironment.isEnabled()) {
             target.add(overrideEnvironment.getContent());
-        }
-        else {
+        } else {
             target.add(PythonExtensionSettings.getInstance().getPythonEnvironment());
         }
         target.add(PythonAdapterExtensionSettings.getInstance().getPythonAdapterLibraryEnvironment());
     }
+
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         super.reportValidity(reportContext, report);

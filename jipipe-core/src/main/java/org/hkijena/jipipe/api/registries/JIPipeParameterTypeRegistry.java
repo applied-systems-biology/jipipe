@@ -17,12 +17,12 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterGenerator;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
+import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -33,7 +33,7 @@ import java.util.*;
 public class JIPipeParameterTypeRegistry {
     private final BiMap<String, JIPipeParameterTypeInfo> registeredParameters = HashBiMap.create();
     private final BiMap<Class<?>, JIPipeParameterTypeInfo> registeredParameterClasses = HashBiMap.create();
-    private final Map<Class<?>, Class<? extends JIPipeParameterEditorUI>> parameterTypesUIs = new HashMap<>();
+    private final Map<Class<?>, Class<? extends JIPipeDesktopParameterEditorUI>> parameterTypesUIs = new HashMap<>();
     private final Map<Class<?>, Set<JIPipeParameterGenerator>> parameterGeneratorUIs = new HashMap<>();
     private final JIPipe jiPipe;
 
@@ -87,7 +87,7 @@ public class JIPipeParameterTypeRegistry {
      * @param parameterType parameter type
      * @param uiClass       corresponding editor UI
      */
-    public void registerParameterEditor(Class<?> parameterType, Class<? extends JIPipeParameterEditorUI> uiClass) {
+    public void registerParameterEditor(Class<?> parameterType, Class<? extends JIPipeDesktopParameterEditorUI> uiClass) {
         parameterTypesUIs.put(parameterType, uiClass);
     }
 
@@ -95,15 +95,15 @@ public class JIPipeParameterTypeRegistry {
      * Creates editor for the parameter
      *
      * @param workbench       SciJava context
-     * @param parameterTree the parameter tree
+     * @param parameterTree   the parameter tree
      * @param parameterAccess the parameter
      * @return Parameter editor UI
      */
-    public JIPipeParameterEditorUI createEditorFor(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        Class<? extends JIPipeParameterEditorUI> uiClass = parameterTypesUIs.getOrDefault(parameterAccess.getFieldClass(), null);
+    public JIPipeDesktopParameterEditorUI createEditorFor(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        Class<? extends JIPipeDesktopParameterEditorUI> uiClass = parameterTypesUIs.getOrDefault(parameterAccess.getFieldClass(), null);
         if (uiClass == null) {
             // Search a matching one
-            for (Map.Entry<Class<?>, Class<? extends JIPipeParameterEditorUI>> entry : parameterTypesUIs.entrySet()) {
+            for (Map.Entry<Class<?>, Class<? extends JIPipeDesktopParameterEditorUI>> entry : parameterTypesUIs.entrySet()) {
                 if (entry.getKey().isAssignableFrom(parameterAccess.getFieldClass())) {
                     uiClass = entry.getValue();
                     break;

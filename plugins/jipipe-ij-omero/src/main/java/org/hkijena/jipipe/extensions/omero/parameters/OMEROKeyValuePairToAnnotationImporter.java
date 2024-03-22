@@ -102,7 +102,7 @@ public class OMEROKeyValuePairToAnnotationImporter extends AbstractJIPipeParamet
     }
 
     public void createAnnotations(List<JIPipeTextAnnotation> target, MetadataFacility metadata, SecurityContext context, DataObject dataObject) throws DSOutOfServiceException, DSAccessException {
-        if(enabled) {
+        if (enabled) {
             Map<String, String> keyValuePairs = OMEROUtils.getKeyValuePairs(metadata, context, dataObject);
             JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
             for (Map.Entry<String, String> entry : keyValuePairs.entrySet()) {

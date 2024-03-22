@@ -28,13 +28,11 @@ public class IsInfiniteFunction extends ExpressionFunction {
 
     @Override
     public Object evaluate(List<Object> parameters, JIPipeExpressionVariablesMap variables) {
-        if(parameters.get(0) instanceof Double) {
+        if (parameters.get(0) instanceof Double) {
             return Double.isInfinite((Double) parameters.get(0));
-        }
-        else if(parameters.get(0) instanceof Float) {
+        } else if (parameters.get(0) instanceof Float) {
             return Float.isInfinite((Float) parameters.get(0));
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -43,8 +41,7 @@ public class IsInfiniteFunction extends ExpressionFunction {
     public ParameterInfo getParameterInfo(int index) {
         if (index == 0) {
             return new ParameterInfo("Value", "The value to be checked.", Number.class);
-        }
-        else {
+        } else {
             return null;
         }
     }

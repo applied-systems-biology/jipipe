@@ -20,8 +20,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.tables.MutableTableColumn;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -125,8 +125,8 @@ public class FloatArrayTableColumn implements MutableTableColumn {
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
+    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
         ResultsTableData data = new ResultsTableData(Collections.singleton(this));
-        data.display(displayName, workbench, source);
+        data.display(displayName, desktopWorkbench, source);
     }
 }

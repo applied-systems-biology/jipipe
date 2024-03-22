@@ -13,18 +13,18 @@
 
 package org.hkijena.jipipe.extensions.scene3d.datatypes;
 
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
-import org.hkijena.jipipe.api.data.utils.JIPipeSerializedJsonObjectData;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
+import org.hkijena.jipipe.api.data.utils.JIPipeSerializedJsonObjectData;
+import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
 import org.hkijena.jipipe.extensions.scene3d.model.Scene3DNode;
 import org.hkijena.jipipe.extensions.scene3d.utils.Scene3DToColladaExporter;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
-import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.nio.file.Path;
@@ -51,12 +51,12 @@ public class Scene3DData extends JIPipeSerializedJsonObjectData implements List<
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        Path outputFile = FileChooserSettings.saveFile(workbench.getWindow(), FileChooserSettings.LastDirectoryKey.Data, "Export Collada (*.dae)", new FileNameExtensionFilter("Collada 1.4 (*.dae)", "dae"));
+    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
+        Path outputFile = FileChooserSettings.saveFile(desktopWorkbench.getWindow(), FileChooserSettings.LastDirectoryKey.Data, "Export Collada (*.dae)", new FileNameExtensionFilter("Collada 1.4 (*.dae)", "dae"));
         if (outputFile != null) {
-            JIPipeRunnerQueue queue = new JIPipeRunnerQueue("Collada export");
+            JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Collada export");
             Scene3DToColladaExporter exporter = new Scene3DToColladaExporter(this, outputFile);
-            JIPipeRunExecuterUI.runInDialog(workbench, workbench.getWindow(), exporter, queue);
+            JIPipeDesktopRunExecuterUI.runInDialog(desktopWorkbench, desktopWorkbench.getWindow(), exporter, queue);
         }
     }
 

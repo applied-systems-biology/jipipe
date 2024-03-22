@@ -204,6 +204,7 @@ public interface JIPipeNodeInfo {
 
     /**
      * Returns true if this node is deprecated
+     *
      * @return if the node is deprecated
      */
     default boolean isDeprecated() {

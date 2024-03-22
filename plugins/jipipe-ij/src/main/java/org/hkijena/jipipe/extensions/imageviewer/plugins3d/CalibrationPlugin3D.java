@@ -15,10 +15,10 @@ package org.hkijena.jipipe.extensions.imageviewer.plugins3d;
 
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.ImageViewer3DDisplayRangeControl;
-import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
@@ -83,33 +83,30 @@ public class CalibrationPlugin3D extends GeneralImageViewerPanelPlugin3D {
 
     private void createModeButton(ImageJCalibrationMode mode, JPanel buttonsPanel) {
         JButton switchButton = new JButton(mode.getShortName());
-        if(mode == ImageJCalibrationMode.AutomaticImageJ) {
+        if (mode == ImageJCalibrationMode.AutomaticImageJ) {
             switchButton.setToolTipText("Set the minimum and maximum display range using ImageJ's auto-calibration algorithm");
-        }
-        else if(mode == ImageJCalibrationMode.MinMax) {
+        } else if (mode == ImageJCalibrationMode.MinMax) {
             switchButton.setToolTipText("Set the minimum and maximum display range to the minimum and maximum pixel value");
-        }
-        else {
+        } else {
             switchButton.setToolTipText("Set the minimum display range to " + mode.getMin() + " and the maximum range to " + mode.getMax());
         }
         switchButton.setBorder(BorderFactory.createCompoundBorder(
                 new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 1),
-                BorderFactory.createEmptyBorder(1,1,1,1)
+                BorderFactory.createEmptyBorder(1, 1, 1, 1)
         ));
         switchButton.addActionListener(e -> {
-            if(mode == ImageJCalibrationMode.Custom) {
+            if (mode == ImageJCalibrationMode.Custom) {
                 Optional<double[]> result = UIUtils.getMinMaxByDialog(getViewerPanel3D(), "Custom display range", "Please set the new display range",
                         displayRangeCalibrationControl.getCurrentMin(),
                         displayRangeCalibrationControl.getCurrentMax(),
                         displayRangeCalibrationControl.getMinSelectableValue(),
                         displayRangeCalibrationControl.getMaxSelectableValue());
-                if(result.isPresent()) {
+                if (result.isPresent()) {
                     displayRangeCalibrationControl.setMode(ImageJCalibrationMode.Custom);
                     displayRangeCalibrationControl.setCustomMinMax(result.get()[0], result.get()[1]);
                 }
                 displayRangeCalibrationControl.applyCustomCalibration();
-            }
-            else {
+            } else {
                 displayRangeCalibrationControl.setMode(mode);
                 displayRangeCalibrationControl.updateFromCurrentImage(false);
             }
@@ -119,7 +116,7 @@ public class CalibrationPlugin3D extends GeneralImageViewerPanelPlugin3D {
     }
 
     @Override
-    public void initializeSettingsPanel(FormPanel formPanel) {
+    public void initializeSettingsPanel(JIPipeDesktopFormPanel formPanel) {
         formPanel.addGroupHeader("Display range", UIUtils.getIconFromResources("actions/contrast.png"));
 
         JPanel buttonsPanel = new JPanel();

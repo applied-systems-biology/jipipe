@@ -20,23 +20,24 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
-import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
+import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
 
 import javax.swing.*;
 import java.util.UUID;
 
-public class DissolveCompartmentsTool extends JIPipeMenuExtension {
+public class DissolveCompartmentsTool extends JIPipeDesktopMenuExtension {
     /**
      * Creates a new instance
      *
      * @param workbench workbench the extension is attached to
      */
-    public DissolveCompartmentsTool(JIPipeWorkbench workbench) {
+    public DissolveCompartmentsTool(JIPipeDesktopWorkbench workbench) {
         super(workbench);
         setText("Dissolve compartments");
         setToolTipText("Merges all compartments into one large compartment. Compartment interfaces are converted into IO interface nodes.");
@@ -45,7 +46,7 @@ public class DissolveCompartmentsTool extends JIPipeMenuExtension {
     }
 
     private void dissolveCompartments() {
-        JIPipeProjectWorkbench workbench = (JIPipeProjectWorkbench) getWorkbench();
+        JIPipeDesktopProjectWorkbench workbench = (JIPipeDesktopProjectWorkbench) getDesktopWorkbench();
         if (JOptionPane.showConfirmDialog(workbench.getWindow(), "You will lose all manual node positions and all nodes will be put into one compartment. This operation cannot be undone. Do you want to continue?", "Dissolve compartments", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
             return;
         }
@@ -72,7 +73,7 @@ public class DissolveCompartmentsTool extends JIPipeMenuExtension {
             }
             workbench.getProject().getGraph().mergeWith(graph);
         }
-        workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_COMPARTMENT_EDITOR);
+        workbench.getDocumentTabPane().selectSingletonTab(JIPipeDesktopProjectWorkbench.TAB_COMPARTMENT_EDITOR);
     }
 
     @Override

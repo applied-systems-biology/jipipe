@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.settings;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeProjectTemplate;
+import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.api.enums.DynamicEnumParameter;
@@ -83,14 +83,14 @@ public class ProjectsSettings extends AbstractJIPipeParameterCollection {
         if (index == -1) {
             recentProjects.add(0, fileName);
             emitParameterChangedEvent("recent-projects");
-            if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+            if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
                 JIPipe.getSettings().save();
             }
         } else if (index != 0) {
             recentProjects.remove(index);
             recentProjects.add(0, fileName);
             emitParameterChangedEvent("recent-projects");
-            if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+            if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
                 JIPipe.getSettings().save();
             }
         }

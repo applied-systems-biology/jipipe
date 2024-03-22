@@ -17,11 +17,11 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
-import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
 
 /**
- * All settings for {@link JIPipeGraphEditorUI}
+ * All settings for {@link JIPipeDesktopGraphEditorUI}
  */
 public class GeneralUISettings extends AbstractJIPipeParameterCollection {
 
@@ -36,7 +36,7 @@ public class GeneralUISettings extends AbstractJIPipeParameterCollection {
     private boolean openDataWindowsAlwaysOnTop = true;
     private boolean openUtilityWindowsAlwaysOnTop = true;
     private boolean allowDefaultCollapsedParameters = true;
-    private JIPipeUITheme theme = JIPipeUITheme.ModernLight;
+    private JIPipeDesktopUITheme theme = JIPipeDesktopUITheme.ModernLight;
 
     public static GeneralUISettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, GeneralUISettings.class);
@@ -125,12 +125,12 @@ public class GeneralUISettings extends AbstractJIPipeParameterCollection {
 
     @SetJIPipeDocumentation(name = "Theme", description = "The theme that is used for the user interface. Requires a restart to take effect.")
     @JIPipeParameter("theme")
-    public JIPipeUITheme getTheme() {
+    public JIPipeDesktopUITheme getTheme() {
         return theme;
     }
 
     @JIPipeParameter("theme")
-    public void setTheme(JIPipeUITheme theme) {
+    public void setTheme(JIPipeDesktopUITheme theme) {
         this.theme = theme;
     }
 

@@ -23,16 +23,16 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.parameters.library.references.IconRef;
-import org.hkijena.jipipe.extensions.parameters.library.references.IconRefParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.library.references.IconRefDesktopParameterEditorUI;
 import org.hkijena.jipipe.extensions.settings.NodeTemplateSettings;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
@@ -78,7 +78,7 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
         return result;
     }
 
-    public static void create(JIPipeGraphCanvasUI canvasUI, Set<JIPipeGraphNode> algorithms) {
+    public static void create(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeGraphNode> algorithms) {
         JIPipeNodeTemplate template = new JIPipeNodeTemplate();
 
         if (algorithms.size() == 1) {
@@ -95,7 +95,7 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
             if (url != null) {
                 String urlString = url.toString();
                 String iconName = null;
-                for (String icon : IconRefParameterEditorUI.getAvailableIcons()) {
+                for (String icon : IconRefDesktopParameterEditorUI.getAvailableIcons()) {
                     if (urlString.endsWith(icon)) {
                         iconName = icon;
                         break;
@@ -111,7 +111,7 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
 
         int result = JOptionPane.YES_OPTION;
         if (canvasUI.getGraph().getProject() != null) {
-            result = JOptionPane.showOptionDialog(canvasUI.getWorkbench().getWindow(),
+            result = JOptionPane.showOptionDialog(canvasUI.getDesktopWorkbench().getWindow(),
                     "Node templates can be stored globally or inside the project. Where should the template be stored?",
                     "Create node template",
                     JOptionPane.YES_NO_CANCEL_OPTION,
@@ -123,13 +123,13 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
         if (result == JOptionPane.CANCEL_OPTION)
             return;
 
-        if (ParameterPanel.showDialog(canvasUI.getWorkbench(), template, new MarkdownDocument("# Node templates\n\nUse this user interface to modify node templates."), "Create template",
-                ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_DOCUMENTATION)) {
+        if (JIPipeDesktopParameterPanel.showDialog(canvasUI.getDesktopWorkbench(), template, new MarkdownText("# Node templates\n\nUse this user interface to modify node templates."), "Create template",
+                JIPipeDesktopParameterPanel.WITH_SCROLLING | JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION)) {
             if (result == JOptionPane.YES_OPTION) {
                 // Store globally
                 NodeTemplateSettings.getInstance().getNodeTemplates().add(template);
                 NodeTemplateSettings.getInstance().emitParameterChangedEvent("node-templates");
-                if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+                if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
                     JIPipe.getSettings().save();
                 }
             } else {

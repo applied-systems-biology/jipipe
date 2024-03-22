@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imp.datatypes;
 
-import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
@@ -32,6 +31,6 @@ public class ImpImageToImageJImageDataTypeConverter implements JIPipeDataConvert
 
     @Override
     public JIPipeData convert(JIPipeData input, JIPipeProgressInfo progressInfo) {
-        return new ImagePlusData(((ImpImageData)input).toImagePlus(true, 10));
+        return new ImagePlusData(((ImpImageData) input).toImagePlus(true, 10));
     }
 }

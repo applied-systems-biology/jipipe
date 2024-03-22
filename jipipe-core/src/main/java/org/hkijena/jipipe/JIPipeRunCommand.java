@@ -15,14 +15,15 @@ package org.hkijena.jipipe;
 
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
-import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
-import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.app.StatusService;
@@ -79,7 +80,7 @@ public class JIPipeRunCommand implements Command {
                 if (GraphicsEnvironment.isHeadless()) {
                     report.print();
                 } else {
-                    UIUtils.openValidityReportDialog(new JIPipeDummyWorkbench(),
+                    UIUtils.openValidityReportDialog(new JIPipeDesktopDummyWorkbench(),
                             null,
                             report,
                             "Errors while initializing JIPipe",

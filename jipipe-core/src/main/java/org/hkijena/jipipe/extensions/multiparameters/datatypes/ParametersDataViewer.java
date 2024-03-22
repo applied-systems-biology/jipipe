@@ -17,13 +17,14 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
-import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.ui.tableeditor.TableEditor;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
+import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.ui.swing.script.EditorPane;
@@ -32,24 +33,24 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Map;
 
-public class ParametersDataViewer extends JIPipeWorkbenchPanel {
+public class ParametersDataViewer extends JIPipeDesktopWorkbenchPanel {
 
-    private final DocumentTabPane tabPane = new DocumentTabPane(true, DocumentTabPane.TabPlacement.Top);
+    private final JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.TabPlacement.Top);
     private final EditorPane jsonViewer = new EditorPane();
-    private final TableEditor tableViewer;
-    private final ParameterPanel guiViewer;
+    private final JIPipeDesktopTableEditor tableViewer;
+    private final JIPipeDesktopParameterPanel guiViewer;
     private ParametersData parametersData;
 
     /**
      * @param workbench the workbench
      */
-    public ParametersDataViewer(JIPipeWorkbench workbench) {
+    public ParametersDataViewer(JIPipeDesktopWorkbench workbench) {
         super(workbench);
-        this.tableViewer = new TableEditor(workbench, new ResultsTableData());
-        this.guiViewer = new ParameterPanel(getWorkbench(),
+        this.tableViewer = new JIPipeDesktopTableEditor(workbench, new ResultsTableData());
+        this.guiViewer = new JIPipeDesktopParameterPanel(getDesktopWorkbench(),
                 new JIPipeDummyParameterCollection(),
-                new MarkdownDocument("# Parameters\n\nThis panel displays the parameters. Editing the values has no effect."),
-                ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION);
+                new MarkdownText("# Parameters\n\nThis panel displays the parameters. Editing the values has no effect."),
+                JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterPanel.WITH_SCROLLING | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION);
         initialize();
     }
 
@@ -93,32 +94,32 @@ public class ParametersDataViewer extends JIPipeWorkbenchPanel {
         jsonViewer.setBackground(UIManager.getColor("TextArea.background"));
         jsonViewer.setHighlightCurrentLine(false);
         jsonViewer.setTabSize(4);
-        getWorkbench().getContext().inject(jsonViewer);
+        getDesktopWorkbench().getContext().inject(jsonViewer);
         jsonViewer.setSyntaxEditingStyle("text/json");
         RTextScrollPane scrollPane = new RTextScrollPane(jsonViewer, true);
         scrollPane.setFoldIndicatorEnabled(true);
         tabPane.addTab("JSON view",
                 UIUtils.getIconFromResources("actions/dialog-xml-editor.png"),
                 scrollPane,
-                DocumentTabPane.CloseMode.withoutCloseButton);
+                JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
     }
 
     private void initializeTableViewer() {
         tabPane.addTab("Table view",
                 UIUtils.getIconFromResources("actions/table.png"),
                 tableViewer,
-                DocumentTabPane.CloseMode.withoutCloseButton);
+                JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
     }
 
     private void initializeGUIViewer() {
         tabPane.addTab("Graphical view",
                 UIUtils.getIconFromResources("actions/followmouse.png"),
                 guiViewer,
-                DocumentTabPane.CloseMode.withoutCloseButton);
+                JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
 
     }
 
-    public DocumentTabPane getTabPane() {
+    public JIPipeDesktopTabPane getTabPane() {
         return tabPane;
     }
 

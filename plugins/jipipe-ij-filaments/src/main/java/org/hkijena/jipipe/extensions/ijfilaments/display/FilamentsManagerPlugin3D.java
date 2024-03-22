@@ -25,9 +25,16 @@ import ij3d.ContentCreator;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
+import org.hkijena.jipipe.api.run.JIPipeRunnable;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
+import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
+import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
+import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallToggleButtonRibbonAction;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.extensions.ij3d.imageviewer.Measurement3DSettings;
 import org.hkijena.jipipe.extensions.ijfilaments.FilamentsPlugin;
@@ -40,16 +47,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPlugin3D;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.Image3DRenderType;
+import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
-import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.ribbon.Ribbon;
-import org.hkijena.jipipe.ui.components.ribbon.SmallButtonAction;
-import org.hkijena.jipipe.ui.components.ribbon.SmallToggleButtonAction;
-import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.scijava.vecmath.Color3f;
@@ -66,11 +66,11 @@ import java.util.stream.Collectors;
 
 public class FilamentsManagerPlugin3D extends JIPipeImageViewerPlugin3D implements JIPipeRunnable.FinishedEventListener {
     private final JList<Filaments3DData> filamentsListControl = new JList<>();
-    private final SmallToggleButtonAction displayROIViewMenuItem = new SmallToggleButtonAction("Display filaments", "Determines whether filaments are displayed", UIUtils.getIconFromResources("actions/eye.png"));
-    private final SmallToggleButtonAction displayROIAsVolumeItem = new SmallToggleButtonAction("Render as volume", "If enabled, render filaments as volume", UIUtils.getIconFromResources("actions/antivignetting.png"));
+    private final JIPipeDesktopSmallToggleButtonRibbonAction displayROIViewMenuItem = new JIPipeDesktopSmallToggleButtonRibbonAction("Display filaments", "Determines whether filaments are displayed", UIUtils.getIconFromResources("actions/eye.png"));
+    private final JIPipeDesktopSmallToggleButtonRibbonAction displayROIAsVolumeItem = new JIPipeDesktopSmallToggleButtonRibbonAction("Render as volume", "If enabled, render filaments as volume", UIUtils.getIconFromResources("actions/antivignetting.png"));
     private final List<SelectionContextPanel> selectionContextPanels = new ArrayList<>();
     private final JPanel selectionContentPanelUI = new JPanel();
-    private final Ribbon ribbon = new Ribbon(3);
+    private final JIPipeDesktopRibbon ribbon = new JIPipeDesktopRibbon(3);
     private final Timer updateContentLaterTimer;
     private List<Filaments3DData> filamentsList = new ArrayList<>();
     private boolean filterListOnlySelected = false;
@@ -169,7 +169,7 @@ public class FilamentsManagerPlugin3D extends JIPipeImageViewerPlugin3D implemen
     }
 
     @Override
-    public void initializeSettingsPanel(FormPanel formPanel) {
+    public void initializeSettingsPanel(JIPipeDesktopFormPanel formPanel) {
         if (getCurrentImagePlus() == null)
             return;
         formPanel.addVerticalGlue(mainPanel, null);
@@ -229,7 +229,7 @@ public class FilamentsManagerPlugin3D extends JIPipeImageViewerPlugin3D implemen
     }
 
     private void openDrawingSettings() {
-        ParameterPanel.showDialog(getWorkbench(), getViewerPanel(), filamentsDrawer, new MarkdownDocument("# Filaments display settings\n\nPlease use the settings on the left to modify how filaments are visualized."), "Filaments display settings", ParameterPanel.DEFAULT_DIALOG_FLAGS);
+        JIPipeDesktopParameterPanel.showDialog(getDesktopWorkbench(), getViewerPanel(), filamentsDrawer, new MarkdownText("# Filaments display settings\n\nPlease use the settings on the left to modify how filaments are visualized."), "Filaments display settings", JIPipeDesktopParameterPanel.DEFAULT_DIALOG_FLAGS);
         rebuildRoiContentLater();
     }
 
@@ -241,23 +241,23 @@ public class FilamentsManagerPlugin3D extends JIPipeImageViewerPlugin3D implemen
 
         // View menu for general display
         {
-            Ribbon.Task viewTask = ribbon.addTask("View");
-            Ribbon.Band renderingBand = viewTask.addBand("Rendering");
+            JIPipeDesktopRibbon.Task viewTask = ribbon.addTask("View");
+            JIPipeDesktopRibbon.Band renderingBand = viewTask.addBand("Rendering");
 
             renderingBand.add(displayROIViewMenuItem);
 
-            renderingBand.add(new SmallButtonAction("More settings ...", "Opens more rendering settings", UIUtils.getIconFromResources("actions/configure.png"), this::openDrawingSettings));
+            renderingBand.add(new JIPipeDesktopSmallButtonRibbonAction("More settings ...", "Opens more rendering settings", UIUtils.getIconFromResources("actions/configure.png"), this::openDrawingSettings));
             renderingBand.add(displayROIAsVolumeItem);
-            renderingBand.add(new SmallButtonAction("Save settings", "Saves the current settings as default", UIUtils.getIconFromResources("actions/save.png"), this::saveDefaults));
-            renderingBand.add(new SmallButtonAction("Rebuild", "Re-renders the ROI", UIUtils.getIconFromResources("actions/run-build.png"), this::rebuildRoiContentNow));
+            renderingBand.add(new JIPipeDesktopSmallButtonRibbonAction("Save settings", "Saves the current settings as default", UIUtils.getIconFromResources("actions/save.png"), this::saveDefaults));
+            renderingBand.add(new JIPipeDesktopSmallButtonRibbonAction("Rebuild", "Re-renders the ROI", UIUtils.getIconFromResources("actions/run-build.png"), this::rebuildRoiContentNow));
         }
 
         // Filter task
         {
-            Ribbon.Task filterTask = ribbon.addTask("Filter");
-            Ribbon.Band listBand = filterTask.addBand("List");
+            JIPipeDesktopRibbon.Task filterTask = ribbon.addTask("Filter");
+            JIPipeDesktopRibbon.Band listBand = filterTask.addBand("List");
 
-            listBand.add(new SmallToggleButtonAction("Only selection", "Show only ROI that are selected", UIUtils.getIconFromResources("actions/edit-select-all.png"), filterListOnlySelected, (toggle) -> {
+            listBand.add(new JIPipeDesktopSmallToggleButtonRibbonAction("Only selection", "Show only ROI that are selected", UIUtils.getIconFromResources("actions/edit-select-all.png"), filterListOnlySelected, (toggle) -> {
                 filterListOnlySelected = toggle.isSelected();
                 updateListModel();
             }));
@@ -265,30 +265,30 @@ public class FilamentsManagerPlugin3D extends JIPipeImageViewerPlugin3D implemen
 
         // Select/Edit task
         {
-            Ribbon.Task selectionTask = ribbon.addTask("Selection");
-            Ribbon.Band generalBand = selectionTask.addBand("General");
-            Ribbon.Band modifyBand = selectionTask.addBand("Modify");
-            Ribbon.Band measureBand = selectionTask.addBand("Measure");
+            JIPipeDesktopRibbon.Task selectionTask = ribbon.addTask("Selection");
+            JIPipeDesktopRibbon.Band generalBand = selectionTask.addBand("General");
+            JIPipeDesktopRibbon.Band modifyBand = selectionTask.addBand("Modify");
+            JIPipeDesktopRibbon.Band measureBand = selectionTask.addBand("Measure");
 
-            generalBand.add(new SmallButtonAction("Select all", "Selects all filaments", UIUtils.getIconFromResources("actions/edit-select-all.png"), this::selectAll));
-            generalBand.add(new SmallButtonAction("Clear selection", "Deselects all filaments", UIUtils.getIconFromResources("actions/edit-select-none.png"), this::selectNone));
-            generalBand.add(new SmallButtonAction("Invert selection", "Inverts the current selection", UIUtils.getIconFromResources("actions/edit-select-none.png"), this::invertSelection));
+            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Select all", "Selects all filaments", UIUtils.getIconFromResources("actions/edit-select-all.png"), this::selectAll));
+            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Clear selection", "Deselects all filaments", UIUtils.getIconFromResources("actions/edit-select-none.png"), this::selectNone));
+            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Invert selection", "Inverts the current selection", UIUtils.getIconFromResources("actions/edit-select-none.png"), this::invertSelection));
 
-            modifyBand.add(new SmallButtonAction("Delete", "Deletes the selected filaments", UIUtils.getIconFromResources("actions/delete.png"), this::removeSelectedFilaments));
+            modifyBand.add(new JIPipeDesktopSmallButtonRibbonAction("Delete", "Deletes the selected filaments", UIUtils.getIconFromResources("actions/delete.png"), this::removeSelectedFilaments));
 
-            SmallButtonAction measureAction = new SmallButtonAction("Measure", "Measures the ROI and displays the results as table", UIUtils.getIconFromResources("actions/statistics.png"), this::measureSelectedFilaments);
+            JIPipeDesktopSmallButtonRibbonAction measureAction = new JIPipeDesktopSmallButtonRibbonAction("Measure", "Measures the ROI and displays the results as table", UIUtils.getIconFromResources("actions/statistics.png"), this::measureSelectedFilaments);
             measureBand.add(measureAction);
-            measureBand.add(new SmallButtonAction("Settings ...", "Opens the measurement settings", UIUtils.getIconFromResources("actions/configure.png"), this::openMeasurementSettings));
+            measureBand.add(new JIPipeDesktopSmallButtonRibbonAction("Settings ...", "Opens the measurement settings", UIUtils.getIconFromResources("actions/configure.png"), this::openMeasurementSettings));
 
         }
 
         // Import/Export task
         {
-            Ribbon.Task importExportTask = ribbon.addTask("Import/Export");
-            Ribbon.Band fileBand = importExportTask.addBand("File");
+            JIPipeDesktopRibbon.Task importExportTask = ribbon.addTask("Import/Export");
+            JIPipeDesktopRibbon.Band fileBand = importExportTask.addBand("File");
 
-            fileBand.add(new SmallButtonAction("Import from file", "Imports filaments from a *.roi or *.zip file", UIUtils.getIconFromResources("actions/fileopen.png"), this::importFilamentsFromFile));
-            fileBand.add(new SmallButtonAction("Export to file", "Exports filaments to a *.zip file", UIUtils.getIconFromResources("actions/save.png"), this::exportFilamentsToFile));
+            fileBand.add(new JIPipeDesktopSmallButtonRibbonAction("Import from file", "Imports filaments from a *.roi or *.zip file", UIUtils.getIconFromResources("actions/fileopen.png"), this::importFilamentsFromFile));
+            fileBand.add(new JIPipeDesktopSmallButtonRibbonAction("Export to file", "Exports filaments to a *.zip file", UIUtils.getIconFromResources("actions/save.png"), this::exportFilamentsToFile));
         }
     }
 
@@ -301,7 +301,7 @@ public class FilamentsManagerPlugin3D extends JIPipeImageViewerPlugin3D implemen
     private void openMeasurementSettings() {
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(getViewerPanel()));
         dialog.setTitle("Measurement settings");
-        dialog.setContentPane(new ParameterPanel(new JIPipeDummyWorkbench(), Measurement3DSettings.INSTANCE, null, FormPanel.WITH_SCROLLING));
+        dialog.setContentPane(new JIPipeDesktopParameterPanel(new JIPipeDesktopDummyWorkbench(), Measurement3DSettings.INSTANCE, null, JIPipeDesktopFormPanel.WITH_SCROLLING));
         UIUtils.addEscapeListener(dialog);
         dialog.setSize(640, 480);
         dialog.setLocationRelativeTo(getViewerPanel());
@@ -313,7 +313,7 @@ public class FilamentsManagerPlugin3D extends JIPipeImageViewerPlugin3D implemen
     private void measureSelectedFilaments() {
         Filaments3DData selected = getSelectedFilamentsOrAll("Measure filaments", "Please select which filaments should be measured");
         ResultsTableData measurements = selected.measureComponents();
-        TableEditor.openWindow(getViewerPanel().getWorkbench(), measurements, "Measurements");
+        JIPipeDesktopTableEditor.openWindow(getViewerPanel().getDesktopWorkbench(), measurements, "Measurements");
     }
 
     private void selectNone() {
@@ -339,7 +339,7 @@ public class FilamentsManagerPlugin3D extends JIPipeImageViewerPlugin3D implemen
             ImageViewerUIFilamentDisplaySettings settings = ImageViewerUIFilamentDisplaySettings.getInstance();
             settings.getFilamentDrawer().copyFrom(filamentsDrawer);
             settings.setShowFilaments(displayROIViewMenuItem.getState());
-            if(!JIPipe.NO_SETTINGS_AUTOSAVE) {
+            if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
                 JIPipe.getSettings().save();
             }
         }

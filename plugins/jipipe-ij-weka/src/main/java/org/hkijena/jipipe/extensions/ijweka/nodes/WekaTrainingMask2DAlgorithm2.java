@@ -14,14 +14,14 @@
 package org.hkijena.jipipe.extensions.ijweka.nodes;
 
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -90,7 +90,7 @@ public class WekaTrainingMask2DAlgorithm2 extends JIPipeMergingAlgorithm {
             labelImages.add(dataAnnotation.getData(ImagePlus2DGreyscaleMaskData.class, progressInfo).getDuplicateImage());
         }
 
-        if(trainingImages.isEmpty()) {
+        if (trainingImages.isEmpty()) {
             progressInfo.log("Nothing to train. Skipping.");
             return;
         }
@@ -108,7 +108,7 @@ public class WekaTrainingMask2DAlgorithm2 extends JIPipeMergingAlgorithm {
             wekaSegmentation.setUseNeighbors(featureSettings.isUseNeighbors());
 
             for (int i = 0; i < trainingImages.size(); i++) {
-                if(!ImageJUtils.imagesHaveSameSize(trainingImages.get(0), trainingImages.get(i), labelImages.get(i))) {
+                if (!ImageJUtils.imagesHaveSameSize(trainingImages.get(0), trainingImages.get(i), labelImages.get(i))) {
                     throw new JIPipeValidationRuntimeException(new GraphNodeValidationReportContext(this),
                             new IllegalArgumentException("Training images don't have the same size!"),
                             "Training images have different sizes!",
