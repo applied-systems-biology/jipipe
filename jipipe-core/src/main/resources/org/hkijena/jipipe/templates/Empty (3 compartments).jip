@@ -138,16 +138,6 @@
     },
     "edges" : [ ],
     "additional-metadata" : {
-      "node-hotkeys" : {
-        "jipipe:type" : "org.hkijena.jipipe.ui.grapheditor.NodeHotKeyStorage",
-        "data" : {
-          "hotkeys" : { }
-        }
-      },
-      "jipipe:graph:view-mode" : {
-        "jipipe:type" : "org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode",
-        "data" : "Vertical"
-      }
     }
   },
   "compartments" : {
@@ -303,16 +293,6 @@
         }
       } ],
       "additional-metadata" : {
-        "node-hotkeys" : {
-          "jipipe:type" : "org.hkijena.jipipe.ui.grapheditor.NodeHotKeyStorage",
-          "data" : {
-            "hotkeys" : { }
-          }
-        },
-        "jipipe:graph:view-mode" : {
-          "jipipe:type" : "org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode",
-          "data" : "Vertical"
-        }
       }
     }
   }

@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopGraphEditorToolBarButtonExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.utils.ReflectionUtils;
@@ -48,8 +49,8 @@ public class JIPipeCustomMenuRegistry {
      */
     public void registerMenu(Class<? extends JIPipeDesktopMenuExtension> extension) {
         try {
-            Constructor<? extends JIPipeDesktopMenuExtension> constructor = extension.getConstructor(JIPipeWorkbench.class);
-            JIPipeDesktopMenuExtension instance = constructor.newInstance((JIPipeWorkbench) null);
+            Constructor<? extends JIPipeDesktopMenuExtension> constructor = extension.getConstructor(JIPipeDesktopWorkbench.class);
+            JIPipeDesktopMenuExtension instance = constructor.newInstance((JIPipeDesktopWorkbench) null);
             List<Class<? extends JIPipeDesktopMenuExtension>> list = registeredMenuExtensions.getOrDefault(instance.getMenuTarget(), null);
             if (list == null) {
                 list = new ArrayList<>();
