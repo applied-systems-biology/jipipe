@@ -15,7 +15,6 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.forms;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
@@ -143,7 +142,7 @@ public class MaskDrawerFormData extends FormData {
     }
 
     @Override
-    public Component getEditor(JIPipeWorkbench workbench) {
+    public Component getEditor(JIPipeDesktopWorkbench workbench) {
         return getImageViewerPanel();
     }
 

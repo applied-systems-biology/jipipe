@@ -970,7 +970,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                         additionalMetadata.put(metadataEntry.getKey(), data);
                     }
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 e.printStackTrace();
             }
         }

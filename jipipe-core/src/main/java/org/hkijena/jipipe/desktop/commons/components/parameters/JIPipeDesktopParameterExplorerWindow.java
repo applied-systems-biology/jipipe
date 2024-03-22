@@ -16,6 +16,7 @@ package org.hkijena.jipipe.desktop.commons.components.parameters;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
@@ -35,7 +36,7 @@ import java.awt.*;
 import java.util.Objects;
 
 public class JIPipeDesktopParameterExplorerWindow extends JFrame implements JIPipeParameterCollection.ParameterChangedEventListener {
-    private final JIPipeWorkbench workbench;
+    private final JIPipeDesktopWorkbench workbench;
     private final JIPipeParameterCollection parameterCollection;
     private final JIPipeParameterTree parameterTree;
     private final JPanel contentPanel = new JPanel(new BorderLayout());
@@ -53,7 +54,7 @@ public class JIPipeDesktopParameterExplorerWindow extends JFrame implements JIPi
     private JIPipeDesktopReadonlyCopyableTextField currentValueJson;
     private JIPipeDesktopReadonlyCopyableTextField testerValueJson;
 
-    public JIPipeDesktopParameterExplorerWindow(JIPipeWorkbench workbench, JIPipeParameterCollection parameterCollection) {
+    public JIPipeDesktopParameterExplorerWindow(JIPipeDesktopWorkbench workbench, JIPipeParameterCollection parameterCollection) {
         this.workbench = workbench;
         this.parameterCollection = parameterCollection;
         this.parameterTree = new JIPipeParameterTree(parameterCollection);

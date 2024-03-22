@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterGenerator;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -99,7 +100,7 @@ public class JIPipeParameterTypeRegistry {
      * @param parameterAccess the parameter
      * @return Parameter editor UI
      */
-    public JIPipeDesktopParameterEditorUI createEditorFor(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+    public JIPipeDesktopParameterEditorUI createEditorFor(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         Class<? extends JIPipeDesktopParameterEditorUI> uiClass = parameterTypesUIs.getOrDefault(parameterAccess.getFieldClass(), null);
         if (uiClass == null) {
             // Search a matching one
@@ -114,7 +115,7 @@ public class JIPipeParameterTypeRegistry {
             throw new NullPointerException("Could not find parameter editor for parameter class '" + parameterAccess.getFieldClass() + "'");
         }
         try {
-            return uiClass.getConstructor(JIPipeWorkbench.class, JIPipeParameterTree.class, JIPipeParameterAccess.class).newInstance(workbench, parameterTree, parameterAccess);
+            return uiClass.getConstructor(JIPipeDesktopWorkbench.class, JIPipeParameterTree.class, JIPipeParameterAccess.class).newInstance(workbench, parameterTree, parameterAccess);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                  NoSuchMethodException e) {
             throw new RuntimeException(e);
