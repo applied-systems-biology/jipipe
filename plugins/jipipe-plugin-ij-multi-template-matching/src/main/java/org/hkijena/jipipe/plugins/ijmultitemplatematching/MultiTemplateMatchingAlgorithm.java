@@ -123,7 +123,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     private static String loadScriptFromResources() {
-        return ResourceUtils.getPluginResourceAsString("extensions/ijmultitemplatematching/template-matching-script.py");
+        return ResourceUtils.getPluginResourceAsString("plugins/ijmultitemplatematching/template-matching-script.py");
     }
 
     @Override

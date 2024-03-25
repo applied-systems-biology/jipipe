@@ -102,6 +102,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     private final Image nodeIcon;
     private final Font nativeMainFont = new Font(Font.DIALOG, Font.PLAIN, 12);
     private final Font nativeSecondaryFont = new Font(Font.DIALOG, Font.PLAIN, 11);
+    private final Font nativeSecondaryHighlightedFont = new Font(Font.DIALOG, Font.ITALIC, 11);
     private final Color mainTextColor;
     private final Color secondaryTextColor;
     private final boolean showInputs;
@@ -118,6 +119,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     private double zoom = 1;
     private Font zoomedMainFont;
     private Font zoomedSecondaryFont;
+    private Font zoomedHighlightedSecondaryFont;
     private JIPipeDesktopGraphNodeUIActiveArea currentActiveArea;
     private BufferedImage nodeBuffer;
     private boolean nodeBufferInvalid = true;
@@ -349,8 +351,8 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         // Node button
         if (nodeIsRunnable) {
             int realSlotHeight = viewMode.gridToRealSize(new Dimension(1, 1), zoom).height;
-            boolean hasInputs = (node.getInputSlots().size() > 0 || slotsInputsEditable) && showInputs;
-            boolean hasOutputs = (node.getOutputSlots().size() > 0 || slotsOutputsEditable) && showOutputs;
+            boolean hasInputs = (!node.getInputSlots().isEmpty() || slotsInputsEditable) && showInputs;
+            boolean hasOutputs = (!node.getOutputSlots().isEmpty() || slotsOutputsEditable) && showOutputs;
 
             int centerY;
             if (hasInputs && !hasOutputs) {
@@ -362,7 +364,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             }
 
             String nameLabel = node.getName();
-            int centerNativeWidth = (int) Math.round((nodeIsRunnable ? 22 : 0) * zoom + 22 * zoom + mainFontMetrics.stringWidth(nameLabel));
+            int centerNativeWidth = (int) Math.round(22 * zoom + 22 * zoom + mainFontMetrics.stringWidth(nameLabel));
             double startX = getWidth() / 2.0 - centerNativeWidth / 2.0;
 
             JIPipeDesktopGraphNodeUIRunNodeActiveArea activeArea = new JIPipeDesktopGraphNodeUIRunNodeActiveArea(this);
@@ -410,6 +412,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         // Update fonts
         zoomedMainFont = new Font(Font.DIALOG, Font.PLAIN, (int) Math.round(12 * zoom));
         zoomedSecondaryFont = new Font(Font.DIALOG, Font.PLAIN, (int) Math.round(11 * zoom));
+        zoomedHighlightedSecondaryFont = new Font(Font.DIALOG, Font.ITALIC, (int) Math.round(11 * zoom));
     }
 
     /**
@@ -569,7 +572,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 //            return;
 //        }
         boolean excludeButton = false;
-        if (slotStateMap.size() > 0 && hasButton) {
+        if (!slotStateMap.isEmpty() && hasButton) {
             nodeWidth -= 22;
             sumWidth -= 22;
             excludeButton = true;
@@ -757,7 +760,6 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         paintNodeControls(g2, fontMetrics, realSlotHeight, hasInputs && showInputs, hasOutputs && showOutputs);
 
         // Paint slots
-        g2.setFont(zoomedSecondaryFont);
         g2.setStroke(JIPipeDesktopGraphCanvasUI.STROKE_UNIT);
 
         if (hasInputs && showInputs) {
@@ -936,6 +938,13 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     }
 
     private void paintSlot(Graphics2D g2, JIPipeDesktopGraphNodeUISlotActiveArea slotState, int realSlotHeight, double startX, int slotWidth, Color indicatorColor, Color indicatorTextColor, int slotY, int indicatorY, int centerY) {
+
+        if(slotState.isSlotLabelIsCustom()) {
+            g2.setFont(zoomedHighlightedSecondaryFont);
+        }
+        else {
+            g2.setFont(zoomedSecondaryFont);
+        }
 
         final double originalStartX = startX;
         boolean hasMouseOver = currentActiveArea == slotState || (currentActiveArea instanceof JIPipeDesktopGraphNodeUISlotButtonActiveArea && ((JIPipeDesktopGraphNodeUISlotButtonActiveArea) currentActiveArea).getUISlot() == slotState);

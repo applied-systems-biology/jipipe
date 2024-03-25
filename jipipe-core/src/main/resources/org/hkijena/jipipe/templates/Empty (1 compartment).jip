@@ -38,20 +38,14 @@
     "ij:update-site-providers" : [ ]
   } ],
   "additional-metadata" : {
-    "pipeline-parameters" : {
-      "jipipe:type" : "org.hkijena.jipipe.ui.settings.JIPipeProjectInfoParameters",
-      "exported-parameters" : {
-        "parameter-reference-groups" : [ ]
-      }
-    },
     "org.hkijena.jipipe:pipeline-parameters" : {
-      "jipipe:type" : "org.hkijena.jipipe.ui.settings.JIPipeProjectInfoParameters",
+      "jipipe:type" : "org.hkijena.jipipe.api.project.JIPipeProjectInfoParameters",
       "exported-parameters" : {
         "parameter-reference-groups" : [ ]
       }
     },
     "org.hkijena.jipipe.ui:project-tabs" : {
-      "jipipe:type" : "org.hkijena.jipipe.ui.project.JIPipeProjectTabMetadata",
+      "jipipe:type" : "org.hkijena.jipipe.desktop.app.project.JIPipeDesktopJIPipeProjectTabMetadata",
       "data" : {
         "open-tabs" : [ "singleton:COMPARTMENT_EDITOR", "graph-compartment:fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851" ],
         "selected-tab" : "singleton:COMPARTMENT_EDITOR"
