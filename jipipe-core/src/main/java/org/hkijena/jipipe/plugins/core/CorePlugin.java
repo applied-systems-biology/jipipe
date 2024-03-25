@@ -18,6 +18,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeStandardMetadata;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.compat.*;
@@ -33,6 +34,7 @@ import org.hkijena.jipipe.api.grapheditortool.*;
 import org.hkijena.jipipe.api.nodes.JIPipeTextAnnotationMatchingMethod;
 import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.run.JIPipeGraphRunPartitionInheritedBoolean;
+import org.hkijena.jipipe.desktop.app.grapheditor.JIPipeNodeHotKeyStorage;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.data.CopyContainingFolderDataImportOperation;
 import org.hkijena.jipipe.plugins.core.data.DefaultDataDisplayOperation;
@@ -160,6 +162,10 @@ public class CorePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerGraphEditorTool(JIPipeMoveNodesGraphEditorTool.class);
         registerGraphEditorTool(JIPipeCropViewGraphEditorTool.class);
         registerGraphEditorTool(JIPipeRewireGraphEditorTool.class);
+
+        // Metadata objects
+        registerMetadataObjectType(JIPipeNodeHotKeyStorage.class, "jipipe:node-hotkey-storage", "org.hkijena.jipipe.ui.grapheditor.NodeHotKeyStorage");
+        registerMetadataObjectType(JIPipeStandardMetadata.class, "jipipe:standard-metadata");
     }
 
     @Override

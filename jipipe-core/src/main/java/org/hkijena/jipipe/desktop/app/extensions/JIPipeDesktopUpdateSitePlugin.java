@@ -18,7 +18,7 @@ import net.imagej.updater.UpdateSite;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipePlugin;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
-import org.hkijena.jipipe.api.JIPipeMetadata;
+import org.hkijena.jipipe.api.JIPipeStandardMetadata;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
@@ -28,14 +28,13 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.nio.file.Path;
-import java.util.Collections;
 
 /**
  * Helper class that encapsulates an ImageJ update site into a {@link JIPipePlugin}
  */
 public class JIPipeDesktopUpdateSitePlugin implements JIPipePlugin {
 
-    private final JIPipeMetadata metadata = new JIPipeMetadata();
+    private final JIPipeStandardMetadata metadata = new JIPipeStandardMetadata();
     private JIPipeImageJUpdateSiteDependency dependency;
     private UpdateSite updateSite;
 
@@ -64,7 +63,7 @@ public class JIPipeDesktopUpdateSitePlugin implements JIPipePlugin {
     }
 
     @Override
-    public JIPipeMetadata getMetadata() {
+    public JIPipeStandardMetadata getMetadata() {
         return metadata;
     }
 

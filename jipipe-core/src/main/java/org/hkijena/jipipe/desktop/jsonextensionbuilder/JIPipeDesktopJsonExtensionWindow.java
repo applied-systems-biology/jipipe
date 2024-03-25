@@ -20,7 +20,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJsonPlugin;
 import org.hkijena.jipipe.JIPipeRegistryIssues;
-import org.hkijena.jipipe.api.JIPipeMetadata;
+import org.hkijena.jipipe.api.JIPipeStandardMetadata;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -321,8 +321,8 @@ public class JIPipeDesktopJsonExtensionWindow extends JFrame {
                 int finalProjectFormat = projectFormat;
                 missingDependencies.add(new JIPipeDependency() {
                     @Override
-                    public JIPipeMetadata getMetadata() {
-                        return new JIPipeMetadata() {
+                    public JIPipeStandardMetadata getMetadata() {
+                        return new JIPipeStandardMetadata() {
                             {
                                 setTitle("Newer JIPipe version");
                                 setDescription(new HTMLText("You might require a newer JIPipe version to load this"));

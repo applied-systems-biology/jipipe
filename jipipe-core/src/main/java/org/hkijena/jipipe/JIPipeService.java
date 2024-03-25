@@ -43,6 +43,8 @@ public interface JIPipeService extends Service, JIPipeValidatable {
 
     JIPipeSettingsRegistry getSettingsRegistry();
 
+    JIPipeMetadataRegistry getMetadataRegistry();
+
     JIPipeExpressionRegistry getExpressionRegistry();
 
     JIPipeUtilityRegistry getUtilityRegistry();

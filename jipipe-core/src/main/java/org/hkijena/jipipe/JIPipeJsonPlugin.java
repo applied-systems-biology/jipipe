@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeMetadata;
+import org.hkijena.jipipe.api.JIPipeStandardMetadata;
 import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 import org.hkijena.jipipe.api.grouping.JsonNodeRegistrationTask;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -59,7 +59,7 @@ public class JIPipeJsonPlugin extends AbstractJIPipeParameterCollection implemen
     private String version = "1.0.0";
 
     private StringList provides = new StringList();
-    private JIPipeMetadata metadata = new JIPipeMetadata();
+    private JIPipeStandardMetadata metadata = new JIPipeStandardMetadata();
     private Path jsonFilePath;
     private JIPipe registry;
     private JIPipeImageJUpdateSiteDependency.List updateSiteDependenciesParameter = new JIPipeImageJUpdateSiteDependency.List();
@@ -120,7 +120,7 @@ public class JIPipeJsonPlugin extends AbstractJIPipeParameterCollection implemen
     @JsonGetter("metadata")
     @JIPipeParameter("metadata")
     @SetJIPipeDocumentation(name = "Metadata", description = "Additional extension metadata")
-    public JIPipeMetadata getMetadata() {
+    public JIPipeStandardMetadata getMetadata() {
         return metadata;
     }
 
@@ -130,7 +130,7 @@ public class JIPipeJsonPlugin extends AbstractJIPipeParameterCollection implemen
      * @param metadata Metadata
      */
     @JsonSetter("metadata")
-    public void setMetadata(JIPipeMetadata metadata) {
+    public void setMetadata(JIPipeStandardMetadata metadata) {
         this.metadata = metadata;
     }
 
@@ -401,7 +401,7 @@ public class JIPipeJsonPlugin extends AbstractJIPipeParameterCollection implemen
             extension.serializedJson = node;
             extension.id = node.get("id").textValue();
             extension.version = node.get("version").textValue();
-            extension.metadata = JsonUtils.getObjectMapper().readerFor(JIPipeMetadata.class).readValue(node.get("metadata"));
+            extension.metadata = JsonUtils.getObjectMapper().readerFor(JIPipeStandardMetadata.class).readValue(node.get("metadata"));
 
             return extension;
         }

@@ -33,7 +33,7 @@ import java.util.Set;
 /**
  * JSON-serializable project metadata
  */
-public class JIPipeMetadata extends AbstractJIPipeParameterCollection {
+public class JIPipeStandardMetadata extends AbstractJIPipeParameterCollection implements JIPipeMetadataObject {
     private String name = "New project";
     private HTMLText description = new HTMLText("A JIPipe project");
 
@@ -52,7 +52,7 @@ public class JIPipeMetadata extends AbstractJIPipeParameterCollection {
     /**
      * Creates new empty instance
      */
-    public JIPipeMetadata() {
+    public JIPipeStandardMetadata() {
     }
 
     /**
@@ -60,7 +60,7 @@ public class JIPipeMetadata extends AbstractJIPipeParameterCollection {
      *
      * @param other The original metadata
      */
-    public JIPipeMetadata(JIPipeMetadata other) {
+    public JIPipeStandardMetadata(JIPipeStandardMetadata other) {
         this.name = other.name;
         this.description = new HTMLText(other.description);
         this.summary = new HTMLText(other.summary);

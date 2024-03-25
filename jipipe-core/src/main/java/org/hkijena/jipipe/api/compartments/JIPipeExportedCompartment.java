@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeMetadata;
+import org.hkijena.jipipe.api.JIPipeStandardMetadata;
 import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
@@ -49,7 +49,7 @@ import java.util.UUID;
 @JsonDeserialize(using = JIPipeExportedCompartment.Deserializer.class)
 public class JIPipeExportedCompartment {
     private final JIPipeGraph outputGraph = new JIPipeGraph();
-    private JIPipeMetadata metadata = new JIPipeMetadata();
+    private JIPipeStandardMetadata metadata = new JIPipeStandardMetadata();
 
     /**
      * Creates a new instance
@@ -218,7 +218,7 @@ public class JIPipeExportedCompartment {
     /**
      * @return Metadata
      */
-    public JIPipeMetadata getMetadata() {
+    public JIPipeStandardMetadata getMetadata() {
         return metadata;
     }
 
@@ -227,7 +227,7 @@ public class JIPipeExportedCompartment {
      *
      * @param metadata The metadata
      */
-    public void setMetadata(JIPipeMetadata metadata) {
+    public void setMetadata(JIPipeStandardMetadata metadata) {
         this.metadata = metadata;
     }
 
@@ -256,7 +256,7 @@ public class JIPipeExportedCompartment {
             JsonNode node = jsonParser.readValueAsTree();
             exportedCompartment.outputGraph.fromJson(node.get("graph"), new UnspecifiedValidationReportContext(), new JIPipeValidationReport(), new JIPipeNotificationInbox());
             if (node.has("metadata"))
-                exportedCompartment.metadata = JsonUtils.getObjectMapper().readerFor(JIPipeMetadata.class).readValue(node.get("metadata"));
+                exportedCompartment.metadata = JsonUtils.getObjectMapper().readerFor(JIPipeStandardMetadata.class).readValue(node.get("metadata"));
 
             return exportedCompartment;
         }

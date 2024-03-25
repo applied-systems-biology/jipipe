@@ -112,10 +112,7 @@ public class RenderPipelineRun implements JIPipeRunnable {
         progressInfo.log("If this causes issues, arrange your nodes and compartments in a space-efficient way!");
 
         // Calculate final image dimensions
-        JIPipeGraphViewMode compartmentGraphViewMode = project.getCompartmentGraph().getAdditionalMetadata(JIPipeGraphViewMode.class, "jipipe:graph:view-mode");
-        if (compartmentGraphViewMode == null) {
-            compartmentGraphViewMode = JIPipeGraphViewMode.VerticalCompact;
-        }
+        final JIPipeGraphViewMode compartmentGraphViewMode = JIPipeGraphViewMode.VerticalCompact;
         int outputWidth = 0;
         int outputHeight = 0;
         for (Rectangle bounds : compartmentBounds.values()) {

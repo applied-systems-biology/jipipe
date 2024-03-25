@@ -16,6 +16,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.collect.ImmutableList;
+import org.hkijena.jipipe.api.JIPipeMetadataObject;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -28,7 +29,7 @@ import java.util.UUID;
 /**
  * JSON-serializable class that stores node hotkeys
  */
-public class JIPipeNodeHotKeyStorage {
+public class JIPipeNodeHotKeyStorage implements JIPipeMetadataObject {
 
     private Map<String, Map<Hotkey, String>> hotkeys = new HashMap<>();
 
@@ -36,7 +37,7 @@ public class JIPipeNodeHotKeyStorage {
     }
 
     public static JIPipeNodeHotKeyStorage getInstance(JIPipeGraph graph) {
-        Object instance = graph.getAdditionalMetadata().getOrDefault("node-hotkeys", null);
+        JIPipeMetadataObject instance = graph.getAdditionalMetadata().getOrDefault("node-hotkeys", null);
         if (instance instanceof JIPipeNodeHotKeyStorage) {
             return (JIPipeNodeHotKeyStorage) instance;
         }

@@ -16,7 +16,7 @@ package org.hkijena.jipipe;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeMetadata;
+import org.hkijena.jipipe.api.JIPipeStandardMetadata;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -33,7 +33,7 @@ import java.util.Set;
  * {@link JIPipeDependency} is deserialize to this type.
  */
 public class JIPipeMutableDependency implements JIPipeDependency {
-    private JIPipeMetadata metadata = new JIPipeMetadata();
+    private JIPipeStandardMetadata metadata = new JIPipeStandardMetadata();
     private String dependencyId;
     private String dependencyVersion = "1.0.0";
     private StringList dependencyProvides = new StringList();
@@ -60,7 +60,7 @@ public class JIPipeMutableDependency implements JIPipeDependency {
      * @param other the original
      */
     public JIPipeMutableDependency(JIPipeDependency other) {
-        this.metadata = new JIPipeMetadata(other.getMetadata());
+        this.metadata = new JIPipeStandardMetadata(other.getMetadata());
         this.dependencyId = other.getDependencyId();
         this.dependencyVersion = other.getDependencyVersion();
         for (JIPipeDependency dependency : other.getDependencies()) {
@@ -87,7 +87,7 @@ public class JIPipeMutableDependency implements JIPipeDependency {
     @JsonGetter("metadata")
     @JIPipeParameter("metadata")
     @SetJIPipeDocumentation(name = "Metadata")
-    public JIPipeMetadata getMetadata() {
+    public JIPipeStandardMetadata getMetadata() {
         return metadata;
     }
 
@@ -97,7 +97,7 @@ public class JIPipeMutableDependency implements JIPipeDependency {
      * @param metadata The metadata
      */
     @JsonSetter("metadata")
-    public void setMetadata(JIPipeMetadata metadata) {
+    public void setMetadata(JIPipeStandardMetadata metadata) {
         this.metadata = metadata;
     }
 

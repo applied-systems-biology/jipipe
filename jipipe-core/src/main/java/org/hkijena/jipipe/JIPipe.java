@@ -122,10 +122,10 @@ public class JIPipe extends AbstractService implements JIPipeService {
     private final JIPipeUtilityRegistry utilityRegistry;
     private final JIPipeExternalEnvironmentRegistry externalEnvironmentRegistry;
     private final JIPipeExtensionRegistry extensionRegistry;
-
     private final JIPipeGraphEditorToolRegistry graphEditorToolRegistry;
-
     private final JIPipeProjectTemplateRegistry projectTemplateRegistry;
+
+    private final JIPipeMetadataRegistry metadataRegistry;
     private final DatatypeRegisteredEventEmitter datatypeRegisteredEventEmitter = new DatatypeRegisteredEventEmitter();
     private final ExtensionContentAddedEventEmitter extensionContentAddedEventEmitter = new ExtensionContentAddedEventEmitter();
     private final ExtensionContentRemovedEventEmitter extensionContentRemovedEventEmitter = new ExtensionContentRemovedEventEmitter();
@@ -153,6 +153,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
         extensionRegistry = new JIPipeExtensionRegistry(this);
         projectTemplateRegistry = new JIPipeProjectTemplateRegistry(this);
         graphEditorToolRegistry = new JIPipeGraphEditorToolRegistry(this);
+        metadataRegistry = new JIPipeMetadataRegistry(this);
     }
 
     /**
@@ -1494,6 +1495,11 @@ public class JIPipe extends AbstractService implements JIPipeService {
     @Override
     public JIPipeSettingsRegistry getSettingsRegistry() {
         return settingsRegistry;
+    }
+
+    @Override
+    public JIPipeMetadataRegistry getMetadataRegistry() {
+        return metadataRegistry;
     }
 
     @Override

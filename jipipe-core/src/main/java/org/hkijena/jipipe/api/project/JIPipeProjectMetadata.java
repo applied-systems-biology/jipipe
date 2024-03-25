@@ -16,7 +16,7 @@ package org.hkijena.jipipe.api.project;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
-import org.hkijena.jipipe.api.JIPipeMetadata;
+import org.hkijena.jipipe.api.JIPipeStandardMetadata;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 /**
  * Metadata for a {@link JIPipeProject}
  */
-public class JIPipeProjectMetadata extends JIPipeMetadata {
+public class JIPipeProjectMetadata extends JIPipeStandardMetadata {
     private JIPipeImageJUpdateSiteDependency.List updateSiteDependencies = new JIPipeImageJUpdateSiteDependency.List();
     private String templateDescription = "";
     private JIPipeProjectPermissions permissions = new JIPipeProjectPermissions();

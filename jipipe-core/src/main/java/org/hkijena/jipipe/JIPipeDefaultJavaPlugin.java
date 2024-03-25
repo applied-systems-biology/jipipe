@@ -85,14 +85,14 @@ import java.util.stream.Collectors;
  */
 public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements JIPipeJavaPlugin {
 
-    private final JIPipeMetadata metadata;
+    private final JIPipeStandardMetadata metadata;
     private JIPipe registry;
 
     /**
      * Creates a new instance
      */
     public JIPipeDefaultJavaPlugin() {
-        metadata = new JIPipeMetadata();
+        metadata = new JIPipeStandardMetadata();
         metadata.setName(getName());
         metadata.setDescription(getDescription());
         metadata.setSummary(getSummary());
@@ -159,7 +159,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
     public abstract String getCitation();
 
     @Override
-    public JIPipeMetadata getMetadata() {
+    public JIPipeStandardMetadata getMetadata() {
         return metadata;
     }
 
@@ -697,6 +697,16 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      */
     public void registerUtility(Class<?> categoryClass, Class<?> utilityClass) {
         registry.getUtilityRegistry().register(categoryClass, utilityClass);
+    }
+
+    /**
+     * Registers a new metadata object type, which are JSON-serializable objects with a defined type identifier string
+     * @param objectClass the object class
+     * @param id the ID of the object class
+     * @param alternativeIds alternative Ids that are captured during the reading process
+     */
+    public void registerMetadataObjectType(Class<? extends JIPipeMetadataObject> objectClass, String id, String... alternativeIds) {
+        registry.getMetadataRegistry().register(objectClass, id, alternativeIds);
     }
 
     /**
