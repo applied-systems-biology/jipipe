@@ -33,8 +33,10 @@ import org.hkijena.jipipe.api.data.utils.JIPipeWeakDataReferenceData;
 import org.hkijena.jipipe.api.grapheditortool.*;
 import org.hkijena.jipipe.api.nodes.JIPipeTextAnnotationMatchingMethod;
 import org.hkijena.jipipe.api.nodes.categories.*;
+import org.hkijena.jipipe.api.project.JIPipeProjectInfoParameters;
 import org.hkijena.jipipe.api.run.JIPipeGraphRunPartitionInheritedBoolean;
 import org.hkijena.jipipe.desktop.app.grapheditor.JIPipeNodeHotKeyStorage;
+import org.hkijena.jipipe.desktop.app.project.JIPipeDesktopJIPipeProjectTabMetadata;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.data.CopyContainingFolderDataImportOperation;
 import org.hkijena.jipipe.plugins.core.data.DefaultDataDisplayOperation;
@@ -166,6 +168,14 @@ public class CorePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         // Metadata objects
         registerMetadataObjectType(JIPipeNodeHotKeyStorage.class, "jipipe:node-hotkey-storage", "org.hkijena.jipipe.ui.grapheditor.NodeHotKeyStorage");
         registerMetadataObjectType(JIPipeStandardMetadata.class, "jipipe:standard-metadata");
+        registerMetadataObjectType(JIPipeProjectInfoParameters.class,
+                "jipipe:project-info-parameters",
+                "org.hkijena.jipipe.ui.settings.JIPipeProjectInfoParameters",
+                "org.hkijena.jipipe.api.project.JIPipeProjectInfoParameters");
+        registerMetadataObjectType(JIPipeDesktopJIPipeProjectTabMetadata.class,
+                "jipipe:desktop:project-tabs",
+                "org.hkijena.jipipe.ui.project.JIPipeProjectTabMetadata",
+                "org.hkijena.jipipe.desktop.app.project.JIPipeDesktopJIPipeProjectTabMetadata");
     }
 
     @Override

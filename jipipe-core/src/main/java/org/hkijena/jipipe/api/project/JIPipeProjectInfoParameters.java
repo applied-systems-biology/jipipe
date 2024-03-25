@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.api.project;
 
+import org.hkijena.jipipe.api.JIPipeMetadataObject;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEvent;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEventListener;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceAccessGroupList;
@@ -26,7 +27,7 @@ import java.util.Map;
 /**
  * Additional metadata that provides parameter references for {@link JIPipeDesktopProjectOverviewUI}
  */
-public class JIPipeProjectInfoParameters extends AbstractJIPipeParameterCollection implements JIPipeCustomParameterCollection, ParameterReferencesChangedEventListener {
+public class JIPipeProjectInfoParameters extends AbstractJIPipeParameterCollection implements JIPipeMetadataObject, JIPipeCustomParameterCollection, ParameterReferencesChangedEventListener {
 
     public static final String METADATA_KEY = "org.hkijena.jipipe:pipeline-parameters";
     private JIPipeProject project;

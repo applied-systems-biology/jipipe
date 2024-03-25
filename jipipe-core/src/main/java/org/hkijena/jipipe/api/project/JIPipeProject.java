@@ -24,6 +24,7 @@ import com.google.common.collect.*;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeGraphType;
+import org.hkijena.jipipe.api.JIPipeMetadataObject;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.cache.JIPipeLocalProjectMemoryCache;
@@ -88,7 +89,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
     private final JIPipeGraphNode.BaseDirectoryChangedEventEmitter baseDirectoryChangedEventEmitter = new JIPipeGraphNode.BaseDirectoryChangedEventEmitter();
     private JIPipeProjectMetadata metadata = new JIPipeProjectMetadata();
     private JIPipeRuntimePartitionConfiguration runtimePartitions = new JIPipeRuntimePartitionConfiguration();
-    private Map<String, Object> additionalMetadata = new HashMap<>();
+    private Map<String, JIPipeMetadataObject> additionalMetadata = new HashMap<>();
     private Path workDirectory;
     private boolean isCleaningUp;
     private boolean isLoading;
@@ -616,11 +617,11 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
         return runtimePartitions;
     }
 
-    public Map<String, Object> getAdditionalMetadata() {
+    public Map<String, JIPipeMetadataObject> getAdditionalMetadata() {
         return additionalMetadata;
     }
 
-    public void setAdditionalMetadata(Map<String, Object> additionalMetadata) {
+    public void setAdditionalMetadata(Map<String, JIPipeMetadataObject> additionalMetadata) {
         this.additionalMetadata = additionalMetadata;
     }
 
@@ -651,17 +652,24 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
 
         if (!getAdditionalMetadata().isEmpty()) {
             generator.writeObjectFieldStart("additional-metadata");
-            for (Map.Entry<String, Object> entry : getAdditionalMetadata().entrySet()) {
-                if (entry.getValue() instanceof JIPipeParameterCollection) {
-                    generator.writeObjectFieldStart(entry.getKey());
-                    generator.writeObjectField("jipipe:type", entry.getValue().getClass());
-                    ParameterUtils.serializeParametersToJson((JIPipeParameterCollection) entry.getValue(), generator);
-                    generator.writeEndObject();
-                } else {
-                    generator.writeObjectFieldStart(entry.getKey());
-                    generator.writeObjectField("jipipe:type", entry.getValue().getClass());
-                    generator.writeObjectField("data", entry.getValue());
-                    generator.writeEndObject();
+            for (Map.Entry<String, JIPipeMetadataObject> entry : getAdditionalMetadata().entrySet()) {
+                String typeId = JIPipe.getInstance().getMetadataRegistry().getId(entry.getValue().getClass());
+
+                if(typeId != null) {
+                    if (entry.getValue() instanceof JIPipeParameterCollection) {
+                        generator.writeObjectFieldStart(entry.getKey());
+                        generator.writeObjectField("jipipe:type", typeId);
+                        ParameterUtils.serializeParametersToJson((JIPipeParameterCollection) entry.getValue(), generator);
+                        generator.writeEndObject();
+                    } else {
+                        generator.writeObjectFieldStart(entry.getKey());
+                        generator.writeObjectField("jipipe:type", typeId);
+                        generator.writeObjectField("data", entry.getValue());
+                        generator.writeEndObject();
+                    }
+                }
+                else {
+                    System.err.println("Unable to serialize " + entry.getValue() + " as metadata object: not registered!");
                 }
             }
             generator.writeEndObject();
@@ -698,15 +706,21 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
             JsonNode additionalMetadataNode = jsonNode.path("additional-metadata");
             for (Map.Entry<String, JsonNode> metadataEntry : ImmutableList.copyOf(additionalMetadataNode.fields())) {
                 try {
-                    Class<?> metadataClass = JsonUtils.getObjectMapper().readerFor(Class.class).readValue(metadataEntry.getValue().get("jipipe:type"));
+                    String typeId = metadataEntry.getValue().get("jipipe:type").textValue();
+                    Class<? extends JIPipeMetadataObject> metadataClass = JIPipe.getInstance().getMetadataRegistry().findById(typeId);
+
+                    if(metadataClass == null) {
+                        throw new NullPointerException("Unable to find metadata object ID '" + typeId + "'");
+                    }
+
                     if (JIPipeParameterCollection.class.isAssignableFrom(metadataClass)) {
                         JIPipeParameterCollection metadata = (JIPipeParameterCollection) ReflectionUtils.newInstance(metadataClass);
                         ParameterUtils.deserializeParametersFromJson(metadata, metadataEntry.getValue(), context, report);
-                        additionalMetadata.put(metadataEntry.getKey(), metadata);
+                        additionalMetadata.put(metadataEntry.getKey(), (JIPipeMetadataObject) metadata);
                     } else {
                         Object data = JsonUtils.getObjectMapper().readerFor(metadataClass).readValue(metadataEntry.getValue().get("data"));
                         if (data != null) {
-                            additionalMetadata.put(metadataEntry.getKey(), data);
+                            additionalMetadata.put(metadataEntry.getKey(), (JIPipeMetadataObject) data);
                         }
                     }
                 } catch (Exception e) {
@@ -863,7 +877,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
      * @return global parameters
      */
     public JIPipeProjectInfoParameters getPipelineParameters() {
-        Object existing = getAdditionalMetadata().getOrDefault(JIPipeProjectInfoParameters.METADATA_KEY, null);
+        JIPipeMetadataObject existing = getAdditionalMetadata().getOrDefault(JIPipeProjectInfoParameters.METADATA_KEY, null);
         JIPipeProjectInfoParameters result;
         if (existing instanceof JIPipeProjectInfoParameters) {
             result = (JIPipeProjectInfoParameters) existing;

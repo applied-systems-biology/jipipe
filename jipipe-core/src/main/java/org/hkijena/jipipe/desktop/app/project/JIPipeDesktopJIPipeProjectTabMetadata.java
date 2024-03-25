@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop.app.project;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.api.JIPipeMetadataObject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.JIPipePipelineGraphEditorUI;
@@ -30,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Metadata that allows the restoration of tabs
  */
-public class JIPipeDesktopJIPipeProjectTabMetadata {
+public class JIPipeDesktopJIPipeProjectTabMetadata implements JIPipeMetadataObject {
 
     public static String METADATA_KEY = "org.hkijena.jipipe.ui:project-tabs";
     private List<String> openTabs = new ArrayList<>();
