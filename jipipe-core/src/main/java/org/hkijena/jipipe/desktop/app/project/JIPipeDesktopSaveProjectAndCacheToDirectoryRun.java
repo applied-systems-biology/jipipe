@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.cache.exporters.JIPipeDesktopDataTableToOutputExporterRun;
-import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
+import org.hkijena.jipipe.plugins.settings.ProjectsSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import java.io.IOException;

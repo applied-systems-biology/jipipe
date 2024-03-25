@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
+import org.hkijena.jipipe.plugins.settings.GeneralDataSettings;
 
 import java.util.*;
 

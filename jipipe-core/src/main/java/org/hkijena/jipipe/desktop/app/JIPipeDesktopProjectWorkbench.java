@@ -55,7 +55,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopMemoryOptionsC
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopMemoryStatusUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopRecentProjectsMenu;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopReloadableValidityChecker;
-import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.ijupdater.JIPipeDesktopImageJUpdaterPluginManagerUI;
@@ -63,10 +63,10 @@ import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopNotificatio
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopWorkbenchNotificationInboxUI;
 import org.hkijena.jipipe.desktop.jsonextensionbuilder.JIPipeDesktopJsonExtensionWindow;
 import org.hkijena.jipipe.desktop.jsonextensionbuilder.extensionbuilder.JIPipeDesktopJsonExporter;
-import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
-import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.GeneralUISettings;
+import org.hkijena.jipipe.plugins.settings.ProjectsSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;

@@ -17,7 +17,7 @@ import org.hkijena.jipipe.JIPipeJsonPlugin;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
 import org.hkijena.jipipe.desktop.jsonextensionbuilder.JIPipeDesktopJsonExtensionWorkbench;
 import org.hkijena.jipipe.desktop.jsonextensionbuilder.JIPipeDesktopJsonExtensionWorkbenchPanel;
-import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 
 import java.awt.*;
 import java.util.HashMap;

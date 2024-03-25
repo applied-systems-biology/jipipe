@@ -16,7 +16,7 @@ package org.hkijena.jipipe.desktop.commons.notifications;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.extensions.settings.NotificationUISettings;
+import org.hkijena.jipipe.plugins.settings.NotificationUISettings;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;

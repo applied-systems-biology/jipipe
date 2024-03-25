@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCachedDataPreview;
-import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
+import org.hkijena.jipipe.plugins.settings.GeneralDataSettings;
 
 import javax.swing.*;
 import javax.swing.event.TableModelListener;

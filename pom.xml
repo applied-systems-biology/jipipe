@@ -209,129 +209,129 @@ See the LICENSE file provided with this code for the full license.
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-python</artifactId>
+                <artifactId>jipipe-plugin-python</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-annotation</artifactId>
+                <artifactId>jipipe-plugin-annotations</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-filesystem</artifactId>
+                <artifactId>jipipe-plugin-filesystem</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-multiparameters</artifactId>
+                <artifactId>jipipe-plugin-multiparameters</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-plots</artifactId>
+                <artifactId>jipipe-plugin-plots</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-tables</artifactId>
+                <artifactId>jipipe-plugin-tables</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-ij</artifactId>
+                <artifactId>jipipe-plugin-ij</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-ij2</artifactId>
+                <artifactId>jipipe-plugin-ij2</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-ij-algorithms</artifactId>
+                <artifactId>jipipe-plugin-ij-algorithms</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-ij-weka</artifactId>
+                <artifactId>jipipe-plugin-ij-weka</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-ij-trackmate</artifactId>
+                <artifactId>jipipe-plugin-ij-trackmate</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-ij-multi-template-matching</artifactId>
+                <artifactId>jipipe-plugin-ij-multi-template-matching</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-clij</artifactId>
+                <artifactId>jipipe-plugin-clij</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-strings</artifactId>
+                <artifactId>jipipe-plugin-strings</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-utils</artifactId>
+                <artifactId>jipipe-plugin-utils</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-ij-omero</artifactId>
+                <artifactId>jipipe-plugin-ij-omero</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-forms</artifactId>
+                <artifactId>jipipe-plugin-forms</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-r</artifactId>
+                <artifactId>jipipe-plugin-r</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-cellpose</artifactId>
+                <artifactId>jipipe-plugin-cellpose2</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-omnipose</artifactId>
+                <artifactId>jipipe-plugin-omnipose</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-ij-filaments</artifactId>
+                <artifactId>jipipe-plugin-ij-filaments</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-ij-3d</artifactId>
+                <artifactId>jipipe-plugin-ij-3d</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-scene-3d</artifactId>
+                <artifactId>jipipe-plugin-scene-3d</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-imp</artifactId>
+                <artifactId>jipipe-plugin-imp</artifactId>
                 <version>${project.version}</version>
             </dependency>
-<!--            <dependency>-->
-<!--                <groupId>org.hkijena</groupId>-->
-<!--                <artifactId>jipipe-ilastik</artifactId>-->
-<!--                <version>${project.version}</version>-->
-<!--            </dependency>-->
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-plugin-ilastik</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -359,31 +359,31 @@ See the LICENSE file provided with this code for the full license.
         <module>jipipe-core</module>
         <module>jipipe-desktop</module>
         <module>jipipe-cli</module>
-        <module>plugins/jipipe-plots</module>
-        <module>plugins/jipipe-python</module>
-        <module>plugins/jipipe-ij</module>
-        <module>plugins/jipipe-ij2</module>
-        <module>plugins/jipipe-ij-omero</module>
-        <module>plugins/jipipe-ij-algorithms</module>
-        <module>plugins/jipipe-ij-multi-template-matching</module>
-        <module>plugins/jipipe-ij-filaments</module>
-        <module>plugins/jipipe-annotation</module>
-        <module>plugins/jipipe-filesystem</module>
-        <module>plugins/jipipe-tables</module>
-        <module>plugins/jipipe-multiparameters</module>
-        <module>plugins/jipipe-clij</module>
-        <module>plugins/jipipe-strings</module>
-        <module>plugins/jipipe-utils</module>
-        <module>plugins/jipipe-forms</module>
-        <module>plugins/jipipe-r</module>
-        <module>plugins/jipipe-cellpose</module>
-        <module>plugins/jipipe-omnipose</module>
-        <module>plugins/jipipe-ij-weka</module>
-        <module>plugins/jipipe-ij-trackmate</module>
-        <module>plugins/jipipe-ij-3d</module>
-        <module>plugins/jipipe-scene-3d</module>
-        <module>plugins/jipipe-ilastik</module>
-        <module>plugins/jipipe-imp</module>
+        <module>plugins/jipipe-plugin-plots</module>
+        <module>plugins/jipipe-plugin-python</module>
+        <module>plugins/jipipe-plugin-ij</module>
+        <module>plugins/jipipe-plugin-ij2</module>
+        <module>plugins/jipipe-plugin-ij-omero</module>
+        <module>plugins/jipipe-plugin-ij-algorithms</module>
+        <module>plugins/jipipe-plugin-ij-multi-template-matching</module>
+        <module>plugins/jipipe-plugin-ij-filaments</module>
+        <module>plugins/jipipe-plugin-annotations</module>
+        <module>plugins/jipipe-plugin-filesystem</module>
+        <module>plugins/jipipe-plugin-tables</module>
+        <module>plugins/jipipe-plugin-multiparameters</module>
+        <module>plugins/jipipe-plugin-clij</module>
+        <module>plugins/jipipe-plugin-strings</module>
+        <module>plugins/jipipe-plugin-utils</module>
+        <module>plugins/jipipe-plugin-forms</module>
+        <module>plugins/jipipe-plugin-r</module>
+        <module>plugins/jipipe-plugin-cellpose2</module>
+        <module>plugins/jipipe-plugin-omnipose</module>
+        <module>plugins/jipipe-plugin-ij-weka</module>
+        <module>plugins/jipipe-plugin-ij-trackmate</module>
+        <module>plugins/jipipe-plugin-ij-3d</module>
+        <module>plugins/jipipe-plugin-scene-3d</module>
+        <module>plugins/jipipe-plugin-ilastik</module>
+        <module>plugins/jipipe-plugin-imp</module>
     </modules>
 
     <build>

@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
-import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
+import org.hkijena.jipipe.plugins.settings.ExtensionSettings;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.File;

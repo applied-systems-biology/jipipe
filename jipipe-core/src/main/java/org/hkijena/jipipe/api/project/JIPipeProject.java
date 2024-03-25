@@ -46,10 +46,10 @@ import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartitionConfigur
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
-import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
-import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.extensions.settings.NodeTemplateSettings;
+import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.plugins.settings.NodeTemplateSettings;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;

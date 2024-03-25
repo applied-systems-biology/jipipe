@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 
 import java.util.Collection;
 import java.util.Set;

@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.compat.ImageJDataImporter;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopDataInfoListCellRenderer;
-import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 
 import javax.swing.*;
 import java.util.Comparator;

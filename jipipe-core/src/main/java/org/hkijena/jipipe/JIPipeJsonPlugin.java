@@ -33,8 +33,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.JsonNodeInfoValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
-import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
+import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -56,6 +57,8 @@ public class JIPipeJsonPlugin extends AbstractJIPipeParameterCollection implemen
     private final JIPipeService.ExtensionContentRemovedEventEmitter extensionContentRemovedEventEmitter = new JIPipeService.ExtensionContentRemovedEventEmitter();
     private String id;
     private String version = "1.0.0";
+
+    private StringList provides = new StringList();
     private JIPipeMetadata metadata = new JIPipeMetadata();
     private Path jsonFilePath;
     private JIPipe registry;
@@ -139,6 +142,20 @@ public class JIPipeJsonPlugin extends AbstractJIPipeParameterCollection implemen
             "[Author]:[Extension] where [Author] contains information about who developed the extension. An example is <i>org.hkijena:my-extension</i>")
     public String getDependencyId() {
         return id;
+    }
+
+    @SetJIPipeDocumentation(name = "Provides", description = "Set of alternative dependency IDs")
+    @JIPipeParameter("provides")
+    @JsonGetter("provides")
+    @Override
+    public StringList getDependencyProvides() {
+        return provides;
+    }
+
+    @JIPipeParameter("provides")
+    @JsonSetter("provides")
+    public void setDependencyProvides(StringList dependencyProvides) {
+        this.provides = dependencyProvides;
     }
 
     /**

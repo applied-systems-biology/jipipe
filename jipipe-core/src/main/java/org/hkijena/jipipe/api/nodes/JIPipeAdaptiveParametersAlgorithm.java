@@ -18,11 +18,11 @@ import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
-import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
-import org.hkijena.jipipe.extensions.expressions.ui.JIPipeExpressionDesktopParameterEditorUI;
+import org.hkijena.jipipe.plugins.expressions.ExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
+import org.hkijena.jipipe.plugins.expressions.ui.JIPipeExpressionDesktopParameterEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 

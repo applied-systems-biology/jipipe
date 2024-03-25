@@ -19,7 +19,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopAlgorithmCacheBrowserUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
-import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
+import org.hkijena.jipipe.plugins.settings.GeneralUISettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

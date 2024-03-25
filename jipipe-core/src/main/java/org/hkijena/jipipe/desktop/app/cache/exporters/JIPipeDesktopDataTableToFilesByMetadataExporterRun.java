@@ -26,8 +26,8 @@ import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
-import org.hkijena.jipipe.extensions.settings.DataExporterSettings;
-import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.DataExporterSettings;
+import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 

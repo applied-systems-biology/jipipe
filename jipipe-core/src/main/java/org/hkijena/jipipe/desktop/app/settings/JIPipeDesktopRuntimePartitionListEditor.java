@@ -25,7 +25,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEdit
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
-import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

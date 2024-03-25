@@ -33,7 +33,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeToggleButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
-import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
+import org.hkijena.jipipe.plugins.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;

@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.api.nodes;
 
-import org.hkijena.jipipe.extensions.parameters.api.enums.EnumItemInfo;
+import org.hkijena.jipipe.plugins.parameters.api.enums.EnumItemInfo;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 

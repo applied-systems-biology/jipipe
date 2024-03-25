@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.utils;
 
-import org.hkijena.jipipe.extensions.core.CorePlugin;
+import org.hkijena.jipipe.plugins.core.CorePlugin;
 
 public class VersionUtils {
 

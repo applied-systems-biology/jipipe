@@ -20,10 +20,10 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
-import org.hkijena.jipipe.extensions.plots.datatypes.PlotDataSeries;
-import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.plots.datatypes.PlotDataSeries;
+import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

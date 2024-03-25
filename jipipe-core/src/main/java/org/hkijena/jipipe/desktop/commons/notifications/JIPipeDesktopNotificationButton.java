@@ -17,9 +17,8 @@ import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.extensions.settings.NotificationUISettings;
+import org.hkijena.jipipe.plugins.settings.NotificationUISettings;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
-import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.icons.JIPipeDesktopAnimatedIcon;
 import org.hkijena.jipipe.utils.UIUtils;
 

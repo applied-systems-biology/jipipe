@@ -21,13 +21,14 @@ import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeMetadata;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
-import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.nio.file.Path;
+import java.util.Collections;
 
 /**
  * Helper class that encapsulates an ImageJ update site into a {@link JIPipePlugin}
@@ -75,6 +76,11 @@ public class JIPipeDesktopUpdateSitePlugin implements JIPipePlugin {
     @Override
     public String getDependencyVersion() {
         return "N/A";
+    }
+
+    @Override
+    public StringList getDependencyProvides() {
+        return new StringList();
     }
 
     @Override

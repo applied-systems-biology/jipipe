@@ -18,8 +18,8 @@ import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
-import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 

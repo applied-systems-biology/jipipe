@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.desktop.commons.components;
 
-import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
 import org.hkijena.jipipe.desktop.app.ploteditor.JIPipeDesktopPlotEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;

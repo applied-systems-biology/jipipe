@@ -15,7 +15,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.compartments.dragdrop;
 
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphDragAndDropBehavior;
-import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
+import org.hkijena.jipipe.plugins.settings.GraphEditorUISettings;
 
 import javax.swing.*;
 import java.awt.*;

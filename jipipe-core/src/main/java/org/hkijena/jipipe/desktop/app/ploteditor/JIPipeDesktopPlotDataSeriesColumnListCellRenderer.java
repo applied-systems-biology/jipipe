@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.desktop.app.ploteditor;
 
-import org.hkijena.jipipe.extensions.tables.datatypes.DoubleArrayTableColumn;
-import org.hkijena.jipipe.extensions.tables.datatypes.StringArrayTableColumn;
-import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

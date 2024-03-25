@@ -17,8 +17,8 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettings;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerRange;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerRange;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
 
 public class JIPipeSimpleIteratingAlgorithmIterationStepGenerationSettings extends AbstractJIPipeParameterCollection implements JIPipeIterationStepGenerationSettings {
     private OptionalIntegerRange limit = new OptionalIntegerRange(new IntegerRange("0-9"), false);

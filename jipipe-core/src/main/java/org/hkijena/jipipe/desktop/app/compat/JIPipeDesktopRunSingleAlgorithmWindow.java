@@ -29,7 +29,7 @@ import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopAlgorithmCompen
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeNodeInfoListCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
-import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
+import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;

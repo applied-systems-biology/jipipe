@@ -18,11 +18,11 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphDragAndDropBehavior;
-import org.hkijena.jipipe.extensions.filesystem.datasources.FileListDataSource;
-import org.hkijena.jipipe.extensions.filesystem.datasources.FolderListDataSource;
-import org.hkijena.jipipe.extensions.filesystem.datasources.PathListDataSource;
-import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathList;
-import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
+import org.hkijena.jipipe.plugins.filesystem.datasources.FileListDataSource;
+import org.hkijena.jipipe.plugins.filesystem.datasources.FolderListDataSource;
+import org.hkijena.jipipe.plugins.filesystem.datasources.PathListDataSource;
+import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathList;
+import org.hkijena.jipipe.plugins.settings.GraphEditorUISettings;
 
 import javax.swing.*;
 import java.awt.*;

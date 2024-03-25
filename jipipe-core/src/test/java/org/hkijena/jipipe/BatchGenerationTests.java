@@ -22,8 +22,8 @@ import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStepGenerator;
-import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
-import org.hkijena.jipipe.extensions.strings.StringData;
+import org.hkijena.jipipe.plugins.settings.ExtensionSettings;
+import org.hkijena.jipipe.plugins.strings.StringData;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

@@ -27,7 +27,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanv
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopAddAlgorithmSlotPanel;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
-import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
+import org.hkijena.jipipe.plugins.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 

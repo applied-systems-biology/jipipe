@@ -16,7 +16,7 @@ package org.hkijena.jipipe.api.nodes;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
+import org.hkijena.jipipe.plugins.settings.GraphEditorUISettings;
 import org.jgrapht.graph.DefaultEdge;
 
 /**

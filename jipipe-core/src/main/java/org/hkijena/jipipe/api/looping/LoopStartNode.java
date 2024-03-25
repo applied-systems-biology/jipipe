@@ -30,8 +30,8 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationS
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStepGenerator;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
 
 import java.util.ArrayList;
 import java.util.Comparator;

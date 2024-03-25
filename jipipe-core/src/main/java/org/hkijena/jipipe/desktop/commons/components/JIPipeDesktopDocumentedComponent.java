@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.desktop.commons.components;
 
-import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 
 import javax.swing.*;

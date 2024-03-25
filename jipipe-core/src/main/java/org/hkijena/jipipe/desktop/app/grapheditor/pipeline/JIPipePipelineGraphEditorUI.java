@@ -43,11 +43,11 @@ import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.properties.JIPipeDesk
 import org.hkijena.jipipe.desktop.app.history.JIPipeDesktopHistoryJournalUI;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
-import org.hkijena.jipipe.extensions.nodetemplate.NodeTemplateBox;
-import org.hkijena.jipipe.extensions.nodetemplate.NodeTemplateMenu;
-import org.hkijena.jipipe.extensions.nodetoolboxtool.NodeToolBox;
-import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
+import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplateBox;
+import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplateMenu;
+import org.hkijena.jipipe.plugins.nodetoolboxtool.NodeToolBox;
+import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.plugins.settings.GeneralUISettings;
 import org.hkijena.jipipe.utils.*;
 
 import javax.swing.*;

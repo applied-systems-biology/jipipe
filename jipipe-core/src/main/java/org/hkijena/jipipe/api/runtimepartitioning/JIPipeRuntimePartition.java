@@ -23,8 +23,8 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
-import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 
 import java.awt.*;
 

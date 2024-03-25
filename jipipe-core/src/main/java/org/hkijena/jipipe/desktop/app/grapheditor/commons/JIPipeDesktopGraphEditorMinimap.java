@@ -15,7 +15,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons;
 
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
-import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
+import org.hkijena.jipipe.plugins.settings.GeneralUISettings;
 
 import javax.swing.*;
 import java.awt.*;

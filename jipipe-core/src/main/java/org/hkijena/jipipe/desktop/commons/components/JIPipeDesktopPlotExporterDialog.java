@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.desktop.commons.components;
 
-import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.UIUtils;

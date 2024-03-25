@@ -18,8 +18,8 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
-import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

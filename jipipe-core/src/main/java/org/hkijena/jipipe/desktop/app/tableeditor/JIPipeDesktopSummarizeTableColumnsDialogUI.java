@@ -15,8 +15,8 @@ package org.hkijena.jipipe.desktop.app.tableeditor;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
-import org.hkijena.jipipe.extensions.tables.IntegratingColumnOperation;
-import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.plugins.tables.IntegratingColumnOperation;
+import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
 

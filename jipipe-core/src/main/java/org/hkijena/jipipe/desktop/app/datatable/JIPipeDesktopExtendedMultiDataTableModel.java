@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.infos.JIPipeEmptyNodeInfo;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCachedDataPreview;
-import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
+import org.hkijena.jipipe.plugins.settings.GeneralDataSettings;
 import org.hkijena.jipipe.utils.data.Store;
 
 import javax.swing.*;

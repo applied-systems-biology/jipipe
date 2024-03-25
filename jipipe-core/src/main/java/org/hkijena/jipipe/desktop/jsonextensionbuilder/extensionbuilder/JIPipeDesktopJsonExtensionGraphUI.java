@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseRole;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.*;
 import org.hkijena.jipipe.desktop.jsonextensionbuilder.JIPipeDesktopJsonExtensionWorkbench;
-import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.JIPipePipelineGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.dragdrop.JIPipeCreateNodesFromDraggedDataDragAndDropBehavior;

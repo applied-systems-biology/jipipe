@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.sources.JIPipeWeakDataTableDataSource;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
-import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
+import org.hkijena.jipipe.plugins.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopDataTableRowUI;
 import org.hkijena.jipipe.desktop.app.datatracer.JIPipeDesktopDataTracerUI;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;

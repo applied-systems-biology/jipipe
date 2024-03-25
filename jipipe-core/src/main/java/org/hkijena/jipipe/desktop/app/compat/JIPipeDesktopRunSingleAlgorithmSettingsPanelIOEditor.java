@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseRole;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
-import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
+import org.hkijena.jipipe.plugins.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import java.util.Map;

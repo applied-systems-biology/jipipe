@@ -20,12 +20,14 @@ import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGro
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollectionDesktopParameterEditorUI;
 import org.hkijena.jipipe.api.grouping.parameters.NodeGroupContents;
 import org.hkijena.jipipe.api.grouping.parameters.NodeGroupContentsDesktopParameterEditorUI;
-import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaPlugin;
-import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
+
+import java.util.Collections;
 
 /**
  * Extension for anything that is related to {@link JIPipeGraphWrapperAlgorithm}
@@ -48,6 +50,10 @@ public class GroupingPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         return new HTMLText("Provides algorithms that wrap around algorithm graphs");
     }
 
+    @Override
+    public StringList getDependencyProvides() {
+        return new StringList();
+    }
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerNodeType("graph-wrapper:input", GraphWrapperAlgorithmInput.class, UIUtils.getIconURLFromResources("actions/plug.png"));

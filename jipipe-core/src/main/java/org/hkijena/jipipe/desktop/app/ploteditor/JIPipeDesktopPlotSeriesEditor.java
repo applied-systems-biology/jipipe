@@ -19,11 +19,11 @@ import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
-import org.hkijena.jipipe.extensions.plots.datatypes.PlotColumn;
-import org.hkijena.jipipe.extensions.plots.datatypes.PlotDataSeries;
-import org.hkijena.jipipe.extensions.plots.datatypes.PlotMetadata;
-import org.hkijena.jipipe.extensions.plots.parameters.UIPlotDataSeriesColumnEnum;
-import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.plots.datatypes.PlotColumn;
+import org.hkijena.jipipe.plugins.plots.datatypes.PlotDataSeries;
+import org.hkijena.jipipe.plugins.plots.datatypes.PlotMetadata;
+import org.hkijena.jipipe.plugins.plots.parameters.UIPlotDataSeriesColumnEnum;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
 
 import java.util.ArrayList;
 import java.util.HashMap;

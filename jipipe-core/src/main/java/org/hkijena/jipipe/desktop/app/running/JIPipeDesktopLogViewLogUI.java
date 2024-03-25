@@ -18,8 +18,8 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopGenericNotificationInboxUI;
-import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
+import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

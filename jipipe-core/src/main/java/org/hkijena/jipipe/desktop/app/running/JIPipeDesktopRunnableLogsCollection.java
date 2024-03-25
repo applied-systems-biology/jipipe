@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableLogEntry;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
-import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
+import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

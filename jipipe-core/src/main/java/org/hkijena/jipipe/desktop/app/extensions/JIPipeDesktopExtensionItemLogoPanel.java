@@ -18,7 +18,7 @@ import org.hkijena.jipipe.JIPipePlugin;
 import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
-import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
+import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 

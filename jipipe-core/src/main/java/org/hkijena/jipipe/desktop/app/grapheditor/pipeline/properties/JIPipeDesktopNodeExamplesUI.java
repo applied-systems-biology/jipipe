@@ -19,9 +19,9 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
-import org.hkijena.jipipe.extensions.nodeexamples.JIPipeNodeExampleListCellRenderer;
-import org.hkijena.jipipe.extensions.nodetemplate.NodeTemplatesRefreshedEvent;
-import org.hkijena.jipipe.extensions.nodetemplate.NodeTemplatesRefreshedEventListener;
+import org.hkijena.jipipe.plugins.nodeexamples.JIPipeNodeExampleListCellRenderer;
+import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatesRefreshedEvent;
+import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatesRefreshedEventListener;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

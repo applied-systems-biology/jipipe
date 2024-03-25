@@ -19,7 +19,8 @@ import org.hkijena.jipipe.api.JIPipeMetadata;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
+import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -91,6 +92,13 @@ public interface JIPipeDependency extends JIPipeValidatable {
      */
     @JsonGetter("id")
     String getDependencyId();
+
+    /**
+     * The list of alternative IDs that are covered by this dependency
+     * @return alternative IDs
+     */
+    @JsonGetter("provides")
+    StringList getDependencyProvides();
 
     /**
      * @return The dependency version

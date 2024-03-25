@@ -32,9 +32,9 @@ import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerRange;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerRange;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
 import org.hkijena.jipipe.utils.ParameterUtils;
 
 import java.util.ArrayList;

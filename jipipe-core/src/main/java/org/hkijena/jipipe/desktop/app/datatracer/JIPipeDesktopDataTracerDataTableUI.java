@@ -33,10 +33,10 @@ import org.hkijena.jipipe.desktop.app.resultanalysis.renderers.JIPipeDesktopAnno
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopComponentCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
-import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariableInfo;
-import org.hkijena.jipipe.extensions.expressions.ui.ExpressionBuilderUI;
-import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
+import org.hkijena.jipipe.plugins.expressions.ui.ExpressionBuilderUI;
+import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.GeneralDataSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.Store;

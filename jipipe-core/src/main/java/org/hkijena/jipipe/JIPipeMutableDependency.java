@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.JIPipeMetadata;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ public class JIPipeMutableDependency implements JIPipeDependency {
     private JIPipeMetadata metadata = new JIPipeMetadata();
     private String dependencyId;
     private String dependencyVersion = "1.0.0";
+    private StringList dependencyProvides = new StringList();
     private List<JIPipeImageJUpdateSiteDependency> imageJUpdateSiteDependencies = new ArrayList<>();
 
     private Set<JIPipeDependency> dependencies = new HashSet<>();
@@ -64,6 +66,21 @@ public class JIPipeMutableDependency implements JIPipeDependency {
         for (JIPipeDependency dependency : other.getDependencies()) {
             this.dependencies.add(new JIPipeMutableDependency(dependency));
         }
+        this.dependencyProvides = new StringList(other.getDependencyProvides());
+    }
+
+    @SetJIPipeDocumentation(name = "Provides", description = "Set of alternative dependency IDs")
+    @JIPipeParameter("provides")
+    @JsonGetter("provides")
+    @Override
+    public StringList getDependencyProvides() {
+        return dependencyProvides;
+    }
+
+    @JIPipeParameter("provides")
+    @JsonSetter("provides")
+    public void setDependencyProvides(StringList dependencyProvides) {
+        this.dependencyProvides = dependencyProvides;
     }
 
     @Override

@@ -15,7 +15,7 @@ package org.hkijena.jipipe.desktop.app.tableeditor;
 
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabListCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
-import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 

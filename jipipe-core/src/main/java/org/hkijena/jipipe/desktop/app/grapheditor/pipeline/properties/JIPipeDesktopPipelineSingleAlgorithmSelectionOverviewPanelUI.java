@@ -36,8 +36,8 @@ import org.hkijena.jipipe.desktop.app.grapheditor.groups.JIPipeDesktopNodeGroupU
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.*;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
-import org.hkijena.jipipe.extensions.nodeexamples.JIPipeNodeExamplePickerDialog;
-import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
+import org.hkijena.jipipe.plugins.nodeexamples.JIPipeNodeExamplePickerDialog;
+import org.hkijena.jipipe.plugins.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;

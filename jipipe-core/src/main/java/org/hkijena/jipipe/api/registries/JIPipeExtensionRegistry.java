@@ -78,7 +78,8 @@ public class JIPipeExtensionRegistry {
         for (JIPipeDependency dependency : dependencies) {
             boolean found = false;
             for (JIPipeDependency registeredExtension : JIPipe.getInstance().getRegisteredExtensions()) {
-                if (registeredExtension.getDependencyId().equals(dependency.getDependencyId())) {
+                if (Objects.equals(registeredExtension.getDependencyId(), dependency.getDependencyId()) ||
+                        registeredExtension.getDependencyProvides().contains(dependency.getDependencyId())) {
                     // Check version
                     if (VersionUtils.compareVersions(registeredExtension.getDependencyVersion(), dependency.getDependencyVersion()) >= 0) {
                         found = true;

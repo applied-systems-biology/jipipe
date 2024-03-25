@@ -142,129 +142,129 @@
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-python</artifactId>
+            <artifactId>jipipe-plugin-python</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-annotation</artifactId>
+            <artifactId>jipipe-plugin-annotations</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-filesystem</artifactId>
+            <artifactId>jipipe-plugin-filesystem</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-multiparameters</artifactId>
+            <artifactId>jipipe-plugin-multiparameters</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-plots</artifactId>
+            <artifactId>jipipe-plugin-plots</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-tables</artifactId>
+            <artifactId>jipipe-plugin-tables</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-ij</artifactId>
+            <artifactId>jipipe-plugin-ij</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-ij2</artifactId>
+            <artifactId>jipipe-plugin-ij2</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-ij-algorithms</artifactId>
+            <artifactId>jipipe-plugin-ij-algorithms</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-ij-weka</artifactId>
+            <artifactId>jipipe-plugin-ij-weka</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-ij-trackmate</artifactId>
+            <artifactId>jipipe-plugin-ij-trackmate</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-ij-multi-template-matching</artifactId>
+            <artifactId>jipipe-plugin-ij-multi-template-matching</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-ij-filaments</artifactId>
+            <artifactId>jipipe-plugin-ij-filaments</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-clij</artifactId>
+            <artifactId>jipipe-plugin-clij</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-strings</artifactId>
+            <artifactId>jipipe-plugin-strings</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-utils</artifactId>
+            <artifactId>jipipe-plugin-utils</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-ij-omero</artifactId>
+            <artifactId>jipipe-plugin-ij-omero</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-forms</artifactId>
+            <artifactId>jipipe-plugin-forms</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-r</artifactId>
+            <artifactId>jipipe-plugin-r</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-cellpose</artifactId>
+            <artifactId>jipipe-plugin-cellpose2</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-omnipose</artifactId>
+            <artifactId>jipipe-plugin-omnipose</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-ij-3d</artifactId>
+            <artifactId>jipipe-plugin-ij-3d</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-scene-3d</artifactId>
+            <artifactId>jipipe-plugin-scene-3d</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-imp</artifactId>
+            <artifactId>jipipe-plugin-imp</artifactId>
             <scope>runtime</scope>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>org.hkijena</groupId>-->
-        <!--            <artifactId>jipipe-ilastik</artifactId>-->
-        <!--            <scope>runtime</scope>-->
-        <!--        </dependency>-->
+        <dependency>
+            <groupId>org.hkijena</groupId>
+            <artifactId>jipipe-plugin-ilastik</artifactId>
+            <scope>runtime</scope>
+        </dependency>
         <dependency>
             <groupId>net.haesleinhuepf</groupId>
             <artifactId>clij2_</artifactId>

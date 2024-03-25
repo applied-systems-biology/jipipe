@@ -21,9 +21,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
-import org.hkijena.jipipe.api.JIPipeWorkbench;
-import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.plugins.settings.GeneralUISettings;
+import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopDynamicParameterEditorDialog;
 import org.hkijena.jipipe.utils.*;
@@ -63,7 +62,7 @@ public class JIPipeDesktopParameterPanel extends JIPipeDesktopFormPanel implemen
 
     /**
      * With this flag, there will be a search bar for parameters.
-     * {@link org.hkijena.jipipe.extensions.settings.GeneralUISettings}.isShowParameterSearchBar() will override this setting
+     * {@link org.hkijena.jipipe.plugins.settings.GeneralUISettings}.isShowParameterSearchBar() will override this setting
      */
     public static final int WITH_SEARCH_BAR = 512;
 

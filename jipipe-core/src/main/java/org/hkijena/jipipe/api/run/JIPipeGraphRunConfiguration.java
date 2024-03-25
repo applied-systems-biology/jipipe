@@ -16,8 +16,8 @@ package org.hkijena.jipipe.api.run;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
-import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
+import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
+import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 

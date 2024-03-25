@@ -20,11 +20,11 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
-import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
-import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 

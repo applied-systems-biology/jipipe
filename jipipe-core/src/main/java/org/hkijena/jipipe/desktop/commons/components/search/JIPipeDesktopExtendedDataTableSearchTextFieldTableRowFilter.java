@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.desktop.commons.components.search;
 
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
-import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionVariablesMap;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;

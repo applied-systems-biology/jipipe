@@ -60,9 +60,9 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopAddAlgorithmSl
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopZoomViewPort;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopDropShadowRenderer;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
-import org.hkijena.jipipe.extensions.core.nodes.JIPipeCommentNode;
-import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
-import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
+import org.hkijena.jipipe.plugins.core.nodes.JIPipeCommentNode;
+import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
+import org.hkijena.jipipe.plugins.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;

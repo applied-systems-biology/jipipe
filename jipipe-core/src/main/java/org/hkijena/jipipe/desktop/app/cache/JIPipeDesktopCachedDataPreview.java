@@ -16,7 +16,7 @@ package org.hkijena.jipipe.desktop.app.cache;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailGenerationQueue;
-import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
+import org.hkijena.jipipe.plugins.settings.GeneralDataSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.Store;
 import org.hkijena.jipipe.utils.data.WeakStore;

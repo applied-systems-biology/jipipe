@@ -28,10 +28,10 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeBu
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
-import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.extensions.settings.TableViewerUISettings;
-import org.hkijena.jipipe.extensions.tables.ConvertingColumnOperation;
-import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.TableViewerUISettings;
+import org.hkijena.jipipe.plugins.tables.ConvertingColumnOperation;
+import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.BusyCursor;

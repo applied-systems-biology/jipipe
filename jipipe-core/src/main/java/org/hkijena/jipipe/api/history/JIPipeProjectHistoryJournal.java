@@ -15,7 +15,7 @@ package org.hkijena.jipipe.api.history;
 
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.project.JIPipeProject;
-import org.hkijena.jipipe.extensions.settings.HistoryJournalSettings;
+import org.hkijena.jipipe.plugins.settings.HistoryJournalSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

@@ -17,7 +17,7 @@ import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
-import org.hkijena.jipipe.extensions.settings.NotificationUISettings;
+import org.hkijena.jipipe.plugins.settings.NotificationUISettings;
 
 import java.util.Collections;
 import java.util.HashSet;

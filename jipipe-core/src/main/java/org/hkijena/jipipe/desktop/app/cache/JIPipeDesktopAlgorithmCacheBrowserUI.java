@@ -39,7 +39,7 @@ import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
-import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.WeakStore;
 import org.hkijena.jipipe.utils.json.JsonUtils;

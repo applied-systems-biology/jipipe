@@ -22,9 +22,9 @@ import com.vladsch.flexmark.pdf.converter.PdfConverterExtension;
 import com.vladsch.flexmark.util.data.MutableDataHolder;
 import com.vladsch.flexmark.util.data.MutableDataSet;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
+import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.GeneralUISettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

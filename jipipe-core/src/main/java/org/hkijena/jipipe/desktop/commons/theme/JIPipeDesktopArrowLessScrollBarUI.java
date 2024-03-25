@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.desktop.commons.theme;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
+import org.hkijena.jipipe.plugins.settings.GeneralUISettings;
 
 import javax.swing.*;
 import javax.swing.plaf.ComponentUI;

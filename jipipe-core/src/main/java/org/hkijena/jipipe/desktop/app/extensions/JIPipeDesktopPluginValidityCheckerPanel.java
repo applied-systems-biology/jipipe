@@ -17,7 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeService;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopReloadableValidityChecker;
-import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 
 import java.util.HashMap;
 

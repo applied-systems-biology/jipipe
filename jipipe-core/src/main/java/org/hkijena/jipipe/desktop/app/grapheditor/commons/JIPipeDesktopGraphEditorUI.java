@@ -34,8 +34,8 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.search.JIPipeDesktopNo
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopVerticalToolBar;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopColorIcon;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
-import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
+import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;

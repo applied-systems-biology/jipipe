@@ -44,9 +44,9 @@ import org.hkijena.jipipe.desktop.commons.components.window.JIPipeDesktopAlwaysO
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopGenericNotificationInboxUI;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
-import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.plugins.settings.GeneralDataSettings;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.ListSelectionMode;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;

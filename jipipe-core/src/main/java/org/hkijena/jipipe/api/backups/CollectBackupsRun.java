@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.api.backups;
 
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
-import org.hkijena.jipipe.extensions.settings.BackupSettings;
+import org.hkijena.jipipe.plugins.settings.BackupSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 

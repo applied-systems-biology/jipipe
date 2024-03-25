@@ -27,13 +27,13 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.extensions.jsonextensionloader.JsonExtensionLoaderPlugin;
-import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
-import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
-import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
-import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.plugins.jsonextensionloader.JsonExtensionLoaderPlugin;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.plugins.settings.ExtensionSettings;
+import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.GeneralUISettings;
+import org.hkijena.jipipe.plugins.settings.ProjectsSettings;
 import org.hkijena.jipipe.desktop.commons.events.WindowClosedEvent;
 import org.hkijena.jipipe.desktop.commons.events.WindowClosedEventEmitter;
 import org.hkijena.jipipe.desktop.commons.events.WindowOpenedEvent;
@@ -344,6 +344,10 @@ public class JIPipeDesktopJsonExtensionWindow extends JFrame {
                     @Override
                     public Path getDependencyLocation() {
                         return Paths.get("");
+                    }
+                    @Override
+                    public StringList getDependencyProvides() {
+                        return new StringList();
                     }
 
                     @Override

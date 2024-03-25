@@ -29,11 +29,11 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.JsonNodeInfoValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
-import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicCategoryEnumParameter;
-import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.extensions.parameters.library.references.IconRef;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.DynamicCategoryEnumParameter;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.plugins.parameters.library.references.IconRef;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.*;

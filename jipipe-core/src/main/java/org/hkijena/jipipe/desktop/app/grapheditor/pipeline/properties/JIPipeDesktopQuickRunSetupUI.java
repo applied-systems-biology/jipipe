@@ -32,8 +32,8 @@ import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopLogViewer;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
 import org.hkijena.jipipe.desktop.commons.components.*;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
-import org.hkijena.jipipe.extensions.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
+import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 

@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.desktop.commons.components;
 
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
-import org.hkijena.jipipe.extensions.parameters.api.enums.DynamicEnumParameter;
-import org.hkijena.jipipe.extensions.parameters.api.enums.DynamicEnumDesktopParameterEditorUI;
+import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicEnumParameter;
+import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicEnumDesktopParameterEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

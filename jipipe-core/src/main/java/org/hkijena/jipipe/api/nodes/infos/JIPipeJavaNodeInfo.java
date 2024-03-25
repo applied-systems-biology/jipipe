@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.data.JIPipeEmptyData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
-import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
