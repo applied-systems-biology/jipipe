@@ -329,6 +329,11 @@ See the LICENSE file provided with this code for the full license.
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-plugin-opencv</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-plugin-ilastik</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -384,6 +389,7 @@ See the LICENSE file provided with this code for the full license.
         <module>plugins/jipipe-plugin-scene-3d</module>
         <module>plugins/jipipe-plugin-ilastik</module>
         <module>plugins/jipipe-plugin-imp</module>
+        <module>plugins/jipipe-plugin-opencv</module>
     </modules>
 
     <build>

@@ -103,6 +103,8 @@
     <file url="file://$PROJECT_DIR$/plugins/jipipe-plugin-multiparameters/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/plugins/jipipe-plugin-omnipose/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/plugins/jipipe-plugin-omnipose/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/plugins/jipipe-plugin-opencv/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/plugins/jipipe-plugin-opencv/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/plugins/jipipe-plugin-plots/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/plugins/jipipe-plugin-plots/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/plugins/jipipe-plugin-python/src/main/java" charset="UTF-8" />
