@@ -87,6 +87,10 @@
             <groupId>org.hkijena</groupId>
             <artifactId>jipipe-plugin-ij</artifactId>
         </dependency>
+        <dependency>
+            <groupId>net.imagej</groupId>
+            <artifactId>imagej-opencv</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
