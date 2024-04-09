@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.api.compat;
 
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,7 +26,7 @@ public class EmptyImageJDataImporterUI extends ImageJDataImporterUI {
      * @param workbench the workbench
      * @param importer  the importer
      */
-    public EmptyImageJDataImporterUI(JIPipeWorkbench workbench, ImageJDataImportOperation importer) {
+    public EmptyImageJDataImporterUI(JIPipeDesktopWorkbench workbench, ImageJDataImportOperation importer) {
         super(workbench, importer);
         initialize();
     }

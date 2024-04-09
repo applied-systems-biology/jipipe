@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.api.notifications;
 
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 
 import javax.swing.*;
 import java.awt.*;

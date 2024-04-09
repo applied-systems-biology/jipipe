@@ -18,9 +18,9 @@ import org.hkijena.jipipe.api.compartments.datatypes.JIPipeCompartmentOutputData
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.jsoup.Jsoup;
 
 import javax.swing.*;
@@ -28,7 +28,7 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ExistingCompartmentDatabaseEntry implements JIPipeNodeDatabaseEntry{
+public class ExistingCompartmentDatabaseEntry implements JIPipeNodeDatabaseEntry {
     private final String id;
     private final JIPipeProjectCompartment compartment;
     private final WeightedTokens tokens = new WeightedTokens();
@@ -125,7 +125,7 @@ public class ExistingCompartmentDatabaseEntry implements JIPipeNodeDatabaseEntry
     }
 
     @Override
-    public JIPipeGraphNodeUI addToGraph(JIPipeGraphCanvasUI canvasUI) {
+    public JIPipeDesktopGraphNodeUI addToGraph(JIPipeDesktopGraphCanvasUI canvasUI) {
         return canvasUI.getNodeUIs().get(compartment);
     }
 

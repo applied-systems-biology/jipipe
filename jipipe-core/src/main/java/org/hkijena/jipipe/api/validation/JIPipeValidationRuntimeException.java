@@ -40,8 +40,7 @@ public class JIPipeValidationRuntimeException extends RuntimeException {
                 ExceptionUtils.getStackTrace(e)));
         if (e instanceof JIPipeValidationRuntimeException) {
             mergeReport(((JIPipeValidationRuntimeException) e).report, null);
-        }
-        else {
+        } else {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     new InternalErrorValidationReportContext(),
                     e.toString(),
@@ -57,8 +56,7 @@ public class JIPipeValidationRuntimeException extends RuntimeException {
         report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context, title, explanation, solution, ExceptionUtils.getStackTrace(e)));
         if (e instanceof JIPipeValidationRuntimeException) {
             mergeReport(((JIPipeValidationRuntimeException) e).report, context);
-        }
-        else {
+        } else {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     context,
                     e.toString(),

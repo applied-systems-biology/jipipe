@@ -17,17 +17,16 @@ import ij.IJ;
 import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.SingleImageJAlgorithmRunConfiguration;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
-import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
-import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
-import org.hkijena.jipipe.ui.compat.RunSingleAlgorithmWindow;
-import org.hkijena.jipipe.ui.components.SplashScreen;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
+import org.hkijena.jipipe.plugins.settings.ExtensionSettings;
+import org.hkijena.jipipe.desktop.app.compat.JIPipeDesktopRunSingleAlgorithmWindow;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopSplashScreen;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Initializable;
@@ -86,12 +85,12 @@ public abstract class JIPipeRunCustomAlgorithmCommand extends DynamicCommand imp
         if (!JIPipe.isInstantiated()) {
             UIUtils.loadLookAndFeelFromSettings();
             if (!JIPipe.isInstantiated() && withSplash) {
-                SwingUtilities.invokeLater(() -> SplashScreen.getInstance().showSplash(getContext()));
+                SwingUtilities.invokeLater(() -> JIPipeDesktopSplashScreen.getInstance().showSplash(getContext()));
             }
             JIPipe jiPipe = JIPipe.createInstance(getContext());
-            SplashScreen.getInstance().setJIPipe(JIPipe.getInstance());
+            JIPipeDesktopSplashScreen.getInstance().setJIPipe(JIPipe.getInstance());
             jiPipe.initialize(extensionSettings, issues);
-            SwingUtilities.invokeLater(() -> SplashScreen.getInstance().hideSplash());
+            SwingUtilities.invokeLater(() -> JIPipeDesktopSplashScreen.getInstance().hideSplash());
         }
         if (!extensionSettings.isSilent()) {
             JIPipeValidationReport report = new JIPipeValidationReport();
@@ -100,7 +99,7 @@ public abstract class JIPipeRunCustomAlgorithmCommand extends DynamicCommand imp
                 if (GraphicsEnvironment.isHeadless()) {
                     report.print();
                 } else {
-                    UIUtils.openValidityReportDialog(new JIPipeDummyWorkbench(),
+                    UIUtils.openValidityReportDialog(new JIPipeDesktopDummyWorkbench(),
                             null,
                             report,
                             "Errors while initializing JIPipe",
@@ -118,7 +117,7 @@ public abstract class JIPipeRunCustomAlgorithmCommand extends DynamicCommand imp
         if (StringUtils.isNullOrEmpty(nodeId) || StringUtils.isNullOrEmpty(parameters)) {
             UIUtils.loadLookAndFeelFromSettings();
             initializeRegistry(true);
-            RunSingleAlgorithmWindow dialog = new RunSingleAlgorithmWindow(getContext(), JIPipe.getNodes().getInfoById(nodeId));
+            JIPipeDesktopRunSingleAlgorithmWindow dialog = new JIPipeDesktopRunSingleAlgorithmWindow(getContext(), JIPipe.getNodes().getInfoById(nodeId));
             dialog.setTitle(windowTitle);
             dialog.setIconImage(UIUtils.getJIPipeIcon128());
             dialog.pack();

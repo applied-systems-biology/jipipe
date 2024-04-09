@@ -13,13 +13,12 @@
 
 package org.hkijena.jipipe.api.nodes.database;
 
-import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
 import javax.swing.*;
 
-public class JIPipeNodeDatabaseUpdater implements JIPipeGraph.NodeAddedEventListener, JIPipeGraph.NodeRemovedEventListener, JIPipeParameterCollection.ParameterChangedEventListener{
+public class JIPipeNodeDatabaseUpdater implements JIPipeGraph.NodeAddedEventListener, JIPipeGraph.NodeRemovedEventListener, JIPipeParameterCollection.ParameterChangedEventListener {
     private final JIPipeNodeDatabase database;
     private final Timer timer;
 
@@ -29,8 +28,8 @@ public class JIPipeNodeDatabaseUpdater implements JIPipeGraph.NodeAddedEventList
         initialize();
     }
 
-    private void initialize() {     
-        if(database.getProject() != null) {
+    private void initialize() {
+        if (database.getProject() != null) {
             database.getProject().getGraph().getNodeAddedEventEmitter().subscribe(this);
             database.getProject().getGraph().getNodeRemovedEventEmitter().subscribe(this);
             database.getProject().getCompartmentGraph().getNodeAddedEventEmitter().subscribe(this);
@@ -55,7 +54,7 @@ public class JIPipeNodeDatabaseUpdater implements JIPipeGraph.NodeAddedEventList
 
     @Override
     public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
-        if(database.getProject() != null && event.getSource() == database.getProject().getMetadata() && "node-templates".equals(event.getKey())) {
+        if (database.getProject() != null && event.getSource() == database.getProject().getMetadata() && "node-templates".equals(event.getKey())) {
             rebuildLater();
         }
     }

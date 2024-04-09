@@ -287,14 +287,14 @@ public class JIPipeSingleIterationStep implements JIPipeIterationStep, Comparabl
 
     /**
      * Creates a context for new data that inherits direct predecessors from this data batch's input
+     *
      * @return the new context
      */
     public JIPipeDataContext createNewContext() {
         JIPipeMutableDataContext context;
-        if(node != null) {
+        if (node != null) {
             context = new JIPipeMutableDataContext(node);
-        }
-        else {
+        } else {
             context = new JIPipeMutableDataContext();
         }
         for (Map.Entry<JIPipeDataSlot, Integer> entry : inputSlotRows.entrySet()) {
@@ -521,7 +521,7 @@ public class JIPipeSingleIterationStep implements JIPipeIterationStep, Comparabl
     @Override
     public Set<Integer> getInputSlotRowIndices(String slotName) {
         for (Map.Entry<JIPipeDataSlot, Integer> entry : inputSlotRows.entrySet()) {
-            if(slotName.equals(entry.getKey().getName())) {
+            if (slotName.equals(entry.getKey().getName())) {
                 return Collections.singleton(entry.getValue());
             }
         }

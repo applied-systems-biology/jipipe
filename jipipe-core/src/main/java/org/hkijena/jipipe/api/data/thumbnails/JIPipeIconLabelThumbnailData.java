@@ -15,15 +15,15 @@ package org.hkijena.jipipe.api.data.thumbnails;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.utils.JIPipeSerializedJsonObjectData;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -49,7 +49,7 @@ public class JIPipeIconLabelThumbnailData extends JIPipeSerializedJsonObjectData
     }
 
     public static JIPipeIconLabelThumbnailData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-      return JIPipeSerializedJsonObjectData.importData(storage, JIPipeIconLabelThumbnailData.class);
+        return JIPipeSerializedJsonObjectData.importData(storage, JIPipeIconLabelThumbnailData.class);
     }
 
 
@@ -59,7 +59,7 @@ public class JIPipeIconLabelThumbnailData extends JIPipeSerializedJsonObjectData
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
+    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
 
     }
 
@@ -89,8 +89,7 @@ public class JIPipeIconLabelThumbnailData extends JIPipeSerializedJsonObjectData
         try {
             ImageIcon iconFromResources = UIUtils.getIconFromResources(icon);
             label.setIcon(iconFromResources);
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             e.printStackTrace();
         }
         return label;

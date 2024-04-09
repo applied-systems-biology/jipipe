@@ -34,6 +34,7 @@ public class JIPipeNotification implements Comparable<JIPipeNotification> {
     public JIPipeNotification(String id) {
         this.id = id;
     }
+
     public JIPipeNotification(String id, String heading, String description, JIPipeNotificationAction... actions) {
         this.id = id;
         this.heading = heading;

@@ -1,0 +1,1394 @@
+{
+  "jipipe:project-type" : "project",
+  "jipipe:project-format-version" : 1,
+  "metadata" : {
+    "name" : "Example: Cellpose segmentation",
+    "description" : "<html>\n  <head>\n    \n  </head>\n  <body>\n    <h1>\n      Cellpose example\n    </h1>\n    <p>\n      JIPipe organizes pipelines in projects that can be saved and loaded from \n      disk. Each pipeline is organized into <b>Compartments</b> that separate \n      the whole graph into functional units. You can find an overview of all \n      compartments in the <i>Compartments</i> tab. You can re-open the tab by \n      selecting <i>Compartment &gt; Edit compartments</i> if you closed the \n      tab.<br><br>By double-clicking a compartment in the overview, JIPipe \n      will open an editor where you can modify the sub-pipeline that is \n      associated to the compartment. If you just want to run a project, you \n      can find the `Run` button at the top-right corner. Pipeline developers \n      might have organized a set of most common pipeline parameters. You can \n      find them in <i>Project &gt; Project overview</i> alongside additional \n      information like the authors, citations, and website. This template \n      contains one graph node called 'Analysis'\n    </p>\n    <p>\n      \n    </p>\n    <p>\n      This example comes with all necessary nodes to apply Cellpose to one or \n      multiple folders containing TIFF files. \n    </p>\n  </body>\n</html>\n",
+    "summary" : "<html><head></head><body></body></html>",
+    "authors" : [ ],
+    "acknowledgements" : [ ],
+    "website" : "",
+    "license" : "",
+    "citation" : "",
+    "dependency-citations" : [ ],
+    "thumbnail" : {
+      "data" : null
+    },
+    "categories" : [ ],
+    "update-site-dependencies" : [ ],
+    "template-description" : "Showcases how to segment images with Cellpose",
+    "permissions" : {
+      "prevent-adding-deleting-nodes" : false,
+      "prevent-modifying-slots" : false
+    },
+    "node-templates" : [ ],
+    "restore-tabs" : true
+  },
+  "dependencies" : [ {
+    "metadata" : {
+      "name" : "Filesystem types and algorithms",
+      "description" : "<html><head></head><body>Data types and algorithms for interacting with files and folders</body></html>",
+      "summary" : "<html><head></head><body>Data types and algorithms for interacting with files and folders</body></html>",
+      "authors" : [ {
+        "title" : null,
+        "first-name" : "Zoltán",
+        "last-name" : "Cseresnyés",
+        "affiliations-list" : [ "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany" ],
+        "website" : "https://www.leibniz-hki.de/en/staff-details.html?member=144",
+        "contact" : "zoltan.cseresnyes@leibniz-hki.de",
+        "first-author" : true,
+        "corresponding-author" : false,
+        "custom-text" : "<html><head></head><body></body></html>"
+      }, {
+        "title" : null,
+        "first-name" : "Ruman",
+        "last-name" : "Gerst",
+        "affiliations-list" : [ "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany", "Faculty of Biological Sciences, Friedrich Schiller University Jena, Germany" ],
+        "website" : "https://www.leibniz-hki.de/en/staff-details.html?member=1027",
+        "contact" : "ruman.gerst@leibniz-hki.de",
+        "first-author" : true,
+        "corresponding-author" : false,
+        "custom-text" : "<html><head></head><body></body></html>"
+      }, {
+        "title" : null,
+        "first-name" : "Marc Thilo",
+        "last-name" : "Figge",
+        "affiliations-list" : [ "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany", "Institute of Microbiology, Faculty of Biological Sciences, Friedrich Schiller University Jena, Germany" ],
+        "website" : "https://www.leibniz-hki.de/en/staff-details.html?member=81",
+        "contact" : "thilo.figge@leibniz-hki.de",
+        "first-author" : false,
+        "corresponding-author" : true,
+        "custom-text" : "<html><head></head><body></body></html>"
+      } ],
+      "acknowledgements" : [ ],
+      "website" : "https://www.jipipe.org/",
+      "license" : "MIT",
+      "citation" : "Gerst, R., Cseresnyés, Z. & Figge, M.T. JIPipe: visual batch processing for ImageJ. Nat Methods (2023). https://doi.org/10.1038/s41592-022-01744-4",
+      "dependency-citations" : [ ],
+      "thumbnail" : {
+        "data" : null
+      },
+      "categories" : [ "Automation", "Annotation", "Filtering" ]
+    },
+    "id" : "org.hkijena.jipipe:filesystem",
+    "version" : "1.79.0-SNAPSHOT",
+    "ij:update-site-dependencies" : [ ],
+    "dependencies" : [ ],
+    "ij:update-site-providers" : [ ]
+  }, {
+    "metadata" : {
+      "name" : "Compartment management",
+      "description" : "<html><head></head><body>Data types required for graph compartment management</body></html>",
+      "summary" : "<html><head></head><body>Data types required for graph compartment management</body></html>",
+      "authors" : [ {
+        "title" : null,
+        "first-name" : "Zoltán",
+        "last-name" : "Cseresnyés",
+        "affiliations-list" : [ "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany" ],
+        "website" : "https://www.leibniz-hki.de/en/staff-details.html?member=144",
+        "contact" : "zoltan.cseresnyes@leibniz-hki.de",
+        "first-author" : true,
+        "corresponding-author" : false,
+        "custom-text" : "<html><head></head><body></body></html>"
+      }, {
+        "title" : null,
+        "first-name" : "Ruman",
+        "last-name" : "Gerst",
+        "affiliations-list" : [ "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany", "Faculty of Biological Sciences, Friedrich Schiller University Jena, Germany" ],
+        "website" : "https://www.leibniz-hki.de/en/staff-details.html?member=1027",
+        "contact" : "ruman.gerst@leibniz-hki.de",
+        "first-author" : true,
+        "corresponding-author" : false,
+        "custom-text" : "<html><head></head><body></body></html>"
+      }, {
+        "title" : null,
+        "first-name" : "Marc Thilo",
+        "last-name" : "Figge",
+        "affiliations-list" : [ "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany", "Institute of Microbiology, Faculty of Biological Sciences, Friedrich Schiller University Jena, Germany" ],
+        "website" : "https://www.leibniz-hki.de/en/staff-details.html?member=81",
+        "contact" : "thilo.figge@leibniz-hki.de",
+        "first-author" : false,
+        "corresponding-author" : true,
+        "custom-text" : "<html><head></head><body></body></html>"
+      } ],
+      "acknowledgements" : [ ],
+      "website" : "https://www.jipipe.org/",
+      "license" : "MIT",
+      "citation" : "Gerst, R., Cseresnyés, Z. & Figge, M.T. JIPipe: visual batch processing for ImageJ. Nat Methods (2023). https://doi.org/10.1038/s41592-022-01744-4",
+      "dependency-citations" : [ ],
+      "thumbnail" : {
+        "data" : null
+      },
+      "categories" : [ "Core" ]
+    },
+    "id" : "org.hkijena.jipipe:compartments",
+    "version" : "1.79.0-SNAPSHOT",
+    "ij:update-site-dependencies" : [ ],
+    "dependencies" : [ ],
+    "ij:update-site-providers" : [ ]
+  }, {
+    "metadata" : {
+      "name" : "Annotation data types and algorithms",
+      "description" : "<html><head></head><body>Provides data types and algorithms to modify data annotations</body></html>",
+      "summary" : "<html><head></head><body>Provides data types and algorithms to modify data annotations</body></html>",
+      "authors" : [ {
+        "title" : null,
+        "first-name" : "Zoltán",
+        "last-name" : "Cseresnyés",
+        "affiliations-list" : [ "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany" ],
+        "website" : "https://www.leibniz-hki.de/en/staff-details.html?member=144",
+        "contact" : "zoltan.cseresnyes@leibniz-hki.de",
+        "first-author" : true,
+        "corresponding-author" : false,
+        "custom-text" : "<html><head></head><body></body></html>"
+      }, {
+        "title" : null,
+        "first-name" : "Ruman",
+        "last-name" : "Gerst",
+        "affiliations-list" : [ "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany", "Faculty of Biological Sciences, Friedrich Schiller University Jena, Germany" ],
+        "website" : "https://www.leibniz-hki.de/en/staff-details.html?member=1027",
+        "contact" : "ruman.gerst@leibniz-hki.de",
+        "first-author" : true,
+        "corresponding-author" : false,
+        "custom-text" : "<html><head></head><body></body></html>"
+      }, {
+        "title" : null,
+        "first-name" : "Marc Thilo",
+        "last-name" : "Figge",
+        "affiliations-list" : [ "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany", "Institute of Microbiology, Faculty of Biological Sciences, Friedrich Schiller University Jena, Germany" ],
+        "website" : "https://www.leibniz-hki.de/en/staff-details.html?member=81",
+        "contact" : "thilo.figge@leibniz-hki.de",
+        "first-author" : false,
+        "corresponding-author" : true,
+        "custom-text" : "<html><head></head><body></body></html>"
+      } ],
+      "acknowledgements" : [ ],
+      "website" : "https://www.jipipe.org/",
+      "license" : "MIT",
+      "citation" : "Gerst, R., Cseresnyés, Z. & Figge, M.T. JIPipe: visual batch processing for ImageJ. Nat Methods (2023). https://doi.org/10.1038/s41592-022-01744-4",
+      "dependency-citations" : [ ],
+      "thumbnail" : {
+        "data" : null
+      },
+      "categories" : [ "Annotation" ]
+    },
+    "id" : "org.hkijena.jipipe:annotations",
+    "version" : "1.79.0-SNAPSHOT",
+    "ij:update-site-dependencies" : [ ],
+    "dependencies" : [ ],
+    "ij:update-site-providers" : [ ]
+  }, {
+    "metadata" : {
+      "name" : "ImageJ algorithms",
+      "description" : "<html><head></head><body>A JIPipe project</body></html>",
+      "summary" : "<html><head></head><body></body></html>",
+      "authors" : [ ],
+      "acknowledgements" : [ ],
+      "website" : "",
+      "license" : "",
+      "citation" : "",
+      "dependency-citations" : [ ],
+      "thumbnail" : {
+        "data" : null
+      },
+      "categories" : [ ]
+    },
+    "id" : "org.hkijena.jipipe:imagej-algorithms",
+    "version" : "1.79.0-SNAPSHOT",
+    "ij:update-site-dependencies" : [ ],
+    "dependencies" : [ ],
+    "ij:update-site-providers" : [ ]
+  }, {
+    "metadata" : {
+      "name" : "Core",
+      "description" : "<html><head></head><body>A JIPipe project</body></html>",
+      "summary" : "<html><head></head><body></body></html>",
+      "authors" : [ ],
+      "acknowledgements" : [ ],
+      "website" : "",
+      "license" : "",
+      "citation" : "",
+      "dependency-citations" : [ ],
+      "thumbnail" : {
+        "data" : null
+      },
+      "categories" : [ ]
+    },
+    "id" : "org.hkijena.jipipe:core",
+    "version" : "1.79.0-SNAPSHOT",
+    "ij:update-site-dependencies" : [ ],
+    "dependencies" : [ ],
+    "ij:update-site-providers" : [ ]
+  }, {
+    "metadata" : {
+      "name" : "Utilities",
+      "description" : "<html><head></head><body>Utility algorithms</body></html>",
+      "summary" : "<html><head></head><body>Utility algorithms</body></html>",
+      "authors" : [ {
+        "title" : null,
+        "first-name" : "Zoltán",
+        "last-name" : "Cseresnyés",
+        "affiliations-list" : [ "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany" ],
+        "website" : "https://www.leibniz-hki.de/en/staff-details.html?member=144",
+        "contact" : "zoltan.cseresnyes@leibniz-hki.de",
+        "first-author" : true,
+        "corresponding-author" : false,
+        "custom-text" : "<html><head></head><body></body></html>"
+      }, {
+        "title" : null,
+        "first-name" : "Ruman",
+        "last-name" : "Gerst",
+        "affiliations-list" : [ "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany", "Faculty of Biological Sciences, Friedrich Schiller University Jena, Germany" ],
+        "website" : "https://www.leibniz-hki.de/en/staff-details.html?member=1027",
+        "contact" : "ruman.gerst@leibniz-hki.de",
+        "first-author" : true,
+        "corresponding-author" : false,
+        "custom-text" : "<html><head></head><body></body></html>"
+      }, {
+        "title" : null,
+        "first-name" : "Marc Thilo",
+        "last-name" : "Figge",
+        "affiliations-list" : [ "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany", "Institute of Microbiology, Faculty of Biological Sciences, Friedrich Schiller University Jena, Germany" ],
+        "website" : "https://www.leibniz-hki.de/en/staff-details.html?member=81",
+        "contact" : "thilo.figge@leibniz-hki.de",
+        "first-author" : false,
+        "corresponding-author" : true,
+        "custom-text" : "<html><head></head><body></body></html>"
+      } ],
+      "acknowledgements" : [ ],
+      "website" : "https://www.jipipe.org/",
+      "license" : "MIT",
+      "citation" : "Gerst, R., Cseresnyés, Z. & Figge, M.T. JIPipe: visual batch processing for ImageJ. Nat Methods (2023). https://doi.org/10.1038/s41592-022-01744-4",
+      "dependency-citations" : [ ],
+      "thumbnail" : {
+        "data" : null
+      },
+      "categories" : [ "Data processing", "Scripting" ]
+    },
+    "id" : "org.hkijena.jipipe:utils",
+    "version" : "1.79.0-SNAPSHOT",
+    "ij:update-site-dependencies" : [ ],
+    "dependencies" : [ ],
+    "ij:update-site-providers" : [ ]
+  }, {
+    "metadata" : {
+      "name" : "Cellpose integration",
+      "description" : "<html><head></head><body>Integrates Cellpose</body></html>",
+      "summary" : "<html><head></head><body>Integrates Cellpose</body></html>",
+      "authors" : [ {
+        "title" : null,
+        "first-name" : "Zoltán",
+        "last-name" : "Cseresnyés",
+        "affiliations-list" : [ "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany" ],
+        "website" : "https://www.leibniz-hki.de/en/staff-details.html?member=144",
+        "contact" : "zoltan.cseresnyes@leibniz-hki.de",
+        "first-author" : true,
+        "corresponding-author" : false,
+        "custom-text" : "<html><head></head><body></body></html>"
+      }, {
+        "title" : null,
+        "first-name" : "Ruman",
+        "last-name" : "Gerst",
+        "affiliations-list" : [ "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany", "Faculty of Biological Sciences, Friedrich Schiller University Jena, Germany" ],
+        "website" : "https://www.leibniz-hki.de/en/staff-details.html?member=1027",
+        "contact" : "ruman.gerst@leibniz-hki.de",
+        "first-author" : true,
+        "corresponding-author" : false,
+        "custom-text" : "<html><head></head><body></body></html>"
+      }, {
+        "title" : null,
+        "first-name" : "Marc Thilo",
+        "last-name" : "Figge",
+        "affiliations-list" : [ "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany", "Institute of Microbiology, Faculty of Biological Sciences, Friedrich Schiller University Jena, Germany" ],
+        "website" : "https://www.leibniz-hki.de/en/staff-details.html?member=81",
+        "contact" : "thilo.figge@leibniz-hki.de",
+        "first-author" : false,
+        "corresponding-author" : true,
+        "custom-text" : "<html><head></head><body></body></html>"
+      } ],
+      "acknowledgements" : [ {
+        "title" : null,
+        "first-name" : "Carsen",
+        "last-name" : "Stringer",
+        "affiliations-list" : [ "HHMI Janelia Research Campus, Ashburn, VA, USA" ],
+        "website" : "",
+        "contact" : "",
+        "first-author" : true,
+        "corresponding-author" : false,
+        "custom-text" : "<html><head></head><body></body></html>"
+      }, {
+        "title" : null,
+        "first-name" : "Tim",
+        "last-name" : "Wang",
+        "affiliations-list" : [ "HHMI Janelia Research Campus, Ashburn, VA, USA" ],
+        "website" : "",
+        "contact" : "",
+        "first-author" : false,
+        "corresponding-author" : false,
+        "custom-text" : "<html><head></head><body></body></html>"
+      }, {
+        "title" : null,
+        "first-name" : "Michalis",
+        "last-name" : "Michaelos",
+        "affiliations-list" : [ "HHMI Janelia Research Campus, Ashburn, VA, USA" ],
+        "website" : "",
+        "contact" : "",
+        "first-author" : false,
+        "corresponding-author" : false,
+        "custom-text" : "<html><head></head><body></body></html>"
+      }, {
+        "title" : null,
+        "first-name" : "Marius",
+        "last-name" : "Pachitariu",
+        "affiliations-list" : [ "HHMI Janelia Research Campus, Ashburn, VA, USA" ],
+        "website" : "",
+        "contact" : "",
+        "first-author" : false,
+        "corresponding-author" : true,
+        "custom-text" : "<html><head></head><body></body></html>"
+      } ],
+      "website" : "https://www.jipipe.org/",
+      "license" : "MIT",
+      "citation" : "Gerst, R., Cseresnyés, Z. & Figge, M.T. JIPipe: visual batch processing for ImageJ. Nat Methods (2023). https://doi.org/10.1038/s41592-022-01744-4",
+      "dependency-citations" : [ "Stringer, C., Wang, T., Michaelos, M., & Pachitariu, M. (2021). Cellpose: a generalist algorithm for cellular segmentation. Nature Methods, 18(1), 100-106." ],
+      "thumbnail" : {
+        "data" : null
+      },
+      "categories" : [ "Deep-Learning", "Segmentation", "Machine Learning" ]
+    },
+    "id" : "org.hkijena.jipipe:cellpose",
+    "version" : "1.79.0-SNAPSHOT",
+    "ij:update-site-dependencies" : [ ],
+    "dependencies" : [ ],
+    "ij:update-site-providers" : [ ]
+  }, {
+    "metadata" : {
+      "name" : "Python integration",
+      "description" : "<html><head></head><body>A JIPipe project</body></html>",
+      "summary" : "<html><head></head><body></body></html>",
+      "authors" : [ ],
+      "acknowledgements" : [ ],
+      "website" : "",
+      "license" : "",
+      "citation" : "",
+      "dependency-citations" : [ ],
+      "thumbnail" : {
+        "data" : null
+      },
+      "categories" : [ ]
+    },
+    "id" : "org.hkijena.jipipe:python",
+    "version" : "1.79.0-SNAPSHOT",
+    "ij:update-site-dependencies" : [ ],
+    "dependencies" : [ ],
+    "ij:update-site-providers" : [ ]
+  }, {
+    "metadata" : {
+      "name" : "Multi parameter algorithms",
+      "description" : "<html><head></head><body>A JIPipe project</body></html>",
+      "summary" : "<html><head></head><body></body></html>",
+      "authors" : [ ],
+      "acknowledgements" : [ ],
+      "website" : "",
+      "license" : "",
+      "citation" : "",
+      "dependency-citations" : [ ],
+      "thumbnail" : {
+        "data" : null
+      },
+      "categories" : [ ]
+    },
+    "id" : "org.hkijena.jipipe:multi-parameters-algorithms",
+    "version" : "1.79.0-SNAPSHOT",
+    "ij:update-site-dependencies" : [ ],
+    "dependencies" : [ ],
+    "ij:update-site-providers" : [ ]
+  }, {
+    "metadata" : {
+      "name" : "ImageJ integration",
+      "description" : "<html><head></head><body>A JIPipe project</body></html>",
+      "summary" : "<html><head></head><body></body></html>",
+      "authors" : [ ],
+      "acknowledgements" : [ ],
+      "website" : "",
+      "license" : "",
+      "citation" : "",
+      "dependency-citations" : [ ],
+      "thumbnail" : {
+        "data" : null
+      },
+      "categories" : [ ]
+    },
+    "id" : "org.hkijena.jipipe:imagej-integration",
+    "version" : "1.79.0-SNAPSHOT",
+    "ij:update-site-dependencies" : [ ],
+    "dependencies" : [ ],
+    "ij:update-site-providers" : [ ]
+  } ],
+  "additional-metadata" : {
+    "pipeline-parameters" : {
+      "jipipe:type" : "org.hkijena.jipipe.ui.settings.JIPipeProjectInfoParameters",
+      "exported-parameters" : {
+        "parameter-reference-groups" : [ ]
+      }
+    },
+    "org.hkijena.jipipe:pipeline-parameters" : {
+      "jipipe:type" : "org.hkijena.jipipe.ui.settings.JIPipeProjectInfoParameters",
+      "exported-parameters" : {
+        "parameter-reference-groups" : [ ]
+      }
+    },
+    "org.hkijena.jipipe.ui:project-tabs" : {
+      "jipipe:type" : "org.hkijena.jipipe.ui.project.JIPipeProjectTabMetadata",
+      "data" : {
+        "open-tabs" : [ "singleton:COMPARTMENT_EDITOR", "singleton:PROJECT_OVERVIEW", "graph-compartment:fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851" ],
+        "selected-tab" : "graph-compartment:fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851"
+      }
+    }
+  },
+  "graph" : {
+    "nodes" : {
+      "35ba3543-193a-4047-b794-285b0c03fa2d" : {
+        "jipipe:graph-compartment" : "fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851",
+        "jipipe:alias-id" : "analysis-output",
+        "jipipe:slot-configuration" : {
+          "input" : { },
+          "output" : { }
+        },
+        "jipipe:ui-grid-location" : {
+          "fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851" : {
+            "Vertical" : {
+              "x" : 33,
+              "y" : 21
+            },
+            "VerticalCompact" : {
+              "x" : 19,
+              "y" : 1
+            }
+          }
+        },
+        "jipipe:node-info-id" : "jipipe:compartment-output",
+        "jipipe:algorithm:enabled" : true,
+        "jipipe:node:bookmarked" : false,
+        "jipipe:algorithm:pass-through" : false,
+        "jipipe:node:name" : "Analysis output",
+        "jipipe:node:description" : "<html><head></head><body></body></html>"
+      },
+      "6e90c619-3985-4874-ba7a-2f6dc8501e22" : {
+        "jipipe:graph-compartment" : "fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851",
+        "jipipe:alias-id" : "input-folders",
+        "jipipe:slot-configuration" : {
+          "input" : { },
+          "output" : {
+            "Folder paths" : {
+              "slot-data-type" : "folder",
+              "slot-type" : "Output",
+              "inherited-slot" : "",
+              "name" : "Folder paths",
+              "custom-name" : "",
+              "description" : "",
+              "is-virtual" : false,
+              "save-outputs" : true,
+              "is-optional" : false,
+              "inheritance-conversions" : { }
+            }
+          }
+        },
+        "jipipe:ui-grid-location" : {
+          "fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851" : {
+            "Vertical" : {
+              "x" : 5,
+              "y" : 1
+            },
+            "VerticalCompact" : {
+              "x" : 5,
+              "y" : 1
+            }
+          }
+        },
+        "jipipe:node-info-id" : "import-folder-list",
+        "jipipe:algorithm:enabled" : true,
+        "folder-paths" : [ ],
+        "jipipe:node:bookmarked" : false,
+        "jipipe:algorithm:pass-through" : false,
+        "jipipe:node:name" : "Input folders",
+        "jipipe:node:description" : "<html>\n  <head>\n    \n  </head>\n  <body>\n    <p>\n      These folders contain the image files in *.tif format.\n    </p>\n  </body>\n</html>\n"
+      },
+      "16ffaf2c-7ee1-4bbc-b037-7332f50ac18d" : {
+        "jipipe:graph-compartment" : "fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851",
+        "jipipe:alias-id" : "annotate-with-folder-names",
+        "jipipe:slot-configuration" : {
+          "input" : {
+            "Paths" : {
+              "slot-data-type" : "path",
+              "slot-type" : "Input",
+              "inherited-slot" : null,
+              "name" : "Paths",
+              "custom-name" : null,
+              "description" : "",
+              "is-virtual" : false,
+              "save-outputs" : true,
+              "is-optional" : false,
+              "inheritance-conversions" : { }
+            }
+          },
+          "output" : {
+            "Annotated paths" : {
+              "slot-data-type" : "path",
+              "slot-type" : "Output",
+              "inherited-slot" : "Paths",
+              "name" : "Annotated paths",
+              "custom-name" : null,
+              "description" : "",
+              "is-virtual" : false,
+              "save-outputs" : true,
+              "is-optional" : false,
+              "inheritance-conversions" : { }
+            }
+          }
+        },
+        "jipipe:ui-grid-location" : {
+          "fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851" : {
+            "Vertical" : {
+              "x" : 5,
+              "y" : 5
+            },
+            "VerticalCompact" : {
+              "x" : 5,
+              "y" : 5
+            }
+          }
+        },
+        "jipipe:node-info-id" : "path-to-annotation-simple",
+        "annotation-merge-strategy" : "OverwriteExisting",
+        "remove-extensions" : true,
+        "jipipe:algorithm:enabled" : true,
+        "jipipe:parallelization:enabled" : true,
+        "jipipe:node:bookmarked" : false,
+        "full-path" : false,
+        "jipipe:algorithm:pass-through" : false,
+        "jipipe:node:name" : "Annotate with folder names",
+        "jipipe:node:description" : "<html><head></head><body></body></html>",
+        "generated-annotation" : "#Folder",
+        "jipipe:adaptive-parameters/attach-only-non-default-parameter-annotations" : true,
+        "jipipe:adaptive-parameters/attach-parameter-annotations" : true,
+        "jipipe:adaptive-parameters/parameter-annotations-prefix" : "",
+        "jipipe:adaptive-parameters/enabled" : true,
+        "jipipe:adaptive-parameters/overridden-parameters" : [ ],
+        "jipipe:adaptive-parameters/parameter-annotations-use-internal-names" : false,
+        "jipipe:parameter-slot-algorithm/has-parameter-slot" : false,
+        "jipipe:parameter-slot-algorithm/attach-only-non-default-parameter-annotations" : true,
+        "jipipe:parameter-slot-algorithm/attach-parameter-annotations" : true,
+        "jipipe:parameter-slot-algorithm/parameter-annotations-prefix" : "",
+        "jipipe:parameter-slot-algorithm/parameter-annotations-use-internal-names" : false,
+        "jipipe:data-batch-generation/limit" : {
+          "content" : {
+            "value" : "0-9",
+            "is-expression" : false,
+            "expression" : {
+              "expression" : "MAKE_SEQUENCE(0, 10)"
+            }
+          },
+          "enabled" : false
+        }
+      },
+      "c7fc8888-702f-420c-b5c3-432186fbf967" : {
+        "jipipe:graph-compartment" : "fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851",
+        "jipipe:alias-id" : "list-tiff-files",
+        "jipipe:slot-configuration" : {
+          "input" : {
+            "Folders" : {
+              "slot-data-type" : "folder",
+              "slot-type" : "Input",
+              "inherited-slot" : null,
+              "name" : "Folders",
+              "custom-name" : null,
+              "description" : "",
+              "is-virtual" : false,
+              "save-outputs" : true,
+              "is-optional" : false,
+              "inheritance-conversions" : { }
+            }
+          },
+          "output" : {
+            "Files" : {
+              "slot-data-type" : "file",
+              "slot-type" : "Output",
+              "inherited-slot" : "",
+              "name" : "Files",
+              "custom-name" : null,
+              "description" : "",
+              "is-virtual" : false,
+              "save-outputs" : true,
+              "is-optional" : false,
+              "inheritance-conversions" : { }
+            }
+          }
+        },
+        "jipipe:ui-grid-location" : {
+          "fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851" : {
+            "Vertical" : {
+              "x" : 6,
+              "y" : 9
+            },
+            "VerticalCompact" : {
+              "x" : 6,
+              "y" : 9
+            }
+          }
+        },
+        "jipipe:node-info-id" : "folder-list-files",
+        "jipipe:algorithm:enabled" : true,
+        "jipipe:parallelization:enabled" : true,
+        "subfolder" : null,
+        "recursive-follows-links" : true,
+        "jipipe:node:bookmarked" : false,
+        "filters" : {
+          "expression" : "STRING_MATCHES_GLOB(name, \"*.tif\") OR STRING_MATCHES_GLOB(name, \"*.tiff\")"
+        },
+        "jipipe:algorithm:pass-through" : false,
+        "recursive" : false,
+        "jipipe:node:name" : "List TIFF files",
+        "jipipe:node:description" : "<html><head></head><body></body></html>",
+        "jipipe:adaptive-parameters/attach-only-non-default-parameter-annotations" : true,
+        "jipipe:adaptive-parameters/attach-parameter-annotations" : true,
+        "jipipe:adaptive-parameters/parameter-annotations-prefix" : "",
+        "jipipe:adaptive-parameters/enabled" : true,
+        "jipipe:adaptive-parameters/overridden-parameters" : [ ],
+        "jipipe:adaptive-parameters/parameter-annotations-use-internal-names" : false,
+        "jipipe:parameter-slot-algorithm/has-parameter-slot" : false,
+        "jipipe:parameter-slot-algorithm/attach-only-non-default-parameter-annotations" : true,
+        "jipipe:parameter-slot-algorithm/attach-parameter-annotations" : true,
+        "jipipe:parameter-slot-algorithm/parameter-annotations-prefix" : "",
+        "jipipe:parameter-slot-algorithm/parameter-annotations-use-internal-names" : false,
+        "jipipe:data-batch-generation/limit" : {
+          "content" : {
+            "value" : "0-9",
+            "is-expression" : false,
+            "expression" : {
+              "expression" : "MAKE_SEQUENCE(0, 10)"
+            }
+          },
+          "enabled" : false
+        }
+      },
+      "4d7d87fe-3647-471c-80da-fe6968af0f54" : {
+        "jipipe:graph-compartment" : "fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851",
+        "jipipe:alias-id" : "provide-the-folders-with-tif-fi",
+        "jipipe:slot-configuration" : {
+          "input" : {
+            "Comment" : {
+              "slot-data-type" : "jipipe:data",
+              "slot-type" : "Input",
+              "inherited-slot" : null,
+              "name" : "Comment",
+              "custom-name" : null,
+              "description" : "",
+              "is-virtual" : false,
+              "save-outputs" : true,
+              "is-optional" : true,
+              "inheritance-conversions" : { }
+            }
+          },
+          "output" : {
+            "Comment" : {
+              "slot-data-type" : "jipipe:data",
+              "slot-type" : "Output",
+              "inherited-slot" : "",
+              "name" : "Comment",
+              "custom-name" : null,
+              "description" : "",
+              "is-virtual" : false,
+              "save-outputs" : true,
+              "is-optional" : false,
+              "inheritance-conversions" : { }
+            }
+          }
+        },
+        "jipipe:ui-grid-location" : {
+          "fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851" : {
+            "Vertical" : {
+              "x" : 19,
+              "y" : 5
+            },
+            "VerticalCompact" : {
+              "x" : 19,
+              "y" : 5
+            }
+          }
+        },
+        "jipipe:node-info-id" : "jipipe:comment",
+        "background-color" : "#FFFFCC",
+        "icon" : "actions/edit-comment.png",
+        "jipipe:node:bookmarked" : false,
+        "text-color" : "#000000",
+        "jipipe:node:name" : "Provide the folders with *.tif files here",
+        "jipipe:node:description" : "<html><head></head><body></body></html>"
+      },
+      "1cba933d-595b-45d9-a5bc-b4345baf034b" : {
+        "jipipe:graph-compartment" : "fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851",
+        "jipipe:alias-id" : "import-image",
+        "jipipe:slot-configuration" : {
+          "input" : {
+            "Files" : {
+              "slot-data-type" : "file",
+              "slot-type" : "Input",
+              "inherited-slot" : null,
+              "name" : "Files",
+              "custom-name" : null,
+              "description" : "The image file",
+              "is-virtual" : false,
+              "save-outputs" : true,
+              "is-optional" : false,
+              "inheritance-conversions" : { }
+            }
+          },
+          "output" : {
+            "Image" : {
+              "slot-data-type" : "imagej-imgplus",
+              "slot-type" : "Output",
+              "inherited-slot" : null,
+              "name" : "Image",
+              "custom-name" : null,
+              "description" : "Imported image",
+              "is-virtual" : true,
+              "save-outputs" : true,
+              "is-optional" : false,
+              "inheritance-conversions" : { }
+            }
+          }
+        },
+        "jipipe:ui-grid-location" : {
+          "fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851" : {
+            "Vertical" : {
+              "x" : 6,
+              "y" : 13
+            },
+            "VerticalCompact" : {
+              "x" : 6,
+              "y" : 17
+            }
+          }
+        },
+        "jipipe:node-info-id" : "import-imagej-imgplus-from-file",
+        "generated-image-type" : "imagej-imgplus",
+        "remove-overlay" : false,
+        "jipipe:algorithm:enabled" : true,
+        "jipipe:parallelization:enabled" : true,
+        "jipipe:node:bookmarked" : false,
+        "remove-lut" : false,
+        "jipipe:algorithm:pass-through" : false,
+        "jipipe:node:name" : "Import image",
+        "jipipe:node:description" : "<html><head></head><body></body></html>",
+        "title-annotation" : {
+          "content" : "Image title",
+          "enabled" : false
+        },
+        "defer-loading" : false,
+        "jipipe:adaptive-parameters/attach-only-non-default-parameter-annotations" : true,
+        "jipipe:adaptive-parameters/attach-parameter-annotations" : true,
+        "jipipe:adaptive-parameters/parameter-annotations-prefix" : "",
+        "jipipe:adaptive-parameters/enabled" : true,
+        "jipipe:adaptive-parameters/overridden-parameters" : [ ],
+        "jipipe:adaptive-parameters/parameter-annotations-use-internal-names" : false,
+        "jipipe:parameter-slot-algorithm/has-parameter-slot" : false,
+        "jipipe:parameter-slot-algorithm/attach-only-non-default-parameter-annotations" : true,
+        "jipipe:parameter-slot-algorithm/attach-parameter-annotations" : true,
+        "jipipe:parameter-slot-algorithm/parameter-annotations-prefix" : "",
+        "jipipe:parameter-slot-algorithm/parameter-annotations-use-internal-names" : false,
+        "jipipe:data-batch-generation/limit" : {
+          "content" : {
+            "value" : "0-9",
+            "is-expression" : false,
+            "expression" : {
+              "expression" : "MAKE_SEQUENCE(0, 10)"
+            }
+          },
+          "enabled" : false
+        }
+      },
+      "71cf4670-967e-47f0-b8d4-10832bea19b7" : {
+        "jipipe:graph-compartment" : "fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851",
+        "jipipe:alias-id" : "visualize-roi",
+        "jipipe:slot-configuration" : {
+          "input" : {
+            "ROI" : {
+              "slot-data-type" : "imagej-roi",
+              "slot-type" : "Input",
+              "inherited-slot" : null,
+              "name" : "ROI",
+              "custom-name" : null,
+              "description" : "The ROI",
+              "is-virtual" : false,
+              "save-outputs" : true,
+              "is-optional" : false,
+              "inheritance-conversions" : { }
+            },
+            "Image" : {
+              "slot-data-type" : "imagej-imgplus",
+              "slot-type" : "Input",
+              "inherited-slot" : null,
+              "name" : "Image",
+              "custom-name" : null,
+              "description" : "The image where ROI are drawn on",
+              "is-virtual" : true,
+              "save-outputs" : true,
+              "is-optional" : false,
+              "inheritance-conversions" : { }
+            }
+          },
+          "output" : {
+            "Output" : {
+              "slot-data-type" : "imagej-imgplus-color-rgb",
+              "slot-type" : "Output",
+              "inherited-slot" : null,
+              "name" : "Output",
+              "custom-name" : null,
+              "description" : "The ROI visualization (RGB image)",
+              "is-virtual" : true,
+              "save-outputs" : true,
+              "is-optional" : false,
+              "inheritance-conversions" : { }
+            }
+          }
+        },
+        "jipipe:ui-grid-location" : {
+          "fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851" : {
+            "Vertical" : {
+              "x" : 1,
+              "y" : 21
+            },
+            "VerticalCompact" : {
+              "x" : 1,
+              "y" : 25
+            }
+          }
+        },
+        "jipipe:node-info-id" : "ij1-roi-to-rgb",
+        "draw-over" : true,
+        "jipipe:parallelization:enabled" : true,
+        "prefer-render-via-overlay" : false,
+        "jipipe:node:name" : "Visualize ROI",
+        "label-foreground" : "#FFFFFF",
+        "label-size" : 9,
+        "override-fill-color" : {
+          "content" : "#FF0000",
+          "enabled" : false
+        },
+        "draw-outline-mode" : "Always",
+        "jipipe:algorithm:enabled" : true,
+        "magnification" : 1.0,
+        "label-background" : {
+          "content" : "#000000",
+          "enabled" : false
+        },
+        "override-line-width" : {
+          "content" : 1.0,
+          "enabled" : false
+        },
+        "drawn-label" : "None",
+        "jipipe:node:bookmarked" : false,
+        "ignore-c" : false,
+        "jipipe:algorithm:pass-through" : false,
+        "jipipe:node:description" : "<html><head></head><body></body></html>",
+        "fill-outline-mode" : "IfAvailable",
+        "override-line-color" : {
+          "content" : "#FFFF00",
+          "enabled" : false
+        },
+        "ignore-t" : false,
+        "opacity" : 1.0,
+        "ignore-z" : false,
+        "jipipe:adaptive-parameters/attach-only-non-default-parameter-annotations" : true,
+        "jipipe:adaptive-parameters/attach-parameter-annotations" : true,
+        "jipipe:adaptive-parameters/parameter-annotations-prefix" : "",
+        "jipipe:adaptive-parameters/enabled" : true,
+        "jipipe:adaptive-parameters/overridden-parameters" : [ ],
+        "jipipe:adaptive-parameters/parameter-annotations-use-internal-names" : false,
+        "jipipe:data-batch-generation/annotation-merge-strategy" : "Merge",
+        "jipipe:data-batch-generation/column-matching" : "PrefixHashUnion",
+        "jipipe:data-batch-generation/data-annotation-merge-strategy" : "MergeTables",
+        "jipipe:data-batch-generation/custom-matched-columns-expression" : {
+          "expression" : ""
+        },
+        "jipipe:data-batch-generation/skip-incomplete" : false,
+        "jipipe:data-batch-generation/custom-annotation-matching" : {
+          "expression" : "exact_match_results"
+        },
+        "jipipe:data-batch-generation/limit" : {
+          "content" : {
+            "value" : "0-9",
+            "is-expression" : false,
+            "expression" : {
+              "expression" : "MAKE_SEQUENCE(0, 10)"
+            }
+          },
+          "enabled" : false
+        },
+        "jipipe:data-batch-generation/annotation-matching-method" : "ExactMatch",
+        "jipipe:parameter-slot-algorithm/has-parameter-slot" : false,
+        "jipipe:parameter-slot-algorithm/attach-only-non-default-parameter-annotations" : true,
+        "jipipe:parameter-slot-algorithm/attach-parameter-annotations" : true,
+        "jipipe:parameter-slot-algorithm/parameter-annotations-prefix" : "",
+        "jipipe:parameter-slot-algorithm/parameter-annotations-use-internal-names" : false
+      },
+      "83da02a2-9669-46d2-b436-e2a9f8947742" : {
+        "jipipe:graph-compartment" : "fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851",
+        "jipipe:alias-id" : "count-roi",
+        "jipipe:slot-configuration" : {
+          "input" : {
+            "Counted ROI" : {
+              "slot-data-type" : "imagej-roi",
+              "slot-type" : "Input",
+              "inherited-slot" : null,
+              "name" : "Counted ROI",
+              "custom-name" : null,
+              "description" : "ROI to be counted",
+              "is-virtual" : false,
+              "save-outputs" : true,
+              "is-optional" : false,
+              "inheritance-conversions" : { }
+            }
+          },
+          "output" : {
+            "Counts" : {
+              "slot-data-type" : "annotation-table",
+              "slot-type" : "Output",
+              "inherited-slot" : null,
+              "name" : "Counts",
+              "custom-name" : null,
+              "description" : "The counts",
+              "is-virtual" : false,
+              "save-outputs" : true,
+              "is-optional" : false,
+              "inheritance-conversions" : { }
+            }
+          }
+        },
+        "jipipe:ui-grid-location" : {
+          "fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851" : {
+            "Vertical" : {
+              "x" : 16,
+              "y" : 21
+            },
+            "VerticalCompact" : {
+              "x" : 16,
+              "y" : 25
+            }
+          }
+        },
+        "jipipe:node-info-id" : "ij1-roi-count",
+        "jipipe:algorithm:enabled" : true,
+        "add-annotations" : true,
+        "jipipe:parallelization:enabled" : true,
+        "jipipe:node:bookmarked" : false,
+        "jipipe:algorithm:pass-through" : false,
+        "jipipe:node:name" : "Count ROI",
+        "jipipe:node:description" : "<html><head></head><body></body></html>",
+        "jipipe:adaptive-parameters/attach-only-non-default-parameter-annotations" : true,
+        "jipipe:adaptive-parameters/attach-parameter-annotations" : true,
+        "jipipe:adaptive-parameters/parameter-annotations-prefix" : "",
+        "jipipe:adaptive-parameters/enabled" : true,
+        "jipipe:adaptive-parameters/overridden-parameters" : [ ],
+        "jipipe:adaptive-parameters/parameter-annotations-use-internal-names" : false,
+        "jipipe:parameter-slot-algorithm/has-parameter-slot" : false,
+        "jipipe:parameter-slot-algorithm/attach-only-non-default-parameter-annotations" : true,
+        "jipipe:parameter-slot-algorithm/attach-parameter-annotations" : true,
+        "jipipe:parameter-slot-algorithm/parameter-annotations-prefix" : "",
+        "jipipe:parameter-slot-algorithm/parameter-annotations-use-internal-names" : false,
+        "jipipe:data-batch-generation/annotation-merge-strategy" : "Merge",
+        "jipipe:data-batch-generation/column-matching" : "PrefixHashUnion",
+        "jipipe:data-batch-generation/data-annotation-merge-strategy" : "MergeTables",
+        "jipipe:data-batch-generation/custom-matched-columns-expression" : {
+          "expression" : ""
+        },
+        "jipipe:data-batch-generation/skip-incomplete" : false,
+        "jipipe:data-batch-generation/custom-annotation-matching" : {
+          "expression" : "exact_match_results"
+        },
+        "jipipe:data-batch-generation/limit" : {
+          "content" : {
+            "value" : "0-9",
+            "is-expression" : false,
+            "expression" : {
+              "expression" : "MAKE_SEQUENCE(0, 10)"
+            }
+          },
+          "enabled" : false
+        },
+        "jipipe:data-batch-generation/annotation-matching-method" : "ExactMatch"
+      },
+      "c23646fc-c119-4c87-8ce6-99ca886aa50b" : {
+        "jipipe:graph-compartment" : "fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851",
+        "jipipe:alias-id" : "annotate-with-file-names",
+        "jipipe:slot-configuration" : {
+          "input" : {
+            "Paths" : {
+              "slot-data-type" : "path",
+              "slot-type" : "Input",
+              "inherited-slot" : null,
+              "name" : "Paths",
+              "custom-name" : null,
+              "description" : "",
+              "is-virtual" : false,
+              "save-outputs" : true,
+              "is-optional" : false,
+              "inheritance-conversions" : { }
+            }
+          },
+          "output" : {
+            "Annotated paths" : {
+              "slot-data-type" : "path",
+              "slot-type" : "Output",
+              "inherited-slot" : "Paths",
+              "name" : "Annotated paths",
+              "custom-name" : null,
+              "description" : "",
+              "is-virtual" : false,
+              "save-outputs" : true,
+              "is-optional" : false,
+              "inheritance-conversions" : { }
+            }
+          }
+        },
+        "jipipe:ui-grid-location" : {
+          "" : {
+            "VerticalCompact" : {
+              "x" : 11,
+              "y" : 13
+            }
+          },
+          "fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851" : {
+            "VerticalCompact" : {
+              "x" : 5,
+              "y" : 13
+            }
+          }
+        },
+        "jipipe:node-info-id" : "path-to-annotation-simple",
+        "annotation-merge-strategy" : "OverwriteExisting",
+        "remove-extensions" : true,
+        "jipipe:algorithm:enabled" : true,
+        "jipipe:parallelization:enabled" : true,
+        "jipipe:node:bookmarked" : false,
+        "full-path" : false,
+        "jipipe:algorithm:pass-through" : false,
+        "jipipe:node:name" : "Annotate with file names",
+        "jipipe:node:description" : "<html><head></head><body></body></html>",
+        "generated-annotation" : "#Image",
+        "jipipe:adaptive-parameters/attach-only-non-default-parameter-annotations" : true,
+        "jipipe:adaptive-parameters/attach-parameter-annotations" : true,
+        "jipipe:adaptive-parameters/parameter-annotations-prefix" : "",
+        "jipipe:adaptive-parameters/enabled" : true,
+        "jipipe:adaptive-parameters/overridden-parameters" : [ ],
+        "jipipe:adaptive-parameters/parameter-annotations-use-internal-names" : false,
+        "jipipe:parameter-slot-algorithm/has-parameter-slot" : false,
+        "jipipe:parameter-slot-algorithm/attach-only-non-default-parameter-annotations" : true,
+        "jipipe:parameter-slot-algorithm/attach-parameter-annotations" : true,
+        "jipipe:parameter-slot-algorithm/parameter-annotations-prefix" : "",
+        "jipipe:parameter-slot-algorithm/parameter-annotations-use-internal-names" : false,
+        "jipipe:data-batch-generation/limit" : {
+          "content" : {
+            "value" : "0-9",
+            "is-expression" : false,
+            "expression" : {
+              "expression" : "MAKE_SEQUENCE(0, 10)"
+            }
+          },
+          "enabled" : false
+        }
+      },
+      "0d7b1bf7-eb13-4b9f-8f55-9cfb6b06ef75" : {
+        "jipipe:graph-compartment" : "fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851",
+        "jipipe:alias-id" : "cellpose-2-x",
+        "jipipe:slot-configuration" : {
+          "input" : {
+            "Input" : {
+              "slot-data-type" : "imagej-imgplus",
+              "slot-type" : "Input",
+              "inherited-slot" : null,
+              "name" : "Input",
+              "custom-name" : null,
+              "description" : "",
+              "is-virtual" : true,
+              "save-outputs" : true,
+              "is-optional" : false,
+              "inheritance-conversions" : { }
+            }
+          },
+          "output" : {
+            "ROI" : {
+              "slot-data-type" : "imagej-roi",
+              "slot-type" : "Output",
+              "inherited-slot" : null,
+              "name" : "ROI",
+              "custom-name" : null,
+              "description" : "ROI of the segmented areas",
+              "is-virtual" : false,
+              "save-outputs" : true,
+              "is-optional" : false,
+              "inheritance-conversions" : { }
+            },
+            "Labels" : {
+              "slot-data-type" : "imagej-imgplus-greyscale",
+              "slot-type" : "Output",
+              "inherited-slot" : null,
+              "name" : "Labels",
+              "custom-name" : null,
+              "description" : "A grayscale image where each connected component is assigned a unique value",
+              "is-virtual" : true,
+              "save-outputs" : true,
+              "is-optional" : false,
+              "inheritance-conversions" : { }
+            },
+            "Flows XY" : {
+              "slot-data-type" : "imagej-imgplus",
+              "slot-type" : "Output",
+              "inherited-slot" : null,
+              "name" : "Flows XY",
+              "custom-name" : null,
+              "description" : "An RGB image that indicates the x and y flow of each pixel",
+              "is-virtual" : true,
+              "save-outputs" : true,
+              "is-optional" : false,
+              "inheritance-conversions" : { }
+            }
+          }
+        },
+        "jipipe:ui-grid-location" : {
+          "fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851" : {
+            "VerticalCompact" : {
+              "x" : 2,
+              "y" : 21
+            }
+          }
+        },
+        "jipipe:node-info-id" : "cellpose-2",
+        "jipipe:algorithm:enabled" : true,
+        "enable-3d-segmentation" : true,
+        "jipipe:parallelization:enabled" : true,
+        "jipipe:node:bookmarked" : false,
+        "jipipe:algorithm:pass-through" : false,
+        "jipipe:node:name" : "Cellpose (2.x)",
+        "jipipe:node:description" : "<html><head></head><body></body></html>",
+        "diameter-annotation" : {
+          "content" : "Diameter",
+          "enabled" : true
+        },
+        "cleanup-afterwards" : true,
+        "diameter" : {
+          "content" : 30.0,
+          "enabled" : true
+        },
+        "override-environment" : {
+          "content" : {
+            "name" : "",
+            "environment-type" : "System",
+            "arguments" : {
+              "expression" : "ARRAY(script_file)"
+            },
+            "executable-path" : ""
+          },
+          "enabled" : false
+        },
+        "model" : "Cytoplasm",
+        "threshold-parameters/stitch-threshold" : {
+          "content" : 0.0,
+          "enabled" : false
+        },
+        "threshold-parameters/cell-probability-threshold" : 0.0,
+        "threshold-parameters/flow-threshold" : 0.4,
+        "threshold-parameters/exclude-on-edges" : false,
+        "enhancement-parameters/normalize" : true,
+        "enhancement-parameters/anisotropy" : {
+          "content" : 1.0,
+          "enabled" : false
+        },
+        "enhancement-parameters/interpolate" : true,
+        "enhancement-parameters/no-resample" : false,
+        "enhancement-parameters/net-average" : true,
+        "jipipe:adaptive-parameters/attach-only-non-default-parameter-annotations" : true,
+        "jipipe:adaptive-parameters/attach-parameter-annotations" : true,
+        "jipipe:adaptive-parameters/parameter-annotations-prefix" : "",
+        "jipipe:adaptive-parameters/enabled" : true,
+        "jipipe:adaptive-parameters/overridden-parameters" : [ ],
+        "jipipe:adaptive-parameters/parameter-annotations-use-internal-names" : false,
+        "jipipe:parameter-slot-algorithm/has-parameter-slot" : false,
+        "jipipe:parameter-slot-algorithm/attach-only-non-default-parameter-annotations" : true,
+        "jipipe:parameter-slot-algorithm/attach-parameter-annotations" : true,
+        "jipipe:parameter-slot-algorithm/parameter-annotations-prefix" : "",
+        "jipipe:parameter-slot-algorithm/parameter-annotations-use-internal-names" : false,
+        "output-parameters/output-probabilities" : false,
+        "output-parameters/output-roi" : true,
+        "output-parameters/output-labels" : true,
+        "output-parameters/output-flows-xy" : true,
+        "output-parameters/output-flows-z" : false,
+        "output-parameters/output-flows-d" : false,
+        "jipipe:data-batch-generation/annotation-merge-strategy" : "Merge",
+        "jipipe:data-batch-generation/data-annotation-merge-strategy" : "MergeTables",
+        "gpu-parameters/enable-gpu" : true,
+        "gpu-parameters/gpu-device" : {
+          "content" : 0,
+          "enabled" : false
+        },
+        "channel-parameters/invert" : false,
+        "channel-parameters/segmented-channel" : {
+          "content" : 0,
+          "enabled" : false
+        },
+        "channel-parameters/nuclear-channel" : {
+          "content" : 0,
+          "enabled" : false
+        },
+        "channel-parameters/all-channels" : false
+      }
+    },
+    "edges" : [ {
+      "source-node" : "6e90c619-3985-4874-ba7a-2f6dc8501e22",
+      "target-node" : "4d7d87fe-3647-471c-80da-fe6968af0f54",
+      "source-slot" : "Folder paths",
+      "target-slot" : "Comment",
+      "metadata" : {
+        "ui-hidden" : false,
+        "ui-shape" : "Line"
+      }
+    }, {
+      "source-node" : "0d7b1bf7-eb13-4b9f-8f55-9cfb6b06ef75",
+      "target-node" : "83da02a2-9669-46d2-b436-e2a9f8947742",
+      "source-slot" : "ROI",
+      "target-slot" : "Counted ROI",
+      "metadata" : {
+        "ui-hidden" : false,
+        "ui-shape" : "Elbow"
+      }
+    }, {
+      "source-node" : "1cba933d-595b-45d9-a5bc-b4345baf034b",
+      "target-node" : "0d7b1bf7-eb13-4b9f-8f55-9cfb6b06ef75",
+      "source-slot" : "Image",
+      "target-slot" : "Input",
+      "metadata" : {
+        "ui-hidden" : false,
+        "ui-shape" : "Elbow"
+      }
+    }, {
+      "source-node" : "6e90c619-3985-4874-ba7a-2f6dc8501e22",
+      "target-node" : "16ffaf2c-7ee1-4bbc-b037-7332f50ac18d",
+      "source-slot" : "Folder paths",
+      "target-slot" : "Paths",
+      "metadata" : {
+        "ui-hidden" : false,
+        "ui-shape" : "Elbow"
+      }
+    }, {
+      "source-node" : "c23646fc-c119-4c87-8ce6-99ca886aa50b",
+      "target-node" : "1cba933d-595b-45d9-a5bc-b4345baf034b",
+      "source-slot" : "Annotated paths",
+      "target-slot" : "Files",
+      "metadata" : {
+        "ui-hidden" : false,
+        "ui-shape" : "Elbow"
+      }
+    }, {
+      "source-node" : "0d7b1bf7-eb13-4b9f-8f55-9cfb6b06ef75",
+      "target-node" : "71cf4670-967e-47f0-b8d4-10832bea19b7",
+      "source-slot" : "ROI",
+      "target-slot" : "ROI",
+      "metadata" : {
+        "ui-hidden" : false,
+        "ui-shape" : "Elbow"
+      }
+    }, {
+      "source-node" : "c7fc8888-702f-420c-b5c3-432186fbf967",
+      "target-node" : "c23646fc-c119-4c87-8ce6-99ca886aa50b",
+      "source-slot" : "Files",
+      "target-slot" : "Paths",
+      "metadata" : {
+        "ui-hidden" : false,
+        "ui-shape" : "Elbow"
+      }
+    }, {
+      "source-node" : "16ffaf2c-7ee1-4bbc-b037-7332f50ac18d",
+      "target-node" : "c7fc8888-702f-420c-b5c3-432186fbf967",
+      "source-slot" : "Annotated paths",
+      "target-slot" : "Folders",
+      "metadata" : {
+        "ui-hidden" : false,
+        "ui-shape" : "Elbow"
+      }
+    }, {
+      "source-node" : "1cba933d-595b-45d9-a5bc-b4345baf034b",
+      "target-node" : "71cf4670-967e-47f0-b8d4-10832bea19b7",
+      "source-slot" : "Image",
+      "target-slot" : "Image",
+      "metadata" : {
+        "ui-hidden" : false,
+        "ui-shape" : "Elbow"
+      }
+    } ],
+    "additional-metadata" : {
+    }
+  },
+  "compartments" : {
+    "compartment-graph" : {
+      "nodes" : {
+        "fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851" : {
+          "jipipe:graph-compartment" : "",
+          "jipipe:alias-id" : "analysis",
+          "jipipe:slot-configuration" : {
+            "input" : {
+              "Input" : {
+                "slot-data-type" : "jipipe:compartment-output",
+                "slot-type" : "Input",
+                "inherited-slot" : null,
+                "name" : "Input",
+                "custom-name" : null,
+                "description" : "",
+                "is-virtual" : false,
+                "save-outputs" : true,
+                "is-optional" : true,
+                "inheritance-conversions" : { }
+              }
+            },
+            "output" : {
+              "Output" : {
+                "slot-data-type" : "jipipe:compartment-output",
+                "slot-type" : "Output",
+                "inherited-slot" : "",
+                "name" : "Output",
+                "custom-name" : null,
+                "description" : "",
+                "is-virtual" : false,
+                "save-outputs" : true,
+                "is-optional" : false,
+                "inheritance-conversions" : { }
+              }
+            }
+          },
+          "jipipe:ui-grid-location" : {
+            "" : {
+              "Vertical" : {
+                "x" : 1,
+                "y" : 1
+              },
+              "VerticalCompact" : {
+                "x" : 1,
+                "y" : 1
+              }
+            }
+          },
+          "jipipe:node-info-id" : "jipipe:project-compartment",
+          "show-limited-parameters" : false,
+          "exported-parameters" : {
+            "parameter-reference-groups" : [ ]
+          },
+          "jipipe:node:bookmarked" : false,
+          "jipipe:node:name" : "Analysis",
+          "jipipe:node:description" : "<html><head></head><body></body></html>"
+        }
+      },
+      "edges" : [ ],
+      "additional-metadata" : {
+      }
+    }
+  }
+}

@@ -15,11 +15,12 @@ package org.hkijena.jipipe;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import org.hkijena.jipipe.api.JIPipeMetadata;
+import org.hkijena.jipipe.api.JIPipeStandardMetadata;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
+import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -84,13 +85,20 @@ public interface JIPipeDependency extends JIPipeValidatable {
      * @return The dependency metadata
      */
     @JsonGetter("metadata")
-    JIPipeMetadata getMetadata();
+    JIPipeStandardMetadata getMetadata();
 
     /**
      * @return The unique dependency ID
      */
     @JsonGetter("id")
     String getDependencyId();
+
+    /**
+     * The list of alternative IDs that are covered by this dependency
+     * @return alternative IDs
+     */
+    @JsonGetter("provides")
+    StringList getDependencyProvides();
 
     /**
      * @return The dependency version

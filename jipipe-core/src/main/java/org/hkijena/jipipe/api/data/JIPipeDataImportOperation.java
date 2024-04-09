@@ -15,7 +15,7 @@ package org.hkijena.jipipe.api.data;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 
 import java.nio.file.Path;
 
@@ -50,5 +50,5 @@ public interface JIPipeDataImportOperation extends JIPipeDataOperation {
      * @param progressInfo       the {@link JIPipeProgressInfo}
      * @return the imported data (optional). Can be null if no data is returned due to an error or delayed operation.
      */
-    JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench, JIPipeProgressInfo progressInfo);
+    JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeDesktopWorkbench workbench, JIPipeProgressInfo progressInfo);
 }

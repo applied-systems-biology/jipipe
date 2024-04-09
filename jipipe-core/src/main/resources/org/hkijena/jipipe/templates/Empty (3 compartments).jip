@@ -39,19 +39,13 @@
   } ],
   "additional-metadata" : {
     "pipeline-parameters" : {
-      "jipipe:type" : "org.hkijena.jipipe.ui.settings.JIPipeProjectInfoParameters",
-      "exported-parameters" : {
-        "parameter-reference-groups" : [ ]
-      }
-    },
-    "org.hkijena.jipipe:pipeline-parameters" : {
-      "jipipe:type" : "org.hkijena.jipipe.ui.settings.JIPipeProjectInfoParameters",
+      "jipipe:type" : "org.hkijena.jipipe.api.project.JIPipeProjectInfoParameters",
       "exported-parameters" : {
         "parameter-reference-groups" : [ ]
       }
     },
     "org.hkijena.jipipe.ui:project-tabs" : {
-      "jipipe:type" : "org.hkijena.jipipe.ui.project.JIPipeProjectTabMetadata",
+      "jipipe:type" : "org.hkijena.jipipe.desktop.app.project.JIPipeDesktopJIPipeProjectTabMetadata",
       "data" : {
         "open-tabs" : [ "singleton:COMPARTMENT_EDITOR", "graph-compartment:1b413a1d-0363-487d-b632-a67384f2494e", "graph-compartment:5692ac9d-fced-450c-8b3a-9ae8ea022fcc", "graph-compartment:58582f8c-f272-4486-8e92-429f54519e83" ],
         "selected-tab" : "singleton:COMPARTMENT_EDITOR"
@@ -138,16 +132,6 @@
     },
     "edges" : [ ],
     "additional-metadata" : {
-      "node-hotkeys" : {
-        "jipipe:type" : "org.hkijena.jipipe.ui.grapheditor.NodeHotKeyStorage",
-        "data" : {
-          "hotkeys" : { }
-        }
-      },
-      "jipipe:graph:view-mode" : {
-        "jipipe:type" : "org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode",
-        "data" : "Vertical"
-      }
     }
   },
   "compartments" : {
@@ -303,16 +287,6 @@
         }
       } ],
       "additional-metadata" : {
-        "node-hotkeys" : {
-          "jipipe:type" : "org.hkijena.jipipe.ui.grapheditor.NodeHotKeyStorage",
-          "data" : {
-            "hotkeys" : { }
-          }
-        },
-        "jipipe:graph:view-mode" : {
-          "jipipe:type" : "org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode",
-          "data" : "Vertical"
-        }
       }
     }
   }

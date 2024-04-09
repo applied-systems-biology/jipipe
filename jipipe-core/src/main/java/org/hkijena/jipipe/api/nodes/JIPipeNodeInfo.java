@@ -17,7 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
-import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
@@ -204,6 +204,7 @@ public interface JIPipeNodeInfo {
 
     /**
      * Returns true if this node is deprecated
+     *
      * @return if the node is deprecated
      */
     default boolean isDeprecated() {

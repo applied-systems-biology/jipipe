@@ -17,9 +17,9 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.jsoup.Jsoup;
 
@@ -54,7 +54,7 @@ public class CreateNewNodeByInfoDatabaseEntry implements JIPipeNodeDatabaseEntry
 
     private void initializeSlots() {
         for (AddJIPipeInputSlot inputSlot : nodeInfo.getInputSlots()) {
-            if(!StringUtils.isNullOrEmpty(inputSlot.slotName())) {
+            if (!StringUtils.isNullOrEmpty(inputSlot.slotName())) {
                 inputSlots.put(inputSlot.slotName(), new JIPipeDataSlotInfo(inputSlot.value(),
                         JIPipeSlotType.Input,
                         inputSlot.slotName(),
@@ -62,7 +62,7 @@ public class CreateNewNodeByInfoDatabaseEntry implements JIPipeNodeDatabaseEntry
             }
         }
         for (AddJIPipeOutputSlot outputSlot : nodeInfo.getOutputSlots()) {
-            if(!StringUtils.isNullOrEmpty(outputSlot.slotName())) {
+            if (!StringUtils.isNullOrEmpty(outputSlot.slotName())) {
                 outputSlots.put(outputSlot.slotName(), new JIPipeDataSlotInfo(outputSlot.value(),
                         JIPipeSlotType.Output,
                         outputSlot.slotName(),
@@ -121,9 +121,10 @@ public class CreateNewNodeByInfoDatabaseEntry implements JIPipeNodeDatabaseEntry
     public String getId() {
         return id;
     }
+
     @Override
     public String getCategory() {
-        return (nodeInfo.getCategory().getName() + "\n" +nodeInfo.getMenuPath()).trim();
+        return (nodeInfo.getCategory().getName() + "\n" + nodeInfo.getMenuPath()).trim();
     }
 
     @Override
@@ -147,7 +148,7 @@ public class CreateNewNodeByInfoDatabaseEntry implements JIPipeNodeDatabaseEntry
     }
 
     @Override
-    public JIPipeGraphNodeUI addToGraph(JIPipeGraphCanvasUI canvasUI) {
+    public JIPipeDesktopGraphNodeUI addToGraph(JIPipeDesktopGraphCanvasUI canvasUI) {
         JIPipeGraphNode node = nodeInfo.newInstance();
         if (canvasUI.getHistoryJournal() != null) {
             canvasUI.getHistoryJournal().snapshotBeforeAddNode(node, canvasUI.getCompartment());
@@ -160,6 +161,7 @@ public class CreateNewNodeByInfoDatabaseEntry implements JIPipeNodeDatabaseEntry
     public String getDescriptionPlain() {
         return descriptionPlain;
     }
+
     @Override
     public boolean canAddInputSlots() {
         return canAddInputSlots;

@@ -16,13 +16,13 @@ package org.hkijena.jipipe.api.nodes;
 import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
-import org.hkijena.jipipe.extensions.expressions.ui.JIPipeExpressionParameterEditorUI;
-import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
-import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.plugins.expressions.ExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
+import org.hkijena.jipipe.plugins.expressions.ui.JIPipeExpressionDesktopParameterEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
@@ -37,7 +37,7 @@ public interface JIPipeAdaptiveParametersAlgorithm extends JIPipeParameterCollec
     JIPipeAdaptiveParameterSettings getAdaptiveParameterSettings();
 
     @Override
-    default void installUIParameterOptions(ParameterPanel parameterPanel, JIPipeParameterEditorUI parameterEditorUI, JPopupMenu menu) {
+    default void installUIParameterOptions(JIPipeDesktopParameterPanel parameterPanel, JIPipeDesktopParameterEditorUI parameterEditorUI, JPopupMenu menu) {
         JIPipeParameterCollection.super.installUIParameterOptions(parameterPanel, parameterEditorUI, menu);
 
         if (getAdaptiveParameterSettings().isEnabled()) {
@@ -64,7 +64,7 @@ public interface JIPipeAdaptiveParametersAlgorithm extends JIPipeParameterCollec
     }
 
     @Override
-    default JComponent installUIOverrideParameterEditor(ParameterPanel parameterPanel, JIPipeParameterEditorUI parameterEditorUI) {
+    default JComponent installUIOverrideParameterEditor(JIPipeDesktopParameterPanel parameterPanel, JIPipeDesktopParameterEditorUI parameterEditorUI) {
 
         if (getAdaptiveParameterSettings().isEnabled()) {
             String key = parameterEditorUI.getParameterAccess().getKey();
@@ -103,7 +103,7 @@ public interface JIPipeAdaptiveParametersAlgorithm extends JIPipeParameterCollec
                         .setSetter(t -> {
                         }).setSource(new JIPipeDummyParameterCollection()).build();
 
-                JIPipeExpressionParameterEditorUI newEditorUI = new JIPipeExpressionParameterEditorUI(parameterEditorUI.getWorkbench(), parameterPanel.getParameterTree(), dummy);
+                JIPipeExpressionDesktopParameterEditorUI newEditorUI = new JIPipeExpressionDesktopParameterEditorUI(parameterEditorUI.getDesktopWorkbench(), parameterPanel.getParameterTree(), dummy);
                 JLabel label = new JLabel("Adaptive", UIUtils.getIconFromResources("emblems/emblem-important-blue.png"), JLabel.LEFT);
                 label.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4),
                         new RoundedLineBorder(new Color(0xE6E6E6), 1, 3)));

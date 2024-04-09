@@ -22,8 +22,8 @@ import org.hkijena.jipipe.api.compat.ImageJDataImporter;
 import org.hkijena.jipipe.api.compat.ImageJDataImporterUI;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterEditorUI;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentInstaller;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeDesktopExternalEnvironmentDesktopParameterEditorUI;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeGraphEditorTool;
 import org.hkijena.jipipe.api.nodes.*;
@@ -34,28 +34,30 @@ import org.hkijena.jipipe.api.parameters.JIPipeDefaultParameterTypeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterGenerator;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
+import org.hkijena.jipipe.api.project.JIPipeProjectMetadata;
+import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
 import org.hkijena.jipipe.api.registries.JIPipeJavaNodeRegistrationTask;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistrationTask;
 import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.extensions.core.CorePlugin;
-import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.expressions.functions.ColumnOperationAdapterFunction;
-import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
-import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterGenerator;
-import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterTypeInfo;
-import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
-import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
-import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.extensions.tables.ColumnOperation;
-import org.hkijena.jipipe.ui.extension.GraphEditorToolBarButtonExtension;
-import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
-import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.NodeUIContextAction;
-import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
-import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreview;
-import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotRowUI;
+import org.hkijena.jipipe.plugins.core.CorePlugin;
+import org.hkijena.jipipe.plugins.expressions.ExpressionFunction;
+import org.hkijena.jipipe.plugins.expressions.functions.ColumnOperationAdapterFunction;
+import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterGenerator;
+import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterTypeInfo;
+import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.plugins.tables.ColumnOperation;
+import org.hkijena.jipipe.desktop.api.JIPipeDesktopGraphEditorToolBarButtonExtension;
+import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
+import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
+import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultDataSlotPreview;
+import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultDataSlotRowUI;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.reflections.Reflections;
@@ -83,14 +85,14 @@ import java.util.stream.Collectors;
  */
 public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements JIPipeJavaPlugin {
 
-    private final JIPipeMetadata metadata;
+    private final JIPipeStandardMetadata metadata;
     private JIPipe registry;
 
     /**
      * Creates a new instance
      */
     public JIPipeDefaultJavaPlugin() {
-        metadata = new JIPipeMetadata();
+        metadata = new JIPipeStandardMetadata();
         metadata.setName(getName());
         metadata.setDescription(getDescription());
         metadata.setSummary(getSummary());
@@ -157,7 +159,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
     public abstract String getCitation();
 
     @Override
-    public JIPipeMetadata getMetadata() {
+    public JIPipeStandardMetadata getMetadata() {
         return metadata;
     }
 
@@ -221,7 +223,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      *
      * @param klass The menu entry
      */
-    public void registerMenuExtension(Class<? extends JIPipeMenuExtension> klass) {
+    public void registerMenuExtension(Class<? extends JIPipeDesktopMenuExtension> klass) {
         registry.getCustomMenuRegistry().registerMenu(klass);
     }
 
@@ -230,7 +232,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      *
      * @param klass the toolbar button class
      */
-    public void registerGraphEditorToolBarButtonExtension(Class<? extends GraphEditorToolBarButtonExtension> klass) {
+    public void registerGraphEditorToolBarButtonExtension(Class<? extends JIPipeDesktopGraphEditorToolBarButtonExtension> klass) {
         registry.getCustomMenuRegistry().registerGraphEditorToolBarButton(klass);
     }
 
@@ -277,7 +279,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param cellUI     Results table cell UI. Can be null.
      * @param operations list of operations to register. passed to registerDatatypeOperation.
      */
-    public void registerDatatype(String id, Class<? extends JIPipeData> dataClass, URL icon, Class<? extends JIPipeResultDataSlotRowUI> rowUI, Class<? extends JIPipeResultDataSlotPreview> cellUI, JIPipeDataOperation... operations) {
+    public void registerDatatype(String id, Class<? extends JIPipeData> dataClass, URL icon, Class<? extends JIPipeDesktopResultDataSlotRowUI> rowUI, Class<? extends JIPipeDesktopResultDataSlotPreview> cellUI, JIPipeDataOperation... operations) {
         registry.getDatatypeRegistry().register(id, dataClass, this);
         if (icon != null) {
             registry.getDatatypeRegistry().registerIcon(dataClass, icon);
@@ -432,7 +434,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param description          Description for the parameter type
      * @param uiClass              Parameter editor UI. Can be null if the editor is already provided.
      */
-    public void registerParameterType(String id, Class<?> parameterClass, Supplier<Object> newInstanceGenerator, Function<Object, Object> duplicateFunction, String name, String description, Class<? extends JIPipeParameterEditorUI> uiClass) {
+    public void registerParameterType(String id, Class<?> parameterClass, Supplier<Object> newInstanceGenerator, Function<Object, Object> duplicateFunction, String name, String description, Class<? extends JIPipeDesktopParameterEditorUI> uiClass) {
         JIPipeDefaultParameterTypeInfo info = new JIPipeDefaultParameterTypeInfo(id,
                 parameterClass,
                 newInstanceGenerator != null ? newInstanceGenerator : () -> ReflectionUtils.newInstance(parameterClass),
@@ -465,7 +467,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param description    Description for the parameter type
      * @param uiClass        Parameter editor UI. Can be null if the editor is already provided.
      */
-    public void registerParameterType(String id, Class<?> parameterClass, String name, String description, Class<? extends JIPipeParameterEditorUI> uiClass) {
+    public void registerParameterType(String id, Class<?> parameterClass, String name, String description, Class<? extends JIPipeDesktopParameterEditorUI> uiClass) {
         registerParameterType(id, parameterClass, null, null, name, description, uiClass);
     }
 
@@ -482,7 +484,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param uiClass              Parameter editor UI. Can be null if the editor is already provided.
      * @param <T>                  parameter class
      */
-    public <T> void registerParameterType(String id, Class<T> parameterClass, Class<? extends ListParameter<T>> listClass, Supplier<Object> newInstanceGenerator, Function<Object, Object> duplicateFunction, String name, String description, Class<? extends JIPipeParameterEditorUI> uiClass) {
+    public <T> void registerParameterType(String id, Class<T> parameterClass, Class<? extends ListParameter<T>> listClass, Supplier<Object> newInstanceGenerator, Function<Object, Object> duplicateFunction, String name, String description, Class<? extends JIPipeDesktopParameterEditorUI> uiClass) {
         JIPipeDefaultParameterTypeInfo info = new JIPipeDefaultParameterTypeInfo(id,
                 parameterClass,
                 newInstanceGenerator != null ? newInstanceGenerator : () -> ReflectionUtils.newInstance(parameterClass),
@@ -505,7 +507,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param info    the info
      * @param uiClass Parameter editor UI. Can be null if the editor is already provided.
      */
-    public void registerParameterType(JIPipeParameterTypeInfo info, Class<? extends JIPipeParameterEditorUI> uiClass) {
+    public void registerParameterType(JIPipeParameterTypeInfo info, Class<? extends JIPipeDesktopParameterEditorUI> uiClass) {
         registry.getParameterTypeRegistry().register(info);
         if (uiClass != null) {
             registerParameterEditor(info.getFieldClass(), uiClass);
@@ -519,7 +521,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param listClass a parameter type that is a list of the registered type
      * @param uiClass   Parameter editor UI. Can be null if the editor is already provided.
      */
-    public void registerParameterType(JIPipeParameterTypeInfo info, Class<?> listClass, Class<? extends JIPipeParameterEditorUI> uiClass) {
+    public void registerParameterType(JIPipeParameterTypeInfo info, Class<?> listClass, Class<? extends JIPipeDesktopParameterEditorUI> uiClass) {
         registry.getParameterTypeRegistry().register(info);
         if (uiClass != null) {
             registerParameterEditor(info.getFieldClass(), uiClass);
@@ -541,7 +543,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param parameterClass the parameter class
      * @param uiClass        the editor class
      */
-    public void registerParameterEditor(Class<?> parameterClass, Class<? extends JIPipeParameterEditorUI> uiClass) {
+    public void registerParameterEditor(Class<?> parameterClass, Class<? extends JIPipeDesktopParameterEditorUI> uiClass) {
         registry.getParameterTypeRegistry().registerParameterEditor(parameterClass, uiClass);
     }
 
@@ -698,6 +700,16 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
     }
 
     /**
+     * Registers a new metadata object type, which are JSON-serializable objects with a defined type identifier string
+     * @param objectClass the object class
+     * @param id the ID of the object class
+     * @param alternativeIds alternative Ids that are captured during the reading process
+     */
+    public void registerMetadataObjectType(Class<? extends JIPipeMetadataObject> objectClass, String id, String... alternativeIds) {
+        registry.getMetadataRegistry().register(objectClass, id, alternativeIds);
+    }
+
+    /**
      * Registers a node template as example for a node.
      * Silently fails if the template does not contain exactly one node
      *
@@ -722,10 +734,11 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * Registers a node as node example based on a node instance
      * The configurator function is run prior to the registration
      * Must be run within postprocess()
-     * @param nodeClass the node class
-     * @param name the name of the example
+     *
+     * @param nodeClass    the node class
+     * @param name         the name of the example
      * @param configurator executed on an instance of the node
-     * @param <T> the node type
+     * @param <T>          the node type
      */
     public <T extends JIPipeGraphNode> void registerNodeExample(Class<T> nodeClass, String name, Consumer<T> configurator) {
         JIPipeGraph graph = new JIPipeGraph();
@@ -742,6 +755,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * Registers a node example based on the node instance
      * The name of the example is taken from the node custom name
      * Must be run within postprocess()
+     *
      * @param node the example node
      */
     public void registerNodeExample(JIPipeGraphNode node) {
@@ -922,7 +936,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
                                                                                               String name,
                                                                                               String description,
                                                                                               Icon icon) {
-        registerParameterType(id, environmentClass, listClass, null, null, name, description, ExternalEnvironmentParameterEditorUI.class);
+        registerParameterType(id, environmentClass, listClass, null, null, name, description, JIPipeDesktopExternalEnvironmentDesktopParameterEditorUI.class);
         registry.getExternalEnvironmentRegistry().registerEnvironment(environmentClass, settings);
     }
 
@@ -933,7 +947,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param installerClass   the installer class
      * @param icon             icon for the installer
      */
-    public void registerEnvironmentInstaller(Class<? extends JIPipeEnvironment> environmentClass, Class<? extends ExternalEnvironmentInstaller> installerClass, Icon icon) {
+    public void registerEnvironmentInstaller(Class<? extends JIPipeEnvironment> environmentClass, Class<? extends JIPipeExternalEnvironmentInstaller> installerClass, Icon icon) {
         registry.getExternalEnvironmentRegistry().registerInstaller(environmentClass, installerClass, icon);
     }
 

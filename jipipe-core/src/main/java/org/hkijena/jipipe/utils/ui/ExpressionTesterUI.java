@@ -22,12 +22,12 @@ import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
-import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.ui.JIPipeExpressionParameterEditorUI;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
+import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
+import org.hkijena.jipipe.plugins.expressions.*;
+import org.hkijena.jipipe.plugins.expressions.ui.JIPipeExpressionDesktopParameterEditorUI;
+import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -40,14 +40,14 @@ import java.util.*;
 /**
  * A developer tool to test {@link JIPipeExpressionEvaluator}
  */
-public class ExpressionTesterUI extends JIPipeWorkbenchPanel {
+public class ExpressionTesterUI extends JIPipeDesktopWorkbenchPanel {
     private final JIPipeExpressionEvaluator evaluator = new JIPipeExpressionEvaluator();
-    private final MarkdownReader resultReader = new MarkdownReader(false);
+    private final JIPipeDesktopMarkdownReader resultReader = new JIPipeDesktopMarkdownReader(false);
     private final StringBuilder resultOutput = new StringBuilder();
-    private JIPipeExpressionParameterEditorUI expressionEditor;
+    private JIPipeExpressionDesktopParameterEditorUI expressionEditor;
     private JIPipeExpressionParameter expression = new JIPipeExpressionParameter();
 
-    public ExpressionTesterUI(JIPipeWorkbench workbench) {
+    public ExpressionTesterUI(JIPipeDesktopWorkbench workbench) {
         super(workbench);
         initialize();
     }
@@ -65,7 +65,7 @@ public class ExpressionTesterUI extends JIPipeWorkbenchPanel {
                     setExpression((JIPipeExpressionParameter) o);
                     return true;
                 }).setSource(new JIPipeDummyParameterCollection()).build();
-        expressionEditor = new JIPipeExpressionParameterEditorUI(getWorkbench(), new JIPipeParameterTree(access.getSource()), access);
+        expressionEditor = new JIPipeExpressionDesktopParameterEditorUI(getDesktopWorkbench(), new JIPipeParameterTree(access.getSource()), access);
 
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.add(expressionEditor, BorderLayout.CENTER);
@@ -101,7 +101,7 @@ public class ExpressionTesterUI extends JIPipeWorkbenchPanel {
         }
         helpText.append("<table>\n\n");
 
-        MarkdownReader helpReader = new MarkdownReader(true, new MarkdownDocument(helpText.toString()));
+        JIPipeDesktopMarkdownReader helpReader = new JIPipeDesktopMarkdownReader(true, new MarkdownText(helpText.toString()));
 
         // Add everything into a split panel
         JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT,
@@ -145,7 +145,7 @@ public class ExpressionTesterUI extends JIPipeWorkbenchPanel {
         }
         resultOutput.append("<tr><td>Output</td><td><pre>").append(HtmlEscapers.htmlEscaper().escape("" + result)).append("</pre></td></tr></table>");
         resultOutput.append("<hr/>\n");
-        resultReader.setDocument(new MarkdownDocument(resultOutput.toString()));
+        resultReader.setDocument(new MarkdownText(resultOutput.toString()));
         SwingUtilities.invokeLater(() -> resultReader.getScrollPane().getVerticalScrollBar().setValue(resultReader.getScrollPane().getVerticalScrollBar().getMaximum()));
     }
 

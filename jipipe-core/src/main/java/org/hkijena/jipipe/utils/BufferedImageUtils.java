@@ -17,7 +17,7 @@ import ij.plugin.filter.GaussianBlur;
 import ij.process.ByteProcessor;
 import ij.process.ColorProcessor;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
-import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -38,7 +38,7 @@ public class BufferedImageUtils {
     public static BufferedImage read(Path filePath, boolean greyscaleCorrection) {
         try {
             BufferedImage image = ImageIO.read(filePath.toFile());
-            if(greyscaleCorrection && image.getType() == BufferedImage.TYPE_CUSTOM && image.getColorModel().hasAlpha() && image.getColorModel().getNumComponents() == 2) {
+            if (greyscaleCorrection && image.getType() == BufferedImage.TYPE_CUSTOM && image.getColorModel().hasAlpha() && image.getColorModel().getNumComponents() == 2) {
                 int width = image.getWidth();
                 int height = image.getHeight();
                 BufferedImage fixed = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -64,8 +64,7 @@ public class BufferedImageUtils {
                     }
                 }
                 return fixed;
-            }
-            else if(greyscaleCorrection && image.getType() == BufferedImage.TYPE_BYTE_GRAY && !image.getColorModel().hasAlpha() && image.getColorModel().getNumComponents() == 1) {
+            } else if (greyscaleCorrection && image.getType() == BufferedImage.TYPE_BYTE_GRAY && !image.getColorModel().hasAlpha() && image.getColorModel().getNumComponents() == 1) {
                 int width = image.getWidth();
                 int height = image.getHeight();
                 BufferedImage fixed = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -90,19 +89,19 @@ public class BufferedImageUtils {
                     }
                 }
                 return fixed;
-            }
-            else {
+            } else {
                 return image;
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
+
     public static BufferedImage setAlpha(BufferedImage image, BufferedImage mask) {
-        if(mask.getType() != BufferedImage.TYPE_BYTE_GRAY) {
+        if (mask.getType() != BufferedImage.TYPE_BYTE_GRAY) {
             mask = copyBufferedImageToGray(mask);
         }
-        if(image.getWidth() != mask.getWidth() || image.getHeight() != mask.getHeight()) {
+        if (image.getWidth() != mask.getWidth() || image.getHeight() != mask.getHeight()) {
             throw new JIPipeValidationRuntimeException(new IllegalArgumentException("Images have unequal size!"),
                     "Images have a different size!",
                     "The provided images have a different size",
@@ -131,7 +130,7 @@ public class BufferedImageUtils {
 
         if (!src.getColorModel().hasAlpha()) {
             // Just color it white
-            Arrays.fill(dstBuffer, (byte)255);
+            Arrays.fill(dstBuffer, (byte) 255);
         } else {
             if (src.getType() != BufferedImage.TYPE_INT_ARGB) {
                 src = copyBufferedImageToARGB(src);
@@ -172,7 +171,7 @@ public class BufferedImageUtils {
     }
 
     public static BufferedImage convertAlphaToCheckerboard(Image originalImage, int checkerSize) {
-        return convertAlphaToCheckerboard(originalImage, checkerSize, Color.WHITE, ModernMetalTheme.GRAY);
+        return convertAlphaToCheckerboard(originalImage, checkerSize, Color.WHITE, JIPipeDesktopModernMetalTheme.GRAY);
     }
 
     public static BufferedImage convertAlphaToCheckerboard(Image originalImage, int checkerSize, Color checkerColor1, Color checkerColor2) {

@@ -15,7 +15,6 @@ package org.hkijena.jipipe.api.runtimepartitioning;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.apache.commons.math3.geometry.enclosing.EnclosingBall;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.grouping.JIPipeGraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithmIterationStepGenerationSettings;
@@ -24,8 +23,8 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
-import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 
 import java.awt.*;
 
@@ -123,6 +122,7 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
     public HTMLText getDescription() {
         return description;
     }
+
     @JIPipeParameter("description")
     @JsonSetter("description")
     public void setDescription(HTMLText description) {
@@ -213,19 +213,19 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
         switch (iterationMode) {
             case PassThrough: {
-                if(subParameter == loopIterationIteratingSettings)
+                if (subParameter == loopIterationIteratingSettings)
                     return false;
-                if(subParameter == loopIterationMergingSettings)
+                if (subParameter == loopIterationMergingSettings)
                     return false;
             }
             break;
             case IteratingDataBatch: {
-                if(subParameter == loopIterationMergingSettings)
+                if (subParameter == loopIterationMergingSettings)
                     return false;
             }
             break;
             case MergingDataBatch: {
-                if(subParameter == loopIterationIteratingSettings)
+                if (subParameter == loopIterationIteratingSettings)
                     return false;
             }
             break;

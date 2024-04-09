@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 public class JIPipeInputDataSlot extends JIPipeDataSlot {
 
     private boolean skipDataGathering;
+
     public JIPipeInputDataSlot(JIPipeDataSlotInfo info, JIPipeGraphNode node) {
         super(info, node);
         if (info.getSlotType() != JIPipeSlotType.Input) {

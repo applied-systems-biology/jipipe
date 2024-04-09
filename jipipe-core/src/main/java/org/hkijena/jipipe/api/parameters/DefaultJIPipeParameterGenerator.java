@@ -13,13 +13,14 @@
 
 package org.hkijena.jipipe.api.parameters;
 
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
-import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -33,7 +34,7 @@ import java.util.List;
 public abstract class DefaultJIPipeParameterGenerator extends AbstractJIPipeParameterCollection implements JIPipeParameterGenerator, JIPipeValidatable {
 
     @Override
-    public <T> List<T> generate(JIPipeWorkbench workbench, Component parent, Class<T> klass) {
+    public <T> List<T> generate(JIPipeDesktopWorkbench workbench, Component parent, Class<T> klass) {
         Dialog dialog = new Dialog(SwingUtilities.getWindowAncestor(parent), workbench, this);
         dialog.setTitle("");
         dialog.setModal(true);
@@ -67,11 +68,11 @@ public abstract class DefaultJIPipeParameterGenerator extends AbstractJIPipePara
      */
     private static class Dialog extends JDialog {
 
-        private final JIPipeWorkbench workbench;
+        private final JIPipeDesktopWorkbench workbench;
         private final DefaultJIPipeParameterGenerator generator;
         private boolean cancelled = true;
 
-        public Dialog(Window windowAncestor, JIPipeWorkbench workbench, DefaultJIPipeParameterGenerator generator) {
+        public Dialog(Window windowAncestor, JIPipeDesktopWorkbench workbench, DefaultJIPipeParameterGenerator generator) {
             super(windowAncestor);
             this.workbench = workbench;
             this.generator = generator;
@@ -80,9 +81,9 @@ public abstract class DefaultJIPipeParameterGenerator extends AbstractJIPipePara
 
         private void initialize() {
             getContentPane().setLayout(new BorderLayout());
-            getContentPane().add(new ParameterPanel(workbench, generator,
-                    new MarkdownDocument("# " + generator.getName() + "\n\n" + generator.getDescription()),
-                    ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_SCROLLING), BorderLayout.CENTER);
+            getContentPane().add(new JIPipeDesktopParameterPanel(workbench, generator,
+                    new MarkdownText("# " + generator.getName() + "\n\n" + generator.getDescription()),
+                    JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterPanel.WITH_SCROLLING), BorderLayout.CENTER);
 
             JPanel buttonPanel = new JPanel();
             buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));

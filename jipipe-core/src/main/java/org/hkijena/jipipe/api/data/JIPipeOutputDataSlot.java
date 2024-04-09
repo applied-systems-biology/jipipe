@@ -21,6 +21,7 @@ public class JIPipeOutputDataSlot extends JIPipeDataSlot {
     private boolean skipCache;
     private boolean skipExport;
     private boolean skipGC;
+
     public JIPipeOutputDataSlot(JIPipeDataSlotInfo info, JIPipeGraphNode node) {
         super(info, node);
         if (info.getSlotType() != JIPipeSlotType.Output) {

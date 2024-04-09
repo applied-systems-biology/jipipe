@@ -17,15 +17,17 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
-import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollectionParameterEditorUI;
+import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollectionDesktopParameterEditorUI;
 import org.hkijena.jipipe.api.grouping.parameters.NodeGroupContents;
-import org.hkijena.jipipe.api.grouping.parameters.NodeGroupContentsParameterEditorUI;
-import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaPlugin;
-import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.api.grouping.parameters.NodeGroupContentsDesktopParameterEditorUI;
+import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
+
+import java.util.Collections;
 
 /**
  * Extension for anything that is related to {@link JIPipeGraphWrapperAlgorithm}
@@ -49,6 +51,10 @@ public class GroupingPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
+    public StringList getDependencyProvides() {
+        return new StringList();
+    }
+    @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerNodeType("graph-wrapper:input", GraphWrapperAlgorithmInput.class, UIUtils.getIconURLFromResources("actions/plug.png"));
         registerNodeType("graph-wrapper:output", GraphWrapperAlgorithmOutput.class, UIUtils.getIconURLFromResources("actions/plug.png"));
@@ -59,14 +65,14 @@ public class GroupingPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 null,
                 "Group content",
                 "Node group contents",
-                NodeGroupContentsParameterEditorUI.class);
+                NodeGroupContentsDesktopParameterEditorUI.class);
         registerParameterType("graph-node-parameters",
                 GraphNodeParameterReferenceGroupCollection.class,
                 null,
                 null,
                 "Exported parameters",
                 "Organizes parameters sourced from another graph",
-                GraphNodeParameterReferenceGroupCollectionParameterEditorUI.class);
+                GraphNodeParameterReferenceGroupCollectionDesktopParameterEditorUI.class);
     }
 
     @Override

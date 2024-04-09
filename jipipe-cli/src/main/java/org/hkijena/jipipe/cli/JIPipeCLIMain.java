@@ -11,24 +11,26 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.cli;import com.fasterxml.jackson.core.JsonProcessingException;
+package org.hkijena.jipipe.cli;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import net.imagej.ImageJ;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeRegistryIssues;
-import org.hkijena.jipipe.api.run.JIPipeGraphRun;
-import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
-import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.run.JIPipeGraphRun;
+import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
-import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
+import org.hkijena.jipipe.plugins.settings.ExtensionSettings;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.File;
@@ -124,11 +126,9 @@ public class JIPipeCLIMain {
                 }
             } else if (arg.startsWith("--P")) {
                 parameterOverrides.put(arg.substring(3), value);
-            }
-            else if(arg.startsWith("--U")) {
+            } else if (arg.startsWith("--U")) {
                 userDirectoryOverrides.put(arg.substring(3), Paths.get(value));
-            }
-            else {
+            } else {
                 System.err.println("Unknown argument: " + arg);
                 showHelp();
                 return;

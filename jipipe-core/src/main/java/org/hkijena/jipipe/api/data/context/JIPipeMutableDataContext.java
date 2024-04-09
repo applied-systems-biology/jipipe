@@ -30,6 +30,7 @@ public class JIPipeMutableDataContext implements JIPipeDataContext {
     public JIPipeMutableDataContext() {
         this.id = "local://" + UUID.randomUUID();
     }
+
     public JIPipeMutableDataContext(String source) {
         this.source = source;
         this.id = "local://" + UUID.randomUUID();

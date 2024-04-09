@@ -20,15 +20,16 @@ import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
-import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.jsoup.Jsoup;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CreateNewNodeByExampleDatabaseEntry implements JIPipeNodeDatabaseEntry {
     private final String id;
@@ -67,7 +68,7 @@ public class CreateNewNodeByExampleDatabaseEntry implements JIPipeNodeDatabaseEn
         for (JIPipeNodeMenuLocation alias : example.getNodeInfo().getAliases()) {
             tokens.add(alias.getCategory().getName() + "\n" + alias.getMenuPath(), WeightedTokens.WEIGHT_MENU);
         }
-        tokens.add(example.getNodeTemplate().getDescription().getBody(),WeightedTokens.WEIGHT_DESCRIPTION);
+        tokens.add(example.getNodeTemplate().getDescription().getBody(), WeightedTokens.WEIGHT_DESCRIPTION);
         tokens.add(example.getNodeInfo().getDescription().getBody(), WeightedTokens.WEIGHT_DESCRIPTION);
     }
 
@@ -93,10 +94,9 @@ public class CreateNewNodeByExampleDatabaseEntry implements JIPipeNodeDatabaseEn
 
     @Override
     public HTMLText getDescription() {
-        if(StringUtils.isNullOrEmpty(example.getNodeTemplate().getDescription().getBody())) {
+        if (StringUtils.isNullOrEmpty(example.getNodeTemplate().getDescription().getBody())) {
             return example.getNodeInfo().getDescription();
-        }
-        else {
+        } else {
             return example.getNodeTemplate().getDescription();
         }
     }
@@ -141,7 +141,7 @@ public class CreateNewNodeByExampleDatabaseEntry implements JIPipeNodeDatabaseEn
     }
 
     @Override
-    public JIPipeGraphNodeUI addToGraph(JIPipeGraphCanvasUI canvasUI) {
+    public JIPipeDesktopGraphNodeUI addToGraph(JIPipeDesktopGraphCanvasUI canvasUI) {
         JIPipeGraphNode copy = example.getNodeTemplate().getGraph().getGraphNodes().iterator().next().duplicate();
         if (canvasUI.getHistoryJournal() != null) {
             canvasUI.getHistoryJournal().snapshotBeforeAddNode(copy, canvasUI.getCompartment());

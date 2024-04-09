@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.api.nodes.algorithm;
 
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
+import org.hkijena.jipipe.plugins.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -233,7 +233,7 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
     /**
      * Runs a parameter set iteration
      *
-     * @param runContext the run context
+     * @param runContext           the run context
      * @param progressInfo         progress info from the run
      * @param parameterAnnotations parameter annotations
      */

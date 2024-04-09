@@ -29,11 +29,11 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.JsonNodeInfoValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
-import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicCategoryEnumParameter;
-import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.extensions.parameters.library.references.IconRef;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.DynamicCategoryEnumParameter;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.plugins.parameters.library.references.IconRef;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.*;
@@ -51,7 +51,7 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
     private JIPipeGraph graph = new JIPipeGraph();
     private StringList menuPath = new StringList();
     private boolean hidden = false;
-    private boolean deprecated =false;
+    private boolean deprecated = false;
     private IconRef customIcon = new IconRef();
     private GraphWrapperAlgorithmInput algorithmInput;
     private GraphWrapperAlgorithmOutput algorithmOutput;
@@ -70,11 +70,11 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
     }
 
     /**
-     * Creates a new info from a {@link NodeGroup}
+     * Creates a new info from a {@link JIPipeNodeGroup}
      *
      * @param group the node group. The graph will NOT be copied.
      */
-    public JsonNodeInfo(NodeGroup group) {
+    public JsonNodeInfo(JIPipeNodeGroup group) {
         graph = new JIPipeGraph(group.getWrappedGraph());
         exportedParameters = new GraphNodeParameterReferenceGroupCollection(group.getExportedParameters());
         exportedParameters.setGraph(getGraph());

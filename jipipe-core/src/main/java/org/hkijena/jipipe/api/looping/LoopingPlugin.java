@@ -17,12 +17,14 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.grouping.JIPipeGraphWrapperAlgorithm;
-import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaPlugin;
-import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
+
+import java.util.Collections;
 
 /**
  * Extension for anything that is related to {@link JIPipeGraphWrapperAlgorithm}
@@ -49,6 +51,11 @@ public class LoopingPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerNodeType("loop:start", LoopStartNode.class, UIUtils.getIconURLFromResources("actions/run-build.png"));
         registerNodeType("loop:end", LoopEndNode.class, UIUtils.getIconURLFromResources("actions/run-build-prune.png"));
+    }
+
+    @Override
+    public StringList getDependencyProvides() {
+        return new StringList();
     }
 
     @Override

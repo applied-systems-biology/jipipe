@@ -15,7 +15,10 @@ package org.hkijena.jipipe.api;
 
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Result of a iteration step generation run
@@ -32,18 +35,18 @@ public class JIPipeDataBatchGenerationResult {
         this.iterationSteps = iterationSteps;
     }
 
+    public void setDataBatches(JIPipeMultiIterationStep... iterationSteps) {
+        this.iterationSteps = new ArrayList<>();
+        for (JIPipeMultiIterationStep iterationStep : iterationSteps) {
+            this.iterationSteps.add(iterationStep);
+        }
+    }
+
     public Set<String> getReferenceTextAnnotationColumns() {
         return referenceTextAnnotationColumns;
     }
 
     public void setReferenceTextAnnotationColumns(Set<String> referenceTextAnnotationColumns) {
         this.referenceTextAnnotationColumns = referenceTextAnnotationColumns;
-    }
-
-    public void setDataBatches(JIPipeMultiIterationStep... iterationSteps) {
-        this.iterationSteps = new ArrayList<>();
-        for (JIPipeMultiIterationStep iterationStep : iterationSteps) {
-            this.iterationSteps.add(iterationStep);
-        }
     }
 }

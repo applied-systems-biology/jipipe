@@ -17,9 +17,9 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.compat.*;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;

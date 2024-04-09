@@ -339,8 +339,7 @@ public class PathUtils {
                     } else {
                         return false;
                     }
-                }
-                else {
+                } else {
                     return true;
                 }
             } catch (IOException e) {

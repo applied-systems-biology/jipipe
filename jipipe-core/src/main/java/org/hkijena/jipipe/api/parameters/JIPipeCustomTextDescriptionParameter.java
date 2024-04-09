@@ -20,27 +20,28 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
  */
 public interface JIPipeCustomTextDescriptionParameter {
     /**
-     * Gets the parameter as custom text description
-     * @return the text description
-     */
-    String getTextDescription();
-
-    /**
      * Get the text description of an object.
      * Adapts to JIPipeCustomTextDescriptionParameter if the object implements it
+     *
      * @param obj the object
      * @return the text description or JSON serialized string
      */
     static String getTextDescriptionOf(Object obj) {
-        if(obj != null) {
+        if (obj != null) {
             if (obj instanceof JIPipeCustomTextDescriptionParameter) {
                 return ((JIPipeCustomTextDescriptionParameter) obj).getTextDescription();
             } else {
                 return JsonUtils.toJsonString(obj);
             }
-        }
-        else {
+        } else {
             return "[Not set]";
         }
     }
+
+    /**
+     * Gets the parameter as custom text description
+     *
+     * @return the text description
+     */
+    String getTextDescription();
 }

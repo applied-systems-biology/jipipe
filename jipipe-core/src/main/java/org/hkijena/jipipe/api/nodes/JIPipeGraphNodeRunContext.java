@@ -22,6 +22,7 @@ public class JIPipeGraphNodeRunContext {
 
     /**
      * Gets the thread pool for parallelization
+     *
      * @return the pool or null
      */
     public JIPipeFixedThreadPool getThreadPool() {
@@ -30,6 +31,7 @@ public class JIPipeGraphNodeRunContext {
 
     /**
      * Sets the thread tool for parallelization
+     *
      * @param threadPool the pool or null if parallelization should be disabled
      */
     public void setThreadPool(JIPipeFixedThreadPool threadPool) {
@@ -38,6 +40,7 @@ public class JIPipeGraphNodeRunContext {
 
     /**
      * Gets the {@link JIPipeGraphRun} that is currently executing
+     *
      * @return the graph run
      */
     public JIPipeGraphRun getGraphRun() {
@@ -46,6 +49,7 @@ public class JIPipeGraphNodeRunContext {
 
     /**
      * Sets the {@link JIPipeGraphRun} that is currently executing
+     *
      * @param graphRun the graph run
      */
     public void setGraphRun(JIPipeGraphRun graphRun) {

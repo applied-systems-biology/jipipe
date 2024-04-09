@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.api.parameters;
 
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 
 import java.awt.*;
 import java.util.List;
@@ -41,5 +41,5 @@ public interface JIPipeParameterGenerator {
      * @param klass     the generated field class
      * @return the generated values
      */
-    <T> List<T> generate(JIPipeWorkbench workbench, Component parent, Class<T> klass);
+    <T> List<T> generate(JIPipeDesktopWorkbench workbench, Component parent, Class<T> klass);
 }

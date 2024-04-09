@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.api.backups;
 
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
-import org.hkijena.jipipe.extensions.settings.BackupSettings;
+import org.hkijena.jipipe.plugins.settings.BackupSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -52,7 +52,7 @@ public class CollectBackupsRun extends AbstractJIPipeRunnable {
             stream.forEach(sessionPath -> {
                 if (Files.isDirectory(sessionPath)) {
                     Path infoFile = sessionPath.resolve("backup-info.json");
-                    if(Files.isRegularFile(infoFile)) {
+                    if (Files.isRegularFile(infoFile)) {
                         getProgressInfo().log("Reading backup info: " + infoFile);
                         try {
                             JIPipeProjectBackupSessionInfo sessionInfo = JsonUtils.readFromFile(infoFile, JIPipeProjectBackupSessionInfo.class);
@@ -101,10 +101,9 @@ public class CollectBackupsRun extends AbstractJIPipeRunnable {
 
         // Fix legacy sessions
         for (JIPipeProjectBackupItem item : items) {
-            if(StringUtils.isNullOrEmpty(item.getSessionId())) {
+            if (StringUtils.isNullOrEmpty(item.getSessionId())) {
                 item.setSessionId("unnamed-" + UUID.randomUUID());
-            }
-            else if(item.getSessionId().equals("legacy")) {
+            } else if (item.getSessionId().equals("legacy")) {
                 item.setSessionId("legacy-" + UUID.randomUUID());
             }
         }

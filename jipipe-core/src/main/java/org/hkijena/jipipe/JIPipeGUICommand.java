@@ -18,13 +18,13 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
-import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
-import org.hkijena.jipipe.extensions.settings.NotificationUISettings;
-import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
-import org.hkijena.jipipe.ui.JIPipeProjectWindow;
-import org.hkijena.jipipe.ui.components.SplashScreen;
-import org.hkijena.jipipe.ui.ijupdater.MissingRegistrationUpdateSiteResolver;
-import org.hkijena.jipipe.ui.notifications.WorkbenchNotificationInboxUI;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
+import org.hkijena.jipipe.plugins.settings.ExtensionSettings;
+import org.hkijena.jipipe.plugins.settings.NotificationUISettings;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopSplashScreen;
+import org.hkijena.jipipe.desktop.commons.ijupdater.JIPipeDesktopImageJUpdaterMissingRegistrationUpdateSiteResolver;
+import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopWorkbenchNotificationInboxUI;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.command.Command;
@@ -63,19 +63,19 @@ public class JIPipeGUICommand implements Command {
         // Update look & feel
         UIUtils.loadLookAndFeelFromSettings();
         if (!JIPipe.isInstantiated()) {
-            SwingUtilities.invokeLater(() -> SplashScreen.getInstance().showSplash(context));
+            SwingUtilities.invokeLater(() -> JIPipeDesktopSplashScreen.getInstance().showSplash(context));
         }
 
         // Check java dependencies
         if (!checkJavaDependencies()) {
-            SwingUtilities.invokeLater(() -> SplashScreen.getInstance().hideSplash());
+            SwingUtilities.invokeLater(() -> JIPipeDesktopSplashScreen.getInstance().hideSplash());
             if (JOptionPane.showConfirmDialog(null,
                     "JIPipe has detected that you might miss some essential files. Please " +
                             "ensure that you installed following dependencies:\nGuava\nFlexMark\nJackson\nJGraphT\nOpenHTMLToPDF\nMSLinks\nApache Commons\nFontBox\nPDFBox\nAutoLink \n\n" +
                             "Do you want to continue anyway?", "Missing dependencies", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE) == JOptionPane.NO_OPTION) {
                 return;
             }
-            SwingUtilities.invokeLater(() -> SplashScreen.getInstance().showSplash(context));
+            SwingUtilities.invokeLater(() -> JIPipeDesktopSplashScreen.getInstance().showSplash(context));
         }
 
         // Run registration
@@ -84,23 +84,23 @@ public class JIPipeGUICommand implements Command {
         try {
             if (JIPipe.getInstance() == null) {
                 JIPipe jiPipe = JIPipe.createInstance(context);
-                SplashScreen.getInstance().setJIPipe(JIPipe.getInstance());
+                JIPipeDesktopSplashScreen.getInstance().setJIPipe(JIPipe.getInstance());
                 jiPipe.initialize(extensionSettings, issues);
             }
         } catch (Exception e) {
             e.printStackTrace();
             if (!extensionSettings.isSilent())
-                UIUtils.openErrorDialog(new JIPipeDummyWorkbench(), null, e);
+                UIUtils.openErrorDialog(new JIPipeDesktopDummyWorkbench(), null, e);
             return;
         }
 
         // Resolve missing ImageJ dependencies
         if (!extensionSettings.isSilent()) {
-            SwingUtilities.invokeLater(() ->  {
+            SwingUtilities.invokeLater(() -> {
                 JIPipeValidationReport report = new JIPipeValidationReport();
                 issues.reportValidity(new UnspecifiedValidationReportContext(), report);
                 if (!report.isValid()) {
-                    UIUtils.openValidityReportDialog(new JIPipeDummyWorkbench(), null, report, "JIPipe extension registry", "Issues were detected during the initialization of certain extensions. " +
+                    UIUtils.openValidityReportDialog(new JIPipeDesktopDummyWorkbench(), null, report, "JIPipe extension registry", "Issues were detected during the initialization of certain extensions. " +
                             "Please review the following items. Close the window to ignore the messages and load JIPipe.", false);
                 }
             });
@@ -113,8 +113,8 @@ public class JIPipeGUICommand implements Command {
         SwingUtilities.invokeLater(() -> {
             ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE);
             ToolTipManager.sharedInstance().setInitialDelay(1000);
-            JIPipeProjectWindow window = JIPipeProjectWindow.newWindow(getContext(),
-                    JIPipeProjectWindow.getDefaultTemplateProject(),
+            JIPipeDesktopProjectWindow window = JIPipeDesktopProjectWindow.newWindow(getContext(),
+                    JIPipeDesktopProjectWindow.getDefaultTemplateProject(),
                     true,
                     true);
 
@@ -126,9 +126,9 @@ public class JIPipeGUICommand implements Command {
                             JIPipe.getInstance().getProgressInfo().log("Notification was triggered: " + notification.toString());
                         }
 
-                        WorkbenchNotificationInboxUI inboxUI = new WorkbenchNotificationInboxUI(window.getProjectUI());
+                        JIPipeDesktopWorkbenchNotificationInboxUI inboxUI = new JIPipeDesktopWorkbenchNotificationInboxUI(window.getProjectUI());
 
-                        if(!inboxUI.isHasNotifications()) {
+                        if (!inboxUI.isHasNotifications()) {
                             return;
                         }
 
@@ -221,7 +221,7 @@ public class JIPipeGUICommand implements Command {
     private void resolveMissingImageJDependencies(JIPipeRegistryIssues issues) {
         if (issues.getMissingImageJSites().isEmpty())
             return;
-        MissingRegistrationUpdateSiteResolver resolver = new MissingRegistrationUpdateSiteResolver(getContext(), issues);
+        JIPipeDesktopImageJUpdaterMissingRegistrationUpdateSiteResolver resolver = new JIPipeDesktopImageJUpdaterMissingRegistrationUpdateSiteResolver(getContext(), issues);
         resolver.revalidate();
         resolver.repaint();
         resolver.setLocationRelativeTo(null);

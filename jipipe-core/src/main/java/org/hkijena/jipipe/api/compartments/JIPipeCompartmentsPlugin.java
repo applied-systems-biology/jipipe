@@ -20,13 +20,15 @@ import org.hkijena.jipipe.api.compartments.algorithms.CompartmentNodeTypeCategor
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.compartments.datatypes.JIPipeCompartmentOutputData;
-import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaPlugin;
-import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
+
+import java.util.Collections;
 
 /**
  * Extension that provides compartment management functionality
@@ -54,6 +56,10 @@ public class JIPipeCompartmentsPlugin extends JIPipePrepackagedDefaultJavaPlugin
         return "org.hkijena.jipipe:compartments";
     }
 
+    @Override
+    public StringList getDependencyProvides() {
+        return new StringList();
+    }
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerNodeTypeCategory(new CompartmentNodeTypeCategory());

@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.api.JIPipeFunctionallyComparable;
-import org.hkijena.jipipe.api.grouping.NodeGroup;
+import org.hkijena.jipipe.api.grouping.JIPipeNodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -32,7 +32,7 @@ import java.io.IOException;
 @JsonSerialize(using = NodeGroupContents.Serializer.class)
 @JsonDeserialize(using = NodeGroupContents.Deserializer.class)
 public class NodeGroupContents implements JIPipeFunctionallyComparable {
-    private NodeGroup parent;
+    private JIPipeNodeGroup parent;
     private JIPipeGraph wrappedGraph;
 
     /**
@@ -52,11 +52,11 @@ public class NodeGroupContents implements JIPipeFunctionallyComparable {
             this.wrappedGraph = new JIPipeGraph(other.wrappedGraph);
     }
 
-    public NodeGroup getParent() {
+    public JIPipeNodeGroup getParent() {
         return parent;
     }
 
-    public void setParent(NodeGroup parent) {
+    public void setParent(JIPipeNodeGroup parent) {
         this.parent = parent;
     }
 

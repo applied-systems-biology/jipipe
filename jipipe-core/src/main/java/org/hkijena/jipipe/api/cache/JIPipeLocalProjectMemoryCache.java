@@ -15,9 +15,9 @@ package org.hkijena.jipipe.api.cache;
 
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
@@ -50,10 +50,10 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
     private final StoredEventEmitter storedEventEmitter = new StoredEventEmitter();
     private final ClearedEventEmitter clearedEventEmitter = new ClearedEventEmitter();
     private final ModifiedEventEmitter modifiedEventEmitter = new ModifiedEventEmitter();
+    private final StampedLock stampedLock = new StampedLock();
     private DefaultDirectedGraph<UUID, DefaultEdge> currentNodeStatePredecessorGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
     private int currentSize = 0;
     private boolean ignoreNodeFunctionalEquals = false;
-    private final StampedLock stampedLock = new StampedLock();
 
     public JIPipeLocalProjectMemoryCache(JIPipeProject project) {
         this.project = project;
@@ -99,8 +99,7 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
             dataTableCopy.addDataFromTable(data, progressInfo);
             slotMap.put(outputName, dataTableCopy);
             progressInfo.log("Stored " + data.getRowCount() + " into " + nodeUUID + "/" + outputName);
-        }
-        finally {
+        } finally {
             stampedLock.unlock(stamp);
         }
 
@@ -283,8 +282,7 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
         long stamp = stampedLock.readLock();
         try {
             return cachedOutputSlots.getOrDefault(nodeUUID, Collections.emptyMap());
-        }
-        finally {
+        } finally {
             stampedLock.unlock(stamp);
         }
     }

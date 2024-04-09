@@ -25,7 +25,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.JIPipeFunctionallyComparable;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
@@ -34,14 +36,15 @@ import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
-import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
-import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
+import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
+import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
@@ -276,7 +279,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
     /**
      * Runs the workload
      *
-     * @param runContext the context of the run process
+     * @param runContext   the context of the run process
      * @param progressInfo progress passed from the runner
      */
     public abstract void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo);
@@ -1104,10 +1107,9 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      */
     public String getDisplayName() {
         String compartment = getCompartmentDisplayName();
-        if(!StringUtils.isNullOrEmpty(compartment)) {
-            return compartment + "/"  + getName();
-        }
-        else {
+        if (!StringUtils.isNullOrEmpty(compartment)) {
+            return compartment + "/" + getName();
+        } else {
             return getName();
         }
     }
@@ -1124,6 +1126,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
 
     /**
      * Gathers all known external environments
+     *
      * @param target the list where the external environments will be gathered
      */
     public void getExternalEnvironments(List<JIPipeEnvironment> target) {
@@ -1210,6 +1213,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
 
     /**
      * Returns the currently accessible project data directories
+     *
      * @return the project data directory map. empty map if the node is not associated to a project
      */
     public Map<String, Path> getProjectDataDirs() {
@@ -1236,6 +1240,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
 
     /**
      * Gets a description of the node as text
+     *
      * @param stringBuilder the string builder
      */
     public void getTextDescription(StringBuilder stringBuilder) {
@@ -1244,32 +1249,31 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         JIPipeParameterTree referenceTree = new JIPipeParameterTree(referenceInstance);
         stringBuilder.append("<ul>");
         for (String key : currentTree.getParameters().keySet()) {
-            if("jipipe:node:name".equals(key))
+            if ("jipipe:node:name".equals(key))
                 continue;
-            if("jipipe:node:description".equals(key))
+            if ("jipipe:node:description".equals(key))
                 continue;
             JIPipeParameterAccess currentAccess = currentTree.getParameterAccess(key);
             JIPipeParameterAccess referenceAccess = referenceTree.getParameterAccess(key);
             Object reference = referenceAccess != null ? referenceAccess.get(Object.class) : null;
             Object obj = currentAccess.get(Object.class);
-            if(referenceAccess == null || !Objects.equals(obj, reference)) {
-                if(obj instanceof ListParameter) {
+            if (referenceAccess == null || !Objects.equals(obj, reference)) {
+                if (obj instanceof ListParameter) {
                     ListParameter<?> objects = (ListParameter<?>) obj;
                     for (int i = 0; i < objects.size(); i++) {
                         Object item = objects.get(i);
                         stringBuilder.append("<li>").append("The parameter item #").append(i + 1).append(" of \"").append(currentAccess.getName()).append("\"");
-                        if(currentAccess.getSource() != this) {
-                            stringBuilder.append(" in category \"").append( currentTree.getSourceDocumentationName(currentAccess.getSource())).append("\"");
+                        if (currentAccess.getSource() != this) {
+                            stringBuilder.append(" in category \"").append(currentTree.getSourceDocumentationName(currentAccess.getSource())).append("\"");
                         }
                         String textDescription = JIPipeCustomTextDescriptionParameter.getTextDescriptionOf(item);
                         stringBuilder.append(" (").append(key).append(") is set to <strong>")
                                 .append(HtmlEscapers.htmlEscaper().escape(textDescription)).append("</strong></li>");
                     }
-                }
-                else {
+                } else {
                     stringBuilder.append("<li>").append("The parameter \"").append(currentAccess.getName()).append("\"");
-                    if(currentAccess.getSource() != this) {
-                        stringBuilder.append(" in category \"").append( currentTree.getSourceDocumentationName(currentAccess.getSource())).append("\"");
+                    if (currentAccess.getSource() != this) {
+                        stringBuilder.append(" in category \"").append(currentTree.getSourceDocumentationName(currentAccess.getSource())).append("\"");
                     }
                     String textDescription = JIPipeCustomTextDescriptionParameter.getTextDescriptionOf(obj);
                     stringBuilder.append(" (").append(key).append(") is set to <strong>")

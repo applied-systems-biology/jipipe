@@ -14,9 +14,9 @@
 package org.hkijena.jipipe.api.nodes.database;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,20 +25,36 @@ import java.util.Map;
 public interface JIPipeNodeDatabaseEntry {
 
     String getId();
+
     WeightedTokens getTokens();
+
     boolean exists();
+
     JIPipeNodeDatabaseRole getRole();
+
     String getName();
+
     HTMLText getDescription();
+
     String getDescriptionPlain();
+
     Icon getIcon();
+
     String getCategory();
+
     Map<String, JIPipeDataSlotInfo> getInputSlots();
+
     Map<String, JIPipeDataSlotInfo> getOutputSlots();
+
     Color getFillColor();
+
     Color getBorderColor();
-    JIPipeGraphNodeUI addToGraph(JIPipeGraphCanvasUI canvasUI);
+
+    JIPipeDesktopGraphNodeUI addToGraph(JIPipeDesktopGraphCanvasUI canvasUI);
+
     boolean canAddInputSlots();
+
     boolean canAddOutputSlots();
+
     boolean isDeprecated();
 }

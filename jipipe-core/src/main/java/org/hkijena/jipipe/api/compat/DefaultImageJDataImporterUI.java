@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.api.compat;
 
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
 
 import java.awt.*;
 
@@ -26,7 +26,7 @@ public class DefaultImageJDataImporterUI extends ImageJDataImporterUI {
      * @param workbench the workbench
      * @param importer  the importer
      */
-    public DefaultImageJDataImporterUI(JIPipeWorkbench workbench, ImageJDataImportOperation importer) {
+    public DefaultImageJDataImporterUI(JIPipeDesktopWorkbench workbench, ImageJDataImportOperation importer) {
         super(workbench, importer);
         initialize();
     }
@@ -34,6 +34,6 @@ public class DefaultImageJDataImporterUI extends ImageJDataImporterUI {
     private void initialize() {
         setLayout(new BorderLayout());
         ImageJDataImportOperation importer = getImporter();
-        add(new ParameterPanel(getWorkbench(), importer, null, ParameterPanel.NO_GROUP_HEADERS | ParameterPanel.WITHOUT_COLLAPSE));
+        add(new JIPipeDesktopParameterPanel(getDesktopWorkbench(), importer, null, JIPipeDesktopParameterPanel.NO_GROUP_HEADERS | JIPipeDesktopParameterPanel.WITHOUT_COLLAPSE));
     }
 }

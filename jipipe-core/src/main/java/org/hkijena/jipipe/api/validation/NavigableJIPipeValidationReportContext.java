@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.api.validation;
 
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 
 /**
  * A {@link JIPipeValidationReportContext} that can navigate to an UI element

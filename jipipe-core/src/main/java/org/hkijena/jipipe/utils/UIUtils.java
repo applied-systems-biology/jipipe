@@ -23,6 +23,7 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Theme;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -30,22 +31,22 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.components.JIPipeValidityReportUI;
-import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
-import org.hkijena.jipipe.ui.components.html.HTMLEditor;
-import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
-import org.hkijena.jipipe.ui.components.window.AlwaysOnTopToggle;
-import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
-import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
-import org.hkijena.jipipe.ui.notifications.GenericNotificationInboxUI;
-import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
-import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
+import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
+import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopUserFriendlyErrorUI;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopValidityReportUI;
+import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopColorIcon;
+import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopHTMLEditor;
+import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
+import org.hkijena.jipipe.desktop.commons.components.window.JIPipeDesktopAlwaysOnTopToggle;
+import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopGenericNotificationInboxUI;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.plugins.settings.GeneralDataSettings;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.ListSelectionMode;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
@@ -143,7 +144,7 @@ public class UIUtils {
     }
 
     public static Border createControlErrorBorder() {
-        if(CONTROL_ERROR_BORDER == null) {
+        if (CONTROL_ERROR_BORDER == null) {
             CONTROL_ERROR_BORDER = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
                     new RoundedLineBorder(new Color(0xa51d2d), 1, 5));
         }
@@ -151,12 +152,11 @@ public class UIUtils {
     }
 
     public static Border createControlBorder() {
-        if(CONTROL_BORDER == null) {
-            if(!DARK_THEME) {
+        if (CONTROL_BORDER == null) {
+            if (!DARK_THEME) {
                 CONTROL_BORDER = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
-                        new RoundedLineBorder(ModernMetalTheme.MEDIUM_GRAY, 1, 5));
-            }
-            else {
+                        new RoundedLineBorder(JIPipeDesktopModernMetalTheme.MEDIUM_GRAY, 1, 5));
+            } else {
                 CONTROL_BORDER = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
                         new RoundedLineBorder(Color.DARK_GRAY, 1, 5));
             }
@@ -187,7 +187,7 @@ public class UIUtils {
     }
 
     public static void addBalloonToComponent(AbstractButton button, String text) {
-        EdgedBalloonStyle style = new EdgedBalloonStyle(UIManager.getColor("TextField.background"), ModernMetalTheme.PRIMARY5);
+        EdgedBalloonStyle style = new EdgedBalloonStyle(UIManager.getColor("TextField.background"), JIPipeDesktopModernMetalTheme.PRIMARY5);
         final BalloonTip balloonTip = new BalloonTip(
                 button,
                 new JLabel(StringUtils.wordWrappedHTML(text, 100)),
@@ -214,8 +214,8 @@ public class UIUtils {
         JButton helpButton = new JButton(UIUtils.getIconFromResources("actions/help.png"));
         UIUtils.makeFlat25x25(helpButton);
         helpButton.addActionListener(e -> {
-            MarkdownDocument document = new MarkdownDocument(text);
-            MarkdownReader.showDialog(document, false, "Info", SwingUtilities.getWindowAncestor(helpButton), false);
+            MarkdownText document = new MarkdownText(text);
+            JIPipeDesktopMarkdownReader.showDialog(document, false, "Info", SwingUtilities.getWindowAncestor(helpButton), false);
         });
         helpButton.setOpaque(false);
         return helpButton;
@@ -296,7 +296,7 @@ public class UIUtils {
      * Attempts to override the look and feel based on the JIPipe settings
      */
     public static void loadLookAndFeelFromSettings() {
-        JIPipeUITheme theme = getThemeFromRawSettings();
+        JIPipeDesktopUITheme theme = getThemeFromRawSettings();
         theme.install();
     }
 
@@ -324,15 +324,15 @@ public class UIUtils {
         }
     }
 
-    public static JIPipeUITheme getThemeFromRawSettings() {
+    public static JIPipeDesktopUITheme getThemeFromRawSettings() {
         Path propertyFile = JIPipeSettingsRegistry.getPropertyFile();
-        JIPipeUITheme theme = JIPipeUITheme.ModernLight;
+        JIPipeDesktopUITheme theme = JIPipeDesktopUITheme.ModernLight;
         if (Files.exists(propertyFile)) {
             try {
                 JsonNode node = JsonUtils.getObjectMapper().readValue(propertyFile.toFile(), JsonNode.class);
                 JsonNode themeNode = node.path("general-ui/theme");
                 if (!themeNode.isMissingNode())
-                    theme = JsonUtils.getObjectMapper().readerFor(JIPipeUITheme.class).readValue(themeNode);
+                    theme = JsonUtils.getObjectMapper().readerFor(JIPipeDesktopUITheme.class).readValue(themeNode);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -813,8 +813,8 @@ public class UIUtils {
      * @param color the color
      * @return the icon
      */
-    public static SolidColorIcon getIconFromColor(Color color) {
-        return new SolidColorIcon(16, 16, color);
+    public static SolidJIPipeDesktopColorIcon getIconFromColor(Color color) {
+        return new SolidJIPipeDesktopColorIcon(16, 16, color);
     }
 
     /**
@@ -1069,10 +1069,10 @@ public class UIUtils {
      * @param parent    the parent component
      * @param exception the exception
      */
-    public static void openErrorDialog(JIPipeWorkbench workbench, Component parent, Exception exception) {
+    public static void openErrorDialog(JIPipeDesktopWorkbench workbench, Component parent, Exception exception) {
         JDialog dialog = new JDialog();
         dialog.setTitle("Error");
-        UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(workbench, null, UserFriendlyErrorUI.WITH_SCROLLING);
+        JIPipeDesktopUserFriendlyErrorUI errorUI = new JIPipeDesktopUserFriendlyErrorUI(workbench, null, JIPipeDesktopUserFriendlyErrorUI.WITH_SCROLLING);
         errorUI.displayErrors(exception);
         errorUI.addVerticalGlue();
         dialog.setContentPane(errorUI);
@@ -1083,7 +1083,7 @@ public class UIUtils {
         dialog.setVisible(true);
     }
 
-    public static void openNotificationsDialog(JIPipeWorkbench workbench, Component parent, JIPipeNotificationInbox notifications, String title, String infoText, boolean autoClose) {
+    public static void openNotificationsDialog(JIPipeDesktopWorkbench workbench, Component parent, JIPipeNotificationInbox notifications, String title, String infoText, boolean autoClose) {
 
         if (autoClose && notifications.isEmpty()) {
             return;
@@ -1091,7 +1091,7 @@ public class UIUtils {
 
         JPanel contentPanel = new JPanel(new BorderLayout(8, 8));
 
-        GenericNotificationInboxUI inboxUI = new GenericNotificationInboxUI(workbench, notifications);
+        JIPipeDesktopGenericNotificationInboxUI inboxUI = new JIPipeDesktopGenericNotificationInboxUI(workbench, notifications);
         contentPanel.add(inboxUI, BorderLayout.CENTER);
 
         JPanel messagePanel = new JPanel(new GridBagLayout());
@@ -1130,10 +1130,10 @@ public class UIUtils {
      * @param infoText  the info text
      * @param modal     make the dialog modal
      */
-    public static void openValidityReportDialog(JIPipeWorkbench workbench, Component parent, JIPipeValidationReport report, String title, String infoText, boolean modal) {
+    public static void openValidityReportDialog(JIPipeDesktopWorkbench workbench, Component parent, JIPipeValidationReport report, String title, String infoText, boolean modal) {
         JPanel contentPanel = new JPanel(new BorderLayout(8, 8));
 
-        JIPipeValidityReportUI ui = new JIPipeValidityReportUI(workbench, false);
+        JIPipeDesktopValidityReportUI ui = new JIPipeDesktopValidityReportUI(workbench, false);
         ui.setReport(report);
 
         contentPanel.add(ui, BorderLayout.CENTER);
@@ -1158,7 +1158,7 @@ public class UIUtils {
             dialog.setLocationRelativeTo(parent);
             dialog.setIconImage(UIUtils.getJIPipeIcon128());
 
-            AlwaysOnTopToggle topToggle = new AlwaysOnTopToggle(dialog);
+            JIPipeDesktopAlwaysOnTopToggle topToggle = new JIPipeDesktopAlwaysOnTopToggle(dialog);
             ui.getErrorToolbar().add(topToggle);
 
             dialog.setVisible(true);
@@ -1171,7 +1171,7 @@ public class UIUtils {
             frame.setLocationRelativeTo(parent);
             frame.setIconImage(UIUtils.getJIPipeIcon128());
 
-            AlwaysOnTopToggle topToggle = new AlwaysOnTopToggle(frame);
+            JIPipeDesktopAlwaysOnTopToggle topToggle = new JIPipeDesktopAlwaysOnTopToggle(frame);
             ui.getErrorToolbar().add(topToggle);
 
             frame.setVisible(true);
@@ -1286,8 +1286,8 @@ public class UIUtils {
      * @param initialValue initial value
      * @return value or null
      */
-    public static HTMLText getHTMLByDialog(JIPipeWorkbench workbench, Component parent, String title, String message, HTMLText initialValue) {
-        HTMLEditor area = new HTMLEditor(workbench, HTMLEditor.Mode.Full, HTMLEditor.WITH_SCROLL_BAR);
+    public static HTMLText getHTMLByDialog(JIPipeDesktopWorkbench workbench, Component parent, String title, String message, HTMLText initialValue) {
+        JIPipeDesktopHTMLEditor area = new JIPipeDesktopHTMLEditor(workbench, JIPipeDesktopHTMLEditor.Mode.Full, JIPipeDesktopHTMLEditor.WITH_SCROLL_BAR);
         area.setText(initialValue.getHtml());
 
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent), title);
@@ -1495,7 +1495,7 @@ public class UIUtils {
         JSpinner spinnerMin = new JSpinner(new SpinnerNumberModel(initialMin, min, max, 1));
         JSpinner spinnerMax = new JSpinner(new SpinnerNumberModel(initialMax, min, max, 1));
 
-        FormPanel formPanel = new FormPanel(FormPanel.NONE);
+        JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.NONE);
         formPanel.addToForm(spinnerMin, new JLabel("Min"));
         formPanel.addToForm(spinnerMax, new JLabel("Max"));
 
@@ -1742,7 +1742,7 @@ public class UIUtils {
      * @param css      style sheets
      * @return text pane
      */
-    public static JTextPane makeMarkdownReader(MarkdownDocument document, String[] css) {
+    public static JTextPane makeMarkdownReader(MarkdownText document, String[] css) {
         JTextPane content = new JTextPane();
         HTMLEditorKit kit = new HTMLEditorKit();
         for (String rule : css) {
@@ -1926,14 +1926,14 @@ public class UIUtils {
      * @param withSeparator  if a separator should be prepended if items are installed
      */
     public static void installMenuExtension(JIPipeWorkbench workbench, JMenu targetMenu, JIPipeMenuExtensionTarget targetMenuType, boolean withSeparator) {
-        List<JIPipeMenuExtension> extensions = JIPipe.getCustomMenus()
+        List<JIPipeDesktopMenuExtension> extensions = JIPipe.getCustomMenus()
                 .getMenuExtensionsTargeting(targetMenuType, workbench);
         if (!extensions.isEmpty()) {
             if (withSeparator)
                 targetMenu.addSeparator();
             for (Map.Entry<String, JMenu> entry : createMenuTree(targetMenu, extensions.stream()
-                    .map(JIPipeMenuExtension::getMenuPath).collect(Collectors.toSet())).entrySet()) {
-                for (JIPipeMenuExtension extension : extensions) {
+                    .map(JIPipeDesktopMenuExtension::getMenuPath).collect(Collectors.toSet())).entrySet()) {
+                for (JIPipeDesktopMenuExtension extension : extensions) {
                     if (StringUtils.getCleanedMenuPath(entry.getKey()).equals(StringUtils.getCleanedMenuPath(extension.getMenuPath()))) {
                         entry.getValue().add(extension);
                     }
@@ -2031,14 +2031,6 @@ public class UIUtils {
         if (lastComponent instanceof JSeparator)
             return;
         menu.addSeparator();
-    }
-
-    public static boolean confirmResetParameters(JIPipeWorkbench parent, String title) {
-        return JOptionPane.showConfirmDialog(parent.getWindow(),
-                "This will reset most of the properties. Continue?",
-                title,
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION;
     }
 
     public static void showConnectionErrorMessage(Component parent, JIPipeDataSlot source, JIPipeDataSlot target) {

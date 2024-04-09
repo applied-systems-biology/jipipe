@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.api.nodes.annotation;
 
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -22,16 +22,16 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeAnnotationGraphNodeUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopAnnotationGraphNodeUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 
 import java.awt.*;
 import java.util.Set;
 
 /**
  * A node that is an annotation
- * Nodes of this type are rendered by {@link org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeAnnotationGraphNodeUI} instead of {@link org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI} and have a custom size information
+ * Nodes of this type are rendered by {@link JIPipeDesktopAnnotationGraphNodeUI} instead of {@link JIPipeDesktopGraphNodeUI} and have a custom size information
  */
 public abstract class JIPipeAnnotationGraphNode extends JIPipeGraphNode {
 
@@ -96,11 +96,11 @@ public abstract class JIPipeAnnotationGraphNode extends JIPipeGraphNode {
         return true;
     }
 
-    public abstract void paintNode(Graphics2D g2, JIPipeAnnotationGraphNodeUI nodeUI, double zoom);
+    public abstract void paintNode(Graphics2D g2, JIPipeDesktopAnnotationGraphNodeUI nodeUI, double zoom);
 
-    public void paintMinimap(Graphics2D graphics2D, int x, int y, int width, int height, BasicStroke defaultStroke, BasicStroke selectedStroke, Set<JIPipeGraphNodeUI> selection) {
+    public void paintMinimap(Graphics2D graphics2D, int x, int y, int width, int height, BasicStroke defaultStroke, BasicStroke selectedStroke, Set<JIPipeDesktopGraphNodeUI> selection) {
         graphics2D.setColor(Color.GRAY);
-        graphics2D.setStroke(JIPipeGraphCanvasUI.STROKE_MARQUEE);
+        graphics2D.setStroke(JIPipeDesktopGraphCanvasUI.STROKE_MARQUEE);
         graphics2D.drawRect(x, y, width, height);
     }
 }

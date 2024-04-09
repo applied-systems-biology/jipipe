@@ -16,7 +16,7 @@ package org.hkijena.jipipe.api.nodes;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
+import org.hkijena.jipipe.plugins.settings.GraphEditorUISettings;
 import org.jgrapht.graph.DefaultEdge;
 
 /**
@@ -103,7 +103,8 @@ public class JIPipeGraphEdge extends DefaultEdge {
         /**
          * The edge will auto-hide if it is too far away
          * No label is shown
-         * @deprecated  not supported and will behave the same as Smart (no label shown)
+         *
+         * @deprecated not supported and will behave the same as Smart (no label shown)
          */
         @Deprecated
         SmartSilent,
@@ -116,6 +117,7 @@ public class JIPipeGraphEdge extends DefaultEdge {
          * The edge is always hidden
          * A label is shown
          * (currently does the same as "AlwaysHidden")
+         *
          * @deprecated not supported and will behave as AlwaysHidden
          */
         @Deprecated

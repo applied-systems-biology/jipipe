@@ -36,6 +36,7 @@ public class RuntimePartitionReferenceParameter {
     public int getIndex() {
         return index;
     }
+
     @JsonSetter("index")
     public void setIndex(int index) {
         this.index = index;

@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.api.parameters;
 
-import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 
 /**
  * An {@link JIPipeParameterCollection} that comes with a predefined name

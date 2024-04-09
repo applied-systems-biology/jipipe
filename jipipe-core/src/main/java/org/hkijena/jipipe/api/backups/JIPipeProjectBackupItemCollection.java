@@ -15,7 +15,6 @@ package org.hkijena.jipipe.api.backups;
 
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,7 +53,7 @@ public class JIPipeProjectBackupItemCollection {
 
     public String getOriginalProjectPath() {
         for (JIPipeProjectBackupItem backupItem : backupItemList) {
-            if(!StringUtils.isNullOrEmpty(backupItem.getOriginalProjectPath())) {
+            if (!StringUtils.isNullOrEmpty(backupItem.getOriginalProjectPath())) {
                 return backupItem.getOriginalProjectPath();
             }
         }
@@ -63,11 +62,10 @@ public class JIPipeProjectBackupItemCollection {
 
     public String renderName() {
         String originalPath = getOriginalProjectPath();
-        if(!StringUtils.isNullOrEmpty(originalPath)) {
-           return originalPath + " [" + getSessionId() + "]";
-        }
-        else {
-           return getSessionId();
+        if (!StringUtils.isNullOrEmpty(originalPath)) {
+            return originalPath + " [" + getSessionId() + "]";
+        } else {
+            return getSessionId();
         }
     }
 }

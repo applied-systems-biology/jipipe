@@ -15,8 +15,8 @@ package org.hkijena.jipipe.api.compat.ui;
 
 import org.hkijena.jipipe.api.compat.ImageJDataExportOperation;
 import org.hkijena.jipipe.api.compat.ImageJDataExporterUI;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.PathEditor;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPathEditorComponent;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 
@@ -32,7 +32,7 @@ public abstract class AbstractPathImageJDataExporterUI extends ImageJDataExporte
      * @param workbench the workbench
      * @param exporter  the importer
      */
-    public AbstractPathImageJDataExporterUI(JIPipeWorkbench workbench, ImageJDataExportOperation exporter) {
+    public AbstractPathImageJDataExporterUI(JIPipeDesktopWorkbench workbench, ImageJDataExportOperation exporter) {
         super(workbench, exporter);
         initialize();
     }
@@ -41,7 +41,7 @@ public abstract class AbstractPathImageJDataExporterUI extends ImageJDataExporte
 
     private void initialize() {
         setLayout(new BorderLayout());
-        PathEditor pathEditor = new PathEditor(PathIOMode.Save, getPathType());
+        JIPipeDesktopPathEditorComponent pathEditor = new JIPipeDesktopPathEditorComponent(PathIOMode.Save, getPathType());
         try {
             pathEditor.setPath(Paths.get(getExporter().getName()));
         } catch (Exception e) {

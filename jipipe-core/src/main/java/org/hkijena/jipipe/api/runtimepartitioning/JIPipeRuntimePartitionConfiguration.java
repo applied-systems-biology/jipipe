@@ -15,16 +15,16 @@ package org.hkijena.jipipe.api.runtimepartitioning;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hkijena.jipipe.extensions.expressions.functions.math.RandomFunction;
-import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
-import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
+import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopColorIcon;
+import org.hkijena.jipipe.plugins.expressions.functions.math.RandomFunction;
+import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 public class JIPipeRuntimePartitionConfiguration {
     private JIPipeRuntimePartition defaultRuntimePartition = new JIPipeRuntimePartition();
@@ -42,7 +42,7 @@ public class JIPipeRuntimePartitionConfiguration {
      * @return the partition. will not be null (fallback to the default partition of needed)
      */
     public JIPipeRuntimePartition get(int index) {
-        if(index <= 0 || index > extraRuntimePartitions.size()) {
+        if (index <= 0 || index > extraRuntimePartitions.size()) {
             return defaultRuntimePartition;
         }
         return extraRuntimePartitions.get(index - 1);
@@ -53,14 +53,14 @@ public class JIPipeRuntimePartitionConfiguration {
         return defaultRuntimePartition;
     }
 
-    @JsonGetter("extra")
-    public List<JIPipeRuntimePartition> getExtraRuntimePartitions() {
-        return Collections.unmodifiableList(extraRuntimePartitions);
-    }
-
     @JsonSetter("default")
     public void setDefaultRuntimePartition(JIPipeRuntimePartition defaultRuntimePartition) {
         this.defaultRuntimePartition = defaultRuntimePartition;
+    }
+
+    @JsonGetter("extra")
+    public List<JIPipeRuntimePartition> getExtraRuntimePartitions() {
+        return Collections.unmodifiableList(extraRuntimePartitions);
     }
 
     @JsonSetter("extra")
@@ -70,6 +70,7 @@ public class JIPipeRuntimePartitionConfiguration {
 
     /**
      * Adds a new runtime partition. The color is automatically generated.
+     *
      * @return the new partition
      */
     public JIPipeRuntimePartition add() {
@@ -81,7 +82,7 @@ public class JIPipeRuntimePartitionConfiguration {
 
         // Find a proper hue
         Set<Integer> usedHues = new HashSet<>();
-        if(defaultRuntimePartition.getColor().isEnabled()) {
+        if (defaultRuntimePartition.getColor().isEnabled()) {
             float[] hsb = Color.RGBtoHSB(defaultRuntimePartition.getColor().getContent().getRed(),
                     defaultRuntimePartition.getColor().getContent().getGreen(),
                     defaultRuntimePartition.getColor().getContent().getBlue(),
@@ -95,14 +96,13 @@ public class JIPipeRuntimePartitionConfiguration {
                     null);
             usedHues.add(Math.round(hsb[0] * 10));
         }
-        if(usedHues.size() >= 9) {
+        if (usedHues.size() >= 9) {
             for (int i = 0; i < 10; i++) {
-                if(!usedHues.contains(i)) {
+                if (!usedHues.contains(i)) {
                     partition.setColor(new OptionalColorParameter(Color.getHSBColor(i / 10.0f, baseSaturation, baseValue), true));
                 }
             }
-        }
-        else {
+        } else {
             partition.setColor(new OptionalColorParameter(Color.getHSBColor(RandomFunction.RANDOM.nextFloat(), baseSaturation, baseValue), true));
         }
 
@@ -115,22 +115,20 @@ public class JIPipeRuntimePartitionConfiguration {
     }
 
     public void remove(int index) {
-        if(index <= 0) {
+        if (index <= 0) {
             throw new IndexOutOfBoundsException("Cannot remove default partition");
         }
         extraRuntimePartitions.remove(index - 1);
     }
 
     public int indexOf(JIPipeRuntimePartition partition) {
-        if(partition == defaultRuntimePartition) {
+        if (partition == defaultRuntimePartition) {
             return 0;
-        }
-        else {
+        } else {
             int index = extraRuntimePartitions.indexOf(partition);
-            if(index != -1) {
+            if (index != -1) {
                 return index + 1;
-            }
-            else {
+            } else {
                 return -1;
             }
         }
@@ -150,20 +148,18 @@ public class JIPipeRuntimePartitionConfiguration {
     public String getFullName(JIPipeRuntimePartition value) {
         int idx = indexOf(value);
         String nameText;
-        if(idx >= 0 ) {
+        if (idx >= 0) {
             nameText = idx == 0 ? StringUtils.orElse(value.getName(), "Default") : StringUtils.orElse(value.getName(), "Unnamed");
-        }
-        else {
+        } else {
             nameText = StringUtils.orElse(value.getName(), "Unnamed");
         }
         return nameText + " (Partition " + idx + ")";
     }
 
     public Icon getIcon(JIPipeRuntimePartition runtimePartition) {
-        if(runtimePartition.getColor().isEnabled()) {
-            return new SolidColorIcon(16, 16, runtimePartition.getColor().getContent());
-        }
-        else {
+        if (runtimePartition.getColor().isEnabled()) {
+            return new SolidJIPipeDesktopColorIcon(16, 16, runtimePartition.getColor().getContent());
+        } else {
             return UIUtils.getIconFromResources("actions/runtime-partition.png");
         }
     }

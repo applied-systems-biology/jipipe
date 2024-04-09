@@ -14,21 +14,22 @@
 package org.hkijena.jipipe.api.nodes.annotation;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorTool;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.Objects;
 
-public class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGraphNode> implements JIPipeToggleableGraphEditorTool, JIPipeWorkbenchAccess {
+public class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGraphNode> implements JIPipeToggleableGraphEditorTool, JIPipeDesktopWorkbenchAccess {
     private final Class<T> nodeClass;
     private final JIPipeAnnotationGraphNode nodeInstance;
-    private JIPipeGraphEditorUI graphEditorUI;
+    private JIPipeDesktopGraphEditorUI graphEditorUI;
 
     private Point firstPoint;
 
@@ -55,12 +56,12 @@ public class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGraphNode> 
     }
 
     @Override
-    public JIPipeGraphEditorUI getGraphEditor() {
+    public JIPipeDesktopGraphEditorUI getGraphEditor() {
         return graphEditorUI;
     }
 
     @Override
-    public void setGraphEditor(JIPipeGraphEditorUI graphEditorUI) {
+    public void setGraphEditor(JIPipeDesktopGraphEditorUI graphEditorUI) {
         this.graphEditorUI = graphEditorUI;
     }
 
@@ -174,8 +175,8 @@ public class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGraphNode> 
             int gridWidth = getGraphCanvas().getViewMode().getGridWidth();
             int gridHeight = getGraphCanvas().getViewMode().getGridHeight();
             double zoom = getGraphCanvas().getZoom();
-            graphics2D.setStroke(JIPipeGraphCanvasUI.STROKE_COMMENT);
-            graphics2D.setColor(JIPipeGraphCanvasUI.COLOR_HIGHLIGHT_GREEN);
+            graphics2D.setStroke(JIPipeDesktopGraphCanvasUI.STROKE_COMMENT);
+            graphics2D.setColor(JIPipeDesktopGraphCanvasUI.COLOR_HIGHLIGHT_GREEN);
             int x0 = (int) ((firstPoint.x * gridWidth) * zoom);
             int y0 = (int) ((firstPoint.y * gridHeight) * zoom);
             int x1 = (int) ((secondPoint.x * gridWidth) * zoom);
@@ -193,7 +194,12 @@ public class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGraphNode> 
     }
 
     @Override
+    public JIPipeDesktopWorkbench getDesktopWorkbench() {
+        return graphEditorUI.getDesktopWorkbench();
+    }
+
+    @Override
     public JIPipeWorkbench getWorkbench() {
-        return graphEditorUI.getWorkbench();
+        return graphEditorUI.getDesktopWorkbench();
     }
 }

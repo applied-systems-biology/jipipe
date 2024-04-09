@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.api;
 
+import org.hkijena.jipipe.api.run.JIPipeRunnable;
+
 /**
  * Abstract base class for implementing {@link JIPipeRunnable}
  */

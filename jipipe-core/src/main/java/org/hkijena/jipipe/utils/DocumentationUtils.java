@@ -15,9 +15,9 @@ package org.hkijena.jipipe.utils;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
+import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
 
 import java.io.IOException;
 import java.net.URL;

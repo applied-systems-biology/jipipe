@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeMetadata;
+import org.hkijena.jipipe.api.JIPipeStandardMetadata;
 import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 import org.hkijena.jipipe.api.grouping.JsonNodeRegistrationTask;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -33,8 +33,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.JsonNodeInfoValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
-import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
+import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -56,7 +57,9 @@ public class JIPipeJsonPlugin extends AbstractJIPipeParameterCollection implemen
     private final JIPipeService.ExtensionContentRemovedEventEmitter extensionContentRemovedEventEmitter = new JIPipeService.ExtensionContentRemovedEventEmitter();
     private String id;
     private String version = "1.0.0";
-    private JIPipeMetadata metadata = new JIPipeMetadata();
+
+    private StringList provides = new StringList();
+    private JIPipeStandardMetadata metadata = new JIPipeStandardMetadata();
     private Path jsonFilePath;
     private JIPipe registry;
     private JIPipeImageJUpdateSiteDependency.List updateSiteDependenciesParameter = new JIPipeImageJUpdateSiteDependency.List();
@@ -117,7 +120,7 @@ public class JIPipeJsonPlugin extends AbstractJIPipeParameterCollection implemen
     @JsonGetter("metadata")
     @JIPipeParameter("metadata")
     @SetJIPipeDocumentation(name = "Metadata", description = "Additional extension metadata")
-    public JIPipeMetadata getMetadata() {
+    public JIPipeStandardMetadata getMetadata() {
         return metadata;
     }
 
@@ -127,7 +130,7 @@ public class JIPipeJsonPlugin extends AbstractJIPipeParameterCollection implemen
      * @param metadata Metadata
      */
     @JsonSetter("metadata")
-    public void setMetadata(JIPipeMetadata metadata) {
+    public void setMetadata(JIPipeStandardMetadata metadata) {
         this.metadata = metadata;
     }
 
@@ -139,6 +142,20 @@ public class JIPipeJsonPlugin extends AbstractJIPipeParameterCollection implemen
             "[Author]:[Extension] where [Author] contains information about who developed the extension. An example is <i>org.hkijena:my-extension</i>")
     public String getDependencyId() {
         return id;
+    }
+
+    @SetJIPipeDocumentation(name = "Provides", description = "Set of alternative dependency IDs")
+    @JIPipeParameter("provides")
+    @JsonGetter("provides")
+    @Override
+    public StringList getDependencyProvides() {
+        return provides;
+    }
+
+    @JIPipeParameter("provides")
+    @JsonSetter("provides")
+    public void setDependencyProvides(StringList dependencyProvides) {
+        this.provides = dependencyProvides;
     }
 
     /**
@@ -384,7 +401,7 @@ public class JIPipeJsonPlugin extends AbstractJIPipeParameterCollection implemen
             extension.serializedJson = node;
             extension.id = node.get("id").textValue();
             extension.version = node.get("version").textValue();
-            extension.metadata = JsonUtils.getObjectMapper().readerFor(JIPipeMetadata.class).readValue(node.get("metadata"));
+            extension.metadata = JsonUtils.getObjectMapper().readerFor(JIPipeStandardMetadata.class).readValue(node.get("metadata"));
 
             return extension;
         }
