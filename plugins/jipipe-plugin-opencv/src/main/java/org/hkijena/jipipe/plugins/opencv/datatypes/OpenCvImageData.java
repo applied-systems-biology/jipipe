@@ -11,13 +11,20 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imp.datatypes;
+package org.hkijena.jipipe.plugins.opencv.datatypes;
 
-import com.google.common.collect.ImmutableList;
+import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
+import net.imagej.opencv.ImgToMatConverter;
+import org.bytedeco.opencv.global.opencv_core;
+import org.bytedeco.opencv.global.opencv_imgcodecs;
+import org.bytedeco.opencv.global.opencv_imgproc;
+import org.bytedeco.opencv.opencv_core.Mat;
+import org.bytedeco.opencv.opencv_core.MatVector;
+import org.bytedeco.opencv.opencv_core.Size;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -34,58 +41,55 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.imagejdatatypes.display.CachedImagePlusDataViewerWindow;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.plugins.imp.utils.ImpImageDataImageViewerCustomLoader;
-import org.hkijena.jipipe.plugins.imp.utils.ImpImageUtils;
+import org.hkijena.jipipe.plugins.opencv.utils.OpenCvImageDataImageViewerCustomLoader;
+import org.hkijena.jipipe.plugins.opencv.utils.OpenCvImageUtils;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@SetJIPipeDocumentation(name = "IMP Image", description = "An image used by the Image Manipulation Pipeline")
+@SetJIPipeDocumentation(name = "OpenCV Image", description = "An OpenCV image")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains one image file with one of following extensions: *.tif, *.tiff, *.png, *.jpeg, *.jpg, *.png. " +
         "We recommend the usage of TIFF.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/imageplus-data.schema.json")
 @LabelAsJIPipeHeavyData
-public class ImpImageData implements JIPipeData {
-    private final List<BufferedImage> images;
+public class OpenCvImageData implements JIPipeData {
+    private final MatVector images;
     private final int width;
     private final int height;
     private final int numSlices;
     private final int numFrames;
     private final int numChannels;
 
-    public ImpImageData(BufferedImage image) {
-        this.images = Arrays.asList(image);
+    public OpenCvImageData(Mat image) {
+        this.images = new MatVector();
+        this.images.push_back(image);
         this.numSlices = 1;
         this.numFrames = 1;
         this.numChannels = 1;
-        this.width = image.getWidth();
-        this.height = image.getHeight();
+        this.width = image.cols();
+        this.height = image.rows();
     }
 
-    public ImpImageData(Map<ImageSliceIndex, BufferedImage> images) {
-        this.images = new ArrayList<>();
-        this.numSlices = ImpImageUtils.findNSlices(images);
-        this.numFrames = ImpImageUtils.findNFrames(images);
-        this.numChannels = ImpImageUtils.findNChannels(images);
-        this.width = ImpImageUtils.findWidth(images.values());
-        this.height = ImpImageUtils.findHeight(images.values());
+    public OpenCvImageData(Map<ImageSliceIndex, Mat> images) {
+        this.images = new MatVector();
+        this.numSlices = OpenCvImageUtils.findNSlices(images);
+        this.numFrames = OpenCvImageUtils.findNFrames(images);
+        this.numChannels = OpenCvImageUtils.findNChannels(images);
+        this.width = OpenCvImageUtils.findWidth(images.values());
+        this.height = OpenCvImageUtils.findHeight(images.values());
 
-        for (int i = 0; i < numSlices * numFrames * numChannels; i++) {
-            this.images.add(null);
-        }
-        for (Map.Entry<ImageSliceIndex, BufferedImage> entry : images.entrySet()) {
-            this.images.set(entry.getKey().zeroSliceIndexToOneStackIndex(numChannels, numSlices, numFrames) - 1, entry.getValue());
+        this.images.resize( numSlices * numFrames * numChannels);
+        for (Map.Entry<ImageSliceIndex, Mat> entry : images.entrySet()) {
+            this.images.put(entry.getKey().zeroSliceIndexToOneStackIndex(numChannels, numSlices, numFrames) - 1, entry.getValue());
         }
 
         if (images.size() != numSlices * numFrames * numChannels) {
@@ -94,57 +98,59 @@ public class ImpImageData implements JIPipeData {
         if (images.isEmpty()) {
             throw new IllegalArgumentException("Empty image!");
         }
-        for (BufferedImage image : this.images) {
+        for (long i = 0; i < this.images.size(); i++) {
+            Mat image = this.images.get(i);
             if (image == null) {
                 throw new NullPointerException("Not all slice indices are present!");
             }
         }
-
     }
 
-    public ImpImageData(ImagePlus img) {
-        this.images = new ArrayList<>();
+    public OpenCvImageData(ImagePlus img) {
+        this.images  = new MatVector();
         this.numSlices = img.getNSlices();
         this.numFrames = img.getNFrames();
         this.numChannels = img.getNChannels();
         this.width = img.getWidth();
         this.height = img.getHeight();
-
-        for (int i = 0; i < numSlices * numFrames * numChannels; i++) {
-            this.images.add(null);
-        }
+        this.images.resize(numSlices * numFrames * numChannels);
 
         for (int c = 0; c < numChannels; c++) {
             for (int z = 0; z < numSlices; z++) {
                 for (int t = 0; t < numFrames; t++) {
                     int i = ImageJUtils.zeroSliceIndexToOneStackIndex(c, z, t, numChannels, numSlices, numFrames);
                     ImageProcessor processor = img.getStack().getProcessor(i);
-                    ImagePlus rendered = ImageJUtils.renderToRGBWithLUTIfNeeded(new ImagePlus("image", processor), new JIPipeProgressInfo());
-                    this.images.set(i - 1, rendered.getProcessor().getBufferedImage());
+                    Mat mat = OpenCvImageUtils.toMat(processor);
+                    this.images.put(i - 1, mat);
                 }
             }
         }
     }
 
-    public ImpImageData(List<BufferedImage> images, int numSlices, int numFrames, int numChannels) {
-        this.images = ImmutableList.copyOf(images);
+    public OpenCvImageData(MatVector images, int numSlices, int numFrames, int numChannels) {
+        this.images = new MatVector();
         this.numSlices = numSlices;
         this.numFrames = numFrames;
         this.numChannels = numChannels;
-        this.width = ImpImageUtils.findWidth(images);
-        this.height = ImpImageUtils.findHeight(images);
-        if (images.size() != numSlices * numFrames * numChannels) {
+        this.width = OpenCvImageUtils.findWidth(images);
+        this.height = OpenCvImageUtils.findHeight(images);
+        for (long i = 0; i < this.images.size(); i++) {
+            Mat image = images.get(i);
+            this.images.push_back(image);
+        }
+        if (images.size() != (long) numSlices * numFrames * numChannels) {
             throw new IllegalArgumentException("Wrong hyperstack dimensions!");
         }
-        if (images.isEmpty()) {
+        if (images.empty()) {
             throw new IllegalArgumentException("Empty image!");
         }
     }
 
-    public ImpImageData(ImpImageData other) {
-        this.images = new ArrayList<>();
-        for (BufferedImage image : other.images) {
-            this.images.add(BufferedImageUtils.copyBufferedImage(image));
+    public OpenCvImageData(OpenCvImageData other) {
+        this.images = new MatVector();
+        for (long i = 0; i < this.images.size(); i++) {
+            Mat image = images.get(i).clone();
+            this.images.push_back(image);
         }
         this.width = other.width;
         this.height = other.height;
@@ -153,7 +159,7 @@ public class ImpImageData implements JIPipeData {
         this.numChannels = other.numChannels;
     }
 
-    public static ImpImageData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+    public static OpenCvImageData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
 
         List<Path> targetFiles = PathUtils.findFilesByExtensionIn(storage.getFileSystemPath(), ".tif", ".tiff", ".png", ".jpg", ".jpeg", ".bmp");
         if (targetFiles.isEmpty()) {
@@ -165,13 +171,10 @@ public class ImpImageData implements JIPipeData {
         }
 
         if (targetFiles.size() == 1) {
-            try {
-                return new ImpImageData(ImageIO.read(targetFiles.get(0).toFile()));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            ImagePlus imagePlus = IJ.openImage(targetFiles.get(0).toString());
+            return new OpenCvImageData(imagePlus);
         } else {
-            Map<ImageSliceIndex, BufferedImage> imageMap = new HashMap<>();
+            Map<ImageSliceIndex, Mat> imageMap = new HashMap<>();
             Pattern p = Pattern.compile("\\d+");
 
             for (Path targetFile : targetFiles) {
@@ -185,20 +188,16 @@ public class ImpImageData implements JIPipeData {
                     coordinates.add(Integer.parseInt(matcher.group()));
                 }
 
-                try {
-                    BufferedImage image = ImageIO.read(targetFile.toFile());
-                    imageMap.put(new ImageSliceIndex(coordinates.get(0), coordinates.get(1), coordinates.get(2)), image);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                ImagePlus imagePlus = IJ.openImage(targetFile.toString());
+                imageMap.put(new ImageSliceIndex(coordinates.get(0), coordinates.get(1), coordinates.get(2)), OpenCvImageUtils.toMat(imagePlus.getProcessor()));
             }
-            return new ImpImageData(imageMap);
+            return new OpenCvImageData(imageMap);
         }
 
     }
 
-    public List<BufferedImage> getImages() {
-        return Collections.unmodifiableList(images);
+    public MatVector getImages() {
+        return images;
     }
 
     public int getNumSlices() {
@@ -217,18 +216,22 @@ public class ImpImageData implements JIPipeData {
     public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         if (images.size() == 1) {
             String fileName = StringUtils.orElse(name, "image");
-            Path outputPath = PathUtils.ensureExtension(storage.getFileSystemPath().resolve(fileName), ".png");
+            Path outputPath = PathUtils.ensureExtension(storage.getFileSystemPath().resolve(fileName), ".tif");
             try {
-                ImageIO.write(images.get(0), "PNG", outputPath.toFile());
+                if(!opencv_imgcodecs.imwrite(outputPath.toString(), images.get(0))) {
+                    throw new IOException("Unable to write image!");
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         } else {
-            ImpImageUtils.forEachIndexedZCTSlice(this, (ip, index) -> {
+            OpenCvImageUtils.forEachIndexedZCTSlice(this, (ip, index) -> {
                 String fileName = StringUtils.orElse(name, "image") + "-z" + index.getZ() + "c" + index.getC() + "t" + index.getT();
-                Path outputPath = PathUtils.ensureExtension(storage.getFileSystemPath().resolve(fileName), ".png");
+                Path outputPath = PathUtils.ensureExtension(storage.getFileSystemPath().resolve(fileName), ".tif");
                 try {
-                    ImageIO.write(ip, "PNG", outputPath.toFile());
+                    if(!opencv_imgcodecs.imwrite(outputPath.toString(), ip)) {
+                        throw new IOException("Unable to write image!");
+                    }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -246,13 +249,13 @@ public class ImpImageData implements JIPipeData {
 
     @Override
     public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
-        return new ImpImageData(this);
+        return new OpenCvImageData(this);
     }
 
     @Override
     public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
         CachedImagePlusDataViewerWindow window = new CachedImagePlusDataViewerWindow(desktopWorkbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
-        window.setCustomDataLoader(new ImpImageDataImageViewerCustomLoader());
+        window.setCustomDataLoader(new OpenCvImageDataImageViewerCustomLoader());
         window.setVisible(true);
         SwingUtilities.invokeLater(window::reloadDisplayedData);
     }
@@ -262,11 +265,13 @@ public class ImpImageData implements JIPipeData {
         double factorX = 1.0 * width / getWidth();
         double factorY = 1.0 * height / getHeight();
         double factor = Math.min(factorX, factorY);
-        boolean smooth = factor < 0;
         int imageWidth = (int) Math.max(1, getWidth() * factor);
         int imageHeight = (int) Math.max(1, getHeight() * factor);
-        Image scaledInstance = images.get(0).getScaledInstance(imageWidth, imageHeight, Image.SCALE_SMOOTH);
-        return new JIPipeImageThumbnailData(BufferedImageUtils.convertAlphaToCheckerboard(scaledInstance, 10));
+
+       try(Mat scaledInstance = new Mat()) {
+           opencv_imgproc.resize(images.get(0), scaledInstance, new Size(imageWidth, imageHeight));
+           return new JIPipeImageThumbnailData(OpenCvImageUtils.toImagePlus(scaledInstance));
+       }
     }
 
     public ImageSliceIndex getSliceIndex(int index) {
@@ -276,42 +281,37 @@ public class ImpImageData implements JIPipeData {
         return new ImageSliceIndex(c, z, t);
     }
 
-    public ImagePlus toImagePlus(boolean createCheckerboard, int checkerboardSize) {
+    public ImagePlus toImagePlus() {
         ImageStack stack = new ImageStack(width, height, numChannels * numFrames * numSlices);
         for (int i = 0; i < images.size(); i++) {
-            ColorProcessor processor;
-            if (createCheckerboard) {
-                processor = new ColorProcessor(BufferedImageUtils.convertAlphaToCheckerboard(images.get(i), checkerboardSize));
-            } else {
-                processor = new ColorProcessor(images.get(i));
-            }
-            stack.setProcessor(processor, getSliceIndex(i).zeroSliceIndexToOneStackIndex(numChannels, numSlices, numFrames));
+            stack.setProcessor(OpenCvImageUtils.toProcessor(images.get(i)),
+                    getSliceIndex(i).zeroSliceIndexToOneStackIndex(numChannels, numSlices, numFrames));
         }
         return new ImagePlus("Image", stack);
     }
 
     @Override
     public String toString() {
-        return getWidth() + " x " + getHeight() + " x " + numSlices + " x " + numChannels + " x " + numFrames + " [" + BufferedImageUtils.getColorModelString(images.get(0)) + "]";
+        return getWidth() + " x " + getHeight() + " x " + numSlices + " x " + numChannels + " x " + numFrames + " [" + OpenCvImageUtils.getTypeName(images.get(0)) + "]";
     }
 
-    public BufferedImage getImage(int i) {
+    public Mat getImage(int i) {
         return images.get(i);
     }
 
-    public BufferedImage getImage(ImageSliceIndex index) {
+    public Mat getImage(ImageSliceIndex index) {
         return images.get(index.zeroSliceIndexToOneStackIndex(numChannels, numSlices, numFrames) - 1);
     }
 
-    public BufferedImage getImage(int c, int z, int t) {
+    public Mat getImage(int c, int z, int t) {
         return getImage(ImageJUtils.zeroSliceIndexToOneStackIndex(c, z, t, numChannels, numSlices, numFrames) - 1);
     }
 
-    public BufferedImage getImageOrExpand(ImageSliceIndex index) {
+    public Mat getImageOrExpand(ImageSliceIndex index) {
         return getImageOrExpand(index.getC(), index.getZ(), index.getT());
     }
 
-    public BufferedImage getImageOrExpand(int c, int z, int t) {
+    public Mat getImageOrExpand(int c, int z, int t) {
         return getImage(ImageJUtils.zeroSliceIndexToOneStackIndex(Math.min(c, numChannels - 1),
                 Math.min(z, numSlices - 1),
                 Math.min(t, numFrames - 1),
@@ -321,7 +321,7 @@ public class ImpImageData implements JIPipeData {
     }
 
     public int getSize() {
-        return images.size();
+        return (int) images.size();
     }
 
     public boolean isHyperstack() {

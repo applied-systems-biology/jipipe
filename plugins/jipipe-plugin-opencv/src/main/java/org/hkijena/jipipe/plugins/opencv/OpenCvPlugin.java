@@ -14,23 +14,24 @@
 package org.hkijena.jipipe.plugins.opencv;
 
 import com.google.common.collect.Sets;
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.JIPipeJavaPlugin;
-import org.hkijena.jipipe.JIPipeMutableDependency;
+import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
-import org.hkijena.jipipe.plugins.imp.nodes.*;
+import org.hkijena.jipipe.plugins.opencv.datatypes.ImageJToOpenCvDataTypeConverter;
+import org.hkijena.jipipe.plugins.opencv.datatypes.OpenCvImageData;
+import org.hkijena.jipipe.plugins.opencv.datatypes.OpenCvToImageJDataTypeConverter;
 import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
+import javax.swing.*;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -54,6 +55,15 @@ public class OpenCvPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         getMetadata().setThumbnail(new ImageParameter(RESOURCES.getResourceURL("thumbnail.png")));
     }
 
+    @Override
+    public List<ImageIcon> getSplashIcons() {
+        return Collections.singletonList(RESOURCES.getIcon32FromResources("opencv.png"));
+    }
+
+    @Override
+    public List<JIPipeImageJUpdateSiteDependency> getImageJUpdateSiteDependencies() {
+        return Collections.singletonList(new JIPipeImageJUpdateSiteDependency("IJ-OpenCV-plugins", "https://sites.imagej.net/IJ-OpenCV/"));
+    }
 
     @Override
     public StringList getDependencyCitations() {
@@ -82,6 +92,9 @@ public class OpenCvPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+        registerDatatype("opencv-image", OpenCvImageData.class, RESOURCES.getIcon16URLFromResources("opencv-image.png"));
+        registerDatatypeConversion(new ImageJToOpenCvDataTypeConverter());
+        registerDatatypeConversion(new OpenCvToImageJDataTypeConverter());
     }
 
     @Override

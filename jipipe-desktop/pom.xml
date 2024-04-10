@@ -320,6 +320,11 @@
             <artifactId>jogl-all-natives-windows-amd64</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>opencv</artifactId>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 
     <properties>
