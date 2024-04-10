@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.utils.algorithms;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -47,6 +48,8 @@ public class ConverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        iterationStep.addOutputData(getFirstOutputSlot(), iterationStep.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), progressInfo);
+        JIPipeData inputData = iterationStep.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo);
+        JIPipeData outputData = JIPipe.getDataTypes().convert(inputData,getFirstOutputSlot().getAcceptedDataType(), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(),outputData, progressInfo);
     }
 }
