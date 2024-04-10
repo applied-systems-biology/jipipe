@@ -21,6 +21,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.opencv.datatypes.ImageJToOpenCvDataTypeConverter;
 import org.hkijena.jipipe.plugins.opencv.datatypes.OpenCvImageData;
 import org.hkijena.jipipe.plugins.opencv.datatypes.OpenCvToImageJDataTypeConverter;
+import org.hkijena.jipipe.plugins.opencv.nodes.InpaintingAlgorithm;
 import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -95,6 +96,8 @@ public class OpenCvPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerDatatype("opencv-image", OpenCvImageData.class, RESOURCES.getIcon16URLFromResources("opencv-image.png"));
         registerDatatypeConversion(new ImageJToOpenCvDataTypeConverter());
         registerDatatypeConversion(new OpenCvToImageJDataTypeConverter());
+
+        registerNodeType("opencv-photo-inpainting", InpaintingAlgorithm.class);
     }
 
     @Override

@@ -29,8 +29,10 @@ import org.hkijena.jipipe.plugins.opencv.datatypes.OpenCvImageData;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 
 public class OpenCvImageUtils {
     private OpenCvImageUtils() {
@@ -125,6 +127,37 @@ public class OpenCvImageUtils {
         } else {
             function.accept(img.getImage(0), new ImageSliceIndex(0, 0, 0));
         }
+    }
+
+    /**
+     * Runs the function for each Z, C, and T slice.
+     *
+     * @param img          the image
+     * @param function     the function. The indices are ZERO-based
+     * @param progressInfo the progress
+     */
+    public static OpenCvImageData generateForEachIndexedZCTSlice(OpenCvImageData img, BiFunction<Mat, ImageSliceIndex, Mat> function, JIPipeProgressInfo progressInfo) {
+        Map<ImageSliceIndex, Mat> result = new HashMap<>();
+        if (img.getImages().size() > 1) {
+            int iterationIndex = 0;
+            for (int t = 0; t < img.getNumFrames(); t++) {
+                for (int z = 0; z < img.getNumSlices(); z++) {
+                    for (int c = 0; c < img.getNumChannels(); c++) {
+                        if (progressInfo.isCancelled())
+                            return null;
+                        progressInfo.resolveAndLog("Slice", iterationIndex++, img.getSize()).log("z=" + z + ", c=" + c + ", t=" + t);
+                        Mat processor = img.getImage(c, z, t);
+                        ImageSliceIndex index = new ImageSliceIndex(c, z, t);
+                        result.put(index, function.apply(processor, index));
+                    }
+                }
+            }
+        } else {
+            Mat processor = img.getImage(0,0,0);
+            ImageSliceIndex index = new ImageSliceIndex(0,0,0);
+            result.put(index, function.apply(processor, index));
+        }
+        return new OpenCvImageData(result);
     }
 
     public static ImageProcessor toProcessor(Mat mat) {
