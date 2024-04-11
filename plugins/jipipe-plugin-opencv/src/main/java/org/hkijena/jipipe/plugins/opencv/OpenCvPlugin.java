@@ -21,12 +21,16 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.opencv.datatypes.ImageJToOpenCvDataTypeConverter;
 import org.hkijena.jipipe.plugins.opencv.datatypes.OpenCvImageData;
 import org.hkijena.jipipe.plugins.opencv.datatypes.OpenCvToImageJDataTypeConverter;
+import org.hkijena.jipipe.plugins.opencv.nodes.ConvertDepthAlgorithm;
 import org.hkijena.jipipe.plugins.opencv.nodes.InpaintingAlgorithm;
+import org.hkijena.jipipe.plugins.opencv.utils.OpenCvDepth;
+import org.hkijena.jipipe.plugins.opencv.utils.OpenCvTypesEnum;
 import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -96,8 +100,12 @@ public class OpenCvPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerDatatype("opencv-image", OpenCvImageData.class, RESOURCES.getIcon16URLFromResources("opencv-image.png"));
         registerDatatypeConversion(new ImageJToOpenCvDataTypeConverter());
         registerDatatypeConversion(new OpenCvToImageJDataTypeConverter());
+        registerEnumParameterType("opencv-type", OpenCvTypesEnum.class, "OpenCV Type", "An OpenCV data type (CV_[bit depth][data type Signed/Unsigned/Float]C[number of channels])");
+        registerEnumParameterType("opencv-depth", OpenCvDepth.class, "OpenCV Depth", "An OpenCV depth (CV_[bit depth][data type Signed/Unsigned/Float])");
 
-        registerNodeType("opencv-photo-inpainting", InpaintingAlgorithm.class);
+        registerNodeType("opencv-convert-depth", ConvertDepthAlgorithm.class, UIUtils.getIconURLFromResources("actions/gtk-convert.png"));
+
+        registerNodeType("opencv-photo-inpainting", InpaintingAlgorithm.class, UIUtils.getIconURLFromResources("actions/bandage.png"));
         registerEnumParameterType("opencv-photo-inpainting:method", InpaintingAlgorithm.Method.class, "Inpainting method", "An inpainting method");
     }
 
