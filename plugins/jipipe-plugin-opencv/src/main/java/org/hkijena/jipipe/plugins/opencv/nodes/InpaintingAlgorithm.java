@@ -13,7 +13,9 @@
 
 package org.hkijena.jipipe.plugins.opencv.nodes;
 
+import org.bytedeco.opencv.global.opencv_core;
 import org.bytedeco.opencv.global.opencv_photo;
+import org.bytedeco.opencv.global.opencv_xphoto;
 import org.bytedeco.opencv.opencv_core.Mat;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -27,19 +29,23 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.plugins.opencv.datatypes.OpenCvImageData;
 import org.hkijena.jipipe.plugins.opencv.utils.OpenCvImageUtils;
 
 @SetJIPipeDocumentation(name = "Image inpainting", description = "Applies an algorithm for inpainting (content-aware fill) that attempts to fill in masked areas based on the surrounding image information")
 @ConfigureJIPipeNode(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Restore")
-@AddJIPipeInputSlot(value = OpenCvImageData.class, slotName = "Input", create = true)
-@AddJIPipeInputSlot(value = OpenCvImageData.class, slotName = "Mask", create = true)
+@AddJIPipeInputSlot(value = OpenCvImageData.class, slotName = "Input", create = true, description = "Input 8-bit, 16-bit unsigned or 32-bit float 1-channel or 8-bit 3-channel image. ")
+@AddJIPipeInputSlot(value = OpenCvImageData.class, slotName = "Mask", create = true, description = "Inpainting mask, 8-bit 1-channel image. Non-zero pixels indicate the area that needs to be inpainted.")
 @AddJIPipeOutputSlot(value = OpenCvImageData.class, slotName = "Output", create = true)
 @AddJIPipeCitation("https://docs.opencv.org/3.4/df/d3d/tutorial_py_inpainting.html")
+@AddJIPipeCitation("https://docs.opencv.org/4.x/dc/d2f/tutorial_xphoto_inpainting.html")
 public class InpaintingAlgorithm extends JIPipeIteratingAlgorithm {
 
     private int radius = 3;
-    private Method method = Method.TeleaEtAl;
+    private Method method = Method.ShiftMap;
 
     public InpaintingAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -47,6 +53,8 @@ public class InpaintingAlgorithm extends JIPipeIteratingAlgorithm {
 
     public InpaintingAlgorithm(InpaintingAlgorithm other) {
         super(other);
+        this.radius = other.radius;
+        this.method = other.method;
     }
 
     @Override
@@ -54,27 +62,75 @@ public class InpaintingAlgorithm extends JIPipeIteratingAlgorithm {
         OpenCvImageData inputImage = iterationStep.getInputData("Input", OpenCvImageData.class, progressInfo);
         OpenCvImageData maskImage = iterationStep.getInputData("Mask", OpenCvImageData.class, progressInfo);
         OpenCvImageData outputImage = OpenCvImageUtils.generateForEachIndexedZCTSlice(inputImage, (input, index) -> {
-            Mat mask = maskImage.getImageOrExpand(index);
+            Mat mask = OpenCvImageUtils.toMask(maskImage.getImageOrExpand(index));
+
             Mat dst = new Mat();
-            opencv_photo.inpaint(input, mask, dst, radius, method.nativeValue);
+            if(method.isxPhoto()) {
+                Mat invertedMask = new Mat();
+                opencv_core.bitwise_not(mask, invertedMask);
+                opencv_xphoto.inpaint(input, invertedMask, dst, method.nativeValue);
+            }
+            else {
+                opencv_photo.inpaint(input, mask, dst, radius, method.nativeValue);
+            }
             return dst;
         }, progressInfo);
         iterationStep.addOutputData(getFirstOutputSlot(), outputImage, progressInfo);
     }
 
+    @SetJIPipeDocumentation(name = "Radius", description = "Radius of a circular neighborhood of each point inpainted that is considered by the algorithm.")
+     @JIPipeParameter("radius")
+    public int getRadius() {
+        return radius;
+    }
+
+    @JIPipeParameter("radius")
+    public void setRadius(int radius) {
+        this.radius = radius;
+    }
+
+    @SetJIPipeDocumentation(name = "Method", description = "The inpainting method")
+    @JIPipeParameter("method")
+    public Method getMethod() {
+        return method;
+    }
+
+    @JIPipeParameter("method")
+    public void setMethod(Method method) {
+        this.method = method;
+        emitParameterUIChangedEvent();
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        if("radius".equals(access.getKey()) && method.isxPhoto()) {
+            return false;
+        }
+        return super.isParameterUIVisible(tree, access);
+    }
+
     public enum Method {
-        TeleaEtAl(opencv_photo.INPAINT_TELEA),
-        NavierStokesEtAl(opencv_photo.INPAINT_NS);
+        TeleaEtAl(opencv_photo.INPAINT_TELEA, false),
+        NavierStokesEtAl(opencv_photo.INPAINT_NS, false),
+        ShiftMap(opencv_xphoto.INPAINT_SHIFTMAP, true),
+        FSRFast(opencv_xphoto.INPAINT_FSR_FAST, true),
+        FSRBest(opencv_xphoto.INPAINT_FSR_BEST, true);
 
         private final int nativeValue;
+        private final boolean xPhoto;
 
-        Method(int nativeValue) {
+        Method(int nativeValue, boolean xPhoto) {
 
             this.nativeValue = nativeValue;
+            this.xPhoto = xPhoto;
         }
 
         public int getNativeValue() {
             return nativeValue;
+        }
+
+        public boolean isxPhoto() {
+            return xPhoto;
         }
     }
 }

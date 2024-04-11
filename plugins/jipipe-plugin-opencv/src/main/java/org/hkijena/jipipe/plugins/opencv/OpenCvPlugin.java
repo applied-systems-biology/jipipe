@@ -98,6 +98,7 @@ public class OpenCvPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerDatatypeConversion(new OpenCvToImageJDataTypeConverter());
 
         registerNodeType("opencv-photo-inpainting", InpaintingAlgorithm.class);
+        registerEnumParameterType("opencv-photo-inpainting:method", InpaintingAlgorithm.Method.class, "Inpainting method", "An inpainting method");
     }
 
     @Override

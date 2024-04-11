@@ -21,6 +21,7 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import org.bytedeco.opencv.global.opencv_core;
+import org.bytedeco.opencv.global.opencv_imgproc;
 import org.bytedeco.opencv.opencv_core.Mat;
 import org.bytedeco.opencv.opencv_core.MatVector;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -166,6 +167,29 @@ public class OpenCvImageUtils {
 
     public static ImagePlus toImagePlus(Mat mat) {
         return ImageJFunctions.wrap((RandomAccessibleInterval) MatToImgConverter.convert(mat), "img");
+    }
+
+    public static Mat toGrayscale(Mat src, int type) {
+        if(src.type() != type) {
+            Mat dst = new Mat();
+            if(src.channels() > 1) {
+                opencv_imgproc.cvtColor(src, dst, opencv_imgproc.COLOR_BGR2GRAY);
+            }
+            if(dst.type() != type) {
+                dst.convertTo(src, type);
+            }
+            else {
+                return dst;
+            }
+        }
+        return src;
+    }
+
+    public static Mat toMask(Mat src) {
+        src = toGrayscale(src, opencv_core.CV_8U);
+        Mat mask = new Mat();
+        opencv_imgproc.threshold(src, mask, 1, 255, opencv_imgproc.THRESH_BINARY);
+        return mask;
     }
 
     public static String getTypeName(Mat mat) {
