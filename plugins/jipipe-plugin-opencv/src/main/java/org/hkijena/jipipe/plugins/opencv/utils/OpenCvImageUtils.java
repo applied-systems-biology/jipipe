@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.opencv.utils;
 
+import com.google.common.primitives.Ints;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import net.imagej.opencv.ImgToMatConverter;
@@ -181,6 +182,15 @@ public class OpenCvImageUtils {
             else {
                 return dst;
             }
+        }
+        return src;
+    }
+
+    public static Mat toType(Mat src, int type, int... allowedTypes) {
+        if(src.type() != type || !Ints.contains(allowedTypes, src.type())) {
+            Mat dst = new Mat();
+            src.convertTo(dst, type);
+            return dst;
         }
         return src;
     }
