@@ -45,7 +45,7 @@ public class CLIJSettings extends AbstractJIPipeParameterCollection {
     }
 
     public static CLIJSettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, CLIJSettings.class);
+        return JIPipe.getSettings().getApplicationSettings(ID, CLIJSettings.class);
     }
 
     /**

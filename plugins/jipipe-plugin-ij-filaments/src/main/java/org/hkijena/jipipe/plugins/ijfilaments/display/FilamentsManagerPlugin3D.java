@@ -340,7 +340,7 @@ public class FilamentsManagerPlugin3D extends JIPipeImageViewerPlugin3D implemen
             settings.getFilamentDrawer().copyFrom(filamentsDrawer);
             settings.setShowFilaments(displayROIViewMenuItem.getState());
             if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                JIPipe.getSettings().save();
+                JIPipe.getSettings().saveApplicationSettings();
             }
         }
     }

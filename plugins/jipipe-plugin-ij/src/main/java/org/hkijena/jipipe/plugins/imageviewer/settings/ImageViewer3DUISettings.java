@@ -31,7 +31,7 @@ public class ImageViewer3DUISettings extends AbstractJIPipeParameterCollection {
     private double defaultAnimationFPS = 24;
 
     public static ImageViewer3DUISettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, ImageViewer3DUISettings.class);
+        return JIPipe.getSettings().getApplicationSettings(ID, ImageViewer3DUISettings.class);
     }
 
     @SetJIPipeDocumentation(name = "Show side bar", description = "If enabled, show a side bar with additional settings and tools")

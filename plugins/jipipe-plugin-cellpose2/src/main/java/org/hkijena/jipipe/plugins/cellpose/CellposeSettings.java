@@ -42,7 +42,7 @@ public class CellposeSettings extends AbstractJIPipeParameterCollection {
     }
 
     public static CellposeSettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, CellposeSettings.class);
+        return JIPipe.getSettings().getApplicationSettings(ID, CellposeSettings.class);
     }
 
     /**

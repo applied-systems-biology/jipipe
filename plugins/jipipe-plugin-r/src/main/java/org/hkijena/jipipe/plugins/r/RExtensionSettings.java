@@ -42,7 +42,7 @@ public class RExtensionSettings extends AbstractJIPipeParameterCollection implem
     }
 
     public static RExtensionSettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, RExtensionSettings.class);
+        return JIPipe.getSettings().getApplicationSettings(ID, RExtensionSettings.class);
 
     }
 

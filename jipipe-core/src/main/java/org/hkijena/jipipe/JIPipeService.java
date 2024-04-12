@@ -41,7 +41,7 @@ public interface JIPipeService extends Service, JIPipeValidatable {
 
     JIPipeCustomMenuRegistry getCustomMenuRegistry();
 
-    JIPipeSettingsRegistry getSettingsRegistry();
+    JIPipeApplicationSettingsRegistry getSettingsRegistry();
 
     JIPipeMetadataRegistry getMetadataRegistry();
 

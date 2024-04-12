@@ -40,7 +40,7 @@ public class PythonExtensionSettings extends AbstractJIPipeParameterCollection i
     }
 
     public static PythonExtensionSettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, PythonExtensionSettings.class);
+        return JIPipe.getSettings().getApplicationSettings(ID, PythonExtensionSettings.class);
     }
 
     /**

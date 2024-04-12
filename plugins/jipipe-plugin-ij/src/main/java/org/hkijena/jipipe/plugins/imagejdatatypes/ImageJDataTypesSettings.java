@@ -27,7 +27,7 @@ public class ImageJDataTypesSettings extends AbstractJIPipeParameterCollection {
     private OMETIFFCompression bioFormatsCompression = OMETIFFCompression.Uncompressed;
 
     public static ImageJDataTypesSettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, ImageJDataTypesSettings.class);
+        return JIPipe.getSettings().getApplicationSettings(ID, ImageJDataTypesSettings.class);
     }
 
     @SetJIPipeDocumentation(name = "Use Bio-Formats for saving & loading", description = "If enabled, Bio-Formats is used to save and load results. Otherwise the native ImageJ functions are used that " +

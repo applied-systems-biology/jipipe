@@ -291,7 +291,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
             if (settings != null) {
                 settings.setShowSideBar(enableSideBarButton.isSelected());
                 if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                    JIPipe.getSettings().save();
+                    JIPipe.getSettings().saveApplicationSettings();
                 }
             }
             updateSideBar();
@@ -807,7 +807,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
             if (settings != null) {
                 settings.setDefaultAnimationFPS(fps);
                 if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                    JIPipe.getSettings().save();
+                    JIPipe.getSettings().saveApplicationSettings();
                 }
             }
             stopAnimations();

@@ -35,7 +35,7 @@ public class ImageViewer2DUISettings extends AbstractJIPipeParameterCollection {
     private boolean exportAsDisplayed = true;
 
     public static ImageViewer2DUISettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, ImageViewer2DUISettings.class);
+        return JIPipe.getSettings().getApplicationSettings(ID, ImageViewer2DUISettings.class);
     }
 
     @SetJIPipeDocumentation(name = "Export images/movies as displayed", description = "If enabled, the 'Snapshot' menu will images and movies as displayed (including zoom). Otherwise, " +

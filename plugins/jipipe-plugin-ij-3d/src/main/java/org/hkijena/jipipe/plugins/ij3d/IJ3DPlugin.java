@@ -130,7 +130,7 @@ public class IJ3DPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
 
-        registerSettingsSheet(ImageViewerUIROI3DDisplaySettings.ID,
+        registerApplicationSettingsSheet(ImageViewerUIROI3DDisplaySettings.ID,
                 "3D ROI display",
                 "Settings for the ROI manager component of the JIPipe image viewer",
                 IJ3DPlugin.RESOURCES.getIconFromResources("data-type-roi3d.png"),

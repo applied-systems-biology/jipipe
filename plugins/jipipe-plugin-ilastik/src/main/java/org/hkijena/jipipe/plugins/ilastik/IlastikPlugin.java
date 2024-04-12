@@ -344,7 +344,7 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerSettingsSheet(IlastikSettings.ID,
+        registerApplicationSettingsSheet(IlastikSettings.ID,
                 "Ilastik",
                 "Connect existing Ilastik installations to JIPipe or automatically install a new Ilastik environment if none is available",
                 RESOURCES.getIconFromResources("ilastik.png"),

@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
-import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeApplicationSettingsRegistry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
@@ -325,7 +325,7 @@ public class UIUtils {
     }
 
     public static JIPipeDesktopUITheme getThemeFromRawSettings() {
-        Path propertyFile = JIPipeSettingsRegistry.getPropertyFile();
+        Path propertyFile = JIPipeApplicationSettingsRegistry.getPropertyFile();
         JIPipeDesktopUITheme theme = JIPipeDesktopUITheme.ModernLight;
         if (Files.exists(propertyFile)) {
             try {

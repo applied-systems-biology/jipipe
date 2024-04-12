@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeApplicationSettingsRegistry;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.util.Map;
@@ -55,7 +55,7 @@ public class ExtensionSettings extends AbstractJIPipeParameterCollection {
     public static ExtensionSettings getInstanceFromRaw() {
         ExtensionSettings result = new ExtensionSettings();
         try {
-            JsonNode node = JIPipeSettingsRegistry.getRawNode();
+            JsonNode node = JIPipeApplicationSettingsRegistry.getRawNode();
             if (node != null && !node.isMissingNode()) {
                 JIPipeParameterTree tree = new JIPipeParameterTree(result);
                 for (Map.Entry<String, JIPipeParameterAccess> entry : tree.getParameters().entrySet()) {

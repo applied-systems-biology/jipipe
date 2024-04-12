@@ -28,7 +28,7 @@ public class ImageViewerUISpotsDisplaySettings extends AbstractJIPipeParameterCo
     }
 
     public static ImageViewerUISpotsDisplaySettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, ImageViewerUISpotsDisplaySettings.class);
+        return JIPipe.getSettings().getApplicationSettings(ID, ImageViewerUISpotsDisplaySettings.class);
     }
 
     @SetJIPipeDocumentation(name = "Spot visualization")

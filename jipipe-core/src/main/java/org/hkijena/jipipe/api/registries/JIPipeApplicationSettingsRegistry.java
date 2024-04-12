@@ -37,13 +37,12 @@ import java.util.Map;
  * Registry for settings.
  * Settings are organized in "sheets" (parameter collections)
  */
-public class JIPipeSettingsRegistry extends AbstractJIPipeParameterCollection implements JIPipeCustomParameterCollection, JIPipeParameterCollection.ParameterChangedEventListener {
+public class JIPipeApplicationSettingsRegistry extends AbstractJIPipeParameterCollection implements JIPipeCustomParameterCollection {
 
     private final JIPipe jiPipe;
     private final BiMap<String, Sheet> registeredSheets = HashBiMap.create();
-    private boolean isLoading = false;
 
-    public JIPipeSettingsRegistry(JIPipe jiPipe) {
+    public JIPipeApplicationSettingsRegistry(JIPipe jiPipe) {
         this.jiPipe = jiPipe;
     }
 
@@ -179,7 +178,6 @@ public class JIPipeSettingsRegistry extends AbstractJIPipeParameterCollection im
         if (!Files.isRegularFile(file))
             return;
         try {
-            isLoading = true;
             JsonNode objectNode = JsonUtils.getObjectMapper().readTree(file.toFile());
             for (Map.Entry<String, JIPipeParameterAccess> entry : getParameters().entrySet()) {
                 JsonNode node = objectNode.path(entry.getKey());
@@ -190,8 +188,6 @@ public class JIPipeSettingsRegistry extends AbstractJIPipeParameterCollection im
             }
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            isLoading = false;
         }
     }
 

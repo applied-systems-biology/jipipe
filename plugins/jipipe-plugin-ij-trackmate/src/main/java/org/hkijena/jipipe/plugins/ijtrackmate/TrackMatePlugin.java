@@ -208,14 +208,14 @@ public class TrackMatePlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     private void registerSettings() {
-        registerSettingsSheet(ImageViewerUISpotsDisplaySettings.ID,
+        registerApplicationSettingsSheet(ImageViewerUISpotsDisplaySettings.ID,
                 "Spots display",
                 "Settings for the spots manager component of the JIPipe image viewer",
                 RESOURCES.getIconFromResources("trackmate-spots.png"),
                 "Image viewer",
                 UIUtils.getIconFromResources("actions/viewimage.png"),
                 new ImageViewerUISpotsDisplaySettings());
-        registerSettingsSheet(ImageViewerUITracksDisplaySettings.ID,
+        registerApplicationSettingsSheet(ImageViewerUITracksDisplaySettings.ID,
                 "Tracks display",
                 "Settings for the track manager component of the JIPipe image viewer",
                 RESOURCES.getIconFromResources("trackmate-tracker.png"),

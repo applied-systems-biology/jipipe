@@ -28,7 +28,7 @@ public class ImageViewerUIFilamentDisplaySettings extends AbstractJIPipeParamete
     }
 
     public static ImageViewerUIFilamentDisplaySettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, ImageViewerUIFilamentDisplaySettings.class);
+        return JIPipe.getSettings().getApplicationSettings(ID, ImageViewerUIFilamentDisplaySettings.class);
     }
 
     @SetJIPipeDocumentation(name = "Filament visualization")

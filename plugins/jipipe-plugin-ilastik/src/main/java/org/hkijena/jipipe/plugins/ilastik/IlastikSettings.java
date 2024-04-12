@@ -41,7 +41,7 @@ public class IlastikSettings extends AbstractJIPipeParameterCollection {
     }
 
     public static IlastikSettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, IlastikSettings.class);
+        return JIPipe.getSettings().getApplicationSettings(ID, IlastikSettings.class);
     }
 
     /**

@@ -117,7 +117,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
     private final JIPipeImageJAdapterRegistry imageJDataAdapterRegistry;
     private final JIPipeCustomMenuRegistry customMenuRegistry;
     private final JIPipeParameterTypeRegistry parameterTypeRegistry;
-    private final JIPipeSettingsRegistry settingsRegistry;
+    private final JIPipeApplicationSettingsRegistry settingsRegistry;
     private final JIPipeExpressionRegistry tableOperationRegistry;
     private final JIPipeUtilityRegistry utilityRegistry;
     private final JIPipeExternalEnvironmentRegistry externalEnvironmentRegistry;
@@ -146,7 +146,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
         imageJDataAdapterRegistry = new JIPipeImageJAdapterRegistry(this);
         customMenuRegistry = new JIPipeCustomMenuRegistry(this);
         parameterTypeRegistry = new JIPipeParameterTypeRegistry(this);
-        settingsRegistry = new JIPipeSettingsRegistry(this);
+        settingsRegistry = new JIPipeApplicationSettingsRegistry(this);
         tableOperationRegistry = new JIPipeExpressionRegistry(this);
         utilityRegistry = new JIPipeUtilityRegistry(this);
         externalEnvironmentRegistry = new JIPipeExternalEnvironmentRegistry(this);
@@ -201,7 +201,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
         return instance.imageJDataAdapterRegistry;
     }
 
-    public static JIPipeSettingsRegistry getSettings() {
+    public static JIPipeApplicationSettingsRegistry getSettings() {
         return instance.settingsRegistry;
     }
 
@@ -1493,7 +1493,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
     }
 
     @Override
-    public JIPipeSettingsRegistry getSettingsRegistry() {
+    public JIPipeApplicationSettingsRegistry getSettingsRegistry() {
         return settingsRegistry;
     }
 

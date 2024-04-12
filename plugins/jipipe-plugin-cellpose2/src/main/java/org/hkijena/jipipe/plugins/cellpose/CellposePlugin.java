@@ -192,7 +192,7 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerSettingsSheet(CellposeSettings.ID,
+        registerApplicationSettingsSheet(CellposeSettings.ID,
                 "Cellpose",
                 "Connect existing Cellpose installations to JIPipe or automatically install a new Cellpose environment if none is available",
                 UIUtils.getIconFromResources("apps/cellpose.png"),
