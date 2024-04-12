@@ -121,19 +121,19 @@ public class JIPipeDesktopModernPluginManager implements JIPipeDesktopWorkbenchA
             });
             restartMessage = messagePanel.addMessage(JIPipeDesktopMessagePanel.MessageType.Info, "To apply the changes, please restart ImageJ.", true, true, exitButton);
         } else if (!getExtensionRegistry().getScheduledDeactivateExtensions().isEmpty() || !getExtensionRegistry().getScheduledActivateExtensions().isEmpty()) {
-            JButton exitButton = new JButton("Close ImageJ");
+            JButton exitButton = new JButton("Close ImageJ/JIPipe");
             exitButton.addActionListener(e -> {
                 if (JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(messagePanel), "Do you really want to close ImageJ? You will lose all unsaved changes.", "Close ImageJ", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                     JIPipe.exitLater(0);
                 }
             });
-            JButton restartJIPipeGUIButton = new JButton("Restart JIPipe");
-            restartJIPipeGUIButton.addActionListener(e -> {
-                if (JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(messagePanel), "Do you really want to restart JIPipe? You will lose all unsaved changes.", "Restart JIPipe", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                    JIPipe.restartGUI();
-                }
-            });
-            restartMessage = messagePanel.addMessage(JIPipeDesktopMessagePanel.MessageType.Info, "To apply the changes, please restart ImageJ or JIPipe.", true, true, exitButton, restartJIPipeGUIButton);
+//            JButton restartJIPipeGUIButton = new JButton("Restart JIPipe");
+//            restartJIPipeGUIButton.addActionListener(e -> {
+//                if (JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(messagePanel), "Do you really want to restart JIPipe? You will lose all unsaved changes.", "Restart JIPipe", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+//                    JIPipe.restartGUI();
+//                }
+//            });
+//            restartMessage = messagePanel.addMessage(JIPipeDesktopMessagePanel.MessageType.Info, "To apply the changes, please restart ImageJ or JIPipe.", true, true, exitButton, restartJIPipeGUIButton);
         }
     }
 
