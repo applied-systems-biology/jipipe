@@ -34,7 +34,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.plugins.opencv.datatypes.OpenCvImageData;
 import org.hkijena.jipipe.plugins.opencv.utils.OpenCvImageUtils;
-import org.hkijena.jipipe.plugins.opencv.utils.OpenCvTypes;
+import org.hkijena.jipipe.plugins.opencv.utils.OpenCvType;
 
 @SetJIPipeDocumentation(name = "Image inpainting", description = "Applies an algorithm for inpainting (content-aware fill) that attempts to fill in masked areas based on the surrounding image information")
 @ConfigureJIPipeNode(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Restore")
@@ -63,7 +63,7 @@ public class InpaintingAlgorithm extends JIPipeIteratingAlgorithm {
         OpenCvImageData inputImage = iterationStep.getInputData("Input", OpenCvImageData.class, progressInfo);
         OpenCvImageData maskImage = iterationStep.getInputData("Mask", OpenCvImageData.class, progressInfo);
         OpenCvImageData outputImage = OpenCvImageUtils.generateForEachIndexedZCTSlice(inputImage, (src_, index) -> {
-            Mat src = OpenCvImageUtils.toType(src_, OpenCvTypes.CV_8UC3, OpenCvTypes.CV_8U, OpenCvTypes.CV_16U, OpenCvTypes.CV_32F);
+            Mat src = OpenCvImageUtils.toType(src_, OpenCvType.CV_8UC3, OpenCvType.CV_8U, OpenCvType.CV_16U, OpenCvType.CV_32F);
             Mat mask = OpenCvImageUtils.toMask(maskImage.getImageOrExpand(index));
 
             Mat dst = new Mat();

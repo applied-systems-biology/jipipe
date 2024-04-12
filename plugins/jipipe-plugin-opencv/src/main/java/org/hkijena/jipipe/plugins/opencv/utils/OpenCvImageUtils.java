@@ -28,10 +28,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.opencv.datatypes.OpenCvImageData;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
@@ -217,13 +214,42 @@ public class OpenCvImageUtils {
         return src;
     }
 
-    public static Mat toType(Mat src, int type, int... allowedTypes) {
-        if(src.type() != type || !Ints.contains(allowedTypes, src.type())) {
+    public static Mat toType(Mat src, OpenCvType type, OpenCvType... allowedTypes) {
+        List<Integer> allowedTypesList = new ArrayList<>();
+        allowedTypesList.add(type.getNativeValue());
+        for (OpenCvType allowedType : allowedTypes) {
+            allowedTypesList.add(allowedType.getNativeValue());
+        }
+
+        if(!allowedTypesList.contains(src.type())) {
             Mat dst = new Mat();
-            src.convertTo(dst, type);
+
+            // Channel conversion
+            if(src.channels() == 3 && dst.channels() == 1) {
+                // BGR2GRAY
+                opencv_imgproc.cvtColor(src, dst, opencv_imgproc.COLOR_BGR2GRAY);
+                opencv_core.swap(src, dst);
+            }
+            else if(src.channels() != type.getChannels()) {
+                // Expand the channels
+                MatVector toMerge = new MatVector();
+                for (int c = 0; c < type.getChannels(); c++) {
+                    Mat singleChannel = new Mat();
+                    opencv_core.extractChannel(src, singleChannel, Math.min(c, src.channels() - 1));
+                    toMerge.push_back(singleChannel);
+                }
+                opencv_core.merge(toMerge, dst);
+                toMerge.close();
+                opencv_core.swap(src, dst);
+            }
+
+            // Depth conversion
+            src.convertTo(dst, type.getDepth());
             return dst;
         }
-        return src;
+        else {
+            return src;
+        }
     }
 
     public static Mat toMask(Mat src) {

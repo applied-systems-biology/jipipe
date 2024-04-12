@@ -291,6 +291,12 @@ public class OpenCvImageData implements JIPipeData {
     }
 
     @Override
+    public void close() {
+        JIPipeData.super.close();
+        images.close();
+    }
+
+    @Override
     public String toString() {
         return getWidth() + " x " + getHeight() + " x " + numSlices + " x " + numChannels + " x " + numFrames + " [" + OpenCvImageUtils.getTypeName(images.get(0)) + "]";
     }

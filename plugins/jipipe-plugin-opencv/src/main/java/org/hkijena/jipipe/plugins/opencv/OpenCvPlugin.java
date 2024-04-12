@@ -22,9 +22,14 @@ import org.hkijena.jipipe.plugins.opencv.datatypes.ImageJToOpenCvDataTypeConvert
 import org.hkijena.jipipe.plugins.opencv.datatypes.OpenCvImageData;
 import org.hkijena.jipipe.plugins.opencv.datatypes.OpenCvToImageJDataTypeConverter;
 import org.hkijena.jipipe.plugins.opencv.nodes.ConvertDepthAlgorithm;
+import org.hkijena.jipipe.plugins.opencv.nodes.ConvertTypeAlgorithm;
 import org.hkijena.jipipe.plugins.opencv.nodes.InpaintingAlgorithm;
+import org.hkijena.jipipe.plugins.opencv.nodes.filters.BilateralFilterAlgorithm;
+import org.hkijena.jipipe.plugins.opencv.nodes.generators.GaborKernelGenerator;
+import org.hkijena.jipipe.plugins.opencv.nodes.generators.GaussianKernelGenerator;
+import org.hkijena.jipipe.plugins.opencv.utils.OpenCvBorderType;
 import org.hkijena.jipipe.plugins.opencv.utils.OpenCvDepth;
-import org.hkijena.jipipe.plugins.opencv.utils.OpenCvTypesEnum;
+import org.hkijena.jipipe.plugins.opencv.utils.OpenCvType;
 import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -100,10 +105,17 @@ public class OpenCvPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerDatatype("opencv-image", OpenCvImageData.class, RESOURCES.getIcon16URLFromResources("opencv-image.png"));
         registerDatatypeConversion(new ImageJToOpenCvDataTypeConverter());
         registerDatatypeConversion(new OpenCvToImageJDataTypeConverter());
-        registerEnumParameterType("opencv-type", OpenCvTypesEnum.class, "OpenCV Type", "An OpenCV data type (CV_[bit depth][data type Signed/Unsigned/Float]C[number of channels])");
+        registerEnumParameterType("opencv-type", OpenCvType.class, "OpenCV Type", "An OpenCV data type (CV_[bit depth][data type Signed/Unsigned/Float]C[number of channels])");
         registerEnumParameterType("opencv-depth", OpenCvDepth.class, "OpenCV Depth", "An OpenCV depth (CV_[bit depth][data type Signed/Unsigned/Float])");
+        registerEnumParameterType("opencv-border-type", OpenCvBorderType.class, "OpenCV Border Type", "An OpenCV border type");
 
         registerNodeType("opencv-convert-depth", ConvertDepthAlgorithm.class, UIUtils.getIconURLFromResources("actions/gtk-convert.png"));
+        registerNodeType("opencv-convert-type", ConvertTypeAlgorithm.class, UIUtils.getIconURLFromResources("actions/gtk-convert.png"));
+
+        registerNodeType("opencv-generate-gabor", GaborKernelGenerator.class);
+        registerNodeType("opencv-generate-gaussian", GaussianKernelGenerator.class);
+
+        registerNodeType("opencv-filter-bilateral", BilateralFilterAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
 
         registerNodeType("opencv-photo-inpainting", InpaintingAlgorithm.class, UIUtils.getIconURLFromResources("actions/bandage.png"));
         registerEnumParameterType("opencv-photo-inpainting:method", InpaintingAlgorithm.Method.class, "Inpainting method", "An inpainting method");
