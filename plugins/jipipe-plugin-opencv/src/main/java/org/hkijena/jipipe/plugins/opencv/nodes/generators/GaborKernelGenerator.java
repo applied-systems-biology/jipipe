@@ -1,8 +1,7 @@
 package org.hkijena.jipipe.plugins.opencv.nodes.generators;
 
-import org.bytedeco.opencv.global.opencv_imgproc;
-import org.bytedeco.opencv.opencv_core.Mat;
-import org.bytedeco.opencv.opencv_core.Size;
+import org.bytedeco.javacpp.opencv_core;
+import org.bytedeco.javacpp.opencv_imgproc;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -123,7 +122,7 @@ public class GaborKernelGenerator extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        Mat gaborKernel = opencv_imgproc.getGaborKernel(new Size(width, height), sigma, theta, lambd, gamma, psi, OpenCvDepth.CV_32F.getNativeValue());
+        opencv_core.Mat gaborKernel = opencv_imgproc.getGaborKernel(new opencv_core.Size(width, height), sigma, theta, lambd, gamma, psi, OpenCvDepth.CV_32F.getNativeValue());
         iterationStep.addOutputData(getFirstOutputSlot(), new OpenCvImageData(gaborKernel), progressInfo);
     }
 }

@@ -137,6 +137,11 @@
                 <artifactId>opencv</artifactId>
                 <version>3.4.2-1.4.2</version>
             </dependency>
+            <dependency>
+                <groupId>org.bytedeco</groupId>
+                <artifactId>javacv-platform</artifactId>
+                <version>1.4.2</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -328,6 +333,11 @@
         <dependency>
             <groupId>org.bytedeco.javacpp-presets</groupId>
             <artifactId>opencv</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>javacv-platform</artifactId>
             <scope>runtime</scope>
         </dependency>
     </dependencies>

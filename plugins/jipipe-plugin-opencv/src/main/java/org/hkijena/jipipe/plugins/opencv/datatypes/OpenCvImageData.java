@@ -16,15 +16,10 @@ package org.hkijena.jipipe.plugins.opencv.datatypes;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
-import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
-import net.imagej.opencv.ImgToMatConverter;
-import org.bytedeco.opencv.global.opencv_core;
-import org.bytedeco.opencv.global.opencv_imgcodecs;
-import org.bytedeco.opencv.global.opencv_imgproc;
-import org.bytedeco.opencv.opencv_core.Mat;
-import org.bytedeco.opencv.opencv_core.MatVector;
-import org.bytedeco.opencv.opencv_core.Size;
+import org.bytedeco.javacpp.opencv_core;
+import org.bytedeco.javacpp.opencv_imgcodecs;
+import org.bytedeco.javacpp.opencv_imgproc;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -43,12 +38,10 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.opencv.utils.OpenCvImageDataImageViewerCustomLoader;
 import org.hkijena.jipipe.plugins.opencv.utils.OpenCvImageUtils;
-import org.hkijena.jipipe.utils.BufferedImageUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
-import java.awt.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -62,15 +55,15 @@ import java.util.regex.Pattern;
         "We recommend the usage of TIFF.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/imageplus-data.schema.json")
 @LabelAsJIPipeHeavyData
 public class OpenCvImageData implements JIPipeData {
-    private final MatVector images;
+    private final opencv_core.MatVector images;
     private final int width;
     private final int height;
     private final int numSlices;
     private final int numFrames;
     private final int numChannels;
 
-    public OpenCvImageData(Mat image) {
-        this.images = new MatVector();
+    public OpenCvImageData(opencv_core.Mat image) {
+        this.images = new opencv_core.MatVector();
         this.images.push_back(image);
         this.numSlices = 1;
         this.numFrames = 1;
@@ -79,8 +72,8 @@ public class OpenCvImageData implements JIPipeData {
         this.height = image.rows();
     }
 
-    public OpenCvImageData(Map<ImageSliceIndex, Mat> images) {
-        this.images = new MatVector();
+    public OpenCvImageData(Map<ImageSliceIndex, opencv_core.Mat> images) {
+        this.images = new opencv_core.MatVector();
         this.numSlices = OpenCvImageUtils.findNSlices(images);
         this.numFrames = OpenCvImageUtils.findNFrames(images);
         this.numChannels = OpenCvImageUtils.findNChannels(images);
@@ -88,7 +81,7 @@ public class OpenCvImageData implements JIPipeData {
         this.height = OpenCvImageUtils.findHeight(images.values());
 
         this.images.resize( numSlices * numFrames * numChannels);
-        for (Map.Entry<ImageSliceIndex, Mat> entry : images.entrySet()) {
+        for (Map.Entry<ImageSliceIndex, opencv_core.Mat> entry : images.entrySet()) {
             this.images.put(entry.getKey().zeroSliceIndexToOneStackIndex(numChannels, numSlices, numFrames) - 1, entry.getValue());
         }
 
@@ -99,7 +92,7 @@ public class OpenCvImageData implements JIPipeData {
             throw new IllegalArgumentException("Empty image!");
         }
         for (long i = 0; i < this.images.size(); i++) {
-            Mat image = this.images.get(i);
+            opencv_core.Mat image = this.images.get(i);
             if (image == null) {
                 throw new NullPointerException("Not all slice indices are present!");
             }
@@ -107,7 +100,7 @@ public class OpenCvImageData implements JIPipeData {
     }
 
     public OpenCvImageData(ImagePlus img) {
-        this.images  = new MatVector();
+        this.images  = new opencv_core.MatVector();
         this.numSlices = img.getNSlices();
         this.numFrames = img.getNFrames();
         this.numChannels = img.getNChannels();
@@ -120,22 +113,22 @@ public class OpenCvImageData implements JIPipeData {
                 for (int t = 0; t < numFrames; t++) {
                     int i = ImageJUtils.zeroSliceIndexToOneStackIndex(c, z, t, numChannels, numSlices, numFrames);
                     ImageProcessor processor = img.getStack().getProcessor(i);
-                    Mat mat = OpenCvImageUtils.toMat(processor);
+                    opencv_core.Mat mat = OpenCvImageUtils.toMat(processor);
                     this.images.put(i - 1, mat);
                 }
             }
         }
     }
 
-    public OpenCvImageData(MatVector images, int numSlices, int numFrames, int numChannels) {
-        this.images = new MatVector();
+    public OpenCvImageData(opencv_core.MatVector images, int numSlices, int numFrames, int numChannels) {
+        this.images = new opencv_core.MatVector();
         this.numSlices = numSlices;
         this.numFrames = numFrames;
         this.numChannels = numChannels;
         this.width = OpenCvImageUtils.findWidth(images);
         this.height = OpenCvImageUtils.findHeight(images);
         for (long i = 0; i < this.images.size(); i++) {
-            Mat image = images.get(i);
+            opencv_core.Mat image = images.get(i);
             this.images.push_back(image);
         }
         if (images.size() != (long) numSlices * numFrames * numChannels) {
@@ -147,9 +140,9 @@ public class OpenCvImageData implements JIPipeData {
     }
 
     public OpenCvImageData(OpenCvImageData other) {
-        this.images = new MatVector();
+        this.images = new opencv_core.MatVector();
         for (long i = 0; i < this.images.size(); i++) {
-            Mat image = images.get(i).clone();
+            opencv_core.Mat image = images.get(i).clone();
             this.images.push_back(image);
         }
         this.width = other.width;
@@ -174,7 +167,7 @@ public class OpenCvImageData implements JIPipeData {
             ImagePlus imagePlus = IJ.openImage(targetFiles.get(0).toString());
             return new OpenCvImageData(imagePlus);
         } else {
-            Map<ImageSliceIndex, Mat> imageMap = new HashMap<>();
+            Map<ImageSliceIndex, opencv_core.Mat> imageMap = new HashMap<>();
             Pattern p = Pattern.compile("\\d+");
 
             for (Path targetFile : targetFiles) {
@@ -196,7 +189,7 @@ public class OpenCvImageData implements JIPipeData {
 
     }
 
-    public MatVector getImages() {
+    public opencv_core.MatVector getImages() {
         return images;
     }
 
@@ -268,8 +261,8 @@ public class OpenCvImageData implements JIPipeData {
         int imageWidth = (int) Math.max(1, getWidth() * factor);
         int imageHeight = (int) Math.max(1, getHeight() * factor);
 
-       try(Mat scaledInstance = new Mat()) {
-           opencv_imgproc.resize(images.get(0), scaledInstance, new Size(imageWidth, imageHeight));
+       try(opencv_core.Mat scaledInstance = new opencv_core.Mat()) {
+           opencv_imgproc.resize(images.get(0), scaledInstance, new opencv_core.Size(imageWidth, imageHeight));
            return new JIPipeImageThumbnailData(OpenCvImageUtils.toImagePlus(scaledInstance));
        }
     }
@@ -301,23 +294,23 @@ public class OpenCvImageData implements JIPipeData {
         return getWidth() + " x " + getHeight() + " x " + numSlices + " x " + numChannels + " x " + numFrames + " [" + OpenCvImageUtils.getTypeName(images.get(0)) + "]";
     }
 
-    public Mat getImage(int i) {
+    public opencv_core.Mat getImage(int i) {
         return images.get(i);
     }
 
-    public Mat getImage(ImageSliceIndex index) {
+    public opencv_core.Mat getImage(ImageSliceIndex index) {
         return images.get(index.zeroSliceIndexToOneStackIndex(numChannels, numSlices, numFrames) - 1);
     }
 
-    public Mat getImage(int c, int z, int t) {
+    public opencv_core.Mat getImage(int c, int z, int t) {
         return getImage(ImageJUtils.zeroSliceIndexToOneStackIndex(c, z, t, numChannels, numSlices, numFrames) - 1);
     }
 
-    public Mat getImageOrExpand(ImageSliceIndex index) {
+    public opencv_core.Mat getImageOrExpand(ImageSliceIndex index) {
         return getImageOrExpand(index.getC(), index.getZ(), index.getT());
     }
 
-    public Mat getImageOrExpand(int c, int z, int t) {
+    public opencv_core.Mat getImageOrExpand(int c, int z, int t) {
         return getImage(ImageJUtils.zeroSliceIndexToOneStackIndex(Math.min(c, numChannels - 1),
                 Math.min(z, numSlices - 1),
                 Math.min(t, numFrames - 1),

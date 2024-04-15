@@ -119,9 +119,9 @@ public class InpaintingAlgorithm extends JIPipeIteratingAlgorithm {
     public enum Method {
         TeleaEtAl(opencv_photo.INPAINT_TELEA, false),
         NavierStokesEtAl(opencv_photo.INPAINT_NS, false),
-        ShiftMap(opencv_xphoto.INPAINT_SHIFTMAP, true),
-        FSRFast(opencv_xphoto.INPAINT_FSR_FAST, true),
-        FSRBest(opencv_xphoto.INPAINT_FSR_BEST, true);
+        ShiftMap(opencv_xphoto.INPAINT_SHIFTMAP, true);
+//        FSRFast(2, true),
+//        FSRBest(1, true);
 
         private final int nativeValue;
         private final boolean xPhoto;
