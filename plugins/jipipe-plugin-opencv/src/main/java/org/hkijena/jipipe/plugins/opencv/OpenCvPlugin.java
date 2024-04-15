@@ -71,11 +71,6 @@ public class OpenCvPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public List<JIPipeImageJUpdateSiteDependency> getImageJUpdateSiteDependencies() {
-        return Collections.singletonList(new JIPipeImageJUpdateSiteDependency("IJ-OpenCV-plugins", "https://sites.imagej.net/IJ-OpenCV/"));
-    }
-
-    @Override
     public StringList getDependencyCitations() {
         return new StringList();
     }

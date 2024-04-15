@@ -120,6 +120,7 @@ public class JIPipeDesktopModernPluginManager implements JIPipeDesktopWorkbenchA
                 JIPipe.exitLater(0);
             }
         });
+        restartMessage = messagePanel.addMessage(JIPipeDesktopMessagePanel.MessageType.Info, "To apply the changes, please restart ImageJ or JIPipe.", true, true, exitButton);
     }
 
     public void updateConflictsMessage() {
