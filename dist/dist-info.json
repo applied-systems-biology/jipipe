@@ -83,7 +83,8 @@
     "jipipe-plugin-omnipose",
     "jipipe-plugin-scene-3d",
     "jipipe-plugin-imp",
-    "jipipe-plugin-ilastik"
+    "jipipe-plugin-ilastik",
+    "jipipe-plugin-opencv"
   ],
   "jipipe-version": "4.0.0"
 }
