@@ -30,7 +30,7 @@ public class OMEROSettings extends AbstractJIPipeParameterCollection implements 
     private OMEROCredentialsEnvironment.List presets = new OMEROCredentialsEnvironment.List();
 
     public static OMEROSettings getInstance() {
-        return JIPipe.getSettings().getApplicationSettings(ID, OMEROSettings.class);
+        return JIPipe.getSettings().getSettings(ID, OMEROSettings.class);
     }
 
     @SetJIPipeDocumentation(name = "Default credentials", description = "The default credentials for the OMERO server")

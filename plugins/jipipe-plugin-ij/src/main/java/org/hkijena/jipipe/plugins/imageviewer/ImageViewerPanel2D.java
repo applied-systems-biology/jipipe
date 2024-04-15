@@ -232,7 +232,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
             if (settings != null) {
                 settings.setExportAsDisplayed(exportDisplayedScaleToggle.getState());
                 if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                    JIPipe.getSettings().saveApplicationSettings();
+                    JIPipe.getSettings().save();
                 }
             }
         });
@@ -261,7 +261,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
             if (settings != null) {
                 settings.setDefaultAnimationFPS(fps);
                 if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                    JIPipe.getSettings().saveApplicationSettings();
+                    JIPipe.getSettings().save();
                 }
             }
             stopAnimations();
@@ -443,7 +443,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
             if (settings != null) {
                 settings.setShowSideBar(enableSideBarButton.isSelected());
                 if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                    JIPipe.getSettings().saveApplicationSettings();
+                    JIPipe.getSettings().save();
                 }
             }
             updateSideBar();
@@ -581,7 +581,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
         if (response == JOptionPane.OK_OPTION) {
             FileChooserSettings.getInstance().setLastDataDirectory(exportPathEditor.getPath());
             if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                JIPipe.getSettings().saveApplicationSettings();
+                JIPipe.getSettings().save();
             }
             Path targetPath = exportPathEditor.getPath();
             String format = fileFormatEditor.getSelectedItem() + "";

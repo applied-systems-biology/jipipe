@@ -229,7 +229,7 @@ public class FilamentsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
             settings.getFilamentDrawer().copyFrom(filamentsDrawer);
             settings.setShowFilaments(displayFilamentsViewMenuItem.getState());
             if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                JIPipe.getSettings().saveApplicationSettings();
+                JIPipe.getSettings().save();
             }
         }
     }

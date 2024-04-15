@@ -28,7 +28,7 @@ public class ImageViewerUIROI3DDisplaySettings extends AbstractJIPipeParameterCo
     }
 
     public static ImageViewerUIROI3DDisplaySettings getInstance() {
-        return JIPipe.getSettings().getApplicationSettings(ID, ImageViewerUIROI3DDisplaySettings.class);
+        return JIPipe.getSettings().getSettings(ID, ImageViewerUIROI3DDisplaySettings.class);
     }
 
     @SetJIPipeDocumentation(name = "Show ROI", description = "If enabled, ROI are visible")

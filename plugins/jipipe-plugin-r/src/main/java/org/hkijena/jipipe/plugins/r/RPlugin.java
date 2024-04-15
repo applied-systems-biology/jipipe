@@ -191,7 +191,7 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "R script",
                 "An R script",
                 null);
-        registerApplicationSettingsSheet(RExtensionSettings.ID,
+        registerSettingsSheet(RExtensionSettings.ID,
                 "R integration",
                 "Connect existing R installations to JIPipe or automatically install a new R environment if none is available",
                 UIUtils.getIconFromResources("apps/rlogo_icon.png"),

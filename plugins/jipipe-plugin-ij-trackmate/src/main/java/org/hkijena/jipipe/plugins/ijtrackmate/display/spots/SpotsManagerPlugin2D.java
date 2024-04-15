@@ -289,7 +289,7 @@ public class SpotsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
             settings.getSpotDrawer().copyFrom(spotDrawer);
             settings.setShowSpots(displaySpotsViewMenuItem.getState());
             if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                JIPipe.getSettings().saveApplicationSettings();
+                JIPipe.getSettings().save();
             }
         }
     }

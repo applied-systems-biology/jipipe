@@ -218,14 +218,14 @@ public class PythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 PythonEnvironmentType.class,
                 "Python environment type",
                 "A Python environment type");
-        registerApplicationSettingsSheet(PythonExtensionSettings.ID,
+        registerSettingsSheet(PythonExtensionSettings.ID,
                 "Python integration",
                 "Connect existing Python installations to JIPipe or automatically install a new Python environment if none is available",
                 UIUtils.getIconFromResources("apps/python.png"),
                 "Extensions",
                 UIUtils.getIconFromResources("actions/plugins.png"),
                 settings);
-        registerApplicationSettingsSheet(PythonAdapterExtensionSettings.ID,
+        registerSettingsSheet(PythonAdapterExtensionSettings.ID,
                 "Python integration (adapter)",
                 "Settings for the Python adapter library that is utilized by JIPipe",
                 UIUtils.getIconFromResources("apps/python.png"),

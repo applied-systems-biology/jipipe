@@ -186,7 +186,7 @@ public class OmniposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerApplicationSettingsSheet(OmniposeSettings.ID,
+        registerSettingsSheet(OmniposeSettings.ID,
                 "Omnipose",
                 "Connect existing Omnipose installations to JIPipe or automatically install a new Omnipose environment if none is available",
                 RESOURCES.getIconFromResources("omnipose.png"),

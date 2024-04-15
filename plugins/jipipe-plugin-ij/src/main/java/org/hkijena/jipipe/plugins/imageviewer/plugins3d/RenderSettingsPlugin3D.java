@@ -50,7 +50,7 @@ public class RenderSettingsPlugin3D extends JIPipeImageViewerPlugin3D {
     private void saveImageRenderSettingsAsDefault() {
         getViewerPanel3D().getSettings().getRendererSettings().copyFrom(getViewerPanel3D().getImage3DRendererSettings());
         if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-            JIPipe.getSettings().saveApplicationSettings();
+            JIPipe.getSettings().save();
         }
     }
 }

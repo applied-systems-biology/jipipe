@@ -42,7 +42,7 @@ public class OmniposeSettings extends AbstractJIPipeParameterCollection {
     }
 
     public static OmniposeSettings getInstance() {
-        return JIPipe.getSettings().getApplicationSettings(ID, OmniposeSettings.class);
+        return JIPipe.getSettings().getSettings(ID, OmniposeSettings.class);
     }
 
     /**

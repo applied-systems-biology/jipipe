@@ -379,7 +379,7 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerApplicationSettingsSheet(ImageJDataTypesSettings.ID,
+        registerSettingsSheet(ImageJDataTypesSettings.ID,
                 "ImageJ data types",
                 "Settings on how ImageJ data types are imported/exported",
                 UIUtils.getIconFromResources("apps/imagej.png"),
@@ -408,14 +408,14 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Determines how ROI elements are drawn");
 
         // Register settings
-        registerApplicationSettingsSheet(ImageViewer2DUISettings.ID,
+        registerSettingsSheet(ImageViewer2DUISettings.ID,
                 "2D image viewer",
                 "Settings for the JIPipe 2D image viewer",
                 UIUtils.getIconFromResources("data-types/imgplus-2d.png"),
                 "Image viewer",
                 UIUtils.getIconFromResources("actions/viewimage.png"),
                 new ImageViewer2DUISettings());
-        registerApplicationSettingsSheet(ImageViewer3DUISettings.ID,
+        registerSettingsSheet(ImageViewer3DUISettings.ID,
                 "3D image viewer",
                 "Settings for the JIPipe 2D image viewer",
                 UIUtils.getIconFromResources("data-types/imgplus-3d.png"),
@@ -550,14 +550,14 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerMenuExtension(BioFormatsConfigTool.class);
 
-        registerApplicationSettingsSheet(ImageViewerUIROI2DDisplaySettings.ID,
+        registerSettingsSheet(ImageViewerUIROI2DDisplaySettings.ID,
                 "2D ROI display",
                 "Settings for the ROI manager component of the JIPipe image viewer",
                 UIUtils.getIconFromResources("actions/roi.png"),
                 "Image viewer",
                 UIUtils.getIconFromResources("actions/viewimage.png"),
                 new ImageViewerUIROI2DDisplaySettings());
-        registerApplicationSettingsSheet(ImageViewerGeneralUISettings.ID,
+        registerSettingsSheet(ImageViewerGeneralUISettings.ID,
                 "General",
                 "General settings for the image viewer",
                 UIUtils.getIconFromResources("actions/configure.png"),

@@ -29,7 +29,7 @@ public class ImageViewerUIROI2DDisplaySettings extends AbstractJIPipeParameterCo
     }
 
     public static ImageViewerUIROI2DDisplaySettings getInstance() {
-        return JIPipe.getSettings().getApplicationSettings(ID, ImageViewerUIROI2DDisplaySettings.class);
+        return JIPipe.getSettings().getSettings(ID, ImageViewerUIROI2DDisplaySettings.class);
     }
 
     @SetJIPipeDocumentation(name = "ROI visualization")

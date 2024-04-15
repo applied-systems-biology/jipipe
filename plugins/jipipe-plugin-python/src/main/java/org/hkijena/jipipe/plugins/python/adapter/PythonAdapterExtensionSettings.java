@@ -39,7 +39,7 @@ public class PythonAdapterExtensionSettings extends AbstractJIPipeParameterColle
     }
 
     public static PythonAdapterExtensionSettings getInstance() {
-        return JIPipe.getSettings().getApplicationSettings(ID, PythonAdapterExtensionSettings.class);
+        return JIPipe.getSettings().getSettings(ID, PythonAdapterExtensionSettings.class);
     }
 
     /**

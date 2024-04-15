@@ -240,7 +240,7 @@ public class CLIJPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("clij-push-to-gpu", Clij2PushAlgorithm.class, UIUtils.getIconURLFromResources("apps/clij.png"));
         registerNodeType("clij-pull-from-gpu", Clij2PullAlgorithm.class, UIUtils.getIconURLFromResources("apps/clij.png"));
 
-        registerApplicationSettingsSheet(CLIJSettings.ID,
+        registerSettingsSheet(CLIJSettings.ID,
                 "CLIJ2",
                 "Configure the GPU devices and how data is interchanged between ImageJ and CLIJ",
                 UIUtils.getIconFromResources("apps/clij.png"),

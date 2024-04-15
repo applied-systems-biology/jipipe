@@ -28,7 +28,7 @@ public class ImageViewerUITracksDisplaySettings extends AbstractJIPipeParameterC
     }
 
     public static ImageViewerUITracksDisplaySettings getInstance() {
-        return JIPipe.getSettings().getApplicationSettings(ID, ImageViewerUITracksDisplaySettings.class);
+        return JIPipe.getSettings().getSettings(ID, ImageViewerUITracksDisplaySettings.class);
     }
 
     @SetJIPipeDocumentation(name = "Track visualization")

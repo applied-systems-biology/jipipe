@@ -214,7 +214,7 @@ public class JIPipeImageViewer extends JPanel implements JIPipeDesktopWorkbenchA
             autoSwitchToggle.addActionListener(e -> {
                 settings.setAutoSwitch2D3DViewer(autoSwitchToggle.isSelected());
                 if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                    JIPipe.getSettings().saveApplicationSettings();
+                    JIPipe.getSettings().save();
                 }
             });
             switchModeMenu.add(autoSwitchToggle);

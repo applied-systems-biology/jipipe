@@ -133,7 +133,7 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerNodeTypeCategory(new FilamentsNodeTypeCategory());
-        registerApplicationSettingsSheet(ImageViewerUIFilamentDisplaySettings.ID,
+        registerSettingsSheet(ImageViewerUIFilamentDisplaySettings.ID,
                 "Filaments display",
                 "Settings for the filaments manager component of the JIPipe image viewer",
                 RESOURCES.getIconFromResources("data-type-filaments.png"),

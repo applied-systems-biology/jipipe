@@ -408,7 +408,7 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D implements JIP
             settings.setShowROI(displayROIViewMenuItem.getState());
             settings.setRenderROIAsVolume(displayROIAsVolumeItem.getState());
             if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                JIPipe.getSettings().saveApplicationSettings();
+                JIPipe.getSettings().save();
             }
         }
     }

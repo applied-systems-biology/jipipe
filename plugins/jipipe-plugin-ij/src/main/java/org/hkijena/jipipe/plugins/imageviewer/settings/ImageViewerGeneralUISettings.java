@@ -28,7 +28,7 @@ public class ImageViewerGeneralUISettings extends AbstractJIPipeParameterCollect
     private boolean autoSwitch2D3DViewer = false;
 
     public static ImageViewerGeneralUISettings getInstance() {
-        return JIPipe.getSettings().getApplicationSettings(ID, ImageViewerGeneralUISettings.class);
+        return JIPipe.getSettings().getSettings(ID, ImageViewerGeneralUISettings.class);
     }
 
     @SetJIPipeDocumentation(name = "Automatically select 2D/3D viewer", description = "If enabled, the viewer automatically switches to the 3D mode if 3D data is opened")
