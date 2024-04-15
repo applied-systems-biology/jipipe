@@ -5,8 +5,6 @@ PROJECT_DIR=../..
 
 pushd $PROJECT_DIR || exit
 JIPIPE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -Po "\d\.\d+\.\d+")
-OPENCV_DOWNLOAD="https://github.com/bytedeco/javacv/releases/download/1.5.8/javacv-platform-1.5.8-bin.zip"
-OPENCV_DIR=javacv-platform-1.5.8-bin
 popd || exit
 
 if [ ! -e "./dependencies/mslinks-1.0.5.jar" ]; then
@@ -225,19 +223,6 @@ if [ ! -e "./dependencies/LICENSE_mslinks.txt" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/LICENSE_mslinks.txt https://raw.githubusercontent.com/DmitriiShamrikov/mslinks/master/LICENSE
 fi
-if [ ! -e "$OPENCV_DIR" ]; then
-wget -O opencv.zip "$OPENCV_DOWNLOAD"
-unzip opencv.zip
-rm opencv.zip
-rm -rv $OPENCV_DIR/samples
-rm -rv $OPENCV_DIR/*.md
-rm -rv $OPENCV_DIR/*-android-*
-rm -rv $OPENCV_DIR/*-ios-*
-rm -rv $OPENCV_DIR/*-x86.jar
-rm -rv $OPENCV_DIR/*-arm.jar
-rm -rv $OPENCV_DIR/*-arm64.jar
-rm -rv $OPENCV_DIR/*-armhf.jar
-fi
 
 rm -r package
 mkdir package
@@ -249,10 +234,8 @@ for component in jipipe-core jipipe-desktop jipipe-cli jipipe-plugin-clij jipipe
 done
 
 cp -rv ./dependencies ./package/dependencies
-cp -rv $OPENCV_DIR/*.jar ./package/dependencies
 cp -v README.txt package
 cp -v ../../LICENSE package/LICENSE_JIPipe.txt
-cp -v $OPENCV_DIR/LICENSE.txt package/LICENSE_OpenCV.txt
 rm -r JIPipe-$JIPIPE_VERSION.zip
 pushd package || exit
 	zip -r ../JIPipe-$JIPIPE_VERSION.zip .
