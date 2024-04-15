@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -37,7 +38,7 @@ import org.hkijena.jipipe.plugins.opencv.utils.OpenCvImageUtils;
 import org.hkijena.jipipe.plugins.opencv.utils.OpenCvType;
 
 @SetJIPipeDocumentation(name = "Image inpainting", description = "Applies an algorithm for inpainting (content-aware fill) that attempts to fill in masked areas based on the surrounding image information")
-@ConfigureJIPipeNode(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Restore")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Restore")
 @AddJIPipeInputSlot(value = OpenCvImageData.class, slotName = "Input", create = true, description = "Input 8-bit, 16-bit unsigned or 32-bit float 1-channel or 8-bit 3-channel image. ")
 @AddJIPipeInputSlot(value = OpenCvImageData.class, slotName = "Mask", create = true, description = "Inpainting mask, 8-bit 1-channel image. Non-zero pixels indicate the area that needs to be inpainted.")
 @AddJIPipeOutputSlot(value = OpenCvImageData.class, slotName = "Output", create = true)
