@@ -13,17 +13,11 @@
 
 package org.hkijena.jipipe.plugins.opencv.utils;
 
-import com.google.common.primitives.Ints;
 import ij.ImagePlus;
 import ij.process.*;
-import net.imagej.opencv.MatToImgConverter;
-import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.img.display.imagej.ImageJFunctions;
 import org.bytedeco.javacpp.indexer.*;
-import org.bytedeco.opencv.global.opencv_core;
-import org.bytedeco.opencv.global.opencv_imgproc;
-import org.bytedeco.opencv.opencv_core.Mat;
-import org.bytedeco.opencv.opencv_core.MatVector;
+import org.bytedeco.javacpp.opencv_core;
+import org.bytedeco.javacpp.opencv_imgproc;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.opencv.datatypes.OpenCvImageData;
@@ -37,21 +31,21 @@ public class OpenCvImageUtils {
 
     }
 
-    public static int findNSlices(Map<ImageSliceIndex, Mat> images) {
+    public static int findNSlices(Map<ImageSliceIndex, opencv_core.Mat> images) {
         return images.keySet().stream().map(ImageSliceIndex::getZ).max(Comparator.naturalOrder()).orElse(-1) + 1;
     }
 
-    public static int findNFrames(Map<ImageSliceIndex, Mat> images) {
+    public static int findNFrames(Map<ImageSliceIndex, opencv_core.Mat> images) {
         return images.keySet().stream().map(ImageSliceIndex::getT).max(Comparator.naturalOrder()).orElse(-1) + 1;
     }
 
-    public static int findNChannels(Map<ImageSliceIndex, Mat> images) {
+    public static int findNChannels(Map<ImageSliceIndex, opencv_core.Mat> images) {
         return images.keySet().stream().map(ImageSliceIndex::getC).max(Comparator.naturalOrder()).orElse(-1) + 1;
     }
 
-    public static int findWidth(Collection<Mat> images) {
+    public static int findWidth(Collection<opencv_core.Mat> images) {
         int width = 0;
-        for (Mat image : images) {
+        for (opencv_core.Mat image : images) {
             if (width != 0 && width != image.cols()) {
                 throw new IllegalArgumentException("Inconsistent image width!");
             }
@@ -60,9 +54,9 @@ public class OpenCvImageUtils {
         return width;
     }
 
-    public static int findHeight(Collection<Mat> images) {
+    public static int findHeight(Collection<opencv_core.Mat> images) {
         int height = 0;
-        for (Mat image : images) {
+        for (opencv_core.Mat image : images) {
             if (height != 0 && height != image.rows()) {
                 throw new IllegalArgumentException("Inconsistent image height!");
             }
@@ -71,10 +65,10 @@ public class OpenCvImageUtils {
         return height;
     }
 
-    public static int findWidth(MatVector images) {
+    public static int findWidth(opencv_core.MatVector images) {
         int width = 0;
         for (long i = 0; i < images.size(); i++) {
-            Mat image = images.get(i);
+            opencv_core.Mat image = images.get(i);
             if (width != 0 && width != image.cols()) {
                 throw new IllegalArgumentException("Inconsistent image width!");
             }
@@ -83,10 +77,10 @@ public class OpenCvImageUtils {
         return width;
     }
 
-    public static int findHeight(MatVector images) {
+    public static int findHeight(opencv_core.MatVector images) {
         int height = 0;
         for (long i = 0; i < images.size(); i++) {
-            Mat image = images.get(i);
+            opencv_core.Mat image = images.get(i);
             if (height != 0 && height != image.rows()) {
                 throw new IllegalArgumentException("Inconsistent image height!");
             }
@@ -95,7 +89,7 @@ public class OpenCvImageUtils {
         return height;
     }
 
-    public static Mat toMat(ImageProcessor processor) {
+    public static opencv_core.Mat toMat(ImageProcessor processor) {
 //        ImagePlus imagePlus = new ImagePlus("img", processor);
 //        Img wrapped = ImageJFunctions.wrap(imagePlus);
 //        return ImgToMatConverter.toMat(wrapped);
@@ -123,7 +117,7 @@ public class OpenCvImageUtils {
      * @param function     the function. The indices are ZERO-based
      * @param progressInfo the progress
      */
-    public static void forEachIndexedZCTSlice(OpenCvImageData img, BiConsumer<Mat, ImageSliceIndex> function, JIPipeProgressInfo progressInfo) {
+    public static void forEachIndexedZCTSlice(OpenCvImageData img, BiConsumer<opencv_core.Mat, ImageSliceIndex> function, JIPipeProgressInfo progressInfo) {
         if (img.getImages().size() > 1) {
             int iterationIndex = 0;
             for (int t = 0; t < img.getNumFrames(); t++) {
@@ -132,7 +126,7 @@ public class OpenCvImageUtils {
                         if (progressInfo.isCancelled())
                             return;
                         progressInfo.resolveAndLog("Slice", iterationIndex++, img.getSize()).log("z=" + z + ", c=" + c + ", t=" + t);
-                        Mat processor = img.getImage(c, z, t);
+                        opencv_core.Mat processor = img.getImage(c, z, t);
                         function.accept(processor, new ImageSliceIndex(c, z, t));
                     }
                 }
@@ -149,8 +143,8 @@ public class OpenCvImageUtils {
      * @param function     the function. The indices are ZERO-based
      * @param progressInfo the progress
      */
-    public static OpenCvImageData generateForEachIndexedZCTSlice(OpenCvImageData img, BiFunction<Mat, ImageSliceIndex, Mat> function, JIPipeProgressInfo progressInfo) {
-        Map<ImageSliceIndex, Mat> result = new HashMap<>();
+    public static OpenCvImageData generateForEachIndexedZCTSlice(OpenCvImageData img, BiFunction<opencv_core.Mat, ImageSliceIndex, opencv_core.Mat> function, JIPipeProgressInfo progressInfo) {
+        Map<ImageSliceIndex, opencv_core.Mat> result = new HashMap<>();
         if (img.getImages().size() > 1) {
             int iterationIndex = 0;
             for (int t = 0; t < img.getNumFrames(); t++) {
@@ -159,21 +153,21 @@ public class OpenCvImageUtils {
                         if (progressInfo.isCancelled())
                             return null;
                         progressInfo.resolveAndLog("Slice", iterationIndex++, img.getSize()).log("z=" + z + ", c=" + c + ", t=" + t);
-                        Mat processor = img.getImage(c, z, t);
+                        opencv_core.Mat processor = img.getImage(c, z, t);
                         ImageSliceIndex index = new ImageSliceIndex(c, z, t);
                         result.put(index, function.apply(processor, index));
                     }
                 }
             }
         } else {
-            Mat processor = img.getImage(0,0,0);
+            opencv_core.Mat processor = img.getImage(0,0,0);
             ImageSliceIndex index = new ImageSliceIndex(0,0,0);
             result.put(index, function.apply(processor, index));
         }
         return new OpenCvImageData(result);
     }
 
-    public static ImageProcessor toProcessor(Mat mat) {
+    public static ImageProcessor toProcessor(opencv_core.Mat mat) {
 //        return ImageJFunctions.wrap((RandomAccessibleInterval) MatToImgConverter.convert(mat), "img").getProcessor();
         if(mat.channels() == 3) {
             return convertMatToColorProcessor(mat);
@@ -194,13 +188,13 @@ public class OpenCvImageUtils {
         }
     }
 
-    public static ImagePlus toImagePlus(Mat mat) {
+    public static ImagePlus toImagePlus(opencv_core.Mat mat) {
         return new ImagePlus(mat.toString(), toProcessor(mat));
     }
 
-    public static Mat toGrayscale(Mat src, int type) {
+    public static opencv_core.Mat toGrayscale(opencv_core.Mat src, int type) {
         if(src.type() != type) {
-            Mat dst = new Mat();
+            opencv_core.Mat dst = new opencv_core.Mat();
             if(src.channels() == 3) {
                 opencv_imgproc.cvtColor(src, dst, opencv_imgproc.COLOR_BGR2GRAY);
             }
@@ -214,7 +208,7 @@ public class OpenCvImageUtils {
         return src;
     }
 
-    public static Mat toType(Mat src, OpenCvType type, OpenCvType... allowedTypes) {
+    public static opencv_core.Mat toType(opencv_core.Mat src, OpenCvType type, OpenCvType... allowedTypes) {
         List<Integer> allowedTypesList = new ArrayList<>();
         allowedTypesList.add(type.getNativeValue());
         for (OpenCvType allowedType : allowedTypes) {
@@ -222,7 +216,7 @@ public class OpenCvImageUtils {
         }
 
         if(!allowedTypesList.contains(src.type())) {
-            Mat dst = new Mat();
+            opencv_core.Mat dst = new opencv_core.Mat();
 
             // Channel conversion
             if(src.channels() == 3 && dst.channels() == 1) {
@@ -232,9 +226,9 @@ public class OpenCvImageUtils {
             }
             else if(src.channels() != type.getChannels()) {
                 // Expand the channels
-                MatVector toMerge = new MatVector();
+                opencv_core.MatVector toMerge = new opencv_core.MatVector();
                 for (int c = 0; c < type.getChannels(); c++) {
-                    Mat singleChannel = new Mat();
+                    opencv_core.Mat singleChannel = new opencv_core.Mat();
                     opencv_core.extractChannel(src, singleChannel, Math.min(c, src.channels() - 1));
                     toMerge.push_back(singleChannel);
                 }
@@ -252,14 +246,14 @@ public class OpenCvImageUtils {
         }
     }
 
-    public static Mat toMask(Mat src) {
+    public static opencv_core.Mat toMask(opencv_core.Mat src) {
         src = toGrayscale(src, opencv_core.CV_8U);
-        Mat mask = new Mat();
+        opencv_core.Mat mask = new opencv_core.Mat();
         opencv_imgproc.threshold(src, mask, 1, 255, opencv_imgproc.THRESH_BINARY);
         return mask;
     }
 
-    public static String getTypeName(Mat mat) {
+    public static String getTypeName(opencv_core.Mat mat) {
         String typeInfo = "";
         switch (mat.depth()) {
             case opencv_core.CV_8S:
@@ -287,24 +281,24 @@ public class OpenCvImageUtils {
         return typeInfo;
     }
 
-    public static Mat convertByteProcessorToMat(ByteProcessor byteProcessor) {
+    public static opencv_core.Mat convertByteProcessorToMat(ByteProcessor byteProcessor) {
         int width = byteProcessor.getWidth();
         int height = byteProcessor.getHeight();
 
         byte[] pixels = (byte[]) byteProcessor.getPixels();
 
-        Mat mat = new Mat(height, width, opencv_core.CV_8UC1);
+        opencv_core.Mat mat = new opencv_core.Mat(height, width, opencv_core.CV_8UC1);
         mat.data().put(pixels);
 
         return mat;
     }
 
-    public static Mat convertShortProcessorToMat(ShortProcessor shortProcessor) {
+    public static opencv_core.Mat convertShortProcessorToMat(ShortProcessor shortProcessor) {
         int width = shortProcessor.getWidth();
         int height = shortProcessor.getHeight();
 
         short[] pixels = (short[]) shortProcessor.getPixels();
-        Mat mat = new Mat(height, width, opencv_core.CV_16UC1);
+        opencv_core.Mat mat = new opencv_core.Mat(height, width, opencv_core.CV_16UC1);
 
         UShortRawIndexer matIndexer = mat.createIndexer();
         for (int y = 0; y < height; y++) {
@@ -316,12 +310,12 @@ public class OpenCvImageUtils {
         return mat;
     }
 
-    public static Mat convertFloatProcessorToMat(FloatProcessor floatProcessor) {
+    public static opencv_core.Mat convertFloatProcessorToMat(FloatProcessor floatProcessor) {
         int width = floatProcessor.getWidth();
         int height = floatProcessor.getHeight();
 
         float[] pixels = (float[]) floatProcessor.getPixels();
-        Mat mat = new Mat(height, width, opencv_core.CV_32FC1);
+        opencv_core.Mat mat = new opencv_core.Mat(height, width, opencv_core.CV_32FC1);
 
         FloatRawIndexer matIndexer = mat.createIndexer();
         for (int y = 0; y < height; y++) {
@@ -333,12 +327,12 @@ public class OpenCvImageUtils {
         return mat;
     }
 
-    public static Mat convertColorProcessorToMat(ColorProcessor colorProcessor) {
+    public static opencv_core.Mat convertColorProcessorToMat(ColorProcessor colorProcessor) {
         int width = colorProcessor.getWidth();
         int height = colorProcessor.getHeight();
 
         int[] pixels = (int[]) colorProcessor.getPixels();
-        Mat mat = new Mat(height, width, opencv_core.CV_8UC3);
+        opencv_core.Mat mat = new opencv_core.Mat(height, width, opencv_core.CV_8UC3);
 
         UByteRawIndexer matIndexer = mat.createIndexer();
         for (int y = 0; y < height; y++) {
@@ -353,9 +347,9 @@ public class OpenCvImageUtils {
         return mat;
     }
 
-    public static ByteProcessor convertMatToByteProcessor(Mat mat) {
+    public static ByteProcessor convertMatToByteProcessor(opencv_core.Mat mat) {
         // Convert Mat to CV_8U format if necessary
-        Mat cv8UImage = new Mat();
+        opencv_core.Mat cv8UImage = new opencv_core.Mat();
         if (mat.depth() != opencv_core.CV_8U) {
             mat.convertTo(cv8UImage, opencv_core.CV_8U);
         } else {
@@ -382,9 +376,9 @@ public class OpenCvImageUtils {
         return byteProcessor;
     }
 
-    public static ShortProcessor convertMatToShortProcessor(Mat mat) {
+    public static ShortProcessor convertMatToShortProcessor(opencv_core.Mat mat) {
         // Convert Mat to CV_16U format if necessary
-        Mat cv16UImage = new Mat();
+        opencv_core.Mat cv16UImage = new opencv_core.Mat();
         if (mat.depth() != opencv_core.CV_16U) {
             mat.convertTo(cv16UImage, opencv_core.CV_16U);
         } else {
@@ -411,9 +405,9 @@ public class OpenCvImageUtils {
         return shortProcessor;
     }
 
-    public static FloatProcessor convertMatToFloatProcessor(Mat mat) {
+    public static FloatProcessor convertMatToFloatProcessor(opencv_core.Mat mat) {
         // Convert Mat to CV_16U format if necessary
-        Mat cv32FImage = new Mat();
+        opencv_core.Mat cv32FImage = new opencv_core.Mat();
         if (mat.depth() != opencv_core.CV_32F) {
             mat.convertTo(cv32FImage, opencv_core.CV_32F);
         } else {
@@ -440,9 +434,9 @@ public class OpenCvImageUtils {
         return floatProcessor;
     }
 
-    public static ColorProcessor convertMatToColorProcessor(Mat mat) {
+    public static ColorProcessor convertMatToColorProcessor(opencv_core.Mat mat) {
         // Convert Mat to CV_8UC3 format if necessary
-        Mat cv8UC3Image = new Mat();
+        opencv_core.Mat cv8UC3Image = new opencv_core.Mat();
         if (mat.channels() == 1) {
             opencv_imgproc.cvtColor(mat, cv8UC3Image, opencv_imgproc.COLOR_GRAY2BGR);
         } else if (mat.depth() != opencv_core.CV_8U) {

@@ -1,8 +1,7 @@
 package org.hkijena.jipipe.plugins.opencv.nodes.generators;
 
-import org.bytedeco.opencv.global.opencv_imgproc;
-import org.bytedeco.opencv.opencv_core.Mat;
-import org.bytedeco.opencv.opencv_core.Size;
+import org.bytedeco.javacpp.opencv_core;
+import org.bytedeco.javacpp.opencv_imgproc;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -58,7 +57,7 @@ public class GaussianKernelGenerator extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        Mat gaussianKernel = opencv_imgproc.getGaussianKernel(size, sigma, OpenCvDepth.CV_32F.getNativeValue());
+        opencv_core.Mat gaussianKernel = opencv_imgproc.getGaussianKernel(size, sigma, OpenCvDepth.CV_32F.getNativeValue());
         iterationStep.addOutputData(getFirstOutputSlot(), new OpenCvImageData(gaussianKernel), progressInfo);
     }
 }

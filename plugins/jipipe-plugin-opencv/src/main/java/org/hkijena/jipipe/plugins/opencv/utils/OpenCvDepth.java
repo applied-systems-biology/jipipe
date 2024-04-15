@@ -13,7 +13,8 @@
 
 package org.hkijena.jipipe.plugins.opencv.utils;
 
-import org.bytedeco.opencv.global.opencv_core;
+
+import org.bytedeco.javacpp.opencv_core;
 
 public enum OpenCvDepth {
     CV_8U(opencv_core.CV_8U),

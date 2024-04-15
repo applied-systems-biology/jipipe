@@ -13,10 +13,9 @@
 
 package org.hkijena.jipipe.plugins.opencv.nodes;
 
-import org.bytedeco.opencv.global.opencv_core;
-import org.bytedeco.opencv.global.opencv_photo;
-import org.bytedeco.opencv.global.opencv_xphoto;
-import org.bytedeco.opencv.opencv_core.Mat;
+import org.bytedeco.javacpp.opencv_core;
+import org.bytedeco.javacpp.opencv_photo;
+import org.bytedeco.javacpp.opencv_xphoto;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -64,12 +63,12 @@ public class InpaintingAlgorithm extends JIPipeIteratingAlgorithm {
         OpenCvImageData inputImage = iterationStep.getInputData("Input", OpenCvImageData.class, progressInfo);
         OpenCvImageData maskImage = iterationStep.getInputData("Mask", OpenCvImageData.class, progressInfo);
         OpenCvImageData outputImage = OpenCvImageUtils.generateForEachIndexedZCTSlice(inputImage, (src_, index) -> {
-            Mat src = OpenCvImageUtils.toType(src_, OpenCvType.CV_8UC3, OpenCvType.CV_8U, OpenCvType.CV_16U, OpenCvType.CV_32F);
-            Mat mask = OpenCvImageUtils.toMask(maskImage.getImageOrExpand(index));
+            opencv_core.Mat src = OpenCvImageUtils.toType(src_, OpenCvType.CV_8UC3, OpenCvType.CV_8U, OpenCvType.CV_16U, OpenCvType.CV_32F);
+            opencv_core.Mat mask = OpenCvImageUtils.toMask(maskImage.getImageOrExpand(index));
 
-            Mat dst = new Mat();
+            opencv_core.Mat dst = new opencv_core.Mat();
             if(method.isxPhoto()) {
-                Mat invertedMask = new Mat();
+                opencv_core.Mat invertedMask = new opencv_core.Mat();
                 opencv_core.bitwise_not(mask, invertedMask);
                 opencv_xphoto.inpaint(src, invertedMask, dst, method.nativeValue);
             }
@@ -120,9 +119,9 @@ public class InpaintingAlgorithm extends JIPipeIteratingAlgorithm {
     public enum Method {
         TeleaEtAl(opencv_photo.INPAINT_TELEA, false),
         NavierStokesEtAl(opencv_photo.INPAINT_NS, false),
-        ShiftMap(opencv_xphoto.INPAINT_SHIFTMAP, true),
-        FSRFast(opencv_xphoto.INPAINT_FSR_FAST, true),
-        FSRBest(opencv_xphoto.INPAINT_FSR_BEST, true);
+        ShiftMap(opencv_xphoto.INPAINT_SHIFTMAP, true);
+//        FSRFast(2, true),
+//        FSRBest(1, true);
 
         private final int nativeValue;
         private final boolean xPhoto;

@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.plugins.opencv.utils;
 
-import org.bytedeco.opencv.global.opencv_core;
+
+import org.bytedeco.javacpp.opencv_core;
 
 public enum OpenCvBorderType {
     Constant(opencv_core.BORDER_CONSTANT),

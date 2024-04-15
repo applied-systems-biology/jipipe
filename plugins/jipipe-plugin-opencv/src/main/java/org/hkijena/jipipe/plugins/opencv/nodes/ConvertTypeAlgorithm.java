@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.plugins.opencv.nodes;
 
-import org.bytedeco.opencv.opencv_core.Mat;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
