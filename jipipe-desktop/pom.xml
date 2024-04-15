@@ -132,6 +132,11 @@
                 <artifactId>jogl-all-natives-windows-amd64</artifactId>
                 <version>2.4.0-rc-20210111</version>
             </dependency>
+            <dependency>
+                <groupId>org.bytedeco.javacpp-presets</groupId>
+                <artifactId>opencv</artifactId>
+                <version>3.4.2-1.4.2</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -321,7 +326,7 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>org.bytedeco</groupId>
+            <groupId>org.bytedeco.javacpp-presets</groupId>
             <artifactId>opencv</artifactId>
             <scope>runtime</scope>
         </dependency>

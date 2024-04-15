@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.opencv.nodes;
 
-import org.bytedeco.opencv.opencv_core.Mat;
+import org.bytedeco.javacpp.opencv_core;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -62,7 +62,7 @@ public class ConvertDepthAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         OpenCvImageData inputData = iterationStep.getInputData(getFirstInputSlot(), OpenCvImageData.class, progressInfo);
         OpenCvImageData outputData = OpenCvImageUtils.generateForEachIndexedZCTSlice(inputData, (src, index) -> {
-            Mat dst = new Mat();
+            opencv_core.Mat dst = new opencv_core.Mat();
             src.convertTo(dst, depth.getNativeValue());
             return dst;
         }, progressInfo);
