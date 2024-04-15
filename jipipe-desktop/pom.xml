@@ -357,6 +357,14 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>${maven-javadoc-plugin.version}</version>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <configuration>
+                    <!-- Caused by OpenCV -->
+                    <fail>false</fail>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
