@@ -1185,10 +1185,10 @@ public class ImageJUtils {
 
 
     /**
-     * Runs the function for each Z, C, and T slice.
+     * Runs the function for each C, and T slice.
      *
      * @param img          the image
-     * @param function     the function. The indices are ZERO-based
+     * @param function     the function. The indices are ZERO-based (Z is always -1)
      * @param progressInfo the progress
      */
     public static void forEachIndexedCTStack(ImagePlus img, TriConsumer<ImagePlus, ImageSliceIndex, JIPipeProgressInfo> function, JIPipeProgressInfo progressInfo) {
@@ -1205,7 +1205,7 @@ public class ImageJUtils {
                 }
             }
         } else {
-            function.accept(img, new ImageSliceIndex(0, 0, 0), progressInfo);
+            function.accept(img, new ImageSliceIndex(0, -1, 0), progressInfo);
         }
     }
 

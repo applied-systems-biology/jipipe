@@ -250,6 +250,7 @@ public class CLIJPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerMenuExtension(CLIJControlPanelJIPipeDesktopMenuExtension.class);
 
         registerNodeExamplesFromResources(RESOURCES, "examples");
+        registerEnumParameterType("clij-split-mode", CLIJSplitMode.class, "CLIJ Split mode", "Determines how/if images are split prior to executing the algorithm");
     }
 
     private void registerAlgorithms(JIPipeProgressInfo progressInfo) {
