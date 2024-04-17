@@ -25,4 +25,4 @@ maven_package:
     - ./build.sh
   artifacts:
     paths:
-      - JIPipe-${PROJECT_VERSION}.zip
+      - dist/zip/JIPipe-${PROJECT_VERSION}.zip
