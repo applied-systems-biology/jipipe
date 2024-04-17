@@ -6,7 +6,7 @@ stages:
 
 variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
-  PROJECT_VERSION: $(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -Po "\d\.\d+\.\d+")
+  PROJECT_VERSION: "4.0.0"
 
 cache:
   paths:
