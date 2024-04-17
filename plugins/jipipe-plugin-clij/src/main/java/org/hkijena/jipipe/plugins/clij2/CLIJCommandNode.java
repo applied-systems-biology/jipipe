@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.plugins.clij2;
 
+import ij.ImagePlus;
+import ij.process.ImageProcessor;
 import net.haesleinhuepf.clij.clearcl.ClearCLBuffer;
 import net.haesleinhuepf.clij.macro.CLIJImageJProcessor;
 import net.haesleinhuepf.clij.macro.CLIJMacroPlugin;
@@ -23,6 +25,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -35,15 +38,17 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.plugins.clij2.datatypes.CLIJImageData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.BooleanParameterSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.scijava.InstantiableException;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
 
+    public static final String RESULTS_TABLE_SLOT_NAME = "Results table";
     private final JIPipeDynamicParameterCollection clijParameters;
     private CLIJMacroPlugin pluginInstance;
     private boolean avoidGPUMemory = true;
@@ -206,87 +211,182 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
             args[argIndex] = clijParameters.getParameter(key).get(Object.class);
         }
 
-        if (avoidGPUMemory) {
-            Map<String, ClearCLBuffer> outputs = new HashMap<>();
+        // Handle the case where there are no image inputs
+        boolean hasImageInputs = getInputSlots().stream().anyMatch(slot -> slot.getAcceptedDataType() == ImagePlusData.class);
 
+        if (avoidGPUMemory && hasImageInputs) {
+
+            Map<String, ImagePlus> inputImages = new HashMap<>();
+            int numC = 0;
+            int numZ = 0;
+            int numT = 0;
             for (JIPipeDataSlot inputSlot : getInputSlots()) {
-                int argIndex = info.getInputSlotToArgIndexMap().get(inputSlot.getName());
-
-                // TODO: splitting
-                ImagePlusData cpuImageData = iterationStep.getInputData(inputSlot, ImagePlusData.class, progressInfo);
-                CLIJ2 clij = CLIJ2.getInstance();
-                if (info.getIoInputSlots().contains(inputSlot.getName())) {
-                    outputs.put(inputSlot.getName(), clij.push(cpuImageData.getImage()));
-                }
-                args[argIndex] = clij.push(cpuImageData.getImage());
+                ImagePlus imp = iterationStep.getInputData(inputSlot, ImagePlusData.class, progressInfo).getImage();
+                inputImages.put(inputSlot.getName(), imp);
+                numC = Math.max(numC, imp.getNChannels());
+                numZ = Math.max(numZ, imp.getNSlices());
+                numT = Math.max(numT, imp.getNFrames());
             }
 
-            // TODO: loop through splits
+            Map<String, Map<ImageSliceIndex, ImagePlus>> splitInputImages = new HashMap<>();
+            if(splitMode == CLIJSplitMode.None) {
+                for (Map.Entry<String, ImagePlus> entry : inputImages.entrySet()) {
+                    Map<ImageSliceIndex, ImagePlus> splitMap = new HashMap<>();
+                    splitMap.put(new ImageSliceIndex(0,0,0), entry.getValue());
+                    splitInputImages.put(entry.getKey(), splitMap);
+                }
+            }
+            else if(splitMode == CLIJSplitMode.To3D) {
+                for (Map.Entry<String, ImagePlus> entry : inputImages.entrySet()) {
+                    Map<ImageSliceIndex, ImagePlus> splitMap = splitInputImages.getOrDefault(entry.getKey(), null);
+                    if(splitMap == null) {
+                        splitMap = new HashMap<>();
+                        splitInputImages.put(entry.getKey(), splitMap);
+                    }
+                    Map<ImageSliceIndex, ImagePlus> finalSplitMap = splitMap;
+                    ImagePlus expandedImage = ImageJUtils.ensureSize(entry.getValue(), numC, numZ, numT, equalizeReplicateLast);
+                    ImageJUtils.forEachIndexedCTStack(expandedImage, (imp, index, impProgress)-> {
+                        finalSplitMap.put(new ImageSliceIndex(index.getC(), 0, index.getT()), imp);
+                    }, progressInfo.resolve("Split into 3D"));
+                }
+            }
+            else if(splitMode == CLIJSplitMode.To2D) {
+                for (Map.Entry<String, ImagePlus> entry : inputImages.entrySet()) {
+                    Map<ImageSliceIndex, ImagePlus> splitMap = splitInputImages.getOrDefault(entry.getKey(), null);
+                    if(splitMap == null) {
+                        splitMap = new HashMap<>();
+                        splitInputImages.put(entry.getKey(), splitMap);
+                    }
+                    Map<ImageSliceIndex, ImagePlus> finalSplitMap = splitMap;
+                    ImagePlus expandedImage = ImageJUtils.ensureSize(entry.getValue(), numC, numZ, numT, equalizeReplicateLast);
+                    ImageJUtils.forEachIndexedZCTSlice(expandedImage, (ip, index )-> {
+                        finalSplitMap.put(index, new ImagePlus("slice", ip));
+                    }, progressInfo.resolve("Split into 2D"));
+                }
+            }
+            else {
+                throw new UnsupportedOperationException();
+            }
 
-            // Prepare outputs (dst buffer)
-            ClearCLBuffer referenceImage = null;
-            for (Object arg : args) {
-                if (arg instanceof ClearCLBuffer) {
-                    referenceImage = (ClearCLBuffer) arg;
+            Map<String, Map<ImageSliceIndex, ImageProcessor>> outputImages = new HashMap<>();
+            ResultsTableData outputTable = new ResultsTableData();
+
+            // Prepare output table
+            for (CLIJCommandNodeInfo.OutputTableColumnInfo columnInfo : info.getOutputTableColumnInfos()) {
+                outputTable.addColumn(columnInfo.getName(), columnInfo.isStringColumn());
+            }
+
+            List<ImageSliceIndex> splitSliceIndices = new ArrayList<>(splitInputImages.get(splitInputImages.keySet().iterator().next()).keySet());
+            for (int j = 0; j < splitSliceIndices.size(); j++) {
+                ImageSliceIndex splitSliceIndex = splitSliceIndices.get(j);
+                JIPipeProgressInfo splitProgress = progressInfo.resolveAndLog(splitSliceIndex.toString(), j, splitSliceIndices.size());
+                try {
+                    Map<String, ClearCLBuffer> outputs = new HashMap<>();
+
+                    for (JIPipeDataSlot inputSlot : getInputSlots()) {
+                        int argIndex = info.getInputSlotToArgIndexMap().get(inputSlot.getName());
+
+                        ImagePlus splitImage = splitInputImages.get(inputSlot.getName()).get(splitSliceIndex);
+                        CLIJ2 clij = CLIJ2.getInstance();
+                        if (info.getIoInputSlots().contains(inputSlot.getName())) {
+                            outputs.put(inputSlot.getName(), clij.push(splitImage));
+                        }
+                        args[argIndex] = clij.push(splitImage);
+                    }
+
+                    // Prepare outputs (dst buffer)
+                    ClearCLBuffer referenceBuffer = null;
+                    for (Object arg : args) {
+                        if (arg instanceof ClearCLBuffer) {
+                            referenceBuffer = (ClearCLBuffer) arg;
+                            break;
+                        }
+                    }
+
+                    for (JIPipeDataSlot outputSlot : getOutputSlots()) {
+                        if (outputs.containsKey(outputSlot.getName()))
+                            continue;
+                        if (outputSlot.getName().equals(RESULTS_TABLE_SLOT_NAME))
+                            continue;
+                        int argIndex = info.getOutputSlotToArgIndexMap().get(outputSlot.getName());
+                        ClearCLBuffer buffer = pluginInstance.createOutputBufferFromSource(referenceBuffer);
+                        args[argIndex] = buffer;
+                        outputs.put(outputSlot.getName(), buffer);
+                    }
+
+                    // Run algorithm
+                    splitProgress.log("Running " + pluginInstance);
+                    if (pluginInstance instanceof CLIJOpenCLProcessor) {
+                        ((CLIJOpenCLProcessor) pluginInstance).executeCL();
+                    } else if (pluginInstance instanceof CLIJImageJProcessor) {
+                        ((CLIJImageJProcessor) pluginInstance).executeIJ();
+                    } else {
+                        throw new UnsupportedOperationException("Unable to run CLIJ plugin of type " + pluginInstance.getClass());
+                    }
+                    splitProgress.log("Extracting outputs");
+
+                    // Extract image outputs and store them into the global storage
+                    for (JIPipeOutputDataSlot outputSlot : getOutputSlots()) {
+                        ClearCLBuffer buffer = outputs.get(outputSlot.getName());
+                        CLIJImageData imageData = new CLIJImageData(buffer);
+                        ImagePlus img = imageData.pull().getImage();
+                        Map<ImageSliceIndex, ImageProcessor> outputSlices = outputImages.getOrDefault(outputSlot.getName(), null);
+                        if(outputSlices == null) {
+                            outputSlices = new HashMap<>();
+                            outputImages.put(outputSlot.getName(), outputSlices);
+                        }
+                        Map<ImageSliceIndex, ImageProcessor> finalOutputSlices = outputSlices;
+                        ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
+                            ImageSliceIndex globalSliceIndex = new ImageSliceIndex(splitSliceIndex.getC() + index.getC(),
+                                    splitSliceIndex.getZ() + index.getZ(),
+                                    splitSliceIndex.getT() + index.getT());
+                            finalOutputSlices.put(globalSliceIndex, ip);
+                        }, splitProgress);
+                    }
+
+                    // Extract results table
+                    if (!info.getOutputTableColumnInfos().isEmpty()) {
+                        outputTable.addRow();
+                        for (CLIJCommandNodeInfo.OutputTableColumnInfo columnInfo : info.getOutputTableColumnInfos()) {
+                            Object value = args[columnInfo.getArgIndex()];
+                            outputTable.setValueAt(value, 0, columnInfo.getName());
+                        }
+                    }
+
+                } finally {
+
+                    // Cleanup all images
+                    for (int i = 0; i < args.length; i++) {
+                        Object arg = args[i];
+                        if (arg instanceof ClearCLBuffer) {
+                            ((ClearCLBuffer) arg).close();
+                            args[i] = null;
+                        }
+                    }
+                }
+            }
+
+            progressInfo.log("Writing merged outputs");
+
+            // Output images
+            ImagePlus referenceInputImage = null;
+            for (JIPipeInputDataSlot inputSlot : getInputSlots()) {
+                if(inputSlot.getAcceptedDataType() == ImagePlusData.class) {
+                    referenceInputImage = iterationStep.getInputData(inputSlot, ImagePlusData.class, progressInfo).getImage();
                     break;
                 }
             }
-
-            for (JIPipeDataSlot outputSlot : getOutputSlots()) {
-                if (outputs.containsKey(outputSlot.getName()))
-                    continue;
-                if (outputSlot.getName().equals("Results table"))
-                    continue;
-                int argIndex = info.getOutputSlotToArgIndexMap().get(outputSlot.getName());
-                ClearCLBuffer buffer = pluginInstance.createOutputBufferFromSource(referenceImage);
-                args[argIndex] = buffer;
-                outputs.put(outputSlot.getName(), buffer);
-            }
-
-            // Run algorithm
-            if (pluginInstance instanceof CLIJOpenCLProcessor) {
-                ((CLIJOpenCLProcessor) pluginInstance).executeCL();
-            } else if (pluginInstance instanceof CLIJImageJProcessor) {
-                ((CLIJImageJProcessor) pluginInstance).executeIJ();
-            } else {
-                throw new UnsupportedOperationException("Unable to run CLIJ plugin of type " + pluginInstance.getClass());
-            }
-
-            // Extract outputs
-            for (JIPipeOutputDataSlot outputSlot : getOutputSlots()) {
-                ClearCLBuffer buffer = outputs.get(outputSlot.getName());
-                CLIJImageData imageData = new CLIJImageData(buffer);
-                if (!avoidGPUMemory) {
-                    iterationStep.addOutputData(outputSlot, imageData, progressInfo);
-                } else {
-                    iterationStep.addOutputData(outputSlot, imageData.pull(), progressInfo);
+            for (Map.Entry<String, Map<ImageSliceIndex, ImageProcessor>> entry : outputImages.entrySet()) {
+                ImagePlus merged = ImageJUtils.mergeMappedSlices(entry.getValue());
+                if(referenceInputImage != null) {
+                    merged.copyScale(referenceInputImage);
                 }
+                iterationStep.addOutputData(entry.getKey(), new ImagePlusData(merged), progressInfo);
             }
 
-            // Extract outputs table
+            // Write output table into slot
             if (!info.getOutputTableColumnInfos().isEmpty()) {
-                ResultsTableData resultsTableData = new ResultsTableData();
-                for (CLIJCommandNodeInfo.OutputTableColumnInfo columnInfo : info.getOutputTableColumnInfos()) {
-                    resultsTableData.addColumn(columnInfo.getName(), columnInfo.isStringColumn());
-                }
-                resultsTableData.addRow();
-                for (CLIJCommandNodeInfo.OutputTableColumnInfo columnInfo : info.getOutputTableColumnInfos()) {
-                    Object value = args[columnInfo.getArgIndex()];
-                    resultsTableData.setValueAt(value, 0, columnInfo.getName());
-                }
-                iterationStep.addOutputData("Results table", resultsTableData, progressInfo);
-            }
-
-            for (Object arg : args) {
-                if (arg instanceof ClearCLBuffer) {
-                    ((ClearCLBuffer) arg).close();
-                }
-            }
-            for (JIPipeDataSlot outputSlot : getOutputSlots()) {
-                ClearCLBuffer buffer = outputs.get(outputSlot.getName());
-                if (buffer != null) {
-                    buffer.close();
-                }
+                iterationStep.addOutputData(RESULTS_TABLE_SLOT_NAME, outputTable, progressInfo);
             }
 
         } else {
@@ -315,7 +415,7 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
             for (JIPipeDataSlot outputSlot : getOutputSlots()) {
                 if (outputs.containsKey(outputSlot.getName()))
                     continue;
-                if (outputSlot.getName().equals("Results table"))
+                if (outputSlot.getName().equals(RESULTS_TABLE_SLOT_NAME))
                     continue;
                 int argIndex = info.getOutputSlotToArgIndexMap().get(outputSlot.getName());
                 ClearCLBuffer buffer = pluginInstance.createOutputBufferFromSource(referenceImage);
@@ -354,7 +454,7 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
                     Object value = args[columnInfo.getArgIndex()];
                     resultsTableData.setValueAt(value, 0, columnInfo.getName());
                 }
-                iterationStep.addOutputData("Results table", resultsTableData, progressInfo);
+                iterationStep.addOutputData(RESULTS_TABLE_SLOT_NAME, resultsTableData, progressInfo);
             }
         }
 
