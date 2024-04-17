@@ -9,6 +9,8 @@ variables:
   PROJECT_VERSION: $(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -Po "\d\.\d+\.\d+")
 
 before_script:
+  - apt-get update
+  - apt-get install -y zip
   - mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 
 maven_package:
