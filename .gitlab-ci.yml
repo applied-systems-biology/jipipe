@@ -8,6 +8,10 @@ variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
   PROJECT_VERSION: $(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -Po "\d\.\d+\.\d+")
 
+cache:
+  paths:
+    - .m2/repository
+
 before_script:
   - apt-get update
   - apt-get install -y zip
