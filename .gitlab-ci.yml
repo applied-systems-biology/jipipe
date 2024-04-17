@@ -1,0 +1,22 @@
+image: maven:3-eclipse-temurin-8-focal
+
+stages:
+  - build
+  - package
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+  PROJECT_VERSION: $(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -Po "\d\.\d+\.\d+")
+
+before_script:
+  - mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+
+maven_package:
+  stage: package
+  script:
+    - mvn package
+    - cd dist/zip
+    - ./build.sh
+  artifacts:
+    paths:
+      - JIPipe-${PROJECT_VERSION}.zip
