@@ -124,6 +124,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
     private final JIPipeExtensionRegistry extensionRegistry;
     private final JIPipeGraphEditorToolRegistry graphEditorToolRegistry;
     private final JIPipeProjectTemplateRegistry projectTemplateRegistry;
+    private final JIPipeArtifactsRegistry artifactsRegistry;
 
     private final JIPipeMetadataRegistry metadataRegistry;
     private final DatatypeRegisteredEventEmitter datatypeRegisteredEventEmitter = new DatatypeRegisteredEventEmitter();
@@ -154,6 +155,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
         projectTemplateRegistry = new JIPipeProjectTemplateRegistry(this);
         graphEditorToolRegistry = new JIPipeGraphEditorToolRegistry(this);
         metadataRegistry = new JIPipeMetadataRegistry(this);
+        artifactsRegistry = new JIPipeArtifactsRegistry(this);
     }
 
     /**
@@ -1523,5 +1525,10 @@ public class JIPipe extends AbstractService implements JIPipeService {
     @Override
     public JIPipeUtilityRegistry getUtilityRegistry() {
         return utilityRegistry;
+    }
+
+    @Override
+    public JIPipeArtifactsRegistry getArtifactsRegistry() {
+        return artifactsRegistry;
     }
 }
