@@ -13,14 +13,19 @@
 
 package org.hkijena.jipipe.desktop.app.plugins;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.api.artifacts.JIPipeArtifactDownload;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
 
-public class JIPipeDesktopManagePluginsButton extends JButton implements JIPipeDesktopWorkbenchAccess {
+public class JIPipeDesktopManagePluginsButton extends JButton implements JIPipeDesktopWorkbenchAccess, ActionListener {
 
     private final JIPipeDesktopWorkbench workbench;
 
@@ -33,6 +38,7 @@ public class JIPipeDesktopManagePluginsButton extends JButton implements JIPipeD
         UIUtils.setStandardButtonBorder(this);
         setText("Plugins");
         setIcon(UIUtils.getIconFromResources("actions/preferences-plugin.png"));
+        addActionListener(this);
     }
 
     @Override
@@ -43,5 +49,11 @@ public class JIPipeDesktopManagePluginsButton extends JButton implements JIPipeD
     @Override
     public JIPipeDesktopWorkbench getDesktopWorkbench() {
         return workbench;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        List<JIPipeArtifactDownload> downloads = JIPipe.getInstance().getArtifactsRegistry().queryRepositories(null, null, null);
+        System.out.println();
     }
 }

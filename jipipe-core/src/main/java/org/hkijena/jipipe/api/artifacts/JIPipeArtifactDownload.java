@@ -22,6 +22,7 @@ public class JIPipeArtifactDownload {
     private String artifactId;
     private String version;
     private String classifier;
+    private long size;
 
     public JIPipeArtifactDownload() {
     }
@@ -32,6 +33,7 @@ public class JIPipeArtifactDownload {
         this.artifactId = other.artifactId;
         this.version = other.version;
         this.classifier = other.classifier;
+        this.size = other.size;
     }
 
     @JsonGetter("url")
@@ -86,5 +88,20 @@ public class JIPipeArtifactDownload {
 
     public String getFullId() {
         return  getGroupId() + "." + getArtifactId() + ":" + getVersion() + "-" + getClassifier();
+    }
+
+    @JsonGetter("size")
+    public long getSize() {
+        return size;
+    }
+
+    @JsonSetter("size")
+    public void setSize(long size) {
+        this.size = size;
+    }
+
+    @Override
+    public String toString() {
+        return "Artifact download " + getFullId();
     }
 }
