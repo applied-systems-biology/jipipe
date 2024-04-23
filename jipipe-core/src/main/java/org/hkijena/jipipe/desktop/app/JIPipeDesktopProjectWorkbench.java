@@ -13,9 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app;
 
-import net.imagej.ui.swing.updater.ImageJUpdater;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeJsonPlugin;
 import org.hkijena.jipipe.JIPipeService;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
@@ -39,7 +37,6 @@ import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheManagerUI;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopAlgorithmCompendiumUI;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDataTypeCompendiumUI;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopWelcomePanel;
-import org.hkijena.jipipe.desktop.app.extensions.JIPipeDesktopModernPluginManagerUI;
 import org.hkijena.jipipe.desktop.app.extensions.JIPipeDesktopPluginValidityCheckerPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.compartments.JIPipeCompartmentsGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.JIPipePipelineGraphEditorUI;
@@ -59,10 +56,8 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopReloadableVali
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
-import org.hkijena.jipipe.desktop.commons.ijupdater.JIPipeDesktopImageJUpdaterPluginManagerUI;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopNotificationButton;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopWorkbenchNotificationInboxUI;
-import org.hkijena.jipipe.desktop.jsonextensionbuilder.JIPipeDesktopJsonExtensionWindow;
 import org.hkijena.jipipe.desktop.jsonextensionbuilder.extensionbuilder.JIPipeDesktopJsonExporter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
@@ -631,7 +626,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         runProjectButton.setToolTipText("Runs the whole pipeline");
         UIUtils.setStandardButtonBorder(runProjectButton);
 
-        runProjectButton.addActionListener(e -> openRunUI());
+        runProjectButton.addActionListener(e -> runWholeProject());
         menu.add(runProjectButton);
 
         // Plugins/artifacts management
@@ -929,7 +924,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         }
     }
 
-    private void openRunUI() {
+    public void runWholeProject() {
         JIPipeDesktopRunSettingsUI ui = new JIPipeDesktopRunSettingsUI(this);
         documentTabPane.addTab("Run", UIUtils.getIconFromResources("actions/run-build.png"), ui,
                 JIPipeDesktopTabPane.CloseMode.withAskOnCloseButton, true);

@@ -2161,6 +2161,12 @@ public class UIUtils {
                         BorderFactory.createEmptyBorder(3, 3, 3, 3))));
     }
 
+    public static Border createButtonBorder(Color color) {
+        return BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
+                BorderFactory.createCompoundBorder(new RoundedLineBorder(color, 1, 5),
+                        BorderFactory.createEmptyBorder(3, 3, 3, 3)));
+    }
+
 
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {
         private final Component component;

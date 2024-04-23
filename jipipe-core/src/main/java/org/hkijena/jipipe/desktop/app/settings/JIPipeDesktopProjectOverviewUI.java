@@ -32,6 +32,7 @@ import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.SizeFitMode;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
 import java.awt.*;
@@ -415,6 +416,14 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         openSettingsButton.setToolTipText("Opens the JIPipe application settings dialog");
         openSettingsButton.addActionListener(e -> getDesktopProjectWorkbench().openApplicationSettings(null));
         toolBar.add(openSettingsButton);
+
+        JButton runProjectButton = new JButton("Run project", UIUtils.getIconFromResources("actions/play.png"));
+        runProjectButton.setOpaque(false);
+        runProjectButton.setBackground(new Color(0, 0, 0, 0));
+        runProjectButton.setBorder(UIUtils.createButtonBorder(new Color(0x5CB85C)));
+        runProjectButton.setToolTipText("Runs the whole project");
+        runProjectButton.addActionListener(e -> getDesktopProjectWorkbench().runWholeProject());
+        toolBar.add(runProjectButton);
 
         topPanel.add(toolBar, BorderLayout.SOUTH);
     }
