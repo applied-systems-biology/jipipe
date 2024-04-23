@@ -43,6 +43,7 @@ import org.hkijena.jipipe.desktop.app.extensions.JIPipeDesktopModernPluginManage
 import org.hkijena.jipipe.desktop.app.extensions.JIPipeDesktopPluginValidityCheckerPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.compartments.JIPipeCompartmentsGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.JIPipePipelineGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.plugins.JIPipeDesktopManagePluginsButton;
 import org.hkijena.jipipe.desktop.app.project.JIPipeDesktopJIPipeProjectTabMetadata;
 import org.hkijena.jipipe.desktop.app.project.JIPipeDesktopLoadResultDirectoryIntoCacheRun;
 import org.hkijena.jipipe.desktop.app.project.JIPipeDesktopLoadResultZipIntoCacheRun;
@@ -96,7 +97,6 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     public static final String TAB_INTRODUCTION = "INTRODUCTION";
     public static final String TAB_LICENSE = "LICENSE";
     public static final String TAB_COMPARTMENT_EDITOR = "COMPARTMENT_EDITOR";
-    public static final String TAB_PLUGIN_MANAGER = "PLUGIN_MANAGER";
     public static final String TAB_VALIDITY_CHECK = "VALIDITY_CHECK";
     public static final String TAB_PLUGIN_VALIDITY_CHECK = "PLUGIN_VALIDITY_CHECK";
     public static final String TAB_NOTIFICATIONS = "NOTIFICATIONS";
@@ -256,11 +256,6 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
                 "Compartments",
                 UIUtils.getIconFromResources("actions/graph-compartments.png"),
                 () -> new JIPipeCompartmentsGraphEditorUI(this),
-                JIPipeDesktopTabPane.SingletonTabMode.Hidden);
-        documentTabPane.registerSingletonTab(TAB_PLUGIN_MANAGER,
-                "Plugin manager",
-                UIUtils.getIconFromResources("actions/plugins.png"),
-                () -> new JIPipeDesktopModernPluginManagerUI(this),
                 JIPipeDesktopTabPane.SingletonTabMode.Hidden);
         validityCheckerPanel = new JIPipeDesktopReloadableValidityChecker(this, project);
         documentTabPane.registerSingletonTab(TAB_VALIDITY_CHECK,
@@ -585,41 +580,6 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
         menu.add(projectMenu);
 
-        // Plugins menu
-        JMenu pluginsMenu = new JMenu("Plugins");
-
-        JMenuItem newPluginButton = new JMenuItem("New JSON extension ...", UIUtils.getIconFromResources("actions/document-new.png"));
-        newPluginButton.setToolTipText("Opens the extension builder");
-        newPluginButton.addActionListener(e -> {
-            JIPipeDesktopJsonExtensionWindow window = JIPipeDesktopJsonExtensionWindow.newWindow(context, new JIPipeJsonPlugin(), true);
-            window.setTitle("New extension");
-        });
-        pluginsMenu.add(newPluginButton);
-
-        JMenuItem installPluginButton = new JMenuItem("Install ...", UIUtils.getIconFromResources("actions/run-install.png"));
-        installPluginButton.addActionListener(e -> JIPipeDesktopJsonExtensionWindow.installExtensions(this));
-        pluginsMenu.add(installPluginButton);
-
-        JMenuItem managePluginsButton = new JMenuItem("Manage JIPipe plugins", UIUtils.getIconFromResources("apps/jipipe.png"));
-        managePluginsButton.addActionListener(e -> managePlugins());
-        pluginsMenu.add(managePluginsButton);
-
-        JMenu pluginsImageJMenu = new JMenu("ImageJ");
-
-        JMenuItem manageImageJPlugins = new JMenuItem("Manage ImageJ plugins (via JIPipe)", UIUtils.getIconFromResources("apps/imagej.png"));
-        manageImageJPlugins.addActionListener(e -> manageImageJPlugins(true));
-        pluginsImageJMenu.add(manageImageJPlugins);
-
-        JMenuItem manageImageJPluginsViaUpdater = new JMenuItem("Run ImageJ updater", UIUtils.getIconFromResources("apps/imagej.png"));
-        manageImageJPluginsViaUpdater.addActionListener(e -> manageImageJPlugins(false));
-        pluginsImageJMenu.add(manageImageJPluginsViaUpdater);
-
-        pluginsMenu.add(pluginsImageJMenu);
-
-        UIUtils.installMenuExtension(this, pluginsMenu, JIPipeMenuExtensionTarget.ProjectPluginsMenu, true);
-
-        menu.add(pluginsMenu);
-
         // Tools menu
         JMenu toolsMenu = new JMenu("Tools");
 
@@ -673,6 +633,9 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
         runProjectButton.addActionListener(e -> openRunUI());
         menu.add(runProjectButton);
+
+        // Plugins/artifacts management
+        menu.add(new JIPipeDesktopManagePluginsButton(this));
 
         // Notification panel
         menu.add(notificationButton);
@@ -889,27 +852,6 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         UIUtils.openFileInNative(getProject().getWorkDirectory());
     }
 
-    private void manageImageJPlugins(boolean useJIPipeUpdater) {
-        if (useJIPipeUpdater) {
-            List<JIPipeDesktopTabPane.DocumentTab> tabs = getDocumentTabPane().getTabsContaining(JIPipeDesktopImageJUpdaterPluginManagerUI.class);
-            if (!tabs.isEmpty()) {
-                getDocumentTabPane().switchToContent(tabs.get(0).getContent());
-            } else {
-                JIPipeDesktopImageJUpdaterPluginManagerUI pluginManager = new JIPipeDesktopImageJUpdaterPluginManagerUI(this);
-                getDocumentTabPane().addTab("Manage ImageJ plugins",
-                        UIUtils.getIconFromResources("apps/imagej.png"),
-                        pluginManager,
-                        JIPipeDesktopTabPane.CloseMode.withSilentCloseButton,
-                        false);
-                getDocumentTabPane().switchToLastTab();
-            }
-        } else {
-            ImageJUpdater updater = new ImageJUpdater();
-            getContext().inject(updater);
-            updater.run();
-        }
-    }
-
     public void openCacheBrowser() {
         JIPipeDesktopCacheBrowserUI cacheTable = new JIPipeDesktopCacheBrowserUI(this);
         getDocumentTabPane().addTab("Cache browser",
@@ -966,10 +908,6 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         pluginValidityCheckerPanel.recheckValidity();
         if (!avoidSwitching || !pluginValidityCheckerPanel.getReport().isValid())
             documentTabPane.selectSingletonTab(TAB_PLUGIN_VALIDITY_CHECK);
-    }
-
-    private void managePlugins() {
-        documentTabPane.selectSingletonTab(TAB_PLUGIN_MANAGER);
     }
 
     private void openCompartmentEditor() {

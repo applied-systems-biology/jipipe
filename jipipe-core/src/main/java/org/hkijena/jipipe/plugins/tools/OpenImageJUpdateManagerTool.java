@@ -14,28 +14,31 @@
 package org.hkijena.jipipe.plugins.tools;
 
 import ij.ImageJ;
+import net.imagej.ui.swing.updater.ImageJUpdater;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 
-public class OpenImageJTool extends JIPipeDesktopMenuExtension {
+public class OpenImageJUpdateManagerTool extends JIPipeDesktopMenuExtension {
     /**
      * Creates a new instance
      *
      * @param workbench workbench the extension is attached to
      */
-    public OpenImageJTool(JIPipeDesktopWorkbench workbench) {
+    public OpenImageJUpdateManagerTool(JIPipeDesktopWorkbench workbench) {
         super(workbench);
-        setText("Open ImageJ");
-        setToolTipText("Opens ImageJ (useful if you started JIPipe outside of ImageJ).");
+        setText("Open ImageJ Update Manager");
+        setToolTipText("Opens the ImageJ update manager");
         setIcon(UIUtils.getIconFromResources("apps/imagej.png"));
         addActionListener(e -> showImageJ());
     }
 
     private void showImageJ() {
-        final ImageJ ij = new ImageJ(ImageJ.EMBEDDED);
-        ij.setVisible(true);
+        ImageJUpdater updater = new ImageJUpdater();
+        JIPipe.getInstance().getContext().inject(updater);
+        updater.run();
     }
 
     @Override

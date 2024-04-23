@@ -15,13 +15,25 @@ package org.hkijena.jipipe.api.registries;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.artifacts.JIPipeArtifactDownload;
+import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryReference;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.plugins.artifacts.ArtifactSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class JIPipeArtifactsRegistry {
     private final JIPipe jiPipe;
@@ -37,6 +49,37 @@ public class JIPipeArtifactsRegistry {
 
     public JIPipeRunnableQueue getQueue() {
         return queue;
+    }
+
+    public List<JIPipeArtifactDownload> queryRepositories() {
+        Map<String, JIPipeArtifactDownload> downloadMap = new HashMap<>();
+        for (JIPipeArtifactRepositoryReference repository : ArtifactSettings.getInstance().getRepositories()) {
+            try {
+                String urlString =  repository.getUrl() + "/service/rest/v1/search/assets?repository=" + repository.getRepository();
+                urlString = urlString.replace("//", "/");
+                URL url = new URL(urlString);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("Accept", "application/json");
+
+                if (conn.getResponseCode() != 200) {
+                    System.out.println("Failed : HTTP error code : " + conn.getResponseCode());
+                    continue;
+                }
+
+                BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+
+                String output;
+                while ((output = br.readLine()) != null) {
+                    System.out.println(output);
+                }
+
+                conn.disconnect();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return null;
     }
 
     public Path getArtifactsPath() {

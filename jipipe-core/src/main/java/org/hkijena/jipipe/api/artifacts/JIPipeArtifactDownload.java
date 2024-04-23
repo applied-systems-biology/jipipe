@@ -83,4 +83,8 @@ public class JIPipeArtifactDownload {
     public void setClassifier(String classifier) {
         this.classifier = classifier;
     }
+
+    public String getFullId() {
+        return  getGroupId() + "." + getArtifactId() + ":" + getVersion() + "-" + getClassifier();
+    }
 }
