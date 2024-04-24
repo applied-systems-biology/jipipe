@@ -56,7 +56,7 @@ public class JIPipeArtifactsRegistry {
     }
 
     public List<JIPipeLocalArtifact> queryLocalRepositories(String groupId, String artifactId, String version) {
-        
+
     }
 
     public List<JIPipeRemoteArtifact> queryRemoteRepositories(String groupId, String artifactId, String version) {
