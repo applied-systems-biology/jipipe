@@ -56,7 +56,8 @@ public class JIPipeArtifactsRegistry {
     }
 
     public List<JIPipeLocalArtifact> queryLocalRepositories(String groupId, String artifactId, String version) {
-
+        Path localRepositoryPath = getLocalRepositoryPath();
+        
     }
 
     public List<JIPipeRemoteArtifact> queryRemoteRepositories(String groupId, String artifactId, String version) {
@@ -134,7 +135,7 @@ public class JIPipeArtifactsRegistry {
         return downloadMap.values().stream().sorted((o1, o2) -> VersionUtils.compareVersions(o1.getVersion(), o2.getVersion())).collect(Collectors.toList());
     }
 
-    public Path getArtifactsPath() {
+    public Path getLocalRepositoryPath() {
         if(ArtifactSettings.getInstance().getOverrideInstallationPath().isEnabled() && !ArtifactSettings.getInstance().getOverrideInstallationPath().getContent().toString().isEmpty()) {
             if(ArtifactSettings.getInstance().getOverrideInstallationPath().getContent().isAbsolute()) {
                 return ArtifactSettings.getInstance().getOverrideInstallationPath().getContent();
