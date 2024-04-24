@@ -16,34 +16,20 @@ package org.hkijena.jipipe.api.artifacts;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
-public class JIPipeArtifactDownload {
-    private String url;
+public class JIPipeArtifact {
     private String groupId;
     private String artifactId;
     private String version;
     private String classifier;
-    private long size;
 
-    public JIPipeArtifactDownload() {
+    public JIPipeArtifact() {
     }
 
-    public JIPipeArtifactDownload(JIPipeArtifactDownload other) {
-        this.url = other.url;
+    public JIPipeArtifact(JIPipeArtifact other) {
         this.groupId = other.groupId;
         this.artifactId = other.artifactId;
         this.version = other.version;
         this.classifier = other.classifier;
-        this.size = other.size;
-    }
-
-    @JsonGetter("url")
-    public String getUrl() {
-        return url;
-    }
-
-    @JsonSetter("url")
-    public void setUrl(String url) {
-        this.url = url;
     }
 
     @JsonGetter("group-id")
@@ -90,18 +76,8 @@ public class JIPipeArtifactDownload {
         return  getGroupId() + "." + getArtifactId() + ":" + getVersion() + "-" + getClassifier();
     }
 
-    @JsonGetter("size")
-    public long getSize() {
-        return size;
-    }
-
-    @JsonSetter("size")
-    public void setSize(long size) {
-        this.size = size;
-    }
-
     @Override
     public String toString() {
-        return "Artifact download " + getFullId();
+        return "Artifact " + getFullId();
     }
 }

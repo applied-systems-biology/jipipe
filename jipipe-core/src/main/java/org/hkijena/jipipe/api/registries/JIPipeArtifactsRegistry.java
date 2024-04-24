@@ -17,7 +17,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.artifacts.JIPipeArtifactDownload;
+import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
+import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryReference;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.plugins.artifacts.ArtifactSettings;
@@ -31,8 +32,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -56,8 +55,12 @@ public class JIPipeArtifactsRegistry {
         return queue;
     }
 
-    public List<JIPipeArtifactDownload> queryRepositories(String groupId, String artifactId, String version) {
-        Map<String, JIPipeArtifactDownload> downloadMap = new HashMap<>();
+    public List<JIPipeLocalArtifact> queryLocalRepositories(String groupId, String artifactId, String version) {
+        
+    }
+
+    public List<JIPipeRemoteArtifact> queryRemoteRepositories(String groupId, String artifactId, String version) {
+        Map<String, JIPipeRemoteArtifact> downloadMap = new HashMap<>();
         for (JIPipeArtifactRepositoryReference repository : ArtifactSettings.getInstance().getRepositories()) {
             Stack<String> tokens = new Stack<>();
             tokens.add(null);
@@ -104,7 +107,7 @@ public class JIPipeArtifactsRegistry {
                     // Read items
                     if(rootNode.has("items")) {
                         for (JsonNode item : ImmutableList.copyOf(rootNode.get("items").elements())) {
-                            JIPipeArtifactDownload download = new JIPipeArtifactDownload();
+                            JIPipeRemoteArtifact download = new JIPipeRemoteArtifact();
                             download.setUrl(item.get("downloadUrl").asText());
                             download.setSize(item.get("fileSize").asLong());
                             download.setArtifactId(item.get("maven2").get("artifactId").asText());

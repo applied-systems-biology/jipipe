@@ -14,8 +14,7 @@
 package org.hkijena.jipipe.desktop.app.plugins;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeWorkbench;
-import org.hkijena.jipipe.api.artifacts.JIPipeArtifactDownload;
+import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -53,7 +52,7 @@ public class JIPipeDesktopManagePluginsButton extends JButton implements JIPipeD
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        List<JIPipeArtifactDownload> downloads = JIPipe.getInstance().getArtifactsRegistry().queryRepositories(null, null, null);
+        List<JIPipeRemoteArtifact> downloads = JIPipe.getInstance().getArtifactsRegistry().queryRemoteRepositories(null, null, null);
         System.out.println();
     }
 }
