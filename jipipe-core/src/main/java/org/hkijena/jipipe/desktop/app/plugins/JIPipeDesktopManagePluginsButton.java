@@ -25,14 +25,29 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-public class JIPipeDesktopManagePluginsButton extends JButton implements JIPipeDesktopWorkbenchAccess, ActionListener {
+public class JIPipeDesktopManagePluginsButton extends JButton implements JIPipeDesktopWorkbenchAccess {
 
     private final JIPipeDesktopWorkbench workbench;
     private final JPopupMenu popupMenu = new JPopupMenu();
+    private boolean dismissedNewExtensions = false;
 
     public JIPipeDesktopManagePluginsButton(JIPipeDesktopWorkbench workbench) {
         this.workbench = workbench;
         initialize();
+        updateIcon();
+    }
+
+    private void updateIcon() {
+        if(hasNewExtensions()) {
+            setIcon(UIUtils.getIconFromResources("emblems/emblem-important-blue.png"));
+        }
+        else {
+            setIcon(UIUtils.getIconFromResources("actions/preferences-plugin.png"));
+        }
+    }
+
+    private boolean hasNewExtensions() {
+        return !dismissedNewExtensions && !JIPipe.getInstance().getExtensionRegistry().getNewExtensions().isEmpty();
     }
 
     private void initialize() {
@@ -44,7 +59,10 @@ public class JIPipeDesktopManagePluginsButton extends JButton implements JIPipeD
 
     private void reloadPopupMenu() {
         popupMenu.removeAll();
-        popupMenu.add(UIUtils.createMenuItem("JIPipe plugins", "Opens the JIPipe plugin manager", UIUtils.getIconFromResources("apps/jipipe.png"), this::openJIPipePluginManager));
+        popupMenu.add(UIUtils.createMenuItem("JIPipe plugins",
+                "Opens the JIPipe plugin manager",
+                hasNewExtensions() ? UIUtils.getIconFromResources("emblems/emblem-important-blue.png") : UIUtils.getIconFromResources("apps/jipipe.png"),
+                this::openJIPipePluginManager));
         popupMenu.add(UIUtils.createMenuItem("External dependencies", "Opens the artifacts manager",UIUtils.getIconFromResources("actions/run-install.png"), this::openArtifactManager));
         popupMenu.addSeparator();
         popupMenu.add(UIUtils.createMenuItem("ImageJ plugins", "Opens the ImageJ update manager",UIUtils.getIconFromResources("apps/imagej.png"), this::openImageJPluginManager));
@@ -57,10 +75,13 @@ public class JIPipeDesktopManagePluginsButton extends JButton implements JIPipeD
     }
 
     private void openArtifactManager() {
-
+        JIPipeDesktopArtifactManagerUI.show(getDesktopWorkbench());
     }
 
     private void openJIPipePluginManager() {
+        dismissedNewExtensions = true;
+        JIPipe.getInstance().getExtensionRegistry().dismissNewExtensions();
+        updateIcon();
 
     }
 
@@ -72,11 +93,5 @@ public class JIPipeDesktopManagePluginsButton extends JButton implements JIPipeD
     @Override
     public JIPipeDesktopWorkbench getDesktopWorkbench() {
         return workbench;
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        List<JIPipeRemoteArtifact> downloads = JIPipe.getInstance().getArtifactsRegistry().queryRemoteRepositories(null, null, null);
-        System.out.println();
     }
 }

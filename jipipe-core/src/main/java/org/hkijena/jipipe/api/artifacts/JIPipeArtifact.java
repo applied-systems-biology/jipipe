@@ -15,8 +15,11 @@ package org.hkijena.jipipe.api.artifacts;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.apache.commons.lang3.SystemUtils;
+import org.hkijena.jipipe.utils.VersionUtils;
+import org.jetbrains.annotations.NotNull;
 
-public class JIPipeArtifact {
+public class JIPipeArtifact implements Comparable<JIPipeArtifact> {
     private String groupId;
     private String artifactId;
     private String version;
@@ -76,8 +79,37 @@ public class JIPipeArtifact {
         return  getGroupId() + "." + getArtifactId() + ":" + getVersion() + "-" + getClassifier();
     }
 
+    public boolean isCompatible() {
+        if("any".equalsIgnoreCase(getClassifier())) {
+            return true;
+        }
+        else if(SystemUtils.IS_OS_WINDOWS) {
+            return getClassifier().startsWith("win");
+        }
+        else if(SystemUtils.IS_OS_LINUX) {
+            return getClassifier().startsWith("linux");
+        }
+        else if(SystemUtils.IS_OS_MAC) {
+            return getClassifier().startsWith("mac");
+        }
+        else {
+            return false;
+        }
+    }
+
     @Override
     public String toString() {
         return "Artifact " + getFullId();
+    }
+
+    @Override
+    public int compareTo(@NotNull JIPipeArtifact o) {
+        int compareName = getArtifactId().compareTo(o.getArtifactId());
+        if(compareName == 0) {
+            return -VersionUtils.compareVersions(getVersion(), o.getVersion()); // Never versions at the top
+        }
+        else {
+            return compareName;
+        }
     }
 }

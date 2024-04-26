@@ -17,6 +17,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryReference;
@@ -37,11 +40,14 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
+import java.util.concurrent.locks.StampedLock;
 import java.util.stream.Collectors;
 
 public class JIPipeArtifactsRegistry {
     private final JIPipe jiPipe;
     private final JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Artifacts");
+    private final Map<String, JIPipeArtifact> cachedArtifacts = new HashMap<>();
+    private final StampedLock lock = new StampedLock();
 
     public JIPipeArtifactsRegistry(JIPipe jiPipe) {
         this.jiPipe = jiPipe;
@@ -55,7 +61,27 @@ public class JIPipeArtifactsRegistry {
         return queue;
     }
 
-    public List<JIPipeLocalArtifact> queryLocalRepositories(String groupId, String artifactId, String version) {
+    public Map<String, JIPipeArtifact> getCachedArtifacts() {
+        return Collections.unmodifiableMap(cachedArtifacts);
+    }
+
+    public void updateCachedArtifacts(JIPipeProgressInfo progressInfo) {
+        long stamp = lock.writeLock();
+        try {
+            cachedArtifacts.clear();
+            for (JIPipeRemoteArtifact artifact : queryRemoteRepositories(null, null, null, progressInfo.resolve("Remote repository"))) {
+                cachedArtifacts.put(artifact.getFullId(), artifact);
+            }
+            for (JIPipeLocalArtifact artifact : queryLocalRepositories(null, null, null, progressInfo.resolve("Local repository"))) {
+                cachedArtifacts.put(artifact.getFullId(), artifact);
+            }
+        }
+        finally {
+            lock.unlock(stamp);
+        }
+    }
+
+    public List<JIPipeLocalArtifact> queryLocalRepositories(String groupId, String artifactId, String version, JIPipeProgressInfo progressInfo) {
         Path localRepositoryPath = getLocalRepositoryPath();
         List<JIPipeLocalArtifact> artifacts = new ArrayList<>();
         try {
@@ -93,7 +119,7 @@ public class JIPipeArtifactsRegistry {
         return artifacts;
     }
 
-    public List<JIPipeRemoteArtifact> queryRemoteRepositories(String groupId, String artifactId, String version) {
+    public List<JIPipeRemoteArtifact> queryRemoteRepositories(String groupId, String artifactId, String version, JIPipeProgressInfo progressInfo) {
         Map<String, JIPipeRemoteArtifact> downloadMap = new HashMap<>();
         for (JIPipeArtifactRepositoryReference repository : ArtifactSettings.getInstance().getRepositories()) {
             Stack<String> tokens = new Stack<>();
@@ -114,13 +140,14 @@ public class JIPipeArtifactsRegistry {
                     if(token != null) {
                         urlString += "&continuationToken" + token;
                     }
+                    progressInfo.log("Contacting " + urlString);
                     URL url = new URL(urlString);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("GET");
                     conn.setRequestProperty("Accept", "application/json");
 
                     if (conn.getResponseCode() != 200) {
-                        System.out.println("Failed : HTTP error code : " + conn.getResponseCode());
+                        progressInfo.log("Failed : HTTP error code : " + conn.getResponseCode());
                         continue;
                     }
 
@@ -151,6 +178,7 @@ public class JIPipeArtifactsRegistry {
 
                             if(!downloadMap.containsKey(download.getFullId())) {
                                 downloadMap.put(download.getFullId(), download);
+                                progressInfo.log("Found " + download.getFullId());
                             }
                         }
                     }
@@ -197,6 +225,23 @@ public class JIPipeArtifactsRegistry {
             } else {
                 throw new UnsupportedOperationException("Unknown operating system!");
             }
+        }
+    }
+
+    public void enqueueUpdateCachedArtifacts() {
+        queue.enqueue(new UpdateCachedArtifactsRun());
+    }
+
+    public static class UpdateCachedArtifactsRun extends AbstractJIPipeRunnable{
+
+        @Override
+        public String getTaskLabel() {
+            return "Update cached artifacts";
+        }
+
+        @Override
+        public void run() {
+            JIPipe.getInstance().getArtifactsRegistry().updateCachedArtifacts(getProgressInfo());
         }
     }
 }
