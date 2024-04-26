@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.plugins;
 
+import net.imagej.ui.swing.updater.ImageJUpdater;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -27,6 +28,7 @@ import java.util.List;
 public class JIPipeDesktopManagePluginsButton extends JButton implements JIPipeDesktopWorkbenchAccess, ActionListener {
 
     private final JIPipeDesktopWorkbench workbench;
+    private final JPopupMenu popupMenu = new JPopupMenu();
 
     public JIPipeDesktopManagePluginsButton(JIPipeDesktopWorkbench workbench) {
         this.workbench = workbench;
@@ -37,7 +39,29 @@ public class JIPipeDesktopManagePluginsButton extends JButton implements JIPipeD
         UIUtils.setStandardButtonBorder(this);
         setText("Plugins");
         setIcon(UIUtils.getIconFromResources("actions/preferences-plugin.png"));
-        addActionListener(this);
+        UIUtils.addReloadablePopupMenuToButton(this, popupMenu, this::reloadPopupMenu);
+    }
+
+    private void reloadPopupMenu() {
+        popupMenu.removeAll();
+        popupMenu.add(UIUtils.createMenuItem("JIPipe plugins", "Opens the JIPipe plugin manager", UIUtils.getIconFromResources("apps/jipipe.png"), this::openJIPipePluginManager));
+        popupMenu.add(UIUtils.createMenuItem("External dependencies", "Opens the artifacts manager",UIUtils.getIconFromResources("actions/run-install.png"), this::openArtifactManager));
+        popupMenu.addSeparator();
+        popupMenu.add(UIUtils.createMenuItem("ImageJ plugins", "Opens the ImageJ update manager",UIUtils.getIconFromResources("apps/imagej.png"), this::openImageJPluginManager));
+    }
+
+    private void openImageJPluginManager() {
+        ImageJUpdater updater = new ImageJUpdater();
+        JIPipe.getInstance().getContext().inject(updater);
+        updater.run();
+    }
+
+    private void openArtifactManager() {
+
+    }
+
+    private void openJIPipePluginManager() {
+
     }
 
     @Override

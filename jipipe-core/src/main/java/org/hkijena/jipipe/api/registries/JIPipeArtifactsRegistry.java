@@ -34,8 +34,8 @@ import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -57,7 +57,40 @@ public class JIPipeArtifactsRegistry {
 
     public List<JIPipeLocalArtifact> queryLocalRepositories(String groupId, String artifactId, String version) {
         Path localRepositoryPath = getLocalRepositoryPath();
+        List<JIPipeLocalArtifact> artifacts = new ArrayList<>();
+        try {
+            Files.walkFileTree(localRepositoryPath, new FileVisitor<Path>() {
 
+                @Override
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    if (file.getFileName().toString().equals("artifact.json")) {
+                        JIPipeLocalArtifact artifact = JsonUtils.readFromFile(file, JIPipeLocalArtifact.class);
+                        artifact.setLocalPath(file.getParent());
+                        artifacts.add(artifact);
+                        return FileVisitResult.TERMINATE;
+                    }
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return artifacts;
     }
 
     public List<JIPipeRemoteArtifact> queryRemoteRepositories(String groupId, String artifactId, String version) {
