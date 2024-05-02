@@ -9,6 +9,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueueButton;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopMessagePanel;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -19,6 +20,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Comparator;
@@ -40,6 +44,7 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
         initialize();
         artifactsRegistry.getQueue().getFinishedEventEmitter().subscribe(this);
         artifactsRegistry.enqueueUpdateCachedArtifacts();
+        updateSelectionPanel();
     }
 
     private void initialize() {
@@ -62,7 +67,7 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
         AutoResizeSplitPane splitPane = new AutoResizeSplitPane(AutoResizeSplitPane.LEFT_RIGHT,
                 artifactListScrollPane,
                 propertyPanel,
-                new AutoResizeSplitPane.DynamicSidebarRatio(300, false));
+                new AutoResizeSplitPane.DynamicSidebarRatio(350, false));
         add(splitPane, BorderLayout.CENTER);
 
         artifactEntryJList.setCellRenderer(new ArtifactEntryListCellRenderer());
@@ -79,6 +84,101 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
 
             }
         });
+        artifactEntryJList.addListSelectionListener(e -> updateSelectionPanel() );
+    }
+
+    private boolean hasChanges() {
+        return artifactEntryList.stream().anyMatch(ArtifactEntry::isToggleInstallationStatus);
+    }
+
+    private void updateSelectionPanel() {
+        propertyPanel.clear();
+
+        if(hasChanges()) {
+            JIPipeDesktopMessagePanel messagePanel = new JIPipeDesktopMessagePanel();
+            messagePanel.addMessage(JIPipeDesktopMessagePanel.MessageType.Success,
+                    "You have pending changes",
+                    false,
+                    true,
+                    UIUtils.createButton("Revert", UIUtils.getIconFromResources("actions/edit-undo.png"), this::revertChanges),
+                    UIUtils.createButton("Apply", UIUtils.getIconFromResources("actions/check.png"), this::applyChanges));
+            propertyPanel.addWideToForm(messagePanel);
+        }
+
+        propertyPanel.addGroupHeader("Artifacts", "A variety of external tools are managed via the artifacts system that automatically downloads and applies the " +
+                "correct version of the dependency based on project metadata.\n\n" +
+                "Artifacts are automatically downloaded to a directory shared across multiple JIPipe instances.", UIUtils.getIconFromResources("actions/help-info.png"));
+        propertyPanel.addWideToForm(UIUtils.createButton("Open artifacts directory", UIUtils.getIconFromResources("actions/folder-open.png"), this::openArtifactsDirectory));
+
+        ArtifactEntry selectedValue = artifactEntryJList.getSelectedValue();
+        if(selectedValue != null) {
+            JIPipeArtifact artifact = selectedValue.artifact;
+            propertyPanel.addGroupHeader(artifact.getArtifactId(), UIUtils.getIconFromResources("actions/run-install.png"));
+            propertyPanel.addToForm(UIUtils.makeReadonlyBorderlessTextField(artifact.getVersion()), new JLabel("Version"));
+            propertyPanel.addToForm(UIUtils.makeReadonlyBorderlessTextField(artifact.getClassifier()), new JLabel("Label"));
+            propertyPanel.addToForm(UIUtils.makeReadonlyBorderlessTextField(artifact.getGroupId()), new JLabel("Publisher"));
+            propertyPanel.addToForm(UIUtils.makeReadonlyBorderlessTextField(artifact.isCompatible() ? "Yes" : "No"), new JLabel("Compatible"));
+            if(artifact.getClassifier().contains("gpu")) {
+                propertyPanel.addToForm(new JLabel("Requires GPU", UIUtils.getIconFromResources("devices/device_pci.png"), JLabel.LEFT), new JLabel("Additional info"));
+            }
+
+            if(artifact instanceof JIPipeRemoteArtifact) {
+                if(selectedValue.isToggleInstallationStatus()) {
+                    propertyPanel.addToForm(UIUtils.createLeftAlignedButton("Mark for installation", UIUtils.getIconFromResources("emblems/checkbox-checked.png"), () -> {
+                        selectedValue.setToggleInstallationStatus(false);
+                        updateSelectionPanel();
+                    }), new JLabel("Status"));
+                }
+                else {
+                    propertyPanel.addToForm(UIUtils.createLeftAlignedButton("Mark for installation", UIUtils.getIconFromResources("emblems/checkbox-unchecked.png"), () -> {
+                        selectedValue.setToggleInstallationStatus(true);
+                        updateSelectionPanel();
+                    }), new JLabel("Status"));
+                }
+            }
+            else {
+                if(selectedValue.isToggleInstallationStatus()) {
+                    propertyPanel.addToForm(UIUtils.createLeftAlignedButton("Keep installed", UIUtils.getIconFromResources("emblems/checkbox-unchecked.png"), () -> {
+                        selectedValue.setToggleInstallationStatus(false);
+                        updateSelectionPanel();
+                    }), new JLabel("Status"));
+                }
+                else {
+                    propertyPanel.addToForm(UIUtils.createLeftAlignedButton("Keep installed", UIUtils.getIconFromResources("emblems/checkbox-checked.png"), () -> {
+                        selectedValue.setToggleInstallationStatus(true);
+                        updateSelectionPanel();
+                    }), new JLabel("Status"));
+                }
+            }
+        }
+
+        propertyPanel.addVerticalGlue();
+    }
+
+    private void revertChanges() {
+        for (ArtifactEntry artifactEntry : artifactEntryList) {
+            artifactEntry.setToggleInstallationStatus(false);
+        }
+        repaint();
+        updateSelectionPanel();
+    }
+
+    private void applyChanges() {
+
+    }
+
+    private void openArtifactsDirectory() {
+        Path localRepositoryPath = JIPipe.getInstance().getArtifactsRegistry().getLocalRepositoryPath();
+        try {
+            Files.createDirectories(localRepositoryPath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            Desktop.getDesktop().open(localRepositoryPath.toFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void show(JIPipeDesktopWorkbench desktopWorkbench) {
@@ -128,6 +228,7 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
                 artifactListScrollPane.getVerticalScrollBar().setValue(scrollPosition);
             });
         });
+        repaint();
     }
 
     @Override
