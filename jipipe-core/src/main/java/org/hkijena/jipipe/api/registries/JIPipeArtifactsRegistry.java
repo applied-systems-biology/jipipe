@@ -152,6 +152,8 @@ public class JIPipeArtifactsRegistry {
                     progressInfo.log("Contacting " + urlString);
                     URL url = new URL(urlString);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setConnectTimeout(1000);
+                    conn.setReadTimeout(5000);
                     conn.setRequestMethod("GET");
                     conn.setRequestProperty("Accept", "application/json");
 

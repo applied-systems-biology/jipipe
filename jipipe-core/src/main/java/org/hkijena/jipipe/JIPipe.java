@@ -1009,8 +1009,9 @@ public class JIPipe extends AbstractService implements JIPipeService {
             projectsSettings.getRecentProjects().removeAll(invalidRecentProjects);
         }
 
-        // Check the backups
+        // Check artifacts
         progressInfo.setProgress(7);
+        artifactsRegistry.updateCachedArtifacts(progressInfo.resolve("Updating artifacts"));
 
         progressInfo.setProgress(8);
         progressInfo.log("JIPipe loading finished");
@@ -1021,36 +1022,6 @@ public class JIPipe extends AbstractService implements JIPipeService {
         for (String newExtension : extensionRegistry.getNewExtensions()) {
             progressInfo.log("New extension found: " + newExtension);
         }
-
-        // TODO: re-add extension notification? (or handle with better manager)
-//        if (!extensionRegistry.getNewExtensions().isEmpty()) {
-//            JIPipeNotification notification = new JIPipeNotification("org.hkijena.jipipe.core:new-extension");
-//            notification.setHeading("New extensions available");
-//            String nameList = extensionRegistry.getNewExtensions().stream().map(id -> extensionRegistry.getKnownExtensionById(id).getMetadata().getName()).collect(Collectors.joining(", "));
-//            if (extensionRegistry.getNewExtensions().size() != 1) {
-//                notification.setDescription("There are " + extensionRegistry.getNewExtensions().size() + " new extensions available: " + nameList + ".\n" +
-//                        "You can ignore these or open the extension manager to activate the new extensions.\n\n" +
-//                        "For more information, please visit https://www.jipipe.org/installation/extensions/");
-//            } else {
-//                notification.setDescription("There is 1 new extension available: " + nameList + ".\n" +
-//                        "You can ignore these or open the extension manager to activate the new extensions.\n\n" +
-//                        "For more information, please visit https://www.jipipe.org/installation/extensions/");
-//            }
-//            notification.getActions().add(new JIPipeNotificationAction("Ignore", "Ignores the newly available extensions. You will not be warned again about them.",
-//                    UIUtils.getIconFromResources("actions/filename-ignore-amarok.png"), workbench -> {
-//                extensionRegistry.dismissNewExtensions();
-//            }));
-//            notification.getActions().add(new JIPipeNotificationAction("Show",
-//                    "Opens the plugin manager. You will not be warned again about the new extensions.",
-//                    UIUtils.getIconInvertedFromResources("actions/plugins.png"),
-//                    JIPipeNotificationAction.Style.Success,
-//                    workbench -> {
-//                        extensionRegistry.dismissNewExtensions();
-//                        //TODO: add extension manager back in
-//                    }));
-//            JIPipeNotificationInbox.getInstance().push(notification);
-//        }
-
 
         // Push progress into log
         JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(new JIPipeRunnableLogEntry("JIPipe initialization",
