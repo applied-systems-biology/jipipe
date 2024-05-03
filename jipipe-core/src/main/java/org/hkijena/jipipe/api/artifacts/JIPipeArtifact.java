@@ -80,26 +80,23 @@ public class JIPipeArtifact implements Comparable<JIPipeArtifact> {
 
     /**
      * Returns a string GroupId.ArtifactId:Version-Classifier
+     *
      * @return the full identifier string for this artifact
      */
     public String getFullId() {
-        return  getGroupId() + "." + getArtifactId() + ":" + getVersion() + "-" + getClassifier();
+        return getGroupId() + "." + getArtifactId() + ":" + getVersion() + "-" + getClassifier();
     }
 
     public boolean isCompatible() {
-        if("any".equalsIgnoreCase(getClassifier())) {
+        if ("any".equalsIgnoreCase(getClassifier())) {
             return true;
-        }
-        else if(SystemUtils.IS_OS_WINDOWS) {
+        } else if (SystemUtils.IS_OS_WINDOWS) {
             return getClassifier().startsWith("win");
-        }
-        else if(SystemUtils.IS_OS_LINUX) {
+        } else if (SystemUtils.IS_OS_LINUX) {
             return getClassifier().startsWith("linux");
-        }
-        else if(SystemUtils.IS_OS_MAC) {
+        } else if (SystemUtils.IS_OS_MAC) {
             return getClassifier().startsWith("mac");
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -116,10 +113,9 @@ public class JIPipeArtifact implements Comparable<JIPipeArtifact> {
     @Override
     public int compareTo(@NotNull JIPipeArtifact o) {
         int compareName = getArtifactId().compareTo(o.getArtifactId());
-        if(compareName == 0) {
+        if (compareName == 0) {
             return -VersionUtils.compareVersions(getVersion(), o.getVersion()); // Never versions at the top
-        }
-        else {
+        } else {
             return compareName;
         }
     }

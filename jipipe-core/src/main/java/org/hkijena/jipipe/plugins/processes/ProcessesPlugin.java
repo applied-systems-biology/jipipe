@@ -23,8 +23,6 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
-import java.util.Collections;
-
 @Plugin(type = JIPipeJavaPlugin.class)
 public class ProcessesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
@@ -51,6 +49,7 @@ public class ProcessesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public StringList getDependencyProvides() {
         return new StringList();
     }
+
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         ProcessesExtensionSettings extensionSettings = new ProcessesExtensionSettings();

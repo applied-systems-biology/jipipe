@@ -44,7 +44,10 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.BooleanParameter
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.scijava.InstantiableException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
 
@@ -229,42 +232,39 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
             }
 
             Map<String, Map<ImageSliceIndex, ImagePlus>> splitInputImages = new HashMap<>();
-            if(splitMode == CLIJSplitMode.None) {
+            if (splitMode == CLIJSplitMode.None) {
                 for (Map.Entry<String, ImagePlus> entry : inputImages.entrySet()) {
                     Map<ImageSliceIndex, ImagePlus> splitMap = new HashMap<>();
-                    splitMap.put(new ImageSliceIndex(0,0,0), entry.getValue());
+                    splitMap.put(new ImageSliceIndex(0, 0, 0), entry.getValue());
                     splitInputImages.put(entry.getKey(), splitMap);
                 }
-            }
-            else if(splitMode == CLIJSplitMode.To3D) {
+            } else if (splitMode == CLIJSplitMode.To3D) {
                 for (Map.Entry<String, ImagePlus> entry : inputImages.entrySet()) {
                     Map<ImageSliceIndex, ImagePlus> splitMap = splitInputImages.getOrDefault(entry.getKey(), null);
-                    if(splitMap == null) {
+                    if (splitMap == null) {
                         splitMap = new HashMap<>();
                         splitInputImages.put(entry.getKey(), splitMap);
                     }
                     Map<ImageSliceIndex, ImagePlus> finalSplitMap = splitMap;
                     ImagePlus expandedImage = ImageJUtils.ensureSize(entry.getValue(), numC, numZ, numT, equalizeReplicateLast);
-                    ImageJUtils.forEachIndexedCTStack(expandedImage, (imp, index, impProgress)-> {
+                    ImageJUtils.forEachIndexedCTStack(expandedImage, (imp, index, impProgress) -> {
                         finalSplitMap.put(new ImageSliceIndex(index.getC(), 0, index.getT()), imp);
                     }, progressInfo.resolve("Split into 3D"));
                 }
-            }
-            else if(splitMode == CLIJSplitMode.To2D) {
+            } else if (splitMode == CLIJSplitMode.To2D) {
                 for (Map.Entry<String, ImagePlus> entry : inputImages.entrySet()) {
                     Map<ImageSliceIndex, ImagePlus> splitMap = splitInputImages.getOrDefault(entry.getKey(), null);
-                    if(splitMap == null) {
+                    if (splitMap == null) {
                         splitMap = new HashMap<>();
                         splitInputImages.put(entry.getKey(), splitMap);
                     }
                     Map<ImageSliceIndex, ImagePlus> finalSplitMap = splitMap;
                     ImagePlus expandedImage = ImageJUtils.ensureSize(entry.getValue(), numC, numZ, numT, equalizeReplicateLast);
-                    ImageJUtils.forEachIndexedZCTSlice(expandedImage, (ip, index )-> {
+                    ImageJUtils.forEachIndexedZCTSlice(expandedImage, (ip, index) -> {
                         finalSplitMap.put(index, new ImagePlus("slice", ip));
                     }, progressInfo.resolve("Split into 2D"));
                 }
-            }
-            else {
+            } else {
                 throw new UnsupportedOperationException();
             }
 
@@ -331,7 +331,7 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
                         CLIJImageData imageData = new CLIJImageData(buffer);
                         ImagePlus img = imageData.pull().getImage();
                         Map<ImageSliceIndex, ImageProcessor> outputSlices = outputImages.getOrDefault(outputSlot.getName(), null);
-                        if(outputSlices == null) {
+                        if (outputSlices == null) {
                             outputSlices = new HashMap<>();
                             outputImages.put(outputSlot.getName(), outputSlices);
                         }
@@ -371,14 +371,14 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
             // Output images
             ImagePlus referenceInputImage = null;
             for (JIPipeInputDataSlot inputSlot : getInputSlots()) {
-                if(inputSlot.getAcceptedDataType() == ImagePlusData.class) {
+                if (inputSlot.getAcceptedDataType() == ImagePlusData.class) {
                     referenceInputImage = iterationStep.getInputData(inputSlot, ImagePlusData.class, progressInfo).getImage();
                     break;
                 }
             }
             for (Map.Entry<String, Map<ImageSliceIndex, ImageProcessor>> entry : outputImages.entrySet()) {
                 ImagePlus merged = ImageJUtils.mergeMappedSlices(entry.getValue());
-                if(referenceInputImage != null) {
+                if (referenceInputImage != null) {
                     merged.copyScale(referenceInputImage);
                 }
                 iterationStep.addOutputData(entry.getKey(), new ImagePlusData(merged), progressInfo);

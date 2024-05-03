@@ -90,8 +90,8 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
     private JMenuItem exportMovieItem;
     private Component currentContentPanel;
     private boolean isUpdatingSliders = false;
-    private JScrollPane canvasScrollPane;    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
-    private boolean composite;
+    private JScrollPane canvasScrollPane;
+    private boolean composite;    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
     /**
      * Initializes a new image viewer
      *
@@ -142,17 +142,6 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
         return Collections.unmodifiableMap(compositeBlendLayers);
     }
 
-
-//    public void setRotationEnabled(boolean enabled) {
-//        rotateLeftButton.setVisible(enabled);
-//        rotateRightButton.setVisible(enabled);
-//        if (!enabled) {
-//            rotation = 0;
-//            refreshImageInfo();
-//            refreshSlice();
-//        }
-//    }
-
     public void dispose() {
         try {
             setImage(null);
@@ -165,6 +154,17 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
             e.printStackTrace();
         }
     }
+
+
+//    public void setRotationEnabled(boolean enabled) {
+//        rotateLeftButton.setVisible(enabled);
+//        rotateRightButton.setVisible(enabled);
+//        if (!enabled) {
+//            rotation = 0;
+//            refreshImageInfo();
+//            refreshSlice();
+//        }
+//    }
 
     public JIPipeRunnableQueue getViewerRunnerQueue() {
         return viewerRunnerQueue;

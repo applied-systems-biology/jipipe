@@ -43,8 +43,6 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
-import java.util.Collections;
-
 @Plugin(type = JIPipeJavaPlugin.class)
 public class ExpressionPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
@@ -71,6 +69,7 @@ public class ExpressionPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public StringList getDependencyProvides() {
         return new StringList();
     }
+
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerParameterType("expression",

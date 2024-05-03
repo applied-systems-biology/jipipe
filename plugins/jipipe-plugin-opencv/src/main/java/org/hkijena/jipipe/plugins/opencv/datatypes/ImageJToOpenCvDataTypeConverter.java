@@ -31,6 +31,6 @@ public class ImageJToOpenCvDataTypeConverter implements JIPipeDataConverter {
 
     @Override
     public JIPipeData convert(JIPipeData input, JIPipeProgressInfo progressInfo) {
-        return new OpenCvImageData(((ImagePlusData)input).getImage());
+        return new OpenCvImageData(((ImagePlusData) input).getImage());
     }
 }

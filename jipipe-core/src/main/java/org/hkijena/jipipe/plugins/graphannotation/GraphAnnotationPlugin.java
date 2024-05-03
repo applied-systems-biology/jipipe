@@ -31,8 +31,6 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
-import java.util.Collections;
-
 @Plugin(type = JIPipeJavaPlugin.class)
 public class GraphAnnotationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
@@ -68,6 +66,7 @@ public class GraphAnnotationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public StringList getDependencyProvides() {
         return new StringList();
     }
+
     @Override
     public boolean isCoreExtension() {
         return true;

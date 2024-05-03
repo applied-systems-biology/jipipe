@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.desktop.commons.notifications;
 
-import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.icons.JIPipeDesktopAnimatedIcon;
 import org.hkijena.jipipe.utils.UIUtils;

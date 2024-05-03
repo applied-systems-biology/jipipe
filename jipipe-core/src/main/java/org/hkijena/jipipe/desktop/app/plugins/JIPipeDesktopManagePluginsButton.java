@@ -15,15 +15,11 @@ package org.hkijena.jipipe.desktop.app.plugins;
 
 import net.imagej.ui.swing.updater.ImageJUpdater;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.List;
 
 public class JIPipeDesktopManagePluginsButton extends JButton implements JIPipeDesktopWorkbenchAccess {
 
@@ -38,10 +34,9 @@ public class JIPipeDesktopManagePluginsButton extends JButton implements JIPipeD
     }
 
     private void updateIcon() {
-        if(hasNewExtensions()) {
+        if (hasNewExtensions()) {
             setIcon(UIUtils.getIconFromResources("emblems/emblem-important-blue.png"));
-        }
-        else {
+        } else {
             setIcon(UIUtils.getIconFromResources("actions/preferences-plugin.png"));
         }
     }
@@ -63,9 +58,9 @@ public class JIPipeDesktopManagePluginsButton extends JButton implements JIPipeD
                 "Opens the JIPipe plugin manager",
                 hasNewExtensions() ? UIUtils.getIconFromResources("emblems/emblem-important-blue.png") : UIUtils.getIconFromResources("apps/jipipe.png"),
                 this::openJIPipePluginManager));
-        popupMenu.add(UIUtils.createMenuItem("External dependencies", "Opens the artifacts manager",UIUtils.getIconFromResources("actions/run-install.png"), this::openArtifactManager));
+        popupMenu.add(UIUtils.createMenuItem("External dependencies", "Opens the artifacts manager", UIUtils.getIconFromResources("actions/run-install.png"), this::openArtifactManager));
         popupMenu.addSeparator();
-        popupMenu.add(UIUtils.createMenuItem("ImageJ plugins", "Opens the ImageJ update manager",UIUtils.getIconFromResources("apps/imagej.png"), this::openImageJPluginManager));
+        popupMenu.add(UIUtils.createMenuItem("ImageJ plugins", "Opens the ImageJ update manager", UIUtils.getIconFromResources("apps/imagej.png"), this::openImageJPluginManager));
     }
 
     private void openImageJPluginManager() {

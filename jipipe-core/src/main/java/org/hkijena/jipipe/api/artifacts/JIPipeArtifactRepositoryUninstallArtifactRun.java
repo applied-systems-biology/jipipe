@@ -32,7 +32,7 @@ public class JIPipeArtifactRepositoryUninstallArtifactRun extends JIPipeArtifact
     protected void doOperation(JIPipeProgressInfo progressInfo) {
         Path localPath = artifact.getLocalPath();
         progressInfo.log("Uninstalling: " + localPath);
-        if(Files.isDirectory(localPath)) {
+        if (Files.isDirectory(localPath)) {
             Path artifactInfoFile = localPath.resolve("artifact.json");
             try {
                 Files.deleteIfExists(artifactInfoFile);
@@ -40,8 +40,7 @@ public class JIPipeArtifactRepositoryUninstallArtifactRun extends JIPipeArtifact
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }
-        else {
+        } else {
             progressInfo.log(localPath + " is not a directory! Unable to continue!");
         }
     }

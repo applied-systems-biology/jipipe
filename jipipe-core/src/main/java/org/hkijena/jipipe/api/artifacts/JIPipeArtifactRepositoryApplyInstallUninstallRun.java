@@ -16,7 +16,6 @@ package org.hkijena.jipipe.api.artifacts;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class JIPipeArtifactRepositoryApplyInstallUninstallRun extends JIPipeArtifactRepositoryOperationRun {
@@ -32,24 +31,23 @@ public class JIPipeArtifactRepositoryApplyInstallUninstallRun extends JIPipeArti
     @Override
     protected void doOperation(JIPipeProgressInfo progressInfo) {
         for (int i = 0; i < toUninstall.size(); i++) {
-            if(progressInfo.isCancelled())
+            if (progressInfo.isCancelled())
                 return;
             JIPipeLocalArtifact artifact = toUninstall.get(i);
             JIPipeProgressInfo uninstallingProgress = progressInfo.resolveAndLog("Uninstalling " + artifact.getFullId(), i, toUninstall.size());
             JIPipeArtifactRepositoryUninstallArtifactRun run = new JIPipeArtifactRepositoryUninstallArtifactRun(artifact);
             run.setProgressInfo(uninstallingProgress);
-             try {
-                 run.doOperation(uninstallingProgress);
-             }
-             catch (Throwable e) {
-                 progressInfo.getNotifications().push(new JIPipeNotification("artifact-uninstall-error-" + artifact.getFullId(),
-                         "Error while uninstalling " + artifact.getFullId(),
-                         "The artifact " + artifact.getFullId() + " could not be fully uninstalled. " +
-                                 "Please review the log."));
-             }
+            try {
+                run.doOperation(uninstallingProgress);
+            } catch (Throwable e) {
+                progressInfo.getNotifications().push(new JIPipeNotification("artifact-uninstall-error-" + artifact.getFullId(),
+                        "Error while uninstalling " + artifact.getFullId(),
+                        "The artifact " + artifact.getFullId() + " could not be fully uninstalled. " +
+                                "Please review the log."));
+            }
         }
         for (int i = 0; i < toInstall.size(); i++) {
-            if(progressInfo.isCancelled())
+            if (progressInfo.isCancelled())
                 return;
             JIPipeRemoteArtifact artifact = toInstall.get(i);
             JIPipeProgressInfo installingProgress = progressInfo.resolveAndLog("Installing " + artifact.getFullId(), i, toInstall.size());
@@ -57,8 +55,7 @@ public class JIPipeArtifactRepositoryApplyInstallUninstallRun extends JIPipeArti
             run.setProgressInfo(installingProgress);
             try {
                 run.doOperation(installingProgress);
-            }
-            catch (Throwable e) {
+            } catch (Throwable e) {
                 progressInfo.getNotifications().push(new JIPipeNotification("artifact-install-error-" + artifact.getFullId(),
                         "Error while installing " + artifact.getFullId(),
                         "The artifact " + artifact.getFullId() + " could not be fully installed. " +

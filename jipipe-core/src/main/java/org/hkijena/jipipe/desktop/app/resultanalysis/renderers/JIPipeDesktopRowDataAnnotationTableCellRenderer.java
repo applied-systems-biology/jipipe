@@ -15,11 +15,11 @@ package org.hkijena.jipipe.desktop.app.resultanalysis.renderers;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadata;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadata;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultDataSlotPreview;
 import org.hkijena.jipipe.plugins.settings.GeneralDataSettings;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;

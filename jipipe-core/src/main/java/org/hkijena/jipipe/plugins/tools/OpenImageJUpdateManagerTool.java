@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.plugins.tools;
 
-import ij.ImageJ;
 import net.imagej.ui.swing.updater.ImageJUpdater;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;

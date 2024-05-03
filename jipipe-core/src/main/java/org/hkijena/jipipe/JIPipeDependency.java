@@ -95,6 +95,7 @@ public interface JIPipeDependency extends JIPipeValidatable {
 
     /**
      * The list of alternative IDs that are covered by this dependency
+     *
      * @return alternative IDs
      */
     @JsonGetter("provides")

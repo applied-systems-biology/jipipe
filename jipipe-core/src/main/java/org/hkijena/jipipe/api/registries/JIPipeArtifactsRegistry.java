@@ -71,8 +71,7 @@ public class JIPipeArtifactsRegistry {
             for (JIPipeLocalArtifact artifact : queryLocalRepositories(null, null, null, progressInfo.resolve("Local repository"))) {
                 cachedArtifacts.put(artifact.getFullId(), artifact);
             }
-        }
-        finally {
+        } finally {
             lock.unlock(stamp);
         }
     }
@@ -80,23 +79,23 @@ public class JIPipeArtifactsRegistry {
     public List<JIPipeLocalArtifact> queryLocalRepositories(String groupId, String artifactId, String version, JIPipeProgressInfo progressInfo) {
         Map<String, JIPipeLocalArtifact> artifacts = new HashMap<>();
         try {
-            for(Path repositoryPath : Arrays.asList(getLocalSystemRepositoryPath(), getLocalUserRepositoryPath())) {
+            for (Path repositoryPath : Arrays.asList(getLocalSystemRepositoryPath(), getLocalUserRepositoryPath())) {
                 progressInfo.log("Checking local repository @ " + repositoryPath);
                 Files.walkFileTree(repositoryPath, new FileVisitor<Path>() {
 
                     @Override
                     public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
                         Path artifactFile = dir.resolve("artifact.json");
-                        if(Files.isRegularFile(artifactFile)) {
+                        if (Files.isRegularFile(artifactFile)) {
                             progressInfo.log("Found artifact @ " + artifactFile);
                             JIPipeLocalArtifact artifact = JsonUtils.readFromFile(artifactFile, JIPipeLocalArtifact.class);
-                            if(groupId != null && !Objects.equals(artifact.getGroupId(), groupId)) {
+                            if (groupId != null && !Objects.equals(artifact.getGroupId(), groupId)) {
                                 return FileVisitResult.SKIP_SUBTREE;
                             }
-                            if(artifactId != null && !Objects.equals(artifact.getArtifactId(), artifactId)) {
+                            if (artifactId != null && !Objects.equals(artifact.getArtifactId(), artifactId)) {
                                 return FileVisitResult.SKIP_SUBTREE;
                             }
-                            if(version != null && !Objects.equals(artifact.getVersion(), version)) {
+                            if (version != null && !Objects.equals(artifact.getVersion(), version)) {
                                 return FileVisitResult.SKIP_SUBTREE;
                             }
                             artifact.setLocalPath(dir);
@@ -146,7 +145,7 @@ public class JIPipeArtifactsRegistry {
                     if (version != null) {
                         urlString += "&version=" + version;
                     }
-                    if(token != null) {
+                    if (token != null) {
                         urlString += "&continuationToken" + token;
                     }
                     progressInfo.log("Contacting " + urlString);
@@ -177,7 +176,7 @@ public class JIPipeArtifactsRegistry {
                     JsonNode rootNode = JsonUtils.readFromString(textBuilder.toString(), JsonNode.class);
 
                     // Read items
-                    if(rootNode.has("items")) {
+                    if (rootNode.has("items")) {
                         for (JsonNode item : ImmutableList.copyOf(rootNode.get("items").elements())) {
                             JIPipeRemoteArtifact download = new JIPipeRemoteArtifact();
                             download.setUrl(item.get("downloadUrl").asText());
@@ -187,7 +186,7 @@ public class JIPipeArtifactsRegistry {
                             download.setClassifier(item.get("maven2").get("classifier").asText());
                             download.setVersion(item.get("maven2").get("version").asText());
 
-                            if(!downloadMap.containsKey(download.getFullId())) {
+                            if (!downloadMap.containsKey(download.getFullId())) {
                                 downloadMap.put(download.getFullId(), download);
                                 progressInfo.log("Found " + download.getFullId());
                             }
@@ -195,7 +194,7 @@ public class JIPipeArtifactsRegistry {
                     }
 
                     // Continuation token
-                    if(rootNode.has("continuationToken") && !rootNode.get("continuationToken").isNull()) {
+                    if (rootNode.has("continuationToken") && !rootNode.get("continuationToken").isNull()) {
                         tokens.push(rootNode.get("continuationToken").asText());
                     }
 
@@ -211,13 +210,13 @@ public class JIPipeArtifactsRegistry {
      * JIPipe's system repository path, which is usually located in IMAGEJ_DIR/jipipe/artifacts
      * This repository is intended for distributors of JIPipe to provide artifacts with JIPipe
      * Can be overwritten by setting the JIPIPE_SYSTEM_REPOSITORY_PATH
+     *
      * @return the system repository path
      */
     public Path getLocalSystemRepositoryPath() {
-        if(System.getenv("JIPIPE_LOCAL_REPOSITORY") != null) {
+        if (System.getenv("JIPIPE_LOCAL_REPOSITORY") != null) {
             return Paths.get(System.getenv("JIPIPE_LOCAL_REPOSITORY"));
-        }
-        else {
+        } else {
             return PathUtils.getImageJDir().resolve("jipipe").resolve("artifacts");
         }
     }
@@ -225,20 +224,19 @@ public class JIPipeArtifactsRegistry {
     /**
      * The path to the local repository that is owned by the user.
      * This is usually located in the user's home directory.
+     *
      * @return the user's repository path
      */
     public Path getLocalUserRepositoryPath() {
-        if(ArtifactSettings.getInstance().getOverrideInstallationPath().isEnabled() && !ArtifactSettings.getInstance().getOverrideInstallationPath().getContent().toString().isEmpty()) {
-            if(ArtifactSettings.getInstance().getOverrideInstallationPath().getContent().isAbsolute()) {
+        if (ArtifactSettings.getInstance().getOverrideInstallationPath().isEnabled() && !ArtifactSettings.getInstance().getOverrideInstallationPath().getContent().toString().isEmpty()) {
+            if (ArtifactSettings.getInstance().getOverrideInstallationPath().getContent().isAbsolute()) {
                 return ArtifactSettings.getInstance().getOverrideInstallationPath().getContent();
-            }
-            else {
+            } else {
                 return PathUtils.getJIPipeUserDir().resolve(ArtifactSettings.getInstance().getOverrideInstallationPath().getContent());
             }
-        }
-        else {
+        } else {
             if (SystemUtils.IS_OS_WINDOWS) {
-               return Paths.get(System.getenv("APPDATA")).resolve("JIPipe")
+                return Paths.get(System.getenv("APPDATA")).resolve("JIPipe")
                         .resolve("artifacts");
             } else if (SystemUtils.IS_OS_LINUX) {
                 if (System.getProperties().containsKey("XDG_DATA_HOME") && !StringUtils.isNullOrEmpty(System.getProperty("XDG_DATA_HOME"))) {

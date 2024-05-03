@@ -22,8 +22,6 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
-import java.util.Collections;
-
 /**
  * Extension containing some additional tools
  */
@@ -56,6 +54,7 @@ public class DevelopmentPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public StringList getDependencyProvides() {
         return new StringList();
     }
+
     @Override
     public String getDependencyId() {
         return "org.hkijena.jipipe:dev";

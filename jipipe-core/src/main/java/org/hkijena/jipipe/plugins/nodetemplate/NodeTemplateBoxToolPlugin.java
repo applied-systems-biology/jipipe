@@ -23,8 +23,6 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
-import java.util.Collections;
-
 @Plugin(type = JIPipeJavaPlugin.class)
 public class NodeTemplateBoxToolPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
@@ -57,6 +55,7 @@ public class NodeTemplateBoxToolPlugin extends JIPipePrepackagedDefaultJavaPlugi
     public StringList getDependencyProvides() {
         return new StringList();
     }
+
     @Override
     public boolean isCoreExtension() {
         return true;

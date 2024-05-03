@@ -110,6 +110,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
     private boolean isUpdatingSliders = false;
     private JIPipeDesktopFormPanel bottomPanel;
     private UpdateLutAndCalibrationRun currentUpdateCalibrationRun;
+
     public ImageViewerPanel3D(JIPipeImageViewer imageViewer) {
         this.imageViewer = imageViewer;
         if (JIPipe.getInstance() != null) {
@@ -128,7 +129,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
         viewerRunnerQueue.getFinishedEventEmitter().subscribeWeak(this);
         image3DRendererSettings.getParameterChangedEventEmitter().subscribeLambda((emitter, event) -> rebuildImageLater());
         addComponentListener(this);
-    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
+    }
 
     public static GraphicsConfiguration getBestConfigurationOnSameDevice(Window frame) {
 
@@ -149,7 +150,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
         }
 
         return good;
-    }
+    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
 
     private static void incrementSlider(JSlider slider) {
         int value = slider.getValue();

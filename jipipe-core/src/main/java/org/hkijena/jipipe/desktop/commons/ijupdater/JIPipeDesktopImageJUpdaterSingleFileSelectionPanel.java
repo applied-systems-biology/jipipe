@@ -17,7 +17,6 @@ import com.google.common.collect.ImmutableList;
 import net.imagej.updater.FileObject;
 import net.imagej.updater.GroupAction;
 import org.apache.commons.text.WordUtils;
-import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;

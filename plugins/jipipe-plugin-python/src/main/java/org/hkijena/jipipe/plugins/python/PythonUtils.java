@@ -298,10 +298,9 @@ public class PythonUtils {
             }
         }).collect(Collectors.joining(" ")));
 
-        if(suppressLogs) {
+        if (suppressLogs) {
             progressInfo.log("LOGS ARE SUPPRESSED. NOT STATUS UPDATES FROM PYTHON ARE RECEIVED.");
-        }
-        else {
+        } else {
             LogOutputStream progressInfoLog = new LogOutputStream() {
                 @Override
                 protected void processLine(String s, int i) {
@@ -386,7 +385,7 @@ public class PythonUtils {
      * @param environment                    the environment
      * @param libraryPaths                   additional library paths
      * @param additionalEnvironmentVariables additional environment variables
-     * @param suppressLogs if logs should be suppressed
+     * @param suppressLogs                   if logs should be suppressed
      * @param progressInfo                   the progress info
      */
     public static void runPython(String[] arguments, PythonEnvironment environment, List<Path> libraryPaths, Map<String, String> additionalEnvironmentVariables, boolean suppressLogs, JIPipeProgressInfo progressInfo) {

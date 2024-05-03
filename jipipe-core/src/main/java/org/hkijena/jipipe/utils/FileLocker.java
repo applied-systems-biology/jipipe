@@ -56,7 +56,7 @@ public class FileLocker {
         try {
 
             // Create the file if it does not exist
-            if(!Files.isRegularFile(lockFilePath)) {
+            if (!Files.isRegularFile(lockFilePath)) {
                 acquireWriteLock();
                 releaseLock();
             }

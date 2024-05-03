@@ -27,6 +27,12 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.project.JIPipeDesktopInvalidProjectDependenciesInfoDialog;
+import org.hkijena.jipipe.desktop.commons.events.WindowClosedEvent;
+import org.hkijena.jipipe.desktop.commons.events.WindowClosedEventEmitter;
+import org.hkijena.jipipe.desktop.commons.events.WindowOpenedEvent;
+import org.hkijena.jipipe.desktop.commons.events.WindowOpenedEventEmitter;
+import org.hkijena.jipipe.desktop.commons.ijupdater.JIPipeDesktopImageJUpdaterMissingRegistrationUpdateSiteResolver;
 import org.hkijena.jipipe.plugins.jsonextensionloader.JsonExtensionLoaderPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -34,12 +40,6 @@ import org.hkijena.jipipe.plugins.settings.ExtensionSettings;
 import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
 import org.hkijena.jipipe.plugins.settings.GeneralUISettings;
 import org.hkijena.jipipe.plugins.settings.ProjectsSettings;
-import org.hkijena.jipipe.desktop.commons.events.WindowClosedEvent;
-import org.hkijena.jipipe.desktop.commons.events.WindowClosedEventEmitter;
-import org.hkijena.jipipe.desktop.commons.events.WindowOpenedEvent;
-import org.hkijena.jipipe.desktop.commons.events.WindowOpenedEventEmitter;
-import org.hkijena.jipipe.desktop.commons.ijupdater.JIPipeDesktopImageJUpdaterMissingRegistrationUpdateSiteResolver;
-import org.hkijena.jipipe.desktop.app.project.JIPipeDesktopInvalidProjectDependenciesInfoDialog;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -345,6 +345,7 @@ public class JIPipeDesktopJsonExtensionWindow extends JFrame {
                     public Path getDependencyLocation() {
                         return Paths.get("");
                     }
+
                     @Override
                     public StringList getDependencyProvides() {
                         return new StringList();

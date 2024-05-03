@@ -15,15 +15,11 @@ package org.hkijena.jipipe.api.registries;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeMetadataObject;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * A registry of {@link org.hkijena.jipipe.api.JIPipeMetadataObject} types
@@ -44,10 +40,9 @@ public class JIPipeMetadataRegistry {
 
     public Class<? extends JIPipeMetadataObject> findById(String id) {
         Class<? extends JIPipeMetadataObject> aClass = registeredItems.get(id);
-        if(aClass != null) {
+        if (aClass != null) {
             return aClass;
-        }
-        else {
+        } else {
             return alternativeTypeIds.getOrDefault(id, null);
         }
     }

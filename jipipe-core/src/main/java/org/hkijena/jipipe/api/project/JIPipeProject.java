@@ -655,7 +655,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
             for (Map.Entry<String, JIPipeMetadataObject> entry : getAdditionalMetadata().entrySet()) {
                 String typeId = JIPipe.getInstance().getMetadataRegistry().getId(entry.getValue().getClass());
 
-                if(typeId != null) {
+                if (typeId != null) {
                     if (entry.getValue() instanceof JIPipeParameterCollection) {
                         generator.writeObjectFieldStart(entry.getKey());
                         generator.writeObjectField("jipipe:type", typeId);
@@ -667,8 +667,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
                         generator.writeObjectField("data", entry.getValue());
                         generator.writeEndObject();
                     }
-                }
-                else {
+                } else {
                     System.err.println("Unable to serialize " + entry.getValue() + " as metadata object: not registered!");
                 }
             }
@@ -709,7 +708,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
                     String typeId = metadataEntry.getValue().get("jipipe:type").textValue();
                     Class<? extends JIPipeMetadataObject> metadataClass = JIPipe.getInstance().getMetadataRegistry().findById(typeId);
 
-                    if(metadataClass == null) {
+                    if (metadataClass == null) {
                         throw new NullPointerException("Unable to find metadata object ID '" + typeId + "'");
                     }
 

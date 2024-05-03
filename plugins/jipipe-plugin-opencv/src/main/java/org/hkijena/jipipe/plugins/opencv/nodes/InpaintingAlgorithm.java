@@ -25,7 +25,6 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
@@ -67,12 +66,11 @@ public class InpaintingAlgorithm extends JIPipeIteratingAlgorithm {
             opencv_core.Mat mask = OpenCvImageUtils.toMask(maskImage.getImageOrExpand(index));
 
             opencv_core.Mat dst = new opencv_core.Mat();
-            if(method.isxPhoto()) {
+            if (method.isxPhoto()) {
                 opencv_core.Mat invertedMask = new opencv_core.Mat();
                 opencv_core.bitwise_not(mask, invertedMask);
                 opencv_xphoto.inpaint(src, invertedMask, dst, method.nativeValue);
-            }
-            else {
+            } else {
                 opencv_photo.inpaint(src, mask, dst, radius, method.nativeValue);
             }
             return dst;
@@ -86,7 +84,7 @@ public class InpaintingAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @SetJIPipeDocumentation(name = "Radius", description = "Radius of a circular neighborhood of each point inpainted that is considered by the algorithm.")
-     @JIPipeParameter("radius")
+    @JIPipeParameter("radius")
     public int getRadius() {
         return radius;
     }
@@ -110,7 +108,7 @@ public class InpaintingAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if("radius".equals(access.getKey()) && method.isxPhoto()) {
+        if ("radius".equals(access.getKey()) && method.isxPhoto()) {
             return false;
         }
         return super.isParameterUIVisible(tree, access);

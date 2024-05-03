@@ -26,19 +26,17 @@ public abstract class JIPipeArtifactRepositoryOperationRun extends AbstractJIPip
 
         FileLocker locker = new FileLocker(getProgressInfo(), JIPipe.getArtifacts().getLocalUserRepositoryPath().resolve("lockfile"));
         try {
-            if(getLockType() == RepositoryLockType.Write) {
+            if (getLockType() == RepositoryLockType.Write) {
                 locker.acquireWriteLock();
-            }
-            else {
+            } else {
                 locker.acquireReadLock();
             }
             doOperation(getProgressInfo());
-        }
-        finally {
+        } finally {
             locker.releaseLock();
         }
 
-        if(getLockType() == RepositoryLockType.Write) {
+        if (getLockType() == RepositoryLockType.Write) {
             // Update local caches
             JIPipe.getArtifacts().updateCachedArtifacts(getProgressInfo().resolve("Update cache"));
         }

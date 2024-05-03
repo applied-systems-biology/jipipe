@@ -32,13 +32,13 @@ import java.util.stream.Collectors;
 public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel implements JIPipeRunnable.FinishedEventListener {
 
     private static JFrame CURRENT_WINDOW = null;
-    private JScrollPane artifactListScrollPane;
     private final List<ArtifactEntry> artifactEntryList = new ArrayList<>();
     private final JList<ArtifactEntry> artifactEntryJList = new JList<>();
     private final JIPipeDesktopFormPanel propertyPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
     private final JIPipeArtifactsRegistry artifactsRegistry = JIPipe.getArtifacts();
     private final JCheckBox onlyCompatibleToggle = new JCheckBox("Only compatible", true);
     private final JIPipeDesktopSearchTextField searchTextField = new JIPipeDesktopSearchTextField();
+    private JScrollPane artifactListScrollPane;
 
     public JIPipeDesktopArtifactManagerUI(JIPipeDesktopWorkbench desktopWorkbench) {
         super(desktopWorkbench);
@@ -46,6 +46,35 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
         artifactsRegistry.getQueue().getFinishedEventEmitter().subscribe(this);
         artifactsRegistry.enqueueUpdateCachedArtifacts();
         updateSelectionPanel();
+    }
+
+    public static void show(JIPipeDesktopWorkbench desktopWorkbench) {
+        if (CURRENT_WINDOW != null) {
+            CURRENT_WINDOW.toFront();
+        } else {
+            JFrame frame = new JFrame("JIPipe - Artifacts");
+            frame.setIconImage(UIUtils.getJIPipeIcon128());
+            frame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    super.windowClosing(e);
+
+                    if (JIPipe.getArtifacts().getQueue().isEmpty()) {
+                        frame.setVisible(false);
+                        frame.dispose();
+                        CURRENT_WINDOW = null;
+                    }
+                }
+            });
+            frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+            frame.setContentPane(new JIPipeDesktopArtifactManagerUI(desktopWorkbench));
+            frame.pack();
+            frame.setSize(1024, 768);
+            frame.setLocationRelativeTo(desktopWorkbench.getWindow());
+            frame.setVisible(true);
+            CURRENT_WINDOW = frame;
+        }
+
     }
 
     private void initialize() {
@@ -170,25 +199,24 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
                 if (artifactEntry.artifact instanceof JIPipeRemoteArtifact) {
                     toInstall.add((JIPipeRemoteArtifact) artifactEntry.artifact);
                     installSize += ((JIPipeRemoteArtifact) artifactEntry.artifact).getSize();
-                }
-                else if(artifactEntry.artifact instanceof JIPipeLocalArtifact) {
+                } else if (artifactEntry.artifact instanceof JIPipeLocalArtifact) {
                     toUninstall.add((JIPipeLocalArtifact) artifactEntry.artifact);
                 }
             }
         }
 
-        if(toInstall.isEmpty() && toUninstall.isEmpty()) {
+        if (toInstall.isEmpty() && toUninstall.isEmpty()) {
             return;
         }
         StringBuilder message = new StringBuilder();
-        if(!toInstall.isEmpty()) {
+        if (!toInstall.isEmpty()) {
             message.append(StringUtils.formatPluralS(toInstall.size(), "artifact")).append(" will be installed (").append(installSize / 1024 / 1024).append("MB to download)\n");
         }
-        if(!toUninstall.isEmpty()) {
+        if (!toUninstall.isEmpty()) {
             message.append(" ").append(StringUtils.formatPluralS(toUninstall.size(), "artifact")).append(" will be removed\n");
         }
         message.append("\nDo you want to continue?");
-        if(JOptionPane.showConfirmDialog(this, message.toString(), "Apply changes", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+        if (JOptionPane.showConfirmDialog(this, message.toString(), "Apply changes", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             JIPipeArtifactRepositoryApplyInstallUninstallRun run = new JIPipeArtifactRepositoryApplyInstallUninstallRun(toInstall, toUninstall);
             JIPipeDesktopRunExecuterUI.runInDialog(getDesktopWorkbench(), this, run, JIPipe.getArtifacts().getQueue());
         }
@@ -206,35 +234,6 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public static void show(JIPipeDesktopWorkbench desktopWorkbench) {
-        if (CURRENT_WINDOW != null) {
-            CURRENT_WINDOW.toFront();
-        } else {
-            JFrame frame = new JFrame("JIPipe - Artifacts");
-            frame.setIconImage(UIUtils.getJIPipeIcon128());
-            frame.addWindowListener(new WindowAdapter() {
-                @Override
-                public void windowClosing(WindowEvent e) {
-                    super.windowClosing(e);
-
-                    if (JIPipe.getArtifacts().getQueue().isEmpty()) {
-                        frame.setVisible(false);
-                        frame.dispose();
-                        CURRENT_WINDOW = null;
-                    }
-                }
-            });
-            frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-            frame.setContentPane(new JIPipeDesktopArtifactManagerUI(desktopWorkbench));
-            frame.pack();
-            frame.setSize(1024, 768);
-            frame.setLocationRelativeTo(desktopWorkbench.getWindow());
-            frame.setVisible(true);
-            CURRENT_WINDOW = frame;
-        }
-
     }
 
     private void updateArtifactsList() {

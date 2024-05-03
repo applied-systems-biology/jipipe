@@ -49,7 +49,7 @@ public class ConverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         JIPipeData inputData = iterationStep.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo);
-        JIPipeData outputData = JIPipe.getDataTypes().convert(inputData,getFirstOutputSlot().getAcceptedDataType(), progressInfo);
-        iterationStep.addOutputData(getFirstOutputSlot(),outputData, progressInfo);
+        JIPipeData outputData = JIPipe.getDataTypes().convert(inputData, getFirstOutputSlot().getAcceptedDataType(), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
 }

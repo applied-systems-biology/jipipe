@@ -15,8 +15,8 @@ package org.hkijena.jipipe.desktop.commons.components;
 
 import org.hkijena.jipipe.JIPipeJsonPlugin;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.plugins.settings.ProjectsSettings;
 import org.hkijena.jipipe.desktop.jsonextensionbuilder.JIPipeDesktopJsonExtensionWindow;
+import org.hkijena.jipipe.plugins.settings.ProjectsSettings;
 
 import javax.swing.*;
 import java.nio.file.Path;

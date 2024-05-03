@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.plugins.expressions.functions.statistics;
 
 import ij.process.AutoThresholder;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 
 @SetJIPipeDocumentation(name = "Histogram threshold (Minimum)", description = "Calculates a threshold from a " +

@@ -45,8 +45,10 @@ import javax.swing.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -80,7 +82,7 @@ public class OpenCvImageData implements JIPipeData {
         this.width = OpenCvImageUtils.findWidth(images.values());
         this.height = OpenCvImageUtils.findHeight(images.values());
 
-        this.images.resize( numSlices * numFrames * numChannels);
+        this.images.resize(numSlices * numFrames * numChannels);
         for (Map.Entry<ImageSliceIndex, opencv_core.Mat> entry : images.entrySet()) {
             this.images.put(entry.getKey().zeroSliceIndexToOneStackIndex(numChannels, numSlices, numFrames) - 1, entry.getValue());
         }
@@ -100,7 +102,7 @@ public class OpenCvImageData implements JIPipeData {
     }
 
     public OpenCvImageData(ImagePlus img) {
-        this.images  = new opencv_core.MatVector();
+        this.images = new opencv_core.MatVector();
         this.numSlices = img.getNSlices();
         this.numFrames = img.getNFrames();
         this.numChannels = img.getNChannels();
@@ -211,7 +213,7 @@ public class OpenCvImageData implements JIPipeData {
             String fileName = StringUtils.orElse(name, "image");
             Path outputPath = PathUtils.ensureExtension(storage.getFileSystemPath().resolve(fileName), ".tif");
             try {
-                if(!opencv_imgcodecs.imwrite(outputPath.toString(), images.get(0))) {
+                if (!opencv_imgcodecs.imwrite(outputPath.toString(), images.get(0))) {
                     throw new IOException("Unable to write image!");
                 }
             } catch (IOException e) {
@@ -222,7 +224,7 @@ public class OpenCvImageData implements JIPipeData {
                 String fileName = StringUtils.orElse(name, "image") + "-z" + index.getZ() + "c" + index.getC() + "t" + index.getT();
                 Path outputPath = PathUtils.ensureExtension(storage.getFileSystemPath().resolve(fileName), ".tif");
                 try {
-                    if(!opencv_imgcodecs.imwrite(outputPath.toString(), ip)) {
+                    if (!opencv_imgcodecs.imwrite(outputPath.toString(), ip)) {
                         throw new IOException("Unable to write image!");
                     }
                 } catch (IOException e) {
@@ -261,10 +263,10 @@ public class OpenCvImageData implements JIPipeData {
         int imageWidth = (int) Math.max(1, getWidth() * factor);
         int imageHeight = (int) Math.max(1, getHeight() * factor);
 
-       try(opencv_core.Mat scaledInstance = new opencv_core.Mat()) {
-           opencv_imgproc.resize(images.get(0), scaledInstance, new opencv_core.Size(imageWidth, imageHeight));
-           return new JIPipeImageThumbnailData(OpenCvImageUtils.toImagePlus(scaledInstance));
-       }
+        try (opencv_core.Mat scaledInstance = new opencv_core.Mat()) {
+            opencv_imgproc.resize(images.get(0), scaledInstance, new opencv_core.Size(imageWidth, imageHeight));
+            return new JIPipeImageThumbnailData(OpenCvImageUtils.toImagePlus(scaledInstance));
+        }
     }
 
     public ImageSliceIndex getSliceIndex(int index) {

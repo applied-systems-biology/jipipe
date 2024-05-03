@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.desktop.app.resultanalysis;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 
 import javax.swing.*;

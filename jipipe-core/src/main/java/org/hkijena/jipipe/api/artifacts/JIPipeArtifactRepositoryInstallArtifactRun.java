@@ -15,8 +15,6 @@ package org.hkijena.jipipe.api.artifacts;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.notifications.JIPipeNotification;
-import org.hkijena.jipipe.plugins.artifacts.ArtifactSettings;
 import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.ArchiveUtils;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -24,7 +22,6 @@ import org.hkijena.jipipe.utils.WebUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -43,7 +40,7 @@ public class JIPipeArtifactRepositoryInstallArtifactRun extends JIPipeArtifactRe
         progressInfo.log("Artifact to install: " + artifact.getFullId());
         progressInfo.log("Target path: " + targetPath);
 
-        if(Files.exists(targetPath)) {
+        if (Files.exists(targetPath)) {
             // Delete existing installation
             PathUtils.deleteDirectoryRecursively(targetPath, progressInfo.resolve("Delete old artifact directory"));
         }
@@ -59,25 +56,24 @@ public class JIPipeArtifactRepositoryInstallArtifactRun extends JIPipeArtifactRe
         try {
             //Download
             WebUtils.download(new URL(artifact.getUrl()), tmpFile, "Download", progressInfo);
-            if(progressInfo.isCancelled())
+            if (progressInfo.isCancelled())
                 return;
 
             // Extract
-            if(suffix.equals(".zip")) {
+            if (suffix.equals(".zip")) {
                 ArchiveUtils.decompressZipFile(tmpFile, targetPath, progressInfo.resolve("Extracting"));
-            }
-            else {
+            } else {
                 ArchiveUtils.decompressTarGZ(tmpFile, targetPath, progressInfo.resolve("Extracting"));
             }
 
             // Create metadata file
-            if(progressInfo.isCancelled())
+            if (progressInfo.isCancelled())
                 return;
             JsonUtils.saveToFile(artifact, targetPath.resolve("artifact.json"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
-            if(Files.exists(tmpFile)) {
+            if (Files.exists(tmpFile)) {
                 try {
                     Files.delete(tmpFile);
                 } catch (IOException e) {

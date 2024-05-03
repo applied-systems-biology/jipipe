@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalPathParameter;
 
-public class ArtifactSettings  extends AbstractJIPipeParameterCollection {
+public class ArtifactSettings extends AbstractJIPipeParameterCollection {
     public static final String ID = "artifacts";
 
     private boolean autoDownload = true;
@@ -31,6 +31,10 @@ public class ArtifactSettings  extends AbstractJIPipeParameterCollection {
 
     public ArtifactSettings() {
         repositories.add(new JIPipeArtifactRepositoryReference("https://jipipe.hki-jena.de/nexus/", "jipipe-artifacts", JIPipeArtifactRepositoryType.SonatypeNexus));
+    }
+
+    public static ArtifactSettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, ArtifactSettings.class);
     }
 
     @SetJIPipeDocumentation(name = "Auto download", description = "If enabled, automatically download missing artifacts")
@@ -65,10 +69,6 @@ public class ArtifactSettings  extends AbstractJIPipeParameterCollection {
     @JIPipeParameter("override-installation-path")
     public void setOverrideInstallationPath(OptionalPathParameter overrideInstallationPath) {
         this.overrideInstallationPath = overrideInstallationPath;
-    }
-
-    public static ArtifactSettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, ArtifactSettings.class);
     }
 
 }
