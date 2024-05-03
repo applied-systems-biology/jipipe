@@ -16,15 +16,27 @@ package org.hkijena.jipipe.api.artifacts;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.utils.FileLocker;
 
 public abstract class JIPipeArtifactRepositoryOperationRun extends AbstractJIPipeRunnable {
 
     @Override
     public void run() {
         getProgressInfo().log("Requesting repository lock: " + getLockType());
-        doOperation(getProgressInfo());
 
-        // TODO: Unlock here
+        FileLocker locker = new FileLocker(getProgressInfo(), JIPipe.getInstance().getArtifactsRegistry().getLocalUserRepositoryPath().resolve("lockfile"));
+        try {
+            if(getLockType() == RepositoryLockType.Write) {
+                locker.acquireWriteLock();
+            }
+            else {
+                locker.acquireReadLock();
+            }
+            doOperation(getProgressInfo());
+        }
+        finally {
+            locker.releaseLock();
+        }
 
         if(getLockType() == RepositoryLockType.Write) {
             // Update local caches
