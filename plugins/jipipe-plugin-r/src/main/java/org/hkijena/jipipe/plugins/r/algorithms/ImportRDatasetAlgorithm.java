@@ -123,12 +123,6 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.dataset = dataset;
     }
 
-    @Override
-    protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
-        super.onDeserialized(node, issues, notifications);
-        RPlugin.createMissingRNotificationIfNeeded(notifications);
-    }
-
     public enum Dataset {
         AirPassengers("AirPassengers", "Monthly Airline Passenger Numbers 1949-1960"),
         BJsales("BJsales", "Sales Data with Leading Indicator"),

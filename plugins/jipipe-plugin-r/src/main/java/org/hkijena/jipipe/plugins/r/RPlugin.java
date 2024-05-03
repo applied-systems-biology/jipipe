@@ -41,7 +41,6 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.r.algorithms.ImportRDatasetAlgorithm;
 import org.hkijena.jipipe.plugins.r.algorithms.IteratingRScriptAlgorithm;
 import org.hkijena.jipipe.plugins.r.algorithms.MergingRScriptAlgorithm;
-import org.hkijena.jipipe.plugins.r.installers.REasyInstaller;
 import org.hkijena.jipipe.plugins.r.installers.REnvInstaller;
 import org.hkijena.jipipe.plugins.r.parameters.RScriptParameter;
 import org.hkijena.jipipe.plugins.r.ui.RTokenMaker;
@@ -73,48 +72,9 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         getMetadata().setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("thumbnails/r.png")));
     }
 
-    private static void installR(JIPipeWorkbench workbench) {
-        RExtensionSettings settings = RExtensionSettings.getInstance();
-        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
-        JIPipeParameterAccess parameterAccess = tree.getParameters().get("r-environment");
-        REnvInstaller installer = new REnvInstaller(workbench, parameterAccess);
-        JIPipeDesktopRunExecuterUI.runInDialog((JIPipeDesktopWorkbench) workbench, ((JIPipeDesktopWorkbench) workbench).getWindow(), installer);
-    }
-
-    private static void easyInstallR(JIPipeWorkbench workbench) {
-        RExtensionSettings settings = RExtensionSettings.getInstance();
-        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
-        JIPipeParameterAccess parameterAccess = tree.getParameters().get("r-environment");
-        REasyInstaller installer = new REasyInstaller((JIPipeDesktopWorkbench) workbench, parameterAccess);
-        JIPipeDesktopRunExecuterUI.runInDialog((JIPipeDesktopWorkbench) workbench, ((JIPipeDesktopWorkbench) workbench).getWindow(), installer);
-    }
-
     private static void configureR(JIPipeWorkbench workbench) {
         if (workbench instanceof JIPipeDesktopProjectWorkbench) {
             ((JIPipeDesktopProjectWorkbench) workbench).openApplicationSettings("/Extensions/R integration");
-        }
-    }
-
-    public static void createMissingRNotificationIfNeeded(JIPipeNotificationInbox inbox) {
-        if (!RExtensionSettings.RSettingsAreValid()) {
-            JIPipeNotification notification = new JIPipeNotification(AS_DEPENDENCY.getDependencyId() + ":r-not-configured");
-            notification.setHeading("R is not configured");
-            notification.setDescription("To make use of R within JIPipe, you need to either provide JIPipe with an " +
-                    "existing R installation or let JIPipe install a R distribution for you. Please note that we cannot provide you with an R " +
-                    "setup tool for Linux and Mac.\n\n" +
-                    "For more information, please visit https://www.jipipe.org/installation/third-party/r/");
-            if (SystemUtils.IS_OS_WINDOWS) {
-                notification.getActions().add(new JIPipeNotificationAction("Install R",
-                        "Installs a prepackaged version of R",
-                        UIUtils.getIconInvertedFromResources("actions/download.png"),
-                        JIPipeNotificationAction.Style.Success,
-                        RPlugin::easyInstallR));
-            }
-            notification.getActions().add(new JIPipeNotificationAction("Open settings",
-                    "Opens the applications settings page",
-                    UIUtils.getIconFromResources("actions/configure.png"),
-                    RPlugin::configureR));
-            inbox.push(notification);
         }
     }
 
@@ -179,7 +139,6 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "An optional R environment",
                 null);
         registerEnvironmentInstaller(REnvironment.class, REnvInstaller.class, UIUtils.getIconFromResources("actions/download.png"));
-        registerEnvironmentInstaller(REnvironment.class, REasyInstaller.class, UIUtils.getIconFromResources("emblems/vcs-normal.png"));
 
         AbstractTokenMakerFactory atmf = (AbstractTokenMakerFactory) TokenMakerFactory.getDefaultInstance();
         atmf.putMapping("text/x-r-script", RTokenMaker.class.getName());
@@ -205,10 +164,5 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("r-import-dataset", ImportRDatasetAlgorithm.class, UIUtils.getIconURLFromResources("apps/rlogo_icon.png"));
 
         registerNodeExamplesFromResources(RESOURCES, "examples");
-    }
-
-    @Override
-    public void postprocess(JIPipeProgressInfo progressInfo) {
-        createMissingRNotificationIfNeeded(JIPipeNotificationInbox.getInstance());
     }
 }

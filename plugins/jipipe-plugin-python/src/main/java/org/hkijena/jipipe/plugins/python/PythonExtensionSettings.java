@@ -33,10 +33,8 @@ public class PythonExtensionSettings extends AbstractJIPipeParameterCollection i
     public static String ID = "org.hkijena.jipipe:python";
     private PythonEnvironment pythonEnvironment = new PythonEnvironment();
     private PythonEnvironment.List presets = new PythonEnvironment.List();
-    private StringList easyInstallerRepositories = new StringList();
 
     public PythonExtensionSettings() {
-        easyInstallerRepositories.add("https://github.com/applied-systems-biology/JIPipe-Repositories/raw/main/easyinstall/easyinstall-python.json");
     }
 
     public static PythonExtensionSettings getInstance() {
@@ -75,17 +73,6 @@ public class PythonExtensionSettings extends AbstractJIPipeParameterCollection i
             return report.isValid();
         }
         return false;
-    }
-
-    @SetJIPipeDocumentation(name = "Easy installer repositories", description = "Allows to change the repositories for the EasyInstaller")
-    @JIPipeParameter("easy-installer-repositories")
-    public StringList getEasyInstallerRepositories() {
-        return easyInstallerRepositories;
-    }
-
-    @JIPipeParameter("easy-installer-repositories")
-    public void setEasyInstallerRepositories(StringList easyInstallerRepositories) {
-        this.easyInstallerRepositories = easyInstallerRepositories;
     }
 
     @SetJIPipeDocumentation(name = "Presets", description = "List of presets stored for Python environments.")

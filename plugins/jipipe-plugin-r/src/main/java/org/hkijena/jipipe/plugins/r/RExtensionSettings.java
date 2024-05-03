@@ -35,10 +35,7 @@ public class RExtensionSettings extends AbstractJIPipeParameterCollection implem
     private REnvironment environment = new REnvironment();
     private REnvironment.List presets = new REnvironment.List();
 
-    private StringList easyInstallerRepositories = new StringList();
-
     public RExtensionSettings() {
-        easyInstallerRepositories.add("https://github.com/applied-systems-biology/JIPipe-Repositories/raw/main/easyinstall/easyinstall-r.json");
     }
 
     public static RExtensionSettings getInstance() {
@@ -96,17 +93,6 @@ public class RExtensionSettings extends AbstractJIPipeParameterCollection implem
     @JIPipeParameter("presets")
     public void setPresets(REnvironment.List presets) {
         this.presets = presets;
-    }
-
-    @SetJIPipeDocumentation(name = "Easy installer repositories", description = "Allows to change the repositories for the EasyInstaller")
-    @JIPipeParameter("easy-installer-repositories")
-    public StringList getEasyInstallerRepositories() {
-        return easyInstallerRepositories;
-    }
-
-    @JIPipeParameter("easy-installer-repositories")
-    public void setEasyInstallerRepositories(StringList easyInstallerRepositories) {
-        this.easyInstallerRepositories = easyInstallerRepositories;
     }
 
     @Override

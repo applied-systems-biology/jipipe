@@ -155,12 +155,6 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
-        super.onDeserialized(node, issues, notifications);
-        RPlugin.createMissingRNotificationIfNeeded(notifications);
-    }
-
-    @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         StringBuilder code = new StringBuilder();
 

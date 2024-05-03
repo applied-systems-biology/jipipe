@@ -31,12 +31,10 @@ public class IlastikSettings extends AbstractJIPipeParameterCollection {
 
     public static String ID = "org.hkijena.jipipe:ilastik";
     private ProcessEnvironment environment = new ProcessEnvironment();
-    private StringList easyInstallerRepositories = new StringList();
     private int maxThreads = -1;
     private int maxMemory = 4096;
 
     public IlastikSettings() {
-        easyInstallerRepositories.add("https://github.com/applied-systems-biology/JIPipe-Repositories/raw/main/easyinstall/easyinstall-ilastik.json");
         environment.setArguments(new JIPipeExpressionParameter("cli_parameters"));
     }
 
@@ -85,17 +83,6 @@ public class IlastikSettings extends AbstractJIPipeParameterCollection {
     @JIPipeParameter("environment")
     public void setEnvironment(ProcessEnvironment environment) {
         this.environment = environment;
-    }
-
-    @SetJIPipeDocumentation(name = "Easy installer repositories", description = "Allows to change the repositories for the EasyInstaller")
-    @JIPipeParameter("easy-installer-repositories")
-    public StringList getEasyInstallerRepositories() {
-        return easyInstallerRepositories;
-    }
-
-    @JIPipeParameter("easy-installer-repositories")
-    public void setEasyInstallerRepositories(StringList easyInstallerRepositories) {
-        this.easyInstallerRepositories = easyInstallerRepositories;
     }
 
     @SetJIPipeDocumentation(name = "Maximum number of threads", description = "The maximum number of threads Ilastik will utilize. Negative or zero values indicate no limitation.")

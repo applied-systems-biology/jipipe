@@ -34,11 +34,8 @@ public class CellposeSettings extends AbstractJIPipeParameterCollection {
 
     private OptionalPythonEnvironment overridePythonEnvironment = new OptionalPythonEnvironment();
 
-    private StringList easyInstallerRepositories = new StringList();
-
     public CellposeSettings() {
         overridePythonEnvironment.setEnabled(true);
-        easyInstallerRepositories.add("https://github.com/applied-systems-biology/JIPipe-Repositories/raw/main/easyinstall/easyinstall-cellpose.json");
     }
 
     public static CellposeSettings getInstance() {
@@ -91,17 +88,6 @@ public class CellposeSettings extends AbstractJIPipeParameterCollection {
     @JIPipeParameter("python-environment")
     public void setOverridePythonEnvironment(OptionalPythonEnvironment overridePythonEnvironment) {
         this.overridePythonEnvironment = overridePythonEnvironment;
-    }
-
-    @SetJIPipeDocumentation(name = "Easy installer repositories", description = "Allows to change the repositories for the EasyInstaller")
-    @JIPipeParameter("easy-installer-repositories")
-    public StringList getEasyInstallerRepositories() {
-        return easyInstallerRepositories;
-    }
-
-    @JIPipeParameter("easy-installer-repositories")
-    public void setEasyInstallerRepositories(StringList easyInstallerRepositories) {
-        this.easyInstallerRepositories = easyInstallerRepositories;
     }
 
     public PythonEnvironment getPythonEnvironment() {
