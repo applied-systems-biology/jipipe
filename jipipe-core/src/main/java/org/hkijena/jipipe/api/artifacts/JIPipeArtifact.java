@@ -104,6 +104,10 @@ public class JIPipeArtifact implements Comparable<JIPipeArtifact> {
         }
     }
 
+    public boolean isRequireGPU() {
+        return getClassifier().contains("gpu");
+    }
+
     @Override
     public String toString() {
         return "Artifact " + getFullId();

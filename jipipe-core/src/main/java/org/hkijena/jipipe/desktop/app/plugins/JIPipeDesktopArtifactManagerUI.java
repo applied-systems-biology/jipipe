@@ -119,7 +119,7 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
             propertyPanel.addToForm(UIUtils.makeReadonlyBorderlessTextField(artifact.getClassifier()), new JLabel("Label"));
             propertyPanel.addToForm(UIUtils.makeReadonlyBorderlessTextField(artifact.getGroupId()), new JLabel("Publisher"));
             propertyPanel.addToForm(UIUtils.makeReadonlyBorderlessTextField(artifact.isCompatible() ? "Yes" : "No"), new JLabel("Compatible"));
-            if (artifact.getClassifier().contains("gpu")) {
+            if (artifact.isRequireGPU()) {
                 propertyPanel.addToForm(new JLabel("Requires GPU", UIUtils.getIconFromResources("devices/device_pci.png"), JLabel.LEFT), new JLabel("Additional info"));
             }
 
@@ -378,7 +378,7 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
                 }
             }
             String additionalInfo = "";
-            if (value.getArtifact().getClassifier().contains("gpu")) {
+            if (value.getArtifact().isRequireGPU()) {
                 additionalInfo = "(Requires GPU)";
             }
             nameLabel.setText("<html><strong>" + value.getArtifact().getArtifactId() + "</strong> v" + value.getArtifact().getVersion() + " <span style=\"color:#eba834\">" + additionalInfo + "</span></html>");
