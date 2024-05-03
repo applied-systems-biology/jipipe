@@ -118,17 +118,11 @@ public class IlastikModelData implements JIPipeData {
             desktopWorkbench.sendStatusBarText("Launching Ilastik ...");
             IlastikPlugin.runIlastik(null, Collections.singletonList(outputFile.toString()), progressInfo, true);
         } else {
-            JIPipeNotificationInbox inbox = new JIPipeNotificationInbox();
-            IlastikPlugin.createMissingIlastikNotificationIfNeeded(inbox);
-            JIPipeDesktopGenericNotificationInboxUI ui = new JIPipeDesktopGenericNotificationInboxUI(desktopWorkbench, inbox);
-            JFrame dialog = new JFrame();
-            dialog.setTitle("View Ilastik project");
-            dialog.setContentPane(ui);
-            dialog.setIconImage(UIUtils.getJIPipeIcon128());
-            dialog.pack();
-            dialog.setSize(800, 600);
-            dialog.setLocationRelativeTo(desktopWorkbench.getWindow());
-            dialog.setVisible(true);
+            JOptionPane.showMessageDialog(desktopWorkbench.getWindow(),
+                    "Ilastik is currently not installed. Please click Plugins > External dependencies and use the " +
+                            "artifact manager to install an Ilastik version",
+                    "Launch Ilastik",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
