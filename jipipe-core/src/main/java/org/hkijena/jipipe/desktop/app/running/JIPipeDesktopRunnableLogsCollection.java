@@ -40,8 +40,8 @@ public class JIPipeDesktopRunnableLogsCollection implements JIPipeRunnable.Finis
         JIPipeRunnableQueue.getInstance().getInterruptedEventEmitter().subscribe(this);
 
         // Listen for artifacts queue
-        JIPipe.getInstance().getArtifactsRegistry().getQueue().getFinishedEventEmitter().subscribe(this);
-        JIPipe.getInstance().getArtifactsRegistry().getQueue().getInterruptedEventEmitter().subscribe(this);
+        JIPipe.getArtifacts().getQueue().getFinishedEventEmitter().subscribe(this);
+        JIPipe.getArtifacts().getQueue().getInterruptedEventEmitter().subscribe(this);
     }
 
     public static JIPipeDesktopRunnableLogsCollection getInstance() {

@@ -24,7 +24,7 @@ public abstract class JIPipeArtifactRepositoryOperationRun extends AbstractJIPip
     public void run() {
         getProgressInfo().log("Requesting repository lock: " + getLockType());
 
-        FileLocker locker = new FileLocker(getProgressInfo(), JIPipe.getInstance().getArtifactsRegistry().getLocalUserRepositoryPath().resolve("lockfile"));
+        FileLocker locker = new FileLocker(getProgressInfo(), JIPipe.getArtifacts().getLocalUserRepositoryPath().resolve("lockfile"));
         try {
             if(getLockType() == RepositoryLockType.Write) {
                 locker.acquireWriteLock();
@@ -40,7 +40,7 @@ public abstract class JIPipeArtifactRepositoryOperationRun extends AbstractJIPip
 
         if(getLockType() == RepositoryLockType.Write) {
             // Update local caches
-            JIPipe.getInstance().getArtifactsRegistry().updateCachedArtifacts(getProgressInfo().resolve("Update cache"));
+            JIPipe.getArtifacts().updateCachedArtifacts(getProgressInfo().resolve("Update cache"));
         }
     }
 

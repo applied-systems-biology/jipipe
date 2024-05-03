@@ -36,7 +36,7 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
     private final List<ArtifactEntry> artifactEntryList = new ArrayList<>();
     private final JList<ArtifactEntry> artifactEntryJList = new JList<>();
     private final JIPipeDesktopFormPanel propertyPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
-    private final JIPipeArtifactsRegistry artifactsRegistry = JIPipe.getInstance().getArtifactsRegistry();
+    private final JIPipeArtifactsRegistry artifactsRegistry = JIPipe.getArtifacts();
     private final JCheckBox onlyCompatibleToggle = new JCheckBox("Only compatible", true);
     private final JIPipeDesktopSearchTextField searchTextField = new JIPipeDesktopSearchTextField();
 
@@ -60,7 +60,7 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
         onlyCompatibleToggle.setToolTipText("Only show compatible artifacts");
         onlyCompatibleToggle.addActionListener(e -> updateArtifactsList());
 
-        toolbar.add(new JIPipeDesktopRunnableQueueButton(getDesktopWorkbench(), JIPipe.getInstance().getArtifactsRegistry().getQueue()));
+        toolbar.add(new JIPipeDesktopRunnableQueueButton(getDesktopWorkbench(), JIPipe.getArtifacts().getQueue()));
         add(toolbar, BorderLayout.NORTH);
 
         artifactListScrollPane = new JScrollPane(artifactEntryJList);
@@ -190,12 +190,12 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
         message.append("\nDo you want to continue?");
         if(JOptionPane.showConfirmDialog(this, message.toString(), "Apply changes", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             JIPipeArtifactRepositoryApplyInstallUninstallRun run = new JIPipeArtifactRepositoryApplyInstallUninstallRun(toInstall, toUninstall);
-            JIPipeDesktopRunExecuterUI.runInDialog(getDesktopWorkbench(), this, run, JIPipe.getInstance().getArtifactsRegistry().getQueue());
+            JIPipeDesktopRunExecuterUI.runInDialog(getDesktopWorkbench(), this, run, JIPipe.getArtifacts().getQueue());
         }
     }
 
     private void openArtifactsDirectory() {
-        Path localRepositoryPath = JIPipe.getInstance().getArtifactsRegistry().getLocalUserRepositoryPath();
+        Path localRepositoryPath = JIPipe.getArtifacts().getLocalUserRepositoryPath();
         try {
             Files.createDirectories(localRepositoryPath);
         } catch (IOException e) {
@@ -219,7 +219,7 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
                 public void windowClosing(WindowEvent e) {
                     super.windowClosing(e);
 
-                    if (JIPipe.getInstance().getArtifactsRegistry().getQueue().isEmpty()) {
+                    if (JIPipe.getArtifacts().getQueue().isEmpty()) {
                         frame.setVisible(false);
                         frame.dispose();
                         CURRENT_WINDOW = null;
