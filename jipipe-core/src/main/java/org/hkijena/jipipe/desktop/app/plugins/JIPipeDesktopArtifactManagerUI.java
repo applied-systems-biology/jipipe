@@ -1,17 +1,18 @@
 package org.hkijena.jipipe.desktop.app.plugins;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
-import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
+import org.hkijena.jipipe.api.artifacts.*;
 import org.hkijena.jipipe.api.registries.JIPipeArtifactsRegistry;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueueButton;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopMessagePanel;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -24,8 +25,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel implements JIPipeRunnable.FinishedEventListener {
@@ -84,7 +85,7 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
 
             }
         });
-        artifactEntryJList.addListSelectionListener(e -> updateSelectionPanel() );
+        artifactEntryJList.addListSelectionListener(e -> updateSelectionPanel());
     }
 
     private boolean hasChanges() {
@@ -94,7 +95,7 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
     private void updateSelectionPanel() {
         propertyPanel.clear();
 
-        if(hasChanges()) {
+        if (hasChanges()) {
             JIPipeDesktopMessagePanel messagePanel = new JIPipeDesktopMessagePanel();
             messagePanel.addMessage(JIPipeDesktopMessagePanel.MessageType.Success,
                     "You have pending changes",
@@ -111,39 +112,36 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
         propertyPanel.addWideToForm(UIUtils.createButton("Open artifacts directory", UIUtils.getIconFromResources("actions/folder-open.png"), this::openArtifactsDirectory));
 
         ArtifactEntry selectedValue = artifactEntryJList.getSelectedValue();
-        if(selectedValue != null) {
+        if (selectedValue != null) {
             JIPipeArtifact artifact = selectedValue.artifact;
             propertyPanel.addGroupHeader(artifact.getArtifactId(), UIUtils.getIconFromResources("actions/run-install.png"));
             propertyPanel.addToForm(UIUtils.makeReadonlyBorderlessTextField(artifact.getVersion()), new JLabel("Version"));
             propertyPanel.addToForm(UIUtils.makeReadonlyBorderlessTextField(artifact.getClassifier()), new JLabel("Label"));
             propertyPanel.addToForm(UIUtils.makeReadonlyBorderlessTextField(artifact.getGroupId()), new JLabel("Publisher"));
             propertyPanel.addToForm(UIUtils.makeReadonlyBorderlessTextField(artifact.isCompatible() ? "Yes" : "No"), new JLabel("Compatible"));
-            if(artifact.getClassifier().contains("gpu")) {
+            if (artifact.getClassifier().contains("gpu")) {
                 propertyPanel.addToForm(new JLabel("Requires GPU", UIUtils.getIconFromResources("devices/device_pci.png"), JLabel.LEFT), new JLabel("Additional info"));
             }
 
-            if(artifact instanceof JIPipeRemoteArtifact) {
-                if(selectedValue.isToggleInstallationStatus()) {
+            if (artifact instanceof JIPipeRemoteArtifact) {
+                if (selectedValue.isToggleInstallationStatus()) {
                     propertyPanel.addToForm(UIUtils.createLeftAlignedButton("Mark for installation", UIUtils.getIconFromResources("emblems/checkbox-checked.png"), () -> {
                         selectedValue.setToggleInstallationStatus(false);
                         updateSelectionPanel();
                     }), new JLabel("Status"));
-                }
-                else {
+                } else {
                     propertyPanel.addToForm(UIUtils.createLeftAlignedButton("Mark for installation", UIUtils.getIconFromResources("emblems/checkbox-unchecked.png"), () -> {
                         selectedValue.setToggleInstallationStatus(true);
                         updateSelectionPanel();
                     }), new JLabel("Status"));
                 }
-            }
-            else {
-                if(selectedValue.isToggleInstallationStatus()) {
+            } else {
+                if (selectedValue.isToggleInstallationStatus()) {
                     propertyPanel.addToForm(UIUtils.createLeftAlignedButton("Keep installed", UIUtils.getIconFromResources("emblems/checkbox-unchecked.png"), () -> {
                         selectedValue.setToggleInstallationStatus(false);
                         updateSelectionPanel();
                     }), new JLabel("Status"));
-                }
-                else {
+                } else {
                     propertyPanel.addToForm(UIUtils.createLeftAlignedButton("Keep installed", UIUtils.getIconFromResources("emblems/checkbox-checked.png"), () -> {
                         selectedValue.setToggleInstallationStatus(true);
                         updateSelectionPanel();
@@ -164,11 +162,40 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
     }
 
     private void applyChanges() {
+        List<JIPipeLocalArtifact> toUninstall = new ArrayList<>();
+        List<JIPipeRemoteArtifact> toInstall = new ArrayList<>();
+        long installSize = 0;
+        for (ArtifactEntry artifactEntry : artifactEntryList) {
+            if (artifactEntry.toggleInstallationStatus) {
+                if (artifactEntry.artifact instanceof JIPipeRemoteArtifact) {
+                    toInstall.add((JIPipeRemoteArtifact) artifactEntry.artifact);
+                    installSize += ((JIPipeRemoteArtifact) artifactEntry.artifact).getSize();
+                }
+                else if(artifactEntry.artifact instanceof JIPipeLocalArtifact) {
+                    toUninstall.add((JIPipeLocalArtifact) artifactEntry.artifact);
+                }
+            }
+        }
 
+        if(toInstall.isEmpty() && toUninstall.isEmpty()) {
+            return;
+        }
+        StringBuilder message = new StringBuilder();
+        if(!toInstall.isEmpty()) {
+            message.append(StringUtils.formatPluralS(toInstall.size(), "artifact")).append(" will be installed (").append(installSize / 1024 / 1024).append("MB to download)\n");
+        }
+        if(!toUninstall.isEmpty()) {
+            message.append(" ").append(StringUtils.formatPluralS(toUninstall.size(), "artifact")).append(" will be removed\n");
+        }
+        message.append("\nDo you want to continue?");
+        if(JOptionPane.showConfirmDialog(this, message.toString(), "Apply changes", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            JIPipeArtifactRepositoryApplyInstallUninstallRun run = new JIPipeArtifactRepositoryApplyInstallUninstallRun(toInstall, toUninstall);
+            JIPipeDesktopRunExecuterUI.runInDialog(getDesktopWorkbench(), this, run, JIPipe.getInstance().getArtifactsRegistry().getQueue());
+        }
     }
 
     private void openArtifactsDirectory() {
-        Path localRepositoryPath = JIPipe.getInstance().getArtifactsRegistry().getLocalRepositoryPath();
+        Path localRepositoryPath = JIPipe.getInstance().getArtifactsRegistry().getLocalUserRepositoryPath();
         try {
             Files.createDirectories(localRepositoryPath);
         } catch (IOException e) {
@@ -233,7 +260,7 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
 
     @Override
     public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
-        if (event.getRun() instanceof JIPipeArtifactsRegistry.UpdateCachedArtifactsRun) {
+        if (event.getRun() instanceof JIPipeArtifactRepositoryOperationRun) {
             artifactEntryList.clear();
             for (JIPipeArtifact artifact : artifactsRegistry.getCachedArtifacts().values().stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList())) {
                 artifactEntryList.add(new ArtifactEntry(artifact));

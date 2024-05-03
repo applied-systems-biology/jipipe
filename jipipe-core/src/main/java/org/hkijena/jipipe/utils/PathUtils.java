@@ -13,8 +13,9 @@
 
 package org.hkijena.jipipe.utils;
 
+import ij.IJ;
+import ij.Prefs;
 import org.apache.commons.lang3.SystemUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 
 import javax.swing.*;
@@ -288,8 +289,38 @@ public class PathUtils {
         return null;
     }
 
+    /**
+     * Gets the JIPipe user-writable directory.
+     * Can be overwritten by setting the JIPIPE_USER_DIR environment variable to deploy JIPipe into a read-only environment
+     *
+     * @return the JIPipe user directory
+     */
     public static Path getJIPipeUserDir() {
-        return JIPipe.getJIPipeUserDir();
+        String environmentVar = System.getenv().getOrDefault("JIPIPE_USER_DIR", null);
+        if (environmentVar != null) {
+            return Paths.get(environmentVar);
+        } else {
+            return PathUtils.getImageJDir();
+        }
+    }
+
+    /**
+     * Gets the ImageJ directory
+     *
+     * @return the ImageJ directory
+     */
+    public static Path getImageJDir() {
+        Path imageJDir = Paths.get(Prefs.getImageJDir());
+        if (!imageJDir.isAbsolute())
+            imageJDir = imageJDir.toAbsolutePath();
+        if (!Files.isDirectory(imageJDir)) {
+            try {
+                Files.createDirectories(imageJDir);
+            } catch (IOException e) {
+                IJ.handleException(e);
+            }
+        }
+        return imageJDir;
     }
 
     public static Path absoluteToJIPipeUserDirRelative(Path path) {

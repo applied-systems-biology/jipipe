@@ -19,6 +19,9 @@ import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.utils.VersionUtils;
 import org.jetbrains.annotations.NotNull;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 public class JIPipeArtifact implements Comparable<JIPipeArtifact> {
     private String groupId;
     private String artifactId;
@@ -75,6 +78,10 @@ public class JIPipeArtifact implements Comparable<JIPipeArtifact> {
         this.classifier = classifier;
     }
 
+    /**
+     * Returns a string GroupId.ArtifactId:Version-Classifier
+     * @return the full identifier string for this artifact
+     */
     public String getFullId() {
         return  getGroupId() + "." + getArtifactId() + ":" + getVersion() + "-" + getClassifier();
     }
@@ -111,5 +118,9 @@ public class JIPipeArtifact implements Comparable<JIPipeArtifact> {
         else {
             return compareName;
         }
+    }
+
+    public Path getDefaultInstallationPath(Path localRepositoryPath) {
+        return localRepositoryPath.resolve(Paths.get(getGroupId().replace('.', '/'))).resolve(getArtifactId()).resolve(getVersion() + "-" + getClassifier());
     }
 }

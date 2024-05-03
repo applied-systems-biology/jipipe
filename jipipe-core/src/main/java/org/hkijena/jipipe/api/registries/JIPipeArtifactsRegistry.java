@@ -17,12 +17,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
-import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
-import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
-import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryReference;
+import org.hkijena.jipipe.api.artifacts.*;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.plugins.artifacts.ArtifactSettings;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -82,41 +78,54 @@ public class JIPipeArtifactsRegistry {
     }
 
     public List<JIPipeLocalArtifact> queryLocalRepositories(String groupId, String artifactId, String version, JIPipeProgressInfo progressInfo) {
-        Path localRepositoryPath = getLocalRepositoryPath();
-        List<JIPipeLocalArtifact> artifacts = new ArrayList<>();
+        Map<String, JIPipeLocalArtifact> artifacts = new HashMap<>();
         try {
-            Files.walkFileTree(localRepositoryPath, new FileVisitor<Path>() {
+            for(Path repositoryPath : Arrays.asList(getLocalSystemRepositoryPath(), getLocalUserRepositoryPath())) {
+                progressInfo.log("Checking local repository @ " + repositoryPath);
+                Files.walkFileTree(repositoryPath, new FileVisitor<Path>() {
 
-                @Override
-                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                    return FileVisitResult.CONTINUE;
-                }
-
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    if (file.getFileName().toString().equals("artifact.json")) {
-                        JIPipeLocalArtifact artifact = JsonUtils.readFromFile(file, JIPipeLocalArtifact.class);
-                        artifact.setLocalPath(file.getParent());
-                        artifacts.add(artifact);
-                        return FileVisitResult.TERMINATE;
+                    @Override
+                    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                        Path artifactFile = dir.resolve("artifact.json");
+                        if(Files.isRegularFile(artifactFile)) {
+                            progressInfo.log("Found artifact @ " + artifactFile);
+                            JIPipeLocalArtifact artifact = JsonUtils.readFromFile(artifactFile, JIPipeLocalArtifact.class);
+                            if(groupId != null && !Objects.equals(artifact.getGroupId(), groupId)) {
+                                return FileVisitResult.SKIP_SUBTREE;
+                            }
+                            if(artifactId != null && !Objects.equals(artifact.getArtifactId(), artifactId)) {
+                                return FileVisitResult.SKIP_SUBTREE;
+                            }
+                            if(version != null && !Objects.equals(artifact.getVersion(), version)) {
+                                return FileVisitResult.SKIP_SUBTREE;
+                            }
+                            artifact.setLocalPath(dir);
+                            artifacts.put(artifact.getFullId(), artifact);
+                            return FileVisitResult.SKIP_SUBTREE;
+                        }
+                        return FileVisitResult.CONTINUE;
                     }
-                    return FileVisitResult.CONTINUE;
-                }
 
-                @Override
-                public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-                    return FileVisitResult.CONTINUE;
-                }
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                        return FileVisitResult.CONTINUE;
+                    }
 
-                @Override
-                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-                    return FileVisitResult.CONTINUE;
-                }
-            });
+                    @Override
+                    public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    @Override
+                    public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                        return FileVisitResult.CONTINUE;
+                    }
+                });
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return artifacts;
+        return new ArrayList<>(artifacts.values());
     }
 
     public List<JIPipeRemoteArtifact> queryRemoteRepositories(String groupId, String artifactId, String version, JIPipeProgressInfo progressInfo) {
@@ -196,7 +205,27 @@ public class JIPipeArtifactsRegistry {
         return downloadMap.values().stream().sorted((o1, o2) -> VersionUtils.compareVersions(o1.getVersion(), o2.getVersion())).collect(Collectors.toList());
     }
 
-    public Path getLocalRepositoryPath() {
+    /**
+     * JIPipe's system repository path, which is usually located in IMAGEJ_DIR/jipipe/artifacts
+     * This repository is intended for distributors of JIPipe to provide artifacts with JIPipe
+     * Can be overwritten by setting the JIPIPE_SYSTEM_REPOSITORY_PATH
+     * @return the system repository path
+     */
+    public Path getLocalSystemRepositoryPath() {
+        if(System.getenv("JIPIPE_LOCAL_REPOSITORY") != null) {
+            return Paths.get(System.getenv("JIPIPE_LOCAL_REPOSITORY"));
+        }
+        else {
+            return PathUtils.getImageJDir().resolve("jipipe").resolve("artifacts");
+        }
+    }
+
+    /**
+     * The path to the local repository that is owned by the user.
+     * This is usually located in the user's home directory.
+     * @return the user's repository path
+     */
+    public Path getLocalUserRepositoryPath() {
         if(ArtifactSettings.getInstance().getOverrideInstallationPath().isEnabled() && !ArtifactSettings.getInstance().getOverrideInstallationPath().getContent().toString().isEmpty()) {
             if(ArtifactSettings.getInstance().getOverrideInstallationPath().getContent().isAbsolute()) {
                 return ArtifactSettings.getInstance().getOverrideInstallationPath().getContent();
@@ -229,19 +258,7 @@ public class JIPipeArtifactsRegistry {
     }
 
     public void enqueueUpdateCachedArtifacts() {
-        queue.enqueue(new UpdateCachedArtifactsRun());
+        queue.enqueue(new JIPipeArtifactRepositoryUpdateCachedArtifactsRun());
     }
 
-    public static class UpdateCachedArtifactsRun extends AbstractJIPipeRunnable{
-
-        @Override
-        public String getTaskLabel() {
-            return "Update cached artifacts";
-        }
-
-        @Override
-        public void run() {
-            JIPipe.getInstance().getArtifactsRegistry().updateCachedArtifacts(getProgressInfo());
-        }
-    }
 }

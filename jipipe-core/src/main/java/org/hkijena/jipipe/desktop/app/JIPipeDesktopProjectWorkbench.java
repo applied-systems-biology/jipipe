@@ -897,7 +897,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     /**
      * Validates the plugins
      *
-     * @param avoidSwitching Do no switch to the validity checker tab if the plugins are OK
+     * @param avoidSwitching Do not switch to the validity checker tab if the plugins are OK
      */
     public void validatePlugins(boolean avoidSwitching) {
         pluginValidityCheckerPanel.recheckValidity();

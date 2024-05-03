@@ -568,22 +568,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * @return the JIPipe user directory
      */
     public static Path getJIPipeUserDir() {
-        String environmentVar = System.getenv().getOrDefault("JIPIPE_USER_DIR", null);
-        if (environmentVar != null) {
-            return Paths.get(environmentVar);
-        } else {
-            Path imageJDir = Paths.get(Prefs.getImageJDir());
-            if (!imageJDir.isAbsolute())
-                imageJDir = imageJDir.toAbsolutePath();
-            if (!Files.isDirectory(imageJDir)) {
-                try {
-                    Files.createDirectories(imageJDir);
-                } catch (IOException e) {
-                    IJ.handleException(e);
-                }
-            }
-            return imageJDir;
-        }
+        return PathUtils.getJIPipeUserDir();
     }
 
     /**
