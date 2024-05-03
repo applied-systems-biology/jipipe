@@ -37,6 +37,8 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.concurrent.locks.StampedLock;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class JIPipeArtifactsRegistry {
@@ -59,6 +61,24 @@ public class JIPipeArtifactsRegistry {
 
     public Map<String, JIPipeArtifact> getCachedArtifacts() {
         return Collections.unmodifiableMap(cachedArtifacts);
+    }
+
+    /**
+     * Queries all cached artifacts (local and remote)
+     * @param filters list of filters (connected with OR), using glob syntax
+     * @return the list of matched artifacts, sorted
+     */
+    public List<JIPipeArtifact> queryCachedArtifacts(String... filters) {
+        Set<JIPipeArtifact> available = new HashSet<>();
+        for (String filter : filters) {
+            String regex = StringUtils.convertGlobToRegex(filter);
+            for (JIPipeArtifact artifact : cachedArtifacts.values()) {
+                if(artifact.getFullId().matches(regex)) {
+                    available.add(artifact);
+                }
+            }
+        }
+        return available.stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList());
     }
 
     public void updateCachedArtifacts(JIPipeProgressInfo progressInfo) {

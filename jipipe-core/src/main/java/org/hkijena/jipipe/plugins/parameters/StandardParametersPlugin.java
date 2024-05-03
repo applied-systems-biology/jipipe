@@ -675,6 +675,14 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 "Runtime partition",
                 "A reference to a project runtime partition",
                 RuntimePartitionReferenceDesktopParameterEditorUI.class);
+        registerParameterType("artifact-query",
+                JIPipeArtifactQueryParameter.class,
+                JIPipeArtifactQueryParameter::new,
+                p -> new JIPipeArtifactQueryParameter((JIPipeArtifactQueryParameter)p),
+                "Artifact query",
+                "Queries an artifact from the artifact repository. " +
+                        "Should be formatted as GroupId.ArtifactId:Version-Classifier",
+                JIPipeDesktopArtifactQueryParameterEditorUI.class);
 
         // Icon types
         registerParameterType("algorithm-type-icon",

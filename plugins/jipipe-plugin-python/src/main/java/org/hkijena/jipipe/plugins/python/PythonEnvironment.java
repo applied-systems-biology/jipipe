@@ -30,6 +30,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.utils.EnvironmentVariablesSource;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -54,6 +55,7 @@ public class PythonEnvironment extends JIPipeEnvironment {
     private JIPipeExpressionParameter arguments = new JIPipeExpressionParameter("ARRAY(script_file)");
     private Path executablePath = Paths.get("");
     private StringQueryExpressionAndStringPairParameter.List environmentVariables = new StringQueryExpressionAndStringPairParameter.List();
+    private JIPipeArtifactQueryParameter artifactQuery = new JIPipeArtifactQueryParameter();
 
     public PythonEnvironment() {
 
@@ -71,13 +73,14 @@ public class PythonEnvironment extends JIPipeEnvironment {
         this.arguments = new JIPipeExpressionParameter(other.arguments);
         this.executablePath = other.executablePath;
         this.environmentVariables = new StringQueryExpressionAndStringPairParameter.List(other.environmentVariables);
+        this.artifactQuery = new JIPipeArtifactQueryParameter(other.artifactQuery);
     }
 
     @SetJIPipeDocumentation(name = "Environment type", description = "The kind of environment that should be executed. " +
             "Depending on the environment, you need to set the executable path to the Python executable, " +
             "to the Conda executable, or the environment directory (venv).")
     @JsonGetter("environment-type")
-    @JIPipeParameter("environment-type")
+    @JIPipeParameter(value = "environment-type", important = true, uiOrder = -100)
     public PythonEnvironmentType getType() {
         return type;
     }
@@ -86,6 +89,7 @@ public class PythonEnvironment extends JIPipeEnvironment {
     @JsonSetter("environment-type")
     public void setType(PythonEnvironmentType type) {
         this.type = type;
+        emitParameterUIChangedEvent();
     }
 
     @SetJIPipeDocumentation(name = "Arguments", description = "Arguments passed to the Python/Conda executable (depending on the environment type). " +
@@ -107,7 +111,7 @@ public class PythonEnvironment extends JIPipeEnvironment {
     @SetJIPipeDocumentation(name = "Executable path", description = "Points to the main executable or directory used by Python. " +
             "For system environments, point it to the Python executable. For Conda environments, point it to the Conda executable. " +
             "For virtual environments, point it to the Python executable inside ")
-    @JIPipeParameter("executable-path")
+    @JIPipeParameter(value = "executable-path", uiOrder = -90, important = true)
     @JsonGetter("executable-path")
     public Path getExecutablePath() {
         return executablePath;
@@ -137,14 +141,42 @@ public class PythonEnvironment extends JIPipeEnvironment {
         this.environmentVariables = environmentVariables;
     }
 
+    @SetJIPipeDocumentation(name = "Artifact", description = "Determines the artifact that contains the Python executable")
+    @JIPipeParameter(value = "artifact", uiOrder = -90, important = true)
+    public JIPipeArtifactQueryParameter getArtifactQuery() {
+        return artifactQuery;
+    }
+
+    @JIPipeParameter("artifact")
+    public void setArtifactQuery(JIPipeArtifactQueryParameter artifactQuery) {
+        this.artifactQuery = artifactQuery;
+    }
+
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
-        if (StringUtils.isNullOrEmpty(getExecutablePath()) || !Files.isRegularFile(getAbsoluteExecutablePath())) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext,
-                    "Executable does not exist",
-                    "You need to provide a Python executable",
-                    "Provide a Python executable"));
+        if(type != PythonEnvironmentType.Artifact) {
+            if (StringUtils.isNullOrEmpty(getExecutablePath()) || !Files.isRegularFile(getAbsoluteExecutablePath())) {
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext,
+                        "Executable does not exist",
+                        "You need to provide a Python executable",
+                        "Provide a Python executable"));
+            }
         }
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        if(type == PythonEnvironmentType.Artifact) {
+            if("executable-path".equals(access.getKey())) {
+                return false;
+            }
+        }
+        else {
+            if("artifact".equals(access.getKey())) {
+                return false;
+            }
+        }
+        return super.isParameterUIVisible(tree, access);
     }
 
     @Override
@@ -159,10 +191,12 @@ public class PythonEnvironment extends JIPipeEnvironment {
 
     @Override
     public String toString() {
-        return "Python environment {" +
-                "Type=" + type +
-                ", Arguments=" + arguments +
-                ", Executable=" + executablePath +
+        return "PythonEnvironment{" +
+                "type=" + type +
+                ", arguments=" + arguments +
+                ", executablePath=" + executablePath +
+                ", environmentVariables=" + environmentVariables +
+                ", artifactQuery=" + artifactQuery +
                 '}';
     }
 

@@ -11,23 +11,12 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.python;
+package org.hkijena.jipipe.plugins.parameters.library.jipipe;
 
-/**
- * The supported Python environment types
- */
-public enum PythonEnvironmentType {
-    System,
-    VirtualEnvironment,
-    Conda,
-    Artifact;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-
-    @Override
-    public String toString() {
-        if (this == VirtualEnvironment)
-            return "Virtual environment";
-        else
-            return this.name();
-    }
+@Retention(RetentionPolicy.RUNTIME)
+public @interface JIPipeArtifactQueryParameterSettings {
+    String[] getFilters() default  { "*" };
 }
