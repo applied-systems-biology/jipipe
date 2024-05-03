@@ -676,12 +676,6 @@ public class OmniposeInferenceAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.model = model;
     }
 
-    @Override
-    protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
-        super.onDeserialized(node, issues, notifications);
-        OmniposePlugin.createMissingPythonNotificationIfNeeded(notifications);
-    }
-
     private void updateOutputSlots() {
         toggleSlot(OUTPUT_FLOWS_D, segmentationOutputSettings.isOutputFlowsD());
         toggleSlot(OUTPUT_PROBABILITIES, segmentationOutputSettings.isOutputProbabilities());

@@ -79,7 +79,7 @@
     "jipipe-plugin-strings",
     "jipipe-plugin-forms",
     "jipipe-plugin-r",
-    "jipipe-plugin-cellpose2",
+    "jipipe-plugin-cellpose",
     "jipipe-plugin-omnipose",
     "jipipe-plugin-scene-3d",
     "jipipe-plugin-imp",

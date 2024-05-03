@@ -588,12 +588,6 @@ public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
         return super.isParameterUIVisible(tree, access);
     }
 
-    @Override
-    protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
-        super.onDeserialized(node, issues, notifications);
-        CellposePlugin.createMissingPythonNotificationIfNeeded(notifications);
-    }
-
     private void updateOutputSlots() {
         JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
         if (outputParameters.isOutputLabels()) {

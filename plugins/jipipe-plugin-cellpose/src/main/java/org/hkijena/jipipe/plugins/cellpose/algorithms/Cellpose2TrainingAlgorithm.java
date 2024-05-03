@@ -557,10 +557,4 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     public void setNumEpochs(int numEpochs) {
         this.numEpochs = numEpochs;
     }
-
-    @Override
-    protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
-        super.onDeserialized(node, issues, notifications);
-        CellposePlugin.createMissingPythonNotificationIfNeeded(notifications);
-    }
 }

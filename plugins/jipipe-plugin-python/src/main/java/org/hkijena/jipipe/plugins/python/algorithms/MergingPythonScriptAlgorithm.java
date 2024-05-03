@@ -231,11 +231,4 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
     public void setAnnotationMergeStrategy(JIPipeTextAnnotationMergeMode annotationMergeStrategy) {
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
-
-    @Override
-    protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
-        super.onDeserialized(node, issues, notifications);
-        PythonPlugin.createMissingPythonNotificationIfNeeded(notifications);
-        PythonPlugin.createMissingLibJIPipePythonNotificationIfNeeded(notifications);
-    }
 }

@@ -8,7 +8,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>jipipe-plugin-cellpose2</artifactId>
+    <artifactId>jipipe-plugin-cellpose</artifactId>
     <version>4.0.0-SNAPSHOT</version>
 
     <name>jipipe-plugin-cellpose2</name>

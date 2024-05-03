@@ -232,10 +232,4 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
 
-    @Override
-    protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
-        super.onDeserialized(node, issues, notifications);
-        PythonPlugin.createMissingPythonNotificationIfNeeded(notifications);
-        PythonPlugin.createMissingLibJIPipePythonNotificationIfNeeded(notifications);
-    }
 }

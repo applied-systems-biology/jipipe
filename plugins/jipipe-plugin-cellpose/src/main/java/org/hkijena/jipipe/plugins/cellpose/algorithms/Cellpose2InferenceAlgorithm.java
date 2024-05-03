@@ -694,12 +694,6 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
         toggleSlot(OUTPUT_ROI, segmentationOutputSettings.isOutputROI());
     }
 
-    @Override
-    protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
-        super.onDeserialized(node, issues, notifications);
-        CellposePlugin.createMissingPythonNotificationIfNeeded(notifications);
-    }
-
     private static class CellposeImageInfo {
         private final int sourceRow;
         private final Map<ImageSliceIndex, String> sliceBaseNames;

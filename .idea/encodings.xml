@@ -69,8 +69,8 @@
     <file url="file://$PROJECT_DIR$/jipipe-utils/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/plugins/jipipe-plugin-annotations/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/plugins/jipipe-plugin-annotations/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/plugins/jipipe-plugin-cellpose2/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/plugins/jipipe-plugin-cellpose2/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/plugins/jipipe-plugin-cellpose/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/plugins/jipipe-plugin-cellpose/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/plugins/jipipe-plugin-clij/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/plugins/jipipe-plugin-clij/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/plugins/jipipe-plugin-filesystem/src/main/java" charset="UTF-8" />

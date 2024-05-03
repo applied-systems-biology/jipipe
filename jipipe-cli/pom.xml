@@ -236,7 +236,7 @@
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-plugin-cellpose2</artifactId>
+            <artifactId>jipipe-plugin-cellpose</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
