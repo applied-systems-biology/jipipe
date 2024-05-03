@@ -180,7 +180,7 @@ public class BasicPortableEnvPythonInstaller extends JIPipeExternalEnvironmentIn
         }
 
         ProcessUtils.ExtendedExecutor executor = new ProcessUtils.ExtendedExecutor(ExecuteWatchdog.INFINITE_TIMEOUT, progressInfo);
-        PythonUtils.setupLogger(commandLine, executor, progressInfo);
+        PythonUtils.setupLogger(commandLine, executor, false, progressInfo);
 
         // Set working directory, so conda can see its DLLs
         executor.setWorkingDirectory(installationPath.resolve("python").toAbsolutePath().toFile());

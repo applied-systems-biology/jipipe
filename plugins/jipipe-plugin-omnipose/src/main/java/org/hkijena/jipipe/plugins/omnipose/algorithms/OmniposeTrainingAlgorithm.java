@@ -94,6 +94,7 @@ public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     private boolean trainSizeModel = false;
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private DataAnnotationQueryExpression labelDataAnnotation = new DataAnnotationQueryExpression("\"Label\"");
+    private boolean suppressLogs = false;
 
     public OmniposeTrainingAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -122,6 +123,7 @@ public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.trainSizeModel = other.trainSizeModel;
         this.labelDataAnnotation = new DataAnnotationQueryExpression(other.labelDataAnnotation);
+        this.suppressLogs = other.suppressLogs;
 
         registerSubParameter(gpuSettings);
         registerSubParameter(tweaksSettings);
@@ -172,6 +174,18 @@ public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     @JIPipeParameter("diameter")
     public void setDiameter(OptionalDoubleParameter diameter) {
         this.diameter = diameter;
+    }
+
+    @SetJIPipeDocumentation(name = "Suppress logs", description = "If enabled, the node will not log the status of the Python operation. " +
+            "Can be used to limit memory consumption of JIPipe if larger data sets are used.")
+    @JIPipeParameter("suppress-logs")
+    public boolean isSuppressLogs() {
+        return suppressLogs;
+    }
+
+    @JIPipeParameter("suppress-logs")
+    public void setSuppressLogs(boolean suppressLogs) {
+        this.suppressLogs = suppressLogs;
     }
 
     @SetJIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
@@ -441,7 +455,7 @@ public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
         // Run the module
         PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                OmniposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), envVars, progressInfo);
+                OmniposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), envVars, suppressLogs, progressInfo);
 
         // Extract the model
         Path modelsPath = trainingDir.resolve("models");

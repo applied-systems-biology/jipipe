@@ -59,6 +59,7 @@ public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
     private boolean cleanUpAfterwards = true;
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
+    private boolean suppressLogs = false;
 
     /**
      * Creates a new instance
@@ -82,7 +83,20 @@ public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
         this.annotationMergeStrategy = other.annotationMergeStrategy;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
+        this.suppressLogs = other.suppressLogs;
         registerSubParameter(scriptParameters);
+    }
+
+    @SetJIPipeDocumentation(name = "Suppress logs", description = "If enabled, the node will not log the status of the Python operation. " +
+            "Can be used to limit memory consumption of JIPipe if larger data sets are used.")
+    @JIPipeParameter("suppress-logs")
+    public boolean isSuppressLogs() {
+        return suppressLogs;
+    }
+
+    @JIPipeParameter("suppress-logs")
+    public void setSuppressLogs(boolean suppressLogs) {
+        this.suppressLogs = suppressLogs;
     }
 
     @SetJIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node. Otherwise " +
@@ -160,7 +174,7 @@ public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
         // Run Python
         PythonUtils.runPython(code.toString(),
                 getOverrideEnvironment().isEnabled() ? getOverrideEnvironment().getContent() : PythonExtensionSettings.getInstance().getPythonEnvironment(),
-                Collections.emptyList(), progressInfo);
+                Collections.emptyList(), suppressLogs, progressInfo);
 
         // Extract outputs
         PythonUtils.extractOutputs(outputSlotPaths, getOutputSlots(), progressInfo);

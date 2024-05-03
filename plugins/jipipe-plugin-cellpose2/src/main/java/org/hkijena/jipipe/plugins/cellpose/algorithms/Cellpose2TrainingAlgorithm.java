@@ -80,7 +80,7 @@ import java.util.stream.Collectors;
 @AddJIPipeInputSlot(value = CellposeModelData.class)
 @AddJIPipeOutputSlot(value = CellposeModelData.class, slotName = "Model", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
-public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
+public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     public static final JIPipeDataSlotInfo INPUT_PRETRAINED_MODEL = new JIPipeDataSlotInfo(CellposeModelData.class, JIPipeSlotType.Input, "Pretrained Model", "A custom pretrained model");
 
@@ -96,8 +96,9 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     private boolean trainSizeModel = false;
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private DataAnnotationQueryExpression labelDataAnnotation = new DataAnnotationQueryExpression("\"Label\"");
+    private boolean suppressLogs = false;
 
-    public CellposeTrainingAlgorithm(JIPipeNodeInfo info) {
+    public Cellpose2TrainingAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.gpuSettings = new CellposeGPUSettings();
         this.tweaksSettings = new CellposeTrainingTweaksSettings();
@@ -109,12 +110,13 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         registerSubParameter(channelSettings);
     }
 
-    public CellposeTrainingAlgorithm(CellposeTrainingAlgorithm other) {
+    public Cellpose2TrainingAlgorithm(Cellpose2TrainingAlgorithm other) {
         super(other);
 
         this.gpuSettings = new CellposeGPUSettings(other.gpuSettings);
         this.tweaksSettings = new CellposeTrainingTweaksSettings(other.tweaksSettings);
         this.channelSettings = new CellposeChannelSettings(other.channelSettings);
+        this.suppressLogs = other.suppressLogs;
 
         this.pretrainedModel = other.pretrainedModel;
         this.numEpochs = other.numEpochs;
@@ -130,6 +132,18 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         registerSubParameter(channelSettings);
 
         updateSlots();
+    }
+
+    @SetJIPipeDocumentation(name = "Suppress logs", description = "If enabled, the node will not log the status of the Cellpose operation. " +
+            "Can be used to limit memory consumption of JIPipe if larger data sets are used.")
+    @JIPipeParameter("suppress-logs")
+    public boolean isSuppressLogs() {
+        return suppressLogs;
+    }
+
+    @JIPipeParameter("suppress-logs")
+    public void setSuppressLogs(boolean suppressLogs) {
+        this.suppressLogs = suppressLogs;
     }
 
     @Override
@@ -443,7 +457,7 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
         // Run the module
         PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                CellposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), Collections.emptyMap(), progressInfo);
+                CellposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), Collections.emptyMap(), suppressLogs, progressInfo);
 
         // Extract the model
         Path modelsPath = trainingDir.resolve("models");

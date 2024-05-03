@@ -378,7 +378,7 @@ public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
 
         // Run script
         PythonUtils.runPython(code.toString(), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                CellposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), progressInfo);
+                CellposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), false, progressInfo);
 
 
         for (int i = 0; i < inputRowList.size(); i++) {

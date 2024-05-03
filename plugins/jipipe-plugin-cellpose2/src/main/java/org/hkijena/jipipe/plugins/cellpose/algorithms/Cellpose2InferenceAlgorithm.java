@@ -90,7 +90,7 @@ import java.util.*;
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Probabilities")
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
-public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
+public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     public static final JIPipeDataSlotInfo INPUT_PRETRAINED_MODEL = new JIPipeDataSlotInfo(CellposeModelData.class, JIPipeSlotType.Input, "Pretrained Model", "A custom pretrained model");
     //    public static final JIPipeDataSlotInfo INPUT_SIZE_MODEL = new JIPipeDataSlotInfo(CellposeSizeModelData.class, JIPipeSlotType.Input, "Size Model", "A custom size model", null, true);
@@ -114,8 +114,9 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
     private OptionalTextAnnotationNameParameter diameterAnnotation = new OptionalTextAnnotationNameParameter("Diameter", true);
     private boolean cleanUpAfterwards = true;
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
+    private boolean suppressLogs = false;
 
-    public CellposeAlgorithm(JIPipeNodeInfo info) {
+    public Cellpose2InferenceAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.segmentationTweaksSettings = new CellposeSegmentationTweaksSettings();
         this.gpuSettings = new CellposeGPUSettings();
@@ -133,13 +134,14 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         registerSubParameter(channelSettings);
     }
 
-    public CellposeAlgorithm(CellposeAlgorithm other) {
+    public Cellpose2InferenceAlgorithm(Cellpose2InferenceAlgorithm other) {
         super(other);
         this.gpuSettings = new CellposeGPUSettings(other.gpuSettings);
         this.segmentationTweaksSettings = new CellposeSegmentationTweaksSettings(other.segmentationTweaksSettings);
         this.segmentationThresholdSettings = new CellposeSegmentationThresholdSettings(other.segmentationThresholdSettings);
         this.segmentationOutputSettings = new CellposeSegmentationOutputSettings(other.segmentationOutputSettings);
         this.channelSettings = new CellposeChannelSettings(other.channelSettings);
+        this.suppressLogs = other.suppressLogs;
 
         this.model = other.model;
         this.diameter = new OptionalDoubleParameter(other.diameter);
@@ -166,6 +168,18 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         } else {
             target.add(CellposeSettings.getInstance().getPythonEnvironment());
         }
+    }
+
+    @SetJIPipeDocumentation(name = "Suppress logs", description = "If enabled, the node will not log the status of the Cellpose operation. " +
+            "Can be used to limit memory consumption of JIPipe if larger data sets are used.")
+    @JIPipeParameter("suppress-logs")
+    public boolean isSuppressLogs() {
+        return suppressLogs;
+    }
+
+    @JIPipeParameter("suppress-logs")
+    public void setSuppressLogs(boolean suppressLogs) {
+        this.suppressLogs = suppressLogs;
     }
 
     @SetJIPipeDocumentation(name = "Enable 3D segmentation", description = "If enabled, Cellpose will segment in 3D. Otherwise, " +
@@ -302,7 +316,7 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
             arguments.add(io2DPath.toString());
             arguments.add(io2DPath.toString());
             PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                    CellposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), Collections.emptyMap(), progressInfo.resolve("Extract Cellpose results (2D)"));
+                    CellposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), Collections.emptyMap(), suppressLogs, progressInfo.resolve("Extract Cellpose results (2D)"));
         }
         if (!runWith3D.isEmpty()) {
             List<String> arguments = new ArrayList<>();
@@ -312,7 +326,7 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
             arguments.add(io3DPath.toString());
             arguments.add(io3DPath.toString());
             PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                    CellposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), Collections.emptyMap(), progressInfo.resolve("Extract Cellpose results (3D)"));
+                    CellposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), Collections.emptyMap(), suppressLogs, progressInfo.resolve("Extract Cellpose results (3D)"));
         }
 
         // Fetch the data from the directory
@@ -524,7 +538,7 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
 
         // Run the module
         PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                CellposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), Collections.emptyMap(), progressInfo);
+                CellposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), Collections.emptyMap(), suppressLogs, progressInfo);
     }
 
     private void saveInputImages(JIPipeMultiIterationStep iterationStep, JIPipeProgressInfo progressInfo, Path io2DPath, Path io3DPath, List<CellposeImageInfo> runWith2D, List<CellposeImageInfo> runWith3D) {

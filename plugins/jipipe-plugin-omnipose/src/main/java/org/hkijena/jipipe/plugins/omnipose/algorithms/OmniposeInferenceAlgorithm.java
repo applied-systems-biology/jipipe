@@ -90,7 +90,7 @@ import java.util.*;
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Probabilities")
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
-public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
+public class OmniposeInferenceAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     public static final JIPipeDataSlotInfo INPUT_PRETRAINED_MODEL = new JIPipeDataSlotInfo(CellposeModelData.class, JIPipeSlotType.Input, "Pretrained Model", "A custom pretrained model");
     //    public static final JIPipeDataSlotInfo INPUT_SIZE_MODEL = new JIPipeDataSlotInfo(CellposeSizeModelData.class, JIPipeSlotType.Input, "Size Model", "A custom size model", null, true);
@@ -113,8 +113,9 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
     private OptionalTextAnnotationNameParameter diameterAnnotation = new OptionalTextAnnotationNameParameter("Diameter", true);
     private boolean cleanUpAfterwards = true;
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
+    private boolean suppressLogs = false;
 
-    public OmniposeAlgorithm(JIPipeNodeInfo info) {
+    public OmniposeInferenceAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.segmentationTweaksSettings = new OmniposeSegmentationTweaksSettings();
         this.gpuSettings = new CellposeGPUSettings();
@@ -132,7 +133,7 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         registerSubParameter(channelSettings);
     }
 
-    public OmniposeAlgorithm(OmniposeAlgorithm other) {
+    public OmniposeInferenceAlgorithm(OmniposeInferenceAlgorithm other) {
         super(other);
         this.gpuSettings = new CellposeGPUSettings(other.gpuSettings);
         this.segmentationTweaksSettings = new OmniposeSegmentationTweaksSettings(other.segmentationTweaksSettings);
@@ -146,6 +147,7 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.enable3DSegmentation = other.enable3DSegmentation;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
+        this.suppressLogs = other.suppressLogs;
 
         updateOutputSlots();
         updateInputSlots();
@@ -165,6 +167,18 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         } else {
             target.add(OmniposeSettings.getInstance().getPythonEnvironment());
         }
+    }
+
+    @SetJIPipeDocumentation(name = "Suppress logs", description = "If enabled, the node will not log the status of the Python operation. " +
+            "Can be used to limit memory consumption of JIPipe if larger data sets are used.")
+    @JIPipeParameter("suppress-logs")
+    public boolean isSuppressLogs() {
+        return suppressLogs;
+    }
+
+    @JIPipeParameter("suppress-logs")
+    public void setSuppressLogs(boolean suppressLogs) {
+        this.suppressLogs = suppressLogs;
     }
 
     @SetJIPipeDocumentation(name = "Enable 3D segmentation", description = "If enabled, Cellpose will segment in 3D. Otherwise, " +
@@ -282,7 +296,7 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
             arguments.add(io2DPath.toString());
             arguments.add(io2DPath.toString());
             PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                    OmniposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), Collections.emptyMap(), progressInfo.resolve("Extract Omnipose results (2D)"));
+                    OmniposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), Collections.emptyMap(), suppressLogs, progressInfo.resolve("Extract Omnipose results (2D)"));
         }
         if (!runWith3D.isEmpty()) {
             List<String> arguments = new ArrayList<>();
@@ -292,7 +306,7 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
             arguments.add(io3DPath.toString());
             arguments.add(io3DPath.toString());
             PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                    OmniposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), Collections.emptyMap(), progressInfo.resolve("Extract Omnipose results (3D)"));
+                    OmniposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), Collections.emptyMap(), suppressLogs, progressInfo.resolve("Extract Omnipose results (3D)"));
         }
 
         // Fetch the data from the directory
@@ -520,7 +534,7 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
 
         // Run the module
         PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                OmniposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), envVars, progressInfo);
+                OmniposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), envVars, suppressLogs, progressInfo);
     }
 
     private void saveInputImages(JIPipeMultiIterationStep iterationStep, JIPipeProgressInfo progressInfo, Path io2DPath, Path io3DPath, List<CellposeImageInfo> runWith2D, List<CellposeImageInfo> runWith3D) {

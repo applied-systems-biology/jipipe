@@ -33,7 +33,7 @@ import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.imagejalgorithms.ImageJAlgorithmsPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
-import org.hkijena.jipipe.plugins.omnipose.algorithms.OmniposeAlgorithm;
+import org.hkijena.jipipe.plugins.omnipose.algorithms.OmniposeInferenceAlgorithm;
 import org.hkijena.jipipe.plugins.omnipose.algorithms.OmniposeTrainingAlgorithm;
 import org.hkijena.jipipe.plugins.omnipose.installers.OmniposeEasyInstaller;
 import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
@@ -196,7 +196,7 @@ public class OmniposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerEnumParameterType("omnipose-model", OmniposeModel.class, "Omnipose model", "An Omnipose model");
         registerEnumParameterType("omnipose-pretrained-model", OmniposePretrainedModel.class, "Omnipose pre-trained model", "A pretrained model for Omnipose");
 
-        registerNodeType("omnipose", OmniposeAlgorithm.class, RESOURCES.getIcon16URLFromResources("omnipose.png"));
+        registerNodeType("omnipose", OmniposeInferenceAlgorithm.class, RESOURCES.getIcon16URLFromResources("omnipose.png"));
         registerNodeType("omnipose-training", OmniposeTrainingAlgorithm.class, RESOURCES.getIcon16URLFromResources("omnipose.png"));
 
         registerEnvironmentInstaller(PythonEnvironment.class, OmniposeEasyInstaller.class, UIUtils.getIconFromResources("emblems/vcs-normal.png"));

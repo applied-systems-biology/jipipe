@@ -192,7 +192,7 @@ public class BasicMinicondaEnvPythonInstaller extends JIPipeExternalEnvironmentI
         }
 
         ProcessUtils.ExtendedExecutor executor = new ProcessUtils.ExtendedExecutor(ExecuteWatchdog.INFINITE_TIMEOUT, progressInfo);
-        PythonUtils.setupLogger(commandLine, executor, progressInfo);
+        PythonUtils.setupLogger(commandLine, executor, false, progressInfo);
 
         // Set working directory, so conda can see its DLLs
         executor.setWorkingDirectory(getCondaExecutableInInstallationPath().toAbsolutePath().getParent().toFile());

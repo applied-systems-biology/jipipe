@@ -239,7 +239,7 @@ public class PythonUtils {
         return inputSlotPaths;
     }
 
-    public static void runPython(String code, PythonEnvironment environment, List<Path> libraryPaths, JIPipeProgressInfo progressInfo) {
+    public static void runPython(String code, PythonEnvironment environment, List<Path> libraryPaths, boolean suppressLogs, JIPipeProgressInfo progressInfo) {
         progressInfo.log(code);
         Path codeFilePath = RuntimeSettings.generateTempFile("py", ".py");
         try {
@@ -247,7 +247,7 @@ public class PythonUtils {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        runPython(codeFilePath, environment, libraryPaths, progressInfo);
+        runPython(codeFilePath, environment, libraryPaths, suppressLogs, progressInfo);
     }
 
     public static void extractOutputs(JIPipeSingleIterationStep iterationStep, Map<String, Path> outputSlotPaths, List<JIPipeOutputDataSlot> outputSlots, JIPipeTextAnnotationMergeMode annotationMergeStrategy, JIPipeProgressInfo progressInfo) {
@@ -289,7 +289,7 @@ public class PythonUtils {
         }
     }
 
-    public static void setupLogger(CommandLine commandLine, DefaultExecutor executor, JIPipeProgressInfo progressInfo) {
+    public static void setupLogger(CommandLine commandLine, DefaultExecutor executor, boolean suppressLogs, JIPipeProgressInfo progressInfo) {
         progressInfo.log("Running " + Arrays.stream(commandLine.toStrings()).map(s -> {
             if (s.contains(" ")) {
                 return "\"" + MacroUtils.escapeString(s) + "\"";
@@ -298,15 +298,20 @@ public class PythonUtils {
             }
         }).collect(Collectors.joining(" ")));
 
-        LogOutputStream progressInfoLog = new LogOutputStream() {
-            @Override
-            protected void processLine(String s, int i) {
-                for (String s1 : s.split("\\r")) {
-                    progressInfo.log(WordUtils.wrap(s1, 120));
+        if(suppressLogs) {
+            progressInfo.log("LOGS ARE SUPPRESSED. NOT STATUS UPDATES FROM PYTHON ARE RECEIVED.");
+        }
+        else {
+            LogOutputStream progressInfoLog = new LogOutputStream() {
+                @Override
+                protected void processLine(String s, int i) {
+                    for (String s1 : s.split("\\r")) {
+                        progressInfo.log(WordUtils.wrap(s1, 120));
+                    }
                 }
-            }
-        };
-        executor.setStreamHandler(new PumpStreamHandler(progressInfoLog, progressInfoLog));
+            };
+            executor.setStreamHandler(new PumpStreamHandler(progressInfoLog, progressInfoLog));
+        }
     }
 
     /**
@@ -315,9 +320,10 @@ public class PythonUtils {
      * @param scriptFile   the script file
      * @param environment  the environment
      * @param libraryPaths additional library paths
+     * @param suppressLogs if logging should be suppressed
      * @param progressInfo the progress info
      */
-    public static void runPython(Path scriptFile, PythonEnvironment environment, List<Path> libraryPaths, JIPipeProgressInfo progressInfo) {
+    public static void runPython(Path scriptFile, PythonEnvironment environment, List<Path> libraryPaths, boolean suppressLogs, JIPipeProgressInfo progressInfo) {
         Path pythonExecutable = PathUtils.relativeJIPipeUserDirToAbsolute(environment.getExecutablePath());
         CommandLine commandLine = new CommandLine(pythonExecutable.toFile());
 
@@ -345,7 +351,7 @@ public class PythonUtils {
         }
 
         ProcessUtils.ExtendedExecutor executor = new ProcessUtils.ExtendedExecutor(ExecuteWatchdog.INFINITE_TIMEOUT, progressInfo);
-        setupLogger(commandLine, executor, progressInfo);
+        setupLogger(commandLine, executor, suppressLogs, progressInfo);
 
         try {
             executor.execute(commandLine, environmentVariables);
@@ -380,9 +386,10 @@ public class PythonUtils {
      * @param environment                    the environment
      * @param libraryPaths                   additional library paths
      * @param additionalEnvironmentVariables additional environment variables
+     * @param suppressLogs if logs should be suppressed
      * @param progressInfo                   the progress info
      */
-    public static void runPython(String[] arguments, PythonEnvironment environment, List<Path> libraryPaths, Map<String, String> additionalEnvironmentVariables, JIPipeProgressInfo progressInfo) {
+    public static void runPython(String[] arguments, PythonEnvironment environment, List<Path> libraryPaths, Map<String, String> additionalEnvironmentVariables, boolean suppressLogs, JIPipeProgressInfo progressInfo) {
         Path pythonExecutable = PathUtils.relativeJIPipeUserDirToAbsolute(environment.getExecutablePath());
         CommandLine commandLine = new CommandLine(pythonExecutable.toFile());
 
@@ -415,7 +422,7 @@ public class PythonUtils {
         }
 
         ProcessUtils.ExtendedExecutor executor = new ProcessUtils.ExtendedExecutor(ExecuteWatchdog.INFINITE_TIMEOUT, progressInfo);
-        setupLogger(commandLine, executor, progressInfo);
+        setupLogger(commandLine, executor, suppressLogs, progressInfo);
 
         try {
             executor.execute(commandLine, environmentVariables);

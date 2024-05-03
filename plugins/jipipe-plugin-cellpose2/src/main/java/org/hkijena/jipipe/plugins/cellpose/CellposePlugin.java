@@ -32,8 +32,8 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
-import org.hkijena.jipipe.plugins.cellpose.algorithms.CellposeAlgorithm;
-import org.hkijena.jipipe.plugins.cellpose.algorithms.CellposeTrainingAlgorithm;
+import org.hkijena.jipipe.plugins.cellpose.algorithms.Cellpose2InferenceAlgorithm;
+import org.hkijena.jipipe.plugins.cellpose.algorithms.Cellpose2TrainingAlgorithm;
 import org.hkijena.jipipe.plugins.cellpose.algorithms.ImportCellposeModelAlgorithm;
 import org.hkijena.jipipe.plugins.cellpose.algorithms.ImportCellposeSizeModelAlgorithm;
 import org.hkijena.jipipe.plugins.cellpose.algorithms.deprecated.CellposeAlgorithm_Old;
@@ -216,9 +216,9 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerImageJDataExporter("cellpose-size-model-to-directory", new CellposeSizeModelImageJExporter(), FolderImageJDataExporterUI.class);
 
         registerNodeType("cellpose", CellposeAlgorithm_Old.class, UIUtils.getIconURLFromResources("emblems/vcs-conflicting.png"));
-        registerNodeType("cellpose-2", CellposeAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
+        registerNodeType("cellpose-2", Cellpose2InferenceAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
         registerNodeType("cellpose-training", CellposeTrainingAlgorithm_Old.class, UIUtils.getIconURLFromResources("emblems/vcs-conflicting.png"));
-        registerNodeType("cellpose-training-2", CellposeTrainingAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
+        registerNodeType("cellpose-training-2", Cellpose2TrainingAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
         registerNodeType("import-cellpose-model", ImportCellposeModelAlgorithm.class);
         registerNodeType("import-cellpose-size-model", ImportCellposeSizeModelAlgorithm.class);
 
