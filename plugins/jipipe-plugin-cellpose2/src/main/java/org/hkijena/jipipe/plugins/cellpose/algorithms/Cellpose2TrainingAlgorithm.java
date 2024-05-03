@@ -274,18 +274,18 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.pretrainedModel = pretrainedModel;
 
         // Update diameter
-        switch (pretrainedModel) {
-            case Cytoplasm:
-                if (diameter.getContent() != 30) {
-                    ParameterUtils.setParameter(this, "diameter", 30.0);
-                }
-                break;
-            case Nucleus:
-                if (diameter.getContent() != 17) {
-                    ParameterUtils.setParameter(this, "diameter", 17.0);
-                }
-                break;
-        }
+//        switch (pretrainedModel) {
+//            case Cytoplasm:
+//                if (diameter.getContent() != 30) {
+//                    ParameterUtils.setParameter(this, "diameter", new OptionalDoubleParameter(30, true));
+//                }
+//                break;
+//            case Nucleus:
+//                if (diameter.getContent() != 17) {
+//                    ParameterUtils.setParameter(this, "diameter", 17.0);
+//                }
+//                break;
+//        }
         updateSlots();
     }
 
