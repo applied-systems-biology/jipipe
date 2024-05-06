@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.python;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -47,7 +48,7 @@ import java.util.Set;
 /**
  * Parameter that describes a Python environment
  */
-public class PythonEnvironment extends JIPipeEnvironment {
+public class PythonEnvironment extends JIPipeArtifactEnvironment {
 
     public static final String ENVIRONMENT_ID = "python";
 
@@ -55,7 +56,6 @@ public class PythonEnvironment extends JIPipeEnvironment {
     private JIPipeExpressionParameter arguments = new JIPipeExpressionParameter("ARRAY(script_file)");
     private Path executablePath = Paths.get("");
     private StringQueryExpressionAndStringPairParameter.List environmentVariables = new StringQueryExpressionAndStringPairParameter.List();
-    private JIPipeArtifactQueryParameter artifactQuery = new JIPipeArtifactQueryParameter();
 
     public PythonEnvironment() {
 
@@ -73,7 +73,6 @@ public class PythonEnvironment extends JIPipeEnvironment {
         this.arguments = new JIPipeExpressionParameter(other.arguments);
         this.executablePath = other.executablePath;
         this.environmentVariables = new StringQueryExpressionAndStringPairParameter.List(other.environmentVariables);
-        this.artifactQuery = new JIPipeArtifactQueryParameter(other.artifactQuery);
     }
 
     @SetJIPipeDocumentation(name = "Environment type", description = "The kind of environment that should be executed. " +
@@ -141,20 +140,10 @@ public class PythonEnvironment extends JIPipeEnvironment {
         this.environmentVariables = environmentVariables;
     }
 
-    @SetJIPipeDocumentation(name = "Artifact", description = "Determines the artifact that contains the Python executable")
-    @JIPipeParameter(value = "artifact", uiOrder = -90, important = true)
-    public JIPipeArtifactQueryParameter getArtifactQuery() {
-        return artifactQuery;
-    }
-
-    @JIPipeParameter("artifact")
-    public void setArtifactQuery(JIPipeArtifactQueryParameter artifactQuery) {
-        this.artifactQuery = artifactQuery;
-    }
 
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
-        if(type != PythonEnvironmentType.Artifact) {
+        if(!isLoadFromArtifact()) {
             if (StringUtils.isNullOrEmpty(getExecutablePath()) || !Files.isRegularFile(getAbsoluteExecutablePath())) {
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext,
                         "Executable does not exist",
@@ -166,27 +155,30 @@ public class PythonEnvironment extends JIPipeEnvironment {
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if(type == PythonEnvironmentType.Artifact) {
-            if("executable-path".equals(access.getKey())) {
-                return false;
-            }
-        }
-        else {
-            if("artifact".equals(access.getKey())) {
-                return false;
-            }
+        if("executable-path".equals(access.getKey())) {
+            return !isLoadFromArtifact();
         }
         return super.isParameterUIVisible(tree, access);
     }
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("apps/python.png");
+        if(isLoadFromArtifact()) {
+            return UIUtils.getIconFromResources("actions/run-install.png");
+        }
+        else {
+            return UIUtils.getIconFromResources("apps/python.png");
+        }
     }
 
     @Override
     public String getInfo() {
-        return StringUtils.orElse(getExecutablePath(), "<Not set>");
+        if(isLoadFromArtifact()) {
+            return StringUtils.orElse(getArtifactQuery().getQuery(), "<Not set>");
+        }
+        else {
+            return StringUtils.orElse(getExecutablePath(), "<Not set>");
+        }
     }
 
     @Override
@@ -196,7 +188,7 @@ public class PythonEnvironment extends JIPipeEnvironment {
                 ", arguments=" + arguments +
                 ", executablePath=" + executablePath +
                 ", environmentVariables=" + environmentVariables +
-                ", artifactQuery=" + artifactQuery +
+                ", artifactQuery=" + getArtifactQuery() +
                 '}';
     }
 

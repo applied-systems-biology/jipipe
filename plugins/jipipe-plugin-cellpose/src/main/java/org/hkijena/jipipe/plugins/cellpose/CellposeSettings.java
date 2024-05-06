@@ -31,10 +31,9 @@ public class CellposeSettings extends AbstractJIPipeParameterCollection {
 
     public static String ID = "org.hkijena.jipipe:cellpose";
 
-    private OptionalPythonEnvironment overridePythonEnvironment = new OptionalPythonEnvironment();
+    private PythonEnvironment pythonEnvironment = new PythonEnvironment();
 
     public CellposeSettings() {
-        overridePythonEnvironment.setEnabled(true);
     }
 
     public static CellposeSettings getInstance() {
@@ -78,22 +77,15 @@ public class CellposeSettings extends AbstractJIPipeParameterCollection {
     @SetJIPipeDocumentation(name = "Cellpose Python environment", description = "If enabled, a separate Python environment is used for Cellpose. " +
             "Alternatively, the standard Python environment from the Python extension is used. Please ensure that Cellpose is installed. " +
             "You can also install Cellpose via the Select/Install button (CPU and GPU supported).")
-    @JIPipeParameter("python-environment")
-    @ExternalEnvironmentParameterSettings(showCategory = "Cellpose")
-    public OptionalPythonEnvironment getOverridePythonEnvironment() {
-        return overridePythonEnvironment;
-    }
-
-    @JIPipeParameter("python-environment")
-    public void setOverridePythonEnvironment(OptionalPythonEnvironment overridePythonEnvironment) {
-        this.overridePythonEnvironment = overridePythonEnvironment;
-    }
-
+    @JIPipeParameter("cellpose-python-environment")
+    @ExternalEnvironmentParameterSettings(showCategory = "Cellpose", allowArtifact = true, artifactFilters = { "com.github.mouseland.cellpose.*" })
     public PythonEnvironment getPythonEnvironment() {
-        if (overridePythonEnvironment.isEnabled()) {
-            return overridePythonEnvironment.getContent();
-        } else {
-            return PythonExtensionSettings.getInstance().getPythonEnvironment();
-        }
+        return pythonEnvironment;
     }
+
+    @JIPipeParameter("cellpose-python-environment")
+    public void setPythonEnvironment(PythonEnvironment pythonEnvironment) {
+        this.pythonEnvironment = pythonEnvironment;
+    }
+
 }

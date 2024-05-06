@@ -51,4 +51,12 @@ public @interface ExternalEnvironmentParameterSettings {
      * @return the category or empty (no category)
      */
     String showCategory() default "";
+
+    /**
+     *
+     * @return if this external environment parameter allows to be filled with artifact infos
+     */
+    boolean allowArtifact() default false;
+
+    String[] artifactFilters() default { "*" };
 }

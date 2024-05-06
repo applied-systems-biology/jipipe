@@ -33,7 +33,6 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.r.algorithms.ImportRDatasetAlgorithm;
 import org.hkijena.jipipe.plugins.r.algorithms.IteratingRScriptAlgorithm;
 import org.hkijena.jipipe.plugins.r.algorithms.MergingRScriptAlgorithm;
-import org.hkijena.jipipe.plugins.r.installers.REnvInstaller;
 import org.hkijena.jipipe.plugins.r.parameters.RScriptParameter;
 import org.hkijena.jipipe.plugins.r.ui.RTokenMaker;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
@@ -130,7 +129,6 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Optional R environment",
                 "An optional R environment",
                 null);
-        registerEnvironmentInstaller(REnvironment.class, REnvInstaller.class, UIUtils.getIconFromResources("actions/download.png"));
 
         AbstractTokenMakerFactory atmf = (AbstractTokenMakerFactory) TokenMakerFactory.getDefaultInstance();
         atmf.putMapping("text/x-r-script", RTokenMaker.class.getName());

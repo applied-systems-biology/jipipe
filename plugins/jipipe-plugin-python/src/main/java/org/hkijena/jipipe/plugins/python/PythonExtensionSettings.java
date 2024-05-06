@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.python;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -88,6 +89,7 @@ public class PythonExtensionSettings extends AbstractJIPipeParameterCollection i
     @SetJIPipeDocumentation(name = "Python environment", description = "The Python environment that is utilized by the Python nodes. " +
             "Click the 'Select' button to select an existing environment or install a new Python.")
     @JIPipeParameter("python-environment")
+    @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = { "org.python.*" })
     public PythonEnvironment getPythonEnvironment() {
         return pythonEnvironment;
     }

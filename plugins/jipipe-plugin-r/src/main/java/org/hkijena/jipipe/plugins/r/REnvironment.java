@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -45,7 +46,7 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
-public class REnvironment extends JIPipeEnvironment {
+public class REnvironment extends JIPipeArtifactEnvironment {
     public static final String ENVIRONMENT_ID = "r";
     private Path RExecutablePath = Paths.get("");
     private Path RScriptExecutablePath = Paths.get("");
@@ -83,6 +84,17 @@ public class REnvironment extends JIPipeEnvironment {
                     "You need to provide a RScript executable",
                     "Provide a RScript executable"));
         }
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        if("r-executable-path".equals(access.getKey())) {
+            return !isLoadFromArtifact();
+        }
+        if("rscript-executable-path".equals(access.getKey())) {
+            return !isLoadFromArtifact();
+        }
+        return super.isParameterUIVisible(tree, access);
     }
 
     @SetJIPipeDocumentation(name = "R executable", description = "The main R executable (R.exe on Windows)")

@@ -19,8 +19,7 @@ package org.hkijena.jipipe.plugins.python;
 public enum PythonEnvironmentType {
     System,
     VirtualEnvironment,
-    Conda,
-    Artifact;
+    Conda;
 
 
     @Override

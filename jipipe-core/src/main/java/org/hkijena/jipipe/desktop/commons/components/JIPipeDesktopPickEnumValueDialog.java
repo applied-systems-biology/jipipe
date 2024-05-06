@@ -24,6 +24,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
@@ -43,9 +44,9 @@ public class JIPipeDesktopPickEnumValueDialog extends JDialog {
     private JScrollPane scrollPane;
     private boolean canceled = true;
 
-    public JIPipeDesktopPickEnumValueDialog(Window parent, List<Object> availableItems, EnumItemInfo itemInfo, Object preSelected) {
+    public JIPipeDesktopPickEnumValueDialog(Window parent, List<?> availableItems, EnumItemInfo itemInfo, Object preSelected) {
         super(parent);
-        this.availableItems = availableItems;
+        this.availableItems = new ArrayList<>(availableItems);
         this.itemInfo = itemInfo;
         initialize();
         reloadItemList();
@@ -56,7 +57,7 @@ public class JIPipeDesktopPickEnumValueDialog extends JDialog {
         itemJList.setSelectedValue(preSelected, true);
     }
 
-    public static Object showDialog(Component parent, List<Object> availableItems, EnumItemInfo itemInfo, Object preSelected, String title) {
+    public static Object showDialog(Component parent, List<?> availableItems, EnumItemInfo itemInfo, Object preSelected, String title) {
         JIPipeDesktopPickEnumValueDialog dialog = new JIPipeDesktopPickEnumValueDialog(SwingUtilities.getWindowAncestor(parent), availableItems, itemInfo, preSelected);
         dialog.setTitle(title);
         dialog.setModal(true);

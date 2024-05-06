@@ -19,15 +19,22 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPickEnumValueDialog;
+import org.hkijena.jipipe.plugins.parameters.api.enums.EnumItemInfo;
+import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.HashSet;
-import java.util.Set;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.*;
+import java.util.List;
 
 public class JIPipeDesktopArtifactQueryParameterEditorUI extends JIPipeDesktopParameterEditorUI {
 
-    private final JComboBox<String> comboBox = new JComboBox<>();
+    private final JButton button = new JButton();
+    private final List<JIPipeArtifact> availableArtifacts = new ArrayList<>();
 
     /**
      * Creates new instance
@@ -40,26 +47,38 @@ public class JIPipeDesktopArtifactQueryParameterEditorUI extends JIPipeDesktopPa
         super(workbench, parameterTree, parameterAccess);
         initialize();
         reloadArtifacts();
+        reload();
     }
 
     private void reloadArtifacts() {
-        DefaultComboBoxModel<String> comboBoxModel = new DefaultComboBoxModel<>();
         String[] filters = { "*" };
         JIPipeArtifactQueryParameterSettings annotation = getParameterAccess().getAnnotationOfType(JIPipeArtifactQueryParameterSettings.class);
         if(annotation != null) {
             filters = annotation.getFilters();
         }
-        for (JIPipeArtifact artifact : JIPipe.getArtifacts().queryCachedArtifacts(filters)) {
-            comboBoxModel.addElement(artifact.getFullId());
-        }
-        comboBox.setModel(comboBoxModel);
+        availableArtifacts.clear();
+        availableArtifacts.addAll( JIPipe.getArtifacts().queryCachedArtifacts(filters));
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
-        comboBox.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-        comboBox.setEditable(true);
-        add(comboBox, BorderLayout.CENTER);
+        button.setHorizontalAlignment(SwingConstants.LEFT);
+        button.setIcon(UIUtils.getIconFromResources("actions/run-install.png"));
+        button.addActionListener(e -> {
+            selectArtifact();
+        });
+        add(button, BorderLayout.CENTER);
+    }
+
+    private void selectArtifact() {
+        Object selected = JIPipeDesktopPickEnumValueDialog.showDialog(getDesktopWorkbench().getWindow(),
+                availableArtifacts,
+                new ArtifactEnumItemInfo(),
+                null,
+                "Select artifact");
+        if (selected instanceof JIPipeArtifact) {
+            setParameter(new JIPipeArtifactQueryParameter(((JIPipeArtifact) selected).getFullId()), true);
+        }
     }
 
     @Override
@@ -69,6 +88,34 @@ public class JIPipeDesktopArtifactQueryParameterEditorUI extends JIPipeDesktopPa
 
     @Override
     public void reload() {
+        JIPipeArtifactQueryParameter queryParameter = getParameter(JIPipeArtifactQueryParameter.class);
+        button.setText(StringUtils.orElse(queryParameter.getQuery(), "<None>"));
+    }
 
+    public static class ArtifactEnumItemInfo implements EnumItemInfo {
+
+        @Override
+        public Icon getIcon(Object value) {
+            return UIUtils.getIconFromResources("actions/run-install.png");
+        }
+
+        @Override
+        public String getLabel(Object value) {
+            if(value instanceof JIPipeArtifact) {
+                return ((JIPipeArtifact) value).getFullId();
+            }
+            return "<None>";
+        }
+
+        @Override
+        public String getTooltip(Object value) {
+            if(value instanceof JIPipeArtifact) {
+                return "<html>Name: " + ((JIPipeArtifact) value).getArtifactId() + "<br/>"
+                        + "Publisher: " + ((JIPipeArtifact) value).getGroupId() + "<br/>"
+                        + "Version: " + ((JIPipeArtifact) value).getVersion() + "<br/>"
+                        + "Classifier: " + ((JIPipeArtifact) value).getClassifier() + "</html>";
+            }
+            return "";
+        }
     }
 }

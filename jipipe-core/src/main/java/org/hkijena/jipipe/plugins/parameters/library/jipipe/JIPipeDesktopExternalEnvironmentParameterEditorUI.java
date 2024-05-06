@@ -14,10 +14,8 @@
 package org.hkijena.jipipe.plugins.parameters.library.jipipe;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentInfo;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
-import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentInstaller;
+import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
+import org.hkijena.jipipe.api.environments.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
@@ -41,12 +39,11 @@ import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Objects;
 
-public class JIPipeDesktopExternalEnvironmentDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI implements JIPipeRunnable.FinishedEventListener {
+public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDesktopParameterEditorUI implements JIPipeRunnable.FinishedEventListener {
 
     private final JLabel nameLabel = new JLabel();
     private final JTextField pathLabel = UIUtils.makeReadonlyBorderlessTextField("");
     private final JPopupMenu configureMenu = new JPopupMenu();
-    private JButton configureButton;
 
     /**
      * Creates new instance
@@ -54,7 +51,7 @@ public class JIPipeDesktopExternalEnvironmentDesktopParameterEditorUI extends JI
      * @param workbench       the workbench
      * @param parameterAccess Parameter
      */
-    public JIPipeDesktopExternalEnvironmentDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+    public JIPipeDesktopExternalEnvironmentParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterTree, parameterAccess);
         initialize();
         reload();
@@ -76,7 +73,7 @@ public class JIPipeDesktopExternalEnvironmentDesktopParameterEditorUI extends JI
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         add(buttonPanel, BorderLayout.EAST);
 
-        configureButton = new JButton("Configure ...", UIUtils.getIconFromResources("actions/configure.png"));
+        JButton configureButton = new JButton("Configure ...", UIUtils.getIconFromResources("actions/configure.png"));
         configureButton.setBackground(getBackground());
         configureButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 1, 0, 0,
                         UIManager.getColor("Separator.foreground")),
@@ -129,6 +126,21 @@ public class JIPipeDesktopExternalEnvironmentDesktopParameterEditorUI extends JI
         if (configureMenu.getComponentCount() > 0) {
             configureMenu.addSeparator();
         }
+        if(settings != null && settings.allowArtifact() && JIPipeArtifactEnvironment.class.isAssignableFrom(getParameterAccess().getFieldClass())) {
+            boolean addedArtifact = false;
+            for (JIPipeArtifact artifact : JIPipe.getArtifacts().queryCachedArtifacts(settings.artifactFilters())) {
+                if(artifact.isCompatible()) {
+                    configureMenu.add(UIUtils.createMenuItem("Artifact " + artifact.getFullId(), "Uses the predefined artifact " + artifact.getFullId(),
+                            UIUtils.getIconFromResources("actions/run-install.png"), () -> {
+                                loadArtifact(artifact);
+                            }));
+                    addedArtifact = true;
+                }
+            }
+            if(addedArtifact) {
+                configureMenu.addSeparator();
+            }
+        }
         if (settings == null || settings.allowInstall()) {
 
             String menuCategory = settings != null ? settings.showCategory() : "";
@@ -180,6 +192,16 @@ public class JIPipeDesktopExternalEnvironmentDesktopParameterEditorUI extends JI
                 configureMenu.add(additionalEnvironmentsMenu);
             }
         }
+    }
+
+    private void loadArtifact(JIPipeArtifact artifact) {
+        JIPipeParameterTypeInfo typeInfo = getParameterTypeInfo();
+        JIPipeArtifactEnvironment environment = (JIPipeArtifactEnvironment) typeInfo.newInstance();
+        environment.setLoadFromArtifact(true);
+        environment.setArtifactQuery(new JIPipeArtifactQueryParameter(artifact.getFullId()));
+        environment.setName("Artifact");
+        environment.setSource(artifact.getFullId());
+        setParameter(environment, true);
     }
 
     private void loadPreset(JIPipeEnvironment preset) {

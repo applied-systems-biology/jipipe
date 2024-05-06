@@ -17,8 +17,11 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
@@ -39,7 +42,7 @@ import java.nio.file.Paths;
 /**
  * An environment-like type that points to a package
  */
-public abstract class PythonPackageLibraryEnvironment extends JIPipeEnvironment {
+public abstract class PythonPackageLibraryEnvironment extends JIPipeArtifactEnvironment {
 
     private Path libraryDirectory = Paths.get("library");
     private boolean providedByEnvironment = false;
@@ -79,6 +82,14 @@ public abstract class PythonPackageLibraryEnvironment extends JIPipeEnvironment 
     @JsonSetter("provided-by-environment")
     public void setProvidedByEnvironment(boolean providedByEnvironment) {
         this.providedByEnvironment = providedByEnvironment;
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        if("library-directory".equals(access.getKey())) {
+            return !isLoadFromArtifact();
+        }
+        return super.isParameterUIVisible(tree, access);
     }
 
     @Override

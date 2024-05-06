@@ -91,14 +91,49 @@ public class JIPipeArtifact implements Comparable<JIPipeArtifact> {
         if ("any".equalsIgnoreCase(getClassifier())) {
             return true;
         } else if (SystemUtils.IS_OS_WINDOWS) {
-            return getClassifier().startsWith("win");
+            if(!getClassifier().contains("windows")) {
+                return false;
+            }
+            if(SystemUtils.OS_ARCH == null) {
+                return true;
+            }
+            else if(SystemUtils.OS_ARCH.equals("amd64") || SystemUtils.OS_ARCH.equals("x86_64")) {
+                return getClassifier().contains("amd64") || getClassifier().contains("x86");
+            }
+            else {
+                return getClassifier().contains("x86");
+            }
         } else if (SystemUtils.IS_OS_LINUX) {
-            return getClassifier().startsWith("linux");
+            if(!getClassifier().contains("linux")) {
+                return false;
+            }
+            if(SystemUtils.OS_ARCH == null) {
+                return true;
+            }
+            else if(SystemUtils.OS_ARCH.equals("amd64") || SystemUtils.OS_ARCH.equals("x86_64")) {
+                return getClassifier().contains("amd64") || getClassifier().contains("x86");
+            }
+            else {
+                return getClassifier().contains("x86");
+            }
         } else if (SystemUtils.IS_OS_MAC) {
-            return getClassifier().startsWith("mac");
-        } else {
-            return false;
+            if(!getClassifier().contains("macos")) {
+                return false;
+            }
+            if(SystemUtils.OS_ARCH == null) {
+                return true;
+            }
+            else if(SystemUtils.OS_ARCH.equals("arm64")) {
+                return getClassifier().contains("arm64") || getClassifier().contains("amd64") || getClassifier().contains("x86");
+            }
+            else if(SystemUtils.OS_ARCH.equals("amd64") || SystemUtils.OS_ARCH.equals("x86_64")) {
+                return getClassifier().contains("amd64") || getClassifier().contains("x86");
+            }
+            else {
+                return getClassifier().contains("x86");
+            }
         }
+        return false;
     }
 
     public boolean isRequireGPU() {

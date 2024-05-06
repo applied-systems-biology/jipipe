@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
@@ -120,6 +121,22 @@ public abstract class JIPipeDesktopParameterEditorUI extends JIPipeDesktopWorkbe
      */
     public JIPipeParameterAccess getParameterAccess() {
         return parameterAccess;
+    }
+
+    /**
+     * Returns the field class of the parameter
+     * @return the field class
+     */
+    public Class<?> getParameterFieldClass() {
+        return getParameterAccess().getFieldClass();
+    }
+
+    /**
+     * Returns the info for the current parameter type
+     * @return the parameter type info
+     */
+    public JIPipeParameterTypeInfo getParameterTypeInfo() {
+        return JIPipe.getParameterTypes().getInfoByFieldClass(getParameterAccess().getFieldClass());
     }
 
     /**

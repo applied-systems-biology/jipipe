@@ -56,7 +56,7 @@ import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterGenerator;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterTypeInfo;
 import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
-import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeDesktopExternalEnvironmentDesktopParameterEditorUI;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeDesktopExternalEnvironmentParameterEditorUI;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -940,7 +940,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
                                                                                               String name,
                                                                                               String description,
                                                                                               Icon icon) {
-        registerParameterType(id, environmentClass, listClass, null, null, name, description, JIPipeDesktopExternalEnvironmentDesktopParameterEditorUI.class);
+        registerParameterType(id, environmentClass, listClass, null, null, name, description, JIPipeDesktopExternalEnvironmentParameterEditorUI.class);
         registry.getExternalEnvironmentRegistry().registerEnvironment(environmentClass, settings);
     }
 

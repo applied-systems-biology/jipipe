@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.r;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -74,6 +75,7 @@ public class RExtensionSettings extends AbstractJIPipeParameterCollection implem
 
     @SetJIPipeDocumentation(name = "R environment", description = "Describes the R environment to use.")
     @JIPipeParameter("r-environment")
+    @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = { "org.r.*" })
     public REnvironment getEnvironment() {
         return environment;
     }

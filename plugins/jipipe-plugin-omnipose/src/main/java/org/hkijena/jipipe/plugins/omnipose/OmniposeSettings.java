@@ -31,10 +31,9 @@ public class OmniposeSettings extends AbstractJIPipeParameterCollection {
 
     public static String ID = "org.hkijena.jipipe:omnipose";
 
-    private OptionalPythonEnvironment overridePythonEnvironment = new OptionalPythonEnvironment();
+    private PythonEnvironment pythonEnvironment = new PythonEnvironment();
 
     public OmniposeSettings() {
-        overridePythonEnvironment.setEnabled(true);
     }
 
     public static OmniposeSettings getInstance() {
@@ -76,23 +75,14 @@ public class OmniposeSettings extends AbstractJIPipeParameterCollection {
     @SetJIPipeDocumentation(name = "Omnipose Python environment", description = "If enabled, a separate Python environment is used for Omnipose. " +
             "Alternatively, the standard Python environment from the Python extension is used. Please ensure that Omnipose is installed. " +
             "You can also install Omnipose via the Select/Install button (CPU and GPU supported).")
-    @JIPipeParameter("python-environment")
-    @ExternalEnvironmentParameterSettings(showCategory = "Omnipose")
-    public OptionalPythonEnvironment getOverridePythonEnvironment() {
-        return overridePythonEnvironment;
-    }
-
-    @JIPipeParameter("python-environment")
-    public void setOverridePythonEnvironment(OptionalPythonEnvironment overridePythonEnvironment) {
-        this.overridePythonEnvironment = overridePythonEnvironment;
-    }
-
-
+    @JIPipeParameter("omnipose-python-environment")
+    @ExternalEnvironmentParameterSettings(showCategory = "Omnipose", allowArtifact = true, artifactFilters = { "com.github.kevinjohncutler.omnipose.*" })
     public PythonEnvironment getPythonEnvironment() {
-        if (overridePythonEnvironment.isEnabled()) {
-            return overridePythonEnvironment.getContent();
-        } else {
-            return PythonExtensionSettings.getInstance().getPythonEnvironment();
-        }
+        return pythonEnvironment;
+    }
+
+    @JIPipeParameter("omnipose-python-environment")
+    public void setPythonEnvironment(PythonEnvironment pythonEnvironment) {
+        this.pythonEnvironment = pythonEnvironment;
     }
 }

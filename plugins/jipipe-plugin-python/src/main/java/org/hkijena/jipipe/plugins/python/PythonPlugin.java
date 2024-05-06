@@ -24,7 +24,6 @@ import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnum
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonAdapterLibraryEnvironment;
-import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonAdapterLibraryEnvironmentInstaller;
 import org.hkijena.jipipe.plugins.python.adapter.OptionalJIPipePythonAdapterLibraryEnvironment;
 import org.hkijena.jipipe.plugins.python.adapter.PythonAdapterExtensionSettings;
 import org.hkijena.jipipe.plugins.python.algorithms.*;
@@ -116,9 +115,6 @@ public class PythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Optional JIPipe Python adapter library",
                 "An optional JIPipe Python adapter library",
                 null);
-        registerEnvironmentInstaller(JIPipePythonAdapterLibraryEnvironment.class,
-                JIPipePythonAdapterLibraryEnvironmentInstaller.class,
-                UIUtils.getIconFromResources("actions/download.png"));
 
         registerEnumParameterType("python-environment-type",
                 PythonEnvironmentType.class,
