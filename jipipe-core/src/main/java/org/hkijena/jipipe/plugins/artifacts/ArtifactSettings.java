@@ -26,6 +26,7 @@ public class ArtifactSettings extends AbstractJIPipeParameterCollection {
     public static final String ID = "artifacts";
 
     private boolean autoDownload = true;
+    private boolean preferGPU = true;
     private JIPipeArtifactRepositoryReferenceList repositories = new JIPipeArtifactRepositoryReferenceList();
     private OptionalPathParameter overrideInstallationPath = new OptionalPathParameter();
 
@@ -35,6 +36,17 @@ public class ArtifactSettings extends AbstractJIPipeParameterCollection {
 
     public static ArtifactSettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, ArtifactSettings.class);
+    }
+
+    @SetJIPipeDocumentation(name = "Prefer GPU versions of artifacts", description = "If enabled, automated matching of artifacts will prefer GPU versions")
+    @JIPipeParameter("prefer-gpu")
+    public boolean isPreferGPU() {
+        return preferGPU;
+    }
+
+    @JIPipeParameter("prefer-gpu")
+    public void setPreferGPU(boolean preferGPU) {
+        this.preferGPU = preferGPU;
     }
 
     @SetJIPipeDocumentation(name = "Auto download", description = "If enabled, automatically download missing artifacts")

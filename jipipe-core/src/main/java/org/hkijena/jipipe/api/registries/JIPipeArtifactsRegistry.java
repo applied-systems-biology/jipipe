@@ -37,8 +37,6 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.concurrent.locks.StampedLock;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class JIPipeArtifactsRegistry {
@@ -61,6 +59,90 @@ public class JIPipeArtifactsRegistry {
 
     public Map<String, JIPipeArtifact> getCachedArtifacts() {
         return Collections.unmodifiableMap(cachedArtifacts);
+    }
+
+    /**
+     * Finds the closest compatible artifact to the provided full artifact ID.
+     * @param fullArtifactId full artifact ID
+     * @return matching artifact or null
+     */
+    public JIPipeArtifact findClosestCompatibleArtifact(String fullArtifactId) {
+        try {
+            JIPipeArtifact parsedArtifact = new JIPipeArtifact(fullArtifactId);
+            List<JIPipeArtifact> candidates = Collections.emptyList();
+
+            // If the parsed artifact is compatible, try to match it exactly
+            if(parsedArtifact.isCompatible()) {
+                candidates = queryCachedArtifacts(fullArtifactId);
+            }
+            if(!candidates.isEmpty()) {
+                return candidates.get(0);
+            }
+
+            // Try same version with different classifiers (select GPU versions etc.)
+            candidates = queryCachedArtifacts(parsedArtifact.getGroupId() + "." + parsedArtifact.getArtifactId() + ":" + parsedArtifact.getVersion() + "-*");
+            if(!candidates.isEmpty()) {
+                JIPipeArtifact bestCandidate = selectPreferredArtifactByClassifier(candidates);
+
+                if(bestCandidate != null) {
+                    return bestCandidate;
+                }
+            }
+
+            // Try same artifact ID only
+            candidates = queryCachedArtifacts(parsedArtifact.getGroupId() + "." + parsedArtifact.getArtifactId() + ":" + parsedArtifact.getVersion() + "-*");
+            Map<String, List<JIPipeArtifact>> byVersion = candidates.stream().collect(Collectors.groupingBy(JIPipeArtifact::getVersion));
+            List<String> sortedVersions = byVersion.keySet().stream().sorted((o1, o2) -> -VersionUtils.compareVersions(o1, o2)).collect(Collectors.toList());
+            for (String sortedVersion : sortedVersions) {
+                JIPipeArtifact bestCandidate = selectPreferredArtifactByClassifier(byVersion.get(sortedVersion));
+                if(bestCandidate != null) {
+                    return bestCandidate;
+                }
+            }
+
+            // Nothing found
+            return null;
+
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Selects a preferred artifact by class
+     * @param candidates the candidates
+     * @return the best candidate
+     */
+    public static JIPipeArtifact selectPreferredArtifactByClassifier(List<JIPipeArtifact> candidates) {
+        JIPipeArtifact bestCandidate = null;
+        for (JIPipeArtifact candidate : candidates) {
+            if(candidate.isCompatible()) {
+                if(bestCandidate == null) {
+                    bestCandidate = candidate;
+                }
+                else if(bestCandidate.isNative()) {
+                    if(candidate.isNative()) {
+                        if(ArtifactSettings.getInstance().isPreferGPU() && !bestCandidate.isRequireGPU() && candidate.isRequireGPU()) {
+                            bestCandidate = candidate;
+                        }
+                        else if(!ArtifactSettings.getInstance().isPreferGPU() && bestCandidate.isRequireGPU() && !candidate.isRequireGPU()) {
+                            bestCandidate = candidate;
+                        }
+                    }
+                }
+                else {
+                    if(ArtifactSettings.getInstance().isPreferGPU() && !bestCandidate.isRequireGPU() && candidate.isRequireGPU()) {
+                        bestCandidate = candidate;
+                    }
+                    else if(!ArtifactSettings.getInstance().isPreferGPU() && bestCandidate.isRequireGPU() && !candidate.isRequireGPU()) {
+                        bestCandidate = candidate;
+                    }
+                }
+            }
+        }
+        return bestCandidate;
     }
 
     /**
