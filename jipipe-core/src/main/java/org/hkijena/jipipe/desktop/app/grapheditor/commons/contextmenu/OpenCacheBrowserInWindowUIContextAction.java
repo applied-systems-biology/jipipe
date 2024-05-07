@@ -19,7 +19,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopAlgorithmCacheBrowserUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
-import org.hkijena.jipipe.plugins.settings.GeneralUISettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -39,7 +39,7 @@ public class OpenCacheBrowserInWindowUIContextAction implements NodeUIContextAct
             JIPipeDesktopAlgorithmCacheBrowserUI browserUI =
                     new JIPipeDesktopAlgorithmCacheBrowserUI((JIPipeDesktopProjectWorkbench) ui.getDesktopWorkbench(), ui.getNode(), canvasUI);
             JFrame frame = new JFrame("Cache browser: " + ui.getNode().getName());
-            frame.setAlwaysOnTop(GeneralUISettings.getInstance().isOpenUtilityWindowsAlwaysOnTop());
+            frame.setAlwaysOnTop(JIPipeGeneralUIApplicationSettings.getInstance().isOpenUtilityWindowsAlwaysOnTop());
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             frame.setContentPane(browserUI);
             frame.setIconImage(UIUtils.getJIPipeIcon128());

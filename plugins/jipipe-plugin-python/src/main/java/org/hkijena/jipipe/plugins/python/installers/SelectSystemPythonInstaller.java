@@ -28,7 +28,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonEnvironmentType;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 
@@ -131,7 +131,7 @@ public class SelectSystemPythonInstaller extends JIPipeExternalEnvironmentInstal
         @SetJIPipeDocumentation(name = "Python executable", description = "The executable of the system Python. " +
                 "On Windows this is usually %appdata%\\..\\Local\\Programs\\Python\\PythonXX\\python.exe (XX is the Python version). " +
                 "On Linux, Python is located in /usr/local/bin/python")
-        @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.FilesOnly, key = FileChooserSettings.LastDirectoryKey.External)
+        @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.FilesOnly, key = JIPipeFileChooserApplicationSettings.LastDirectoryKey.External)
         @JIPipeParameter("python-executable")
         public Path getPythonExecutable() {
             return pythonExecutable;

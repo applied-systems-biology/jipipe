@@ -113,7 +113,7 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        RExtensionSettings extensionSettings = new RExtensionSettings();
+        RPluginApplicationSettings extensionSettings = new RPluginApplicationSettings();
 
         registerEnvironment(REnvironment.class,
                 REnvironment.List.class,
@@ -140,13 +140,7 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "R script",
                 "An R script",
                 null);
-        registerSettingsSheet(RExtensionSettings.ID,
-                "R integration",
-                "Connect existing R installations to JIPipe or automatically install a new R environment if none is available",
-                UIUtils.getIconFromResources("apps/rlogo_icon.png"),
-                "Extensions",
-                UIUtils.getIconFromResources("actions/plugins.png"),
-                extensionSettings);
+        registerSettingsSheet(extensionSettings);
         registerNodeType("r-script-iterating", IteratingRScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/rlogo_icon.png"));
         registerNodeType("r-script-merging", MergingRScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/rlogo_icon.png"));
 

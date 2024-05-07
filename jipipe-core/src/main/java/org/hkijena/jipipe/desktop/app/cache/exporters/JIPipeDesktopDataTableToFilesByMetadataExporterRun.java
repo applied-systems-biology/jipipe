@@ -26,8 +26,8 @@ import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
-import org.hkijena.jipipe.plugins.settings.DataExporterSettings;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeDataExporterApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -66,7 +66,7 @@ public class JIPipeDesktopDataTableToFilesByMetadataExporterRun extends JIPipeDe
      * @return if setup was confirmed
      */
     public boolean setup() {
-        outputPath = FileChooserSettings.openDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Export data as files");
+        outputPath = JIPipeFileChooserApplicationSettings.openDirectory(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export data as files");
         if (outputPath == null)
             return false;
 
@@ -106,7 +106,7 @@ public class JIPipeDesktopDataTableToFilesByMetadataExporterRun extends JIPipeDe
 
         if (confirmation.get() && settings.rememberSettings) {
             try {
-                DataExporterSettings.getInstance().copyFrom(settings.exporter);
+                JIPipeDataExporterApplicationSettings.getInstance().copyFrom(settings.exporter);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -183,7 +183,7 @@ public class JIPipeDesktopDataTableToFilesByMetadataExporterRun extends JIPipeDe
     }
 
     public static class Settings extends AbstractJIPipeParameterCollection {
-        private JIPipeDataByMetadataExporter exporter = new JIPipeDataByMetadataExporter(DataExporterSettings.getInstance());
+        private JIPipeDataByMetadataExporter exporter = new JIPipeDataByMetadataExporter(JIPipeDataExporterApplicationSettings.getInstance());
         private boolean splitBySlotName = false;
 
         private boolean rememberSettings = false;

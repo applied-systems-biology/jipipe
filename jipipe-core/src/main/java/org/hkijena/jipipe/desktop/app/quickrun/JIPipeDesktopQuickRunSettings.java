@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
-import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 
@@ -35,13 +35,13 @@ public class JIPipeDesktopQuickRunSettings extends AbstractJIPipeParameterCollec
     private boolean storeIntermediateResults = false;
 
     private boolean silent = false;
-    private int numThreads = RuntimeSettings.getInstance().getDefaultQuickRunThreads();
+    private int numThreads = JIPipeRuntimeApplicationSettings.getInstance().getDefaultQuickRunThreads();
 
     /**
      * Creates a new instance
      */
     public JIPipeDesktopQuickRunSettings() {
-        outputPath = RuntimeSettings.generateTempDirectory("QuickRun");
+        outputPath = JIPipeRuntimeApplicationSettings.generateTempDirectory("QuickRun");
     }
 
     @SetJIPipeDocumentation(name = "Output path", description = "The path where the results are stored. " +

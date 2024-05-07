@@ -16,7 +16,7 @@ package org.hkijena.jipipe.desktop.commons.components;
 import org.hkijena.jipipe.JIPipeJsonPlugin;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.desktop.jsonextensionbuilder.JIPipeDesktopJsonExtensionWindow;
-import org.hkijena.jipipe.plugins.settings.ProjectsSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeProjectDefaultsApplicationSettings;
 
 import javax.swing.*;
 import java.nio.file.Path;
@@ -38,17 +38,17 @@ public class JIPipeDesktopRecentJsonExtensionsMenu extends JMenu implements JIPi
         this.setIcon(icon);
         this.workbenchWindow = workbenchWindow;
         reload();
-        ProjectsSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(this);
+        JIPipeProjectDefaultsApplicationSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(this);
     }
 
     private void reload() {
         removeAll();
-        if (ProjectsSettings.getInstance().getRecentJsonExtensionProjects().isEmpty()) {
+        if (JIPipeProjectDefaultsApplicationSettings.getInstance().getRecentJsonExtensionProjects().isEmpty()) {
             JMenuItem noProject = new JMenuItem("No recent extensions");
             noProject.setEnabled(false);
             add(noProject);
         } else {
-            for (Path path : ProjectsSettings.getInstance().getRecentJsonExtensionProjects()) {
+            for (Path path : JIPipeProjectDefaultsApplicationSettings.getInstance().getRecentJsonExtensionProjects()) {
                 JMenuItem openProjectItem = new JMenuItem(path.toString());
                 openProjectItem.addActionListener(e -> openProject(path));
                 add(openProjectItem);

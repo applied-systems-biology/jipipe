@@ -52,7 +52,7 @@ public class ProcessesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        ProcessesExtensionSettings extensionSettings = new ProcessesExtensionSettings();
+        JIPipeProcessesPluginApplicationSettings extensionSettings = new JIPipeProcessesPluginApplicationSettings();
 
         registerEnvironment(ProcessEnvironment.class,
                 ProcessEnvironment.List.class,
@@ -68,13 +68,7 @@ public class ProcessesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Optional process environment",
                 "An optional process environment",
                 null);
-        registerSettingsSheet(ProcessesExtensionSettings.ID,
-                "Processes",
-                "Setup external processes to be used in the 'Run process' nodes",
-                UIUtils.getIconFromResources("apps/utilities-terminal.png"),
-                "Extensions",
-                UIUtils.getIconFromResources("actions/plugins.png"),
-                extensionSettings);
+        registerSettingsSheet(extensionSettings);
     }
 
     @Override

@@ -33,7 +33,7 @@ import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
 import org.hkijena.jipipe.desktop.commons.components.*;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -316,7 +316,7 @@ public class JIPipeDesktopQuickRunSetupUI extends JIPipeDesktopProjectWorkbenchP
 
     private void openLogInExternalEditor() {
         if (currentQuickRun != null) {
-            Path tempFile = RuntimeSettings.generateTempFile("log", ".txt");
+            Path tempFile = JIPipeRuntimeApplicationSettings.generateTempFile("log", ".txt");
             try {
                 Files.write(tempFile, currentQuickRun.getProgressInfo().getLog().toString().getBytes(StandardCharsets.UTF_8));
                 Desktop.getDesktop().open(tempFile.toFile());
@@ -348,7 +348,7 @@ public class JIPipeDesktopQuickRunSetupUI extends JIPipeDesktopProjectWorkbenchP
         }
 
         currentQuickRun = new JIPipeDesktopQuickRun(getProject(), algorithm, currentSettings);
-        RuntimeSettings.getInstance().setDefaultQuickRunThreads(currentSettings.getNumThreads());
+        JIPipeRuntimeApplicationSettings.getInstance().setDefaultQuickRunThreads(currentSettings.getNumThreads());
         showNextResults = showResults;
 
         removeAll();

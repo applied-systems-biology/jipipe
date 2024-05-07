@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop.app.settings;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.registries.JIPipeApplicationSettingsRegistry;
+import org.hkijena.jipipe.api.settings.JIPipeApplicationSettingsSheet;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
@@ -38,7 +39,7 @@ public class JIPipeDesktopApplicationSettingsUI extends JIPipeDesktopWorkbenchPa
     private final JTree tree = new JTree();
     private final Map<String, DefaultMutableTreeNode> nodePathMap = new HashMap<>();
 
-    private final Map<JIPipeApplicationSettingsRegistry.Sheet, DefaultMutableTreeNode> sheetToNodeMap = new HashMap<>();
+    private final Map<JIPipeApplicationSettingsSheet, DefaultMutableTreeNode> sheetToNodeMap = new HashMap<>();
 
     /**
      * Creates a new instance
@@ -56,8 +57,8 @@ public class JIPipeDesktopApplicationSettingsUI extends JIPipeDesktopWorkbenchPa
         JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JScrollPane(tree), new JPanel(), AutoResizeSplitPane.RATIO_1_TO_3);
         add(splitPane, BorderLayout.CENTER);
 
-        Map<String, List<JIPipeApplicationSettingsRegistry.Sheet>> byCategory =
-                JIPipe.getSettings().getRegisteredSheets().values().stream().collect(Collectors.groupingBy(JIPipeApplicationSettingsRegistry.Sheet::getCategory));
+        Map<String, List<JIPipeApplicationSettingsSheet>> byCategory =
+                JIPipe.getSettings().getRegisteredSheets().values().stream().collect(Collectors.groupingBy(JIPipeApplicationSettingsSheet::getCategory));
         List<String> categories = byCategory.keySet().stream().sorted().collect(Collectors.toList());
         if (categories.contains("General")) {
             categories.remove("General");
@@ -68,12 +69,12 @@ public class JIPipeDesktopApplicationSettingsUI extends JIPipeDesktopWorkbenchPa
         List<SettingsCategoryNode> nodes = new ArrayList<>();
         for (String category : categories) {
             Icon categoryIcon = null;
-            for (JIPipeApplicationSettingsRegistry.Sheet sheet : byCategory.get(category)) {
+            for (JIPipeApplicationSettingsSheet sheet : byCategory.get(category)) {
                 if (categoryIcon == null)
                     categoryIcon = sheet.getCategoryIcon();
             }
             SettingsCategoryNode node = new SettingsCategoryNode(byCategory.get(category), category, categoryIcon);
-            for (JIPipeApplicationSettingsRegistry.Sheet sheet : byCategory.get(category).stream().sorted(Comparator.comparing(JIPipeApplicationSettingsRegistry.Sheet::getName)).collect(Collectors.toList())) {
+            for (JIPipeApplicationSettingsSheet sheet : byCategory.get(category).stream().sorted(Comparator.comparing(JIPipeApplicationSettingsSheet::getName)).collect(Collectors.toList())) {
                 SettingsCategoryNode subCategoryNode = new SettingsCategoryNode(Collections.singletonList(sheet), sheet.getName(), sheet.getIcon());
                 node.add(subCategoryNode);
                 nodePathMap.put("/" + category + "/" + sheet.getName(), subCategoryNode);
@@ -101,16 +102,16 @@ public class JIPipeDesktopApplicationSettingsUI extends JIPipeDesktopWorkbenchPa
             if (node.sheets.isEmpty()) {
                 splitPane.setRightComponent(UIUtils.createInfoLabel("No settings available", "There are no settings within the category '" + node.label + "'"));
             } else if (node.sheets.size() == 1) {
-                JIPipeApplicationSettingsRegistry.Sheet sheet = node.sheets.get(0);
+                JIPipeApplicationSettingsSheet sheet = node.sheets.get(0);
                 JIPipeDesktopParameterPanel parameterPanel = new JIPipeDesktopParameterPanel(getDesktopWorkbench(),
-                        sheet.getParameterCollection(),
+                        sheet,
                         MarkdownText.fromPluginResource("documentation/application-settings.md", new HashMap<>()),
                         JIPipeDesktopParameterPanel.WITH_SCROLLING | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterPanel.WITH_SEARCH_BAR);
                 splitPane.setRightComponent(parameterPanel);
             } else {
                 JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
                 formPanel.addWideToForm(new JLabel("<html><h1>" + node.label + "</h1></html>", UIUtils.getIcon32FromResources("actions/configure.png"), SwingConstants.LEFT));
-                node.sheets.stream().sorted(Comparator.comparing(JIPipeApplicationSettingsRegistry.Sheet::getName)).forEach(sheet -> {
+                node.sheets.stream().sorted(Comparator.comparing(JIPipeApplicationSettingsSheet::getName)).forEach(sheet -> {
                     JButton goToCategoryButton = new JButton("<html><span style=\"font-size: 16px;\">" + sheet.getName() + "</span><br/>" + sheet.getDescription() + "</html>", sheet.getIcon());
                     goToCategoryButton.setHorizontalAlignment(SwingConstants.LEFT);
 //                    goToCategoryButton.setVerticalAlignment(SwingConstants.TOP);
@@ -139,17 +140,17 @@ public class JIPipeDesktopApplicationSettingsUI extends JIPipeDesktopWorkbenchPa
     }
 
     private static class SettingsCategoryNode extends DefaultMutableTreeNode {
-        private final List<JIPipeApplicationSettingsRegistry.Sheet> sheets;
+        private final List<JIPipeApplicationSettingsSheet> sheets;
         private final String label;
         private final Icon icon;
 
-        private SettingsCategoryNode(List<JIPipeApplicationSettingsRegistry.Sheet> sheets, String label, Icon icon) {
+        private SettingsCategoryNode(List<JIPipeApplicationSettingsSheet> sheets, String label, Icon icon) {
             this.sheets = sheets;
             this.label = label;
             this.icon = icon;
         }
 
-        public List<JIPipeApplicationSettingsRegistry.Sheet> getSheets() {
+        public List<JIPipeApplicationSettingsSheet> getSheets() {
             return sheets;
         }
 

@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopRoundedButtonUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.plugins.settings.NotificationUISettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeNotificationUIApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
@@ -124,14 +124,14 @@ public class JIPipeDesktopWorkbenchNotificationUI extends JIPipeDesktopWorkbench
     private void block() {
         if (JOptionPane.showConfirmDialog(getDesktopWorkbench().getWindow(), "Do you really want to block all future notifications of " +
                 "the type '" + notification.getHeading() + "'?", "Block notification", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            NotificationUISettings.getInstance().getBlockedNotifications().add(notification.getId());
-            NotificationUISettings.getInstance().emitParameterChangedEvent("blocked-action-notifications");
+            JIPipeNotificationUIApplicationSettings.getInstance().getBlockedNotifications().add(notification.getId());
+            JIPipeNotificationUIApplicationSettings.getInstance().emitParameterChangedEvent("blocked-action-notifications");
             notification.dismiss();
         }
     }
 
     private void unblock() {
-        NotificationUISettings.getInstance().getBlockedNotifications().remove(notification.getId());
-        NotificationUISettings.getInstance().emitParameterChangedEvent("blocked-action-notifications");
+        JIPipeNotificationUIApplicationSettings.getInstance().getBlockedNotifications().remove(notification.getId());
+        JIPipeNotificationUIApplicationSettings.getInstance().emitParameterChangedEvent("blocked-action-notifications");
     }
 }

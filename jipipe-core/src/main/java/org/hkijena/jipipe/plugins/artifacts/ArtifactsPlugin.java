@@ -80,13 +80,7 @@ public class ArtifactsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Artifact repository",
                 "An artifact repository",
                 null);
-        registerSettingsSheet(ArtifactSettings.ID,
-                "Artifacts",
-                "Settings for the artifact downloader",
-                UIUtils.getIconFromResources("actions/run-install.png"),
-                null,
-                null,
-                new ArtifactSettings());
+        registerSettingsSheet(new JIPipeArtifactApplicationSettings());
     }
 
     @Override

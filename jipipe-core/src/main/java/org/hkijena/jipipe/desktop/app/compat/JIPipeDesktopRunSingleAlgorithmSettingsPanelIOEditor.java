@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseRole;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
-import org.hkijena.jipipe.plugins.settings.GraphEditorUISettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import java.util.Map;
@@ -52,8 +52,8 @@ public class JIPipeDesktopRunSingleAlgorithmSettingsPanelIOEditor extends JIPipe
         return graph;
     }
 
-    private static GraphEditorUISettings createSettings() {
-        GraphEditorUISettings settings = new GraphEditorUISettings();
+    private static JIPipeGraphEditorUIApplicationSettings createSettings() {
+        JIPipeGraphEditorUIApplicationSettings settings = new JIPipeGraphEditorUIApplicationSettings();
         settings.getSearchSettings().setEnableSearch(false);
         return settings;
     }

@@ -24,7 +24,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
 import org.hkijena.jipipe.plugins.scene3d.model.Scene3DNode;
 import org.hkijena.jipipe.plugins.scene3d.utils.Scene3DToColladaExporter;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.nio.file.Path;
@@ -52,7 +52,7 @@ public class Scene3DData extends JIPipeSerializedJsonObjectData implements List<
 
     @Override
     public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-        Path outputFile = FileChooserSettings.saveFile(desktopWorkbench.getWindow(), FileChooserSettings.LastDirectoryKey.Data, "Export Collada (*.dae)", new FileNameExtensionFilter("Collada 1.4 (*.dae)", "dae"));
+        Path outputFile = JIPipeFileChooserApplicationSettings.saveFile(desktopWorkbench.getWindow(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export Collada (*.dae)", new FileNameExtensionFilter("Collada 1.4 (*.dae)", "dae"));
         if (outputFile != null) {
             JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Collada export");
             Scene3DToColladaExporter exporter = new Scene3DToColladaExporter(this, outputFile);

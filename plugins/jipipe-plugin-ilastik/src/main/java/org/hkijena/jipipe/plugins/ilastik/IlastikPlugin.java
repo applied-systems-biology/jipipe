@@ -65,14 +65,14 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     /**
      * Runs Ilastik
      *
-     * @param environment  the environment. can be null (then the {@link IlastikSettings} environment is taken)
+     * @param environment  the environment. can be null (then the {@link JIPipeIlastikPluginApplicationSettings} environment is taken)
      * @param parameters   the cli parameters
      * @param progressInfo the progress info
      * @param detached     if the process is launched detached
      */
     public static void runIlastik(ProcessEnvironment environment, List<String> parameters, JIPipeProgressInfo progressInfo, boolean detached) {
         if (environment == null) {
-            environment = IlastikSettings.getInstance().getEnvironment();
+            environment = JIPipeIlastikPluginApplicationSettings.getInstance().getEnvironment();
         }
 
         // CLI
@@ -81,10 +81,10 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         // Environment variables
         Map<String, String> environmentVariables = new HashMap<>();
-        if (IlastikSettings.getInstance().getMaxThreads() > 0) {
-            environmentVariables.put("LAZYFLOW_THREADS", String.valueOf(IlastikSettings.getInstance().getMaxThreads()));
+        if (JIPipeIlastikPluginApplicationSettings.getInstance().getMaxThreads() > 0) {
+            environmentVariables.put("LAZYFLOW_THREADS", String.valueOf(JIPipeIlastikPluginApplicationSettings.getInstance().getMaxThreads()));
         }
-        environmentVariables.put("LAZYFLOW_TOTAL_RAM_MB", String.valueOf(Math.max(256, IlastikSettings.getInstance().getMaxMemory())));
+        environmentVariables.put("LAZYFLOW_TOTAL_RAM_MB", String.valueOf(Math.max(256, JIPipeIlastikPluginApplicationSettings.getInstance().getMaxMemory())));
         environmentVariables.put("LANG", "en_US.UTF-8");
         environmentVariables.put("LC_ALL", "en_US.UTF-8");
         environmentVariables.put("LC_CTYPE", "en_US.UTF-8");
@@ -299,13 +299,7 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerSettingsSheet(IlastikSettings.ID,
-                "Ilastik",
-                "Connect existing Ilastik installations to JIPipe or automatically install a new Ilastik environment if none is available",
-                RESOURCES.getIconFromResources("ilastik.png"),
-                "Extensions",
-                UIUtils.getIconFromResources("actions/plugins.png"),
-                new IlastikSettings());
+        registerSettingsSheet(new JIPipeIlastikPluginApplicationSettings());
         registerMenuExtension(RunIlastikDesktopMenuExtension.class);
         registerDatatype("ilastik-model", IlastikModelData.class, RESOURCES.getIcon16URLFromResources("ilastik-model.png"));
 

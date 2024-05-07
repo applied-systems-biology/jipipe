@@ -39,8 +39,8 @@ import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchT
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextFieldTableRowFilter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.plugins.expressions.ui.ExpressionBuilderUI;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
-import org.hkijena.jipipe.plugins.settings.GeneralDataSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -83,14 +83,14 @@ public class JIPipeDesktopResultDataSlotTableUI extends JIPipeDesktopProjectWork
 
         initialize();
         reloadTable();
-        GeneralDataSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(this);
+        JIPipeGeneralDataApplicationSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(this);
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
         table = new JXTable();
-        if (GeneralDataSettings.getInstance().isGenerateResultPreviews())
-            table.setRowHeight(GeneralDataSettings.getInstance().getPreviewSize());
+        if (JIPipeGeneralDataApplicationSettings.getInstance().isGenerateResultPreviews())
+            table.setRowHeight(JIPipeGeneralDataApplicationSettings.getInstance().getPreviewSize());
         else
             table.setRowHeight(25);
         JScrollPane scrollPane = new JScrollPane(table);
@@ -157,8 +157,8 @@ public class JIPipeDesktopResultDataSlotTableUI extends JIPipeDesktopProjectWork
         tableBand.add(new JIPipeDesktopSmallButtonRibbonAction("Compact columns", "Auto-size columns to the default size", UIUtils.getIconFromResources("actions/zoom-fit-width.png"), () -> UIUtils.packDataTable(table)));
 
         // Preview band
-        previewBand.add(new JIPipeDesktopSmallToggleButtonRibbonAction("Enable previews", "Allows to toggle previews on and off", UIUtils.getIconFromResources("actions/zoom.png"), GeneralDataSettings.getInstance().isGenerateResultPreviews(), (toggle) -> {
-            GeneralDataSettings.getInstance().setGenerateResultPreviews(toggle.isSelected());
+        previewBand.add(new JIPipeDesktopSmallToggleButtonRibbonAction("Enable previews", "Allows to toggle previews on and off", UIUtils.getIconFromResources("actions/zoom.png"), JIPipeGeneralDataApplicationSettings.getInstance().isGenerateResultPreviews(), (toggle) -> {
+            JIPipeGeneralDataApplicationSettings.getInstance().setGenerateResultPreviews(toggle.isSelected());
             reloadTable();
         }));
         previewBand.add(new JIPipeDesktopRibbon.Action(UIUtils.boxHorizontal(new JLabel("Size"), new JIPipeDesktopDataPreviewControlUI()), 1, new Insets(2, 2, 2, 2)));
@@ -221,7 +221,7 @@ public class JIPipeDesktopResultDataSlotTableUI extends JIPipeDesktopProjectWork
     }
 
     private void exportMetadataAsFiles() {
-        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Export as file", UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export as file", UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
         if (path != null) {
             ResultsTableData tableData = dataTable.toAnnotationTable();
             if (UIUtils.EXTENSION_FILTER_XLSX.accept(path.toFile())) {
@@ -254,8 +254,8 @@ public class JIPipeDesktopResultDataSlotTableUI extends JIPipeDesktopProjectWork
 
     private void reloadTable() {
         dataTable = JIPipeDataTableMetadata.loadFromJson(slot.getSlotStoragePath().resolve("data-table.json"));
-        if (GeneralDataSettings.getInstance().isGenerateResultPreviews())
-            table.setRowHeight(GeneralDataSettings.getInstance().getPreviewSize());
+        if (JIPipeGeneralDataApplicationSettings.getInstance().isGenerateResultPreviews())
+            table.setRowHeight(JIPipeGeneralDataApplicationSettings.getInstance().getPreviewSize());
         else
             table.setRowHeight(25);
         table.setModel(dataTable);

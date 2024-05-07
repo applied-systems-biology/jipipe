@@ -48,7 +48,7 @@ import org.hkijena.jipipe.api.validation.contexts.GraphNodeSlotValidationReportC
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.GraphValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
-import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.GraphUtils;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
@@ -1486,7 +1486,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
             }
             report.report(new GraphNodeValidationReportContext(reportContext, node), node);
         }
-        if (!RuntimeSettings.getInstance().isAllowSkipAlgorithmsWithoutInput()) {
+        if (!JIPipeRuntimeApplicationSettings.getInstance().isAllowSkipAlgorithmsWithoutInput()) {
             for (JIPipeDataSlot slot : graph.vertexSet()) {
                 if (!slot.getNode().getInfo().isRunnable())
                     continue;

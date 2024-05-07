@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.desktop.commons.components;
 
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -164,7 +164,7 @@ public class JIPipeDesktopPlotExporterDialog extends JDialog {
 
         switch ((FileFormat) plotExportFormat.getSelectedItem()) {
             case PNG:
-                if (FileChooserSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase().endsWith(".png")) {
+                if (JIPipeFileChooserApplicationSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase().endsWith(".png")) {
                     path = path.getParent().resolve(path.getFileName() + ".png");
                 }
                 try {
@@ -177,7 +177,7 @@ public class JIPipeDesktopPlotExporterDialog extends JDialog {
                 }
                 break;
             case JPEG:
-                if (FileChooserSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase().endsWith(".jpg")) {
+                if (JIPipeFileChooserApplicationSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase().endsWith(".jpg")) {
                     path = path.getParent().resolve(path.getFileName() + ".jpg");
                 }
                 try {
@@ -190,7 +190,7 @@ public class JIPipeDesktopPlotExporterDialog extends JDialog {
                 }
                 break;
             case SVG: {
-                if (FileChooserSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase().endsWith(".svg")) {
+                if (JIPipeFileChooserApplicationSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase().endsWith(".svg")) {
                     path = path.getParent().resolve(path.getFileName() + ".svg");
                 }
                 int w = ((Number) plotWidth.getValue()).intValue();

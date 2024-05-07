@@ -21,8 +21,8 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
-import org.hkijena.jipipe.plugins.settings.ExtensionSettings;
-import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeExtensionApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.app.StatusService;
@@ -66,7 +66,7 @@ public class JIPipeRunCommand implements Command {
     @Override
     public void run() {
         JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
-        ExtensionSettings extensionSettings = ExtensionSettings.getInstanceFromRaw();
+        JIPipeExtensionApplicationSettings extensionSettings = JIPipeExtensionApplicationSettings.getInstanceFromRaw();
         if (JIPipe.getInstance() == null) {
             JIPipe jiPipe = JIPipe.createInstance(context);
             jiPipe.initialize(extensionSettings, issues);
@@ -106,7 +106,7 @@ public class JIPipeRunCommand implements Command {
         configuration.setStoreToCache(false);
         configuration.setOutputPath(outputDirectory.toPath());
         configuration.setNumThreads(threads);
-        RuntimeSettings.getInstance().setDefaultRunThreads(threads);
+        JIPipeRuntimeApplicationSettings.getInstance().setDefaultRunThreads(threads);
         JIPipeGraphRun run = new JIPipeGraphRun(project, configuration);
         run.run();
         logService.info("JIPipe run finished. Outputs are stored in: " + outputDirectory);

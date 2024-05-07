@@ -49,8 +49,8 @@ import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchT
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.plugins.expressions.ui.ExpressionBuilderUI;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
-import org.hkijena.jipipe.plugins.settings.GeneralDataSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -104,7 +104,7 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
             ((JIPipeDesktopProjectWorkbench) getDesktopWorkbench()).getProject().getCache().getModifiedEventEmitter().subscribeWeak(this);
         }
         updateStatus();
-        GeneralDataSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(this);
+        JIPipeGeneralDataApplicationSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(this);
         showDataRows(new int[0]);
     }
 
@@ -121,8 +121,8 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
         dataTableModel = new JIPipeDesktopExtendedDataTableModel(table, dataTableStore);
         table.setModel(dataTableModel);
         dataTableModel.setScrollPane(scrollPane);
-        if (GeneralDataSettings.getInstance().isGenerateCachePreviews())
-            table.setRowHeight(GeneralDataSettings.getInstance().getPreviewSize());
+        if (JIPipeGeneralDataApplicationSettings.getInstance().isGenerateCachePreviews())
+            table.setRowHeight(JIPipeGeneralDataApplicationSettings.getInstance().getPreviewSize());
         else
             table.setRowHeight(25);
         table.setRowFilter(new JIPipeDesktopExtendedDataTableSearchTextFieldTableRowFilter(searchTextField));
@@ -133,15 +133,15 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
         }
         table.setAutoCreateRowSorter(true);
         UIUtils.packDataTable(table);
-        columnModel.getColumn(1).setPreferredWidth(GeneralDataSettings.getInstance().getPreviewSize());
+        columnModel.getColumn(1).setPreferredWidth(JIPipeGeneralDataApplicationSettings.getInstance().getPreviewSize());
         SwingUtilities.invokeLater(dataTableModel::updateRenderedPreviews);
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
         table = new JXTable();
-        if (GeneralDataSettings.getInstance().isGenerateCachePreviews())
-            table.setRowHeight(GeneralDataSettings.getInstance().getPreviewSize());
+        if (JIPipeGeneralDataApplicationSettings.getInstance().isGenerateCachePreviews())
+            table.setRowHeight(JIPipeGeneralDataApplicationSettings.getInstance().getPreviewSize());
         else
             table.setRowHeight(25);
         table.setDefaultRenderer(JIPipeDataInfo.class, new JIPipeDesktopDataInfoCellRenderer());
@@ -280,7 +280,7 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
 
             popupMenu.add(UIUtils.createMenuItem("Export", "Exports the data", UIUtils.getIconFromResources("actions/document-export.png"),
                     () -> {
-                        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export row " + modelRow);
+                        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export row " + modelRow);
                         if (path != null) {
                             Path directory = path.getParent();
                             String name = path.getFileName().toString();
@@ -294,7 +294,7 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
                 JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(modelRow, dataAnnotationColumn);
                 popupMenu.add(UIUtils.createMenuItem("Export " + dataAnnotation.getName(), "Exports the data annotation '" + dataAnnotation.getName() + "'", UIUtils.getIconFromResources("actions/document-export.png"),
                         () -> {
-                            Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export row " + modelRow);
+                            Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export row " + modelRow);
                             if (path != null) {
                                 Path directory = path.getParent();
                                 String name = path.getFileName().toString();
@@ -349,8 +349,8 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
         tableBand.add(new JIPipeDesktopSmallButtonRibbonAction("Compact columns", "Auto-size columns to the default size", UIUtils.getIconFromResources("actions/zoom-fit-width.png"), () -> UIUtils.packDataTable(table)));
 
         // Preview band
-        previewBand.add(new JIPipeDesktopSmallToggleButtonRibbonAction("Enable previews", "Allows to toggle previews on and off", UIUtils.getIconFromResources("actions/zoom.png"), GeneralDataSettings.getInstance().isGenerateCachePreviews(), (toggle) -> {
-            GeneralDataSettings.getInstance().setGenerateCachePreviews(toggle.isSelected());
+        previewBand.add(new JIPipeDesktopSmallToggleButtonRibbonAction("Enable previews", "Allows to toggle previews on and off", UIUtils.getIconFromResources("actions/zoom.png"), JIPipeGeneralDataApplicationSettings.getInstance().isGenerateCachePreviews(), (toggle) -> {
+            JIPipeGeneralDataApplicationSettings.getInstance().setGenerateCachePreviews(toggle.isSelected());
             reloadTable();
         }));
         previewBand.add(new JIPipeDesktopRibbon.Action(UIUtils.boxHorizontal(new JLabel("Size"), new JIPipeDesktopDataPreviewControlUI()), 1, new Insets(2, 2, 2, 2)));
@@ -449,7 +449,7 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
     private void exportAsJIPipeSlotDirectory() {
         JIPipeDataTable dataTable = dataTableStore.get();
         if (dataTable != null) {
-            Path directory = FileChooserSettings.openDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Export as JIPipe data table");
+            Path directory = JIPipeFileChooserApplicationSettings.openDirectory(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export as JIPipe data table");
             if (directory != null) {
                 try {
                     if (Files.isDirectory(directory) && Files.list(directory).findAny().isPresent()) {
@@ -473,7 +473,7 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
     private void exportAsJIPipeSlotZIP() {
         JIPipeDataTable dataTable = dataTableStore.get();
         if (dataTable != null) {
-            Path outputZipFile = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export as JIPipe data table (*.zip)", UIUtils.EXTENSION_FILTER_ZIP);
+            Path outputZipFile = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export as JIPipe data table (*.zip)", UIUtils.EXTENSION_FILTER_ZIP);
             if (outputZipFile != null) {
                 outputZipFile = PathUtils.ensureExtension(outputZipFile, ".zip");
                 if (Files.isRegularFile(outputZipFile)) {
@@ -493,7 +493,7 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
     }
 
     private void exportMetadataAsFiles() {
-        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Export as file", UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export as file", UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
         if (path != null) {
             ResultsTableData tableData = dataTableModel.getDataTable().toAnnotationTable(true);
             if (UIUtils.EXTENSION_FILTER_XLSX.accept(path.toFile())) {

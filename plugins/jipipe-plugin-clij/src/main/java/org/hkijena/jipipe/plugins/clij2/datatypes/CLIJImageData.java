@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.plugins.clij2.CLIJSettings;
+import org.hkijena.jipipe.plugins.clij2.CLIJPluginApplicationSettings;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.display.CachedImagePlusDataViewerWindow;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
@@ -137,8 +137,8 @@ public class CLIJImageData implements JIPipeData {
     public ImagePlusData pull() {
         CLIJ2 clij = CLIJ2.getInstance();
         ImagePlus imagePlus = clij.pull(image);
-        if (CLIJSettings.getInstance().isAutoCalibrateAfterPulling()) {
-            CLIJSettings.ContrastEnhancerSettings contrastEnhancer = CLIJSettings.getInstance().getContrastEnhancerSettings();
+        if (CLIJPluginApplicationSettings.getInstance().isAutoCalibrateAfterPulling()) {
+            CLIJPluginApplicationSettings.ContrastEnhancerSettings contrastEnhancer = CLIJPluginApplicationSettings.getInstance().getContrastEnhancerSettings();
             ImageJUtils.calibrate(imagePlus,
                     contrastEnhancer.getCalibrationMode(),
                     contrastEnhancer.getCustomMin(),

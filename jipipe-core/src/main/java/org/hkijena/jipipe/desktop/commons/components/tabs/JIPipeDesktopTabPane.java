@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopCustomTabbedPaneUI;
-import org.hkijena.jipipe.plugins.settings.GeneralUISettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXStatusBar;
@@ -102,7 +102,7 @@ public class JIPipeDesktopTabPane extends JPanel implements Disposable {
                 }
             }
         });
-        if (JIPipe.getInstance() != null && GeneralUISettings.getInstance().getTheme().isModern()) {
+        if (JIPipe.getInstance() != null && JIPipeGeneralUIApplicationSettings.getInstance().getTheme().isModern()) {
             tabbedPane.setUI(new JIPipeDesktopCustomTabbedPaneUI());
         }
         add(tabbedPane, BorderLayout.CENTER);
@@ -467,7 +467,7 @@ public class JIPipeDesktopTabPane extends JPanel implements Disposable {
             return;
         if (tab.closeMode == CloseMode.withoutCloseButton || tab.closeMode == CloseMode.withDisabledCloseButton)
             return;
-        if (!GeneralUISettings.getInstance().isNeverAskOnClosingTabs() && tab.closeMode == CloseMode.withAskOnCloseButton) {
+        if (!JIPipeGeneralUIApplicationSettings.getInstance().isNeverAskOnClosingTabs() && tab.closeMode == CloseMode.withAskOnCloseButton) {
             if (JOptionPane.showConfirmDialog(tab.getContent(), "Do you really want to close this?",
                     "Close tab", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
                 forceCloseTab(tab);

@@ -25,8 +25,8 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.scripts.LargeScriptDesktopParameterEditorUI;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
-import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.*;
 
 import javax.swing.*;
@@ -226,8 +226,8 @@ public class ScriptDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
                                 }
 
                                 @Override
-                                public FileChooserSettings.LastDirectoryKey key() {
-                                    return FileChooserSettings.LastDirectoryKey.Projects;
+                                public JIPipeFileChooserApplicationSettings.LastDirectoryKey key() {
+                                    return JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects;
                                 }
                             }).build();
                     JIPipeDesktopParameterEditorUI pathEditor = JIPipe.getInstance().getParameterTypeRegistry().createEditorFor(getDesktopWorkbench(), getParameterTree(), access);
@@ -389,7 +389,7 @@ public class ScriptDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
 
         private void initialize() {
             ScriptParameter parameter = getParameter(ScriptParameter.class);
-            targetDirectory = RuntimeSettings.generateTempDirectory("script-editor");
+            targetDirectory = JIPipeRuntimeApplicationSettings.generateTempDirectory("script-editor");
             targetFile = targetDirectory.resolve("script" + parameter.getExtension());
             try {
                 Files.write(targetFile, StringUtils.nullToEmpty(parameter.getCode()).getBytes(StandardCharsets.UTF_8));

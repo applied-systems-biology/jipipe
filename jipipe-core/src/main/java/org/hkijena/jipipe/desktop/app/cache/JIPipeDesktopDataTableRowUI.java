@@ -33,8 +33,8 @@ import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionEvaluator;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.DynamicDataDisplayOperationIdEnumParameter;
-import org.hkijena.jipipe.plugins.settings.DefaultCacheDisplaySettings;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeDefaultCacheDisplayApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -92,7 +92,7 @@ public class JIPipeDesktopDataTableRowUI extends JIPipeDesktopWorkbenchPanel {
         List<JIPipeDataDisplayOperation> displayOperations = JIPipe.getInstance().getDatatypeRegistry().getSortedDisplayOperationsFor(dataTypeId);
         if (!displayOperations.isEmpty()) {
             JIPipeDataDisplayOperation result = displayOperations.get(0);
-            DynamicDataDisplayOperationIdEnumParameter parameter = DefaultCacheDisplaySettings.getInstance().getValue(dataTypeId, DynamicDataDisplayOperationIdEnumParameter.class);
+            DynamicDataDisplayOperationIdEnumParameter parameter = JIPipeDefaultCacheDisplayApplicationSettings.getInstance().getValue(dataTypeId, DynamicDataDisplayOperationIdEnumParameter.class);
             if (parameter != null) {
                 String defaultName = parameter.getValue();
                 for (JIPipeDataDisplayOperation operation : displayOperations) {
@@ -263,8 +263,8 @@ public class JIPipeDesktopDataTableRowUI extends JIPipeDesktopWorkbenchPanel {
     private void exportAsFolder() {
         if (dataTableStore.isPresent()) {
             JIPipeDataTable dataTable = dataTableStore.get();
-            Path path = FileChooserSettings.saveDirectory(getDesktopWorkbench().getWindow(),
-                    FileChooserSettings.LastDirectoryKey.Data,
+            Path path = JIPipeFileChooserApplicationSettings.saveDirectory(getDesktopWorkbench().getWindow(),
+                    JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
                     "Export " + dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "") +
                             "/" + dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "") + "/" + row);
             if (path != null) {
@@ -282,8 +282,8 @@ public class JIPipeDesktopDataTableRowUI extends JIPipeDesktopWorkbenchPanel {
     private void exportToFolder() {
         JIPipeDataTable dataTable = dataTableStore.get();
         if (dataTable != null) {
-            Path path = FileChooserSettings.saveFile(getDesktopWorkbench().getWindow(),
-                    FileChooserSettings.LastDirectoryKey.Data,
+            Path path = JIPipeFileChooserApplicationSettings.saveFile(getDesktopWorkbench().getWindow(),
+                    JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
                     "Export " + dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "") + "/"
                             + dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "") + "/" + row);
             if (path != null) {
@@ -326,7 +326,7 @@ public class JIPipeDesktopDataTableRowUI extends JIPipeDesktopWorkbenchPanel {
             if (!displayOperations.isEmpty()) {
                 JIPipeDataDisplayOperation result = displayOperations.get(0);
                 String dataTypeId = JIPipe.getDataTypes().getIdOf(dataTable.getAcceptedDataType());
-                DynamicDataDisplayOperationIdEnumParameter parameter = DefaultCacheDisplaySettings.getInstance().getValue(dataTypeId, DynamicDataDisplayOperationIdEnumParameter.class);
+                DynamicDataDisplayOperationIdEnumParameter parameter = JIPipeDefaultCacheDisplayApplicationSettings.getInstance().getValue(dataTypeId, DynamicDataDisplayOperationIdEnumParameter.class);
                 if (parameter != null) {
                     String defaultName = parameter.getValue();
                     for (JIPipeDataDisplayOperation operation : displayOperations) {

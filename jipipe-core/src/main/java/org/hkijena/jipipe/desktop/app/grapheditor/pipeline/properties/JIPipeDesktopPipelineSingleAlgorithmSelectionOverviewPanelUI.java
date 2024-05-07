@@ -37,7 +37,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.*;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.nodeexamples.JIPipeNodeExamplePickerDialog;
-import org.hkijena.jipipe.plugins.settings.GraphEditorUISettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -195,7 +195,7 @@ public class JIPipeDesktopPipelineSingleAlgorithmSelectionOverviewPanelUI extend
     }
 
     private void deleteNode() {
-        if (!GraphEditorUISettings.getInstance().isAskOnDeleteNode() || JOptionPane.showConfirmDialog(canvasUI.getDesktopWorkbench().getWindow(),
+        if (!JIPipeGraphEditorUIApplicationSettings.getInstance().isAskOnDeleteNode() || JOptionPane.showConfirmDialog(canvasUI.getDesktopWorkbench().getWindow(),
                 "Do you really want to remove the node?", "Delete node",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             Set<JIPipeGraphNode> nodes = Collections.singleton(node);

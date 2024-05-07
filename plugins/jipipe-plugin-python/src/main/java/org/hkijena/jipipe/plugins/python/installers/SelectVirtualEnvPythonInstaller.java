@@ -31,7 +31,7 @@ import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpression
 import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonEnvironmentType;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 
@@ -149,7 +149,7 @@ public class SelectVirtualEnvPythonInstaller extends JIPipeExternalEnvironmentIn
         private String name = "Virtual env";
 
         @SetJIPipeDocumentation(name = "Virtual environment directory", description = "The directory of the virtual environment. It usually contains a file pyvenv.cfg.")
-        @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.DirectoriesOnly, key = FileChooserSettings.LastDirectoryKey.External)
+        @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.DirectoriesOnly, key = JIPipeFileChooserApplicationSettings.LastDirectoryKey.External)
         @JIPipeParameter("venv-dir")
         public Path getVirtualEnvDirectory() {
             return virtualEnvDirectory;

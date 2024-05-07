@@ -31,9 +31,9 @@ import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportConte
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumItemInfo;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
 import org.hkijena.jipipe.plugins.r.OptionalREnvironment;
-import org.hkijena.jipipe.plugins.r.RExtensionSettings;
+import org.hkijena.jipipe.plugins.r.RPluginApplicationSettings;
 import org.hkijena.jipipe.plugins.r.RUtils;
-import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;
@@ -70,7 +70,7 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                         "Override R environment",
                         "override-environment"), overrideEnvironment.getContent());
             } else {
-                RExtensionSettings.checkRSettings(reportContext, report);
+                RPluginApplicationSettings.checkRSettings(reportContext, report);
             }
         }
     }
@@ -81,7 +81,7 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         if (overrideEnvironment.isEnabled()) {
             target.add(overrideEnvironment.getContent());
         } else {
-            target.add(RExtensionSettings.getInstance().getDefaultEnvironment());
+            target.add(RPluginApplicationSettings.getInstance().getDefaultEnvironment());
         }
     }
 
@@ -98,11 +98,11 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        Path tempFile = RuntimeSettings.generateTempFile("jipipe-r", ".csv");
+        Path tempFile = JIPipeRuntimeApplicationSettings.generateTempFile("jipipe-r", ".csv");
         String code = "library(datasets)\n" +
                 "write.csv(" + dataset.variableName + ", row.names = FALSE, file=\"" + MacroUtils.escapeString(tempFile.toAbsolutePath().toString()) + "\")\n";
         RUtils.runR(code,
-                overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() : RExtensionSettings.getInstance().getDefaultEnvironment(),
+                overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() : RPluginApplicationSettings.getInstance().getDefaultEnvironment(),
                 progressInfo);
         ResultsTableData resultsTableData = ResultsTableData.fromCSV(tempFile);
         iterationStep.addOutputData(getFirstOutputSlot(), resultsTableData, progressInfo);

@@ -19,9 +19,9 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.DynamicDataDisplayOperationIdEnumParameter;
-import org.hkijena.jipipe.plugins.settings.DefaultCacheDisplaySettings;
-import org.hkijena.jipipe.plugins.settings.DefaultResultImporterSettings;
-import org.hkijena.jipipe.plugins.settings.GeneralDataSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeDefaultCacheDisplayApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeDefaultResultImporterApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.Objects;
@@ -61,12 +61,12 @@ public interface JIPipeDataDisplayOperation extends JIPipeDataOperation {
         else
             displayName = slotName + "/" + row;
         display(data, displayName, desktopWorkbench, new JIPipeDataTableDataSource(dataTable, row));
-        if (saveAsDefault && GeneralDataSettings.getInstance().isAutoSaveLastDisplay()) {
+        if (saveAsDefault && JIPipeGeneralDataApplicationSettings.getInstance().isAutoSaveLastDisplay()) {
             String dataTypeId = JIPipe.getDataTypes().getIdOf(dataTable.getAcceptedDataType());
-            DynamicDataDisplayOperationIdEnumParameter parameter = DefaultCacheDisplaySettings.getInstance().getValue(dataTypeId, DynamicDataDisplayOperationIdEnumParameter.class);
+            DynamicDataDisplayOperationIdEnumParameter parameter = JIPipeDefaultCacheDisplayApplicationSettings.getInstance().getValue(dataTypeId, DynamicDataDisplayOperationIdEnumParameter.class);
             if (parameter != null && !Objects.equals(getId(), parameter.getValue())) {
                 parameter.setValue(getId());
-                DefaultResultImporterSettings.getInstance().setValue(dataTypeId, parameter);
+                JIPipeDefaultResultImporterApplicationSettings.getInstance().setValue(dataTypeId, parameter);
                 if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
                     JIPipe.getSettings().save();
                 }

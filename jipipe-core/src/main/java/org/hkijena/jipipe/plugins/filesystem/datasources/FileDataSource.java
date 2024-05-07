@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
-import org.hkijena.jipipe.plugins.filesystem.FilesystemExtensionSettings;
+import org.hkijena.jipipe.plugins.filesystem.JIPipeFilesystemPluginApplicationSettings;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
@@ -96,7 +96,7 @@ public class FileDataSource extends JIPipeAlgorithm {
     @JIPipeParameter("file-name")
     public void setFileName(Path fileName) {
         this.fileName = PathUtils.normalize(fileName);
-        FilesystemExtensionSettings settings = FilesystemExtensionSettings.getInstance();
+        JIPipeFilesystemPluginApplicationSettings settings = JIPipeFilesystemPluginApplicationSettings.getInstance();
         if (settings != null && settings.isAutoLabelOutputWithFileName()) {
             String name = fileName != null ? fileName.getFileName().toString() : "";
             if (!Objects.equals(getFirstOutputSlot().getInfo().getCustomName(), name)) {
@@ -189,7 +189,7 @@ public class FileDataSource extends JIPipeAlgorithm {
                 }
             }
             // Make relative if already absolute and workDirectory != null
-            FilesystemExtensionSettings settings = FilesystemExtensionSettings.getInstance();
+            JIPipeFilesystemPluginApplicationSettings settings = JIPipeFilesystemPluginApplicationSettings.getInstance();
             if (settings == null || settings.isRelativizePaths()) {
                 if (fileName.isAbsolute()) {
                     if (baseDirectory != null && fileName.startsWith(baseDirectory)) {

@@ -15,7 +15,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons;
 
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
-import org.hkijena.jipipe.plugins.settings.GeneralUISettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
 
 import javax.swing.*;
 import java.awt.*;
@@ -50,7 +50,7 @@ public class JIPipeDesktopGraphEditorMinimap extends JIPipeDesktopWorkbenchPanel
     public JIPipeDesktopGraphEditorMinimap(JIPipeDesktopGraphEditorUI graphEditorUI) {
         super(graphEditorUI.getDesktopWorkbench());
         this.graphEditorUI = graphEditorUI;
-        if (GeneralUISettings.getInstance().getTheme().isDark())
+        if (JIPipeGeneralUIApplicationSettings.getInstance().getTheme().isDark())
             minimapBackground = Color.BLACK;
         else
             minimapBackground = Color.WHITE;

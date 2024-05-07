@@ -23,7 +23,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
-import org.hkijena.jipipe.plugins.settings.NodeTemplateSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeNodeTemplateApplicationSettings;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -50,7 +50,7 @@ public class NodeTemplateMenu extends JMenu implements JIPipeDesktopWorkbenchAcc
     }
 
     private void reloadTemplateList() {
-        List<JIPipeNodeTemplate> templates = new ArrayList<>(NodeTemplateSettings.getInstance().getNodeTemplates());
+        List<JIPipeNodeTemplate> templates = new ArrayList<>(JIPipeNodeTemplateApplicationSettings.getInstance().getNodeTemplates());
         if (project != null) {
             templates.addAll(project.getMetadata().getNodeTemplates());
         }

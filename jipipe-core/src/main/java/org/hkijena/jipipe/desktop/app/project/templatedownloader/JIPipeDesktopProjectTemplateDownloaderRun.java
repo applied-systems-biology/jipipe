@@ -19,8 +19,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.plugins.settings.ProjectsSettings;
-import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeProjectDefaultsApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.WebUtils;
@@ -88,7 +88,7 @@ public class JIPipeDesktopProjectTemplateDownloaderRun implements JIPipeRunnable
         progressInfo.log("Downloading selected templates ...");
 
         // Find and create output directory
-        Path outputDir = PathUtils.getJIPipeUserDir().resolve("jipipe").resolve("templates");
+        Path outputDir = PathUtils.getJIPipeUserDir().resolve("templates");
         if (!Files.isDirectory(outputDir)) {
             Files.createDirectories(outputDir);
         }
@@ -131,7 +131,7 @@ public class JIPipeDesktopProjectTemplateDownloaderRun implements JIPipeRunnable
     }
 
     private void loadAvailablePackages(JIPipeProgressInfo progressInfo) {
-        StringList repositories = ProjectsSettings.getInstance().getProjectTemplateDownloadRepositories();
+        StringList repositories = JIPipeProjectDefaultsApplicationSettings.getInstance().getProjectTemplateDownloadRepositories();
 
         if (repositories.isEmpty()) {
             throw new UnsupportedOperationException("No repositories set! Cancelling.");
@@ -144,7 +144,7 @@ public class JIPipeDesktopProjectTemplateDownloaderRun implements JIPipeRunnable
         for (int i = 0; i < repositories.size(); i++) {
             String repositoryURL = repositories.get(i);
             JIPipeProgressInfo repositoryProgress = progressInfo.resolve("Repository " + i);
-            Path outputFile = RuntimeSettings.generateTempFile("repository", ".json");
+            Path outputFile = JIPipeRuntimeApplicationSettings.generateTempFile("repository", ".json");
             try {
                 WebUtils.download(new URL(repositoryURL), outputFile, "Download repository", repositoryProgress);
             } catch (MalformedURLException e) {

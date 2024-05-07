@@ -15,7 +15,7 @@ package org.hkijena.jipipe.api.backups;
 
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.plugins.settings.BackupSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeBackupApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -75,7 +75,7 @@ public class PruneBackupsRun extends AbstractJIPipeRunnable {
 
     @Override
     public void run() {
-        Path backupsDir = BackupSettings.getInstance().getCurrentBackupPath();
+        Path backupsDir = JIPipeBackupApplicationSettings.getInstance().getCurrentBackupPath();
         CollectBackupsRun subRun = new CollectBackupsRun();
         subRun.setProgressInfo(getProgressInfo().resolve("Collecting backups"));
         subRun.run();

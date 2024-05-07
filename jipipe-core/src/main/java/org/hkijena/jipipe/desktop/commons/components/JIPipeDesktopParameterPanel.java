@@ -24,7 +24,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopDynamicParameterEditorDialog;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.plugins.settings.GeneralUISettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Context;
@@ -62,7 +62,7 @@ public class JIPipeDesktopParameterPanel extends JIPipeDesktopFormPanel implemen
 
     /**
      * With this flag, there will be a search bar for parameters.
-     * {@link org.hkijena.jipipe.plugins.settings.GeneralUISettings}.isShowParameterSearchBar() will override this setting
+     * {@link JIPipeGeneralUIApplicationSettings}.isShowParameterSearchBar() will override this setting
      */
     public static final int WITH_SEARCH_BAR = 512;
 
@@ -408,7 +408,7 @@ public class JIPipeDesktopParameterPanel extends JIPipeDesktopFormPanel implemen
         collapseButton.setText(collapseButton.isSelected() ? "Hide content" : "Show content");
         collapseButton.addActionListener(e -> collapseButton.setText(collapseButton.isSelected() ? "Hide content" : "Show content"));
         if (!collapseButton.isSelected()) {
-            if (!GeneralUISettings.getInstance().isAllowDefaultCollapsedParameters()) {
+            if (!JIPipeGeneralUIApplicationSettings.getInstance().isAllowDefaultCollapsedParameters()) {
                 collapseButton.setSelected(true);
             }
         }

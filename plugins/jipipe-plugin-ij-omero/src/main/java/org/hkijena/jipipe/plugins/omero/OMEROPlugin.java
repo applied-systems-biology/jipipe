@@ -188,14 +188,8 @@ public class OMEROPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        OMEROSettings omeroSettings = new OMEROSettings();
-        registerSettingsSheet(OMEROSettings.ID,
-                "OMERO",
-                "Settings for the OMERO integration (e.g., default credentials)",
-                UIUtils.getIconFromResources("apps/omero.png"),
-                "Extensions",
-                null,
-                omeroSettings);
+        OMEROPluginApplicationSettings omeroSettings = new OMEROPluginApplicationSettings();
+        registerSettingsSheet(omeroSettings);
         registerEnvironment(OMEROCredentialsEnvironment.class,
                 OMEROCredentialsEnvironment.List.class,
                 omeroSettings,

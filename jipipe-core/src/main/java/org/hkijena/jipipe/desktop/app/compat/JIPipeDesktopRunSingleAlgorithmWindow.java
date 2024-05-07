@@ -29,7 +29,7 @@ import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopAlgorithmCompen
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeNodeInfoListCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
-import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;
@@ -63,7 +63,7 @@ public class JIPipeDesktopRunSingleAlgorithmWindow extends JFrame implements JIP
     private JIPipeDesktopSearchTextField searchField;
     private JPanel settingsPanel;
     private JIPipeDesktopRunSingleAlgorithmSettingsPanel currentRunSettingsPanel;
-    private int numThreads = RuntimeSettings.getInstance().getDefaultRunThreads();
+    private int numThreads = JIPipeRuntimeApplicationSettings.getInstance().getDefaultRunThreads();
     private JIPipeDesktopTabPane tabPane;
 
     /**

@@ -26,9 +26,9 @@ import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionEvaluator;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.DynamicDataImportOperationIdEnumParameter;
-import org.hkijena.jipipe.plugins.settings.DefaultResultImporterSettings;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
-import org.hkijena.jipipe.plugins.settings.GeneralDataSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeDefaultResultImporterApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -70,7 +70,7 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
         List<JIPipeDataImportOperation> importOperations = JIPipe.getInstance().getDatatypeRegistry().getSortedImportOperationsFor(dataTypeId);
         if (!importOperations.isEmpty()) {
             JIPipeDataImportOperation result = importOperations.get(0);
-            DynamicDataImportOperationIdEnumParameter parameter = DefaultResultImporterSettings.getInstance().getValue(dataTypeId, DynamicDataImportOperationIdEnumParameter.class);
+            DynamicDataImportOperationIdEnumParameter parameter = JIPipeDefaultResultImporterApplicationSettings.getInstance().getValue(dataTypeId, DynamicDataImportOperationIdEnumParameter.class);
             if (parameter != null) {
                 String defaultName = parameter.getValue();
                 for (JIPipeDataImportOperation operation : importOperations) {
@@ -204,7 +204,7 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
     }
 
     private void exportAsFolder() {
-        Path path = FileChooserSettings.saveDirectory(getDesktopWorkbench().getWindow(), FileChooserSettings.LastDirectoryKey.Data, "Export " + getDisplayName());
+        Path path = JIPipeFileChooserApplicationSettings.saveDirectory(getDesktopWorkbench().getWindow(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export " + getDisplayName());
         if (path != null) {
             try {
                 Files.createDirectories(path);
@@ -244,7 +244,7 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
     }
 
     private void exportToFolder() {
-        Path path = FileChooserSettings.saveFile(getDesktopWorkbench().getWindow(), FileChooserSettings.LastDirectoryKey.Data, "Export " + getDisplayName());
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(getDesktopWorkbench().getWindow(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export " + getDisplayName());
         if (path != null) {
             JIPipeRunnable runnable = new JIPipeRunnable() {
                 private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
@@ -302,12 +302,12 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
                     getDisplayName(),
                     getDesktopWorkbench(),
                     new JIPipeProgressInfo());
-            if (GeneralDataSettings.getInstance().isAutoSaveLastImporter()) {
+            if (JIPipeGeneralDataApplicationSettings.getInstance().isAutoSaveLastImporter()) {
                 String dataTypeId = JIPipe.getDataTypes().getIdOf(getSlot().getAcceptedDataType());
-                DynamicDataImportOperationIdEnumParameter parameter = DefaultResultImporterSettings.getInstance().getValue(dataTypeId, DynamicDataImportOperationIdEnumParameter.class);
+                DynamicDataImportOperationIdEnumParameter parameter = JIPipeDefaultResultImporterApplicationSettings.getInstance().getValue(dataTypeId, DynamicDataImportOperationIdEnumParameter.class);
                 if (parameter != null && !Objects.equals(operation.getId(), parameter.getValue())) {
                     parameter.setValue(operation.getId());
-                    DefaultResultImporterSettings.getInstance().setValue(dataTypeId, parameter);
+                    JIPipeDefaultResultImporterApplicationSettings.getInstance().setValue(dataTypeId, parameter);
                     if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
                         JIPipe.getSettings().save();
                     }
@@ -320,7 +320,7 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
         if (!importOperations.isEmpty()) {
             JIPipeDataImportOperation result = importOperations.get(0);
             String dataTypeId = JIPipe.getDataTypes().getIdOf(getSlot().getAcceptedDataType());
-            DynamicDataImportOperationIdEnumParameter parameter = DefaultResultImporterSettings.getInstance().getValue(dataTypeId, DynamicDataImportOperationIdEnumParameter.class);
+            DynamicDataImportOperationIdEnumParameter parameter = JIPipeDefaultResultImporterApplicationSettings.getInstance().getValue(dataTypeId, DynamicDataImportOperationIdEnumParameter.class);
             if (parameter != null) {
                 String defaultName = parameter.getValue();
                 for (JIPipeDataImportOperation operation : importOperations) {

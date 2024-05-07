@@ -36,8 +36,8 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.list.DoubleList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.IntegerList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
-import org.hkijena.jipipe.plugins.python.adapter.PythonAdapterExtensionSettings;
-import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
+import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonPluginAdapterApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ProcessUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -151,7 +151,7 @@ public class PythonUtils {
     }
 
     public static void installAdapterCodeIfNeeded(StringBuilder pythonCode) {
-        PythonAdapterExtensionSettings.getInstance().getDefaultPythonAdapterLibraryEnvironment().generateCode(pythonCode, new JIPipeProgressInfo());
+        JIPipePythonPluginAdapterApplicationSettings.getInstance().getDefaultPythonAdapterLibraryEnvironment().generateCode(pythonCode, new JIPipeProgressInfo());
         pythonCode.append("import jipipe.data_slot\n");
     }
 
@@ -241,7 +241,7 @@ public class PythonUtils {
 
     public static void runPython(String code, PythonEnvironment environment, List<Path> libraryPaths, boolean suppressLogs, JIPipeProgressInfo progressInfo) {
         progressInfo.log(code);
-        Path codeFilePath = RuntimeSettings.generateTempFile("py", ".py");
+        Path codeFilePath = JIPipeRuntimeApplicationSettings.generateTempFile("py", ".py");
         try {
             Files.write(codeFilePath, code.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {

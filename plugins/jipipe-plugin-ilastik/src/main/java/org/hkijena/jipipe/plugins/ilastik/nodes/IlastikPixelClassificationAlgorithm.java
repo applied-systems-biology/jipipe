@@ -46,7 +46,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.ilastik.IlastikPlugin;
-import org.hkijena.jipipe.plugins.ilastik.IlastikSettings;
+import org.hkijena.jipipe.plugins.ilastik.JIPipeIlastikPluginApplicationSettings;
 import org.hkijena.jipipe.plugins.ilastik.datatypes.IlastikModelData;
 import org.hkijena.jipipe.plugins.ilastik.parameters.IlastikProjectValidationMode;
 import org.hkijena.jipipe.plugins.ilastik.utils.IlastikUtils;
@@ -219,7 +219,7 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
                 }
 
                 // Run ilastik
-                IlastikPlugin.runIlastik(overrideEnvironment.getContentOrDefault(IlastikSettings.getInstance().getEnvironment()),
+                IlastikPlugin.runIlastik(overrideEnvironment.getContentOrDefault(JIPipeIlastikPluginApplicationSettings.getInstance().getEnvironment()),
                         args,
                         exportSourceProgress.resolve("Run Ilastik"),
                         false);
@@ -265,7 +265,7 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
             if (overrideEnvironment.isEnabled()) {
                 report.report(reportContext, overrideEnvironment.getContent());
             } else {
-                IlastikSettings.checkIlastikSettings(reportContext, report);
+                JIPipeIlastikPluginApplicationSettings.checkIlastikSettings(reportContext, report);
             }
         }
     }

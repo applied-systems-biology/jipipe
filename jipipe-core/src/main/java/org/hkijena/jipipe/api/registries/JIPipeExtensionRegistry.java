@@ -92,23 +92,15 @@ public class JIPipeExtensionRegistry {
         return result;
     }
 
-    public static boolean isLegacy() {
-        return Files.isRegularFile(JIPipe.getJIPipeUserDir().resolve("jipipe.properties.json"));
-    }
-
     /**
      * @return The location of the file where the settings are stored
      */
     public static Path getPropertyFile() {
-        return JIPipe.getJIPipeUserDir().resolve("jipipe.extensions.json");
+        return JIPipe.getJIPipeUserDir().resolve("extensions.json");
     }
 
     public void initialize() {
-        if (isLegacy()) {
-            settings.getActivatedExtensions().addAll(Arrays.asList(STANDARD_EXTENSIONS_LEGACY));
-        } else {
-            settings.getActivatedExtensions().addAll(Arrays.asList(STANDARD_EXTENSIONS));
-        }
+        settings.getActivatedExtensions().addAll(Arrays.asList(STANDARD_EXTENSIONS));
         if (!Files.isRegularFile(getPropertyFile()) && !JIPipe.NO_SETTINGS_AUTOSAVE) {
             save();
         }

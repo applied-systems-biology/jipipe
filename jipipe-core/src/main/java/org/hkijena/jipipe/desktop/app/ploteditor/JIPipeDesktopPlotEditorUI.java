@@ -41,7 +41,7 @@ import org.hkijena.jipipe.plugins.plots.JIPipePlotDataClassFilter;
 import org.hkijena.jipipe.plugins.plots.datatypes.PlotData;
 import org.hkijena.jipipe.plugins.plots.datatypes.PlotDataSeries;
 import org.hkijena.jipipe.plugins.plots.datatypes.PlotMetadata;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumn;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
@@ -147,7 +147,7 @@ public class JIPipeDesktopPlotEditorUI extends JIPipeDesktopWorkbenchPanel imple
     }
 
     private void savePlot() {
-        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Save plot", UIUtils.EXTENSION_FILTER_ZIP);
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Save plot", UIUtils.EXTENSION_FILTER_ZIP);
         if (UIUtils.checkAndAskIfFileExists(this, path, "Save plot")) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             try (JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo, path)) {
@@ -159,7 +159,7 @@ public class JIPipeDesktopPlotEditorUI extends JIPipeDesktopWorkbenchPanel imple
     }
 
     private void openPlot() {
-        Path path = FileChooserSettings.openFile(this, FileChooserSettings.LastDirectoryKey.Data, "Open plot", UIUtils.EXTENSION_FILTER_ZIP);
+        Path path = JIPipeFileChooserApplicationSettings.openFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Open plot", UIUtils.EXTENSION_FILTER_ZIP);
         if (path != null) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             try (JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo, path)) {

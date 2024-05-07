@@ -146,13 +146,7 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerSettingsSheet(CellposeSettings.ID,
-                "Cellpose",
-                "Connect existing Cellpose installations to JIPipe or automatically install a new Cellpose environment if none is available",
-                UIUtils.getIconFromResources("apps/cellpose.png"),
-                "Extensions",
-                UIUtils.getIconFromResources("actions/plugins.png"),
-                new CellposeSettings());
+        registerSettingsSheet(new CellposePluginApplicationSettings());
 
         registerEnumParameterType("cellpose-model", CellposeModel.class, "Cellpose model", "A Cellpose model");
         registerEnumParameterType("cellpose-pretrained-model", CellposePretrainedModel.class, "Cellpose pre-trained model", "A pretrained model for Cellpose");

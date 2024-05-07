@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.infos.JIPipeEmptyNodeInfo;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCachedDataPreview;
-import org.hkijena.jipipe.plugins.settings.GeneralDataSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.utils.data.Store;
 
 import javax.swing.*;
@@ -43,7 +43,7 @@ import java.util.*;
 public class JIPipeDesktopExtendedMultiDataTableModel implements TableModel {
 
     private final JTable table;
-    private final GeneralDataSettings dataSettings = GeneralDataSettings.getInstance();
+    private final JIPipeGeneralDataApplicationSettings dataSettings = JIPipeGeneralDataApplicationSettings.getInstance();
     private final ArrayList<JIPipeProjectCompartment> compartmentList = new ArrayList<>();
     private final ArrayList<JIPipeGraphNode> nodeList = new ArrayList<>();
     private final List<String> textAnnotationColumns = new ArrayList<>();
@@ -53,7 +53,7 @@ public class JIPipeDesktopExtendedMultiDataTableModel implements TableModel {
     private final List<Component> previewCache = new ArrayList<>();
     private final Map<String, List<Component>> dataAnnotationPreviewCache = new HashMap<>();
     private final boolean withCompartmentAndAlgorithm;
-    private int previewCacheSize = GeneralDataSettings.getInstance().getPreviewSize();
+    private int previewCacheSize = JIPipeGeneralDataApplicationSettings.getInstance().getPreviewSize();
     private JScrollPane scrollPane;
 
     public JIPipeDesktopExtendedMultiDataTableModel(JTable table, boolean withCompartmentAndAlgorithm) {
@@ -368,7 +368,7 @@ public class JIPipeDesktopExtendedMultiDataTableModel implements TableModel {
             JIPipeDataTable dataTable = slotReferencesList.get(rowIndex).get();
             if (dataTable != null) {
                 JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(rowList.get(rowIndex), dataAnnotationName);
-                if (dataAnnotation != null && GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
+                if (dataAnnotation != null && JIPipeGeneralDataApplicationSettings.getInstance().isGenerateCachePreviews()) {
                     preview = new JIPipeDesktopCachedDataPreview(table, dataAnnotation.getDataItemStore(), true);
                     dataAnnotationPreviewCache.get(dataAnnotationName).set(rowIndex, preview);
                 } else {
@@ -388,7 +388,7 @@ public class JIPipeDesktopExtendedMultiDataTableModel implements TableModel {
         if (preview == null) {
             JIPipeDataTable dataTable = slotReferencesList.get(rowIndex).get();
             if (dataTable != null) {
-                if (GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
+                if (JIPipeGeneralDataApplicationSettings.getInstance().isGenerateCachePreviews()) {
                     preview = new JIPipeDesktopCachedDataPreview(table, dataTable.getDataItemStore(rowList.get(rowIndex)), true);
                     previewCache.set(rowIndex, preview);
                 } else {

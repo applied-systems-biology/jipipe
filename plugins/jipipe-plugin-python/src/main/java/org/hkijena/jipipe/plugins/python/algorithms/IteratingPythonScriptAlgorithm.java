@@ -33,9 +33,9 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScript;
 import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
-import org.hkijena.jipipe.plugins.python.PythonExtensionSettings;
+import org.hkijena.jipipe.plugins.python.JIPipePythonPluginApplicationSettings;
 import org.hkijena.jipipe.plugins.python.PythonUtils;
-import org.hkijena.jipipe.plugins.python.adapter.PythonAdapterExtensionSettings;
+import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonPluginAdapterApplicationSettings;
 import org.hkijena.jipipe.utils.scripting.JythonUtils;
 
 import java.nio.file.Path;
@@ -128,7 +128,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
             if (overrideEnvironment.isEnabled()) {
                 report.report(new ParameterValidationReportContext(reportContext, this, "Override Python environment", "override-python-environment"), overrideEnvironment.getContent());
             } else {
-                PythonExtensionSettings.checkPythonSettings(reportContext, report);
+                JIPipePythonPluginApplicationSettings.checkPythonSettings(reportContext, report);
             }
         }
     }
@@ -139,9 +139,9 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
         if (overrideEnvironment.isEnabled()) {
             target.add(overrideEnvironment.getContent());
         } else {
-            target.add(PythonExtensionSettings.getInstance().getDefaultPythonEnvironment());
+            target.add(JIPipePythonPluginApplicationSettings.getInstance().getDefaultPythonEnvironment());
         }
-        target.add(PythonAdapterExtensionSettings.getInstance().getDefaultPythonAdapterLibraryEnvironment());
+        target.add(JIPipePythonPluginAdapterApplicationSettings.getInstance().getDefaultPythonAdapterLibraryEnvironment());
     }
 
     @Override
@@ -173,7 +173,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Run Python
         PythonUtils.runPython(code.toString(),
-                getOverrideEnvironment().isEnabled() ? getOverrideEnvironment().getContent() : PythonExtensionSettings.getInstance().getDefaultPythonEnvironment(),
+                getOverrideEnvironment().isEnabled() ? getOverrideEnvironment().getContent() : JIPipePythonPluginApplicationSettings.getInstance().getDefaultPythonEnvironment(),
                 Collections.emptyList(), suppressLogs, progressInfo);
 
         // Extract outputs

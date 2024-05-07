@@ -15,7 +15,7 @@ package org.hkijena.jipipe.api.history;
 
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.project.JIPipeProject;
-import org.hkijena.jipipe.plugins.settings.HistoryJournalSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeHistoryJournalApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -27,14 +27,14 @@ import java.util.UUID;
 public class JIPipeProjectHistoryJournal implements JIPipeHistoryJournal {
     private final HistoryChangedEventEmitter historyChangedEventEmitter = new HistoryChangedEventEmitter();
     private final JIPipeProject project;
-    private final HistoryJournalSettings settings;
+    private final JIPipeHistoryJournalApplicationSettings settings;
     private final List<Snapshot> undoStack = new ArrayList<>();
     private final List<Snapshot> redoStack = new ArrayList<>();
     private Snapshot currentSnapshot;
 
     public JIPipeProjectHistoryJournal(JIPipeProject project) {
         this.project = project;
-        this.settings = HistoryJournalSettings.getInstance();
+        this.settings = JIPipeHistoryJournalApplicationSettings.getInstance();
     }
 
     public JIPipeProject getProject() {

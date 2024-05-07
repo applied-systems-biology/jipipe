@@ -21,7 +21,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.plugins.settings.NotificationUISettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeNotificationUIApplicationSettings;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -63,12 +63,12 @@ public class JIPipeDesktopWorkbenchNotificationInboxUI extends JIPipeDesktopWork
         hasNotifications = false;
 
         Set<JIPipeNotification> notificationSet = new TreeSet<>();
-        if (NotificationUISettings.getInstance().isEnableNotifications()) {
+        if (JIPipeNotificationUIApplicationSettings.getInstance().isEnableNotifications()) {
             notificationSet.addAll(JIPipeNotificationInbox.getInstance().getNotifications());
             notificationSet.addAll(getDesktopWorkbench().getNotificationInbox().getNotifications());
         }
 
-        Set<String> blockedIds = new HashSet<>(NotificationUISettings.getInstance().getBlockedNotifications());
+        Set<String> blockedIds = new HashSet<>(JIPipeNotificationUIApplicationSettings.getInstance().getBlockedNotifications());
 
         for (JIPipeNotification notification : notificationSet) {
             if (blockedIds.contains(notification.getId())) {

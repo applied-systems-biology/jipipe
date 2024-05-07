@@ -22,8 +22,8 @@ import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.plugins.settings.NodeTemplateSettings;
-import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeNodeTemplateApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.WebUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -91,7 +91,7 @@ public class NodeTemplateDownloaderRun implements JIPipeRunnable {
         for (NodeTemplateDownloaderPackage targetPackage : targetPackages) {
             progressInfo.log("The following URL will be downloaded: " + targetPackage.getUrl());
 
-            Path outputFile = RuntimeSettings.generateTempFile("template", ".json");
+            Path outputFile = JIPipeRuntimeApplicationSettings.generateTempFile("template", ".json");
             try {
                 WebUtils.download(new URL(targetPackage.getUrl()), outputFile, "Download repository", progressInfo.resolve("Download template"));
             } catch (MalformedURLException e) {
@@ -115,13 +115,13 @@ public class NodeTemplateDownloaderRun implements JIPipeRunnable {
                     ((JIPipeDesktopProjectWorkbench) workbench).getProject().getMetadata().emitParameterChangedEvent("node-templates");
                 } else {
                     // Store globally
-                    NodeTemplateSettings.getInstance().getNodeTemplates().addAll(templates);
-                    NodeTemplateSettings.getInstance().emitParameterChangedEvent("node-templates");
+                    JIPipeNodeTemplateApplicationSettings.getInstance().getNodeTemplates().addAll(templates);
+                    JIPipeNodeTemplateApplicationSettings.getInstance().emitParameterChangedEvent("node-templates");
                     if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
                         JIPipe.getSettings().save();
                     }
                 }
-                NodeTemplateSettings.triggerRefreshedEvent();
+                JIPipeNodeTemplateApplicationSettings.triggerRefreshedEvent();
             } catch (IOException e) {
                 progressInfo.log("Could not read template " + outputFile);
                 progressInfo.log(e.toString());
@@ -153,7 +153,7 @@ public class NodeTemplateDownloaderRun implements JIPipeRunnable {
     }
 
     private void loadAvailablePackages(JIPipeProgressInfo progressInfo) {
-        StringList repositories = NodeTemplateSettings.getInstance().getNodeTemplateDownloadRepositories();
+        StringList repositories = JIPipeNodeTemplateApplicationSettings.getInstance().getNodeTemplateDownloadRepositories();
 
         if (repositories.isEmpty()) {
             throw new UnsupportedOperationException("No repositories set! Cancelling.");
@@ -166,7 +166,7 @@ public class NodeTemplateDownloaderRun implements JIPipeRunnable {
         for (int i = 0; i < repositories.size(); i++) {
             String repositoryURL = repositories.get(i);
             JIPipeProgressInfo repositoryProgress = progressInfo.resolve("Repository " + i);
-            Path outputFile = RuntimeSettings.generateTempFile("repository", ".json");
+            Path outputFile = JIPipeRuntimeApplicationSettings.generateTempFile("repository", ".json");
             try {
                 WebUtils.download(new URL(repositoryURL), outputFile, "Download repository", repositoryProgress);
             } catch (MalformedURLException e) {

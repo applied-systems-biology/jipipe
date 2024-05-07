@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
 import org.hkijena.jipipe.api.data.serialization.JIPipeMergedDataTableMetadata;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultDataSlotPreview;
-import org.hkijena.jipipe.plugins.settings.GeneralDataSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
@@ -37,10 +37,10 @@ public class JIPipeDesktopRowDataAnnotationMergedTableCellRenderer implements Ta
     private final JIPipeMergedDataTableMetadata mergedDataTable;
     private final JScrollPane scrollPane;
     private final JTable table;
-    private final GeneralDataSettings dataSettings = GeneralDataSettings.getInstance();
+    private final JIPipeGeneralDataApplicationSettings dataSettings = JIPipeGeneralDataApplicationSettings.getInstance();
     private JIPipeDesktopProjectWorkbench workbenchUI;
     private Map<String, List<JIPipeDesktopResultDataSlotPreview>> previewCache = new HashMap<>();
-    private int previewCacheSize = GeneralDataSettings.getInstance().getPreviewSize();
+    private int previewCacheSize = JIPipeGeneralDataApplicationSettings.getInstance().getPreviewSize();
 
     /**
      * @param workbenchUI     The workbench

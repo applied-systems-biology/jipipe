@@ -20,7 +20,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.artifacts.*;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
-import org.hkijena.jipipe.plugins.artifacts.ArtifactSettings;
+import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.VersionUtils;
@@ -124,19 +124,19 @@ public class JIPipeArtifactsRegistry {
                 }
                 else if(bestCandidate.isNative()) {
                     if(candidate.isNative()) {
-                        if(ArtifactSettings.getInstance().isPreferGPU() && !bestCandidate.isRequireGPU() && candidate.isRequireGPU()) {
+                        if(JIPipeArtifactApplicationSettings.getInstance().isPreferGPU() && !bestCandidate.isRequireGPU() && candidate.isRequireGPU()) {
                             bestCandidate = candidate;
                         }
-                        else if(!ArtifactSettings.getInstance().isPreferGPU() && bestCandidate.isRequireGPU() && !candidate.isRequireGPU()) {
+                        else if(!JIPipeArtifactApplicationSettings.getInstance().isPreferGPU() && bestCandidate.isRequireGPU() && !candidate.isRequireGPU()) {
                             bestCandidate = candidate;
                         }
                     }
                 }
                 else {
-                    if(ArtifactSettings.getInstance().isPreferGPU() && !bestCandidate.isRequireGPU() && candidate.isRequireGPU()) {
+                    if(JIPipeArtifactApplicationSettings.getInstance().isPreferGPU() && !bestCandidate.isRequireGPU() && candidate.isRequireGPU()) {
                         bestCandidate = candidate;
                     }
-                    else if(!ArtifactSettings.getInstance().isPreferGPU() && bestCandidate.isRequireGPU() && !candidate.isRequireGPU()) {
+                    else if(!JIPipeArtifactApplicationSettings.getInstance().isPreferGPU() && bestCandidate.isRequireGPU() && !candidate.isRequireGPU()) {
                         bestCandidate = candidate;
                     }
                 }
@@ -231,7 +231,7 @@ public class JIPipeArtifactsRegistry {
 
     public List<JIPipeRemoteArtifact> queryRemoteRepositories(String groupId, String artifactId, String version, JIPipeProgressInfo progressInfo) {
         Map<String, JIPipeRemoteArtifact> downloadMap = new HashMap<>();
-        for (JIPipeArtifactRepositoryReference repository : ArtifactSettings.getInstance().getRepositories()) {
+        for (JIPipeArtifactRepositoryReference repository : JIPipeArtifactApplicationSettings.getInstance().getRepositories()) {
             Stack<String> tokens = new Stack<>();
             tokens.add(null);
             while (!tokens.isEmpty()) {
@@ -319,7 +319,7 @@ public class JIPipeArtifactsRegistry {
         if (System.getenv("JIPIPE_LOCAL_REPOSITORY") != null) {
             return Paths.get(System.getenv("JIPIPE_LOCAL_REPOSITORY"));
         } else {
-            return PathUtils.getImageJDir().resolve("jipipe").resolve("artifacts");
+            return PathUtils.getJIPipeUserDir().resolve("artifacts");
         }
     }
 
@@ -330,11 +330,11 @@ public class JIPipeArtifactsRegistry {
      * @return the user's repository path
      */
     public Path getLocalUserRepositoryPath() {
-        if (ArtifactSettings.getInstance().getOverrideInstallationPath().isEnabled() && !ArtifactSettings.getInstance().getOverrideInstallationPath().getContent().toString().isEmpty()) {
-            if (ArtifactSettings.getInstance().getOverrideInstallationPath().getContent().isAbsolute()) {
-                return ArtifactSettings.getInstance().getOverrideInstallationPath().getContent();
+        if (JIPipeArtifactApplicationSettings.getInstance().getOverrideInstallationPath().isEnabled() && !JIPipeArtifactApplicationSettings.getInstance().getOverrideInstallationPath().getContent().toString().isEmpty()) {
+            if (JIPipeArtifactApplicationSettings.getInstance().getOverrideInstallationPath().getContent().isAbsolute()) {
+                return JIPipeArtifactApplicationSettings.getInstance().getOverrideInstallationPath().getContent();
             } else {
-                return PathUtils.getJIPipeUserDir().resolve(ArtifactSettings.getInstance().getOverrideInstallationPath().getContent());
+                return PathUtils.getJIPipeUserDir().resolve(JIPipeArtifactApplicationSettings.getInstance().getOverrideInstallationPath().getContent());
             }
         } else {
             if (SystemUtils.IS_OS_WINDOWS) {

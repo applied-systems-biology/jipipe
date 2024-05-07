@@ -30,7 +30,7 @@ import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopCol
 import org.hkijena.jipipe.desktop.commons.components.ribbon.*;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.settings.ImageViewerUIROI2DDisplaySettings;
+import org.hkijena.jipipe.plugins.imagejdatatypes.settings.ImageViewerUIROI2DDisplayApplicationSettings;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ROIEditor;
@@ -39,7 +39,7 @@ import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewerPlugin2D;
 import org.hkijena.jipipe.plugins.imageviewer.utils.RoiListCellRenderer;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -75,7 +75,7 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     }
 
     private void loadDefaults() {
-        ImageViewerUIROI2DDisplaySettings settings = ImageViewerUIROI2DDisplaySettings.getInstance();
+        ImageViewerUIROI2DDisplayApplicationSettings settings = ImageViewerUIROI2DDisplayApplicationSettings.getInstance();
         roiDrawer.copyFrom(settings.getRoiDrawer());
         displayROIViewMenuItem.setSelected(settings.isShowROI());
         renderROIAsOverlayViewMenuItem.setSelected(settings.isRenderROIAsOverlay());
@@ -367,7 +367,7 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
                 "Do you want to save the ROI display settings as default?",
                 "Save settings as default",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            ImageViewerUIROI2DDisplaySettings settings = ImageViewerUIROI2DDisplaySettings.getInstance();
+            ImageViewerUIROI2DDisplayApplicationSettings settings = ImageViewerUIROI2DDisplayApplicationSettings.getInstance();
             settings.getRoiDrawer().copyFrom(roiDrawer);
             settings.setRenderROIAsOverlay(renderROIAsOverlayViewMenuItem.getState());
             settings.setShowROI(displayROIViewMenuItem.getState());
@@ -383,7 +383,7 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     }
 
     private void importROIsFromFile() {
-        Path path = FileChooserSettings.openFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Data, "Import ROI", UIUtils.EXTENSION_FILTER_ROIS);
+        Path path = JIPipeFileChooserApplicationSettings.openFile(getViewerPanel(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Import ROI", UIUtils.EXTENSION_FILTER_ROIS);
         if (path != null) {
             ROIListData importedROIs = ROIListData.loadRoiListFromFile(path);
             importROIs(importedROIs, false);
@@ -404,7 +404,7 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
         } else {
             fileNameExtensionFilters = new FileNameExtensionFilter[]{UIUtils.EXTENSION_FILTER_ROI_ZIP};
         }
-        Path path = FileChooserSettings.saveFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Data, "Export ROI", fileNameExtensionFilters);
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(getViewerPanel(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export ROI", fileNameExtensionFilters);
         if (path != null) {
             rois.save(path);
         }

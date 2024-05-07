@@ -43,7 +43,7 @@ import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdow
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -233,8 +233,8 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeDesktopGraphEditorUI 
     private void importCompartment() {
         if (!JIPipeDesktopProjectWorkbench.canAddOrDeleteNodes(getDesktopWorkbench()))
             return;
-        Path selectedPath = FileChooserSettings.openFile(this,
-                FileChooserSettings.LastDirectoryKey.Projects,
+        Path selectedPath = JIPipeFileChooserApplicationSettings.openFile(this,
+                JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects,
                 "Open JIPipe graph compartment (*.jipc)",
                 UIUtils.EXTENSION_FILTER_JIPC);
         if (selectedPath != null) {

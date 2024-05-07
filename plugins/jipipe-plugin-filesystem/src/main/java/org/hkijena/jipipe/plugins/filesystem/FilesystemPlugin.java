@@ -110,13 +110,7 @@ public class FilesystemPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerAlgorithms();
 
-        registerSettingsSheet(FilesystemExtensionSettings.ID,
-                "Filesystem",
-                "Settings for the filesystem nodes",
-                UIUtils.getIconFromResources("actions/document-open-folder.png"),
-                "Extensions",
-                UIUtils.getIconFromResources("actions/plugins.png"),
-                new FilesystemExtensionSettings());
+        registerSettingsSheet(new JIPipeFilesystemPluginApplicationSettings());
     }
 
     private void registerAlgorithms() {

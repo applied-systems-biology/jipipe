@@ -43,7 +43,7 @@ import org.hkijena.jipipe.plugins.imageviewer.plugins3d.CalibrationPlugin3D;
 import org.hkijena.jipipe.plugins.imageviewer.plugins3d.LUTManagerPlugin3D;
 import org.hkijena.jipipe.plugins.imageviewer.plugins3d.OpacityManagerPlugin3D;
 import org.hkijena.jipipe.plugins.imageviewer.runs.RawImage2DExporterRun;
-import org.hkijena.jipipe.plugins.imageviewer.settings.ImageViewer3DUISettings;
+import org.hkijena.jipipe.plugins.imageviewer.settings.ImageViewer3DUIApplicationSettings;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer3d.Image3DRenderType;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer3d.Image3DRendererSettings;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer3d.SnapshotSettings;
@@ -51,7 +51,7 @@ import org.hkijena.jipipe.plugins.imageviewer.utils.viewer3d.StandardView;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer3d.universe.CustomImage3DUniverse;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer3d.universe.CustomInteractiveBehavior;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -78,7 +78,7 @@ import java.util.*;
 
 public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbenchAccess, Disposable, UniverseListener, ComponentListener, JIPipeRunnable.FinishedEventListener {
     private final JIPipeImageViewer imageViewer;
-    private final ImageViewer3DUISettings settings;
+    private final ImageViewer3DUIApplicationSettings settings;
     private final JPanel rendererStatusPanel = new JPanel(new BorderLayout());
     private final JPanel dataStatusPanel = new JPanel(new BorderLayout());
     private final JPanel viewerPanel = new JPanel(new BorderLayout());
@@ -114,9 +114,9 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
     public ImageViewerPanel3D(JIPipeImageViewer imageViewer) {
         this.imageViewer = imageViewer;
         if (JIPipe.getInstance() != null) {
-            settings = ImageViewer3DUISettings.getInstance();
+            settings = ImageViewer3DUIApplicationSettings.getInstance();
         } else {
-            settings = new ImageViewer3DUISettings();
+            settings = new ImageViewer3DUIApplicationSettings();
         }
         this.image3DRendererSettings.copyFrom(settings.getRendererSettings());
         this.rebuildImageLaterTimer = new Timer(1000, e -> rebuildImageNow());
@@ -172,7 +172,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
         return currentImageContentsResamplingFactor;
     }
 
-    public ImageViewer3DUISettings getSettings() {
+    public ImageViewer3DUIApplicationSettings getSettings() {
         return settings;
     }
 
@@ -389,7 +389,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
 
     private void exportSnapshotToPNG() {
         if (universe != null) {
-            Path targetFile = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export current slice", UIUtils.EXTENSION_FILTER_PNG, UIUtils.EXTENSION_FILTER_JPEG, UIUtils.EXTENSION_FILTER_BMP);
+            Path targetFile = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export current slice", UIUtils.EXTENSION_FILTER_PNG, UIUtils.EXTENSION_FILTER_JPEG, UIUtils.EXTENSION_FILTER_BMP);
             if (targetFile != null) {
                 String format = "PNG";
                 if (UIUtils.EXTENSION_FILTER_BMP.accept(targetFile.toFile()))
@@ -435,7 +435,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
     }
 
     private void saveRawImage() {
-        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Save as *.tif", UIUtils.EXTENSION_FILTER_TIFF);
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Save as *.tif", UIUtils.EXTENSION_FILTER_TIFF);
         if (path != null) {
             JIPipeDesktopRunExecuterUI.runInDialog(getDesktopWorkbench(), this, new RawImage2DExporterRun(getImagePlus(), path));
         }

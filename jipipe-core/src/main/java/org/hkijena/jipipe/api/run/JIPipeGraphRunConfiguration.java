@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
-import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 
@@ -34,7 +34,7 @@ public class JIPipeGraphRunConfiguration extends AbstractJIPipeParameterCollecti
     private boolean loadFromCache = true;
     private boolean storeToCache = false;
     private boolean storeToDisk = true;
-    private int numThreads = RuntimeSettings.getInstance().getDefaultRunThreads();
+    private int numThreads = JIPipeRuntimeApplicationSettings.getInstance().getDefaultRunThreads();
     private boolean silent = false;
     private boolean ignoreDeactivatedInputs = false;
     private Set<UUID> disableStoreToCacheNodes = new HashSet<>();

@@ -141,13 +141,7 @@ public class OmniposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerSettingsSheet(OmniposeSettings.ID,
-                "Omnipose",
-                "Connect existing Omnipose installations to JIPipe or automatically install a new Omnipose environment if none is available",
-                RESOURCES.getIconFromResources("omnipose.png"),
-                "Extensions",
-                UIUtils.getIconFromResources("actions/plugins.png"),
-                new OmniposeSettings());
+        registerSettingsSheet(new OmniposePluginApplicationSettings());
         registerEnumParameterType("omnipose-model", OmniposeModel.class, "Omnipose model", "An Omnipose model");
         registerEnumParameterType("omnipose-pretrained-model", OmniposePretrainedModel.class, "Omnipose pre-trained model", "A pretrained model for Omnipose");
 

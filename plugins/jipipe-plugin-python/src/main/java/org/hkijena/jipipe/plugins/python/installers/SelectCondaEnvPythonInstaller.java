@@ -31,7 +31,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.Optiona
 import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonEnvironmentType;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 
@@ -142,7 +142,7 @@ public class SelectCondaEnvPythonInstaller extends JIPipeExternalEnvironmentInst
         private String name = "Conda";
 
         @SetJIPipeDocumentation(name = "Conda executable", description = "The conda executable. Located in the Miniconda/Anaconda folder. On Windows it is inside the Scripts directory.")
-        @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.FilesOnly, key = FileChooserSettings.LastDirectoryKey.External)
+        @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.FilesOnly, key = JIPipeFileChooserApplicationSettings.LastDirectoryKey.External)
         @JIPipeParameter("conda-executable")
         public Path getCondaExecutable() {
             return condaExecutable;
@@ -167,7 +167,7 @@ public class SelectCondaEnvPythonInstaller extends JIPipeExternalEnvironmentInst
 
         @SetJIPipeDocumentation(name = "Override environment path", description = "Alternative to using an environment name. You can provide " +
                 "the environment directory here.")
-        @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.DirectoriesOnly, key = FileChooserSettings.LastDirectoryKey.External)
+        @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.DirectoriesOnly, key = JIPipeFileChooserApplicationSettings.LastDirectoryKey.External)
         @JIPipeParameter("override-environment")
         public OptionalPathParameter getOverrideEnvironment() {
             return overrideEnvironment;

@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
-import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.compat.ResultsTableDataImageJExporter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -40,9 +40,9 @@ public class DataTableImageJDataExporter implements ImageJDataExporter {
 
     @Override
     public List<Object> exportData(JIPipeDataTable dataTable, ImageJExportParameters properties, JIPipeProgressInfo progressInfo) {
-        Path path = StringUtils.isNullOrEmpty(properties.getName()) ? RuntimeSettings.generateTempDirectory("data-table-export") : Paths.get(properties.getName());
+        Path path = StringUtils.isNullOrEmpty(properties.getName()) ? JIPipeRuntimeApplicationSettings.generateTempDirectory("data-table-export") : Paths.get(properties.getName());
         if (!path.isAbsolute()) {
-            path = RuntimeSettings.generateTempDirectory("data-table-export").resolve(path);
+            path = JIPipeRuntimeApplicationSettings.generateTempDirectory("data-table-export").resolve(path);
         }
         try {
             Files.createDirectories(path);

@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.desktop.commons.components;
 
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
-import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -42,7 +42,7 @@ public class JIPipeDesktopPathEditorComponent extends JPanel {
     private PathType pathMode;
     private JButton generateRandomButton;
     private List<FileNameExtensionFilter> extensionFilters = new ArrayList<>();
-    private FileChooserSettings.LastDirectoryKey directoryKey = FileChooserSettings.LastDirectoryKey.Parameters;
+    private JIPipeFileChooserApplicationSettings.LastDirectoryKey directoryKey = JIPipeFileChooserApplicationSettings.LastDirectoryKey.Parameters;
 
     /**
      * Creates a new file selection that opens a file
@@ -123,7 +123,7 @@ public class JIPipeDesktopPathEditorComponent extends JPanel {
      * Opens the file chooser
      */
     public void choosePath() {
-        Path selected = FileChooserSettings.selectSingle(this,
+        Path selected = JIPipeFileChooserApplicationSettings.selectSingle(this,
                 directoryKey,
                 "Change current value",
                 ioMode,
@@ -135,9 +135,9 @@ public class JIPipeDesktopPathEditorComponent extends JPanel {
 
     private void generateRandom() {
         if (pathMode == PathType.DirectoriesOnly) {
-            setPath(RuntimeSettings.generateTempDirectory("JIPipe"));
+            setPath(JIPipeRuntimeApplicationSettings.generateTempDirectory("JIPipe"));
         } else {
-            setPath(RuntimeSettings.generateTempFile("JIPipe", null));
+            setPath(JIPipeRuntimeApplicationSettings.generateTempFile("JIPipe", null));
         }
     }
 
@@ -236,11 +236,11 @@ public class JIPipeDesktopPathEditorComponent extends JPanel {
         }
     }
 
-    public FileChooserSettings.LastDirectoryKey getDirectoryKey() {
+    public JIPipeFileChooserApplicationSettings.LastDirectoryKey getDirectoryKey() {
         return directoryKey;
     }
 
-    public void setDirectoryKey(FileChooserSettings.LastDirectoryKey directoryKey) {
+    public void setDirectoryKey(JIPipeFileChooserApplicationSettings.LastDirectoryKey directoryKey) {
         this.directoryKey = directoryKey;
     }
 

@@ -49,7 +49,7 @@ public class RunIlastikDesktopMenuExtension extends JIPipeDesktopMenuExtension i
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (IlastikSettings.environmentSettingsAreValid()) {
+        if (JIPipeIlastikPluginApplicationSettings.environmentSettingsAreValid()) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             progressInfo.setLogToStdOut(true);
             getDesktopWorkbench().sendStatusBarText("Launching Ilastik ...");

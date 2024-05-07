@@ -32,7 +32,7 @@ import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopDefaultResultD
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopDefaultResultDataSlotRowUI;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultDataSlotPreview;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultDataSlotRowUI;
-import org.hkijena.jipipe.plugins.settings.GeneralDataSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jgrapht.Graph;
@@ -540,7 +540,7 @@ public class JIPipeDatatypeRegistry {
      */
     public JIPipeDesktopResultDataSlotPreview getCellRendererFor(JIPipeDesktopProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, JIPipeExportedDataAnnotation dataAnnotation) {
         Class<? extends JIPipeData> dataClass = getById(row.getTrueDataType());
-        if (GeneralDataSettings.getInstance().isGenerateResultPreviews()) {
+        if (JIPipeGeneralDataApplicationSettings.getInstance().isGenerateResultPreviews()) {
             Class<? extends JIPipeDesktopResultDataSlotPreview> rendererClass = resultTableCellUIs.getOrDefault(dataClass, null);
             if (rendererClass != null) {
                 try {

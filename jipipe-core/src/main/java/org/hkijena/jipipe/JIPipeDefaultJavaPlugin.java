@@ -41,6 +41,7 @@ import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
 import org.hkijena.jipipe.api.registries.JIPipeJavaNodeRegistrationTask;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistrationTask;
 import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
+import org.hkijena.jipipe.api.settings.JIPipeApplicationSettingsSheet;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopGraphEditorToolBarButtonExtension;
@@ -664,30 +665,10 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
     /**
      * Registers a new settings sheet
      *
-     * @param id                  unique ID
-     * @param name                sheet name
-     * @param icon                sheet icon
-     * @param category            sheet category (if null defaults to "General")
-     * @param categoryIcon        category icon (if null defaults to a predefined icon)
-     * @param parameterCollection the settings
+     * @param sheet the settings sheet
      */
-    public void registerSettingsSheet(String id, String name, Icon icon, String category, Icon categoryIcon, JIPipeParameterCollection parameterCollection) {
-        registry.getSettingsRegistry().register(id, name, icon, category, categoryIcon, parameterCollection);
-    }
-
-    /**
-     * Registers a new settings sheet
-     *
-     * @param id                  unique ID
-     * @param name                sheet name
-     * @param description         sheet description
-     * @param icon                sheet icon
-     * @param category            sheet category (if null defaults to "General")
-     * @param categoryIcon        category icon (if null defaults to a predefined icon)
-     * @param parameterCollection the settings
-     */
-    public void registerSettingsSheet(String id, String name, String description, Icon icon, String category, Icon categoryIcon, JIPipeParameterCollection parameterCollection) {
-        registry.getSettingsRegistry().register(id, name, description, icon, category, categoryIcon, parameterCollection);
+    public void registerSettingsSheet(JIPipeApplicationSettingsSheet sheet) {
+        registry.getSettingsRegistry().register(sheet);
     }
 
     /**

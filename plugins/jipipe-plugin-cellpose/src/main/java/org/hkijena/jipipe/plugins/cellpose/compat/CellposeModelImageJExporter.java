@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
-import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -36,7 +36,7 @@ public class CellposeModelImageJExporter implements ImageJDataExporter {
     public List<Object> exportData(JIPipeDataTable dataTable, ImageJExportParameters parameters, JIPipeProgressInfo progressInfo) {
         Path path = Paths.get(parameters.getName());
         if (!path.isAbsolute()) {
-            path = RuntimeSettings.generateTempDirectory("cellpose-export").resolve(path);
+            path = JIPipeRuntimeApplicationSettings.generateTempDirectory("cellpose-export").resolve(path);
         }
         if (Files.exists(path)) {
             if (Files.isRegularFile(path)) {

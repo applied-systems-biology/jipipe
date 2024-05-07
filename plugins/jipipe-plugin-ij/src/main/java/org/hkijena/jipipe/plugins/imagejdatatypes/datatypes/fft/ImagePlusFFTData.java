@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
-import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesSettings;
+import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesApplicationSettings;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImageTypeInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
@@ -130,7 +130,7 @@ public class ImagePlusFFTData extends ImagePlusData implements FFTImageData {
             powerSpectrumImageName = name + "_" + powerSpectrumImageName;
         }
 
-        if (ImageJDataTypesSettings.getInstance().isUseBioFormats()) {
+        if (ImageJDataTypesApplicationSettings.getInstance().isUseBioFormats()) {
             Path powerSpectrumOutputPath = storageFolder.resolve(powerSpectrumImageName + ".ome.tif");
             OMEImageData.simpleOMEExport(getImage(), powerSpectrumOutputPath);
             Path fhtOutputPath = storageFolder.resolve(fhtImageName + ".ome.tif");

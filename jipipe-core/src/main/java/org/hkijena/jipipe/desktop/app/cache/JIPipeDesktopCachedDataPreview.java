@@ -16,7 +16,7 @@ package org.hkijena.jipipe.desktop.app.cache;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailGenerationQueue;
-import org.hkijena.jipipe.plugins.settings.GeneralDataSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.Store;
 import org.hkijena.jipipe.utils.data.WeakStore;
@@ -77,7 +77,7 @@ public class JIPipeDesktopCachedDataPreview extends JPanel implements JIPipeThum
         JIPipeDataItemStore dataItemStore = data.get();
         if (dataItemStore != null) {
             JIPipeThumbnailData thumbnail = dataItemStore.getThumbnail();
-            int previewSize = GeneralDataSettings.getInstance().getPreviewSize();
+            int previewSize = JIPipeGeneralDataApplicationSettings.getInstance().getPreviewSize();
             boolean success = thumbnail != null;
             if (success) {
                 if (thumbnail.hasSize()) {
@@ -132,7 +132,7 @@ public class JIPipeDesktopCachedDataPreview extends JPanel implements JIPipeThum
         if (dataItemStore != null) {
             if (event.getStore() == dataItemStore) {
                 JIPipeThumbnailData thumbnail = dataItemStore.getThumbnail();
-                int previewSize = GeneralDataSettings.getInstance().getPreviewSize();
+                int previewSize = JIPipeGeneralDataApplicationSettings.getInstance().getPreviewSize();
                 if (thumbnail != null) {
                     setPreview(thumbnail.renderToComponent(previewSize, previewSize));
                 } else {

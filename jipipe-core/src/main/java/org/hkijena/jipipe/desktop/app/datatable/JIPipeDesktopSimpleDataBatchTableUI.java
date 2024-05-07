@@ -19,7 +19,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDataPreviewCon
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopComponentCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextFieldTableRowFilter;
-import org.hkijena.jipipe.plugins.settings.GeneralDataSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.WeakStore;
@@ -68,8 +68,8 @@ public class JIPipeDesktopSimpleDataBatchTableUI extends JPanel implements JIPip
         setLayout(new BorderLayout());
 
         table = new JXTable();
-        if (GeneralDataSettings.getInstance().isGenerateCachePreviews())
-            table.setRowHeight(GeneralDataSettings.getInstance().getPreviewSize());
+        if (JIPipeGeneralDataApplicationSettings.getInstance().isGenerateCachePreviews())
+            table.setRowHeight(JIPipeGeneralDataApplicationSettings.getInstance().getPreviewSize());
         else
             table.setRowHeight(25);
         table.setDefaultRenderer(Component.class, new JIPipeDesktopComponentCellRenderer());
@@ -92,22 +92,22 @@ public class JIPipeDesktopSimpleDataBatchTableUI extends JPanel implements JIPip
         JIPipeDesktopDataPreviewControlUI previewControlUI = new JIPipeDesktopDataPreviewControlUI();
         toolBar.add(previewControlUI);
 
-        GeneralDataSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(this);
+        JIPipeGeneralDataApplicationSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(this);
     }
 
     private void reloadTable() {
         dataTableModel = new JIPipeDesktopSimpleDataBatchTableModel(table, iterationStepList, WeakStore.class);
         table.setModel(dataTableModel);
         dataTableModel.setScrollPane(scrollPane);
-        if (GeneralDataSettings.getInstance().isGenerateCachePreviews())
-            table.setRowHeight(GeneralDataSettings.getInstance().getPreviewSize());
+        if (JIPipeGeneralDataApplicationSettings.getInstance().isGenerateCachePreviews())
+            table.setRowHeight(JIPipeGeneralDataApplicationSettings.getInstance().getPreviewSize());
         else
             table.setRowHeight(25);
         table.setRowFilter(new JIPipeDesktopSearchTextFieldTableRowFilter(searchTextField));
         TableColumnModel columnModel = table.getColumnModel();
         table.setAutoCreateRowSorter(true);
         UIUtils.packDataTable(table);
-        columnModel.getColumn(1).setPreferredWidth(GeneralDataSettings.getInstance().getPreviewSize());
+        columnModel.getColumn(1).setPreferredWidth(JIPipeGeneralDataApplicationSettings.getInstance().getPreviewSize());
         SwingUtilities.invokeLater(dataTableModel::updateRenderedPreviews);
     }
 

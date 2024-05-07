@@ -39,7 +39,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.plugins.r.OptionalREnvironment;
-import org.hkijena.jipipe.plugins.r.RExtensionSettings;
+import org.hkijena.jipipe.plugins.r.RPluginApplicationSettings;
 import org.hkijena.jipipe.plugins.r.RUtils;
 import org.hkijena.jipipe.plugins.r.parameters.RScriptParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -109,7 +109,7 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
         if (overrideEnvironment.isEnabled()) {
             target.add(overrideEnvironment.getContent());
         } else {
-            target.add(RExtensionSettings.getInstance().getDefaultEnvironment());
+            target.add(RPluginApplicationSettings.getInstance().getDefaultEnvironment());
         }
     }
 
@@ -135,7 +135,7 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
                         "Override R environment",
                         "override-environment"), overrideEnvironment.getContent());
             } else {
-                RExtensionSettings.checkRSettings(reportContext, report);
+                RPluginApplicationSettings.checkRSettings(reportContext, report);
             }
         }
     }
@@ -203,7 +203,7 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
 
         // Export as script and run it
         RUtils.runR(code.toString(),
-                overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() : RExtensionSettings.getInstance().getDefaultEnvironment(),
+                overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() : RPluginApplicationSettings.getInstance().getDefaultEnvironment(),
                 progressInfo);
 
         for (JIPipeOutputDataSlot outputSlot : getOutputSlots()) {

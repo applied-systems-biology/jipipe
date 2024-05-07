@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.plugins.settings.GeneralDataSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
 
 import java.util.*;
 
@@ -152,7 +152,7 @@ public class JIPipeDesktopQuickRun implements JIPipeRunnable, JIPipeValidatable 
     public void run() {
 
         // Remove outdated cache if needed
-        if (GeneralDataSettings.getInstance().isAutoRemoveOutdatedCachedData()) {
+        if (JIPipeGeneralDataApplicationSettings.getInstance().isAutoRemoveOutdatedCachedData()) {
             project.getCache().clearOutdated(getProgressInfo().resolveAndLog("Remove outdated cache"));
         }
 

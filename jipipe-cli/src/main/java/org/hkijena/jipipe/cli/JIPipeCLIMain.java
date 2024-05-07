@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
-import org.hkijena.jipipe.plugins.settings.ExtensionSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeExtensionApplicationSettings;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.File;
@@ -152,7 +152,7 @@ public class JIPipeCLIMain {
         }
         final ImageJ ij = new ImageJ();
         JIPipe jiPipe = JIPipe.createInstance(ij.context());
-        ExtensionSettings extensionSettings = ExtensionSettings.getInstanceFromRaw();
+        JIPipeExtensionApplicationSettings extensionSettings = JIPipeExtensionApplicationSettings.getInstanceFromRaw();
         JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
         jiPipe.initialize(extensionSettings, issues);
 

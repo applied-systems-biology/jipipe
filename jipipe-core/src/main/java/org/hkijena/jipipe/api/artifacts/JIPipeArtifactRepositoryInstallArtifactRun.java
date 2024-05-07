@@ -15,7 +15,7 @@ package org.hkijena.jipipe.api.artifacts;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.ArchiveUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.WebUtils;
@@ -52,7 +52,7 @@ public class JIPipeArtifactRepositoryInstallArtifactRun extends JIPipeArtifactRe
         }
 
         String suffix = artifact.getUrl().endsWith(".zip") ? ".zip" : ".tar.gz";
-        Path tmpFile = RuntimeSettings.generateTempFile("artifact", suffix);
+        Path tmpFile = JIPipeRuntimeApplicationSettings.generateTempFile("artifact", suffix);
         try {
             //Download
             WebUtils.download(new URL(artifact.getUrl()), tmpFile, "Download", progressInfo);

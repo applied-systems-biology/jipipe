@@ -31,7 +31,7 @@ import org.hkijena.jipipe.desktop.commons.components.*;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -115,7 +115,7 @@ public class JIPipeDesktopRunSettingsUI extends JIPipeDesktopProjectWorkbenchPan
 
         try {
             JIPipeGraphRunConfiguration settings = new JIPipeGraphRunConfiguration();
-            settings.setOutputPath(RuntimeSettings.generateTempDirectory(""));
+            settings.setOutputPath(JIPipeRuntimeApplicationSettings.generateTempDirectory(""));
             settings.setLoadFromCache(false);
             run = new JIPipeGraphRun(getDesktopProjectWorkbench().getProject(), settings);
         } catch (Exception e) {
@@ -318,7 +318,7 @@ public class JIPipeDesktopRunSettingsUI extends JIPipeDesktopProjectWorkbenchPan
 
     private void runNow() {
         removeAll();
-        RuntimeSettings.getInstance().setDefaultRunThreads(run.getConfiguration().getNumThreads());
+        JIPipeRuntimeApplicationSettings.getInstance().setDefaultRunThreads(run.getConfiguration().getNumThreads());
         JIPipeDesktopRunExecuterUI executerUI = new JIPipeDesktopRunExecuterUI(getDesktopWorkbench(), run);
         add(executerUI, BorderLayout.CENTER);
         revalidate();

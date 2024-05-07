@@ -99,7 +99,7 @@ public class JIPipeDesktopProjectTemplateDownloaderPackage {
     }
 
     public Path getFinalOutputPath() {
-        return PathUtils.getJIPipeUserDir().resolve("jipipe").resolve("templates").resolve(outputFile);
+        return PathUtils.getJIPipeUserDir().resolve("templates").resolve(outputFile);
     }
 
     public String getId() {

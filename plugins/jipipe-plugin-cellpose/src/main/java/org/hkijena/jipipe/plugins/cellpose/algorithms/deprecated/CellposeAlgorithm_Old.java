@@ -38,7 +38,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.cellpose.CellposeModel;
-import org.hkijena.jipipe.plugins.cellpose.CellposeSettings;
+import org.hkijena.jipipe.plugins.cellpose.CellposePluginApplicationSettings;
 import org.hkijena.jipipe.plugins.cellpose.CellposeUtils;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeSizeModelData;
@@ -195,7 +195,7 @@ public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
             if (overrideEnvironment.isEnabled()) {
                 report.report(reportContext, overrideEnvironment.getContent());
             } else {
-                CellposeSettings.checkPythonSettings(reportContext, report);
+                CellposePluginApplicationSettings.checkPythonSettings(reportContext, report);
             }
         }
     }
@@ -206,7 +206,7 @@ public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
         if (overrideEnvironment.isEnabled()) {
             target.add(overrideEnvironment.getContent());
         } else {
-            target.add(CellposeSettings.getInstance().getDefaultCellposeEnvironment());
+            target.add(CellposePluginApplicationSettings.getInstance().getDefaultCellposeEnvironment());
         }
     }
 
@@ -375,7 +375,7 @@ public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
 
         // Run script
         PythonUtils.runPython(code.toString(), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                CellposeSettings.getInstance().getDefaultCellposeEnvironment(), Collections.emptyList(), false, progressInfo);
+                CellposePluginApplicationSettings.getInstance().getDefaultCellposeEnvironment(), Collections.emptyList(), false, progressInfo);
 
 
         for (int i = 0; i < inputRowList.size(); i++) {

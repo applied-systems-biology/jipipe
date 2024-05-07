@@ -36,10 +36,10 @@ import org.hkijena.jipipe.desktop.commons.ijupdater.JIPipeDesktopImageJUpdaterMi
 import org.hkijena.jipipe.plugins.jsonextensionloader.JsonExtensionLoaderPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.plugins.settings.ExtensionSettings;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
-import org.hkijena.jipipe.plugins.settings.GeneralUISettings;
-import org.hkijena.jipipe.plugins.settings.ProjectsSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeExtensionApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeProjectDefaultsApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -112,11 +112,11 @@ public class JIPipeDesktopJsonExtensionWindow extends JFrame {
      * @param workbench The parent component
      */
     public static void installExtensions(JIPipeDesktopWorkbench workbench) {
-        List<Path> files = FileChooserSettings.openFiles(workbench.getWindow(), FileChooserSettings.LastDirectoryKey.Projects, "Open JIPipe JSON extension (*.jipe)");
+        List<Path> files = JIPipeFileChooserApplicationSettings.openFiles(workbench.getWindow(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Open JIPipe JSON extension (*.jipe)");
         for (Path selectedFile : files) {
             installExtensionFromFile(workbench, selectedFile, true, false);
         }
-        if (ExtensionSettings.getInstance().isValidateImageJDependencies()) {
+        if (JIPipeExtensionApplicationSettings.getInstance().isValidateImageJDependencies()) {
             checkExtensionDependencies(workbench);
         }
         if (!files.isEmpty()) {
@@ -216,7 +216,7 @@ public class JIPipeDesktopJsonExtensionWindow extends JFrame {
                 JOptionPane.showMessageDialog(workbench.getWindow(), "The extension was installed. We recommend to restart ImageJ, " +
                         "especially if you updated an existing extension.", "Extension installed", JOptionPane.INFORMATION_MESSAGE);
             }
-            if (checkDependencies && ExtensionSettings.getInstance().isValidateImageJDependencies()) {
+            if (checkDependencies && JIPipeExtensionApplicationSettings.getInstance().isValidateImageJDependencies()) {
                 checkExtensionDependencies(workbench);
             }
         } catch (Exception e) {
@@ -258,7 +258,7 @@ public class JIPipeDesktopJsonExtensionWindow extends JFrame {
         super.setTitle("JIPipe extension builder");
         setIconImage(UIUtils.getJIPipeIcon128());
         UIUtils.setToAskOnClose(this, "Do you really want to close this JIPipe extension builder?", "Close window");
-        if (GeneralUISettings.getInstance().isMaximizeWindows()) {
+        if (JIPipeGeneralUIApplicationSettings.getInstance().isMaximizeWindows()) {
             SwingUtilities.invokeLater(() -> setExtendedState(getExtendedState() | MAXIMIZED_BOTH));
         }
     }
@@ -370,7 +370,7 @@ public class JIPipeDesktopJsonExtensionWindow extends JFrame {
             window.projectSavePath = path;
             window.getProjectUI().sendStatusBarText("Opened JIPipe JSON extension from " + window.projectSavePath);
             window.setTitle(window.projectSavePath.toString());
-            ProjectsSettings.getInstance().addRecentJsonExtension(path);
+            JIPipeProjectDefaultsApplicationSettings.getInstance().addRecentJsonExtension(path);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -381,7 +381,7 @@ public class JIPipeDesktopJsonExtensionWindow extends JFrame {
      * Asks the user if it should be opened in this or a new window.
      */
     public void openProject() {
-        Path file = FileChooserSettings.openFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Open JIPipe JSON extension (*.jipe)", UIUtils.EXTENSION_FILTER_JIPE);
+        Path file = JIPipeFileChooserApplicationSettings.openFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Open JIPipe JSON extension (*.jipe)", UIUtils.EXTENSION_FILTER_JIPE);
         if (file != null) {
             openProject(file);
         }
@@ -397,7 +397,7 @@ public class JIPipeDesktopJsonExtensionWindow extends JFrame {
         if (avoidDialog && projectSavePath != null)
             savePath = projectSavePath;
         if (savePath == null) {
-            savePath = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Save JIPipe JSON extension (*.jipe)", UIUtils.EXTENSION_FILTER_JIPE);
+            savePath = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Save JIPipe JSON extension (*.jipe)", UIUtils.EXTENSION_FILTER_JIPE);
             if (savePath == null)
                 return;
         }
@@ -420,7 +420,7 @@ public class JIPipeDesktopJsonExtensionWindow extends JFrame {
             setTitle(savePath.toString());
             projectSavePath = savePath;
             projectUI.sendStatusBarText("Saved JIPipe JSON extension to " + savePath);
-            ProjectsSettings.getInstance().addRecentJsonExtension(savePath);
+            JIPipeProjectDefaultsApplicationSettings.getInstance().addRecentJsonExtension(savePath);
 
             // Remove tmp file
             Files.delete(tempFile);

@@ -46,7 +46,7 @@ import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.plugins.settings.GeneralDataSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.ListSelectionMode;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
@@ -282,7 +282,7 @@ public class UIUtils {
      * @param table the table
      */
     public static void packDataTable(JXTable table) {
-        int max = Math.max(-1, GeneralDataSettings.getInstance().getMaxTableColumnSize());
+        int max = Math.max(-1, JIPipeGeneralDataApplicationSettings.getInstance().getMaxTableColumnSize());
         for (int c = 0; c < table.getColumnCount(); c++) {
             try {
                 table.packColumn(c, -1, max);

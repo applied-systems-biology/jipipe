@@ -28,8 +28,8 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeBu
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
-import org.hkijena.jipipe.plugins.settings.TableViewerUISettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeTableViewerUIApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.ConvertingColumnOperation;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
  */
 public class JIPipeDesktopTableEditor extends JIPipeDesktopFlexContentWorkbenchPanel {
     private static final int MAX_UNDO = 10;
-    private final TableViewerUISettings settings;
+    private final JIPipeTableViewerUIApplicationSettings settings;
     private final Stack<ResultsTableData> undoBuffer = new Stack<>();
     private ResultsTableData tableModel;
     private JXTable jxTable;
@@ -65,9 +65,9 @@ public class JIPipeDesktopTableEditor extends JIPipeDesktopFlexContentWorkbenchP
     public JIPipeDesktopTableEditor(JIPipeDesktopWorkbench workbench, ResultsTableData tableModel) {
         super(workbench, WITH_RIBBON);
         if (JIPipe.getInstance() != null) {
-            settings = TableViewerUISettings.getInstance();
+            settings = JIPipeTableViewerUIApplicationSettings.getInstance();
         } else {
-            settings = new TableViewerUISettings();
+            settings = new JIPipeTableViewerUIApplicationSettings();
         }
         this.tableModel = tableModel;
         initialize();
@@ -266,7 +266,7 @@ public class JIPipeDesktopTableEditor extends JIPipeDesktopFlexContentWorkbenchP
     }
 
     private void openTableFromFile() {
-        Path fileName = FileChooserSettings.openFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Open table", UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
+        Path fileName = JIPipeFileChooserApplicationSettings.openFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Open table", UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
         if (fileName != null) {
             ResultsTableData tableData;
             if (UIUtils.EXTENSION_FILTER_XLSX.accept(fileName.toFile())) {
@@ -566,7 +566,7 @@ public class JIPipeDesktopTableEditor extends JIPipeDesktopFlexContentWorkbenchP
     }
 
     private void exportTableToFile() {
-        Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Export table", UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
+        Path selectedPath = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export table", UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
         if (selectedPath != null) {
             if (UIUtils.EXTENSION_FILTER_XLSX.accept(selectedPath.toFile())) {
                 tableModel.saveAsXLSX(selectedPath);

@@ -29,8 +29,8 @@ import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueueButton;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
-import org.hkijena.jipipe.plugins.settings.BackupSettings;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeBackupApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -168,8 +168,8 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
             }
         }
 
-        FileChooserSettings.getInstance().setLastDirectoryBy(FileChooserSettings.LastDirectoryKey.Projects, saveDirectory);
-        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Restore backup as ...", UIUtils.EXTENSION_FILTER_JIP);
+        JIPipeFileChooserApplicationSettings.getInstance().setLastDirectoryBy(JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, saveDirectory);
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Restore backup as ...", UIUtils.EXTENSION_FILTER_JIP);
         if (path != null) {
             try {
                 Files.copy(backupItem.getProjectPath(), path, StandardCopyOption.REPLACE_EXISTING);
@@ -241,7 +241,7 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
 
     private void openBackupFolder() {
         try {
-            Desktop.getDesktop().open(BackupSettings.getInstance().getCurrentBackupPath().toFile());
+            Desktop.getDesktop().open(JIPipeBackupApplicationSettings.getInstance().getCurrentBackupPath().toFile());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

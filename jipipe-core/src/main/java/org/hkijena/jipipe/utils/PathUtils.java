@@ -297,11 +297,18 @@ public class PathUtils {
      */
     public static Path getJIPipeUserDir() {
         String environmentVar = System.getenv().getOrDefault("JIPIPE_USER_DIR", null);
+        Path result;
         if (environmentVar != null) {
-            return Paths.get(environmentVar);
+            result = Paths.get(environmentVar);
         } else {
-            return PathUtils.getImageJDir();
+            result = PathUtils.getImageJDir().resolve("jipipe");
         }
+        try {
+            Files.createDirectories(result);
+        } catch (IOException e) {
+            IJ.handleException(e);
+        }
+        return result;
     }
 
     /**

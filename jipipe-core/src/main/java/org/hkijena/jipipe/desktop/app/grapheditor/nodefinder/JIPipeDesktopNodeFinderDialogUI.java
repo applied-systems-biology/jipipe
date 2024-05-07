@@ -27,7 +27,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanv
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopAddAlgorithmSlotPanel;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
-import org.hkijena.jipipe.plugins.settings.GraphEditorUISettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -241,18 +241,18 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
 
         if (querySlot != null) {
             findExistingNodesToggle.setText("Find existing");
-            findExistingNodesToggle.setSelected(GraphEditorUISettings.getInstance().getAlgorithmFinderSettings().isSearchFindExistingNodes());
+            findExistingNodesToggle.setSelected(JIPipeGraphEditorUIApplicationSettings.getInstance().getAlgorithmFinderSettings().isSearchFindExistingNodes());
             createNodesToggle.setText("Create new");
-            createNodesToggle.setSelected(GraphEditorUISettings.getInstance().getAlgorithmFinderSettings().isSearchFindNewNodes());
+            createNodesToggle.setSelected(JIPipeGraphEditorUIApplicationSettings.getInstance().getAlgorithmFinderSettings().isSearchFindNewNodes());
             findExistingNodesToggle.addActionListener(e -> {
-                GraphEditorUISettings.getInstance().getAlgorithmFinderSettings().setSearchFindExistingNodes(findExistingNodesToggle.isSelected());
+                JIPipeGraphEditorUIApplicationSettings.getInstance().getAlgorithmFinderSettings().setSearchFindExistingNodes(findExistingNodesToggle.isSelected());
                 if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
                     JIPipe.getSettings().save();
                 }
                 reloadList();
             });
             createNodesToggle.addActionListener(e -> {
-                GraphEditorUISettings.getInstance().getAlgorithmFinderSettings().setSearchFindNewNodes(createNodesToggle.isSelected());
+                JIPipeGraphEditorUIApplicationSettings.getInstance().getAlgorithmFinderSettings().setSearchFindNewNodes(createNodesToggle.isSelected());
                 if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
                     JIPipe.getSettings().save();
                 }

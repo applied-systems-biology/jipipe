@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCachedDataPreview;
-import org.hkijena.jipipe.plugins.settings.GeneralDataSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.utils.data.Store;
 
 import javax.swing.*;
@@ -38,10 +38,10 @@ public class JIPipeDesktopExtendedDataTableModel implements TableModel {
 
     private final JTable table;
     private final Store<JIPipeDataTable> dataTableStore;
-    private final GeneralDataSettings dataSettings = GeneralDataSettings.getInstance();
+    private final JIPipeGeneralDataApplicationSettings dataSettings = JIPipeGeneralDataApplicationSettings.getInstance();
     private final List<Component> previewCache = new ArrayList<>();
     private final Map<String, List<Component>> dataAnnotationPreviewCache = new HashMap<>();
-    private int previewCacheSize = GeneralDataSettings.getInstance().getPreviewSize();
+    private int previewCacheSize = JIPipeGeneralDataApplicationSettings.getInstance().getPreviewSize();
     private JScrollPane scrollPane;
 
     /**
@@ -202,7 +202,7 @@ public class JIPipeDesktopExtendedDataTableModel implements TableModel {
                 revalidatePreviewCache();
                 Component preview = previewCache.get(rowIndex);
                 if (preview == null) {
-                    if (GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
+                    if (JIPipeGeneralDataApplicationSettings.getInstance().isGenerateCachePreviews()) {
                         preview = new JIPipeDesktopCachedDataPreview(table, dataTable.getDataItemStore(rowIndex), true);
                         previewCache.set(rowIndex, preview);
                     } else {
@@ -223,7 +223,7 @@ public class JIPipeDesktopExtendedDataTableModel implements TableModel {
                 Component preview = dataAnnotationPreviewCache.get(dataAnnotationName).get(rowIndex);
                 if (preview == null) {
                     JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(rowIndex, dataAnnotationName);
-                    if (dataAnnotation != null && GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
+                    if (dataAnnotation != null && JIPipeGeneralDataApplicationSettings.getInstance().isGenerateCachePreviews()) {
                         preview = new JIPipeDesktopCachedDataPreview(table, dataAnnotation.getDataItemStore(), true);
                         dataAnnotationPreviewCache.get(dataAnnotationName).set(rowIndex, preview);
                     } else {

@@ -30,7 +30,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.PathData;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 
@@ -104,14 +104,14 @@ public class PathFromUserDataSource extends JIPipeSimpleIteratingAlgorithm {
                 try {
                     JIPipeWorkbench workbench = JIPipeDesktopProjectWorkbench.tryFindProjectWorkbench(getParentGraph(), new JIPipeDummyWorkbench());
                     if (multiple) {
-                        pathList.addAll(FileChooserSettings.selectMulti(((JIPipeDesktopWorkbench) workbench).getWindow(),
-                                FileChooserSettings.LastDirectoryKey.Data,
+                        pathList.addAll(JIPipeFileChooserApplicationSettings.selectMulti(((JIPipeDesktopWorkbench) workbench).getWindow(),
+                                JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
                                 getDisplayName(),
                                 pathIOMode,
                                 pathType));
                     } else {
-                        Path path = FileChooserSettings.selectSingle(((JIPipeDesktopWorkbench) workbench).getWindow(),
-                                FileChooserSettings.LastDirectoryKey.Data,
+                        Path path = JIPipeFileChooserApplicationSettings.selectSingle(((JIPipeDesktopWorkbench) workbench).getWindow(),
+                                JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
                                 getDisplayName(),
                                 pathIOMode,
                                 pathType);

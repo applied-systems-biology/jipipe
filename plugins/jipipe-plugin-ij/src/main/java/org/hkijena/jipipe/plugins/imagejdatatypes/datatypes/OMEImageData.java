@@ -57,7 +57,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesSettings;
+import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesApplicationSettings;
 import org.hkijena.jipipe.plugins.imagejdatatypes.display.CachedImagePlusDataViewerWindow;
 import org.hkijena.jipipe.plugins.imagejdatatypes.parameters.OMEExporterSettings;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
@@ -634,7 +634,7 @@ public class OMEImageData implements JIPipeData {
      */
     public static void simpleOMEExport(ImagePlus imp, Path outputPath) {
         String order = ImporterOptions.ORDER_XYCZT;
-        String compression = ImageJDataTypesSettings.getInstance().getBioFormatsCompression().getCompression();
+        String compression = ImageJDataTypesApplicationSettings.getInstance().getBioFormatsCompression().getCompression();
 
         try (IFormatWriter w = new ImageWriter().getWriter(outputPath.toString())) {
             int ptype = 0;

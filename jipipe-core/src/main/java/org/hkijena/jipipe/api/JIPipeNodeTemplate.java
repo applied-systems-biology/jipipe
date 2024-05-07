@@ -32,7 +32,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterS
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.parameters.library.references.IconRef;
 import org.hkijena.jipipe.plugins.parameters.library.references.IconRefDesktopParameterEditorUI;
-import org.hkijena.jipipe.plugins.settings.NodeTemplateSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeNodeTemplateApplicationSettings;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
@@ -127,8 +127,8 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
                 JIPipeDesktopParameterPanel.WITH_SCROLLING | JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION)) {
             if (result == JOptionPane.YES_OPTION) {
                 // Store globally
-                NodeTemplateSettings.getInstance().getNodeTemplates().add(template);
-                NodeTemplateSettings.getInstance().emitParameterChangedEvent("node-templates");
+                JIPipeNodeTemplateApplicationSettings.getInstance().getNodeTemplates().add(template);
+                JIPipeNodeTemplateApplicationSettings.getInstance().emitParameterChangedEvent("node-templates");
                 if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
                     JIPipe.getSettings().save();
                 }
@@ -137,7 +137,7 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
                 canvasUI.getGraph().getProject().getMetadata().getNodeTemplates().add(template);
                 canvasUI.getGraph().getProject().getMetadata().emitParameterChangedEvent("node-templates");
             }
-            NodeTemplateSettings.triggerRefreshedEvent();
+            JIPipeNodeTemplateApplicationSettings.triggerRefreshedEvent();
         }
     }
 

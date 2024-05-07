@@ -22,7 +22,7 @@ import org.hkijena.jipipe.plugins.filesystem.datasources.FileListDataSource;
 import org.hkijena.jipipe.plugins.filesystem.datasources.FolderListDataSource;
 import org.hkijena.jipipe.plugins.filesystem.datasources.PathListDataSource;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathList;
-import org.hkijena.jipipe.plugins.settings.GraphEditorUISettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 
 import javax.swing.*;
 import java.awt.*;
@@ -106,7 +106,7 @@ public class JIPipeCreateNodesFromDraggedDataDragAndDropBehavior implements JIPi
             return;
         } catch (Throwable t) {
             t.printStackTrace();
-            if (GraphEditorUISettings.getInstance().isNotifyInvalidDragAndDrop()) {
+            if (JIPipeGraphEditorUIApplicationSettings.getInstance().isNotifyInvalidDragAndDrop()) {
                 JOptionPane.showMessageDialog(canvas, new JLabel("The dropped data is invalid. You can drop files/folders or JSON data that describes JIPipe nodes."), "Invalid drop", JOptionPane.ERROR_MESSAGE);
             }
         }
@@ -124,7 +124,7 @@ public class JIPipeCreateNodesFromDraggedDataDragAndDropBehavior implements JIPi
                 canvas.pasteNodes(text);
             }
         } catch (Exception e) {
-            if (GraphEditorUISettings.getInstance().isNotifyInvalidDragAndDrop()) {
+            if (JIPipeGraphEditorUIApplicationSettings.getInstance().isNotifyInvalidDragAndDrop()) {
                 JOptionPane.showMessageDialog(canvas.getDesktopWorkbench().getWindow(),
                         "The dropped string is no valid node/graph.",
                         "Drop nodes",

@@ -60,9 +60,9 @@ import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopWorkbenchNo
 import org.hkijena.jipipe.desktop.jsonextensionbuilder.extensionbuilder.JIPipeDesktopJsonExporter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
-import org.hkijena.jipipe.plugins.settings.GeneralUISettings;
-import org.hkijena.jipipe.plugins.settings.ProjectsSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeProjectDefaultsApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
@@ -131,9 +131,9 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         validatePlugins(true);
 
         restoreStandardTabs(showIntroduction, isNewProject);
-        if (ProjectsSettings.getInstance().isRestoreTabs())
+        if (JIPipeProjectDefaultsApplicationSettings.getInstance().isRestoreTabs())
             restoreTabs();
-        if (GeneralUISettings.getInstance().isShowIntroduction() && showIntroduction)
+        if (JIPipeGeneralUIApplicationSettings.getInstance().isShowIntroduction() && showIntroduction)
             documentTabPane.selectSingletonTab(TAB_INTRODUCTION);
 
         // Register modification state watchers
@@ -197,10 +197,10 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     }
 
     public void restoreStandardTabs(boolean showIntroduction, boolean isNewProject) {
-        if (GeneralUISettings.getInstance().isShowIntroduction() && showIntroduction)
+        if (JIPipeGeneralUIApplicationSettings.getInstance().isShowIntroduction() && showIntroduction)
             documentTabPane.selectSingletonTab(TAB_INTRODUCTION);
         else {
-            if (GeneralUISettings.getInstance().isShowProjectInfo() && !isNewProject) {
+            if (JIPipeGeneralUIApplicationSettings.getInstance().isShowProjectInfo() && !isNewProject) {
                 documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW);
             } else {
                 documentTabPane.selectSingletonTab(TAB_COMPARTMENT_EDITOR);
@@ -236,12 +236,12 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
                 "Getting started",
                 UIUtils.getIconFromResources("actions/help-info.png"),
                 () -> new JIPipeDesktopWelcomePanel(this),
-                (GeneralUISettings.getInstance().isShowIntroduction() && showIntroduction) ? JIPipeDesktopTabPane.SingletonTabMode.Present : JIPipeDesktopTabPane.SingletonTabMode.Hidden);
+                (JIPipeGeneralUIApplicationSettings.getInstance().isShowIntroduction() && showIntroduction) ? JIPipeDesktopTabPane.SingletonTabMode.Present : JIPipeDesktopTabPane.SingletonTabMode.Hidden);
         documentTabPane.registerSingletonTab(TAB_PROJECT_OVERVIEW,
                 "Project",
                 UIUtils.getIconFromResources("actions/configure.png"),
                 () -> new JIPipeDesktopProjectOverviewUI(this),
-                (GeneralUISettings.getInstance().isShowProjectInfo() && !isNewProject) ? JIPipeDesktopTabPane.SingletonTabMode.Present : JIPipeDesktopTabPane.SingletonTabMode.Hidden);
+                (JIPipeGeneralUIApplicationSettings.getInstance().isShowProjectInfo() && !isNewProject) ? JIPipeDesktopTabPane.SingletonTabMode.Present : JIPipeDesktopTabPane.SingletonTabMode.Hidden);
         documentTabPane.registerSingletonTab(TAB_LICENSE,
                 "License",
                 UIUtils.getIconFromResources("actions/license.png"),
@@ -482,7 +482,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         saveProjectButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
         saveProjectButton.addActionListener(e -> {
             window.saveProjectAs(true);
-            if (GeneralUISettings.getInstance().isValidateOnSave()) {
+            if (JIPipeGeneralUIApplicationSettings.getInstance().isValidateOnSave()) {
                 validateProject(true);
             }
         });
@@ -494,7 +494,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         saveProjectAsButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK + KeyEvent.SHIFT_DOWN_MASK));
         saveProjectAsButton.addActionListener(e -> {
             window.saveProjectAs(false);
-            if (GeneralUISettings.getInstance().isValidateOnSave()) {
+            if (JIPipeGeneralUIApplicationSettings.getInstance().isValidateOnSave()) {
                 validateProject(true);
             }
         });
@@ -784,14 +784,14 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     }
 
     private void archiveProjectAsDirectory() {
-        Path directory = FileChooserSettings.saveDirectory(this, FileChooserSettings.LastDirectoryKey.Projects, "Archive project as directory");
+        Path directory = JIPipeFileChooserApplicationSettings.saveDirectory(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Archive project as directory");
         if (directory != null) {
             JIPipeDesktopRunExecuterUI.runInDialog(this, this, new JIPipeArchiveProjectToDirectoryRun(getProject(), directory));
         }
     }
 
     private void archiveProjectAsZIP() {
-        Path file = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Archive project as ZIP", UIUtils.EXTENSION_FILTER_ZIP);
+        Path file = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Archive project as ZIP", UIUtils.EXTENSION_FILTER_ZIP);
         if (file != null) {
             JIPipeDesktopRunExecuterUI.runInDialog(this, this, new JIPipeArchiveProjectToZIPRun(getProject(), file));
         }
@@ -826,7 +826,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
 
     public void restoreCacheFromZIPOrDirectory() {
-        Path path = FileChooserSettings.openPath(this, FileChooserSettings.LastDirectoryKey.Projects, "Select exported cache (ZIP/directory)");
+        Path path = JIPipeFileChooserApplicationSettings.openPath(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Select exported cache (ZIP/directory)");
         if (path != null) {
             if (Files.isRegularFile(path)) {
                 // Load into cache with a run

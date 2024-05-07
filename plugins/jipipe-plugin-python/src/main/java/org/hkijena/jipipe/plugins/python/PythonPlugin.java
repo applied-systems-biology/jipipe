@@ -25,7 +25,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonAdapterLibraryEnvironment;
 import org.hkijena.jipipe.plugins.python.adapter.OptionalJIPipePythonAdapterLibraryEnvironment;
-import org.hkijena.jipipe.plugins.python.adapter.PythonAdapterExtensionSettings;
+import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonPluginAdapterApplicationSettings;
 import org.hkijena.jipipe.plugins.python.algorithms.*;
 import org.hkijena.jipipe.plugins.python.installers.SelectCondaEnvPythonInstaller;
 import org.hkijena.jipipe.plugins.python.installers.SelectSystemPythonInstaller;
@@ -82,8 +82,8 @@ public class PythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        PythonExtensionSettings settings = new PythonExtensionSettings();
-        PythonAdapterExtensionSettings adapterExtensionSettings = new PythonAdapterExtensionSettings();
+        JIPipePythonPluginApplicationSettings settings = new JIPipePythonPluginApplicationSettings();
+        JIPipePythonPluginAdapterApplicationSettings adapterExtensionSettings = new JIPipePythonPluginAdapterApplicationSettings();
 
         registerEnvironment(PythonEnvironment.class,
                 PythonEnvironment.List.class,
@@ -120,20 +120,8 @@ public class PythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 PythonEnvironmentType.class,
                 "Python environment type",
                 "A Python environment type");
-        registerSettingsSheet(PythonExtensionSettings.ID,
-                "Python integration",
-                "Connect existing Python installations to JIPipe or automatically install a new Python environment if none is available",
-                UIUtils.getIconFromResources("apps/python.png"),
-                "Extensions",
-                UIUtils.getIconFromResources("actions/plugins.png"),
-                settings);
-        registerSettingsSheet(PythonAdapterExtensionSettings.ID,
-                "Python integration (adapter)",
-                "Settings for the Python adapter library that is utilized by JIPipe",
-                UIUtils.getIconFromResources("apps/python.png"),
-                "Extensions",
-                UIUtils.getIconFromResources("actions/plugins.png"),
-                adapterExtensionSettings);
+        registerSettingsSheet(settings);
+        registerSettingsSheet(adapterExtensionSettings);
 
         registerEnvironmentInstaller(PythonEnvironment.class, SelectCondaEnvPythonInstaller.class, UIUtils.getIconFromResources("actions/project-open.png"));
         registerEnvironmentInstaller(PythonEnvironment.class, SelectSystemPythonInstaller.class, UIUtils.getIconFromResources("actions/project-open.png"));

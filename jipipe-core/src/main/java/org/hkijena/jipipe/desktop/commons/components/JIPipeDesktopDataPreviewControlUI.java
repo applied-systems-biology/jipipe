@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.desktop.commons.components;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.plugins.settings.GeneralDataSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -23,7 +23,7 @@ import java.util.Optional;
 
 public class JIPipeDesktopDataPreviewControlUI extends JPanel implements JIPipeParameterCollection.ParameterChangedEventListener {
 
-    private final GeneralDataSettings dataSettings = GeneralDataSettings.getInstance();
+    private final JIPipeGeneralDataApplicationSettings dataSettings = JIPipeGeneralDataApplicationSettings.getInstance();
     private final JButton zoomStatusButton = new JButton();
 
     public JIPipeDesktopDataPreviewControlUI() {

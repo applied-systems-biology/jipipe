@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.desktop.commons.components;
 
 import org.hkijena.jipipe.desktop.app.ploteditor.JIPipeDesktopPlotEditorUI;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
 import org.jfree.chart.ChartPanel;
@@ -143,7 +143,7 @@ public class JIPipeDesktopPlotDisplayComponent extends JPanel {
             default:
                 throw new UnsupportedOperationException();
         }
-        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export plot as " + fileFormat, filter);
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export plot as " + fileFormat, filter);
         Dimension size;
         if (currentSize) {
             size = getSize();
@@ -154,7 +154,7 @@ public class JIPipeDesktopPlotDisplayComponent extends JPanel {
             JFreeChart chart = chartPanel.getChart();
             switch (fileFormat) {
                 case PNG:
-                    if (FileChooserSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase().endsWith(".png")) {
+                    if (JIPipeFileChooserApplicationSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase().endsWith(".png")) {
                         path = path.getParent().resolve(path.getFileName() + ".png");
                     }
                     try {
@@ -167,7 +167,7 @@ public class JIPipeDesktopPlotDisplayComponent extends JPanel {
                     }
                     break;
                 case JPEG:
-                    if (FileChooserSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase().endsWith(".jpg")) {
+                    if (JIPipeFileChooserApplicationSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase().endsWith(".jpg")) {
                         path = path.getParent().resolve(path.getFileName() + ".jpg");
                     }
                     try {
@@ -180,7 +180,7 @@ public class JIPipeDesktopPlotDisplayComponent extends JPanel {
                     }
                     break;
                 case SVG: {
-                    if (FileChooserSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase().endsWith(".svg")) {
+                    if (JIPipeFileChooserApplicationSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase().endsWith(".svg")) {
                         path = path.getParent().resolve(path.getFileName() + ".svg");
                     }
                     int w = size.width;

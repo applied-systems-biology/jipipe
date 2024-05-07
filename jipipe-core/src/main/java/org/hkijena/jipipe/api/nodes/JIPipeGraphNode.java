@@ -44,7 +44,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
-import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
@@ -956,7 +956,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      */
     public Path getNewScratch() {
         if (getScratchBaseDirectory() == null) {
-            return RuntimeSettings.generateTempDirectory(getParentGraph() != null ? getAliasIdInParentGraph() : "scratch");
+            return JIPipeRuntimeApplicationSettings.generateTempDirectory(getParentGraph() != null ? getAliasIdInParentGraph() : "scratch");
         }
         try {
             return Files.createTempDirectory(getScratchBaseDirectory(), getParentGraph() != null ? getAliasIdInParentGraph() : "scratch");

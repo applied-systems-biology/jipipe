@@ -32,7 +32,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.list.DoubleList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.IntegerList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
-import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ProcessUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -248,7 +248,7 @@ public class RUtils {
     }
 
     public static void runR(String script, REnvironment environment, JIPipeProgressInfo progressInfo) {
-        Path codeFilePath = RuntimeSettings.generateTempFile("R", ".R");
+        Path codeFilePath = JIPipeRuntimeApplicationSettings.generateTempFile("R", ".R");
         try {
             Files.write(codeFilePath, script.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
