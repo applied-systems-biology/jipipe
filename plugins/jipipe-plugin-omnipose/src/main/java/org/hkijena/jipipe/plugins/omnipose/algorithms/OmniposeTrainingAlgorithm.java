@@ -140,7 +140,7 @@ public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         if (overrideEnvironment.isEnabled()) {
             target.add(overrideEnvironment.getContent());
         } else {
-            target.add(OmniposeSettings.getInstance().getPythonEnvironment());
+            target.add(OmniposeSettings.getInstance().getDefaultOmniposeEnvironment());
         }
     }
 
@@ -452,7 +452,7 @@ public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
         // Run the module
         PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                OmniposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), envVars, suppressLogs, progressInfo);
+                OmniposeSettings.getInstance().getDefaultOmniposeEnvironment(), Collections.emptyList(), envVars, suppressLogs, progressInfo);
 
         // Extract the model
         Path modelsPath = trainingDir.resolve("models");

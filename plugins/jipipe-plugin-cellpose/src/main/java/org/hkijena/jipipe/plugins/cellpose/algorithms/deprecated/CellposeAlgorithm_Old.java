@@ -206,7 +206,7 @@ public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
         if (overrideEnvironment.isEnabled()) {
             target.add(overrideEnvironment.getContent());
         } else {
-            target.add(CellposeSettings.getInstance().getPythonEnvironment());
+            target.add(CellposeSettings.getInstance().getDefaultCellposeEnvironment());
         }
     }
 
@@ -375,7 +375,7 @@ public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
 
         // Run script
         PythonUtils.runPython(code.toString(), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                CellposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), false, progressInfo);
+                CellposeSettings.getInstance().getDefaultCellposeEnvironment(), Collections.emptyList(), false, progressInfo);
 
 
         for (int i = 0; i < inputRowList.size(); i++) {

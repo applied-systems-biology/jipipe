@@ -81,7 +81,7 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         if (overrideEnvironment.isEnabled()) {
             target.add(overrideEnvironment.getContent());
         } else {
-            target.add(RExtensionSettings.getInstance().getEnvironment());
+            target.add(RExtensionSettings.getInstance().getDefaultEnvironment());
         }
     }
 
@@ -102,7 +102,7 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         String code = "library(datasets)\n" +
                 "write.csv(" + dataset.variableName + ", row.names = FALSE, file=\"" + MacroUtils.escapeString(tempFile.toAbsolutePath().toString()) + "\")\n";
         RUtils.runR(code,
-                overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() : RExtensionSettings.getInstance().getEnvironment(),
+                overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() : RExtensionSettings.getInstance().getDefaultEnvironment(),
                 progressInfo);
         ResultsTableData resultsTableData = ResultsTableData.fromCSV(tempFile);
         iterationStep.addOutputData(getFirstOutputSlot(), resultsTableData, progressInfo);

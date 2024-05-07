@@ -23,17 +23,18 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
-import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 import org.hkijena.jipipe.plugins.python.PythonEnvironment;
-import org.hkijena.jipipe.plugins.python.PythonExtensionSettings;
 
 public class CellposeSettings extends AbstractJIPipeParameterCollection {
 
     public static String ID = "org.hkijena.jipipe:cellpose";
 
-    private PythonEnvironment pythonEnvironment = new PythonEnvironment();
+    private PythonEnvironment defaultCellposeEnvironment = new PythonEnvironment();
 
     public CellposeSettings() {
+        defaultCellposeEnvironment.setLoadFromArtifact(true);
+        defaultCellposeEnvironment.setArtifactQuery(new JIPipeArtifactQueryParameter("com.github.mouseland.cellpose:*"));
     }
 
     public static CellposeSettings getInstance() {
@@ -49,7 +50,7 @@ public class CellposeSettings extends AbstractJIPipeParameterCollection {
         if (JIPipe.getInstance() != null) {
             CellposeSettings instance = getInstance();
             JIPipeValidationReport report = new JIPipeValidationReport();
-            instance.getPythonEnvironment().reportValidity(new UnspecifiedValidationReportContext(), report);
+            instance.getDefaultCellposeEnvironment().reportValidity(new UnspecifiedValidationReportContext(), report);
             return report.isValid();
         }
         return false;
@@ -74,18 +75,17 @@ public class CellposeSettings extends AbstractJIPipeParameterCollection {
         }
     }
 
-    @SetJIPipeDocumentation(name = "Cellpose Python environment", description = "If enabled, a separate Python environment is used for Cellpose. " +
-            "Alternatively, the standard Python environment from the Python extension is used. Please ensure that Cellpose is installed. " +
-            "You can also install Cellpose via the Select/Install button (CPU and GPU supported).")
-    @JIPipeParameter("cellpose-python-environment")
-    @ExternalEnvironmentParameterSettings(showCategory = "Cellpose", allowArtifact = true, artifactFilters = { "com.github.mouseland.cellpose.*" })
-    public PythonEnvironment getPythonEnvironment() {
-        return pythonEnvironment;
+    @SetJIPipeDocumentation(name = "Default Cellpose environment", description ="The default Cellpose environment that is associated to newly created projects. " +
+            "Leave at default (<code>com.github.mouseland.cellpose:*</code>) to automatically select the best available environment from an artifact.")
+    @JIPipeParameter("default-cellpose-environment")
+    @ExternalEnvironmentParameterSettings(showCategory = "Cellpose", allowArtifact = true, artifactFilters = { "com.github.mouseland.cellpose:*" })
+    public PythonEnvironment getDefaultCellposeEnvironment() {
+        return defaultCellposeEnvironment;
     }
 
-    @JIPipeParameter("cellpose-python-environment")
-    public void setPythonEnvironment(PythonEnvironment pythonEnvironment) {
-        this.pythonEnvironment = pythonEnvironment;
+    @JIPipeParameter("default-cellpose-environment")
+    public void setDefaultCellposeEnvironment(PythonEnvironment defaultCellposeEnvironment) {
+        this.defaultCellposeEnvironment = defaultCellposeEnvironment;
     }
 
 }

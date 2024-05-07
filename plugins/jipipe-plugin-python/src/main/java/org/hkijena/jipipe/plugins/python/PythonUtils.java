@@ -151,7 +151,7 @@ public class PythonUtils {
     }
 
     public static void installAdapterCodeIfNeeded(StringBuilder pythonCode) {
-        PythonAdapterExtensionSettings.getInstance().getPythonAdapterLibraryEnvironment().generateCode(pythonCode, new JIPipeProgressInfo());
+        PythonAdapterExtensionSettings.getInstance().getDefaultPythonAdapterLibraryEnvironment().generateCode(pythonCode, new JIPipeProgressInfo());
         pythonCode.append("import jipipe.data_slot\n");
     }
 

@@ -126,9 +126,9 @@ public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
         if (overrideEnvironment.isEnabled()) {
             target.add(overrideEnvironment.getContent());
         } else {
-            target.add(PythonExtensionSettings.getInstance().getPythonEnvironment());
+            target.add(PythonExtensionSettings.getInstance().getDefaultPythonEnvironment());
         }
-        target.add(PythonAdapterExtensionSettings.getInstance().getPythonAdapterLibraryEnvironment());
+        target.add(PythonAdapterExtensionSettings.getInstance().getDefaultPythonAdapterLibraryEnvironment());
     }
 
     @Override
@@ -170,7 +170,7 @@ public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
 
         // Run Python
         PythonUtils.runPython(code.toString(),
-                getOverrideEnvironment().isEnabled() ? getOverrideEnvironment().getContent() : PythonExtensionSettings.getInstance().getPythonEnvironment(),
+                getOverrideEnvironment().isEnabled() ? getOverrideEnvironment().getContent() : PythonExtensionSettings.getInstance().getDefaultPythonEnvironment(),
                 Collections.emptyList(), suppressLogs, progressInfo);
 
         // Extract outputs

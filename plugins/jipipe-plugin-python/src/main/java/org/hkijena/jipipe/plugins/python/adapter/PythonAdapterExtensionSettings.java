@@ -23,18 +23,19 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 
 import java.util.List;
 
 public class PythonAdapterExtensionSettings extends AbstractJIPipeParameterCollection implements ExternalEnvironmentSettings {
 
     public static String ID = "org.hkijena.jipipe:python-adapter";
-    private JIPipePythonAdapterLibraryEnvironment pythonAdapterLibraryEnvironment = new JIPipePythonAdapterLibraryEnvironment();
+    private JIPipePythonAdapterLibraryEnvironment defaultPythonAdapterLibraryEnvironment = new JIPipePythonAdapterLibraryEnvironment();
     private JIPipePythonAdapterLibraryEnvironment.List pythonAdapterPresets = new JIPipePythonAdapterLibraryEnvironment.List();
-    private boolean checkForUpdates = true;
 
     public PythonAdapterExtensionSettings() {
+        defaultPythonAdapterLibraryEnvironment.setLoadFromArtifact(true);
+        defaultPythonAdapterLibraryEnvironment.setArtifactQuery(new JIPipeArtifactQueryParameter("org.hkijena.jipipe-python-adapter:*"));
     }
 
     public static PythonAdapterExtensionSettings getInstance() {
@@ -50,7 +51,7 @@ public class PythonAdapterExtensionSettings extends AbstractJIPipeParameterColle
         if (JIPipe.getInstance() != null) {
             PythonAdapterExtensionSettings instance = getInstance();
             JIPipeValidationReport report = new JIPipeValidationReport();
-            instance.getPythonAdapterLibraryEnvironment().reportValidity(new UnspecifiedValidationReportContext(), report);
+            instance.getDefaultPythonAdapterLibraryEnvironment().reportValidity(new UnspecifiedValidationReportContext(), report);
             return report.isValid();
         }
         return false;
@@ -67,29 +68,17 @@ public class PythonAdapterExtensionSettings extends AbstractJIPipeParameterColle
         this.pythonAdapterPresets = pythonAdapterPresets;
     }
 
-    @SetJIPipeDocumentation(name = "JIPipe Python adapter", description = "This environment allows you to setup how the JIPipe Python adapter library is supplied. " +
-            "By default, JIPipe will automatically extract the adapter into the ImageJ folder and add code to include it. Alternatively, you can install the Python adapter " +
-            "into your Python environment and disable this feature.")
-    @JIPipeParameter("python-adapter-library")
-    @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = {"org.hkijena.jipipe-python-adapter"})
-    public JIPipePythonAdapterLibraryEnvironment getPythonAdapterLibraryEnvironment() {
-        return pythonAdapterLibraryEnvironment;
+    @SetJIPipeDocumentation(name = "Default JIPipe Python adapter library", description = "This environment allows you to setup how the JIPipe Python adapter library is supplied. " +
+            "Leave at the default (<code>org.hkijena.jipipe-python-adapter:*</code>) to setup the library automatically.")
+    @JIPipeParameter("default-python-adapter-library")
+    @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = {"org.hkijena.jipipe-python-adapter:*"})
+    public JIPipePythonAdapterLibraryEnvironment getDefaultPythonAdapterLibraryEnvironment() {
+        return defaultPythonAdapterLibraryEnvironment;
     }
 
-    @JIPipeParameter("python-adapter-library")
-    public void setPythonAdapterLibraryEnvironment(JIPipePythonAdapterLibraryEnvironment pythonAdapterLibraryEnvironment) {
-        this.pythonAdapterLibraryEnvironment = pythonAdapterLibraryEnvironment;
-    }
-
-    @SetJIPipeDocumentation(name = "Automatically check for updates", description = "If enabled, automatically check for updates of the adapter library when JIPipe is started")
-    @JIPipeParameter("check-for-updates")
-    public boolean isCheckForUpdates() {
-        return checkForUpdates;
-    }
-
-    @JIPipeParameter("check-for-updates")
-    public void setCheckForUpdates(boolean checkForUpdates) {
-        this.checkForUpdates = checkForUpdates;
+    @JIPipeParameter("default-python-adapter-library")
+    public void setDefaultPythonAdapterLibraryEnvironment(JIPipePythonAdapterLibraryEnvironment defaultPythonAdapterLibraryEnvironment) {
+        this.defaultPythonAdapterLibraryEnvironment = defaultPythonAdapterLibraryEnvironment;
     }
 
     @Override

@@ -23,17 +23,18 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
-import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 import org.hkijena.jipipe.plugins.python.PythonEnvironment;
-import org.hkijena.jipipe.plugins.python.PythonExtensionSettings;
 
 public class OmniposeSettings extends AbstractJIPipeParameterCollection {
 
     public static String ID = "org.hkijena.jipipe:omnipose";
 
-    private PythonEnvironment pythonEnvironment = new PythonEnvironment();
+    private PythonEnvironment defaultOmniposeEnvironment = new PythonEnvironment();
 
     public OmniposeSettings() {
+        defaultOmniposeEnvironment.setLoadFromArtifact(true);
+        defaultOmniposeEnvironment.setArtifactQuery(new JIPipeArtifactQueryParameter("com.github.kevinjohncutler.omnipose:*"));
     }
 
     public static OmniposeSettings getInstance() {
@@ -49,7 +50,7 @@ public class OmniposeSettings extends AbstractJIPipeParameterCollection {
         if (JIPipe.getInstance() != null) {
             OmniposeSettings instance = getInstance();
             JIPipeValidationReport report = new JIPipeValidationReport();
-            instance.getPythonEnvironment().reportValidity(new UnspecifiedValidationReportContext(), report);
+            instance.getDefaultOmniposeEnvironment().reportValidity(new UnspecifiedValidationReportContext(), report);
             return report.isValid();
         }
         return false;
@@ -72,17 +73,16 @@ public class OmniposeSettings extends AbstractJIPipeParameterCollection {
         }
     }
 
-    @SetJIPipeDocumentation(name = "Omnipose Python environment", description = "If enabled, a separate Python environment is used for Omnipose. " +
-            "Alternatively, the standard Python environment from the Python extension is used. Please ensure that Omnipose is installed. " +
-            "You can also install Omnipose via the Select/Install button (CPU and GPU supported).")
-    @JIPipeParameter("omnipose-python-environment")
-    @ExternalEnvironmentParameterSettings(showCategory = "Omnipose", allowArtifact = true, artifactFilters = { "com.github.kevinjohncutler.omnipose.*" })
-    public PythonEnvironment getPythonEnvironment() {
-        return pythonEnvironment;
+    @SetJIPipeDocumentation(name = "Omnipose Python environment", description = "The default Omnipose environment that is associated to newly created projects. " +
+            "Leave at default (<code>com.github.kevinjohncutler.omnipose:*</code>) to automatically select the best available environment from an artifact.")
+    @JIPipeParameter("default-omnipose-environment")
+    @ExternalEnvironmentParameterSettings(showCategory = "Omnipose", allowArtifact = true, artifactFilters = { "com.github.kevinjohncutler.omnipose:*" })
+    public PythonEnvironment getDefaultOmniposeEnvironment() {
+        return defaultOmniposeEnvironment;
     }
 
-    @JIPipeParameter("omnipose-python-environment")
-    public void setPythonEnvironment(PythonEnvironment pythonEnvironment) {
-        this.pythonEnvironment = pythonEnvironment;
+    @JIPipeParameter("default-omnipose-environment")
+    public void setDefaultOmniposeEnvironment(PythonEnvironment defaultOmniposeEnvironment) {
+        this.defaultOmniposeEnvironment = defaultOmniposeEnvironment;
     }
 }

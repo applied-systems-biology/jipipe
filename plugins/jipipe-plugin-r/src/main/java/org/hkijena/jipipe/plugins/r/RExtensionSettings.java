@@ -26,16 +26,19 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 
 import java.util.List;
 
 public class RExtensionSettings extends AbstractJIPipeParameterCollection implements ExternalEnvironmentSettings {
 
     public static String ID = "org.hkijena.jipipe:r";
-    private REnvironment environment = new REnvironment();
+    private REnvironment defaultEnvironment = new REnvironment();
     private REnvironment.List presets = new REnvironment.List();
 
     public RExtensionSettings() {
+        defaultEnvironment.setLoadFromArtifact(true);
+        defaultEnvironment.setArtifactQuery(new JIPipeArtifactQueryParameter("org.r.r_prepackaged:*"));
     }
 
     public static RExtensionSettings getInstance() {
@@ -67,22 +70,22 @@ public class RExtensionSettings extends AbstractJIPipeParameterCollection implem
         if (JIPipe.getInstance() != null) {
             RExtensionSettings instance = getInstance();
             JIPipeValidationReport report = new JIPipeValidationReport();
-            instance.getEnvironment().reportValidity(new UnspecifiedValidationReportContext(), report);
+            instance.getDefaultEnvironment().reportValidity(new UnspecifiedValidationReportContext(), report);
             return report.isValid();
         }
         return false;
     }
 
     @SetJIPipeDocumentation(name = "R environment", description = "Describes the R environment to use.")
-    @JIPipeParameter("r-environment")
+    @JIPipeParameter("default-r-environment")
     @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = { "org.r.*" })
-    public REnvironment getEnvironment() {
-        return environment;
+    public REnvironment getDefaultEnvironment() {
+        return defaultEnvironment;
     }
 
-    @JIPipeParameter("r-environment")
-    public void setEnvironment(REnvironment environment) {
-        this.environment = environment;
+    @JIPipeParameter("default-r-environment")
+    public void setDefaultEnvironment(REnvironment defaultEnvironment) {
+        this.defaultEnvironment = defaultEnvironment;
     }
 
     @SetJIPipeDocumentation(name = "Presets", description = "List of presets stored for R environments.")

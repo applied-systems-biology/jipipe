@@ -25,16 +25,19 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 
 import java.util.List;
 
 public class PythonExtensionSettings extends AbstractJIPipeParameterCollection implements ExternalEnvironmentSettings {
 
     public static String ID = "org.hkijena.jipipe:python";
-    private PythonEnvironment pythonEnvironment = new PythonEnvironment();
+    private PythonEnvironment defaultPythonEnvironment = new PythonEnvironment();
     private PythonEnvironment.List presets = new PythonEnvironment.List();
 
     public PythonExtensionSettings() {
+        defaultPythonEnvironment.setLoadFromArtifact(true);
+        defaultPythonEnvironment.setArtifactQuery(new JIPipeArtifactQueryParameter("org.python.python_prepackaged:*"));
     }
 
     public static PythonExtensionSettings getInstance() {
@@ -69,7 +72,7 @@ public class PythonExtensionSettings extends AbstractJIPipeParameterCollection i
         if (JIPipe.getInstance() != null) {
             PythonExtensionSettings instance = getInstance();
             JIPipeValidationReport report = new JIPipeValidationReport();
-            instance.getPythonEnvironment().reportValidity(context, report);
+            instance.getDefaultPythonEnvironment().reportValidity(context, report);
             return report.isValid();
         }
         return false;
@@ -86,17 +89,17 @@ public class PythonExtensionSettings extends AbstractJIPipeParameterCollection i
         this.presets = presets;
     }
 
-    @SetJIPipeDocumentation(name = "Python environment", description = "The Python environment that is utilized by the Python nodes. " +
-            "Click the 'Select' button to select an existing environment or install a new Python.")
-    @JIPipeParameter("python-environment")
+    @SetJIPipeDocumentation(name = "Default Python environment", description = "The default Python environment that is associated to newly created projects. " +
+            "Leave at default (<code>org.python.python_prepackaged:*</code>) to automatically select the best available Python environment from an artifact.")
+    @JIPipeParameter("default-python-environment")
     @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = { "org.python.*" })
-    public PythonEnvironment getPythonEnvironment() {
-        return pythonEnvironment;
+    public PythonEnvironment getDefaultPythonEnvironment() {
+        return defaultPythonEnvironment;
     }
 
-    @JIPipeParameter("python-environment")
-    public void setPythonEnvironment(PythonEnvironment pythonEnvironment) {
-        this.pythonEnvironment = pythonEnvironment;
+    @JIPipeParameter("default-python-environment")
+    public void setDefaultPythonEnvironment(PythonEnvironment defaultPythonEnvironment) {
+        this.defaultPythonEnvironment = defaultPythonEnvironment;
     }
 
     @Override

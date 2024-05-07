@@ -165,7 +165,7 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
         if (overrideEnvironment.isEnabled()) {
             target.add(overrideEnvironment.getContent());
         } else {
-            target.add(CellposeSettings.getInstance().getPythonEnvironment());
+            target.add(CellposeSettings.getInstance().getDefaultCellposeEnvironment());
         }
     }
 
@@ -315,7 +315,7 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
             arguments.add(io2DPath.toString());
             arguments.add(io2DPath.toString());
             PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                    CellposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), Collections.emptyMap(), suppressLogs, progressInfo.resolve("Extract Cellpose results (2D)"));
+                    CellposeSettings.getInstance().getDefaultCellposeEnvironment(), Collections.emptyList(), Collections.emptyMap(), suppressLogs, progressInfo.resolve("Extract Cellpose results (2D)"));
         }
         if (!runWith3D.isEmpty()) {
             List<String> arguments = new ArrayList<>();
@@ -325,7 +325,7 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
             arguments.add(io3DPath.toString());
             arguments.add(io3DPath.toString());
             PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                    CellposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), Collections.emptyMap(), suppressLogs, progressInfo.resolve("Extract Cellpose results (3D)"));
+                    CellposeSettings.getInstance().getDefaultCellposeEnvironment(), Collections.emptyList(), Collections.emptyMap(), suppressLogs, progressInfo.resolve("Extract Cellpose results (3D)"));
         }
 
         // Fetch the data from the directory
@@ -537,7 +537,7 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
 
         // Run the module
         PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                CellposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), Collections.emptyMap(), suppressLogs, progressInfo);
+                CellposeSettings.getInstance().getDefaultCellposeEnvironment(), Collections.emptyList(), Collections.emptyMap(), suppressLogs, progressInfo);
     }
 
     private void saveInputImages(JIPipeMultiIterationStep iterationStep, JIPipeProgressInfo progressInfo, Path io2DPath, Path io3DPath, List<CellposeImageInfo> runWith2D, List<CellposeImageInfo> runWith3D) {

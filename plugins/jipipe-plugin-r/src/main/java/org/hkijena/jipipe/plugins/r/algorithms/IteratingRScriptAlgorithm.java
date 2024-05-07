@@ -109,7 +109,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
         if (overrideEnvironment.isEnabled()) {
             target.add(overrideEnvironment.getContent());
         } else {
-            target.add(RExtensionSettings.getInstance().getEnvironment());
+            target.add(RExtensionSettings.getInstance().getDefaultEnvironment());
         }
     }
 
@@ -203,7 +203,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Export as script and run it
         RUtils.runR(code.toString(),
-                overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() : RExtensionSettings.getInstance().getEnvironment(),
+                overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() : RExtensionSettings.getInstance().getDefaultEnvironment(),
                 progressInfo);
 
         for (JIPipeOutputDataSlot outputSlot : getOutputSlots()) {

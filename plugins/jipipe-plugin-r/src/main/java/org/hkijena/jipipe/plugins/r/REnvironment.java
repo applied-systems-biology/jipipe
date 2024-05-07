@@ -70,19 +70,21 @@ public class REnvironment extends JIPipeArtifactEnvironment {
 
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
-        if (StringUtils.isNullOrEmpty(getRExecutablePath()) || !Files.isRegularFile(getRExecutablePath())) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new UnspecifiedValidationReportContext(),
-                    "R executable does not exist",
-                    "You need to provide a R executable",
-                    "Provide a R executable"));
-        }
-        if (StringUtils.isNullOrEmpty(getRScriptExecutablePath()) || !Files.isRegularFile(getRScriptExecutablePath())) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new UnspecifiedValidationReportContext(),
-                    "RScript executable does not exist",
-                    "You need to provide a RScript executable",
-                    "Provide a RScript executable"));
+        if(!isLoadFromArtifact()) {
+            if (StringUtils.isNullOrEmpty(getRExecutablePath()) || !Files.isRegularFile(getRExecutablePath())) {
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                        new UnspecifiedValidationReportContext(),
+                        "R executable does not exist",
+                        "You need to provide a R executable",
+                        "Provide a R executable"));
+            }
+            if (StringUtils.isNullOrEmpty(getRScriptExecutablePath()) || !Files.isRegularFile(getRScriptExecutablePath())) {
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                        new UnspecifiedValidationReportContext(),
+                        "RScript executable does not exist",
+                        "You need to provide a RScript executable",
+                        "Provide a RScript executable"));
+            }
         }
     }
 
@@ -155,12 +157,22 @@ public class REnvironment extends JIPipeArtifactEnvironment {
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("apps/rlogo_icon.png");
+        if(isLoadFromArtifact()) {
+            return UIUtils.getIconFromResources("actions/run-install.png");
+        }
+        else {
+            return UIUtils.getIconFromResources("apps/rlogo_icon.png");
+        }
     }
 
     @Override
     public String getInfo() {
-        return StringUtils.orElse(RExecutablePath, "<Not set>");
+        if(isLoadFromArtifact()) {
+            return getArtifactQuery().getQuery();
+        }
+        else {
+            return StringUtils.orElse(RExecutablePath, "<Not set>");
+        }
     }
 
     public static class RArgumentsVariablesInfo implements ExpressionParameterVariablesInfo {
