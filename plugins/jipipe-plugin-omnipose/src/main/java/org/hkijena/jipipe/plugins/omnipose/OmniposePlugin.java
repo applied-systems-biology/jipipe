@@ -55,7 +55,6 @@ public class OmniposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     public OmniposePlugin() {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_DEEP_LEARNING, PluginCategoriesEnumParameter.CATEGORY_SEGMENTATION, PluginCategoriesEnumParameter.CATEGORY_MACHINE_LEARNING);
-        getMetadata().setThumbnail(new ImageParameter(RESOURCES.getResourceURL("thumbnail.png")));
     }
 
 

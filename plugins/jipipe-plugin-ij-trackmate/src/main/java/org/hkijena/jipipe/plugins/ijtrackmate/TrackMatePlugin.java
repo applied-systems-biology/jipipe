@@ -84,11 +84,6 @@ public class TrackMatePlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public ImageParameter getThumbnail() {
-        return new ImageParameter(RESOURCES.getResourceURL("thumbnail.png"));
-    }
-
-    @Override
     public JIPipeAuthorMetadata.List getAcknowledgements() {
         return new JIPipeAuthorMetadata.List(
                 new JIPipeAuthorMetadata("", "Jean-Yves", "Tinevez", new StringList("Imagopole, Citech, Institut Pasteur, 75724 Paris, France"), "", "", true, true),

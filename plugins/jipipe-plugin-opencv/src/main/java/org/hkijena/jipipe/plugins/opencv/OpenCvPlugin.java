@@ -62,7 +62,6 @@ public class OpenCvPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public OpenCvPlugin() {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_IMPORT_EXPORT,
                 PluginCategoriesEnumParameter.CATEGORY_VISUALIZATION);
-        getMetadata().setThumbnail(new ImageParameter(RESOURCES.getResourceURL("thumbnail.png")));
     }
 
     @Override

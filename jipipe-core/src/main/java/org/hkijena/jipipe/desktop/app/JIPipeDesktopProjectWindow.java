@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.JIPipeProjectMetadata;
 import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
-import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
+import org.hkijena.jipipe.api.registries.JIPipePluginRegistry;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
@@ -340,7 +340,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                         }
                     }
                 }
-                Set<JIPipeDependency> missingDependencies = JIPipeExtensionRegistry.findUnsatisfiedDependencies(dependencySet);
+                Set<JIPipeDependency> missingDependencies = JIPipePluginRegistry.findUnsatisfiedDependencies(dependencySet);
                 if (!missingDependencies.isEmpty() || !missingUpdateSites.isEmpty()) {
                     if (!JIPipeDesktopInvalidProjectDependenciesInfoDialog.showDialog(getProjectUI(), path, missingDependencies, missingUpdateSites))
                         return;
@@ -387,7 +387,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 Path projectPath = path.resolve("project.jip");
                 JsonNode jsonData = JsonUtils.getObjectMapper().readValue(projectPath.toFile(), JsonNode.class);
                 Set<JIPipeDependency> dependencySet = JIPipeProject.loadDependenciesFromJson(jsonData);
-                Set<JIPipeDependency> missingDependencies = JIPipeExtensionRegistry.findUnsatisfiedDependencies(dependencySet);
+                Set<JIPipeDependency> missingDependencies = JIPipePluginRegistry.findUnsatisfiedDependencies(dependencySet);
                 if (!missingDependencies.isEmpty()) {
                     if (!JIPipeDesktopInvalidProjectDependenciesInfoDialog.showDialog(getProjectUI(), path, missingDependencies, Collections.emptySet()))
                         return;

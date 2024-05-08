@@ -89,11 +89,6 @@ public class OMEROPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public ImageParameter getThumbnail() {
-        return new ImageParameter(ResourceUtils.getPluginResource("thumbnails/omero.png"));
-    }
-
-    @Override
     public Set<JIPipeDependency> getDependencies() {
         return Sets.newHashSet(CorePlugin.AS_DEPENDENCY, ImageJDataTypesPlugin.AS_DEPENDENCY);
     }

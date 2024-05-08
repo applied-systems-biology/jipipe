@@ -72,11 +72,6 @@ public class ImageJ2Plugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public ImageParameter getThumbnail() {
-        return new ImageParameter(ResourceUtils.getPluginResource("thumbnails/imagej2.png"));
-    }
-
-    @Override
     public StringList getDependencyProvides() {
         return new StringList();
     }

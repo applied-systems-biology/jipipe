@@ -112,7 +112,7 @@ public class JIPipeDesktopInvalidProjectDependenciesInfoDialog extends JDialog i
                 dependencyPanel.add(UIUtils.makeBorderlessReadonlyTextPane(dependency.getMetadata().getDescription().getHtml(), false), new GridBagConstraints(0, 2, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
                 // Try to find the extension
-                JIPipePlugin extension = JIPipe.getInstance().getExtensionRegistry().getKnownExtensionById(dependency.getDependencyId());
+                JIPipePlugin extension = JIPipe.getInstance().getPluginRegistry().getKnownPluginById(dependency.getDependencyId());
                 if (extension != null) {
                     if (VersionUtils.compareVersions(extension.getDependencyVersion(), dependency.getDependencyVersion()) == -1) {
                         dependencyPanel.add(UIUtils.createJLabel("Installed version too old (" + extension.getDependencyVersion() + " < " + dependency.getDependencyVersion() + ")",

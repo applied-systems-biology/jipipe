@@ -44,7 +44,6 @@ public class JIPipeDesktopUpdateSitePlugin implements JIPipePlugin {
         metadata.setDescription(new HTMLText(updateSite.getDescription()));
         metadata.setSummary(new HTMLText(updateSite.getDescription()));
         metadata.setWebsite(updateSite.getURL());
-        metadata.setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("thumbnails/imagej-update-site.png")));
         if (!StringUtils.isNullOrEmpty(updateSite.getMaintainer())) {
             metadata.setAuthors(new JIPipeAuthorMetadata.List(new JIPipeAuthorMetadata("", updateSite.getMaintainer(), "", new StringList(), "", "", true, true)));
         }
@@ -56,7 +55,6 @@ public class JIPipeDesktopUpdateSitePlugin implements JIPipePlugin {
         metadata.setDescription(new HTMLText(dependency.getDescription()));
         metadata.setSummary(new HTMLText(dependency.getDescription()));
         metadata.setWebsite(dependency.getUrl());
-        metadata.setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("thumbnails/imagej-update-site.png")));
         if (!StringUtils.isNullOrEmpty(dependency.getMaintainer())) {
             metadata.setAuthors(new JIPipeAuthorMetadata.List(new JIPipeAuthorMetadata("", dependency.getMaintainer(), "", new StringList(), "", "", true, true)));
         }

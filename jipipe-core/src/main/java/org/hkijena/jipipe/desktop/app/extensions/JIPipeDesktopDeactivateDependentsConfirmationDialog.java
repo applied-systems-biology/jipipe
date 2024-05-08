@@ -15,7 +15,7 @@ package org.hkijena.jipipe.desktop.app.extensions;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipePlugin;
-import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
+import org.hkijena.jipipe.api.registries.JIPipePluginRegistry;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -37,8 +37,8 @@ public class JIPipeDesktopDeactivateDependentsConfirmationDialog extends JDialog
         initialize();
     }
 
-    private JIPipeExtensionRegistry getExtensionRegistry() {
-        return JIPipe.getInstance().getExtensionRegistry();
+    private JIPipePluginRegistry getExtensionRegistry() {
+        return JIPipe.getInstance().getPluginRegistry();
     }
 
     private void initialize() {
@@ -53,7 +53,7 @@ public class JIPipeDesktopDeactivateDependentsConfirmationDialog extends JDialog
 
         Set<String> dependents = getExtensionRegistry().getAllDependentsOf(extension.getDependencyId());
         dependents.stream().sorted(NaturalOrderComparator.INSTANCE).forEach(id -> {
-            JIPipePlugin dependency = getExtensionRegistry().getKnownExtensionById(id);
+            JIPipePlugin dependency = getExtensionRegistry().getKnownPluginById(id);
             JPanel dependencyPanel = new JPanel(new GridBagLayout());
             dependencyPanel.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2), BorderFactory.createEmptyBorder(8, 8, 8, 8)));
             dependencyPanel.add(UIUtils.createJLabel(dependency.getMetadata().getName(), UIUtils.getIcon32FromResources("module-json.png"), 16), new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));

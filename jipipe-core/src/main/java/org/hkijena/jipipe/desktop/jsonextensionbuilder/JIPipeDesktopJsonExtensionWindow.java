@@ -22,7 +22,7 @@ import org.hkijena.jipipe.JIPipeJsonPlugin;
 import org.hkijena.jipipe.JIPipeRegistryIssues;
 import org.hkijena.jipipe.api.JIPipeStandardMetadata;
 import org.hkijena.jipipe.api.project.JIPipeProject;
-import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
+import org.hkijena.jipipe.api.registries.JIPipePluginRegistry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
@@ -138,7 +138,7 @@ public class JIPipeDesktopJsonExtensionWindow extends JFrame {
         try {
             JsonNode jsonData = JsonUtils.getObjectMapper().readValue(filePath.toFile(), JsonNode.class);
             Set<JIPipeDependency> dependencySet = JIPipeProject.loadDependenciesFromJson(jsonData);
-            Set<JIPipeDependency> missingDependencies = JIPipeExtensionRegistry.findUnsatisfiedDependencies(dependencySet);
+            Set<JIPipeDependency> missingDependencies = JIPipePluginRegistry.findUnsatisfiedDependencies(dependencySet);
             if (!missingDependencies.isEmpty()) {
                 if (!JIPipeDesktopInvalidProjectDependenciesInfoDialog.showDialog(workbench, filePath, missingDependencies, Collections.emptySet()))
                     return;
@@ -305,7 +305,7 @@ public class JIPipeDesktopJsonExtensionWindow extends JFrame {
         try {
             JsonNode jsonData = JsonUtils.getObjectMapper().readValue(path.toFile(), JsonNode.class);
             Set<JIPipeDependency> dependencySet = JIPipeProject.loadDependenciesFromJson(jsonData);
-            Set<JIPipeDependency> missingDependencies = JIPipeExtensionRegistry.findUnsatisfiedDependencies(dependencySet);
+            Set<JIPipeDependency> missingDependencies = JIPipePluginRegistry.findUnsatisfiedDependencies(dependencySet);
 
             // Check project version as well
             int projectFormat = 0;

@@ -57,7 +57,6 @@ public class PythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     public PythonPlugin() {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_SCRIPTING);
-        getMetadata().setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("thumbnails/python.png")));
     }
 
     @Override

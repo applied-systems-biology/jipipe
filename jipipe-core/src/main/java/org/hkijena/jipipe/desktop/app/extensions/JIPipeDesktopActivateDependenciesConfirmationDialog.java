@@ -18,7 +18,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipePlugin;
-import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
+import org.hkijena.jipipe.api.registries.JIPipePluginRegistry;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
@@ -41,7 +41,7 @@ public class JIPipeDesktopActivateDependenciesConfirmationDialog extends JDialog
         this.pluginManager = pluginManager;
         this.extension = extension;
         this.dependencyExtensionsToActivate = missingDependencies;
-        JIPipeExtensionRegistry extensionRegistry = JIPipe.getInstance().getExtensionRegistry();
+        JIPipePluginRegistry extensionRegistry = JIPipe.getInstance().getPluginRegistry();
 
         for (JIPipeImageJUpdateSiteDependency updateSite : missingUpdateSites) {
             dependencySitesToInstall.put(updateSite, true);
@@ -83,7 +83,7 @@ public class JIPipeDesktopActivateDependenciesConfirmationDialog extends JDialog
             dependencyPanel.add(UIUtils.makeBorderlessReadonlyTextPane(dependency.getMetadata().getDescription().getHtml(), false), new GridBagConstraints(0, 2, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
 
             // Try to find the extension
-            JIPipePlugin extension = JIPipe.getInstance().getExtensionRegistry().getKnownExtensionById(dependency.getDependencyId());
+            JIPipePlugin extension = JIPipe.getInstance().getPluginRegistry().getKnownPluginById(dependency.getDependencyId());
             if (extension != null) {
                 dependencyPanel.add(UIUtils.createJLabel("Extension will be activated", UIUtils.getIconFromResources("emblems/vcs-normal.png")), new GridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(4, 4, 4, 4), 0, 0));
             } else {

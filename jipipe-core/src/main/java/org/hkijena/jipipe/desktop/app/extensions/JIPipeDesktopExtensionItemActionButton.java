@@ -15,14 +15,14 @@ package org.hkijena.jipipe.desktop.app.extensions;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipePlugin;
-import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
+import org.hkijena.jipipe.api.registries.JIPipePluginRegistry;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 
-public class JIPipeDesktopExtensionItemActionButton extends JButton implements JIPipeExtensionRegistry.ScheduledActivateExtensionEventListener, JIPipeExtensionRegistry.ScheduledDeactivateExtensionEventListener, JIPipeRunnable.FinishedEventListener {
+public class JIPipeDesktopExtensionItemActionButton extends JButton implements JIPipePluginRegistry.ScheduledActivatePluginEventListener, JIPipePluginRegistry.ScheduledDeactivatePluginEventListener, JIPipeRunnable.FinishedEventListener {
 
     private final JIPipeDesktopModernPluginManager pluginManager;
     private final JIPipePlugin extension;
@@ -32,13 +32,13 @@ public class JIPipeDesktopExtensionItemActionButton extends JButton implements J
         this.extension = extension;
         addActionListener(e -> executeAction());
         updateDisplay();
-        getExtensionRegistry().getScheduledActivateExtensionEventEmitter().subscribeWeak(this);
-        getExtensionRegistry().getScheduledDeactivateExtensionEventEmitter().subscribeWeak(this);
+        getExtensionRegistry().getScheduledActivatePluginEventEmitter().subscribeWeak(this);
+        getExtensionRegistry().getScheduledDeactivatePluginEventEmitter().subscribeWeak(this);
         JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribeWeak(this);
     }
 
-    private JIPipeExtensionRegistry getExtensionRegistry() {
-        return JIPipe.getInstance().getExtensionRegistry();
+    private JIPipePluginRegistry getExtensionRegistry() {
+        return JIPipe.getInstance().getPluginRegistry();
     }
 
     private void executeAction() {
@@ -50,7 +50,7 @@ public class JIPipeDesktopExtensionItemActionButton extends JButton implements J
     }
 
     private void updateDisplay() {
-        setEnabled(!extension.isCoreExtension());
+        setEnabled(!extension.isCorePlugin());
         if (extension.isActivated()) {
             if (extension.isScheduledForDeactivation()) {
                 setText("Undo deactivation");
@@ -71,12 +71,12 @@ public class JIPipeDesktopExtensionItemActionButton extends JButton implements J
     }
 
     @Override
-    public void onScheduledActivateExtension(JIPipeExtensionRegistry.ScheduledActivateExtensionEvent event) {
+    public void onScheduledActivatePlugin(JIPipePluginRegistry.ScheduledActivatePluginEvent event) {
         updateDisplay();
     }
 
     @Override
-    public void onScheduledDeactivateExtension(JIPipeExtensionRegistry.ScheduledDeactivateExtensionEvent event) {
+    public void onScheduledDeactivatePlugin(JIPipePluginRegistry.ScheduledDeactivatePluginEvent event) {
         updateDisplay();
     }
 

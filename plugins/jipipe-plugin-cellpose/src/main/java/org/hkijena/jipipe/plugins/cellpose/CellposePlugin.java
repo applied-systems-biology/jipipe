@@ -68,7 +68,6 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     public CellposePlugin() {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_DEEP_LEARNING, PluginCategoriesEnumParameter.CATEGORY_SEGMENTATION, PluginCategoriesEnumParameter.CATEGORY_MACHINE_LEARNING);
-        getMetadata().setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("thumbnails/cellpose.png")));
     }
 
     @Override
@@ -126,12 +125,12 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public String getName() {
-        return "Cellpose 2.x integration";
+        return "Cellpose integration";
     }
 
     @Override
     public HTMLText getDescription() {
-        return new HTMLText("Integrates Cellpose 2.x");
+        return new HTMLText("Integrates Cellpose");
     }
 
     @Override

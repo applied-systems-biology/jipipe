@@ -100,7 +100,7 @@ public class JIPipeDesktopExtensionInfoPanel extends JPanel {
         String typeName;
         if (extension instanceof JIPipeDesktopUpdateSitePlugin) {
             typeName = "ImageJ update site";
-        } else if (extension.isCoreExtension()) {
+        } else if (extension.isCorePlugin()) {
             typeName = "Core extension [" + extension.getClass() + "]";
         } else {
             typeName = "Standard extension [" + extension.getClass() + "]";

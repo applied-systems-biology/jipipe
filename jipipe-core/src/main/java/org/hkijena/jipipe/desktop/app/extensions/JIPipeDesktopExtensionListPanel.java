@@ -48,7 +48,7 @@ public class JIPipeDesktopExtensionListPanel extends JIPipeDesktopWorkbenchPanel
 
     private boolean isCoreDependency(JIPipeDependency dependency) {
         if (dependency instanceof JIPipeJavaPlugin)
-            return ((JIPipeJavaPlugin) dependency).isCoreExtension();
+            return ((JIPipeJavaPlugin) dependency).isCorePlugin();
         return false;
     }
 

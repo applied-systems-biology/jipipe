@@ -42,7 +42,7 @@ public class JIPipeDesktopManagePluginsButton extends JButton implements JIPipeD
     }
 
     private boolean hasNewExtensions() {
-        return !dismissedNewExtensions && !JIPipe.getInstance().getExtensionRegistry().getNewExtensions().isEmpty();
+        return !dismissedNewExtensions && !JIPipe.getInstance().getPluginRegistry().getNewPlugins().isEmpty();
     }
 
     private void initialize() {
@@ -58,7 +58,7 @@ public class JIPipeDesktopManagePluginsButton extends JButton implements JIPipeD
                 "Opens the JIPipe plugin manager",
                 hasNewExtensions() ? UIUtils.getIconFromResources("emblems/emblem-important-blue.png") : UIUtils.getIconFromResources("apps/jipipe.png"),
                 this::openJIPipePluginManager));
-        popupMenu.add(UIUtils.createMenuItem("External dependencies", "Opens the artifacts manager", UIUtils.getIconFromResources("actions/run-install.png"), this::openArtifactManager));
+        popupMenu.add(UIUtils.createMenuItem("Artifacts", "Opens the artifacts manager for external dependencies", UIUtils.getIconFromResources("actions/run-install.png"), this::openArtifactManager));
         popupMenu.addSeparator();
         popupMenu.add(UIUtils.createMenuItem("ImageJ plugins", "Opens the ImageJ update manager", UIUtils.getIconFromResources("apps/imagej.png"), this::openImageJPluginManager));
     }
@@ -75,9 +75,8 @@ public class JIPipeDesktopManagePluginsButton extends JButton implements JIPipeD
 
     private void openJIPipePluginManager() {
         dismissedNewExtensions = true;
-        JIPipe.getInstance().getExtensionRegistry().dismissNewExtensions();
+        JIPipeDesktopPluginManagerUI.show(getDesktopWorkbench());
         updateIcon();
-
     }
 
     @Override

@@ -157,11 +157,13 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
                     propertyPanel.addToForm(UIUtils.createLeftAlignedButton("Mark for installation", UIUtils.getIconFromResources("emblems/checkbox-checked.png"), () -> {
                         selectedValue.setToggleInstallationStatus(false);
                         updateSelectionPanel();
+                        artifactEntryJList.repaint(50);
                     }), new JLabel("Status"));
                 } else {
                     propertyPanel.addToForm(UIUtils.createLeftAlignedButton("Mark for installation", UIUtils.getIconFromResources("emblems/checkbox-unchecked.png"), () -> {
                         selectedValue.setToggleInstallationStatus(true);
                         updateSelectionPanel();
+                        artifactEntryJList.repaint(50);
                     }), new JLabel("Status"));
                 }
             } else {
@@ -169,11 +171,13 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
                     propertyPanel.addToForm(UIUtils.createLeftAlignedButton("Keep installed", UIUtils.getIconFromResources("emblems/checkbox-unchecked.png"), () -> {
                         selectedValue.setToggleInstallationStatus(false);
                         updateSelectionPanel();
+                        artifactEntryJList.repaint(50);
                     }), new JLabel("Status"));
                 } else {
                     propertyPanel.addToForm(UIUtils.createLeftAlignedButton("Keep installed", UIUtils.getIconFromResources("emblems/checkbox-checked.png"), () -> {
                         selectedValue.setToggleInstallationStatus(true);
                         updateSelectionPanel();
+                        artifactEntryJList.repaint(50);
                     }), new JLabel("Status"));
                 }
             }
@@ -356,7 +360,7 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
 
         @Override
         public Component getListCellRendererComponent(JList<? extends ArtifactEntry> list, ArtifactEntry value, int index, boolean isSelected, boolean cellHasFocus) {
-            infoLabel.setForeground(UIManager.getColor("Label.foreground"));
+            infoLabel.setForeground(UIManager.getColor("Label.disabledForeground"));
             if (value.getArtifact() instanceof JIPipeRemoteArtifact) {
                 if (value.isToggleInstallationStatus()) {
                     statusLabel.setIcon(UIUtils.getIconFromResources("emblems/checkbox-checked.png"));

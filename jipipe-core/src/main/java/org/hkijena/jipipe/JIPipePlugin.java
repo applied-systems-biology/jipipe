@@ -41,9 +41,9 @@ public interface JIPipePlugin extends JIPipeDependency {
      * @return if the extension is active
      */
     default boolean isActivated() {
-        if (isCoreExtension())
+        if (isCorePlugin())
             return true;
-        return JIPipe.getInstance().getExtensionRegistry().getActivatedExtensions().contains(getDependencyId());
+        return JIPipe.getInstance().getPluginRegistry().getActivatedPlugins().contains(getDependencyId());
     }
 
     /**
@@ -52,7 +52,7 @@ public interface JIPipePlugin extends JIPipeDependency {
      * @return if the extension is scheduled to be activated
      */
     default boolean isScheduledForActivation() {
-        return JIPipe.getInstance().getExtensionRegistry().getScheduledActivateExtensions().contains(getDependencyId());
+        return JIPipe.getInstance().getPluginRegistry().getScheduledActivatePlugins().contains(getDependencyId());
     }
 
     /**
@@ -61,7 +61,7 @@ public interface JIPipePlugin extends JIPipeDependency {
      * @return if the extension is scheduled to be deactivated
      */
     default boolean isScheduledForDeactivation() {
-        return JIPipe.getInstance().getExtensionRegistry().getScheduledDeactivateExtensions().contains(getDependencyId());
+        return JIPipe.getInstance().getPluginRegistry().getScheduledDeactivatePlugins().contains(getDependencyId());
     }
 
     /**
@@ -71,7 +71,7 @@ public interface JIPipePlugin extends JIPipeDependency {
      *
      * @return if the extension cannot be disabled
      */
-    default boolean isCoreExtension() {
+    default boolean isCorePlugin() {
         return false;
     }
 

@@ -57,7 +57,7 @@ public class NodeTemplateBoxToolPlugin extends JIPipePrepackagedDefaultJavaPlugi
     }
 
     @Override
-    public boolean isCoreExtension() {
+    public boolean isCorePlugin() {
         return true;
     }
 }

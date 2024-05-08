@@ -137,11 +137,6 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public ImageParameter getThumbnail() {
-        return new ImageParameter(ResourceUtils.getPluginResource("thumbnails/fiji.png"));
-    }
-
-    @Override
     public StringList getDependencyProvides() {
         return new StringList();
     }

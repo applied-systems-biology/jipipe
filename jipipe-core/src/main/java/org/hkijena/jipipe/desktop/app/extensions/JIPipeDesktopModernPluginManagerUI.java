@@ -16,7 +16,7 @@ package org.hkijena.jipipe.desktop.app.extensions;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipePlugin;
-import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
+import org.hkijena.jipipe.api.registries.JIPipePluginRegistry;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
@@ -45,7 +45,7 @@ public class JIPipeDesktopModernPluginManagerUI extends JIPipeDesktopWorkbenchPa
     private JIPipeDesktopExtensionListPanel extensionListPanel;
     private JIPipeDesktopFormPanel sidePanel;
     private JIPipeDesktopSearchTextField searchTextField;
-    private List<JIPipePlugin> currentlyShownItems = new ArrayList<>(getExtensionRegistry().getKnownExtensionsList());
+    private List<JIPipePlugin> currentlyShownItems = new ArrayList<>(getExtensionRegistry().getKnownPluginsList());
     private JLabel currentListHeading;
     private JButton updateSitesButton;
     private AutoResizeSplitPane splitPane;
@@ -57,12 +57,12 @@ public class JIPipeDesktopModernPluginManagerUI extends JIPipeDesktopWorkbenchPa
 
         initialize();
 //        JIPipe.getInstance().getExtensionRegistry().getEventBus().register(this);
-        if (getExtensionRegistry().getNewExtensions().isEmpty()) {
-            showItems(getExtensionRegistry().getKnownExtensionsList(), "All extensions");
+        if (getExtensionRegistry().getNewPlugins().isEmpty()) {
+            showItems(getExtensionRegistry().getKnownPluginsList(), "All extensions");
         } else {
-            showItems(getExtensionRegistry().getNewExtensions().stream().map(id -> getExtensionRegistry().getKnownExtensionById(id)).collect(Collectors.toList()), "New extensions");
+            showItems(getExtensionRegistry().getNewPlugins().stream().map(id -> getExtensionRegistry().getKnownPluginById(id)).collect(Collectors.toList()), "New extensions");
             // Acknowledge the extensions
-            getExtensionRegistry().dismissNewExtensions();
+            getExtensionRegistry().dismissNewPlugins();
         }
 
 //        JIPipeRunnerQueue.getInstance().getEventBus().register(this);
@@ -127,8 +127,8 @@ public class JIPipeDesktopModernPluginManagerUI extends JIPipeDesktopWorkbenchPa
         return pluginManager;
     }
 
-    private JIPipeExtensionRegistry getExtensionRegistry() {
-        return JIPipe.getInstance().getExtensionRegistry();
+    private JIPipePluginRegistry getExtensionRegistry() {
+        return JIPipe.getInstance().getPluginRegistry();
     }
 
     private void updateSearch() {
@@ -152,16 +152,16 @@ public class JIPipeDesktopModernPluginManagerUI extends JIPipeDesktopWorkbenchPa
     }
 
     private void initializeSidePanel() {
-        JIPipeExtensionRegistry extensionRegistry = JIPipe.getInstance().getExtensionRegistry();
+        JIPipePluginRegistry extensionRegistry = JIPipe.getInstance().getPluginRegistry();
 
-        Set<String> newExtensions = JIPipe.getInstance().getExtensionRegistry().getNewExtensions();
+        Set<String> newExtensions = JIPipe.getInstance().getPluginRegistry().getNewPlugins();
         if (!newExtensions.isEmpty()) {
-            addSidePanelButton("New extensions", UIUtils.getIconFromResources("emblems/emblem-important-blue.png"), () -> newExtensions.stream().map(id -> extensionRegistry.getKnownExtensionById(id)).collect(Collectors.toList()), false);
+            addSidePanelButton("New extensions", UIUtils.getIconFromResources("emblems/emblem-important-blue.png"), () -> newExtensions.stream().map(id -> extensionRegistry.getKnownPluginById(id)).collect(Collectors.toList()), false);
             messagePanel.addMessage(JIPipeDesktopMessagePanel.MessageType.Info, "New extensions are available", true, true);
         }
 
-        addSidePanelButton("Activated extensions", UIUtils.getIconFromResources("actions/checkmark.png"), () -> extensionRegistry.getKnownExtensionsList().stream().filter(dependency -> extensionRegistry.getActivatedExtensions().contains(dependency.getDependencyId())).collect(Collectors.toList()), false);
-        addSidePanelButton("Deactivated extensions", UIUtils.getIconFromResources("actions/close-tab.png"), () -> extensionRegistry.getKnownExtensionsList().stream().filter(dependency -> !extensionRegistry.getActivatedExtensions().contains(dependency.getDependencyId())).collect(Collectors.toList()), false);
+        addSidePanelButton("Activated extensions", UIUtils.getIconFromResources("actions/checkmark.png"), () -> extensionRegistry.getKnownPluginsList().stream().filter(dependency -> extensionRegistry.getActivatedPlugins().contains(dependency.getDependencyId())).collect(Collectors.toList()), false);
+        addSidePanelButton("Deactivated extensions", UIUtils.getIconFromResources("actions/close-tab.png"), () -> extensionRegistry.getKnownPluginsList().stream().filter(dependency -> !extensionRegistry.getActivatedPlugins().contains(dependency.getDependencyId())).collect(Collectors.toList()), false);
 
         // Update sites button
         JIPipeDesktopAnimatedIcon hourglassAnimation = new JIPipeDesktopAnimatedIcon(this, UIUtils.getIconFromResources("actions/hourglass-half.png"),
@@ -172,14 +172,14 @@ public class JIPipeDesktopModernPluginManagerUI extends JIPipeDesktopWorkbenchPa
         addImageJSidePanelButton("Activated", UIUtils.getIconFromResources("actions/checkmark.png"), site -> site.isActivated(), true);
         addImageJSidePanelButton("Deactivated", UIUtils.getIconFromResources("actions/close-tab.png"), site -> !site.isActivated(), true);
 
-        addSidePanelButton("All extensions", UIUtils.getIconFromResources("actions/plugins.png"), extensionRegistry::getKnownExtensionsList, false);
+        addSidePanelButton("All extensions", UIUtils.getIconFromResources("actions/plugins.png"), extensionRegistry::getKnownPluginsList, false);
 
         Set<String> categories = new HashSet<>();
-        for (JIPipeDependency extension : JIPipe.getInstance().getExtensionRegistry().getKnownExtensionsList()) {
+        for (JIPipeDependency extension : JIPipe.getInstance().getPluginRegistry().getKnownPluginsList()) {
             categories.addAll(extension.getMetadata().getProcessedCategories());
         }
         categories.stream().sorted(NaturalOrderComparator.INSTANCE).forEach(category -> {
-            addSidePanelButton(category, UIUtils.getIconFromResources("actions/tag.png"), () -> JIPipe.getInstance().getExtensionRegistry().getKnownExtensionsList().stream().filter(dependency -> dependency.getMetadata().getProcessedCategories().contains(category)).collect(Collectors.toList()), true);
+            addSidePanelButton(category, UIUtils.getIconFromResources("actions/tag.png"), () -> JIPipe.getInstance().getPluginRegistry().getKnownPluginsList().stream().filter(dependency -> dependency.getMetadata().getProcessedCategories().contains(category)).collect(Collectors.toList()), true);
         });
 
     }

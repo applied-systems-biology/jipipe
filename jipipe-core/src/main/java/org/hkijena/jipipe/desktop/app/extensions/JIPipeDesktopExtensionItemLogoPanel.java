@@ -15,7 +15,7 @@ package org.hkijena.jipipe.desktop.app.extensions;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipePlugin;
-import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
+import org.hkijena.jipipe.api.registries.JIPipePluginRegistry;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
@@ -28,7 +28,7 @@ import java.awt.image.BufferedImage;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-public class JIPipeDesktopExtensionItemLogoPanel extends JPanel implements JIPipeExtensionRegistry.ScheduledActivateExtensionEventListener, JIPipeExtensionRegistry.ScheduledDeactivateExtensionEventListener, JIPipeRunnable.FinishedEventListener {
+public class JIPipeDesktopExtensionItemLogoPanel extends JPanel implements JIPipePluginRegistry.ScheduledActivatePluginEventListener, JIPipePluginRegistry.ScheduledDeactivatePluginEventListener, JIPipeRunnable.FinishedEventListener {
 
     private static final Map<BufferedImage, BufferedImage> THUMBNAIL_CACHE = new IdentityHashMap<>();
 
@@ -42,32 +42,11 @@ public class JIPipeDesktopExtensionItemLogoPanel extends JPanel implements JIPip
     public JIPipeDesktopExtensionItemLogoPanel(JIPipePlugin extension) {
         this.extension = extension;
         setOpaque(false);
-        initializeThumbnail();
-        JIPipe.getInstance().getExtensionRegistry().getScheduledActivateExtensionEventEmitter().subscribeWeak(this);
-        JIPipe.getInstance().getExtensionRegistry().getScheduledDeactivateExtensionEventEmitter().subscribeWeak(this);
+        JIPipe.getInstance().getPluginRegistry().getScheduledActivatePluginEventEmitter().subscribeWeak(this);
+        JIPipe.getInstance().getPluginRegistry().getScheduledDeactivatePluginEventEmitter().subscribeWeak(this);
         JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribeWeak(this);
     }
 
-    private void initializeThumbnail() {
-        if (extension.getMetadata().getThumbnail() != null && extension.getMetadata().getThumbnail().getImage() != null) {
-            thumbnail = extension.getMetadata().getThumbnail().getImage();
-        } else {
-            thumbnail = new ImageParameter(ResourceUtils.getPluginResource("extension-thumbnail-default.png")).getImage();
-        }
-        BufferedImage originalThumbnail = thumbnail;
-        BufferedImage cachedThumbnail = THUMBNAIL_CACHE.getOrDefault(thumbnail, null);
-        if (cachedThumbnail != null) {
-            thumbnailDeactivated = THUMBNAIL_DISABLED_CACHE.get(originalThumbnail);
-            thumbnail = cachedThumbnail;
-        } else {
-            thumbnail = BufferedImageUtils.scaleImageToFit(thumbnail, 350, 350);
-            thumbnail = BufferedImageUtils.spatialBlurLinear(thumbnail, new Point(0, 0), new Point(thumbnail.getWidth(), thumbnail.getHeight()), 20);
-            thumbnailDeactivated = BufferedImageUtils.toBufferedImage(thumbnail, BufferedImage.TYPE_BYTE_GRAY);
-            THUMBNAIL_CACHE.put(originalThumbnail, thumbnail);
-            THUMBNAIL_DISABLED_CACHE.put(originalThumbnail, thumbnailDeactivated);
-        }
-
-    }
 
     @Override
     public void paint(Graphics g) {
@@ -89,12 +68,12 @@ public class JIPipeDesktopExtensionItemLogoPanel extends JPanel implements JIPip
     }
 
     @Override
-    public void onScheduledActivateExtension(JIPipeExtensionRegistry.ScheduledActivateExtensionEvent event) {
+    public void onScheduledActivatePlugin(JIPipePluginRegistry.ScheduledActivatePluginEvent event) {
         repaint(50);
     }
 
     @Override
-    public void onScheduledDeactivateExtension(JIPipeExtensionRegistry.ScheduledDeactivateExtensionEvent event) {
+    public void onScheduledDeactivatePlugin(JIPipePluginRegistry.ScheduledDeactivatePluginEvent event) {
         repaint(50);
     }
 

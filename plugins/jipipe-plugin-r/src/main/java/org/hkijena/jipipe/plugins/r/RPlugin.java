@@ -60,13 +60,6 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     public RPlugin() {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_SCRIPTING);
-        getMetadata().setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("thumbnails/r.png")));
-    }
-
-    private static void configureR(JIPipeWorkbench workbench) {
-        if (workbench instanceof JIPipeDesktopProjectWorkbench) {
-            ((JIPipeDesktopProjectWorkbench) workbench).openApplicationSettings("/Extensions/R integration");
-        }
     }
 
     @Override

@@ -77,11 +77,6 @@ public class WekaPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public ImageParameter getThumbnail() {
-        return new ImageParameter(ResourceUtils.getPluginResource("thumbnails/weka.png"));
-    }
-
-    @Override
     public JIPipeAuthorMetadata.List getAcknowledgements() {
         return new JIPipeAuthorMetadata.List(new JIPipeAuthorMetadata("", "Ignacio", "Arganda-Carreras", new StringList(
                 "Ikerbasque, Basque Foundation for Science, Bilbao, Spain",

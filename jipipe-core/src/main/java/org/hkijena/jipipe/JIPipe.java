@@ -121,7 +121,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
     private final JIPipeExpressionRegistry tableOperationRegistry;
     private final JIPipeUtilityRegistry utilityRegistry;
     private final JIPipeExternalEnvironmentRegistry externalEnvironmentRegistry;
-    private final JIPipeExtensionRegistry extensionRegistry;
+    private final JIPipePluginRegistry pluginRegistry;
     private final JIPipeGraphEditorToolRegistry graphEditorToolRegistry;
     private final JIPipeProjectTemplateRegistry projectTemplateRegistry;
     private final JIPipeArtifactsRegistry artifactsRegistry;
@@ -151,7 +151,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
         tableOperationRegistry = new JIPipeExpressionRegistry(this);
         utilityRegistry = new JIPipeUtilityRegistry(this);
         externalEnvironmentRegistry = new JIPipeExternalEnvironmentRegistry(this);
-        extensionRegistry = new JIPipeExtensionRegistry(this);
+        pluginRegistry = new JIPipePluginRegistry(this);
         projectTemplateRegistry = new JIPipeProjectTemplateRegistry(this);
         graphEditorToolRegistry = new JIPipeGraphEditorToolRegistry(this);
         metadataRegistry = new JIPipeMetadataRegistry(this);
@@ -662,8 +662,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
 
         progressInfo.setProgress(0, 5);
         nodeRegistry.installEvents();
-        extensionRegistry.initialize(); // Init extension registry
-        extensionRegistry.load();
+        pluginRegistry.initialize(); // Init extension registry
+        pluginRegistry.load();
         progressInfo.setProgress(1);
         progressInfo.log("Pre-initialization phase ...");
 
@@ -768,8 +768,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
         nodeRegistry.installEvents();
         List<PluginInfo<JIPipeJavaPlugin>> pluginList = pluginService.getPluginsOfType(JIPipeJavaPlugin.class).stream()
                 .sorted(JIPipe::comparePlugins).collect(Collectors.toList());
-        extensionRegistry.initialize(); // Init extension registry
-        extensionRegistry.load();
+        pluginRegistry.initialize(); // Init extension registry
+        pluginRegistry.load();
         progressInfo.setProgress(1);
         progressInfo.log("Pre-initialization phase ...");
 
@@ -818,7 +818,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 if (extension == null) {
                     continue;
                 }
-                if (extension.isCoreExtension() || extensionRegistry.getStartupExtensions().contains(extension.getDependencyId()) || impliedLoadedJavaExtensions.contains(extension.getDependencyId())) {
+                if (extension.isCorePlugin() || pluginRegistry.getStartupPlugins().contains(extension.getDependencyId()) || impliedLoadedJavaExtensions.contains(extension.getDependencyId())) {
                     if (isValidExtensionId(extension.getDependencyId())) {
                         if (!impliedLoadedJavaExtensions.contains(extension.getDependencyId())) {
                             progressInfo.log("-> Core/User: " + extension.getDependencyId());
@@ -852,10 +852,10 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 continue;
             }
             try {
-                extensionRegistry.registerKnownExtension(extension);
+                pluginRegistry.registerKnownPlugin(extension);
 
                 // Check if the extension should be loaded
-                if (!extension.isCoreExtension() && !extensionRegistry.getStartupExtensions().contains(extension.getDependencyId()) && !impliedLoadedJavaExtensions.contains(extension.getDependencyId())) {
+                if (!extension.isCorePlugin() && !pluginRegistry.getStartupPlugins().contains(extension.getDependencyId()) && !impliedLoadedJavaExtensions.contains(extension.getDependencyId())) {
                     progressInfo.log("Extension with ID " + extension.getDependencyId() + " will not be loaded (deactivated in extension manager)");
                     initializationInfo.setLoaded(false);
                     continue;
@@ -876,7 +876,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
                         initializationInfo.setLoaded(false);
                         if (!StringUtils.isNullOrEmpty(extension.getDependencyId())) {
                             progressInfo.log("Extension with ID " + extension.getDependencyId() + " was removed from the list of activated extensions");
-                            extensionRegistry.getSettings().getActivatedExtensions().remove(extension.getDependencyId());
+                            pluginRegistry.getSettings().getActivatedPlugins().remove(extension.getDependencyId());
                             preActivationScheduledSave = true;
                         }
                         continue;
@@ -900,7 +900,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
 
         // Save extension settings
         if (preActivationScheduledSave && !NO_SETTINGS_AUTOSAVE) {
-            extensionRegistry.save();
+            pluginRegistry.save();
         }
 
         progressInfo.setProgress(2);
@@ -955,7 +955,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
         validateParameterTypes(issues);
 
         // Create dependency graph
-        extensionRegistry.getDependencyGraph();
+        pluginRegistry.getDependencyGraph();
 
         // Check for update sites
         if (extensionSettings.isValidateImageJDependencies()) {
@@ -1018,8 +1018,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
         initializing = false;
 
         // Check for new extensions
-        extensionRegistry.findNewExtensions();
-        for (String newExtension : extensionRegistry.getNewExtensions()) {
+        pluginRegistry.findNewPlugins();
+        for (String newExtension : pluginRegistry.getNewPlugins()) {
             progressInfo.log("New extension found: " + newExtension);
         }
 
@@ -1388,8 +1388,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
     }
 
     @Override
-    public JIPipeExtensionRegistry getExtensionRegistry() {
-        return extensionRegistry;
+    public JIPipePluginRegistry getPluginRegistry() {
+        return pluginRegistry;
     }
 
     @Override

@@ -59,7 +59,6 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 PluginCategoriesEnumParameter.CATEGORY_SEGMENTATION,
                 PluginCategoriesEnumParameter.CATEGORY_CLASSIFICATION,
                 PluginCategoriesEnumParameter.CATEGORY_MACHINE_LEARNING);
-        getMetadata().setThumbnail(new ImageParameter(RESOURCES.getResourceURL("thumbnail.png")));
     }
 
     /**

@@ -55,7 +55,6 @@ public class ImpPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public ImpPlugin() {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_IMPORT_EXPORT,
                 PluginCategoriesEnumParameter.CATEGORY_VISUALIZATION);
-        getMetadata().setThumbnail(new ImageParameter(RESOURCES.getResourceURL("thumbnail.png")));
     }
 
 

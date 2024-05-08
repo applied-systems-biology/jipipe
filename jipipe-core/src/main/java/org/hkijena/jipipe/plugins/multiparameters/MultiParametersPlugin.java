@@ -71,7 +71,7 @@ public class MultiParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public boolean isCoreExtension() {
+    public boolean isCorePlugin() {
         return true;
     }
 

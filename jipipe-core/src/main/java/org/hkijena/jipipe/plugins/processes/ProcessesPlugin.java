@@ -72,7 +72,7 @@ public class ProcessesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public boolean isCoreExtension() {
+    public boolean isCorePlugin() {
         return true;
     }
 }

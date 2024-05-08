@@ -65,7 +65,7 @@ public class ToolsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public boolean isCoreExtension() {
+    public boolean isCorePlugin() {
         return true;
     }
 

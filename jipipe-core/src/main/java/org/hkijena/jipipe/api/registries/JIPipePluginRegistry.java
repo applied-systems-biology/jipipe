@@ -37,12 +37,12 @@ import java.util.*;
 /**
  * Registry for managing extensions
  */
-public class JIPipeExtensionRegistry {
+public class JIPipePluginRegistry {
 
     /**
      * Standard set of extension IDs (1.74.0+)
      */
-    public static final String[] STANDARD_EXTENSIONS = new String[]{"org.hkijena.jipipe:annotations", "org.hkijena.jipipe:filesystem", "org.hkijena.jipipe:forms", "org.hkijena.jipipe:imagej-algorithms",
+    public static final String[] STANDARD_PLUGINS = new String[]{"org.hkijena.jipipe:annotations", "org.hkijena.jipipe:filesystem", "org.hkijena.jipipe:forms", "org.hkijena.jipipe:imagej-algorithms",
             "org.hkijena.jipipe:imagej-integration", "org.hkijena.jipipe:plots", "org.hkijena.jipipe:python", "org.hkijena.jipipe:r", "org.hkijena.jipipe:strings", "org.hkijena.jipipe:table-operations", "org.hkijena.jipipe:tools", "org.hkijena.jipipe:utils", "org.hkijena.jipipe:imagej2", "org.hkijena.jipipe:multi-parameters-algorithms"};
 
     /**
@@ -53,17 +53,17 @@ public class JIPipeExtensionRegistry {
             "org.hkijena.jipipe:cellpose", "org.hkijena.jipipe:clij2-integration", "org.hkijena.jipipe:ij-multi-template-matching", "org.hkijena.jipipe:ij-weka", "org.hkijena.jipipe:omero"};
 
     private final JIPipe jiPipe;
-    private final Map<String, JIPipePlugin> knownExtensions = new HashMap<>();
-    private final Set<String> scheduledActivateExtensions = new HashSet<>();
-    private final Set<String> scheduledDeactivateExtensions = new HashSet<>();
-    private final Set<String> newExtensions = new HashSet<>();
-    private final ScheduledDeactivateExtensionEventEmitter scheduledDeactivateExtensionEventEmitter = new ScheduledDeactivateExtensionEventEmitter();
-    private final ScheduledActivateExtensionEventEmitter scheduledActivateExtensionEventEmitter = new ScheduledActivateExtensionEventEmitter();
+    private final Map<String, JIPipePlugin> knownPlugins = new HashMap<>();
+    private final Set<String> scheduledActivatePlugins = new HashSet<>();
+    private final Set<String> scheduledDeactivatePlugins = new HashSet<>();
+    private final Set<String> newPlugins = new HashSet<>();
+    private final ScheduledDeactivatePluginEventEmitter scheduledDeactivatePluginEventEmitter = new ScheduledDeactivatePluginEventEmitter();
+    private final ScheduledActivatePluginEventEmitter scheduledActivatePluginEventEmitter = new ScheduledActivatePluginEventEmitter();
     private Settings settings = new Settings();
     private DefaultDirectedGraph<JIPipeDependency, DefaultEdge> dependencyGraph;
 
 
-    public JIPipeExtensionRegistry(JIPipe jiPipe) {
+    public JIPipePluginRegistry(JIPipe jiPipe) {
         this.jiPipe = jiPipe;
     }
 
@@ -96,11 +96,11 @@ public class JIPipeExtensionRegistry {
      * @return The location of the file where the settings are stored
      */
     public static Path getPropertyFile() {
-        return JIPipe.getJIPipeUserDir().resolve("extensions.json");
+        return JIPipe.getJIPipeUserDir().resolve("plugins.json");
     }
 
     public void initialize() {
-        settings.getActivatedExtensions().addAll(Arrays.asList(STANDARD_EXTENSIONS));
+        settings.getActivatedPlugins().addAll(Arrays.asList(STANDARD_PLUGINS));
         if (!Files.isRegularFile(getPropertyFile()) && !JIPipe.NO_SETTINGS_AUTOSAVE) {
             save();
         }
@@ -110,12 +110,12 @@ public class JIPipeExtensionRegistry {
         return settings;
     }
 
-    public ScheduledDeactivateExtensionEventEmitter getScheduledDeactivateExtensionEventEmitter() {
-        return scheduledDeactivateExtensionEventEmitter;
+    public ScheduledDeactivatePluginEventEmitter getScheduledDeactivatePluginEventEmitter() {
+        return scheduledDeactivatePluginEventEmitter;
     }
 
-    public ScheduledActivateExtensionEventEmitter getScheduledActivateExtensionEventEmitter() {
-        return scheduledActivateExtensionEventEmitter;
+    public ScheduledActivatePluginEventEmitter getScheduledActivatePluginEventEmitter() {
+        return scheduledActivatePluginEventEmitter;
     }
 
     /**
@@ -125,8 +125,8 @@ public class JIPipeExtensionRegistry {
      *
      * @return unmodifiable set
      */
-    public Set<String> getStartupExtensions() {
-        return Collections.unmodifiableSet(settings.getActivatedExtensions());
+    public Set<String> getStartupPlugins() {
+        return Collections.unmodifiableSet(settings.getActivatedPlugins());
     }
 
     /**
@@ -134,7 +134,7 @@ public class JIPipeExtensionRegistry {
      *
      * @return unmodifiable set
      */
-    public Set<String> getActivatedExtensions() {
+    public Set<String> getActivatedPlugins() {
         return Collections.unmodifiableSet(jiPipe.getRegisteredExtensionIds());
     }
 
@@ -144,9 +144,9 @@ public class JIPipeExtensionRegistry {
      *
      * @param extension the extension
      */
-    public void registerKnownExtension(JIPipePlugin extension) {
-        jiPipe.getProgressInfo().resolve("Extension management").log("Discovered extension: " + extension.getDependencyId() + " version " + extension.getDependencyVersion() + " (of type " + extension.getClass().getName() + ")");
-        knownExtensions.put(extension.getDependencyId(), extension);
+    public void registerKnownPlugin(JIPipePlugin extension) {
+        jiPipe.getProgressInfo().resolve("Plugin management").log("Discovered plugin: " + extension.getDependencyId() + " version " + extension.getDependencyVersion() + " (of type " + extension.getClass().getName() + ")");
+        knownPlugins.put(extension.getDependencyId(), extension);
         dependencyGraph = null;
     }
 
@@ -158,24 +158,24 @@ public class JIPipeExtensionRegistry {
      * @param id the ID
      * @return the extension or null
      */
-    public JIPipePlugin getKnownExtensionById(String id) {
-        return knownExtensions.getOrDefault(id, null);
+    public JIPipePlugin getKnownPluginById(String id) {
+        return knownPlugins.getOrDefault(id, null);
     }
 
     /**
      * Updates the list of new extensions
      */
-    public void findNewExtensions() {
-        Set<String> activatedExtensions = getActivatedExtensions();
-        for (JIPipePlugin knownExtension : getKnownExtensionsList()) {
-            if (!activatedExtensions.contains(knownExtension.getDependencyId()) && !settings.getSilencedExtensions().contains(knownExtension.getDependencyId())) {
-                newExtensions.add(knownExtension.getDependencyId());
+    public void findNewPlugins() {
+        Set<String> activatedExtensions = getActivatedPlugins();
+        for (JIPipePlugin knownExtension : getKnownPluginsList()) {
+            if (!activatedExtensions.contains(knownExtension.getDependencyId()) && !settings.getSilencedPlugins().contains(knownExtension.getDependencyId())) {
+                newPlugins.add(knownExtension.getDependencyId());
             }
         }
     }
 
-    public void dismissNewExtensions() {
-        settings.getSilencedExtensions().addAll(getNewExtensions());
+    public void dismissNewPlugins() {
+        settings.getSilencedPlugins().addAll(getNewPlugins());
         if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
             save();
         }
@@ -186,23 +186,23 @@ public class JIPipeExtensionRegistry {
      *
      * @return the extensions (unmodifiable)
      */
-    public Set<String> getNewExtensions() {
-        return Collections.unmodifiableSet(newExtensions);
+    public Set<String> getNewPlugins() {
+        return Collections.unmodifiableSet(newPlugins);
     }
 
-    public List<JIPipePlugin> getKnownExtensionsList() {
-        return new ArrayList<>(knownExtensions.values());
+    public List<JIPipePlugin> getKnownPluginsList() {
+        return new ArrayList<>(knownPlugins.values());
     }
 
-    public Map<String, JIPipePlugin> getKnownExtensionsById() {
-        return Collections.unmodifiableMap(knownExtensions);
+    public Map<String, JIPipePlugin> getKnownPluginById() {
+        return Collections.unmodifiableMap(knownPlugins);
     }
 
     public void clearSchedule(String id) {
-        if (scheduledDeactivateExtensions.contains(id)) {
+        if (scheduledDeactivatePlugins.contains(id)) {
             scheduleActivateExtension(id);
         }
-        if (scheduledActivateExtensions.contains(id)) {
+        if (scheduledActivatePlugins.contains(id)) {
             scheduleDeactivateExtension(id);
         }
     }
@@ -215,7 +215,7 @@ public class JIPipeExtensionRegistry {
      */
     public Set<String> getAllDependenciesOf(String id) {
         Set<String> ids = new HashSet<>();
-        for (JIPipeDependency predecessor : GraphUtils.getAllPredecessors(getDependencyGraph(), getKnownExtensionById(id))) {
+        for (JIPipeDependency predecessor : GraphUtils.getAllPredecessors(getDependencyGraph(), getKnownPluginById(id))) {
             ids.add(predecessor.getDependencyId());
         }
         ids.remove(id);
@@ -230,7 +230,7 @@ public class JIPipeExtensionRegistry {
      */
     public Set<String> getAllDependentsOf(String id) {
         Set<String> ids = new HashSet<>();
-        for (JIPipeDependency successor : GraphUtils.getAllSuccessors(getDependencyGraph(), getKnownExtensionById(id))) {
+        for (JIPipeDependency successor : GraphUtils.getAllSuccessors(getDependencyGraph(), getKnownPluginById(id))) {
             ids.add(successor.getDependencyId());
         }
         ids.remove(id);
@@ -238,40 +238,40 @@ public class JIPipeExtensionRegistry {
     }
 
     public void scheduleActivateExtension(String id) {
-        JIPipePlugin extension = getKnownExtensionById(id);
+        JIPipePlugin extension = getKnownPluginById(id);
         Set<String> ids = new HashSet<>();
         ids.add(id);
         ids.addAll(getAllDependenciesOf(id));
         for (String s : ids) {
-            scheduledDeactivateExtensions.remove(s);
-            scheduledActivateExtensions.add(s);
-            settings.getActivatedExtensions().add(s);
-            settings.getSilencedExtensions().add(s); // That the user is not warned by it
+            scheduledDeactivatePlugins.remove(s);
+            scheduledActivatePlugins.add(s);
+            settings.getActivatedPlugins().add(s);
+            settings.getSilencedPlugins().add(s); // That the user is not warned by it
         }
         if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
             save();
         }
         for (String s : ids) {
-            scheduledActivateExtensionEventEmitter.emit(new ScheduledActivateExtensionEvent(this, s));
+            scheduledActivatePluginEventEmitter.emit(new ScheduledActivatePluginEvent(this, s));
         }
     }
 
     public void scheduleDeactivateExtension(String id) {
-        JIPipePlugin extension = getKnownExtensionById(id);
+        JIPipePlugin extension = getKnownPluginById(id);
         Set<String> ids = new HashSet<>();
         ids.add(id);
         ids.addAll(getAllDependentsOf(id));
         for (String s : ids) {
-            scheduledDeactivateExtensions.add(s);
-            scheduledActivateExtensions.remove(s);
-            settings.getActivatedExtensions().remove(s);
-            settings.getSilencedExtensions().add(s); // That the user is not warned by it
+            scheduledDeactivatePlugins.add(s);
+            scheduledActivatePlugins.remove(s);
+            settings.getActivatedPlugins().remove(s);
+            settings.getSilencedPlugins().add(s); // That the user is not warned by it
         }
         if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
             save();
         }
         for (String s : ids) {
-            scheduledDeactivateExtensionEventEmitter.emit(new ScheduledDeactivateExtensionEvent(this, id));
+            scheduledDeactivatePluginEventEmitter.emit(new ScheduledDeactivatePluginEvent(this, id));
         }
     }
 
@@ -286,13 +286,13 @@ public class JIPipeExtensionRegistry {
             dependencyGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
             BiMap<String, JIPipeDependency> dependencyGraphNodeIds = HashBiMap.create();
             // Add the initial vertices
-            for (JIPipeDependency knownExtension : knownExtensions.values()) {
+            for (JIPipeDependency knownExtension : knownPlugins.values()) {
                 dependencyGraph.addVertex(knownExtension);
                 dependencyGraphNodeIds.put(knownExtension.getDependencyId(), knownExtension);
             }
             // Add edges
             Stack<JIPipeDependency> stack = new Stack<>();
-            stack.addAll(knownExtensions.values());
+            stack.addAll(knownPlugins.values());
             while (!stack.isEmpty()) {
                 JIPipeDependency target = stack.pop();
                 for (JIPipeDependency source : target.getDependencies()) {
@@ -321,7 +321,7 @@ public class JIPipeExtensionRegistry {
     }
 
     public boolean isKnownDependency(String id) {
-        return knownExtensions.containsKey(id);
+        return knownPlugins.containsKey(id);
     }
 
     /**
@@ -334,7 +334,7 @@ public class JIPipeExtensionRegistry {
     public Set<JIPipeDependency> tryResolveToKnownDependencies(Set<JIPipeDependency> dependencies) {
         Set<JIPipeDependency> result = new HashSet<>();
         for (JIPipeDependency dependency : dependencies) {
-            JIPipePlugin known = knownExtensions.getOrDefault(dependency.getDependencyId(), null);
+            JIPipePlugin known = knownPlugins.getOrDefault(dependency.getDependencyId(), null);
             if (known == null)
                 result.add(dependency);
             else
@@ -344,27 +344,27 @@ public class JIPipeExtensionRegistry {
     }
 
     public boolean willBeActivatedOnNextStartup(String id) {
-        if (getActivatedExtensions().contains(id)) {
-            return !getScheduledDeactivateExtensions().contains(id);
+        if (getActivatedPlugins().contains(id)) {
+            return !getScheduledDeactivatePlugins().contains(id);
         } else {
-            return getScheduledActivateExtensions().contains(id);
+            return getScheduledActivatePlugins().contains(id);
         }
     }
 
     public boolean willBeDeactivatedOnNextStartup(String id) {
-        if (getActivatedExtensions().contains(id)) {
-            return getScheduledDeactivateExtensions().contains(id);
+        if (getActivatedPlugins().contains(id)) {
+            return getScheduledDeactivatePlugins().contains(id);
         } else {
-            return !getScheduledActivateExtensions().contains(id);
+            return !getScheduledActivatePlugins().contains(id);
         }
     }
 
-    public Set<String> getScheduledActivateExtensions() {
-        return Collections.unmodifiableSet(scheduledActivateExtensions);
+    public Set<String> getScheduledActivatePlugins() {
+        return Collections.unmodifiableSet(scheduledActivatePlugins);
     }
 
-    public Set<String> getScheduledDeactivateExtensions() {
-        return Collections.unmodifiableSet(scheduledDeactivateExtensions);
+    public Set<String> getScheduledDeactivatePlugins() {
+        return Collections.unmodifiableSet(scheduledDeactivatePlugins);
     }
 
     /**
@@ -407,21 +407,21 @@ public class JIPipeExtensionRegistry {
         return jiPipe;
     }
 
-    public interface ScheduledActivateExtensionEventListener {
-        void onScheduledActivateExtension(ScheduledActivateExtensionEvent event);
+    public interface ScheduledActivatePluginEventListener {
+        void onScheduledActivatePlugin(ScheduledActivatePluginEvent event);
     }
 
-    public interface ScheduledDeactivateExtensionEventListener {
-        void onScheduledDeactivateExtension(ScheduledDeactivateExtensionEvent event);
+    public interface ScheduledDeactivatePluginEventListener {
+        void onScheduledDeactivatePlugin(ScheduledDeactivatePluginEvent event);
     }
 
     /**
-     * Triggered by {@link JIPipeExtensionRegistry} when an extension is scheduled to be activated
+     * Triggered by {@link JIPipePluginRegistry} when an extension is scheduled to be activated
      */
-    public static class ScheduledActivateExtensionEvent extends AbstractJIPipeEvent {
+    public static class ScheduledActivatePluginEvent extends AbstractJIPipeEvent {
         private final String extensionId;
 
-        public ScheduledActivateExtensionEvent(JIPipeExtensionRegistry registry, String extensionId) {
+        public ScheduledActivatePluginEvent(JIPipePluginRegistry registry, String extensionId) {
             super(registry);
             this.extensionId = extensionId;
         }
@@ -431,21 +431,21 @@ public class JIPipeExtensionRegistry {
         }
     }
 
-    public static class ScheduledActivateExtensionEventEmitter extends JIPipeEventEmitter<ScheduledActivateExtensionEvent, ScheduledActivateExtensionEventListener> {
+    public static class ScheduledActivatePluginEventEmitter extends JIPipeEventEmitter<ScheduledActivatePluginEvent, ScheduledActivatePluginEventListener> {
 
         @Override
-        protected void call(ScheduledActivateExtensionEventListener scheduledActivateExtensionEventListener, ScheduledActivateExtensionEvent event) {
-            scheduledActivateExtensionEventListener.onScheduledActivateExtension(event);
+        protected void call(ScheduledActivatePluginEventListener scheduledActivatePluginEventListener, ScheduledActivatePluginEvent event) {
+            scheduledActivatePluginEventListener.onScheduledActivatePlugin(event);
         }
     }
 
     /**
-     * Triggered by {@link JIPipeExtensionRegistry} when an extension is scheduled to be deactivated
+     * Triggered by {@link JIPipePluginRegistry} when an extension is scheduled to be deactivated
      */
-    public static class ScheduledDeactivateExtensionEvent extends AbstractJIPipeEvent {
+    public static class ScheduledDeactivatePluginEvent extends AbstractJIPipeEvent {
         private final String extensionId;
 
-        public ScheduledDeactivateExtensionEvent(JIPipeExtensionRegistry registry, String extensionId) {
+        public ScheduledDeactivatePluginEvent(JIPipePluginRegistry registry, String extensionId) {
             super(registry);
             this.extensionId = extensionId;
         }
@@ -455,37 +455,37 @@ public class JIPipeExtensionRegistry {
         }
     }
 
-    public static class ScheduledDeactivateExtensionEventEmitter extends JIPipeEventEmitter<ScheduledDeactivateExtensionEvent, ScheduledDeactivateExtensionEventListener> {
+    public static class ScheduledDeactivatePluginEventEmitter extends JIPipeEventEmitter<ScheduledDeactivatePluginEvent, ScheduledDeactivatePluginEventListener> {
 
         @Override
-        protected void call(ScheduledDeactivateExtensionEventListener scheduledDeactivateExtensionEventListener, ScheduledDeactivateExtensionEvent event) {
-            scheduledDeactivateExtensionEventListener.onScheduledDeactivateExtension(event);
+        protected void call(ScheduledDeactivatePluginEventListener scheduledDeactivatePluginEventListener, ScheduledDeactivatePluginEvent event) {
+            scheduledDeactivatePluginEventListener.onScheduledDeactivatePlugin(event);
         }
     }
 
     public static class Settings {
-        private Set<String> activatedExtensions = new HashSet<>();
+        private Set<String> activatedPlugins = new HashSet<>();
 
-        private Set<String> silencedExtensions = new HashSet<>();
+        private Set<String> silencedPlugins = new HashSet<>();
 
         @JsonGetter("activated-extensions")
-        public Set<String> getActivatedExtensions() {
-            return activatedExtensions;
+        public Set<String> getActivatedPlugins() {
+            return activatedPlugins;
         }
 
         @JsonSetter("activated-extensions")
-        public void setActivatedExtensions(Set<String> activatedExtensions) {
-            this.activatedExtensions = activatedExtensions;
+        public void setActivatedPlugins(Set<String> activatedPlugins) {
+            this.activatedPlugins = activatedPlugins;
         }
 
         @JsonGetter("silenced-extensions")
-        public Set<String> getSilencedExtensions() {
-            return silencedExtensions;
+        public Set<String> getSilencedPlugins() {
+            return silencedPlugins;
         }
 
         @JsonSetter("silenced-extensions")
-        public void setSilencedExtensions(Set<String> silencedExtensions) {
-            this.silencedExtensions = silencedExtensions;
+        public void setSilencedPlugins(Set<String> silencedPlugins) {
+            this.silencedPlugins = silencedPlugins;
         }
     }
 }

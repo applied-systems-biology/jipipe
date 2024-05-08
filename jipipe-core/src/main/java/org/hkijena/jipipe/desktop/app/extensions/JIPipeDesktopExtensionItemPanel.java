@@ -17,7 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipePlugin;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
-import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
+import org.hkijena.jipipe.api.registries.JIPipePluginRegistry;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -80,8 +80,8 @@ public class JIPipeDesktopExtensionItemPanel extends JIPipeDesktopWorkbenchPanel
         return authorPanel;
     }
 
-    private JIPipeExtensionRegistry getExtensionRegistry() {
-        return JIPipe.getInstance().getExtensionRegistry();
+    private JIPipePluginRegistry getExtensionRegistry() {
+        return JIPipe.getInstance().getPluginRegistry();
     }
 
     private void initialize() {
@@ -161,7 +161,7 @@ public class JIPipeDesktopExtensionItemPanel extends JIPipeDesktopWorkbenchPanel
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         add(buttonPanel, BorderLayout.SOUTH);
 
-        if (extension.isCoreExtension()) {
+        if (extension.isCorePlugin()) {
             JLabel infoLabel = new JLabel("Core extension", UIUtils.getIconFromResources("emblems/emblem-important-blue.png"), JLabel.LEFT);
             infoLabel.setToolTipText("This is a mandatory core extension that cannot be disabled");
             buttonPanel.add(infoLabel);

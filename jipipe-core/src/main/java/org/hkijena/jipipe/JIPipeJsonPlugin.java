@@ -70,7 +70,6 @@ public class JIPipeJsonPlugin extends AbstractJIPipeParameterCollection implemen
      * Creates a new instance
      */
     public JIPipeJsonPlugin() {
-        metadata.setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("extension-thumbnail-default.png")));
     }
 
     /**

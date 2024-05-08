@@ -25,7 +25,7 @@ import org.hkijena.jipipe.JIPipePlugin;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
-import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
+import org.hkijena.jipipe.api.registries.JIPipePluginRegistry;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -43,7 +43,7 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.*;
 
-public class JIPipeDesktopModernPluginManager implements JIPipeDesktopWorkbenchAccess, JIPipeExtensionRegistry.ScheduledActivateExtensionEventListener, JIPipeExtensionRegistry.ScheduledDeactivateExtensionEventListener, JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
+public class JIPipeDesktopModernPluginManager implements JIPipeDesktopWorkbenchAccess, JIPipePluginRegistry.ScheduledActivatePluginEventListener, JIPipePluginRegistry.ScheduledDeactivatePluginEventListener, JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
 
     private final UpdateSitesReadyEventEmitter updateSitesReadyEventEmitter = new UpdateSitesReadyEventEmitter();
     private final UpdateSitesFailedEventEmitter updateSitesFailedEventEmitter = new UpdateSitesFailedEventEmitter();
@@ -63,8 +63,8 @@ public class JIPipeDesktopModernPluginManager implements JIPipeDesktopWorkbenchA
         this.desktopWorkbench = desktopWorkbench;
         this.parent = parent;
         this.messagePanel = messagePanel;
-        JIPipe.getInstance().getExtensionRegistry().getScheduledActivateExtensionEventEmitter().subscribeWeak(this);
-        JIPipe.getInstance().getExtensionRegistry().getScheduledDeactivateExtensionEventEmitter().subscribeWeak(this);
+        JIPipe.getInstance().getPluginRegistry().getScheduledActivatePluginEventEmitter().subscribeWeak(this);
+        JIPipe.getInstance().getPluginRegistry().getScheduledDeactivatePluginEventEmitter().subscribeWeak(this);
         JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribeWeak(this);
         JIPipeRunnableQueue.getInstance().getInterruptedEventEmitter().subscribeWeak(this);
 
@@ -84,8 +84,8 @@ public class JIPipeDesktopModernPluginManager implements JIPipeDesktopWorkbenchA
         return updateSitesFailedEventEmitter;
     }
 
-    private JIPipeExtensionRegistry getExtensionRegistry() {
-        return JIPipe.getInstance().getExtensionRegistry();
+    private JIPipePluginRegistry getExtensionRegistry() {
+        return JIPipe.getInstance().getPluginRegistry();
     }
 
     public void initializeUpdateSites() {
@@ -351,12 +351,12 @@ public class JIPipeDesktopModernPluginManager implements JIPipeDesktopWorkbenchA
     }
 
     @Override
-    public void onScheduledActivateExtension(JIPipeExtensionRegistry.ScheduledActivateExtensionEvent event) {
+    public void onScheduledActivatePlugin(JIPipePluginRegistry.ScheduledActivatePluginEvent event) {
         updateMessagePanel();
     }
 
     @Override
-    public void onScheduledDeactivateExtension(JIPipeExtensionRegistry.ScheduledDeactivateExtensionEvent event) {
+    public void onScheduledDeactivatePlugin(JIPipePluginRegistry.ScheduledDeactivatePluginEvent event) {
         updateMessagePanel();
     }
 

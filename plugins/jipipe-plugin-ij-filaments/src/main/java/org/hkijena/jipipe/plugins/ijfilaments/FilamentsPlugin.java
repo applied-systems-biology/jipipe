@@ -106,11 +106,6 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public ImageParameter getThumbnail() {
-        return new ImageParameter(RESOURCES.getResourceURL("thumbnail.png"));
-    }
-
-    @Override
     public String getDependencyId() {
         return "org.hkijena.jipipe:ij-filaments";
     }

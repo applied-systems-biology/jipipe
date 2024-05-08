@@ -70,9 +70,9 @@ public interface JIPipeDependency extends JIPipeValidatable {
             if (visited.contains(dependency.getDependencyId()))
                 continue;
             JIPipeMutableDependency copy = new JIPipeMutableDependency(dependency);
-            if (minimize) {
-                copy.getMetadata().setThumbnail(new ImageParameter());
-            }
+//            if (minimize) {
+//                copy.getMetadata().setThumbnail(new ImageParameter());
+//            }
             copy.setDependencies(new HashSet<>());
             result.add(copy);
             stack.addAll(dependency.getDependencies());

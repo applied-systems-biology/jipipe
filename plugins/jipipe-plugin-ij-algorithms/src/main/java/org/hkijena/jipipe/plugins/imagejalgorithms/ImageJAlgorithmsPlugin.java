@@ -181,11 +181,6 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public ImageParameter getThumbnail() {
-        return new ImageParameter(ResourceUtils.getPluginResource("thumbnails/fiji.png"));
-    }
-
-    @Override
     public Set<JIPipeDependency> getDependencies() {
         return Sets.newHashSet(CorePlugin.AS_DEPENDENCY, TablesPlugin.AS_DEPENDENCY, StringsPlugin.AS_DEPENDENCY, FormsPlugin.AS_DEPENDENCY, ImageJDataTypesPlugin.AS_DEPENDENCY);
     }

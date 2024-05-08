@@ -33,7 +33,6 @@ import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNode;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNodeTool;
 import org.hkijena.jipipe.api.nodes.infos.JIPipeJavaNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeDefaultParameterTypeInfo;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterGenerator;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.project.JIPipeProjectMetadata;
@@ -105,7 +104,6 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
         metadata.setCitation(getCitation());
         metadata.setLicense(getLicense());
         metadata.setWebsite(getWebsite());
-        metadata.setThumbnail(getThumbnail());
         metadata.setAcknowledgements(getAcknowledgements());
         metadata.setCategories(getCategories());
     }
@@ -117,7 +115,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      */
     public PluginCategoriesEnumParameter.List getCategories() {
         PluginCategoriesEnumParameter.List result = new PluginCategoriesEnumParameter.List();
-        if (isCoreExtension()) {
+        if (isCorePlugin()) {
             result.add(new PluginCategoriesEnumParameter("Core"));
         }
         return result;
@@ -132,18 +130,6 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
         return new JIPipeAuthorMetadata.List();
     }
 
-    /**
-     * Returns the thumbnail
-     *
-     * @return the thumbnail
-     */
-    public ImageParameter getThumbnail() {
-        if (isCoreExtension()) {
-            return new ImageParameter(ResourceUtils.getPluginResource("core-extension-thumbnail-default.png"));
-        } else {
-            return new ImageParameter(ResourceUtils.getPluginResource("extension-thumbnail-default.png"));
-        }
-    }
 
     @Override
     public Set<JIPipeDependency> getDependencies() {
