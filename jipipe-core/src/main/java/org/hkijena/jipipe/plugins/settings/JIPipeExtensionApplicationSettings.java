@@ -63,9 +63,11 @@ public class JIPipeExtensionApplicationSettings extends JIPipeDefaultApplication
             if (node != null && !node.isMissingNode()) {
                 JIPipeParameterTree tree = new JIPipeParameterTree(result);
                 for (Map.Entry<String, JIPipeParameterAccess> entry : tree.getParameters().entrySet()) {
-                    JsonNode entryNode = node.path(ID + "/" + entry.getKey());
-                    Object value = JsonUtils.getObjectMapper().readerFor(entry.getValue().getFieldClass()).readValue(entryNode);
-                    entry.getValue().set(value);
+                    JsonNode entryNode = node.path(ID).path(entry.getKey());
+                    if(!entryNode.isMissingNode()) {
+                        Object value = JsonUtils.getObjectMapper().readerFor(entry.getValue().getFieldClass()).readValue(entryNode);
+                        entry.getValue().set(value);
+                    }
                 }
             }
         } catch (Exception e) {
