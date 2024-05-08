@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.app.extensions.JIPipeDesktopActivateAndApplyUpdateSiteRun;
+import org.hkijena.jipipe.desktop.app.plugins.JIPipeDesktopActivateAndApplyUpdateSiteRun;
 import org.hkijena.jipipe.desktop.app.extensions.JIPipeDesktopExtensionItemActionButton;
 import org.hkijena.jipipe.desktop.app.extensions.JIPipeDesktopModernPluginManager;
 import org.hkijena.jipipe.desktop.app.extensions.JIPipeDesktopUpdateSitePlugin;

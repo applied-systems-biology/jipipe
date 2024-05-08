@@ -30,6 +30,8 @@ import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
+import org.hkijena.jipipe.desktop.app.plugins.JIPipeDesktopActivateAndApplyUpdateSiteRun;
+import org.hkijena.jipipe.desktop.app.plugins.JIPipeDesktopDeactivateAndApplyUpdateSiteRun;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopMessagePanel;
 import org.hkijena.jipipe.desktop.commons.ijupdater.JIPipeDesktopImageJUpdaterConflictDialog;

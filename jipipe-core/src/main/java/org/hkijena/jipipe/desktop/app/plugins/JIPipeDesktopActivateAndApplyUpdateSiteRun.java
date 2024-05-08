@@ -11,13 +11,14 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.desktop.app.extensions;
+package org.hkijena.jipipe.desktop.app.plugins;
 
 import net.imagej.updater.FilesCollection;
 import net.imagej.updater.Installer;
 import net.imagej.updater.UpdateSite;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
+import org.hkijena.jipipe.desktop.app.extensions.JIPipeDesktopModernPluginManager;
 import org.hkijena.jipipe.desktop.commons.ijupdater.JIPipeDesktopImageJUpdaterProgressAdapter2;
 import org.xml.sax.SAXException;
 

@@ -5,13 +5,17 @@ import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipePlugin;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.artifacts.*;
+import org.hkijena.jipipe.api.run.JIPipeRunnable;
+import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueueButton;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopMessagePanel;
+import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
+import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -25,7 +29,7 @@ import java.awt.event.WindowEvent;
 import java.util.*;
 import java.util.List;
 
-public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel {
+public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel implements JIPipeRunnable.FinishedEventListener {
 
     private static JFrame CURRENT_WINDOW = null;
     private final List<PluginEntry> pluginEntryList = new ArrayList<>();
@@ -34,6 +38,7 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel {
     private final JCheckBox onlyNewToggle = new JCheckBox("Only new", false);
     private final JIPipeDesktopSearchTextField searchTextField = new JIPipeDesktopSearchTextField();
     private JScrollPane pluginsListScrollPane;
+    private static boolean SHOW_RESTART_PROMPT;
 
     public JIPipeDesktopPluginManagerUI(JIPipeDesktopWorkbench desktopWorkbench) {
         super(desktopWorkbench);
@@ -41,6 +46,7 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel {
         loadAvailablePlugins();
         updatePluginsList();
         updateSelectionPanel();
+        JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribe(this);
     }
 
     private void loadAvailablePlugins() {
@@ -229,7 +235,11 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel {
     }
 
     private void showImageJUpdateSiteInfo(JIPipeImageJUpdateSiteDependency updateSiteDependency) {
-        // TODO
+        String message = "# " + updateSiteDependency.getName() + "\n\n" +
+                "Description: " + updateSiteDependency.getDescription() + "\n\n" +
+                "URL: " + updateSiteDependency.getUrl() + "\n\n" +
+                "Maintainer: " + updateSiteDependency.getMaintainer();
+        JIPipeDesktopMarkdownReader.showDialog(new MarkdownText(message), true, "Update site info", this, false);
     }
 
     private void addAuthors(JIPipeAuthorMetadata.List authors, String label) {
@@ -306,6 +316,14 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel {
             });
         });
         repaint();
+    }
+
+    @Override
+    public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
+        if(event.getRun() instanceof JIPipeDesktopActivateAndApplyUpdateSiteRun || event.getRun() instanceof JIPipeDesktopDeactivateAndApplyUpdateSiteRun) {
+            SHOW_RESTART_PROMPT = true;
+            updateSelectionPanel();
+        }
     }
 
     public static class PluginEntry {
