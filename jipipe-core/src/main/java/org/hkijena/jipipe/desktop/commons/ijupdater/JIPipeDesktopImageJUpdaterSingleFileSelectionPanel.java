@@ -94,12 +94,12 @@ public class JIPipeDesktopImageJUpdaterSingleFileSelectionPanel extends JIPipeDe
         formPanel.addWideToForm(actionButtons, null);
 
         formPanel.addGroupHeader("General information", UIUtils.getIconFromResources("actions/configure.png"));
-        formPanel.addToForm(UIUtils.makeReadonlyBorderlessTextField(fileObject.getFilename()), new JLabel("File name"), null);
-        formPanel.addToForm(UIUtils.makeReadonlyBorderlessTextField(fileObject.getLocalFilename(true)), new JLabel("Local file name"), null);
-        formPanel.addToForm(UIUtils.makeReadonlyBorderlessTextField(prettyPrintTimestamp(fileObject.getTimestamp())), new JLabel("Release data"), null);
-        formPanel.addToForm(UIUtils.makeReadonlyBorderlessTextArea(fileObject.getDescription()), new JLabel("Description"), null);
-        formPanel.addToForm(UIUtils.makeReadonlyBorderlessTextArea(String.join("\n", fileObject.getCategories())), new JLabel("Categories"), null);
-        formPanel.addToForm(UIUtils.makeReadonlyBorderlessTextArea(String.join("\n", fileObject.getAuthors())), new JLabel("Authors"), null);
+        formPanel.addToForm(UIUtils.createReadonlyBorderlessTextField(fileObject.getFilename()), new JLabel("File name"), null);
+        formPanel.addToForm(UIUtils.createReadonlyBorderlessTextField(fileObject.getLocalFilename(true)), new JLabel("Local file name"), null);
+        formPanel.addToForm(UIUtils.createReadonlyBorderlessTextField(prettyPrintTimestamp(fileObject.getTimestamp())), new JLabel("Release data"), null);
+        formPanel.addToForm(UIUtils.createReadonlyBorderlessTextArea(fileObject.getDescription()), new JLabel("Description"), null);
+        formPanel.addToForm(UIUtils.createReadonlyBorderlessTextArea(String.join("\n", fileObject.getCategories())), new JLabel("Categories"), null);
+        formPanel.addToForm(UIUtils.createReadonlyBorderlessTextArea(String.join("\n", fileObject.getAuthors())), new JLabel("Authors"), null);
         ImmutableList<String> urls = ImmutableList.copyOf(fileObject.getLinks());
         if (!urls.isEmpty()) {
             Map<TextAttribute, Integer> fontAttributes = new HashMap<>();
@@ -121,7 +121,7 @@ public class JIPipeDesktopImageJUpdaterSingleFileSelectionPanel extends JIPipeDe
         }
 
         formPanel.addGroupHeader("Dependencies", UIUtils.getIconFromResources("actions/configure.png"));
-        formPanel.addWideToForm(UIUtils.makeReadonlyBorderlessTextArea(ImmutableList.copyOf(fileObject.getFileDependencies(
+        formPanel.addWideToForm(UIUtils.createReadonlyBorderlessTextArea(ImmutableList.copyOf(fileObject.getFileDependencies(
                 managerUI.getFilesCollection(), true
         )).stream().map(FileObject::getFilename).collect(Collectors.joining("\n"))), null);
 

@@ -37,7 +37,7 @@ public class PolygonMaskDrawer2DTool extends MaskDrawer2DTool implements MouseCl
     public static boolean DEFAULT_SETTING_CLOSE = true;
     public static boolean DEFAULT_SETTING_FILL = true;
 
-    private final JTextArea infoArea = UIUtils.makeReadonlyBorderlessTextArea("");
+    private final JTextArea infoArea = UIUtils.createReadonlyBorderlessTextArea("");
     private List<Point> referencePoints = new ArrayList<>();
     private JCheckBox closeToggle;
     private JCheckBox fillToggle;

@@ -63,7 +63,7 @@ public class JIPipeDesktopDataBatchUI extends JIPipeDesktopProjectWorkbenchPanel
         JIPipeDesktopFormPanel metaDataList = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.NONE);
         for (JIPipeTextAnnotation annotation : batch.getMergedTextAnnotations().values()) {
             JLabel title = new JLabel(annotation.getName(), UIUtils.getIconFromResources("data-types/annotation.png"), JLabel.LEFT);
-            JTextField content = UIUtils.makeReadonlyBorderlessTextField(WordUtils.abbreviate(annotation.getValue(), 50, 70, " ..."));
+            JTextField content = UIUtils.createReadonlyBorderlessTextField(WordUtils.abbreviate(annotation.getValue(), 50, 70, " ..."));
             content.setToolTipText(annotation.getValue());
             metaDataList.addToForm(content, title, null);
         }

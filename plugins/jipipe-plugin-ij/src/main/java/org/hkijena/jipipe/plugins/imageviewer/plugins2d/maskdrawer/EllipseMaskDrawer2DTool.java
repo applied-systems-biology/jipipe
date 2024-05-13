@@ -35,7 +35,7 @@ public class EllipseMaskDrawer2DTool extends MaskDrawer2DTool implements MouseCl
     public static boolean DEFAULT_SETTING_SQUARE = false;
     public static boolean DEFAULT_SETTING_FILL = true;
 
-    private final JTextArea infoArea = UIUtils.makeReadonlyBorderlessTextArea("");
+    private final JTextArea infoArea = UIUtils.createReadonlyBorderlessTextArea("");
     private Point referencePoint;
     private JCheckBox startFromCenterToggle;
     private JCheckBox squareToggle;

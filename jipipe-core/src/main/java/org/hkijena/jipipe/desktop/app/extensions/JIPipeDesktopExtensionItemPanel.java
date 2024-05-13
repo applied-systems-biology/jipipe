@@ -109,7 +109,7 @@ public class JIPipeDesktopExtensionItemPanel extends JIPipeDesktopWorkbenchPanel
                 0,
                 0));
 
-        JTextPane descriptionLabel = UIUtils.makeBorderlessReadonlyTextPane(extension.getMetadata().getSummary().getHtml(), true);
+        JTextPane descriptionLabel = UIUtils.createBorderlessReadonlyTextPane(extension.getMetadata().getSummary().getHtml(), true);
         descriptionLabel.setOpaque(false);
         logoPanel.add(descriptionLabel, new GridBagConstraints(0,
                 1,

@@ -112,7 +112,7 @@ public class JIPipeDesktopMessagePanel extends JIPipeDesktopFormPanel {
         private void initialize() {
             setLayout(new BorderLayout());
             setBorder(new RoundedLineBorder(type.background.darker(), 1, 4));
-            JTextArea messageTextArea = UIUtils.makeReadonlyBorderlessTextArea(text);
+            JTextArea messageTextArea = UIUtils.createReadonlyBorderlessTextArea(text);
             messageTextArea.setForeground(type.foreground);
 
             add(messageTextArea, BorderLayout.CENTER);
@@ -130,7 +130,7 @@ public class JIPipeDesktopMessagePanel extends JIPipeDesktopFormPanel {
             }
             if (withCloseButton) {
                 JButton closeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
-                UIUtils.makeFlat25x25(closeButton);
+                UIUtils.makeButtonFlat25x25(closeButton);
                 closeButton.addActionListener(e -> {
                     closeMessage();
                 });

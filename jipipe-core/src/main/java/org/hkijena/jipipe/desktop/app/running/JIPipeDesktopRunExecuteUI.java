@@ -27,7 +27,7 @@ import java.awt.*;
 /**
  * UI that executes an {@link JIPipeRunnable}
  */
-public class JIPipeDesktopRunExecuterUI extends JIPipeDesktopWorkbenchPanel implements JIPipeRunnable.StartedEventListener, JIPipeRunnable.InterruptedEventListener, JIPipeRunnable.ProgressEventListener, JIPipeRunnable.FinishedEventListener {
+public class JIPipeDesktopRunExecuteUI extends JIPipeDesktopWorkbenchPanel implements JIPipeRunnable.StartedEventListener, JIPipeRunnable.InterruptedEventListener, JIPipeRunnable.ProgressEventListener, JIPipeRunnable.FinishedEventListener {
     private final JIPipeRunnableQueue queue;
     private final JIPipeRunnable run;
     private JProgressBar progressBar;
@@ -36,7 +36,7 @@ public class JIPipeDesktopRunExecuterUI extends JIPipeDesktopWorkbenchPanel impl
     private JTextArea log;
     private JDialog dialog;
 
-    public JIPipeDesktopRunExecuterUI(JIPipeDesktopWorkbench workbench, JIPipeRunnable run) {
+    public JIPipeDesktopRunExecuteUI(JIPipeDesktopWorkbench workbench, JIPipeRunnable run) {
         this(workbench, run, JIPipeRunnableQueue.getInstance());
     }
 
@@ -44,7 +44,7 @@ public class JIPipeDesktopRunExecuterUI extends JIPipeDesktopWorkbenchPanel impl
      * @param workbench the workbench
      * @param run       The runnable
      */
-    public JIPipeDesktopRunExecuterUI(JIPipeDesktopWorkbench workbench, JIPipeRunnable run, JIPipeRunnableQueue queue) {
+    public JIPipeDesktopRunExecuteUI(JIPipeDesktopWorkbench workbench, JIPipeRunnable run, JIPipeRunnableQueue queue) {
         super(workbench);
         this.run = run;
         this.queue = queue;
@@ -63,7 +63,7 @@ public class JIPipeDesktopRunExecuterUI extends JIPipeDesktopWorkbenchPanel impl
         JDialog dialog = new JDialog();
         dialog.setTitle(run.getTaskLabel());
         dialog.setIconImage(UIUtils.getJIPipeIcon128());
-        JIPipeDesktopRunExecuterUI ui = new JIPipeDesktopRunExecuterUI(workbench, run, queue);
+        JIPipeDesktopRunExecuteUI ui = new JIPipeDesktopRunExecuteUI(workbench, run, queue);
         ui.setDialog(dialog);
         dialog.setContentPane(ui);
         dialog.pack();

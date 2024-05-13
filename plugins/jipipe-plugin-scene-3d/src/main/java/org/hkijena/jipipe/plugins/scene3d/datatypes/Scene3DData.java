@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.utils.JIPipeSerializedJsonObjectData;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.plugins.scene3d.model.Scene3DNode;
 import org.hkijena.jipipe.plugins.scene3d.utils.Scene3DToColladaExporter;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
@@ -56,7 +56,7 @@ public class Scene3DData extends JIPipeSerializedJsonObjectData implements List<
         if (outputFile != null) {
             JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Collada export");
             Scene3DToColladaExporter exporter = new Scene3DToColladaExporter(this, outputFile);
-            JIPipeDesktopRunExecuterUI.runInDialog(desktopWorkbench, desktopWorkbench.getWindow(), exporter, queue);
+            JIPipeDesktopRunExecuteUI.runInDialog(desktopWorkbench, desktopWorkbench.getWindow(), exporter, queue);
         }
     }
 

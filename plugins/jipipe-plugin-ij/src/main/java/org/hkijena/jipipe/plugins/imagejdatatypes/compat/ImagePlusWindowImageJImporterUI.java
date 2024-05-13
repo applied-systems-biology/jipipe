@@ -62,7 +62,7 @@ public class ImagePlusWindowImageJImporterUI extends ImageJDataImporterUI {
         JButton reloadButton = new JButton(UIUtils.getIconFromResources("actions/view-refresh.png"));
         reloadButton.setToolTipText("Reload list of available images");
         reloadButton.addActionListener(e -> reloadList());
-        UIUtils.makeFlat25x25(reloadButton);
+        UIUtils.makeButtonFlat25x25(reloadButton);
         add(reloadButton, BorderLayout.EAST);
     }
 

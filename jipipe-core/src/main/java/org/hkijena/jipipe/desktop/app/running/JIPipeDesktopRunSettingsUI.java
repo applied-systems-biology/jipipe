@@ -319,7 +319,7 @@ public class JIPipeDesktopRunSettingsUI extends JIPipeDesktopProjectWorkbenchPan
     private void runNow() {
         removeAll();
         JIPipeRuntimeApplicationSettings.getInstance().setDefaultRunThreads(run.getConfiguration().getNumThreads());
-        JIPipeDesktopRunExecuterUI executerUI = new JIPipeDesktopRunExecuterUI(getDesktopWorkbench(), run);
+        JIPipeDesktopRunExecuteUI executerUI = new JIPipeDesktopRunExecuteUI(getDesktopWorkbench(), run);
         add(executerUI, BorderLayout.CENTER);
         revalidate();
         repaint();

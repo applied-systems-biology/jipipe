@@ -160,7 +160,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
 
         if (menu.getComponentCount() > 0) {
             JButton button = new JButton(UIUtils.getIconFromResources("actions/open-menu.png"));
-            UIUtils.makeFlat25x25(button);
+            UIUtils.makeButtonFlat25x25(button);
             button.setToolTipText("Shows the context menu for the selected node. Alternatively, you can also right-click the node");
             UIUtils.addPopupMenuToButton(button, menu);
             toolBar.add(Box.createHorizontalStrut(4), 0);
@@ -298,7 +298,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
                 toggleButton.setToolTipText("<html><strong>" + tool.getName() + "</strong><br/><br/>" + tool.getTooltip() +
                         (keyBinding != null ? "<br><br>Shortcut: <i><strong>" + UIUtils.keyStrokeToString(keyBinding) + "</strong></i>" : "") + "</html>");
                 toggleButton.addActionListener(e -> selectTool(tool));
-                UIUtils.makeFlat25x25(toggleButton);
+                UIUtils.makeButtonFlat25x25(toggleButton);
                 toolBar.add(toggleButton);
                 toolToggles.put(toggleableGraphEditorTool, toggleButton);
 
@@ -307,7 +307,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
                 button.setToolTipText("<html><strong>" + tool.getName() + "</strong><br/><br/>" + tool.getTooltip() +
                         (keyBinding != null ? "<br><br>Shortcut: <i><strong>" + UIUtils.keyStrokeToString(keyBinding) + "</strong></i>" : "") + "</html>");
                 button.addActionListener(e -> selectTool(tool));
-                UIUtils.makeFlat25x25(button);
+                UIUtils.makeButtonFlat25x25(button);
                 toolBar.add(button);
             }
 
@@ -383,7 +383,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
 
         List<JIPipeDesktopGraphEditorToolBarButtonExtension> graphEditorToolBarButtonExtensions = JIPipe.getCustomMenus().graphEditorToolBarButtonExtensionsFor(this);
         for (JIPipeDesktopGraphEditorToolBarButtonExtension extension : graphEditorToolBarButtonExtensions) {
-            UIUtils.makeFlat25x25(extension);
+            UIUtils.makeButtonFlat25x25(extension);
             menuBar.add(extension);
         }
 
@@ -393,13 +393,13 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         if (getHistoryJournal() != null) {
             JButton undoButton = new JButton(UIUtils.getIconFromResources("actions/undo.png"));
             undoButton.setToolTipText("<html>Undo<br><i>Ctrl-Z</i></html>");
-            UIUtils.makeFlat25x25(undoButton);
+            UIUtils.makeButtonFlat25x25(undoButton);
             undoButton.addActionListener(e -> undo());
             menuBar.add(undoButton);
 
             JButton redoButton = new JButton(UIUtils.getIconFromResources("actions/edit-redo.png"));
             redoButton.setToolTipText("<html>Redo<br><i>Ctrl-Shift-Z</i></html>");
-            UIUtils.makeFlat25x25(redoButton);
+            UIUtils.makeButtonFlat25x25(redoButton);
             redoButton.addActionListener(e -> redo());
             menuBar.add(redoButton);
         }
@@ -431,7 +431,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
 
     private void initializeZoomMenu() {
         JButton zoomOutButton = new JButton(UIUtils.getIconFromResources("actions/square-minus.png"));
-        UIUtils.makeFlat25x25(zoomOutButton);
+        UIUtils.makeButtonFlat25x25(zoomOutButton);
         zoomOutButton.setToolTipText("<html>Zoom out<br><i>Ctrl-NumPad -</i></html>");
         zoomOutButton.addActionListener(e -> canvasUI.zoomOut());
         menuBar.add(zoomOutButton);
@@ -469,7 +469,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         menuBar.add(zoomButton);
 
         JButton zoomInButton = new JButton(UIUtils.getIconFromResources("actions/square-plus.png"));
-        UIUtils.makeFlat25x25(zoomInButton);
+        UIUtils.makeButtonFlat25x25(zoomInButton);
         zoomInButton.setToolTipText("<html>Zoom in<br><i>Ctrl-NumPad +</i></html>");
         zoomInButton.addActionListener(e -> canvasUI.zoomIn());
         menuBar.add(zoomInButton);

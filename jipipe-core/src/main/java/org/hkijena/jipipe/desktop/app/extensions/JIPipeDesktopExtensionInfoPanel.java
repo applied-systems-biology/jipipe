@@ -93,10 +93,10 @@ public class JIPipeDesktopExtensionInfoPanel extends JPanel {
         JIPipeDesktopFormPanel panel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.WITH_SCROLLING);
         // Technical info
         panel.addGroupHeader("Overview", UIUtils.getIconFromResources("actions/code-context.png"));
-        panel.addToForm(UIUtils.makeReadonlyTextField(extension.getDependencyId()), new JLabel("ID"), null);
-        panel.addToForm(UIUtils.makeReadonlyTextField(extension.getDependencyVersion()), new JLabel("Version"), null);
-        panel.addToForm(UIUtils.makeReadonlyTextField(extension.getMetadata().getLicense()), new JLabel("License"), null);
-        panel.addToForm(UIUtils.makeReadonlyTextField("" + extension.getDependencyLocation()), new JLabel("Defining file"), null);
+        panel.addToForm(UIUtils.createReadonlyTextField(extension.getDependencyId()), new JLabel("ID"), null);
+        panel.addToForm(UIUtils.createReadonlyTextField(extension.getDependencyVersion()), new JLabel("Version"), null);
+        panel.addToForm(UIUtils.createReadonlyTextField(extension.getMetadata().getLicense()), new JLabel("License"), null);
+        panel.addToForm(UIUtils.createReadonlyTextField("" + extension.getDependencyLocation()), new JLabel("Defining file"), null);
         String typeName;
         if (extension instanceof JIPipeDesktopUpdateSitePlugin) {
             typeName = "ImageJ update site";
@@ -108,7 +108,7 @@ public class JIPipeDesktopExtensionInfoPanel extends JPanel {
         panel.addToForm(new JLabel(typeName), new JLabel("Type"), null);
 
         if (extension.isActivated()) {
-            panel.addToForm(UIUtils.makeReadonlyTextField(JIPipe.getDataTypes().getDeclaredBy(extension).size() + " data types, " + JIPipe.getNodes().getDeclaredBy(extension).size() + " nodes"), new JLabel("Registered functions"), null);
+            panel.addToForm(UIUtils.createReadonlyTextField(JIPipe.getDataTypes().getDeclaredBy(extension).size() + " data types, " + JIPipe.getNodes().getDeclaredBy(extension).size() + " nodes"), new JLabel("Registered functions"), null);
         }
 
         // Dependencies
@@ -116,10 +116,10 @@ public class JIPipeDesktopExtensionInfoPanel extends JPanel {
         if (!dependencies.isEmpty() || !extension.getImageJUpdateSiteDependencies().isEmpty()) {
             panel.addGroupHeader("Dependencies", UIUtils.getIconFromResources("actions/distribute-graph-directed.png"));
             for (JIPipeDependency dependency : dependencies) {
-                panel.addToForm(UIUtils.makeReadonlyTextField("id=" + dependency.getDependencyId() + ", version=" + dependency.getDependencyVersion()), new JLabel("Dependency"), null);
+                panel.addToForm(UIUtils.createReadonlyTextField("id=" + dependency.getDependencyId() + ", version=" + dependency.getDependencyVersion()), new JLabel("Dependency"), null);
             }
             for (JIPipeImageJUpdateSiteDependency dependency : extension.getImageJUpdateSiteDependencies()) {
-                panel.addToForm(UIUtils.makeReadonlyTextField("name=" + dependency.getName() + ", url=" + dependency.getUrl()), new JLabel("ImageJ update site"), null);
+                panel.addToForm(UIUtils.createReadonlyTextField("name=" + dependency.getName() + ", url=" + dependency.getUrl()), new JLabel("ImageJ update site"), null);
             }
         }
 
@@ -159,9 +159,9 @@ public class JIPipeDesktopExtensionInfoPanel extends JPanel {
         panel.addWideToForm(titlePanel, null);
 
         // Description
-        panel.addWideToForm(UIUtils.makeBorderlessReadonlyTextPane(extension.getMetadata().getSummary().getHtml(), false), null);
+        panel.addWideToForm(UIUtils.createBorderlessReadonlyTextPane(extension.getMetadata().getSummary().getHtml(), false), null);
         if (!StringUtils.isNullOrEmpty(extension.getMetadata().getWebsite())) {
-            JTextPane pane = UIUtils.makeBorderlessReadonlyTextPane("<html><a href=\"" + HtmlEscapers.htmlEscaper().escape(extension.getMetadata().getWebsite()) + "\">" + HtmlEscapers.htmlEscaper().escape(extension.getMetadata().getWebsite()) + "</a></html>", false);
+            JTextPane pane = UIUtils.createBorderlessReadonlyTextPane("<html><a href=\"" + HtmlEscapers.htmlEscaper().escape(extension.getMetadata().getWebsite()) + "\">" + HtmlEscapers.htmlEscaper().escape(extension.getMetadata().getWebsite()) + "</a></html>", false);
             pane.addHyperlinkListener(e -> {
                 if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
                     {
@@ -178,7 +178,7 @@ public class JIPipeDesktopExtensionInfoPanel extends JPanel {
             panel.addWideToForm(pane, null);
         }
         if (!Objects.equals(extension.getMetadata().getSummary().getHtml(), extension.getMetadata().getDescription().getHtml())) {
-            panel.addWideToForm(UIUtils.makeBorderlessReadonlyTextPane(extension.getMetadata().getDescription().getHtml(), false), null);
+            panel.addWideToForm(UIUtils.createBorderlessReadonlyTextPane(extension.getMetadata().getDescription().getHtml(), false), null);
         }
         if (extension.isBeta()) {
             panel.addWideToForm(new JLabel("Beta-test: this extension is currently being tested. Its functions might change extensively in future updates.", UIUtils.getIconFromResources("emblems/vcs-locally-modified-unstaged.png"), JLabel.LEFT));
@@ -200,10 +200,10 @@ public class JIPipeDesktopExtensionInfoPanel extends JPanel {
         if (!StringUtils.isNullOrEmpty(extension.getMetadata().getCitation()) || !extension.getMetadata().getDependencyCitations().isEmpty()) {
             panel.addGroupHeader("Citations", UIUtils.getIconFromResources("actions/contents.png"));
             if (!StringUtils.isNullOrEmpty(extension.getMetadata().getCitation())) {
-                panel.addToForm(UIUtils.makeBorderlessReadonlyTextPane(extension.getMetadata().getCitation(), false), new JLabel("Extension citation"), null);
+                panel.addToForm(UIUtils.createBorderlessReadonlyTextPane(extension.getMetadata().getCitation(), false), new JLabel("Extension citation"), null);
             }
             for (String citation : extension.getMetadata().getDependencyCitations()) {
-                panel.addToForm(UIUtils.makeBorderlessReadonlyTextPane(citation, false), new JLabel("Also cite"), null);
+                panel.addToForm(UIUtils.createBorderlessReadonlyTextPane(citation, false), new JLabel("Also cite"), null);
             }
         }
 

@@ -86,7 +86,7 @@ public class JIPipeDesktopPathEditorComponent extends JPanel {
 
         generateRandomButton = new JButton(UIUtils.getIconFromResources("actions/random.png"));
         generateRandomButton.setToolTipText("Generate random file or folder");
-        UIUtils.makeFlat25x25(generateRandomButton);
+        UIUtils.makeButtonFlat25x25(generateRandomButton);
         generateRandomButton.setBorder(null);
         generateRandomButton.addActionListener(e -> generateRandom());
         add(generateRandomButton, new GridBagConstraints() {
@@ -99,7 +99,7 @@ public class JIPipeDesktopPathEditorComponent extends JPanel {
 
         JButton selectButton = new JButton(UIUtils.getIconFromResources("actions/document-open-folder.png"));
         selectButton.setToolTipText("Select from filesystem");
-        UIUtils.makeFlat25x25(selectButton);
+        UIUtils.makeButtonFlat25x25(selectButton);
         selectButton.setBorder(null);
         add(selectButton, new GridBagConstraints() {
             {

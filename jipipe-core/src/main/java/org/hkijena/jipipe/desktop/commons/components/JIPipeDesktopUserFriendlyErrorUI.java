@@ -199,7 +199,7 @@ public class JIPipeDesktopUserFriendlyErrorUI extends JIPipeDesktopFormPanel imp
         formPanel.addWideToForm(titleLabel);
 
         if (!StringUtils.isNullOrEmpty(entry.getExplanation())) {
-            JTextArea textArea = UIUtils.makeReadonlyBorderlessTextArea(entry.getExplanation());
+            JTextArea textArea = UIUtils.createReadonlyBorderlessTextArea(entry.getExplanation());
             textArea.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 0));
             formPanel.addWideToForm(textArea);
         }

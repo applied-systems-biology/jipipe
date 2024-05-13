@@ -197,7 +197,7 @@ public class ParameterTableEditorWindow extends JFrame {
                     palettePanel.addWideToForm(editor, JIPipeDesktopParameterPanel.generateParameterDocumentation(multiParameterAccess, null));
                 }
 
-                JTextField keyInfo = UIUtils.makeReadonlyBorderlessTextField(parameterTable.getColumnInfo(selectedColumns[0]).getKey());
+                JTextField keyInfo = UIUtils.createReadonlyBorderlessTextField(parameterTable.getColumnInfo(selectedColumns[0]).getKey());
                 keyInfo.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
                 JLabel keyInfoLabel = new JLabel("Will be written into");
                 keyInfoLabel.setIcon(UIUtils.getIconFromResources("actions/dialog-xml-editor.png"));

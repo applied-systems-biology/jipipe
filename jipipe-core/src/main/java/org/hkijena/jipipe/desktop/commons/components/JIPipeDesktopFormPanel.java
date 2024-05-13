@@ -131,7 +131,7 @@ public class JIPipeDesktopFormPanel extends JXPanel {
         helpToolbar.setFloatable(false);
 
         JButton switchToDefaultHelpButton = new JButton(UIUtils.getIconFromResources("actions/go-home.png"));
-        UIUtils.makeFlat25x25(switchToDefaultHelpButton);
+        UIUtils.makeButtonFlat25x25(switchToDefaultHelpButton);
         switchToDefaultHelpButton.addActionListener(e -> switchToDefaultHelp());
         helpToolbar.add(switchToDefaultHelpButton);
 
@@ -735,7 +735,7 @@ public class JIPipeDesktopFormPanel extends JXPanel {
             });
             ++columnCount;
 
-            descriptionArea = UIUtils.makeBorderlessReadonlyTextPane("", true);
+            descriptionArea = UIUtils.createBorderlessReadonlyTextPane("", true);
             descriptionArea.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
             descriptionArea.setOpaque(false);
             descriptionArea.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 4));

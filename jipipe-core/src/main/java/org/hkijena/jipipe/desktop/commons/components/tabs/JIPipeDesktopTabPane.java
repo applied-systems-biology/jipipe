@@ -309,7 +309,7 @@ public class JIPipeDesktopTabPane extends JPanel implements Disposable {
         }
         if (allowRename) {
             JMenuItem renameButton = new JMenuItem("Rename", UIUtils.getIconFromResources("actions/tag.png"));
-            UIUtils.makeBorderlessWithoutMargin(renameButton);
+            UIUtils.makeButtonBorderlessWithoutMargin(renameButton);
             renameButton.addActionListener(e -> {
                 String newName = JOptionPane.showInputDialog(this, "Rename tab '" + tab.getTitle() + "' to ...", tab.getTitle());
                 if (newName != null && !newName.isEmpty()) {
@@ -431,7 +431,7 @@ public class JIPipeDesktopTabPane extends JPanel implements Disposable {
             addTab(tab);
             switchToLastTab();
         });
-        UIUtils.makeFlat(reAttachButton);
+        UIUtils.makeButtonFlat(reAttachButton);
         statusBar.add(reAttachButton);
 
         contentPane.add(statusBar, BorderLayout.SOUTH);

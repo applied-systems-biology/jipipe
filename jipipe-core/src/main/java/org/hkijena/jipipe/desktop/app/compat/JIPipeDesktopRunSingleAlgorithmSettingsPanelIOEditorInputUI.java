@@ -58,8 +58,8 @@ public class JIPipeDesktopRunSingleAlgorithmSettingsPanelIOEditorInputUI extends
         JButton pickImporterButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
         pickImporterButton.addActionListener(e -> pickImporter());
         editImporterPanel.add(pickImporterButton, BorderLayout.EAST);
-        UIUtils.makeFlat25x25(pickImporterButton);
-        UIUtils.makeFlat(selectImporterButton);
+        UIUtils.makeButtonFlat25x25(pickImporterButton);
+        UIUtils.makeButtonFlat(selectImporterButton);
         titlePanel.add(editImporterPanel, BorderLayout.EAST);
         add(titlePanel);
 

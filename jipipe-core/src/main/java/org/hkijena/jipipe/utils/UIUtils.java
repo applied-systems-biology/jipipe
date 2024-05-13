@@ -213,7 +213,7 @@ public class UIUtils {
 
     public static JButton createPopupHelpButton(String text) {
         JButton helpButton = new JButton(UIUtils.getIconFromResources("actions/help.png"));
-        UIUtils.makeFlat25x25(helpButton);
+        UIUtils.makeButtonFlat25x25(helpButton);
         helpButton.addActionListener(e -> {
             MarkdownText document = new MarkdownText(text);
             JIPipeDesktopMarkdownReader.showDialog(document, false, "Info", SwingUtilities.getWindowAncestor(helpButton), false);
@@ -224,7 +224,7 @@ public class UIUtils {
 
     public static JButton createBalloonHelpButton(String text) {
         JButton helpButton = new JButton(UIUtils.getIconFromResources("actions/help.png"));
-        UIUtils.makeFlat25x25(helpButton);
+        UIUtils.makeButtonFlat25x25(helpButton);
         UIUtils.addBalloonToComponent(helpButton, text);
         helpButton.setOpaque(false);
         return helpButton;
@@ -857,7 +857,7 @@ public class UIUtils {
      *
      * @param component the button
      */
-    public static void makeFlat25x25(AbstractButton component) {
+    public static void makeButtonFlat25x25(AbstractButton component) {
         component.setBackground(Color.WHITE);
         component.setOpaque(false);
         component.setPreferredSize(new Dimension(25, 25));
@@ -886,7 +886,7 @@ public class UIUtils {
      *
      * @param component the button
      */
-    public static void makeFlat(AbstractButton component) {
+    public static void makeButtonFlat(AbstractButton component) {
         component.setBackground(Color.WHITE);
         component.setOpaque(false);
 //        component.setPreferredSize(new Dimension(component.getPreferredSize().width, 25));
@@ -902,7 +902,7 @@ public class UIUtils {
      *
      * @param component the component
      */
-    public static void makeBorderlessWithoutMargin(AbstractButton component) {
+    public static void makeButtonBorderlessWithoutMargin(AbstractButton component) {
         component.setBackground(Color.WHITE);
         component.setOpaque(false);
         component.setBorder(null);
@@ -1063,6 +1063,7 @@ public class UIUtils {
         return new JLabel(builder.toString());
     }
 
+
     /**
      * Opens a dialog showing an exception
      *
@@ -1099,7 +1100,7 @@ public class UIUtils {
         messagePanel.setBorder(BorderFactory.createEmptyBorder(16, 8, 16, 8));
         messagePanel.add(new JLabel(UIUtils.getIcon32FromResources("dialog-warning.png")),
                 new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(4, 4, 4, 4), 0, 0));
-        messagePanel.add(makeReadonlyBorderlessTextArea(infoText),
+        messagePanel.add(createReadonlyBorderlessTextArea(infoText),
                 new GridBagConstraints(1, 0, 1, 1, 1, 1, GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH, new Insets(4, 4, 4, 4), 0, 0));
         contentPanel.add(messagePanel, BorderLayout.NORTH);
 
@@ -1144,7 +1145,7 @@ public class UIUtils {
             messagePanel.setBorder(BorderFactory.createEmptyBorder(16, 8, 16, 8));
             messagePanel.add(new JLabel(UIUtils.getIcon32FromResources("dialog-error.png")),
                     new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(4, 4, 4, 4), 0, 0));
-            messagePanel.add(makeReadonlyBorderlessTextArea(infoText),
+            messagePanel.add(createReadonlyBorderlessTextArea(infoText),
                     new GridBagConstraints(1, 0, 1, 1, 1, 1, GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH, new Insets(4, 4, 4, 4), 0, 0));
             contentPanel.add(messagePanel, BorderLayout.NORTH);
         }
@@ -1570,7 +1571,7 @@ public class UIUtils {
      *
      * @param toggleButton toggle button
      */
-    public static void makeToggleReadonly(JToggleButton toggleButton) {
+    public static void makeToggleButtonReadonly(JToggleButton toggleButton) {
         toggleButton.addActionListener(e -> toggleButton.setSelected(!toggleButton.isSelected()));
     }
 
@@ -1580,7 +1581,7 @@ public class UIUtils {
      * @param value text
      * @return textfield
      */
-    public static JTextField makeReadonlyTextField(String value) {
+    public static JTextField createReadonlyTextField(String value) {
         JTextField textField = new JTextField();
         textField.setText(value);
         textField.setEditable(false);
@@ -1594,7 +1595,7 @@ public class UIUtils {
      * @param text text
      * @return text area
      */
-    public static JTextArea makeReadonlyTextArea(String text) {
+    public static JTextArea createReadonlyTextArea(String text) {
         JTextArea textArea = new JTextArea();
         textArea.setBorder(UIUtils.createControlBorder());
         textArea.setEditable(false);
@@ -1610,7 +1611,7 @@ public class UIUtils {
      * @param text text
      * @return text area
      */
-    public static JTextPane makeReadonlyTextPane(String text) {
+    public static JTextPane createReadonlyTextPane(String text) {
         JTextPane textPane = new JTextPane();
         textPane.setBorder(UIUtils.createControlBorder());
         textPane.setEditable(false);
@@ -1659,7 +1660,7 @@ public class UIUtils {
      * @param opaque if the area should be opaque
      * @return text area
      */
-    public static JTextPane makeBorderlessReadonlyTextPane(String text, boolean opaque) {
+    public static JTextPane createBorderlessReadonlyTextPane(String text, boolean opaque) {
         JTextPane textPane = new JTextPane();
         textPane.setBorder(UIUtils.createControlBorder());
         textPane.setEditable(false);
@@ -1710,7 +1711,7 @@ public class UIUtils {
      * @param value text
      * @return textfield
      */
-    public static JTextField makeReadonlyBorderlessTextField(String value) {
+    public static JTextField createReadonlyBorderlessTextField(String value) {
         JTextField textField = new JTextField();
         textField.setText(value);
         textField.setBorder(null);
@@ -1725,7 +1726,7 @@ public class UIUtils {
      * @param text text
      * @return text area
      */
-    public static JTextArea makeReadonlyBorderlessTextArea(String text) {
+    public static JTextArea createReadonlyBorderlessTextArea(String text) {
         JTextArea textArea = new JTextArea();
         textArea.setBorder(null);
         textArea.setOpaque(false);
@@ -1743,7 +1744,7 @@ public class UIUtils {
      * @param css      style sheets
      * @return text pane
      */
-    public static JTextPane makeMarkdownReader(MarkdownText document, String[] css) {
+    public static JTextPane createMarkdownReader(MarkdownText document, String[] css) {
         JTextPane content = new JTextPane();
         HTMLEditorKit kit = new HTMLEditorKit();
         for (String rule : css) {
@@ -1836,7 +1837,7 @@ public class UIUtils {
      * @param url the URL
      * @return the label
      */
-    public static JLabel makeURLLabel(String url) {
+    public static JLabel createURLLabel(String url) {
         JLabel label = new JLabel("<html><a href=\"" + url + "\">" + url + "</a></html>");
         label.setCursor(new Cursor(Cursor.HAND_CURSOR));
         label.addMouseListener(new MouseAdapter() {
@@ -2156,7 +2157,7 @@ public class UIUtils {
         return button;
     }
 
-    public static void makeHighlightedSuccess(JButton button) {
+    public static void makeButtonHighlightedSuccess(JButton button) {
         button.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
                 BorderFactory.createCompoundBorder(new RoundedLineBorder(JIPipeNotificationAction.Style.Success.getBackground(), 1, 5),
                         BorderFactory.createEmptyBorder(3, 3, 3, 3))));

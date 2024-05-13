@@ -99,7 +99,7 @@ public class JIPipeDesktopParameterExplorerWindow extends JFrame implements JIPi
         nameIdLabel = new JIPipeDesktopReadonlyCopyableTextField("", true);
         typeLabel = new JIPipeDesktopReadonlyCopyableTextField("", false);
         typeIdLabel = new JIPipeDesktopReadonlyCopyableTextField("", true);
-        typeDescriptionLabel = UIUtils.makeReadonlyTextPane("");
+        typeDescriptionLabel = UIUtils.createReadonlyTextPane("");
 
         formPanel.addGroupHeader("General info", UIUtils.getIconFromResources("actions/help-info.png"));
         formPanel.addToForm(nameLabel, new JLabel("Name"), new MarkdownText("The name of the parameter"));

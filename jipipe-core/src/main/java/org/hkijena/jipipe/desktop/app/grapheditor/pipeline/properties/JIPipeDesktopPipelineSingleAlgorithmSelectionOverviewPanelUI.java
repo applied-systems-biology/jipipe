@@ -117,7 +117,7 @@ public class JIPipeDesktopPipelineSingleAlgorithmSelectionOverviewPanelUI extend
 
     private void initializeCache(JIPipeDesktopFormPanel formPanel, Map<String, JIPipeDataTable> query) {
         JIPipeDesktopFormPanel.GroupHeaderPanel groupHeader = formPanel.addGroupHeader("Results available", UIUtils.getIconFromResources("actions/database.png"));
-        formPanel.addWideToForm(UIUtils.makeBorderlessReadonlyTextPane("Previously generated results are stored in the memory cache. Click the 'Show results' button to review the results.", false));
+        formPanel.addWideToForm(UIUtils.createBorderlessReadonlyTextPane("Previously generated results are stored in the memory cache. Click the 'Show results' button to review the results.", false));
         groupHeader.addColumn(UIUtils.createButton("Show results", UIUtils.getIconFromResources("actions/open-in-new-window.png"), this::openCacheBrowser));
 
         JIPipeDesktopFormPanel ioTable = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.NONE);
@@ -130,7 +130,7 @@ public class JIPipeDesktopPipelineSingleAlgorithmSelectionOverviewPanelUI extend
             } else {
                 infoString = "0 items";
             }
-            ioTable.addToForm(UIUtils.makeBorderlessReadonlyTextPane(infoString, false),
+            ioTable.addToForm(UIUtils.createBorderlessReadonlyTextPane(infoString, false),
                     new JLabel("Out: " + StringUtils.orElse(outputSlot.getInfo().getCustomName(), outputSlot.getName()), JIPipe.getDataTypes().getIconFor(outputSlot.getAcceptedDataType()), JLabel.LEFT));
         }
 
@@ -144,7 +144,7 @@ public class JIPipeDesktopPipelineSingleAlgorithmSelectionOverviewPanelUI extend
     private void initializeNodeGroup(JIPipeDesktopFormPanel formPanel) {
         JIPipeDesktopFormPanel.GroupHeaderPanel groupHeader = formPanel.addGroupHeader("Group contents", UIUtils.getIconFromResources("actions/help-info.png"));
         groupHeader.addColumn(UIUtils.createButton("Edit", UIUtils.getIconFromResources("actions/edit.png"), this::editNodeGroupContents));
-        formPanel.addWideToForm(UIUtils.makeBorderlessReadonlyTextPane("This node executes the content of a sub-pipeline. You can modify it by clicking the 'Edit' button.", false));
+        formPanel.addWideToForm(UIUtils.createBorderlessReadonlyTextPane("This node executes the content of a sub-pipeline. You can modify it by clicking the 'Edit' button.", false));
 
     }
 
@@ -315,17 +315,17 @@ public class JIPipeDesktopPipelineSingleAlgorithmSelectionOverviewPanelUI extend
         } else {
             description = node.getCustomDescription().getHtml();
         }
-        formPanel.addWideToForm(UIUtils.makeBorderlessReadonlyTextPane(description, false));
+        formPanel.addWideToForm(UIUtils.createBorderlessReadonlyTextPane(description, false));
 
         JIPipeDesktopFormPanel ioTable = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.NONE);
         for (JIPipeInputDataSlot inputSlot : node.getInputSlots()) {
             JIPipeDataInfo dataInfo = JIPipeDataInfo.getInstance(inputSlot.getAcceptedDataType());
-            ioTable.addToForm(UIUtils.makeBorderlessReadonlyTextPane(dataInfo.getDescription() + ". " + StringUtils.nullToEmpty(inputSlot.getDescription()), false),
+            ioTable.addToForm(UIUtils.createBorderlessReadonlyTextPane(dataInfo.getDescription() + ". " + StringUtils.nullToEmpty(inputSlot.getDescription()), false),
                     new JLabel("In: " + StringUtils.orElse(inputSlot.getInfo().getCustomName(), inputSlot.getName()), JIPipe.getDataTypes().getIconFor(inputSlot.getAcceptedDataType()), JLabel.LEFT));
         }
         for (JIPipeOutputDataSlot outputSlot : node.getOutputSlots()) {
             JIPipeDataInfo dataInfo = JIPipeDataInfo.getInstance(outputSlot.getAcceptedDataType());
-            ioTable.addToForm(UIUtils.makeBorderlessReadonlyTextPane(dataInfo.getDescription() + ". " + StringUtils.nullToEmpty(outputSlot.getDescription()), false),
+            ioTable.addToForm(UIUtils.createBorderlessReadonlyTextPane(dataInfo.getDescription() + ". " + StringUtils.nullToEmpty(outputSlot.getDescription()), false),
                     new JLabel("Out: " + StringUtils.orElse(outputSlot.getInfo().getCustomName(), outputSlot.getName()), JIPipe.getDataTypes().getIconFor(outputSlot.getAcceptedDataType()), JLabel.LEFT));
         }
 

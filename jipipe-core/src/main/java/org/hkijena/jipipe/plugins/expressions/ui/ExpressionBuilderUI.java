@@ -195,13 +195,13 @@ public class ExpressionBuilderUI extends JPanel {
         expressionAdditionalButtonsPanel.setFloatable(false);
 
         JButton insertVariableButton = new JButton("Insert variable", UIUtils.getIconFromResources("actions/variable.png"));
-        UIUtils.makeFlat(insertVariableButton);
+        UIUtils.makeButtonFlat(insertVariableButton);
         insertVariableButton.addActionListener(e -> insertCustomVariable());
         insertVariableButton.setToolTipText("Inserts a custom variable");
         expressionAdditionalButtonsPanel.add(insertVariableButton);
 
         JButton insertPathButton = new JButton("Insert path", UIUtils.getIconFromResources("actions/fileopen.png"));
-        UIUtils.makeFlat(insertPathButton);
+        UIUtils.makeButtonFlat(insertPathButton);
         insertPathButton.addActionListener(e -> insertPath());
         insertPathButton.setToolTipText("Inserts a path as raw string");
         expressionAdditionalButtonsPanel.add(insertPathButton);
@@ -209,7 +209,7 @@ public class ExpressionBuilderUI extends JPanel {
         expressionAdditionalButtonsPanel.add(Box.createHorizontalGlue());
 
         JButton insertBracketsButton = new JButton("Bracket selection", UIUtils.getIconFromResources("actions/object-group.png"));
-        UIUtils.makeFlat(insertBracketsButton);
+        UIUtils.makeButtonFlat(insertBracketsButton);
         insertBracketsButton.addActionListener(e -> insertBrackets());
         expressionAdditionalButtonsPanel.add(insertBracketsButton);
 

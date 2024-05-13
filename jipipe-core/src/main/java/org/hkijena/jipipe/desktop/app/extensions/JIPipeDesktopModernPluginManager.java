@@ -30,9 +30,7 @@ import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
-import org.hkijena.jipipe.desktop.app.plugins.JIPipeDesktopActivateAndApplyUpdateSiteRun;
-import org.hkijena.jipipe.desktop.app.plugins.JIPipeDesktopDeactivateAndApplyUpdateSiteRun;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopMessagePanel;
 import org.hkijena.jipipe.desktop.commons.ijupdater.JIPipeDesktopImageJUpdaterConflictDialog;
 import org.hkijena.jipipe.desktop.commons.ijupdater.JIPipeDesktopImageJUpdaterRefreshRepositoryRun;
@@ -235,7 +233,7 @@ public class JIPipeDesktopModernPluginManager implements JIPipeDesktopWorkbenchA
         }
 
         // Straight-forward
-        getExtensionRegistry().scheduleDeactivateExtension(extension.getDependencyId());
+        getExtensionRegistry().scheduleDeactivatePlugin(extension.getDependencyId());
     }
 
     private void deactivateUpdateSiteExtension(JIPipeDesktopUpdateSitePlugin extension) {
@@ -250,7 +248,7 @@ public class JIPipeDesktopModernPluginManager implements JIPipeDesktopWorkbenchA
         if (JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(parent), "Do you really want to deactivate the update site '"
                 + extension.getUpdateSite(getUpdateSites()).getName() + "'? Please note that this will delete plugin files from the ImageJ directory.", "Deactivate update site", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             JIPipeDesktopDeactivateAndApplyUpdateSiteRun run = new JIPipeDesktopDeactivateAndApplyUpdateSiteRun(this, Collections.singletonList(extension.getUpdateSite(getUpdateSites())));
-            JIPipeDesktopRunExecuterUI.runInDialog(desktopWorkbench, SwingUtilities.getWindowAncestor(parent), run);
+            JIPipeDesktopRunExecuteUI.runInDialog(desktopWorkbench, SwingUtilities.getWindowAncestor(parent), run);
         }
     }
 
@@ -286,7 +284,7 @@ public class JIPipeDesktopModernPluginManager implements JIPipeDesktopWorkbenchA
                         "Wait");
                 if (response == JOptionPane.YES_OPTION || response == JOptionPane.CANCEL_OPTION)
                     return;
-                getExtensionRegistry().scheduleActivateExtension(extension.getDependencyId());
+                getExtensionRegistry().scheduleActivatePlugin(extension.getDependencyId());
             } else {
                 // Check if there are missing update sites
                 for (JIPipeImageJUpdateSiteDependency dependency : allUpdateSites) {
@@ -330,12 +328,12 @@ public class JIPipeDesktopModernPluginManager implements JIPipeDesktopWorkbenchA
             }
             if (!toActivate.isEmpty()) {
                 JIPipeDesktopActivateAndApplyUpdateSiteRun run = new JIPipeDesktopActivateAndApplyUpdateSiteRun(this, toActivate);
-                JIPipeDesktopRunExecuterUI.runInDialog(desktopWorkbench, SwingUtilities.getWindowAncestor(parent), run);
+                JIPipeDesktopRunExecuteUI.runInDialog(desktopWorkbench, SwingUtilities.getWindowAncestor(parent), run);
             }
         }
 
         // Schedule activation of extension
-        getExtensionRegistry().scheduleActivateExtension(extension.getDependencyId());
+        getExtensionRegistry().scheduleActivatePlugin(extension.getDependencyId());
 
     }
 
@@ -348,7 +346,7 @@ public class JIPipeDesktopModernPluginManager implements JIPipeDesktopWorkbenchA
         if (JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(parent), "Do you really want to activate the update site '"
                 + extension.getUpdateSite(getUpdateSites()).getName() + "'? Please note that you need an active internet connection.", "Activate update site", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             JIPipeDesktopActivateAndApplyUpdateSiteRun run = new JIPipeDesktopActivateAndApplyUpdateSiteRun(this, Collections.singletonList(extension.getUpdateSite(getUpdateSites())));
-            JIPipeDesktopRunExecuterUI.runInDialog(desktopWorkbench, SwingUtilities.getWindowAncestor(parent), run);
+            JIPipeDesktopRunExecuteUI.runInDialog(desktopWorkbench, SwingUtilities.getWindowAncestor(parent), run);
         }
     }
 

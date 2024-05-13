@@ -152,7 +152,7 @@ public class StringPatternExtractionDesktopParameterEditorUI extends JIPipeDeskt
 
     private void addFilterModeSelection(StringPatternExtraction filter, ButtonGroup group, Icon icon, StringPatternExtraction.Mode mode, String description) {
         JToggleButton toggleButton = new JToggleButton(icon);
-        UIUtils.makeFlat25x25(toggleButton);
+        UIUtils.makeButtonFlat25x25(toggleButton);
         toggleButton.setSelected(filter.getMode() == mode);
         toggleButton.addActionListener(e -> {
             if (toggleButton.isSelected()) {

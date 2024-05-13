@@ -102,11 +102,11 @@ public abstract class JIPipeDesktopCacheDataViewerWindow extends JFrame implemen
         previousRowButton = new JButton(UIUtils.getIconFromResources("actions/caret-up.png"));
         previousRowButton.setToolTipText("<html>Go to previous data row<br/>Ctrl+Up</html>");
         previousRowButton.addActionListener(e -> gotoPreviousRow());
-        UIUtils.makeFlat25x25(previousRowButton);
+        UIUtils.makeButtonFlat25x25(previousRowButton);
         nextRowButton = new JButton(UIUtils.getIconFromResources("actions/caret-down.png"));
         nextRowButton.setToolTipText("<html>Go to next data row<br/>Ctrl+Down</html>");
         nextRowButton.addActionListener(e -> gotoNextRow());
-        UIUtils.makeFlat25x25(nextRowButton);
+        UIUtils.makeButtonFlat25x25(nextRowButton);
         rowInfoLabel = new JButton("?/?");
         rowInfoLabel.setBorder(null);
         UIUtils.addReloadablePopupMenuToButton(rowInfoLabel, rowInfoLabelMenu, this::reloadInfoLabelMenu);

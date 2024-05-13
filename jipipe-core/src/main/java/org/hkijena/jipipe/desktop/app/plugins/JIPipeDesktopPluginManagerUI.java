@@ -1,15 +1,16 @@
 package org.hkijena.jipipe.desktop.app.plugins;
 
+import net.imagej.updater.UpdateSite;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipePlugin;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
-import org.hkijena.jipipe.api.artifacts.*;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueueButton;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopMessagePanel;
@@ -17,6 +18,7 @@ import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdow
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.CoreImageJUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -26,10 +28,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.*;
+import java.nio.file.Files;
 import java.util.List;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel implements JIPipeRunnable.FinishedEventListener {
+public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
 
     private static JFrame CURRENT_WINDOW = null;
     private final List<PluginEntry> pluginEntryList = new ArrayList<>();
@@ -39,20 +43,32 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
     private final JIPipeDesktopSearchTextField searchTextField = new JIPipeDesktopSearchTextField();
     private JScrollPane pluginsListScrollPane;
     private static boolean SHOW_RESTART_PROMPT;
+    private final JIPipeDesktopImageJUpdateSitesRepository updateSitesRepository;
+    private final JPanel managerPanel = new JPanel(new BorderLayout());
 
     public JIPipeDesktopPluginManagerUI(JIPipeDesktopWorkbench desktopWorkbench) {
         super(desktopWorkbench);
+        this.updateSitesRepository = new JIPipeDesktopImageJUpdateSitesRepository(this);
         initialize();
         loadAvailablePlugins();
         updatePluginsList();
         updateSelectionPanel();
+        switchToManager();
         JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribe(this);
+        JIPipeRunnableQueue.getInstance().getInterruptedEventEmitter().subscribe(this);
+    }
+
+    private void switchToManager() {
+        removeAll();
+        add(managerPanel, BorderLayout.CENTER);
+        revalidate();
+        repaint();
     }
 
     private void loadAvailablePlugins() {
         Set<String> newPlugins = new HashSet<>(JIPipe.getInstance().getPluginRegistry().getNewPlugins());
         newPlugins.removeAll(JIPipe.getInstance().getPluginRegistry().getSettings().getSilencedPlugins());
-        if(!newPlugins.isEmpty()) {
+        if (!newPlugins.isEmpty()) {
             onlyNewToggle.setSelected(true);
         }
         for (JIPipePlugin plugin : JIPipe.getInstance().getPluginRegistry().getKnownPluginsList()) {
@@ -95,6 +111,8 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
 
     private void initialize() {
         setLayout(new BorderLayout());
+
+        // Setup manager panel
         JToolBar toolbar = new JToolBar();
         toolbar.setFloatable(false);
         toolbar.add(searchTextField);
@@ -106,7 +124,7 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
         onlyNewToggle.addActionListener(e -> updatePluginsList());
 
         toolbar.add(new JIPipeDesktopRunnableQueueButton(getDesktopWorkbench()));
-        add(toolbar, BorderLayout.NORTH);
+        managerPanel.add(toolbar, BorderLayout.NORTH);
 
         pluginsListScrollPane = new JScrollPane(pluginEntryJList);
         pluginsListScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -114,7 +132,7 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
                 pluginsListScrollPane,
                 propertyPanel,
                 new AutoResizeSplitPane.DynamicSidebarRatio(350, false));
-        add(splitPane, BorderLayout.CENTER);
+        managerPanel.add(splitPane, BorderLayout.CENTER);
 
         pluginEntryJList.setCellRenderer(new PluginEntryListCellRenderer());
         pluginEntryJList.addMouseListener(new MouseAdapter() {
@@ -140,12 +158,28 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
     private void updateSelectionPanel() {
         propertyPanel.clear();
 
+        // Look for the updater's update directory
+        if (Files.exists(CoreImageJUtils.getImageJUpdaterRoot().resolve("update"))) {
+            SHOW_RESTART_PROMPT = true;
+        }
+
+        if (SHOW_RESTART_PROMPT) {
+            JIPipeDesktopMessagePanel messagePanel = new JIPipeDesktopMessagePanel();
+            messagePanel.addMessage(JIPipeDesktopMessagePanel.MessageType.Warning,
+                    "You need to restart ImageJ/JIPipe",
+                    false,
+                    false,
+                    UIUtils.createButton("Close", UIUtils.getIconFromResources("actions/gtk-close.png"), this::closeImageJ));
+            propertyPanel.addWideToForm(messagePanel);
+            return;
+        }
+
         if (hasChanges()) {
             JIPipeDesktopMessagePanel messagePanel = new JIPipeDesktopMessagePanel();
             messagePanel.addMessage(JIPipeDesktopMessagePanel.MessageType.Success,
                     "You have pending changes",
                     false,
-                    true,
+                    false,
                     UIUtils.createButton("Revert", UIUtils.getIconFromResources("actions/edit-undo.png"), this::revertChanges),
                     UIUtils.createButton("Apply", UIUtils.getIconFromResources("actions/check.png"), this::applyChanges));
             propertyPanel.addWideToForm(messagePanel);
@@ -155,10 +189,9 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
         if (selectedValue != null) {
             JIPipePlugin plugin = selectedValue.plugin;
             propertyPanel.addGroupHeader(plugin.getMetadata().getName(), plugin.getMetadata().getDescription().getHtml(), UIUtils.getIconFromResources("actions/puzzle-piece.png"));
-            if(plugin.isCorePlugin()) {
+            if (plugin.isCorePlugin()) {
                 propertyPanel.addToForm(new JLabel("Always active"), new JLabel("Status"));
-            }
-            else {
+            } else {
                 if (!plugin.isActivated()) {
                     if (selectedValue.isToggleInstallationStatus()) {
                         propertyPanel.addToForm(UIUtils.createLeftAlignedButton("Mark for activation", UIUtils.getIconFromResources("emblems/checkbox-checked.png"), () -> {
@@ -193,18 +226,18 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
             addAuthors(plugin.getMetadata().getAuthors(), "Plugin authors");
             addAuthors(plugin.getMetadata().getAcknowledgements(), "Acknowledgements");
 
-            if(!StringUtils.isNullOrEmpty(plugin.getMetadata().getCitation())) {
-                propertyPanel.addToForm(UIUtils.makeBorderlessReadonlyTextPane(plugin.getMetadata().getCitation(), false),
+            if (!StringUtils.isNullOrEmpty(plugin.getMetadata().getCitation())) {
+                propertyPanel.addToForm(UIUtils.createBorderlessReadonlyTextPane(plugin.getMetadata().getCitation(), false),
                         new JLabel("Citation"));
             }
             for (String dependencyCitation : plugin.getMetadata().getDependencyCitations()) {
-                propertyPanel.addToForm(UIUtils.makeBorderlessReadonlyTextPane(dependencyCitation, false),
+                propertyPanel.addToForm(UIUtils.createBorderlessReadonlyTextPane(dependencyCitation, false),
                         new JLabel("Also cite"));
             }
-            propertyPanel.addToForm(UIUtils.makeBorderlessReadonlyTextPane(plugin.getDependencyVersion(), false),
+            propertyPanel.addToForm(UIUtils.createBorderlessReadonlyTextPane(plugin.getDependencyVersion(), false),
                     new JLabel("Version"));
-            if(!StringUtils.isNullOrEmpty(plugin.getMetadata().getLicense())) {
-                propertyPanel.addToForm(UIUtils.makeBorderlessReadonlyTextPane(plugin.getMetadata().getLicense(), false),
+            if (!StringUtils.isNullOrEmpty(plugin.getMetadata().getLicense())) {
+                propertyPanel.addToForm(UIUtils.createBorderlessReadonlyTextPane(plugin.getMetadata().getLicense(), false),
                         new JLabel("License"));
             }
             for (JIPipeImageJUpdateSiteDependency updateSiteDependency : plugin.getAllImageJUpdateSiteDependencies()) {
@@ -221,8 +254,7 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
                 }));
                 propertyPanel.addToForm(button, new JLabel("ImageJ dependency"));
             }
-        }
-        else {
+        } else {
             propertyPanel.addGroupHeader("Plugins", "The JIPipe feature set can be extended with a variety of plugins. " +
                     "Select items on the left-hand side to show more information about a plugin.", UIUtils.getIconFromResources("actions/help-info.png"));
         }
@@ -230,8 +262,31 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
         propertyPanel.addVerticalGlue();
     }
 
+    private void closeImageJ() {
+        if (JOptionPane.showConfirmDialog(this, "Do you really want to close ImageJ/JIPipe?\n" +
+                        "All your currently running calculations will be cancelled and unsaved changes will be lost.",
+                "Close ImageJ/JIPipe",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+            JIPipe.exitLater(0);
+        }
+    }
+
     private void installImageJUpdateSite(JIPipeImageJUpdateSiteDependency updateSiteDependency) {
-        // TODO
+        if (JOptionPane.showConfirmDialog(this, "Do you really want to (re-)install the update site '" + updateSiteDependency.getName() + "'?",
+                "Install update site", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+            switchToRun(new JIPipeDesktopImageJUpdateSitesRepository.ActivateDeactivateRun(updateSitesRepository, Collections.emptyList(), Collections.singletonList(updateSiteDependency.toUpdateSite())));
+        }
+    }
+
+    private void switchToRun(JIPipeRunnable run) {
+        removeAll();
+        add(new JIPipeDesktopRunExecuteUI(getDesktopWorkbench(), run));
+        revalidate();
+        repaint();
+        SwingUtilities.invokeLater(() -> {
+            JIPipeRunnableQueue.getInstance().enqueue(run);
+        });
     }
 
     private void showImageJUpdateSiteInfo(JIPipeImageJUpdateSiteDependency updateSiteDependency) {
@@ -243,18 +298,22 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
     }
 
     private void addAuthors(JIPipeAuthorMetadata.List authors, String label) {
-        if(!authors.isEmpty()) {
-            JPanel authorsPanel = new JPanel(new GridLayout((int)Math.ceil(1.0 * authors.size() / 2), 2));
+        if (!authors.isEmpty()) {
+            JPanel authorsPanel = new JPanel(new GridLayout((int) Math.ceil(1.0 * authors.size() / 2), 2));
             authorsPanel.setLayout(new BoxLayout(authorsPanel, BoxLayout.Y_AXIS));
             for (JIPipeAuthorMetadata author : authors) {
                 JButton button = UIUtils.createButton(author.toString(), UIUtils.getIconFromResources("actions/im-user.png"), () -> {
                     JIPipeAuthorMetadata.openAuthorInfoWindow(getDesktopWorkbench().getWindow(), authors, author);
                 });
-                UIUtils.makeFlat(button);
+                UIUtils.makeButtonFlat(button);
                 authorsPanel.add(button);
             }
             propertyPanel.addToForm(authorsPanel, new JLabel(label));
         }
+    }
+
+    public JIPipeDesktopImageJUpdateSitesRepository getUpdateSitesRepository() {
+        return updateSitesRepository;
     }
 
     private void revertChanges() {
@@ -266,35 +325,165 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
     }
 
     private void applyChanges() {
-        List<JIPipeLocalArtifact> toUninstall = new ArrayList<>();
-        List<JIPipeRemoteArtifact> toInstall = new ArrayList<>();
-        long installSize = 0;
+        // Collect plugins to install/uninstall
+        Set<JIPipePlugin> pluginsToInstall = new HashSet<>();
+        Set<JIPipePlugin> pluginsToUninstall = new HashSet<>();
+        Set<String> pluginIdsNotFound = new HashSet<>();
+
         for (PluginEntry pluginEntry : pluginEntryList) {
-            if (pluginEntry.toggleInstallationStatus) {
-                if (pluginEntry.plugin instanceof JIPipeRemoteArtifact) {
-                    toInstall.add((JIPipeRemoteArtifact) pluginEntry.plugin);
-                    installSize += ((JIPipeRemoteArtifact) pluginEntry.plugin).getSize();
-                } else if (pluginEntry.plugin instanceof JIPipeLocalArtifact) {
-                    toUninstall.add((JIPipeLocalArtifact) pluginEntry.plugin);
+            if (pluginEntry.isToggleInstallationStatus() && !pluginEntry.plugin.isCorePlugin()) {
+                if (pluginEntry.plugin.isActivated()) {
+                    pluginsToUninstall.add(pluginEntry.plugin);
+                } else {
+                    pluginsToInstall.add(pluginEntry.plugin);
+
+                    // Get all dependencies and add them
+                    for (JIPipeDependency dependency : pluginEntry.plugin.getAllDependencies()) {
+                        JIPipePlugin pluginById = JIPipe.getInstance().getPluginRegistry().getKnownPluginById(dependency.getDependencyId());
+                        if (pluginById != null) {
+                            if (!pluginById.isCorePlugin() && !pluginById.isActivated()) {
+                                pluginsToInstall.add(pluginById);
+                            }
+                        } else {
+                            pluginIdsNotFound.add(dependency.getDependencyId());
+                        }
+                    }
+
                 }
             }
         }
 
-        if (toInstall.isEmpty() && toUninstall.isEmpty()) {
-            return;
+        pluginsToInstall.removeAll(pluginsToUninstall);
+
+        // Collect ImageJ update sites
+        Map<String, JIPipeImageJUpdateSiteDependency> updateSiteDependencies = new HashMap<>();
+        Map<String, JCheckBox> updateSiteCheckBoxes = new HashMap<>();
+        for (JIPipePlugin plugin : pluginsToInstall) {
+            for (JIPipeImageJUpdateSiteDependency updateSiteDependency : plugin.getAllImageJUpdateSiteDependencies()) {
+                updateSiteDependencies.put(updateSiteDependency.getName(), updateSiteDependency);
+            }
         }
-        StringBuilder message = new StringBuilder();
-        if (!toInstall.isEmpty()) {
-            message.append(StringUtils.formatPluralS(toInstall.size(), "artifact")).append(" will be installed (").append(installSize / 1024 / 1024).append("MB to download)\n");
+
+        // Create form
+        Insets insets = new Insets(2, 2, 2, 2);
+        JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
+        if (!pluginsToInstall.isEmpty()) {
+            formPanel.addGroupHeader("The following plugins will be activated", UIUtils.getIconFromResources("status/package-install.png"));
+            pluginsToInstall.stream().sorted(Comparator.comparing((JIPipePlugin plugin) -> plugin.getMetadata().getName())).forEach((JIPipePlugin plugin) -> {
+                createPluginInfoEntry(plugin, insets, formPanel);
+            });
         }
-        if (!toUninstall.isEmpty()) {
-            message.append(" ").append(StringUtils.formatPluralS(toUninstall.size(), "artifact")).append(" will be removed\n");
+        if (!pluginsToUninstall.isEmpty()) {
+            formPanel.addGroupHeader("The following plugins will be deactivated", UIUtils.getIconFromResources("status/package-remove.png"));
+            pluginsToUninstall.stream().sorted(Comparator.comparing((JIPipePlugin plugin) -> plugin.getMetadata().getName())).forEach((JIPipePlugin plugin) -> {
+                createPluginInfoEntry(plugin, insets, formPanel);
+            });
         }
-        message.append("\nDo you want to continue?");
-        if (JOptionPane.showConfirmDialog(this, message.toString(), "Apply changes", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            JIPipeArtifactRepositoryApplyInstallUninstallRun run = new JIPipeArtifactRepositoryApplyInstallUninstallRun(toInstall, toUninstall);
-            JIPipeDesktopRunExecuterUI.runInDialog(getDesktopWorkbench(), this, run, JIPipe.getArtifacts().getQueue());
+        if (!pluginIdsNotFound.isEmpty()) {
+            formPanel.addGroupHeader("The following plugins could not be found", UIUtils.getIconFromResources("status/package-broken.png"));
         }
+        if (!updateSiteDependencies.isEmpty()) {
+            JIPipeDesktopFormPanel.GroupHeaderPanel groupHeader = formPanel.addGroupHeader("The following ImageJ update sites will be activated", UIUtils.getIconFromResources("apps/imagej.png"));
+            for (String name : updateSiteDependencies.keySet()) {
+                JCheckBox checkBox = new JCheckBox(updateSiteDependencies.get(name).getName() + " (" + updateSiteDependencies.get(name).getUrl() + ")");
+                checkBox.setSelected(true);
+                updateSiteCheckBoxes.put(name, checkBox);
+                formPanel.addWideToForm(checkBox);
+            }
+            groupHeader.addColumn(UIUtils.createButton("Select all", UIUtils.getIconFromResources("actions/edit-select-all.png"), () -> {
+                for (JCheckBox checkBox : updateSiteCheckBoxes.values()) {
+                    checkBox.setSelected(true);
+                }
+            }));
+            groupHeader.addColumn(UIUtils.createButton("Clear selection", UIUtils.getIconFromResources("actions/edit-select-none.png"), () -> {
+                for (JCheckBox checkBox : updateSiteCheckBoxes.values()) {
+                    checkBox.setSelected(false);
+                }
+            }));
+        }
+        formPanel.addVerticalGlue();
+
+        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this));
+
+        // Create the title
+        JLabel titleLabel = UIUtils.createJLabel("Please review the following changes", 22);
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        // Create the button bar
+        AtomicBoolean userAccepted = new AtomicBoolean(false);
+        JPanel buttonBar = UIUtils.boxHorizontal(Box.createHorizontalGlue(),
+                UIUtils.createButton("Cancel", UIUtils.getIconFromResources("actions/dialog-cancel.png"), () -> {
+                    dialog.setVisible(false);
+                }),
+                UIUtils.createButton("Apply", UIUtils.getIconFromResources("actions/dialog-ok.png"), () -> {
+                    userAccepted.set(true);
+                    dialog.setVisible(false);
+                }));
+
+        // Create the dialog
+        dialog.setIconImage(UIUtils.getJIPipeIcon128());
+        dialog.setTitle("Confirm changes");
+        dialog.getContentPane().setLayout(new BorderLayout());
+        dialog.getContentPane().add(titleLabel, BorderLayout.NORTH);
+        dialog.getContentPane().add(formPanel, BorderLayout.CENTER);
+        dialog.getContentPane().add(buttonBar, BorderLayout.SOUTH);
+        dialog.pack();
+        dialog.setSize(800, 600);
+        dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
+        dialog.setModal(true);
+        UIUtils.addEscapeListener(dialog);
+        dialog.setVisible(true);
+
+        if (userAccepted.get()) {
+            Set<UpdateSite> updateSites = new HashSet<>();
+            for (Map.Entry<String, JIPipeImageJUpdateSiteDependency> entry : updateSiteDependencies.entrySet()) {
+                if (updateSiteCheckBoxes.get(entry.getKey()).isSelected()) {
+                    updateSites.add(entry.getValue().toUpdateSite());
+                }
+            }
+            switchToRun(new JIPipeDesktopApplyPluginManagerRun(this, pluginsToInstall, pluginsToUninstall, updateSites));
+        }
+    }
+
+    private void createPluginInfoEntry(JIPipePlugin plugin, Insets insets, JIPipeDesktopFormPanel formPanel) {
+        JPanel pluginPanel = new JPanel(new GridBagLayout());
+        pluginPanel.add(new JLabel(UIUtils.getIconFromResources("actions/puzzle-piece.png")), new GridBagConstraints(0,
+                0,
+                1,
+                1,
+                0,
+                0,
+                GridBagConstraints.NORTHWEST,
+                GridBagConstraints.NONE,
+                insets,
+                0,
+                0));
+        pluginPanel.add(new JLabel(plugin.getMetadata().getName()), new GridBagConstraints(1,
+                0,
+                1,
+                1,
+                1,
+                0,
+                GridBagConstraints.NORTHWEST,
+                GridBagConstraints.HORIZONTAL,
+                insets,
+                0,
+                0));
+        JLabel descriptionLabel = new JLabel(plugin.getMetadata().getDescription().getHtml());
+        descriptionLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
+        pluginPanel.add(descriptionLabel, new GridBagConstraints(1,
+                1,
+                1,
+                1,
+                1,
+                0,
+                GridBagConstraints.NORTHWEST,
+                GridBagConstraints.HORIZONTAL,
+                insets,
+                0,
+                0));
+        formPanel.addWideToForm(pluginPanel);
     }
 
     private void updatePluginsList() {
@@ -320,9 +509,17 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
 
     @Override
     public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
-        if(event.getRun() instanceof JIPipeDesktopActivateAndApplyUpdateSiteRun || event.getRun() instanceof JIPipeDesktopDeactivateAndApplyUpdateSiteRun) {
+        if (event.getRun() instanceof JIPipeDesktopImageJUpdateSitesRepository.ActivateDeactivateRun || event.getRun() instanceof JIPipeDesktopApplyPluginManagerRun) {
+            switchToManager();
             SHOW_RESTART_PROMPT = true;
             updateSelectionPanel();
+        }
+    }
+
+    @Override
+    public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
+        if (event.getRun() instanceof JIPipeDesktopImageJUpdateSitesRepository.ActivateDeactivateRun) {
+            switchToManager();
         }
     }
 
@@ -353,7 +550,7 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
         }
 
         public void setToggleInstallationStatus(boolean toggleInstallationStatus) {
-            if(plugin.isCorePlugin()) {
+            if (plugin.isCorePlugin()) {
                 return;
             }
             this.toggleInstallationStatus = toggleInstallationStatus;
@@ -425,11 +622,10 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
         @Override
         public Component getListCellRendererComponent(JList<? extends PluginEntry> list, PluginEntry value, int index, boolean isSelected, boolean cellHasFocus) {
             infoLabel.setForeground(UIManager.getColor("Label.disabledForeground"));
-            if(value.getPlugin().isCorePlugin()) {
+            if (value.getPlugin().isCorePlugin()) {
                 statusLabel.setIcon(UIUtils.getIconFromResources("emblems/checkbox-checked.png"));
                 infoLabel.setText("Core plugin");
-            }
-            else {
+            } else {
                 if (!value.getPlugin().isActivated()) {
                     if (value.isToggleInstallationStatus()) {
                         statusLabel.setIcon(UIUtils.getIconFromResources("emblems/checkbox-checked.png"));

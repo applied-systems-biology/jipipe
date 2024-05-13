@@ -88,7 +88,7 @@ public class JIPipeParameterCollectionVisibilitiesDesktopParameterEditorUI exten
 
                 JPanel labelPanel = new JPanel(new BorderLayout(8, 8));
                 JToggleButton exportParameterToggle = new JToggleButton(UIUtils.getIconFromResources("actions/eye.png"));
-                UIUtils.makeFlat25x25(exportParameterToggle);
+                UIUtils.makeButtonFlat25x25(exportParameterToggle);
                 exportParameterToggle.setToolTipText("If enabled, the parameter can be changed by the user.");
                 exportParameterToggle.setSelected(visibilities.isVisible(key));
                 exportParameterToggle.setIcon(exportParameterToggle.isSelected() ? UIUtils.getIconFromResources("actions/eye.png") :

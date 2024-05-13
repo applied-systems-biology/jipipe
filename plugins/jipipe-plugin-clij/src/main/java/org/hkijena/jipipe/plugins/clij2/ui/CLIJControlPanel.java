@@ -38,9 +38,9 @@ import java.util.HashMap;
  */
 public class CLIJControlPanel extends JIPipeDesktopWorkbenchPanel {
 
-    private final JTextField openCLInfo = UIUtils.makeReadonlyBorderlessTextField("N/A");
-    private final JTextField gpuModel = UIUtils.makeReadonlyBorderlessTextField("N/A");
-    private final JTextField gpuMemory = UIUtils.makeReadonlyBorderlessTextField("N/A");
+    private final JTextField openCLInfo = UIUtils.createReadonlyBorderlessTextField("N/A");
+    private final JTextField gpuModel = UIUtils.createReadonlyBorderlessTextField("N/A");
+    private final JTextField gpuMemory = UIUtils.createReadonlyBorderlessTextField("N/A");
     private final JLabel readyLabel = new JLabel();
     private JButton clearMemoryButton;
 

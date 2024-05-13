@@ -412,7 +412,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
         // Memory control
         JButton optionsButton = memoryOptionsControl.createOptionsButton();
-        UIUtils.makeFlat(optionsButton);
+        UIUtils.makeButtonFlat(optionsButton);
         statusBar.add(optionsButton);
         statusBar.add(Box.createHorizontalStrut(4));
         statusBar.add(new JIPipeDesktopMemoryStatusUI());
@@ -786,14 +786,14 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     private void archiveProjectAsDirectory() {
         Path directory = JIPipeFileChooserApplicationSettings.saveDirectory(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Archive project as directory");
         if (directory != null) {
-            JIPipeDesktopRunExecuterUI.runInDialog(this, this, new JIPipeArchiveProjectToDirectoryRun(getProject(), directory));
+            JIPipeDesktopRunExecuteUI.runInDialog(this, this, new JIPipeArchiveProjectToDirectoryRun(getProject(), directory));
         }
     }
 
     private void archiveProjectAsZIP() {
         Path file = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Archive project as ZIP", UIUtils.EXTENSION_FILTER_ZIP);
         if (file != null) {
-            JIPipeDesktopRunExecuterUI.runInDialog(this, this, new JIPipeArchiveProjectToZIPRun(getProject(), file));
+            JIPipeDesktopRunExecuteUI.runInDialog(this, this, new JIPipeArchiveProjectToZIPRun(getProject(), file));
         }
     }
 
@@ -830,10 +830,10 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         if (path != null) {
             if (Files.isRegularFile(path)) {
                 // Load into cache with a run
-                JIPipeDesktopRunExecuterUI.runInDialog(this, this, new JIPipeDesktopLoadResultZipIntoCacheRun(this, project, path, true));
+                JIPipeDesktopRunExecuteUI.runInDialog(this, this, new JIPipeDesktopLoadResultZipIntoCacheRun(this, project, path, true));
             } else {
                 // Load into cache with a run
-                JIPipeDesktopRunExecuterUI.runInDialog(this, this, new JIPipeDesktopLoadResultDirectoryIntoCacheRun(this, project, path, true));
+                JIPipeDesktopRunExecuteUI.runInDialog(this, this, new JIPipeDesktopLoadResultDirectoryIntoCacheRun(this, project, path, true));
             }
         }
     }

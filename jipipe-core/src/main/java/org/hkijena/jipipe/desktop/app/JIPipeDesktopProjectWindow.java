@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.project.*;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultUI;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopSplashScreen;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.events.WindowClosedEvent;
@@ -268,7 +268,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                     });
                 }
             });
-            JIPipeDesktopRunExecuterUI.runInDialog(projectUI, this, run);
+            JIPipeDesktopRunExecuteUI.runInDialog(projectUI, this, run);
         } else {
             try {
                 JIPipeValidationReport report = new JIPipeValidationReport();
@@ -427,7 +427,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                     window.getProjectUI().getDocumentTabPane().switchToLastTab();
                 } else if (selectedOption == JOptionPane.NO_OPTION) {
                     // Load into cache with a run
-                    JIPipeDesktopRunExecuterUI.runInDialog(projectUI, this, new JIPipeDesktopLoadResultDirectoryIntoCacheRun(projectUI, project, path, true));
+                    JIPipeDesktopRunExecuteUI.runInDialog(projectUI, this, new JIPipeDesktopLoadResultDirectoryIntoCacheRun(projectUI, project, path, true));
                 }
                 if (!notifications.isEmpty()) {
                     UIUtils.openNotificationsDialog(window.getProjectUI(), this, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.", true);
@@ -583,7 +583,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             e.printStackTrace();
         }
         JIPipeDesktopSaveProjectAndCacheToDirectoryRun run = new JIPipeDesktopSaveProjectAndCacheToDirectoryRun(projectUI, project, directory, addAsRecentProject);
-        JIPipeDesktopRunExecuterUI.runInDialog(projectUI, this, run);
+        JIPipeDesktopRunExecuteUI.runInDialog(projectUI, this, run);
     }
 
     /**
@@ -601,7 +601,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             }
         }
         JIPipeDesktopSaveProjectAndCacheToZipRun run = new JIPipeDesktopSaveProjectAndCacheToZipRun(projectUI, project, file);
-        JIPipeDesktopRunExecuterUI.runInDialog(projectUI, this, run);
+        JIPipeDesktopRunExecuteUI.runInDialog(projectUI, this, run);
     }
 
     public UUID getSessionId() {

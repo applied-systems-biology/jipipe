@@ -25,7 +25,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueueButton;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
@@ -142,15 +142,15 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
             if (node.getUserObject() instanceof JIPipeProjectBackupItemCollection) {
                 propertiesPanel.addGroupHeader("Backup collection", UIUtils.getIconFromResources("mimetypes/application-jipipe.png"));
                 JIPipeProjectBackupItemCollection itemCollection = (JIPipeProjectBackupItemCollection) node.getUserObject();
-                propertiesPanel.addToForm(UIUtils.makeReadonlyTextField("" + itemCollection.getBackupItemList().size()), new JLabel("Backup count"));
-                propertiesPanel.addToForm(UIUtils.makeReadonlyTextField(itemCollection.getSessionId()), new JLabel("Session ID"));
-                propertiesPanel.addToForm(UIUtils.makeReadonlyTextField(itemCollection.getOriginalProjectPath()), new JLabel("Original project path"));
+                propertiesPanel.addToForm(UIUtils.createReadonlyTextField("" + itemCollection.getBackupItemList().size()), new JLabel("Backup count"));
+                propertiesPanel.addToForm(UIUtils.createReadonlyTextField(itemCollection.getSessionId()), new JLabel("Session ID"));
+                propertiesPanel.addToForm(UIUtils.createReadonlyTextField(itemCollection.getOriginalProjectPath()), new JLabel("Original project path"));
 
             } else if (node.getUserObject() instanceof JIPipeProjectBackupItem) {
                 propertiesPanel.addGroupHeader("Backup", UIUtils.getIconFromResources("actions/clock.png"));
                 JIPipeProjectBackupItem backupItem = (JIPipeProjectBackupItem) node.getUserObject();
-                propertiesPanel.addToForm(UIUtils.makeReadonlyTextField(backupItem.getOriginalProjectPath()), new JLabel("Original project path"));
-                propertiesPanel.addToForm(UIUtils.makeReadonlyTextField(backupItem.getBackupTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)), new JLabel("Modification time"));
+                propertiesPanel.addToForm(UIUtils.createReadonlyTextField(backupItem.getOriginalProjectPath()), new JLabel("Original project path"));
+                propertiesPanel.addToForm(UIUtils.createReadonlyTextField(backupItem.getBackupTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)), new JLabel("Modification time"));
                 propertiesPanel.addWideToForm(UIUtils.createLeftAlignedButton("Restore", UIUtils.getIconFromResources("actions/fileopen.png"), () -> restoreBackup(backupItem)));
             }
         }
@@ -228,14 +228,14 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
     private void removeNamedBackups() {
         if (JOptionPane.showConfirmDialog(this, "Do you really want to remove all backups of projects that have a storage path?\n" +
                 "Please note that the tool will NOT check if the files are still present at the path.", "Remove backups with project file", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            JIPipeDesktopRunExecuterUI.runInDialog(getDesktopWorkbench(), this, new PruneBackupsRun(false, true), BACKUP_QUEUE);
+            JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, new PruneBackupsRun(false, true), BACKUP_QUEUE);
         }
     }
 
     private void removeUnnamedBackups() {
         if (JOptionPane.showConfirmDialog(this, "Do you really want to remove all backups of projects that have NO storage path because they were never saved?\n" +
                 "It might be possible that some of the affected projects have been saved after the creation of the backup.", "Remove backups with project file", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            JIPipeDesktopRunExecuterUI.runInDialog(getDesktopWorkbench(), this, new PruneBackupsRun(true, false), BACKUP_QUEUE);
+            JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, new PruneBackupsRun(true, false), BACKUP_QUEUE);
         }
     }
 

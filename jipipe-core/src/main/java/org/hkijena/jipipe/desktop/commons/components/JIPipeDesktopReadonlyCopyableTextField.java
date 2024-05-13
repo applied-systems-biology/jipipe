@@ -43,7 +43,7 @@ public class JIPipeDesktopReadonlyCopyableTextField extends JPanel {
         copyButton = new JButton(UIUtils.getIconFromResources("actions/edit-copy.png"));
         copyButton.setToolTipText("Copy current value");
         copyButton.addActionListener(e -> copyCurrentValue());
-        UIUtils.makeFlat25x25(copyButton);
+        UIUtils.makeButtonFlat25x25(copyButton);
         copyButton.setBorder(null);
         add(copyButton, BorderLayout.EAST);
     }

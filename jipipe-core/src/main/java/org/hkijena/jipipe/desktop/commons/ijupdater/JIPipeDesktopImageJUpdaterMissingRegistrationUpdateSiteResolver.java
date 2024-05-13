@@ -22,11 +22,11 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.app.plugins.JIPipeDesktopActivateAndApplyUpdateSiteRun;
+import org.hkijena.jipipe.desktop.app.extensions.JIPipeDesktopActivateAndApplyUpdateSiteRun;
 import org.hkijena.jipipe.desktop.app.extensions.JIPipeDesktopExtensionItemActionButton;
 import org.hkijena.jipipe.desktop.app.extensions.JIPipeDesktopModernPluginManager;
 import org.hkijena.jipipe.desktop.app.extensions.JIPipeDesktopUpdateSitePlugin;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopMessagePanel;
 import org.hkijena.jipipe.desktop.commons.components.icons.JIPipeDesktopAnimatedIcon;
@@ -78,7 +78,7 @@ public class JIPipeDesktopImageJUpdaterMissingRegistrationUpdateSiteResolver ext
         formPanel.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
 
         formPanel.addWideToForm(UIUtils.createJLabel("Missing dependencies detected", UIUtils.getIcon32FromResources("dialog-warning.png"), 28));
-        formPanel.addWideToForm(UIUtils.makeBorderlessReadonlyTextPane("JIPipe detected missing ImageJ dependencies that are required for the functionality of various JIPipe extensions. You can ignore this message if you think that all required software is already installed.", false));
+        formPanel.addWideToForm(UIUtils.createBorderlessReadonlyTextPane("JIPipe detected missing ImageJ dependencies that are required for the functionality of various JIPipe extensions. You can ignore this message if you think that all required software is already installed.", false));
         formPanel.addWideToForm(Box.createVerticalStrut(32));
         if (!issues.getErroneousPlugins().isEmpty()) {
             formPanel.addWideToForm(UIUtils.createJLabel(issues.getErroneousPlugins().size() + " JIPipe extensions reported issues. We strongly recommend the installation of all dependencies.", UIUtils.getIconFromResources("emblems/emblem-important-blue.png")));
@@ -125,7 +125,7 @@ public class JIPipeDesktopImageJUpdaterMissingRegistrationUpdateSiteResolver ext
             updateSiteSet.add(updateSite);
         }
         JIPipeDesktopActivateAndApplyUpdateSiteRun run = new JIPipeDesktopActivateAndApplyUpdateSiteRun(pluginManager, updateSiteSet);
-        JIPipeDesktopRunExecuterUI.runInDialog(this, this, run);
+        JIPipeDesktopRunExecuteUI.runInDialog(this, this, run);
     }
 
     @Override
@@ -137,10 +137,10 @@ public class JIPipeDesktopImageJUpdaterMissingRegistrationUpdateSiteResolver ext
                 JPanel dependencyPanel = new JPanel(new GridBagLayout());
                 dependencyPanel.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2), BorderFactory.createEmptyBorder(8, 8, 8, 8)));
                 dependencyPanel.add(UIUtils.createJLabel(dependency.getName(), UIUtils.getIcon32FromResources("module-imagej.png"), 16), new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
-                JTextField idField = UIUtils.makeReadonlyBorderlessTextField("URL: " + dependency.getUrl());
+                JTextField idField = UIUtils.createReadonlyBorderlessTextField("URL: " + dependency.getUrl());
                 idField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 11));
                 dependencyPanel.add(idField, new GridBagConstraints(0, 1, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
-                dependencyPanel.add(UIUtils.makeBorderlessReadonlyTextPane(dependency.getDescription(), false), new GridBagConstraints(0, 2, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
+                dependencyPanel.add(UIUtils.createBorderlessReadonlyTextPane(dependency.getDescription(), false), new GridBagConstraints(0, 2, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
 
                 // Try to find the extension
                 JIPipeDesktopUpdateSitePlugin extension = new JIPipeDesktopUpdateSitePlugin(dependency);

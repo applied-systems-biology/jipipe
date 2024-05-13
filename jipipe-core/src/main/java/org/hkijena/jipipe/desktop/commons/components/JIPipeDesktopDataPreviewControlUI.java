@@ -40,17 +40,17 @@ public class JIPipeDesktopDataPreviewControlUI extends JPanel implements JIPipeP
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
         JButton zoomOutButton = new JButton(UIUtils.getIconFromResources("actions/square-minus.png"));
-        UIUtils.makeFlat25x25(zoomOutButton);
+        UIUtils.makeButtonFlat25x25(zoomOutButton);
         zoomOutButton.addActionListener(e -> decreaseSize());
         add(zoomOutButton);
 
-        UIUtils.makeBorderlessWithoutMargin(zoomStatusButton);
+        UIUtils.makeButtonBorderlessWithoutMargin(zoomStatusButton);
         JPopupMenu zoomMenu = UIUtils.addPopupMenuToButton(zoomStatusButton);
         initializeZoomMenu(zoomMenu);
         add(zoomStatusButton);
 
         JButton zoomInButton = new JButton(UIUtils.getIconFromResources("actions/square-plus.png"));
-        UIUtils.makeFlat25x25(zoomInButton);
+        UIUtils.makeButtonFlat25x25(zoomInButton);
         zoomInButton.addActionListener(e -> increaseSize());
         add(zoomInButton);
     }

@@ -19,18 +19,18 @@ import net.imagej.updater.FilesCollection;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class JIPipeDesktopImageJUpdaterResolveDependencies extends JIPipeDesktopImageJUpdaterConflictDialog {
+public class JIPipeDesktopImageJUpdaterResolveDependenciesDialog extends JIPipeDesktopImageJUpdaterConflictDialog {
 
     protected Conflicts conflicts;
     protected boolean forUpload;
 
-    public JIPipeDesktopImageJUpdaterResolveDependencies(final Window owner,
-                                                         final FilesCollection files) {
+    public JIPipeDesktopImageJUpdaterResolveDependenciesDialog(final Window owner,
+                                                               final FilesCollection files) {
         this(owner, files, false);
     }
 
-    public JIPipeDesktopImageJUpdaterResolveDependencies(final Window owner,
-                                                         final FilesCollection files, final boolean forUpload) {
+    public JIPipeDesktopImageJUpdaterResolveDependenciesDialog(final Window owner,
+                                                               final FilesCollection files, final boolean forUpload) {
         super(owner, "Resolve dependencies");
 
         this.forUpload = forUpload;
@@ -41,7 +41,8 @@ public class JIPipeDesktopImageJUpdaterResolveDependencies extends JIPipeDesktop
     @Override
     protected void updateConflictList() {
         conflictList.clear();
-        for (final Conflicts.Conflict conflict : conflicts.getConflicts(forUpload))
+        for (final Conflicts.Conflict conflict : conflicts.getConflicts(forUpload)) {
             conflictList.add(conflict);
+        }
     }
 }

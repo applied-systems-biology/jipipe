@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueueButton;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPathEditorComponent;
@@ -315,13 +315,13 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
 
 
         animation.setToolTipText("Toggle animation");
-        UIUtils.makeFlat25x25(animation);
+        UIUtils.makeButtonFlat25x25(animation);
         JPanel descriptionPanel = new JPanel();
         descriptionPanel.setLayout(new BoxLayout(descriptionPanel, BoxLayout.X_AXIS));
 
         JButton editButton = new JButton(UIUtils.getIconFromResources("actions/go-jump.png"));
         editButton.setToolTipText("Jump to slice");
-        UIUtils.makeFlat25x25(editButton);
+        UIUtils.makeButtonFlat25x25(editButton);
         editButton.addActionListener(e -> {
             String input = JOptionPane.showInputDialog(this,
                     "Please input a new value for " + name + " (" + slider.getMinimum() + "-" + slider.getMaximum() + ")",
@@ -345,7 +345,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
         contentPanel.add(rightPanel, BorderLayout.EAST);
 
         JButton lastFrame = new JButton(UIUtils.getIconFromResources("actions/caret-left.png"));
-        UIUtils.makeFlat25x25(lastFrame);
+        UIUtils.makeButtonFlat25x25(lastFrame);
         lastFrame.setToolTipText("Go one slice back");
         lastFrame.addActionListener(e -> {
             decrementSlider(slider);
@@ -353,7 +353,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
         rightPanel.add(lastFrame);
 
         JButton nextFrame = new JButton(UIUtils.getIconFromResources("actions/caret-right.png"));
-        UIUtils.makeFlat25x25(nextFrame);
+        UIUtils.makeButtonFlat25x25(nextFrame);
         nextFrame.setToolTipText("Go one slice forward");
         nextFrame.addActionListener(e -> {
             incrementSlider(slider);
@@ -392,11 +392,11 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
         toolBar.add(fitImageButton);
 
         JButton zoomOutButton = new JButton(UIUtils.getIconFromResources("actions/square-minus.png"));
-        UIUtils.makeFlat25x25(zoomOutButton);
+        UIUtils.makeButtonFlat25x25(zoomOutButton);
         zoomOutButton.addActionListener(e -> decreaseZoom());
         toolBar.add(zoomOutButton);
 
-        UIUtils.makeBorderlessWithoutMargin(zoomStatusButton);
+        UIUtils.makeButtonBorderlessWithoutMargin(zoomStatusButton);
         JPopupMenu zoomMenu = UIUtils.addPopupMenuToButton(zoomStatusButton);
         for (double zoom = 0.5; zoom <= 2; zoom += 0.25) {
             JMenuItem changeZoomItem = new JMenuItem((int) (zoom * 100) + "%", UIUtils.getIconFromResources("actions/zoom.png"));
@@ -426,7 +426,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
         toolBar.add(zoomStatusButton);
 
         JButton zoomInButton = new JButton(UIUtils.getIconFromResources("actions/square-plus.png"));
-        UIUtils.makeFlat25x25(zoomInButton);
+        UIUtils.makeButtonFlat25x25(zoomInButton);
         zoomInButton.addActionListener(e -> increaseZoom());
         toolBar.add(zoomInButton);
 
@@ -489,7 +489,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
     private void saveRawImage() {
         Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Save as *.tif", UIUtils.EXTENSION_FILTER_TIFF);
         if (path != null) {
-            JIPipeDesktopRunExecuterUI.runInDialog(workbench, this, new RawImage2DExporterRun(getImagePlus(), path), viewerRunnerQueue);
+            JIPipeDesktopRunExecuteUI.runInDialog(workbench, this, new RawImage2DExporterRun(getImagePlus(), path), viewerRunnerQueue);
         }
     }
 
@@ -587,7 +587,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
             String format = fileFormatEditor.getSelectedItem() + "";
             String baseName = StringUtils.makeFilesystemCompatible(baseNameEditor.getText());
             Stack2DExporterRun run = new Stack2DExporterRun(imageViewer, targetPath, baseName, format);
-            JIPipeDesktopRunExecuterUI.runInDialog(workbench, this, run, viewerRunnerQueue);
+            JIPipeDesktopRunExecuteUI.runInDialog(workbench, this, run, viewerRunnerQueue);
         }
     }
 
@@ -634,7 +634,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
                     animationTimer.getDelay(),
                     (AVICompression) compressionEditor.getSelectedItem(),
                     compressionQualityEditor.getValue());
-            JIPipeDesktopRunExecuterUI.runInDialog(workbench, this, run, viewerRunnerQueue);
+            JIPipeDesktopRunExecuteUI.runInDialog(workbench, this, run, viewerRunnerQueue);
         }
     }
 

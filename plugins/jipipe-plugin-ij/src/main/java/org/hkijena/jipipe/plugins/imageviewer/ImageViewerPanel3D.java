@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueueButton;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
@@ -437,7 +437,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
     private void saveRawImage() {
         Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Save as *.tif", UIUtils.EXTENSION_FILTER_TIFF);
         if (path != null) {
-            JIPipeDesktopRunExecuterUI.runInDialog(getDesktopWorkbench(), this, new RawImage2DExporterRun(getImagePlus(), path));
+            JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, new RawImage2DExporterRun(getImagePlus(), path));
         }
     }
 
@@ -844,13 +844,13 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
         }
 
         animation.setToolTipText("Toggle animation");
-        UIUtils.makeFlat25x25(animation);
+        UIUtils.makeButtonFlat25x25(animation);
         JPanel descriptionPanel = new JPanel();
         descriptionPanel.setLayout(new BoxLayout(descriptionPanel, BoxLayout.X_AXIS));
 
         JButton editButton = new JButton(UIUtils.getIconFromResources("actions/go-jump.png"));
         editButton.setToolTipText("Jump to slice");
-        UIUtils.makeFlat25x25(editButton);
+        UIUtils.makeButtonFlat25x25(editButton);
         editButton.addActionListener(e -> {
             String input = JOptionPane.showInputDialog(this,
                     "Please input a new value for " + name + " (" + slider.getMinimum() + "-" + slider.getMaximum() + ")",
@@ -874,7 +874,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
         contentPanel.add(rightPanel, BorderLayout.EAST);
 
         JButton lastFrame = new JButton(UIUtils.getIconFromResources("actions/caret-left.png"));
-        UIUtils.makeFlat25x25(lastFrame);
+        UIUtils.makeButtonFlat25x25(lastFrame);
         lastFrame.setToolTipText("Go one slice back");
         lastFrame.addActionListener(e -> {
             decrementSlider(slider);
@@ -882,7 +882,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
         rightPanel.add(lastFrame);
 
         JButton nextFrame = new JButton(UIUtils.getIconFromResources("actions/caret-right.png"));
-        UIUtils.makeFlat25x25(nextFrame);
+        UIUtils.makeButtonFlat25x25(nextFrame);
         nextFrame.setToolTipText("Go one slice forward");
         nextFrame.addActionListener(e -> {
             incrementSlider(slider);

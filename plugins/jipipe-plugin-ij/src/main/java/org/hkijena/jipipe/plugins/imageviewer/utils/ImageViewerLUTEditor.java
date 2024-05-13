@@ -200,7 +200,7 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
 
         JButton addThumbButton = new JButton(UIUtils.getIconFromResources("actions/color-add.png"));
         addThumbButton.setToolTipText("Add color");
-        UIUtils.makeFlat(addThumbButton);
+        UIUtils.makeButtonFlat(addThumbButton);
         addThumbButton.setHorizontalAlignment(SwingConstants.LEFT);
         addThumbButton.addActionListener(e -> addColor());
         centerPanel.add(addThumbButton, new GridBagConstraints(2,
@@ -217,7 +217,7 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
 
         deleteThumbButton = new JButton(UIUtils.getIconFromResources("actions/color-remove.png"));
         deleteThumbButton.setToolTipText("Remove color");
-        UIUtils.makeFlat(deleteThumbButton);
+        UIUtils.makeButtonFlat(deleteThumbButton);
         deleteThumbButton.setHorizontalAlignment(SwingConstants.LEFT);
         deleteThumbButton.addActionListener(e -> removeColor());
         centerPanel.add(deleteThumbButton, new GridBagConstraints(3,
@@ -234,17 +234,17 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
 
         // Menu items
         JButton invertColorsButton = new JButton("Invert", UIUtils.getIconFromResources("actions/object-inverse.png"));
-        UIUtils.makeFlat(invertColorsButton);
+        UIUtils.makeButtonFlat(invertColorsButton);
         invertColorsButton.addActionListener(e -> invertColors());
         toolBar.add(invertColorsButton);
 
         JButton setToColorMapButton = new JButton("Color map", UIUtils.getIconFromResources("actions/color-gradient.png"));
-        UIUtils.makeFlat(setToColorMapButton);
+        UIUtils.makeButtonFlat(setToColorMapButton);
         setToColorMapButton.addActionListener(e -> pickColorsFromColorMap());
         toolBar.add(setToColorMapButton);
 
         JButton moreButton = new JButton("More ...", UIUtils.getIconFromResources("actions/configure.png"));
-        UIUtils.makeFlat(moreButton);
+        UIUtils.makeButtonFlat(moreButton);
         toolBar.add(moreButton);
         JPopupMenu moreMenu = UIUtils.addPopupMenuToButton(moreButton);
 

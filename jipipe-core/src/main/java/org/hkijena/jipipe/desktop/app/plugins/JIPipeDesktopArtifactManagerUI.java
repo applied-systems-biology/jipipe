@@ -6,7 +6,7 @@ import org.hkijena.jipipe.api.registries.JIPipeArtifactsRegistry;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueueButton;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopMessagePanel;
@@ -144,10 +144,10 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
         if (selectedValue != null) {
             JIPipeArtifact artifact = selectedValue.artifact;
             propertyPanel.addGroupHeader(artifact.getArtifactId(), UIUtils.getIconFromResources("actions/run-install.png"));
-            propertyPanel.addToForm(UIUtils.makeReadonlyBorderlessTextField(artifact.getVersion()), new JLabel("Version"));
-            propertyPanel.addToForm(UIUtils.makeReadonlyBorderlessTextField(artifact.getClassifier()), new JLabel("Label"));
-            propertyPanel.addToForm(UIUtils.makeReadonlyBorderlessTextField(artifact.getGroupId()), new JLabel("Publisher"));
-            propertyPanel.addToForm(UIUtils.makeReadonlyBorderlessTextField(artifact.isCompatible() ? "Yes" : "No"), new JLabel("Compatible"));
+            propertyPanel.addToForm(UIUtils.createReadonlyBorderlessTextField(artifact.getVersion()), new JLabel("Version"));
+            propertyPanel.addToForm(UIUtils.createReadonlyBorderlessTextField(artifact.getClassifier()), new JLabel("Label"));
+            propertyPanel.addToForm(UIUtils.createReadonlyBorderlessTextField(artifact.getGroupId()), new JLabel("Publisher"));
+            propertyPanel.addToForm(UIUtils.createReadonlyBorderlessTextField(artifact.isCompatible() ? "Yes" : "No"), new JLabel("Compatible"));
             if (artifact.isRequireGPU()) {
                 propertyPanel.addToForm(new JLabel("Requires GPU", UIUtils.getIconFromResources("devices/device_pci.png"), JLabel.LEFT), new JLabel("Additional info"));
             }
@@ -222,7 +222,7 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
         message.append("\nDo you want to continue?");
         if (JOptionPane.showConfirmDialog(this, message.toString(), "Apply changes", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             JIPipeArtifactRepositoryApplyInstallUninstallRun run = new JIPipeArtifactRepositoryApplyInstallUninstallRun(toInstall, toUninstall);
-            JIPipeDesktopRunExecuterUI.runInDialog(getDesktopWorkbench(), this, run, JIPipe.getArtifacts().getQueue());
+            JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, run, JIPipe.getArtifacts().getQueue());
         }
     }
 

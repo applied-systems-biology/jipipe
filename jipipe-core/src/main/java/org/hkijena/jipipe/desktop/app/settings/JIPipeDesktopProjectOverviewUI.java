@@ -313,7 +313,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         JIPipeDesktopFormPanel nameAndAuthorPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.TRANSPARENT_BACKGROUND);
         nameAndAuthorPanel.setLayout(new BoxLayout(nameAndAuthorPanel, BoxLayout.Y_AXIS));
 
-        projectName = UIUtils.makeReadonlyBorderlessTextField("Unnamed project");
+        projectName = UIUtils.createReadonlyBorderlessTextField("Unnamed project");
         projectName.setOpaque(false);
         projectName.setFont(new Font(Font.DIALOG, Font.PLAIN, 40));
         projectName.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
@@ -330,9 +330,9 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
         JIPipeDesktopFormPanel technicalInfo = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.TRANSPARENT_BACKGROUND);
 
-        licenseInfo = UIUtils.makeReadonlyBorderlessTextField("No license");
+        licenseInfo = UIUtils.createReadonlyBorderlessTextField("No license");
         technicalInfo.addToForm(licenseInfo, new JLabel("Licensed under"), null);
-        projectStats = UIUtils.makeReadonlyBorderlessTextField("No information");
+        projectStats = UIUtils.createReadonlyBorderlessTextField("No information");
         technicalInfo.addToForm(projectStats, new JLabel("Project statistics"), null);
         technicalInfo.addVerticalGlue();
 

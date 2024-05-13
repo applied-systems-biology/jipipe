@@ -361,7 +361,7 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
         foregroundColorButton = new JIPipeDesktopColorChooserButton("");
         foregroundColorButton.setIcon(new OverlayJIPipeDesktopColorIcon(UIUtils.getIconFromResources("actions/format-stroke-color.png"),
                 new Rectangle(0, 14, 16, 2), true, false));
-        UIUtils.makeFlat25x25(foregroundColorButton);
+        UIUtils.makeButtonFlat25x25(foregroundColorButton);
         foregroundColorButton.setToolTipText("Set color");
         foregroundColorButton.getColorChosenEventEmitter().subscribeLambda((emitter, event) -> {
             if (!isUpdating) {
@@ -376,7 +376,7 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
         // Compact mode selection
         modeButton = new JButton(UIUtils.getIconFromResources("actions/caret-down.png"));
         modeButton.setHorizontalTextPosition(SwingConstants.LEFT);
-        UIUtils.makeFlat(modeButton);
+        UIUtils.makeButtonFlat(modeButton);
         JPopupMenu modeMenu = UIUtils.addPopupMenuToButton(modeButton);
         {
             JMenuItem compactModeItem = new JMenuItem("Compact", UIUtils.getIconFromResources("actions/edit-select-text.png"));
@@ -394,7 +394,7 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
 
         // Edit in dialog button
         editInDialogButton = new JButton(UIUtils.getIconFromResources("actions/open-in-new-window.png"));
-        UIUtils.makeFlat25x25(editInDialogButton);
+        UIUtils.makeButtonFlat25x25(editInDialogButton);
         editInDialogButton.setToolTipText("Edit in dedicated window");
         editInDialogButton.addActionListener(e -> {
             HTMLText result = UIUtils.getHTMLByDialog(getDesktopWorkbench(), this, "Edit", null, new HTMLText(getHTML()));
@@ -405,7 +405,7 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
 
         // Insert image
         insertImageButton = new JButton("Image", UIUtils.getIconFromResources("actions/insert-image.png"));
-        UIUtils.makeFlat(insertImageButton);
+        UIUtils.makeButtonFlat(insertImageButton);
         JPopupMenu insertImageMenu = UIUtils.addPopupMenuToButton(insertImageButton);
         {
             JMenuItem insertImageFromFileItem = new JMenuItem("Embed from file ...", UIUtils.getIconFromResources("actions/document-open-folder.png"));
@@ -425,7 +425,7 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
 
         // Insert link
         insertLinkButton = new JButton("Link", UIUtils.getIconFromResources("actions/insert-link.png"));
-        UIUtils.makeFlat(insertLinkButton);
+        UIUtils.makeButtonFlat(insertLinkButton);
         insertLinkButton.addActionListener(e -> insertLink());
     }
 
@@ -719,7 +719,7 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
         button.setText("");
         button.setIcon(UIUtils.getIconFromResources(icon));
         button.setToolTipText(name);
-        UIUtils.makeFlat25x25(button);
+        UIUtils.makeButtonFlat25x25(button);
         updatedButtons.put(button, toggled);
         return button;
     }

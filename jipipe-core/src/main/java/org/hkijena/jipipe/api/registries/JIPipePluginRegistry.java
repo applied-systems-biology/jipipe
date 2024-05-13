@@ -200,10 +200,10 @@ public class JIPipePluginRegistry {
 
     public void clearSchedule(String id) {
         if (scheduledDeactivatePlugins.contains(id)) {
-            scheduleActivateExtension(id);
+            scheduleActivatePlugin(id);
         }
         if (scheduledActivatePlugins.contains(id)) {
-            scheduleDeactivateExtension(id);
+            scheduleDeactivatePlugin(id);
         }
     }
 
@@ -237,7 +237,7 @@ public class JIPipePluginRegistry {
         return ids;
     }
 
-    public void scheduleActivateExtension(String id) {
+    public void scheduleActivatePlugin(String id) {
         JIPipePlugin extension = getKnownPluginById(id);
         Set<String> ids = new HashSet<>();
         ids.add(id);
@@ -256,7 +256,7 @@ public class JIPipePluginRegistry {
         }
     }
 
-    public void scheduleDeactivateExtension(String id) {
+    public void scheduleDeactivatePlugin(String id) {
         JIPipePlugin extension = getKnownPluginById(id);
         Set<String> ids = new HashSet<>();
         ids.add(id);

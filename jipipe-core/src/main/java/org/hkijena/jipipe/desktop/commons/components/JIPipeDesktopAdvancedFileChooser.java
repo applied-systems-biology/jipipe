@@ -169,7 +169,7 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
             drillDownEditMode = false;
             trySetCurrentDirectory(pathField.getText());
         });
-        UIUtils.makeFlat25x25(acceptButton);
+        UIUtils.makeButtonFlat25x25(acceptButton);
         drillDownToolBar.add(acceptButton, BorderLayout.EAST);
     }
 
@@ -339,7 +339,7 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
         JToggleButton listViewButton = new JToggleButton(UIUtils.getIconFromResources("actions/view-list.png"));
         listViewButton.setToolTipText("Display as list of items");
         listViewButton.setSelected(true);
-        UIUtils.makeFlat25x25(listViewButton);
+        UIUtils.makeButtonFlat25x25(listViewButton);
         listViewButton.addActionListener(filePane.getViewTypeAction(FilePane.VIEWTYPE_LIST));
         actionToolbar.add(listViewButton);
         viewButtonGroup.add(listViewButton);
@@ -347,7 +347,7 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
         // Details Button
         JToggleButton detailsViewButton = new JToggleButton(UIUtils.getIconFromResources("actions/view-list-details.png"));
         detailsViewButton.setToolTipText("Display as detailed list of items");
-        UIUtils.makeFlat25x25(detailsViewButton);
+        UIUtils.makeButtonFlat25x25(detailsViewButton);
         detailsViewButton.addActionListener(filePane.getViewTypeAction(FilePane.VIEWTYPE_DETAILS));
         actionToolbar.add(detailsViewButton);
         viewButtonGroup.add(detailsViewButton);

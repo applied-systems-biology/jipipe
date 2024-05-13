@@ -46,7 +46,7 @@ public class JIPipeDesktopFancyPasswordField extends JPanel {
         clearButton.setOpaque(false);
         clearButton.setToolTipText("Clear");
         clearButton.addActionListener(e -> setText(""));
-        UIUtils.makeFlat25x25(clearButton);
+        UIUtils.makeButtonFlat25x25(clearButton);
         clearButton.setBorder(null);
         add(clearButton, BorderLayout.EAST);
 

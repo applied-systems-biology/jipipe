@@ -286,7 +286,7 @@ public class SlicerControlsPlugin3D extends JIPipeImageViewerPlugin3D implements
 
             JButton editButton = new JButton(UIUtils.getIconFromResources("actions/go-jump.png"));
             editButton.setToolTipText("Jump to slice");
-            UIUtils.makeFlat25x25(editButton);
+            UIUtils.makeButtonFlat25x25(editButton);
             editButton.addActionListener(e -> {
                 String input = JOptionPane.showInputDialog(plugin.getViewerPanel3D(),
                         "Please input a new value for " + sliderName + " (" + slider.getMinimum() + "-" + slider.getMaximum() + ")",
@@ -312,7 +312,7 @@ public class SlicerControlsPlugin3D extends JIPipeImageViewerPlugin3D implements
             contentPanel.add(rightPanel, BorderLayout.EAST);
 
             JButton lastFrame = new JButton(UIUtils.getIconFromResources("actions/caret-left.png"));
-            UIUtils.makeFlat25x25(lastFrame);
+            UIUtils.makeButtonFlat25x25(lastFrame);
             lastFrame.setToolTipText("Go one slice back");
             lastFrame.addActionListener(e -> {
                 decrement();
@@ -320,7 +320,7 @@ public class SlicerControlsPlugin3D extends JIPipeImageViewerPlugin3D implements
             rightPanel.add(lastFrame);
 
             JButton nextFrame = new JButton(UIUtils.getIconFromResources("actions/caret-right.png"));
-            UIUtils.makeFlat25x25(nextFrame);
+            UIUtils.makeButtonFlat25x25(nextFrame);
             nextFrame.setToolTipText("Go one slice forward");
             nextFrame.addActionListener(e -> {
                 increment();
