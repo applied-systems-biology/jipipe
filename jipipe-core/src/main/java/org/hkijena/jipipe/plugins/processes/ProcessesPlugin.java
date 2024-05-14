@@ -68,7 +68,7 @@ public class ProcessesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Optional process environment",
                 "An optional process environment",
                 null);
-        registerSettingsSheet(extensionSettings);
+        registerApplicationSettingsSheet(extensionSettings);
     }
 
     @Override

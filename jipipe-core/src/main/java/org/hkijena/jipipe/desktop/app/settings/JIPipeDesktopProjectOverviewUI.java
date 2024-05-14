@@ -16,7 +16,6 @@ package org.hkijena.jipipe.desktop.app.settings;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.bookmarks.JIPipeDesktopBookmarkListPanel;
@@ -46,12 +45,13 @@ import java.util.HashMap;
 public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenchPanel implements JIPipeParameterCollection.ParameterChangedEventListener {
 
     private final JTextPane descriptionReader;
+    private final JScrollPane descriptionReaderScrollPane;
 
-    private final JIPipeDesktopParameterPanel projectSettingsParametersPanel;
+    private final JIPipeDesktopProjectSettingsComponents projectSettingsComponents;
+    private final JPanel runtimePartitionsPanel;
     private final JIPipeDesktopParameterPanel userParametersPanel;
     private final JIPipeDesktopParameterPanel userDirectoriesPanel;
-    private final JPanel runtimePartitionsPanel;
-    private final JScrollPane descriptionReaderScrollPane;
+
     private JTextField licenseInfo;
     private JTextField projectName;
     private JTextField projectStats;
@@ -61,14 +61,17 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     private JButton copyCitationButton;
     private JButton copyDependencyCitationsButton;
     private JButton showAcknowledgedAuthorsButton;
+    private AutoResizeSplitPane splitPane;
 
     /**
      * Creates a new instance
      *
-     * @param workbenchUI The workbench UI
+     * @param workbench The workbench UI
      */
-    public JIPipeDesktopProjectOverviewUI(JIPipeDesktopProjectWorkbench workbenchUI) {
-        super(workbenchUI);
+    public JIPipeDesktopProjectOverviewUI(JIPipeDesktopProjectWorkbench workbench) {
+        super(workbench);
+
+        // Description
         descriptionReader = new JTextPane();
         descriptionReader.setContentType("text/html");
         descriptionReader.setEditorKit(new JIPipeDesktopHTMLEditorKit());
@@ -76,10 +79,9 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         UIUtils.registerHyperlinkHandler(descriptionReader);
         descriptionReaderScrollPane = new JScrollPane(descriptionReader);
 
-        projectSettingsParametersPanel = new JIPipeDesktopParameterPanel(getDesktopWorkbench(),
-                new JIPipeParameterTree(getProject().getMetadata()),
-                MarkdownText.fromPluginResource("documentation/project-settings.md", new HashMap<>()),
-                JIPipeDesktopParameterPanel.WITH_SCROLLING | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterPanel.DOCUMENTATION_BELOW);
+        // Project settings
+        projectSettingsComponents = new JIPipeDesktopProjectSettingsComponents(getProject(), workbench);
+
         userParametersPanel = new JIPipeDesktopParameterPanel(getDesktopWorkbench(),
                 getProject().getPipelineParameters(),
                 MarkdownText.fromPluginResource("documentation/project-info-parameters.md", new HashMap<>()),
@@ -178,42 +180,72 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
         initializeRuntimePartitionsPanel();
         initializeUserParametersPanel();
-        initializeUserDirectoriesPanel();
-        initializeGeneralSettingsParametersPanel();
         initializeHeaderPanel();
 
         descriptionReaderScrollPane.setBorder(null);
         userParametersPanel.getScrollPane().setBorder(null);
 
         JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.TabPlacement.Right);
-        tabPane.addTab("Parameters",
+        tabPane.registerSingletonTab("PARAMETERS",
+                "Parameters",
                 UIUtils.getIcon32FromResources("actions/configure.png"),
-                userParametersPanel,
+                () -> userParametersPanel,
                 JIPipeDesktopTabPane.CloseMode.withoutCloseButton,
-                false);
-        tabPane.addTab("Directories",
+                JIPipeDesktopTabPane.SingletonTabMode.Selected);
+        tabPane.registerSingletonTab(
+                "DIRECTORIES",
+                "Directories",
                 UIUtils.getIcon32FromResources("actions/stock_folder-copy.png"),
-                userDirectoriesPanel,
+                () -> userDirectoriesPanel,
                 JIPipeDesktopTabPane.CloseMode.withoutCloseButton,
-                false);
-        tabPane.addTab("Partitions",
+                JIPipeDesktopTabPane.SingletonTabMode.Present);
+        tabPane.registerSingletonTab(
+                "PARTITIONS",
+                "Partitions",
                 UIUtils.getIcon32FromResources("actions/runtime-partition.png"),
-                runtimePartitionsPanel,
+                () -> runtimePartitionsPanel,
                 JIPipeDesktopTabPane.CloseMode.withoutCloseButton,
-                false);
-        tabPane.addTab("Bookmarks",
+                JIPipeDesktopTabPane.SingletonTabMode.Present);
+        tabPane.registerSingletonTab(
+                "BOOKMARKS",
+                "Bookmarks",
                 UIUtils.getIcon32FromResources("actions/bookmark.png"),
-                new JIPipeDesktopBookmarkListPanel(getDesktopWorkbench(), getProject().getGraph(), null, null),
+                () -> new JIPipeDesktopBookmarkListPanel(getDesktopWorkbench(), getProject().getGraph(), null, null),
                 JIPipeDesktopTabPane.CloseMode.withoutCloseButton,
-                false);
-        tabPane.addTab("Settings",
+                JIPipeDesktopTabPane.SingletonTabMode.Present);
+        tabPane.registerSingletonTab(
+                "SETTINGS",
+                "Settings",
                 UIUtils.getIcon32FromResources("actions/wrench.png"),
-                projectSettingsParametersPanel,
+                projectSettingsComponents::getTreePanel,
                 JIPipeDesktopTabPane.CloseMode.withoutCloseButton,
-                false);
+                JIPipeDesktopTabPane.SingletonTabMode.Present);
 
-        AutoResizeSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, descriptionReaderScrollPane, tabPane, new AutoResizeSplitPane.DynamicSidebarRatio(600, false));
+        splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, descriptionReaderScrollPane, tabPane, new AutoResizeSplitPane.DynamicSidebarRatio(600, false));
         add(splitPane, BorderLayout.CENTER);
+
+        tabPane.getTabbedPane().addChangeListener(e -> {
+            if("SETTINGS".equals(tabPane.getCurrentlySelectedSingletonTabId())) {
+                switchToSettings();
+            }
+            else {
+                switchToDescription();
+            }
+        });
+    }
+
+    private void switchToDescription() {
+        splitPane.setLeftComponent(descriptionReaderScrollPane);
+        splitPane.revalidate();
+        splitPane.applyRatio();
+        splitPane.repaint();
+    }
+
+    private void switchToSettings() {
+        splitPane.setLeftComponent(projectSettingsComponents.getContentPanel());
+        splitPane.revalidate();
+        splitPane.applyRatio();
+        splitPane.repaint();
     }
 
     private void initializeRuntimePartitionsPanel() {
@@ -222,28 +254,6 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                 new JIPipeDesktopMarkdownReader(false, MarkdownText.fromPluginResource("documentation/project-info-runtime-partitions.md")),
                 AutoResizeSplitPane.RATIO_3_TO_1);
         runtimePartitionsPanel.add(splitPane, BorderLayout.CENTER);
-    }
-
-    private void initializeGeneralSettingsParametersPanel() {
-        projectSettingsParametersPanel.setCustomIsParameterCollectionVisible((tree, collection) -> {
-            if (collection == getProject().getMetadata().getDirectories()) {
-                return false;
-            }
-            return true;
-        });
-        projectSettingsParametersPanel.setCustomIsParameterVisible((tree, parameter) -> {
-            if (parameter.getKey().contains("template"))
-                return false;
-            if (parameter.getKey().equals("thumbnail"))
-                return false;
-//            if (parameter.getKey().equals("update-site-dependencies"))
-//                return false;
-            return !parameter.isHidden();
-        });
-    }
-
-    private void initializeUserDirectoriesPanel() {
-        // Nothing yet
     }
 
     private void initializeUserParametersPanel() {

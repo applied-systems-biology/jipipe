@@ -38,7 +38,6 @@ import org.hkijena.jipipe.plugins.ijtrackmate.utils.TrackDrawer;
 import org.hkijena.jipipe.plugins.ijtrackmate.utils.TrackMateUtils;
 import org.hkijena.jipipe.plugins.imagejalgorithms.ImageJAlgorithmsPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
-import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -203,8 +202,8 @@ public class TrackMatePlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     private void registerSettings() {
-        registerSettingsSheet(new ImageViewerUISpotsDisplayApplicationSettings());
-        registerSettingsSheet(new ImageViewerUITracksDisplayApplicationSettings());
+        registerApplicationSettingsSheet(new ImageViewerUISpotsDisplayApplicationSettings());
+        registerApplicationSettingsSheet(new ImageViewerUITracksDisplayApplicationSettings());
     }
 
     private void registerNodes() {

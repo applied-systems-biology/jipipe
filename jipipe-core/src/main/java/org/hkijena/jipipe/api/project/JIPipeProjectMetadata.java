@@ -95,7 +95,7 @@ public class JIPipeProjectMetadata extends JIPipeStandardMetadata {
         return directories;
     }
 
-    @JsonGetter("user-directories")
+    @JsonSetter("user-directories")
     public void setDirectories(JIPipeProjectDirectories directories) {
         this.directories = directories;
     }

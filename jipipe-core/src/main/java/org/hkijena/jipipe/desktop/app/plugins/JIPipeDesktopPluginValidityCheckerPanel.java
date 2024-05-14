@@ -24,7 +24,7 @@ import java.util.HashMap;
 /**
  * Panel that checks plugin validity
  */
-public class JIPipeDesktopPluginValidityCheckerPanel extends JIPipeDesktopReloadableValidityChecker implements JIPipeService.ExtensionRegisteredEventListener {
+public class JIPipeDesktopPluginValidityCheckerPanel extends JIPipeDesktopReloadableValidityChecker implements JIPipeService.PluginRegisteredEventListener {
     /**
      * Creates new instance
      */
@@ -35,7 +35,7 @@ public class JIPipeDesktopPluginValidityCheckerPanel extends JIPipeDesktopReload
     }
 
     @Override
-    public void onJIPipeExtensionRegistered(JIPipeService.ExtensionRegisteredEvent event) {
+    public void onJIPipePluginRegistered(JIPipeService.ExtensionRegisteredEvent event) {
         recheckValidity();
     }
 }

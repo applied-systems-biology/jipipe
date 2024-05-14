@@ -85,7 +85,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ROIElementDrawingMode;
 import org.hkijena.jipipe.plugins.imageviewer.settings.ImageViewer2DUIApplicationSettings;
 import org.hkijena.jipipe.plugins.imageviewer.settings.ImageViewer3DUIApplicationSettings;
 import org.hkijena.jipipe.plugins.imageviewer.settings.ImageViewerGeneralUIApplicationSettings;
-import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -374,7 +373,7 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerSettingsSheet(new ImageJDataTypesApplicationSettings());
+        registerApplicationSettingsSheet(new ImageJDataTypesApplicationSettings());
         registerEnumParameterType("ome-tiff-compression",
                 OMETIFFCompression.class,
                 "OME TIFF Compression",
@@ -397,8 +396,8 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Determines how ROI elements are drawn");
 
         // Register settings
-        registerSettingsSheet(new ImageViewer2DUIApplicationSettings());
-        registerSettingsSheet(new ImageViewer3DUIApplicationSettings());
+        registerApplicationSettingsSheet(new ImageViewer2DUIApplicationSettings());
+        registerApplicationSettingsSheet(new ImageViewer3DUIApplicationSettings());
 
         // Register data types
         registerDatatype("imagej-ome",
@@ -527,8 +526,8 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerMenuExtension(BioFormatsConfigTool.class);
 
-        registerSettingsSheet(new ImageViewerUIROI2DDisplayApplicationSettings());
-        registerSettingsSheet(new ImageViewerGeneralUIApplicationSettings());
+        registerApplicationSettingsSheet(new ImageViewerUIROI2DDisplayApplicationSettings());
+        registerApplicationSettingsSheet(new ImageViewerGeneralUIApplicationSettings());
 
     }
 

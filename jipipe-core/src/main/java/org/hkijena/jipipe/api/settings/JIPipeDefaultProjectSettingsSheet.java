@@ -14,20 +14,19 @@
 package org.hkijena.jipipe.api.settings;
 
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 
 /**
  * Application settings sheet of type {@link AbstractJIPipeParameterCollection}, pre-configured to use standardized categories
  */
-public abstract class JIPipeDefaultApplicationsSettingsSheet extends AbstractJIPipeParameterCollection implements JIPipeApplicationSettingsSheet {
+public abstract class JIPipeDefaultProjectSettingsSheet extends AbstractJIPipeParameterCollection implements JIPipeProjectSettingsSheet {
 
     /**
      * Returns one of the predefined categories
      * @return the category
      */
-    public abstract JIPipeDefaultApplicationSettingsSheetCategory getDefaultCategory();
+    public abstract JIPipeDefaultProjectSettingsSheetCategory getDefaultCategory();
 
     @Override
     public Icon getCategoryIcon() {

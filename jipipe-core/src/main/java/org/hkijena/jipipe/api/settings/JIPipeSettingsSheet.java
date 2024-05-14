@@ -15,6 +15,9 @@ package org.hkijena.jipipe.api.settings;
 
 import javax.swing.*;
 
+/**
+ * A settings sheet
+ */
 public interface JIPipeSettingsSheet {
 
     /**

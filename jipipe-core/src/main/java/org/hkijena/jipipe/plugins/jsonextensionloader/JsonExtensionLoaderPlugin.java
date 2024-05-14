@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
  * Extension that loads {@link JIPipeJsonPlugin}
  */
 @Plugin(type = JIPipeJavaPlugin.class)
-public class JsonExtensionLoaderPlugin extends JIPipePrepackagedDefaultJavaPlugin implements JIPipeService.ExtensionRegisteredEventListener {
+public class JsonExtensionLoaderPlugin extends JIPipePrepackagedDefaultJavaPlugin implements JIPipeService.PluginRegisteredEventListener {
 
     private final Set<JsonExtensionRegistrationTask> registrationTasks = new HashSet<>();
 
@@ -211,7 +211,7 @@ public class JsonExtensionLoaderPlugin extends JIPipePrepackagedDefaultJavaPlugi
     }
 
     @Override
-    public void onJIPipeExtensionRegistered(JIPipeService.ExtensionRegisteredEvent event) {
+    public void onJIPipePluginRegistered(JIPipeService.ExtensionRegisteredEvent event) {
         updateRegistrationTasks();
     }
 }

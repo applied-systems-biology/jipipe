@@ -44,7 +44,7 @@ import java.util.Set;
 /**
  * UI around a {@link JIPipeJsonPlugin}
  */
-public class JIPipeDesktopJsonExtensionWorkbench extends JPanel implements JIPipeDesktopWorkbench, JIPipeService.ExtensionRegisteredEventListener, JIPipeService.ExtensionContentRemovedEventListener {
+public class JIPipeDesktopJsonExtensionWorkbench extends JPanel implements JIPipeDesktopWorkbench, JIPipeService.PluginRegisteredEventListener, JIPipeService.PluginContentRemovedEventListener {
     private final JIPipeDesktopJsonExtensionWindow window;
     private final Context context;
     private final JIPipeJsonPlugin pluginProject;
@@ -78,7 +78,7 @@ public class JIPipeDesktopJsonExtensionWorkbench extends JPanel implements JIPip
      * @param event the event
      */
     @Override
-    public void onJIPipeExtensionRegistered(JIPipe.ExtensionRegisteredEvent event) {
+    public void onJIPipePluginRegistered(JIPipe.ExtensionRegisteredEvent event) {
         sendStatusBarText("Registered extension: '" + event.getExtension().getMetadata().getName() + "' with id '" + event.getExtension().getDependencyId() + "'. We recommend to restart ImageJ.");
     }
 
@@ -330,7 +330,7 @@ public class JIPipeDesktopJsonExtensionWorkbench extends JPanel implements JIPip
     }
 
     @Override
-    public void onJIPipeExtensionContentRemoved(JIPipeService.ExtensionContentRemovedEvent event) {
+    public void onJIPipePluginContentRemoved(JIPipeService.ExtensionContentRemovedEvent event) {
         removeUnnecessaryAlgorithmGraphEditors();
     }
 }

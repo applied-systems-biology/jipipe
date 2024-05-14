@@ -19,7 +19,6 @@ import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
-import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -31,7 +30,6 @@ import org.hkijena.jipipe.plugins.python.installers.SelectCondaEnvPythonInstalle
 import org.hkijena.jipipe.plugins.python.installers.SelectSystemPythonInstaller;
 import org.hkijena.jipipe.plugins.python.installers.SelectVirtualEnvPythonInstaller;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
-import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
@@ -119,8 +117,8 @@ public class PythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 PythonEnvironmentType.class,
                 "Python environment type",
                 "A Python environment type");
-        registerSettingsSheet(settings);
-        registerSettingsSheet(adapterExtensionSettings);
+        registerApplicationSettingsSheet(settings);
+        registerApplicationSettingsSheet(adapterExtensionSettings);
 
         registerEnvironmentInstaller(PythonEnvironment.class, SelectCondaEnvPythonInstaller.class, UIUtils.getIconFromResources("actions/project-open.png"));
         registerEnvironmentInstaller(PythonEnvironment.class, SelectSystemPythonInstaller.class, UIUtils.getIconFromResources("actions/project-open.png"));

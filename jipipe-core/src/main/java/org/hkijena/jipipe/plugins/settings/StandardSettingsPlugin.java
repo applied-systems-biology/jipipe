@@ -70,26 +70,26 @@ public class StandardSettingsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
 
         //General
-        registerSettingsSheet(new JIPipeDownloadsApplicationSettings());
-        registerSettingsSheet(new JIPipeRuntimeApplicationSettings());
-        registerSettingsSheet(new JIPipeProjectDefaultsApplicationSettings());
-        registerSettingsSheet(new JIPipeBackupApplicationSettings());
-        registerSettingsSheet(new JIPipeHistoryJournalApplicationSettings());
-        registerSettingsSheet(new JIPipeExtensionApplicationSettings());
-        registerSettingsSheet(new JIPipeNodeTemplateApplicationSettings());
+        registerApplicationSettingsSheet(new JIPipeDownloadsApplicationSettings());
+        registerApplicationSettingsSheet(new JIPipeRuntimeApplicationSettings());
+        registerApplicationSettingsSheet(new JIPipeProjectDefaultsApplicationSettings());
+        registerApplicationSettingsSheet(new JIPipeBackupApplicationSettings());
+        registerApplicationSettingsSheet(new JIPipeHistoryJournalApplicationSettings());
+        registerApplicationSettingsSheet(new JIPipeExtensionApplicationSettings());
+        registerApplicationSettingsSheet(new JIPipeNodeTemplateApplicationSettings());
 
         // UI
-        registerSettingsSheet(new JIPipeGeneralUIApplicationSettings());
-        registerSettingsSheet(new JIPipeNotificationUIApplicationSettings());
-        registerSettingsSheet(new JIPipeGraphEditorUIApplicationSettings());
-        registerSettingsSheet(new JIPipeTableViewerUIApplicationSettings());
-        registerSettingsSheet(new JIPipeFileChooserApplicationSettings());
+        registerApplicationSettingsSheet(new JIPipeGeneralUIApplicationSettings());
+        registerApplicationSettingsSheet(new JIPipeNotificationUIApplicationSettings());
+        registerApplicationSettingsSheet(new JIPipeGraphEditorUIApplicationSettings());
+        registerApplicationSettingsSheet(new JIPipeTableViewerUIApplicationSettings());
+        registerApplicationSettingsSheet(new JIPipeFileChooserApplicationSettings());
 
         // Data
-        registerSettingsSheet(new JIPipeDefaultResultImporterApplicationSettings());
-        registerSettingsSheet(new JIPipeDefaultCacheDisplayApplicationSettings());
-        registerSettingsSheet(new JIPipeGeneralDataApplicationSettings());
-        registerSettingsSheet(new JIPipeDataExporterApplicationSettings());
+        registerApplicationSettingsSheet(new JIPipeDefaultResultImporterApplicationSettings());
+        registerApplicationSettingsSheet(new JIPipeDefaultCacheDisplayApplicationSettings());
+        registerApplicationSettingsSheet(new JIPipeGeneralDataApplicationSettings());
+        registerApplicationSettingsSheet(new JIPipeDataExporterApplicationSettings());
 
 
     }

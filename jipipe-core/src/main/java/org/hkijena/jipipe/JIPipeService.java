@@ -41,7 +41,9 @@ public interface JIPipeService extends Service, JIPipeValidatable {
 
     JIPipeCustomMenuRegistry getCustomMenuRegistry();
 
-    JIPipeApplicationSettingsRegistry getSettingsRegistry();
+    JIPipeApplicationSettingsRegistry getApplicationSettingsRegistry();
+
+    JIPipeProjectSettingsRegistry getProjectSettingsRegistry();
 
     JIPipeMetadataRegistry getMetadataRegistry();
 
@@ -81,20 +83,20 @@ public interface JIPipeService extends Service, JIPipeValidatable {
         void onJIPipeDatatypeRegistered(DatatypeRegisteredEvent event);
     }
 
-    interface ExtensionContentAddedEventListener {
-        void onJIPipeExtensionContentAdded(ExtensionContentAddedEvent event);
+    interface PluginContentAddedEventListener {
+        void onJIPipePluginContentAdded(ExtensionContentAddedEvent event);
     }
 
-    interface ExtensionContentRemovedEventListener {
-        void onJIPipeExtensionContentRemoved(ExtensionContentRemovedEvent event);
+    interface PluginContentRemovedEventListener {
+        void onJIPipePluginContentRemoved(ExtensionContentRemovedEvent event);
     }
 
-    interface ExtensionDiscoveredEventListener {
-        void onJIPipeExtensionDiscovered(ExtensionDiscoveredEvent event);
+    interface PluginDiscoveredEventListener {
+        void onJIPipePluginDiscovered(ExtensionDiscoveredEvent event);
     }
 
-    interface ExtensionRegisteredEventListener {
-        void onJIPipeExtensionRegistered(ExtensionRegisteredEvent event);
+    interface PluginRegisteredEventListener {
+        void onJIPipePluginRegistered(ExtensionRegisteredEvent event);
     }
 
     interface NodeInfoRegisteredEventListener {
@@ -156,10 +158,10 @@ public interface JIPipeService extends Service, JIPipeValidatable {
         }
     }
 
-    class ExtensionContentAddedEventEmitter extends JIPipeEventEmitter<ExtensionContentAddedEvent, ExtensionContentAddedEventListener> {
+    class ExtensionContentAddedEventEmitter extends JIPipeEventEmitter<ExtensionContentAddedEvent, PluginContentAddedEventListener> {
         @Override
-        protected void call(ExtensionContentAddedEventListener extensionContentAddedEventListener, ExtensionContentAddedEvent event) {
-            extensionContentAddedEventListener.onJIPipeExtensionContentAdded(event);
+        protected void call(PluginContentAddedEventListener pluginContentAddedEventListener, ExtensionContentAddedEvent event) {
+            pluginContentAddedEventListener.onJIPipePluginContentAdded(event);
         }
     }
 
@@ -189,11 +191,11 @@ public interface JIPipeService extends Service, JIPipeValidatable {
         }
     }
 
-    class ExtensionContentRemovedEventEmitter extends JIPipeEventEmitter<ExtensionContentRemovedEvent, ExtensionContentRemovedEventListener> {
+    class ExtensionContentRemovedEventEmitter extends JIPipeEventEmitter<ExtensionContentRemovedEvent, PluginContentRemovedEventListener> {
 
         @Override
-        protected void call(ExtensionContentRemovedEventListener extensionContentRemovedEventListener, ExtensionContentRemovedEvent event) {
-            extensionContentRemovedEventListener.onJIPipeExtensionContentRemoved(event);
+        protected void call(PluginContentRemovedEventListener pluginContentRemovedEventListener, ExtensionContentRemovedEvent event) {
+            pluginContentRemovedEventListener.onJIPipePluginContentRemoved(event);
         }
     }
 
@@ -219,11 +221,11 @@ public interface JIPipeService extends Service, JIPipeValidatable {
         }
     }
 
-    class ExtensionDiscoveredEventEmitter extends JIPipeEventEmitter<ExtensionDiscoveredEvent, ExtensionDiscoveredEventListener> {
+    class ExtensionDiscoveredEventEmitter extends JIPipeEventEmitter<ExtensionDiscoveredEvent, PluginDiscoveredEventListener> {
 
         @Override
-        protected void call(ExtensionDiscoveredEventListener extensionDiscoveredEventListener, ExtensionDiscoveredEvent event) {
-            extensionDiscoveredEventListener.onJIPipeExtensionDiscovered(event);
+        protected void call(PluginDiscoveredEventListener pluginDiscoveredEventListener, ExtensionDiscoveredEvent event) {
+            pluginDiscoveredEventListener.onJIPipePluginDiscovered(event);
         }
     }
 
@@ -253,11 +255,11 @@ public interface JIPipeService extends Service, JIPipeValidatable {
         }
     }
 
-    class ExtensionRegisteredEventEmitter extends JIPipeEventEmitter<ExtensionRegisteredEvent, ExtensionRegisteredEventListener> {
+    class ExtensionRegisteredEventEmitter extends JIPipeEventEmitter<ExtensionRegisteredEvent, PluginRegisteredEventListener> {
 
         @Override
-        protected void call(ExtensionRegisteredEventListener extensionRegisteredEventListener, ExtensionRegisteredEvent event) {
-            extensionRegisteredEventListener.onJIPipeExtensionRegistered(event);
+        protected void call(PluginRegisteredEventListener pluginRegisteredEventListener, ExtensionRegisteredEvent event) {
+            pluginRegisteredEventListener.onJIPipePluginRegistered(event);
         }
     }
 

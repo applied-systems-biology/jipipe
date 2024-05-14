@@ -109,7 +109,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                     id = JIPipeProjectTemplate.getFallbackTemplateId();
                     JIPipeProjectDefaultsApplicationSettings.getInstance().getProjectTemplate().setValue(id);
                     if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                        JIPipe.getInstance().getSettingsRegistry().save();
+                        JIPipe.getInstance().getApplicationSettingsRegistry().save();
                     }
                 }
                 JIPipeProjectTemplate template = JIPipe.getInstance().getProjectTemplateRegistry().getRegisteredTemplates().get(id);

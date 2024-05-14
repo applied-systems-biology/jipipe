@@ -44,13 +44,11 @@ import org.hkijena.jipipe.plugins.omero.nodes.navigate.OMEROListImagesAlgorithm;
 import org.hkijena.jipipe.plugins.omero.nodes.navigate.OMEROListProjectsAlgorithm;
 import org.hkijena.jipipe.plugins.omero.nodes.upload.UploadOMEROImageAlgorithm;
 import org.hkijena.jipipe.plugins.omero.nodes.upload.UploadOMEROTableAlgorithm;
-import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.ReflectionUtils;
-import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
@@ -184,7 +182,7 @@ public class OMEROPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         OMEROPluginApplicationSettings omeroSettings = new OMEROPluginApplicationSettings();
-        registerSettingsSheet(omeroSettings);
+        registerApplicationSettingsSheet(omeroSettings);
         registerEnvironment(OMEROCredentialsEnvironment.class,
                 OMEROCredentialsEnvironment.List.class,
                 omeroSettings,

@@ -24,7 +24,6 @@ import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryType;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -80,7 +79,7 @@ public class ArtifactsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Artifact repository",
                 "An artifact repository",
                 null);
-        registerSettingsSheet(new JIPipeArtifactApplicationSettings());
+        registerApplicationSettingsSheet(new JIPipeArtifactApplicationSettings());
     }
 
     @Override

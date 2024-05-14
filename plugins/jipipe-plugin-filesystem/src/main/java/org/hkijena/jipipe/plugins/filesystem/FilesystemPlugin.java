@@ -110,7 +110,7 @@ public class FilesystemPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerAlgorithms();
 
-        registerSettingsSheet(new JIPipeFilesystemPluginApplicationSettings());
+        registerApplicationSettingsSheet(new JIPipeFilesystemPluginApplicationSettings());
     }
 
     private void registerAlgorithms() {

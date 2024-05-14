@@ -97,7 +97,7 @@ public class JIPipeApplicationSettingsRegistry {
         }
         registeredSheets.put(sheet.getId(), sheet);
         registeredSheetsByType.put(sheet.getClass(), sheet);
-        getJIPipe().getProgressInfo().log("Registered settings sheet id=" + sheet.getId() + " in category '" + sheet.getCategory() + "' object=" + sheet);
+        getJIPipe().getProgressInfo().log("Registered application settings sheet id=" + sheet.getId() + " in category '" + sheet.getCategory() + "' object=" + sheet);
     }
 
     /**

@@ -117,7 +117,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
     private final JIPipeImageJAdapterRegistry imageJDataAdapterRegistry;
     private final JIPipeCustomMenuRegistry customMenuRegistry;
     private final JIPipeParameterTypeRegistry parameterTypeRegistry;
-    private final JIPipeApplicationSettingsRegistry settingsRegistry;
+    private final JIPipeApplicationSettingsRegistry applicationSettingsRegistry;
+    private final JIPipeProjectSettingsRegistry projectSettingsRegistry;
     private final JIPipeExpressionRegistry tableOperationRegistry;
     private final JIPipeUtilityRegistry utilityRegistry;
     private final JIPipeExternalEnvironmentRegistry externalEnvironmentRegistry;
@@ -147,7 +148,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
         imageJDataAdapterRegistry = new JIPipeImageJAdapterRegistry(this);
         customMenuRegistry = new JIPipeCustomMenuRegistry(this);
         parameterTypeRegistry = new JIPipeParameterTypeRegistry(this);
-        settingsRegistry = new JIPipeApplicationSettingsRegistry(this);
+        applicationSettingsRegistry = new JIPipeApplicationSettingsRegistry(this);
+        projectSettingsRegistry = new JIPipeProjectSettingsRegistry(this);
         tableOperationRegistry = new JIPipeExpressionRegistry(this);
         utilityRegistry = new JIPipeUtilityRegistry(this);
         externalEnvironmentRegistry = new JIPipeExternalEnvironmentRegistry(this);
@@ -204,7 +206,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
     }
 
     public static JIPipeApplicationSettingsRegistry getSettings() {
-        return instance.settingsRegistry;
+        return instance.applicationSettingsRegistry;
     }
 
     public static JIPipeNodeRegistry getNodes() {
@@ -947,18 +949,21 @@ public class JIPipe extends AbstractService implements JIPipeService {
         // Check for errors
 
         progressInfo.setProgress(3);
-        progressInfo.log("Error-checking-phase ...");
+        progressInfo.log("Validating node types ...");
         validateDataTypes(issues);
         if (extensionSettings.isValidateNodeTypes()) {
             validateNodeTypes(issues);
         }
+        progressInfo.log("Validating parameter types ...");
         validateParameterTypes(issues);
 
         // Create dependency graph
+        progressInfo.log("Creating dependency graph ...");
         pluginRegistry.getDependencyGraph();
 
         // Check for update sites
         if (extensionSettings.isValidateImageJDependencies()) {
+            progressInfo.log("Validating ImageJ update site dependencies ...");
             List<JIPipeDependency> loadedJavaExtensions = new ArrayList<>();
             for (JIPipeJavaExtensionInitializationInfo initializationInfo : allJavaExtensionsList) {
                 if (initializationInfo.isLoaded()) {
@@ -970,6 +975,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
         }
 
         // Create settings for default importers
+        progressInfo.log("Creating dynamic settings ...");
         createDefaultImporterSettings();
         createDefaultCacheDisplaySettings();
         registerNodeExamplesFromFileSystem();
@@ -978,7 +984,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
         // Reload settings
         progressInfo.setProgress(4);
         progressInfo.log("Loading settings ...");
-        settingsRegistry.reload();
+        applicationSettingsRegistry.reload();
 
         // Required as the reload deletes the allowed values
         updateDefaultImporterSettings();
@@ -1205,7 +1211,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * Creates settings for each known data type, so users can change how they will be imported
      */
     private void createDefaultImporterSettings() {
-        JIPipeDefaultResultImporterApplicationSettings settings = settingsRegistry.getById(JIPipeDefaultResultImporterApplicationSettings.ID, JIPipeDefaultResultImporterApplicationSettings.class);
+        JIPipeDefaultResultImporterApplicationSettings settings = applicationSettingsRegistry.getById(JIPipeDefaultResultImporterApplicationSettings.ID, JIPipeDefaultResultImporterApplicationSettings.class);
         for (String id : datatypeRegistry.getRegisteredDataTypes().keySet()) {
             JIPipeDataInfo info = JIPipeDataInfo.getInstance(id);
             JIPipeMutableParameterAccess access = settings.addParameter(id, DynamicDataImportOperationIdEnumParameter.class);
@@ -1218,7 +1224,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * Creates settings for each known data type, so users can change how they will be imported
      */
     private void createDefaultCacheDisplaySettings() {
-        JIPipeDefaultCacheDisplayApplicationSettings settings = settingsRegistry.getById(JIPipeDefaultCacheDisplayApplicationSettings.ID, JIPipeDefaultCacheDisplayApplicationSettings.class);
+        JIPipeDefaultCacheDisplayApplicationSettings settings = applicationSettingsRegistry.getById(JIPipeDefaultCacheDisplayApplicationSettings.ID, JIPipeDefaultCacheDisplayApplicationSettings.class);
         for (String id : datatypeRegistry.getRegisteredDataTypes().keySet()) {
             JIPipeDataInfo info = JIPipeDataInfo.getInstance(id);
             JIPipeMutableParameterAccess access = settings.addParameter(id, DynamicDataDisplayOperationIdEnumParameter.class);
@@ -1228,7 +1234,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
     }
 
     private void updateDefaultImporterSettings() {
-        JIPipeDefaultResultImporterApplicationSettings settings = settingsRegistry.getById(JIPipeDefaultResultImporterApplicationSettings.ID, JIPipeDefaultResultImporterApplicationSettings.class);
+        JIPipeDefaultResultImporterApplicationSettings settings = applicationSettingsRegistry.getById(JIPipeDefaultResultImporterApplicationSettings.ID, JIPipeDefaultResultImporterApplicationSettings.class);
         for (String id : datatypeRegistry.getRegisteredDataTypes().keySet()) {
             List<JIPipeDataImportOperation> operations = datatypeRegistry.getSortedImportOperationsFor(id);
             JIPipeMutableParameterAccess access = (JIPipeMutableParameterAccess) settings.get(id);
@@ -1254,7 +1260,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
     }
 
     private void updateDefaultCacheDisplaySettings() {
-        JIPipeDefaultCacheDisplayApplicationSettings settings = settingsRegistry.getById(JIPipeDefaultCacheDisplayApplicationSettings.ID, JIPipeDefaultCacheDisplayApplicationSettings.class);
+        JIPipeDefaultCacheDisplayApplicationSettings settings = applicationSettingsRegistry.getById(JIPipeDefaultCacheDisplayApplicationSettings.ID, JIPipeDefaultCacheDisplayApplicationSettings.class);
         for (String id : datatypeRegistry.getRegisteredDataTypes().keySet()) {
             List<JIPipeDataDisplayOperation> operations = datatypeRegistry.getSortedDisplayOperationsFor(id);
             JIPipeMutableParameterAccess access = (JIPipeMutableParameterAccess) settings.get(id);
@@ -1455,8 +1461,13 @@ public class JIPipe extends AbstractService implements JIPipeService {
     }
 
     @Override
-    public JIPipeApplicationSettingsRegistry getSettingsRegistry() {
-        return settingsRegistry;
+    public JIPipeApplicationSettingsRegistry getApplicationSettingsRegistry() {
+        return applicationSettingsRegistry;
+    }
+
+    @Override
+    public JIPipeProjectSettingsRegistry getProjectSettingsRegistry() {
+        return projectSettingsRegistry;
     }
 
     @Override

@@ -15,7 +15,6 @@ package org.hkijena.jipipe.plugins.settings;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
@@ -59,7 +58,7 @@ public class JIPipeRuntimeApplicationSettings extends JIPipeDefaultApplicationsS
      * @return a temporary directory
      */
     public static Path generateTempDirectory(String baseName) {
-        if (JIPipe.getInstance() == null || !JIPipe.getInstance().getSettingsRegistry().getRegisteredSheets().containsKey(ID)) {
+        if (JIPipe.getInstance() == null || !JIPipe.getInstance().getApplicationSettingsRegistry().getRegisteredSheets().containsKey(ID)) {
             try {
                 return Files.createTempDirectory("JIPipe" + baseName);
             } catch (IOException e) {
@@ -90,7 +89,7 @@ public class JIPipeRuntimeApplicationSettings extends JIPipeDefaultApplicationsS
      * @return a temporary directory
      */
     public static Path generateTempFile(String prefix, String suffix) {
-        if (JIPipe.getInstance() == null || !JIPipe.getInstance().getSettingsRegistry().getRegisteredSheets().containsKey(ID)) {
+        if (JIPipe.getInstance() == null || !JIPipe.getInstance().getApplicationSettingsRegistry().getRegisteredSheets().containsKey(ID)) {
             try {
                 return Files.createTempFile("JIPipe" + prefix, suffix);
             } catch (IOException e) {

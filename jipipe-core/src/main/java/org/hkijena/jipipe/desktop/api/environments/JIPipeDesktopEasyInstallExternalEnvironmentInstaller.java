@@ -116,7 +116,7 @@ public abstract class JIPipeDesktopEasyInstallExternalEnvironmentInstaller<T ext
                 SwingUtilities.invokeLater(() -> {
                     writeEnvironmentToParameters(generatedEnvironment, getParameterAccess());
                     if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                        JIPipe.getInstance().getSettingsRegistry().save();
+                        JIPipe.getInstance().getApplicationSettingsRegistry().save();
                     }
                 });
             }

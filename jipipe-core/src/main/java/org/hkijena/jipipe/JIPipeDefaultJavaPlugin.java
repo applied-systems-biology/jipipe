@@ -41,6 +41,7 @@ import org.hkijena.jipipe.api.registries.JIPipeJavaNodeRegistrationTask;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistrationTask;
 import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.api.settings.JIPipeApplicationSettingsSheet;
+import org.hkijena.jipipe.api.settings.JIPipeProjectSettingsSheet;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopGraphEditorToolBarButtonExtension;
@@ -55,7 +56,6 @@ import org.hkijena.jipipe.plugins.expressions.functions.ColumnOperationAdapterFu
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterGenerator;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterTypeInfo;
-import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeDesktopExternalEnvironmentParameterEditorUI;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -649,12 +649,20 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
     }
 
     /**
-     * Registers a new settings sheet
+     * Registers a new application settings sheet
      *
      * @param sheet the settings sheet
      */
-    public void registerSettingsSheet(JIPipeApplicationSettingsSheet sheet) {
-        registry.getSettingsRegistry().register(sheet);
+    public void registerApplicationSettingsSheet(JIPipeApplicationSettingsSheet sheet) {
+        registry.getApplicationSettingsRegistry().register(sheet);
+    }
+
+    /**
+     * Registers a new project settings sheet
+     * @param settingsSheetClass the settings sheet class. must have a default constructor.
+     */
+    public void registerProjectSettingsSheet(Class<? extends JIPipeProjectSettingsSheet> settingsSheetClass) {
+        registry.getProjectSettingsRegistry().register(settingsSheetClass);
     }
 
     /**

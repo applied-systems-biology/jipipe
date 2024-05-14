@@ -485,7 +485,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         searchEnabledItem.addActionListener(e -> {
             graphUISettings.getSearchSettings().setEnableSearch(searchEnabledItem.isSelected());
             if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                JIPipe.getInstance().getSettingsRegistry().save();
+                JIPipe.getInstance().getApplicationSettingsRegistry().save();
             }
             nodeDatabaseSearchBox.setVisible(graphUISettings.getSearchSettings().isEnableSearch());
             menuBar.revalidate();
@@ -497,7 +497,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         searchFindNewNodes.addActionListener(e -> {
             graphUISettings.getSearchSettings().setSearchFindNewNodes(searchFindNewNodes.isSelected());
             if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                JIPipe.getInstance().getSettingsRegistry().save();
+                JIPipe.getInstance().getApplicationSettingsRegistry().save();
             }
             nodeDatabaseSearchBox.setAllowNew(searchFindNewNodes.isSelected());
         });
@@ -508,7 +508,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         searchFindExistingNodes.addActionListener(e -> {
             graphUISettings.getSearchSettings().setSearchFindExistingNodes(searchFindExistingNodes.isSelected());
             if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                JIPipe.getInstance().getSettingsRegistry().save();
+                JIPipe.getInstance().getApplicationSettingsRegistry().save();
             }
             nodeDatabaseSearchBox.setAllowExisting(searchFindExistingNodes.isSelected());
         });

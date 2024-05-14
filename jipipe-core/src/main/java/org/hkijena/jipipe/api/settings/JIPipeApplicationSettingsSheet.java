@@ -16,5 +16,8 @@ package org.hkijena.jipipe.api.settings;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
+/**
+ * A settings sheet used for storing application-wide settings
+ */
 public interface JIPipeApplicationSettingsSheet extends JIPipeParameterCollection, JIPipeSettingsSheet {
 }

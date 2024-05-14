@@ -67,6 +67,11 @@ public class JIPipeDesktopFormPanel extends JXPanel {
     public static final int TRANSPARENT_BACKGROUND = 32;
 
     /**
+     * Flag that makes the form panel limit the width of components
+     */
+    public static final int WITH_LIMIT_WIDTH = 64;
+
+    /**
      * Flag that makes the content be wrapped in a {@link JScrollPane}
      */
     public static final int WITH_SCROLLING = 2;
@@ -146,7 +151,6 @@ public class JIPipeDesktopFormPanel extends JXPanel {
         contentPanel.setScrollableHeightHint(ScrollableSizeHint.VERTICAL_STRETCH);
         contentPanel.setOpaque(opaque);
         setOpaque(opaque);
-
 
         // Determine the component that will be displayed in the help pane
         Component helpComponent;

@@ -130,7 +130,7 @@ public class IJ3DPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
 
-        registerSettingsSheet(new ImageViewerUIROI3DDisplayApplicationSettings());
+        registerApplicationSettingsSheet(new ImageViewerUIROI3DDisplayApplicationSettings());
         JIPipeImageViewer.registerDefaultPlugin(ROIManagerPlugin3D.class);
 
         registerEnumParameterType("ij3d-measurement", ROI3DMeasurement.class, "3D Measurement", "A 3D object measurement");

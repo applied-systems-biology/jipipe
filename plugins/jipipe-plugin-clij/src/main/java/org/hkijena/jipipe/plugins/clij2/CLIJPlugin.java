@@ -36,12 +36,10 @@ import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.compat.ImagePlusWindowImageJImporterUI;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
-import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
@@ -235,7 +233,7 @@ public class CLIJPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("clij-push-to-gpu", Clij2PushAlgorithm.class, UIUtils.getIconURLFromResources("apps/clij.png"));
         registerNodeType("clij-pull-from-gpu", Clij2PullAlgorithm.class, UIUtils.getIconURLFromResources("apps/clij.png"));
 
-        registerSettingsSheet(new CLIJPluginApplicationSettings());
+        registerApplicationSettingsSheet(new CLIJPluginApplicationSettings());
         registerMenuExtension(CLIJControlPanelJIPipeDesktopMenuExtension.class);
 
         registerNodeExamplesFromResources(RESOURCES, "examples");
