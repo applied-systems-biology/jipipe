@@ -152,12 +152,12 @@ public class JIPipeDesktopInvalidProjectDependenciesInfoDialog extends JDialog {
         }
         if (!missingUpdateSites.isEmpty()) {
             formPanel.addWideToForm(Box.createVerticalStrut(32));
-            JIPipeDesktopAnimatedIcon hourglassAnimation = new JIPipeDesktopAnimatedIcon(this, UIUtils.getIconFromResources("actions/hourglass-half.png"),
-                    UIUtils.getIconFromResources("emblems/hourglass-half.png"),
-                    100, 0.05);
-            hourglassAnimation.start();
-            formPanel.addWideToForm(UIUtils.createJLabel("ImageJ update sites", 22));
-            formPanel.addWideToForm(UIUtils.createJLabel("Please wait until the update sites are available ...", hourglassAnimation));
+            formPanel.addWideToForm(UIUtils.createJLabel("Missing ImageJ update sites", 22));
+            formPanel.addWideToForm(UIUtils.createJLabel(missingUpdateSites.size() + " update sites were found to be not activated. Please click the 'Start ImageJ updater' button and use the interface to activate and install the following update sites:", UIUtils.getIconFromResources("emblems/emblem-important-blue.png")));
+            formPanel.addWideToForm(Box.createVerticalStrut(16));
+            for (JIPipeImageJUpdateSiteDependency siteDependency : missingUpdateSites) {
+                formPanel.addWideToForm(UIUtils.createJLabel("<html><strong>" + siteDependency.getName() + "</strong> (" + siteDependency.getUrl() + ")</html>", UIUtils.getIconFromResources("actions/run-build-install.png")));
+            }
         }
 
         formPanel.addVerticalGlue();

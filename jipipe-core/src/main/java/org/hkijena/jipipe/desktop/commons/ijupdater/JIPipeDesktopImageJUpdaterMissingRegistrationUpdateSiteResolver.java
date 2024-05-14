@@ -78,7 +78,7 @@ public class JIPipeDesktopImageJUpdaterMissingRegistrationUpdateSiteResolver ext
             formPanel.addWideToForm(UIUtils.createJLabel(issues.getMissingImageJSites().size() + " update sites were found to be not activated. Please click the 'Start ImageJ updater' button and use the interface to activate and install the following update sites:", UIUtils.getIconFromResources("emblems/emblem-important-blue.png")));
             formPanel.addWideToForm(Box.createVerticalStrut(16));
             for (JIPipeImageJUpdateSiteDependency siteDependency : issues.getMissingImageJSites()) {
-                formPanel.addWideToForm(UIUtils.createJLabel(siteDependency.getName() + " (" + siteDependency.getUrl() + ")", UIUtils.getIconFromResources("actions/run-build-install.png")));
+                formPanel.addWideToForm(UIUtils.createJLabel("<html><strong>" + siteDependency.getName() + "</strong> (" + siteDependency.getUrl() + ")</html>", UIUtils.getIconFromResources("actions/run-build-install.png")));
             }
         }
 
