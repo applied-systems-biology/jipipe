@@ -111,17 +111,11 @@ public class NodeTemplateDownloaderRun implements JIPipeRunnable {
                     templates.add(template);
                 }
                 if (workbench instanceof JIPipeDesktopProjectWorkbench && toProject) {
-                    ((JIPipeDesktopProjectWorkbench) workbench).getProject().getMetadata().getNodeTemplates().addAll(templates);
-                    ((JIPipeDesktopProjectWorkbench) workbench).getProject().getMetadata().emitParameterChangedEvent("node-templates");
+                    JIPipe.getNodeTemplates().addToProject(templates, workbench.getProject());
                 } else {
                     // Store globally
-                    JIPipeNodeTemplateApplicationSettings.getInstance().getNodeTemplates().addAll(templates);
-                    JIPipeNodeTemplateApplicationSettings.getInstance().emitParameterChangedEvent("node-templates");
-                    if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                        JIPipe.getSettings().save();
-                    }
+                    JIPipe.getNodeTemplates().addToGlobal(templates);
                 }
-                JIPipeNodeTemplateApplicationSettings.triggerRefreshedEvent();
             } catch (IOException e) {
                 progressInfo.log("Could not read template " + outputFile);
                 progressInfo.log(e.toString());

@@ -127,17 +127,11 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
                 JIPipeDesktopParameterPanel.WITH_SCROLLING | JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION)) {
             if (result == JOptionPane.YES_OPTION) {
                 // Store globally
-                JIPipeNodeTemplateApplicationSettings.getInstance().getNodeTemplates().add(template);
-                JIPipeNodeTemplateApplicationSettings.getInstance().emitParameterChangedEvent("node-templates");
-                if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                    JIPipe.getSettings().save();
-                }
+                JIPipe.getNodeTemplates().addToGlobal(template);
             } else {
                 // Store locally
-                canvasUI.getGraph().getProject().getMetadata().getNodeTemplates().add(template);
-                canvasUI.getGraph().getProject().getMetadata().emitParameterChangedEvent("node-templates");
+                JIPipe.getNodeTemplates().addToProject(template, canvasUI.getGraph().getProject());
             }
-            JIPipeNodeTemplateApplicationSettings.triggerRefreshedEvent();
         }
     }
 
@@ -159,7 +153,7 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
     }
 
     public boolean isFromExtension() {
-        return SOURCE_EXTENSION.equals(source);
+        return JIPipe.getNodeTemplates().isPluginTemplate(this);
     }
 
     @SetJIPipeDocumentation(name = "Name", description = "Name of the template")

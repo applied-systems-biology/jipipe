@@ -29,7 +29,6 @@ import javax.swing.*;
 public class JIPipeNodeTemplateApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet {
 
     public static String ID = "org.hkijena.jipipe:node-templates";
-    private JIPipeNodeTemplate.List nodeTemplates = new JIPipeNodeTemplate.List();
 
     private StringList nodeTemplateDownloadRepositories = new StringList();
 
@@ -41,20 +40,6 @@ public class JIPipeNodeTemplateApplicationSettings extends JIPipeDefaultApplicat
         return JIPipe.getSettings().getById(ID, JIPipeNodeTemplateApplicationSettings.class);
     }
 
-    public static void triggerRefreshedEvent() {
-        JIPipe.getInstance().getNodeTemplatesRefreshedEventEmitter().emit(new NodeTemplatesRefreshedEvent());
-    }
-
-    @SetJIPipeDocumentation(name = "Node templates", description = "List of globally available node templates.")
-    @JIPipeParameter("node-templates")
-    public JIPipeNodeTemplate.List getNodeTemplates() {
-        return nodeTemplates;
-    }
-
-    @JIPipeParameter("node-templates")
-    public void setNodeTemplates(JIPipeNodeTemplate.List nodeTemplates) {
-        this.nodeTemplates = nodeTemplates;
-    }
 
     @SetJIPipeDocumentation(name = "Template downloader repositories", description = "List of repositories for the 'Get more templates' feature")
     @JIPipeParameter("template-download-repositories")

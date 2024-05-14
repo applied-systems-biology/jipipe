@@ -999,7 +999,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
      */
     public List<JIPipeNodeExample> getNodeExamples(String nodeTypeId) {
         List<JIPipeNodeExample> result = new ArrayList<>(JIPipe.getNodes().getNodeExamples(nodeTypeId));
-        for (JIPipeNodeTemplate nodeTemplate : JIPipeNodeTemplateApplicationSettings.getInstance().getNodeTemplates()) {
+        for (JIPipeNodeTemplate nodeTemplate : JIPipe.getInstance().getNodeTemplateRegistry().getGlobalTemplates()) {
             JIPipeNodeExample example = new JIPipeNodeExample(nodeTemplate);
             if (Objects.equals(example.getNodeId(), nodeTypeId)) {
                 example.setSourceInfo("From node templates (global)");

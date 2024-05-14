@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.nodetemplate.templatedownloader;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
@@ -61,11 +62,11 @@ public class NodeTemplateDownloaderDialog extends JDialog {
         formPanel.addWideToForm(UIUtils.createJLabel("Available templates", 22));
 
         Set<String> allSources = new HashSet<>();
-        for (JIPipeNodeTemplate nodeTemplate : JIPipeNodeTemplateApplicationSettings.getInstance().getNodeTemplates()) {
+        for (JIPipeNodeTemplate nodeTemplate : JIPipe.getNodeTemplates().getGlobalTemplates()) {
             allSources.add(StringUtils.orElse(nodeTemplate.getSource(), JIPipeNodeTemplate.SOURCE_USER));
         }
         if (installer.getWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
-            for (JIPipeNodeTemplate nodeTemplate : ((JIPipeDesktopProjectWorkbench) installer.getWorkbench()).getProject().getMetadata().getNodeTemplates()) {
+            for (JIPipeNodeTemplate nodeTemplate : installer.getWorkbench().getProject().getMetadata().getNodeTemplates()) {
                 allSources.add(StringUtils.orElse(nodeTemplate.getSource(), JIPipeNodeTemplate.SOURCE_USER));
             }
         }

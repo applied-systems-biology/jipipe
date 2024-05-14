@@ -35,6 +35,8 @@ public interface JIPipeService extends Service, JIPipeValidatable {
 
     JIPipeNodeRegistry getNodeRegistry();
 
+    JIPipeNodeTemplateRegistry getNodeTemplateRegistry();
+
     JIPipeDatatypeRegistry getDatatypeRegistry();
 
     JIPipeParameterTypeRegistry getParameterTypeRegistry();

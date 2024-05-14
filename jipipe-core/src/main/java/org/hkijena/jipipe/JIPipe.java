@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import ij.IJ;
 import ij.Prefs;
@@ -23,6 +24,7 @@ import net.imagej.updater.UpdateSite;
 import net.imagej.updater.util.AvailableSites;
 import net.imagej.updater.util.Progress;
 import net.imagej.updater.util.UpdaterUtil;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -51,7 +53,6 @@ import org.hkijena.jipipe.desktop.api.registries.JIPipeCustomMenuRegistry;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableLogsCollection;
 import org.hkijena.jipipe.desktop.commons.ijupdater.JIPipeDesktopImageJUpdaterProgressAdapter;
-import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatesRefreshedEventEmitter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.DynamicDataDisplayOperationIdEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.DynamicDataImportOperationIdEnumParameter;
 import org.hkijena.jipipe.plugins.settings.JIPipeDefaultCacheDisplayApplicationSettings;
@@ -126,6 +127,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
     private final JIPipeGraphEditorToolRegistry graphEditorToolRegistry;
     private final JIPipeProjectTemplateRegistry projectTemplateRegistry;
     private final JIPipeArtifactsRegistry artifactsRegistry;
+    private final JIPipeNodeTemplateRegistry nodeTemplateRegistry;
 
     private final JIPipeMetadataRegistry metadataRegistry;
     private final DatatypeRegisteredEventEmitter datatypeRegisteredEventEmitter = new DatatypeRegisteredEventEmitter();
@@ -134,7 +136,6 @@ public class JIPipe extends AbstractService implements JIPipeService {
     private final ExtensionDiscoveredEventEmitter extensionDiscoveredEventEmitter = new ExtensionDiscoveredEventEmitter();
     private final ExtensionRegisteredEventEmitter extensionRegisteredEventEmitter = new ExtensionRegisteredEventEmitter();
     private final NodeInfoRegisteredEventEmitter nodeInfoRegisteredEventEmitter = new NodeInfoRegisteredEventEmitter();
-    private final NodeTemplatesRefreshedEventEmitter nodeTemplatesRefreshedEventEmitter = new NodeTemplatesRefreshedEventEmitter();
     private FilesCollection imageJPlugins = null;
     private boolean initializing = false;
     @Parameter
@@ -158,6 +159,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
         graphEditorToolRegistry = new JIPipeGraphEditorToolRegistry(this);
         metadataRegistry = new JIPipeMetadataRegistry(this);
         artifactsRegistry = new JIPipeArtifactsRegistry(this);
+        nodeTemplateRegistry = new JIPipeNodeTemplateRegistry(this);
     }
 
     /**
@@ -219,6 +221,10 @@ public class JIPipe extends AbstractService implements JIPipeService {
 
     public static JIPipeArtifactsRegistry getArtifacts() {
         return instance.artifactsRegistry;
+    }
+
+    public static JIPipeNodeTemplateRegistry getNodeTemplates() {
+        return instance.nodeTemplateRegistry;
     }
 
     /**
@@ -595,9 +601,6 @@ public class JIPipe extends AbstractService implements JIPipeService {
         timer.start();
     }
 
-    public NodeTemplatesRefreshedEventEmitter getNodeTemplatesRefreshedEventEmitter() {
-        return nodeTemplatesRefreshedEventEmitter;
-    }
 
     @Override
     public DatatypeRegisteredEventEmitter getDatatypeRegisteredEventEmitter() {
@@ -773,6 +776,9 @@ public class JIPipe extends AbstractService implements JIPipeService {
         pluginRegistry.initialize(); // Init extension registry
         pluginRegistry.load();
         progressInfo.setProgress(1);
+        progressInfo.log("Legacy settings conversion ...");
+        tryConvertLegacySettings(progressInfo.resolve("Legacy conversion"));
+
         progressInfo.log("Pre-initialization phase ...");
 
         // Creating instances of extensions
@@ -1019,6 +1025,10 @@ public class JIPipe extends AbstractService implements JIPipeService {
         progressInfo.setProgress(7);
         artifactsRegistry.updateCachedArtifacts(progressInfo.resolve("Updating artifacts"));
 
+        // Load templates
+        progressInfo.log("Loading node templates ...");
+        nodeTemplateRegistry.reloadGlobalTemplates(progressInfo.resolve("Node templates"));
+
         progressInfo.setProgress(8);
         progressInfo.log("JIPipe loading finished");
         initializing = false;
@@ -1037,6 +1047,49 @@ public class JIPipe extends AbstractService implements JIPipeService {
 
         // Mark log as read
         JIPipeDesktopRunnableLogsCollection.getInstance().markAllAsRead();
+    }
+
+    private void tryConvertLegacySettings(JIPipeProgressInfo progressInfo) {
+        Path legacySettingsPath = PathUtils.getImageJDir().resolve("jipipe.properties.json");
+        Path legacyExtensionPath = PathUtils.getImageJDir().resolve("jipipe.extension.json");
+        Path newExtensionPath = PathUtils.getJIPipeUserDir().resolve("plugins.json");
+
+        // Convert legacy extensions
+        if (Files.isRegularFile(legacyExtensionPath) && !Files.isRegularFile(newExtensionPath)) {
+            progressInfo.log("Copying " + legacyExtensionPath + " -> " + newExtensionPath);
+            try {
+                Files.copy(legacyExtensionPath, newExtensionPath);
+                Files.move(legacyExtensionPath, legacyExtensionPath.getParent().resolve("jipipe.extension.json.bak"));
+            } catch (Throwable e) {
+                progressInfo.log("Unable to copy plugin config!");
+                progressInfo.log(ExceptionUtils.getStackTrace(e));
+            }
+        }
+
+        // Convert node templates
+        if (Files.isRegularFile(legacySettingsPath)) {
+            progressInfo.log("Reading legacy settings " + legacySettingsPath);
+            try {
+                JsonNode jsonNode = JsonUtils.readFromFile(legacySettingsPath, JsonNode.class);
+
+                JsonNode nodeTemplatesListNode = jsonNode.path("node-templates/node-templates");
+                if(!nodeTemplatesListNode.isMissingNode()) {
+                    progressInfo.log("Found legacy node templates!");
+                    Path targetDir = nodeTemplateRegistry.getStoragePath();
+                    Files.createDirectories(targetDir);
+                    for (JsonNode node : ImmutableList.copyOf(nodeTemplatesListNode.elements())) {
+                        Path targetFile = targetDir.resolve(UUID.randomUUID() + ".json");
+                        progressInfo.log("Writing legacy node template: " + targetFile);
+                        JsonUtils.saveToFile(node, targetFile);
+                    }
+                }
+
+                Files.move(legacySettingsPath, legacyExtensionPath.getParent().resolve("jipipe.properties.json.bak"));
+            } catch (Throwable e) {
+                progressInfo.log("Unable to copy settings!");
+                progressInfo.log(ExceptionUtils.getStackTrace(e));
+            }
+        }
     }
 
     private void registerProjectTemplatesFromFileSystem() {
@@ -1421,6 +1474,11 @@ public class JIPipe extends AbstractService implements JIPipeService {
     @Override
     public JIPipeCustomMenuRegistry getCustomMenuRegistry() {
         return customMenuRegistry;
+    }
+
+    @Override
+    public JIPipeNodeTemplateRegistry getNodeTemplateRegistry() {
+        return nodeTemplateRegistry;
     }
 
     @Override

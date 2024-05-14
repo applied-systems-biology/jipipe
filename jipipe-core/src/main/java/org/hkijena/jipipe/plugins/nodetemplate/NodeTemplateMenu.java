@@ -46,11 +46,11 @@ public class NodeTemplateMenu extends JMenu implements JIPipeDesktopWorkbenchAcc
         setText("Templates");
         setIcon(UIUtils.getIconFromResources("actions/starred.png"));
         reloadTemplateList();
-        JIPipe.getInstance().getNodeTemplatesRefreshedEventEmitter().subscribeWeak(this);
+        JIPipe.getNodeTemplates().getNodeTemplatesRefreshedEventEmitter().subscribeWeak(this);
     }
 
     private void reloadTemplateList() {
-        List<JIPipeNodeTemplate> templates = new ArrayList<>(JIPipeNodeTemplateApplicationSettings.getInstance().getNodeTemplates());
+        List<JIPipeNodeTemplate> templates = new ArrayList<>(JIPipe.getNodeTemplates().getGlobalTemplates());
         if (project != null) {
             templates.addAll(project.getMetadata().getNodeTemplates());
         }

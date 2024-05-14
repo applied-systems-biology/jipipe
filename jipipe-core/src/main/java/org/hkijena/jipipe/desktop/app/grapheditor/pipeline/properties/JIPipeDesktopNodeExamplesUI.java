@@ -41,7 +41,7 @@ public class JIPipeDesktopNodeExamplesUI extends JIPipeDesktopProjectWorkbenchPa
         this.tabbedPane = tabbedPane;
         initialize();
         reloadList();
-        JIPipe.getInstance().getNodeTemplatesRefreshedEventEmitter().subscribeWeak(this);
+        JIPipe.getNodeTemplates().getNodeTemplatesRefreshedEventEmitter().subscribeWeak(this);
     }
 
     private void initialize() {
