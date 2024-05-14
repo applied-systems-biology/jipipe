@@ -18,9 +18,6 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipePlugin;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.app.extensions.JIPipeDesktopExtensionItemActionButton;
-import org.hkijena.jipipe.desktop.app.extensions.JIPipeDesktopModernPluginManager;
-import org.hkijena.jipipe.desktop.app.extensions.JIPipeDesktopUpdateSitePlugin;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopMessagePanel;
 import org.hkijena.jipipe.desktop.commons.components.icons.JIPipeDesktopAnimatedIcon;
@@ -36,9 +33,8 @@ import java.util.Set;
 /**
  * Shown when potential issues are detected with the project
  */
-public class JIPipeDesktopInvalidProjectDependenciesInfoDialog extends JDialog implements JIPipeDesktopModernPluginManager.UpdateSitesReadyEventListener {
+public class JIPipeDesktopInvalidProjectDependenciesInfoDialog extends JDialog {
     private final Set<JIPipeImageJUpdateSiteDependency> missingUpdateSites;
-    private final JIPipeDesktopModernPluginManager pluginManager;
     private final Path fileName;
     private final Set<JIPipeDependency> dependencySet;
     private final JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.WITH_SCROLLING);
@@ -56,12 +52,7 @@ public class JIPipeDesktopInvalidProjectDependenciesInfoDialog extends JDialog i
         this.fileName = fileName;
         this.dependencySet = dependencySet;
         this.missingUpdateSites = missingUpdateSites;
-
-        pluginManager = new JIPipeDesktopModernPluginManager(workbench, this, messagePanel);
         initialize();
-
-        pluginManager.getUpdateSitesReadyEventEmitter().subscribeWeak(this);
-        pluginManager.initializeUpdateSites();
     }
 
     /**
@@ -128,9 +119,8 @@ public class JIPipeDesktopInvalidProjectDependenciesInfoDialog extends JDialog i
                                 0,
                                 0));
                     } else {
-                        JIPipeDesktopExtensionItemActionButton button = new JIPipeDesktopExtensionItemActionButton(pluginManager, extension);
-                        button.setFont(new Font(Font.DIALOG, Font.PLAIN, 22));
-                        dependencyPanel.add(button, new GridBagConstraints(1,
+                        dependencyPanel.add(UIUtils.createJLabel("Plugin not activated",
+                                UIUtils.getIconFromResources("emblems/emblem-rabbitvcs-eerror.png")), new GridBagConstraints(1,
                                 0,
                                 1,
                                 1,
@@ -143,7 +133,7 @@ public class JIPipeDesktopInvalidProjectDependenciesInfoDialog extends JDialog i
                                 0));
                     }
                 } else {
-                    dependencyPanel.add(UIUtils.createJLabel("Extension not installed",
+                    dependencyPanel.add(UIUtils.createJLabel("Plugin not installed",
                             UIUtils.getIconFromResources("emblems/emblem-rabbitvcs-conflicted.png")), new GridBagConstraints(1,
                             0,
                             1,
@@ -174,32 +164,6 @@ public class JIPipeDesktopInvalidProjectDependenciesInfoDialog extends JDialog i
         getContentPane().add(formPanel, BorderLayout.CENTER);
 
         initializeButtonPanel();
-    }
-
-    @Override
-    public void onPluginManagerUpdateSitesReady(JIPipeDesktopModernPluginManager.UpdateSitesReadyEvent event) {
-        if (!missingUpdateSites.isEmpty()) {
-            formPanel.removeLastRow(); //Vertical glue
-            formPanel.removeLastRow(); // "Please wait..."
-            for (JIPipeImageJUpdateSiteDependency dependency : missingUpdateSites) {
-                JPanel dependencyPanel = new JPanel(new GridBagLayout());
-                dependencyPanel.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2), BorderFactory.createEmptyBorder(8, 8, 8, 8)));
-                dependencyPanel.add(UIUtils.createJLabel(dependency.getName(), UIUtils.getIcon32FromResources("module-imagej.png"), 16), new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
-                JTextField idField = UIUtils.createReadonlyBorderlessTextField("URL: " + dependency.getUrl());
-                idField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 11));
-                dependencyPanel.add(idField, new GridBagConstraints(0, 1, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
-                dependencyPanel.add(UIUtils.createBorderlessReadonlyTextPane(dependency.getDescription(), false), new GridBagConstraints(0, 2, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
-
-                // Try to find the extension
-                JIPipeDesktopUpdateSitePlugin extension = new JIPipeDesktopUpdateSitePlugin(dependency);
-                JIPipeDesktopExtensionItemActionButton button = new JIPipeDesktopExtensionItemActionButton(pluginManager, extension);
-                button.setFont(new Font(Font.DIALOG, Font.PLAIN, 22));
-                dependencyPanel.add(button, new GridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(4, 4, 4, 4), 0, 0));
-
-                formPanel.addWideToForm(dependencyPanel);
-            }
-            formPanel.addVerticalGlue();
-        }
     }
 
     private void initializeButtonPanel() {

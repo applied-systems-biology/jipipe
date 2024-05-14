@@ -11,12 +11,14 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.desktop.app.plugins;
+package org.hkijena.jipipe.desktop.app.plugins.artifactsmanager;
 
 import net.imagej.updater.UpdateSite;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipePlugin;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.desktop.app.plugins.pluginsmanager.JIPipeDesktopImageJUpdateSitesRepository;
+import org.hkijena.jipipe.desktop.app.plugins.pluginsmanager.JIPipeDesktopPluginManagerUI;
 
 import java.util.ArrayList;
 import java.util.Collections;

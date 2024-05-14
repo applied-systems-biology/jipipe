@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.desktop.app.plugins;
+package org.hkijena.jipipe.desktop.app.plugins.pluginsmanager;
 
 import net.imagej.ui.swing.updater.SwingAuthenticator;
 import net.imagej.updater.Conflicts;
@@ -25,10 +25,8 @@ import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.desktop.commons.ijupdater.JIPipeDesktopImageJUpdaterConflictDialog;
-import org.hkijena.jipipe.desktop.commons.ijupdater.JIPipeDesktopImageJUpdaterProgressAdapter;
 import org.hkijena.jipipe.desktop.commons.ijupdater.JIPipeDesktopImageJUpdaterProgressAdapter2;
 import org.hkijena.jipipe.utils.CoreImageJUtils;
-import org.hkijena.jipipe.utils.StringUtils;
 import org.xml.sax.SAXException;
 
 import javax.swing.*;

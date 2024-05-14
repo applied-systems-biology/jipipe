@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.desktop.app.extensions;
+package org.hkijena.jipipe.desktop.app.plugins;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeService;
