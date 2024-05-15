@@ -116,13 +116,13 @@ public class JIPipeNodeTemplateListCellRenderer extends JPanel implements ListCe
 
         if (template.isFromExtension()) {
             storageLabel.setForeground(COLOR_EXTENSION);
-            storageLabel.setText("Extension");
+            storageLabel.setText("Plugin");
         } else if (projectTemplateList.contains(template)) {
             storageLabel.setForeground(COLOR_PROJECT);
-            storageLabel.setText("Project storage");
+            storageLabel.setText("Project");
         } else {
             storageLabel.setForeground(COLOR_GLOBAL);
-            storageLabel.setText("Global storage");
+            storageLabel.setText("Global");
         }
 
         if (isSelected) {
