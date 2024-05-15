@@ -33,7 +33,8 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScript;
 import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
-import org.hkijena.jipipe.plugins.python.JIPipePythonPluginApplicationSettings;
+import org.hkijena.jipipe.plugins.python.PythonEnvironmentAccessNode;
+import org.hkijena.jipipe.plugins.python.PythonPluginApplicationSettings;
 import org.hkijena.jipipe.plugins.python.PythonUtils;
 import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonPluginAdapterApplicationSettings;
 import org.hkijena.jipipe.utils.scripting.JythonUtils;
@@ -49,7 +50,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Python script (iterating)", description = "Runs a Python script that iterates through each data batch in the input slots. " +
         "This node uses an existing dedicated Python interpreter that must be set up in the application settings.\n\nTo learn more about the JIPipe Python API, visit https://jipipe.hki-jena.de/apidocs/python-current/index.html")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
-public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
+public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm implements PythonEnvironmentAccessNode {
 
     private PythonScript code = new PythonScript();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
@@ -125,11 +126,8 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
         super.reportValidity(reportContext, report);
         JythonUtils.checkScriptParametersValidity(scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script parameters", "script-parameters"), report);
         if (!isPassThrough()) {
-            if (overrideEnvironment.isEnabled()) {
-                report.report(new ParameterValidationReportContext(reportContext, this, "Override Python environment", "override-python-environment"), overrideEnvironment.getContent());
-            } else {
-                JIPipePythonPluginApplicationSettings.checkPythonSettings(reportContext, report);
-            }
+            report.report(reportContext, getConfiguredPythonEnvironment());
+            report.report(reportContext, getConfiguredPythonAdapterEnvironment());
         }
     }
 
@@ -139,7 +137,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
         if (overrideEnvironment.isEnabled()) {
             target.add(overrideEnvironment.getContent());
         } else {
-            target.add(JIPipePythonPluginApplicationSettings.getInstance().getDefaultPythonEnvironment());
+            target.add(PythonPluginApplicationSettings.getInstance().getDefaultPythonEnvironment());
         }
         target.add(JIPipePythonPluginAdapterApplicationSettings.getInstance().getDefaultPythonAdapterLibraryEnvironment());
     }
@@ -173,7 +171,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Run Python
         PythonUtils.runPython(code.toString(),
-                getOverrideEnvironment().isEnabled() ? getOverrideEnvironment().getContent() : JIPipePythonPluginApplicationSettings.getInstance().getDefaultPythonEnvironment(),
+                getOverrideEnvironment().isEnabled() ? getOverrideEnvironment().getContent() : PythonPluginApplicationSettings.getInstance().getDefaultPythonEnvironment(),
                 Collections.emptyList(), suppressLogs, progressInfo);
 
         // Extract outputs

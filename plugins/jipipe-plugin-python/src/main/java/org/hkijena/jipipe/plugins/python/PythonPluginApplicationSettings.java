@@ -32,38 +32,19 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.util.List;
 
-public class JIPipePythonPluginApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet implements ExternalEnvironmentSettings {
+public class PythonPluginApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet implements ExternalEnvironmentSettings {
 
     public static String ID = "org.hkijena.jipipe:python";
     private PythonEnvironment defaultPythonEnvironment = new PythonEnvironment();
     private PythonEnvironment.List presets = new PythonEnvironment.List();
 
-    public JIPipePythonPluginApplicationSettings() {
+    public PythonPluginApplicationSettings() {
         defaultPythonEnvironment.setLoadFromArtifact(true);
         defaultPythonEnvironment.setArtifactQuery(new JIPipeArtifactQueryParameter("org.python.python_prepackaged:*"));
     }
 
-    public static JIPipePythonPluginApplicationSettings getInstance() {
-        return JIPipe.getSettings().getById(ID, JIPipePythonPluginApplicationSettings.class);
-    }
-
-    /**
-     * Checks if the Python settings are valid or reports an invalid state
-     *
-     * @param context the context
-     * @param report  the report
-     */
-    public static void checkPythonSettings(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        if (!pythonSettingsAreValid(context)) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    context,
-                    "Python is not configured!",
-                    "Project > Application settings > Extensions > Python integration",
-                    "This node requires an installation of Python. You have to point JIPipe to a Python installation.",
-                    "Please install Python from https://www.python.org/, or from https://www.anaconda.com/ or https://docs.conda.io/en/latest/miniconda.html. " +
-                            "Then go to Project > Application settings > Extensions > Python integration and choose the environment. " +
-                            "Alternatively, you can install a Conda environment from the settings page."));
-        }
+    public static PythonPluginApplicationSettings getInstance() {
+        return JIPipe.getSettings().getById(ID, PythonPluginApplicationSettings.class);
     }
 
     /**
@@ -73,7 +54,7 @@ public class JIPipePythonPluginApplicationSettings extends JIPipeDefaultApplicat
      */
     public static boolean pythonSettingsAreValid(JIPipeValidationReportContext context) {
         if (JIPipe.getInstance() != null) {
-            JIPipePythonPluginApplicationSettings instance = getInstance();
+            PythonPluginApplicationSettings instance = getInstance();
             JIPipeValidationReport report = new JIPipeValidationReport();
             instance.getDefaultPythonEnvironment().reportValidity(context, report);
             return report.isValid();
@@ -140,6 +121,6 @@ public class JIPipePythonPluginApplicationSettings extends JIPipeDefaultApplicat
 
     @Override
     public String getDescription() {
-        return "Connect existing Python installations to JIPipe or automatically install a new Python environment if none is available";
+        return "Settings related to the Python integration";
     }
 }

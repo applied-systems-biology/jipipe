@@ -33,7 +33,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScript;
 import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
-import org.hkijena.jipipe.plugins.python.JIPipePythonPluginApplicationSettings;
+import org.hkijena.jipipe.plugins.python.PythonPluginApplicationSettings;
 import org.hkijena.jipipe.plugins.python.PythonUtils;
 import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonPluginAdapterApplicationSettings;
 import org.hkijena.jipipe.utils.scripting.JythonUtils;
@@ -126,7 +126,7 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
         if (overrideEnvironment.isEnabled()) {
             target.add(overrideEnvironment.getContent());
         } else {
-            target.add(JIPipePythonPluginApplicationSettings.getInstance().getDefaultPythonEnvironment());
+            target.add(PythonPluginApplicationSettings.getInstance().getDefaultPythonEnvironment());
         }
         target.add(JIPipePythonPluginAdapterApplicationSettings.getInstance().getDefaultPythonAdapterLibraryEnvironment());
     }
@@ -139,7 +139,7 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
             if (overrideEnvironment.isEnabled()) {
                 report.report(new ParameterValidationReportContext(reportContext, this, "Override Python environment", "override-python-environment"), overrideEnvironment.getContent());
             } else {
-                JIPipePythonPluginApplicationSettings.checkPythonSettings(reportContext, report);
+                PythonPluginApplicationSettings.checkPythonSettings(reportContext, report);
             }
         }
     }
@@ -173,7 +173,7 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
 
         // Run code
         PythonUtils.runPython(code.toString(),
-                getOverrideEnvironment().isEnabled() ? getOverrideEnvironment().getContent() : JIPipePythonPluginApplicationSettings.getInstance().getDefaultPythonEnvironment(),
+                getOverrideEnvironment().isEnabled() ? getOverrideEnvironment().getContent() : PythonPluginApplicationSettings.getInstance().getDefaultPythonEnvironment(),
                 Collections.emptyList(), suppressLogs, progressInfo);
 
         // Extract outputs
