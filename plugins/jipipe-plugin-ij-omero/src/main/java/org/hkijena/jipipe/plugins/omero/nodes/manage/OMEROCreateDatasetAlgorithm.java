@@ -38,6 +38,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.omero.OMEROCredentialAccessNode;
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialsEnvironment;
 import org.hkijena.jipipe.plugins.omero.OMEROPluginApplicationSettings;
 import org.hkijena.jipipe.plugins.omero.OptionalOMEROCredentialsEnvironment;
@@ -56,7 +57,7 @@ import java.util.Set;
 @ConfigureJIPipeNode(nodeTypeCategory = FileSystemNodeTypeCategory.class, menuPath = "OMERO")
 @AddJIPipeInputSlot(value = OMEROProjectReferenceData.class, slotName = "Project", description = "The project that will contain the dataset", create = true)
 @AddJIPipeOutputSlot(value = OMERODatasetReferenceData.class, slotName = "Dataset", description = "The created dataset", create = true)
-public class OMEROCreateDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class OMEROCreateDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm implements OMEROCredentialAccessNode {
     private final AnnotationsToOMEROKeyValuePairExporter keyValuePairExporter;
     private final AnnotationsToOMEROTagExporter tagExporter;
     private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
@@ -83,7 +84,7 @@ public class OMEROCreateDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         long projectId = iterationStep.getInputData(getFirstInputSlot(), OMEROProjectReferenceData.class, progressInfo).getProjectId();
-        OMEROCredentialsEnvironment environment = overrideCredentials.getContentOrDefault(OMEROPluginApplicationSettings.getInstance().getDefaultCredentials());
+        OMEROCredentialsEnvironment environment = getConfiguredOMEROCredentialsEnvironment();
         progressInfo.log("Connecting to " + environment);
 
         // Generate tags and kv-pairs
@@ -157,7 +158,7 @@ public class OMEROCreateDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         super.reportValidity(reportContext, report);
-        OMEROCredentialsEnvironment environment = overrideCredentials.getContentOrDefault(OMEROPluginApplicationSettings.getInstance().getDefaultCredentials());
+        OMEROCredentialsEnvironment environment = getConfiguredOMEROCredentialsEnvironment();
         report.report(new GraphNodeValidationReportContext(reportContext, this), environment);
     }
 }

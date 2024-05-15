@@ -112,7 +112,7 @@ public class JIPipeNodeTemplateListCellRenderer extends JPanel implements ListCe
         nodeColor.setBorderColor(template.getBorderColor());
         nameLabel.setText(template.getName());
         nodeNameLabel.setText(("Templates\n" + String.join("\n", template.getMenuPath())).replace("\n\n", "\n").trim().replace("\n", " > "));
-        nodeIcon.setIcon(UIUtils.getIconFromResources(StringUtils.orElse(template.getIcon().getIconName(), "actions/configure.png")));
+        nodeIcon.setIcon(template.getIconImage());
 
         if (template.isFromExtension()) {
             storageLabel.setForeground(COLOR_EXTENSION);

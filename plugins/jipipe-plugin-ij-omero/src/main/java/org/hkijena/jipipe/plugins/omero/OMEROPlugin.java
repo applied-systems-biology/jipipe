@@ -20,6 +20,7 @@ import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
@@ -194,6 +195,7 @@ public class OMEROPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 OptionalOMEROCredentialsEnvironment.class,
                 "Optimal OMERO credentials",
                 "Optional OMERO credentials");
+        registerProjectSettingsSheet(OMEROPluginProjectSettings.class);
 
         // Data types
         registerDatatype("omero-group-id", OMEROGroupReferenceData.class, RESOURCES.getIconURLFromResources("omero-group.png"));
@@ -234,6 +236,16 @@ public class OMEROPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public String getDependencyId() {
         return "org.hkijena.jipipe:omero";
+    }
+
+    public static OMEROCredentialsEnvironment getEnvironment(JIPipeProject project, OptionalOMEROCredentialsEnvironment nodeEnvironment) {
+        if(nodeEnvironment.isEnabled()) {
+            return nodeEnvironment.getContent();
+        }
+        if(project != null && project.getSettingsSheet(OMEROPluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
+            return project.getSettingsSheet(OMEROPluginProjectSettings.class).getProjectDefaultEnvironment().getContent();
+        }
+        return OMEROPluginApplicationSettings.getInstance().getDefaultCredentials();
     }
 
 }

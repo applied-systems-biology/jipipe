@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.plugins.omero.OMEROCredentialAccessNode;
 import org.hkijena.jipipe.plugins.omero.datatypes.OMEROGroupReferenceData;
 import org.hkijena.jipipe.plugins.omero.datatypes.OMEROProjectReferenceData;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.LongList;

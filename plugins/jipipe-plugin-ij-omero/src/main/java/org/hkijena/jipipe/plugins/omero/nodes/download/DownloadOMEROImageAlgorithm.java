@@ -45,6 +45,7 @@ import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportConte
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ROIHandler;
+import org.hkijena.jipipe.plugins.omero.OMEROCredentialAccessNode;
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialsEnvironment;
 import org.hkijena.jipipe.plugins.omero.OMEROPluginApplicationSettings;
 import org.hkijena.jipipe.plugins.omero.OptionalOMEROCredentialsEnvironment;
@@ -66,7 +67,7 @@ import java.util.List;
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = OMEROImageReferenceData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = OMEImageData.class, slotName = "Output", create = true)
-public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm implements OMEROCredentialAccessNode {
     private final ImageImportParameters imageImportParameters;
     private final OMEROKeyValuePairToAnnotationImporter keyValuePairToAnnotationImporter;
     private final OMEROTagToAnnotationImporter tagToAnnotationImporter;
@@ -101,7 +102,7 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         OMEROImageReferenceData imageReferenceData = iterationStep.getInputData(getFirstInputSlot(), OMEROImageReferenceData.class, progressInfo);
-        OMEROCredentialsEnvironment environment = overrideCredentials.getContentOrDefault(OMEROPluginApplicationSettings.getInstance().getDefaultCredentials());
+        OMEROCredentialsEnvironment environment = getConfiguredOMEROCredentialsEnvironment();
         LoginCredentials lc = environment.toLoginCredentials();
 
         // Get gateway and fine the appropriate group for the image
@@ -268,7 +269,7 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         super.reportValidity(reportContext, report);
-        OMEROCredentialsEnvironment environment = overrideCredentials.getContentOrDefault(OMEROPluginApplicationSettings.getInstance().getDefaultCredentials());
+        OMEROCredentialsEnvironment environment = getConfiguredOMEROCredentialsEnvironment();
         report.report(new GraphNodeValidationReportContext(reportContext, this), environment);
     }
 }

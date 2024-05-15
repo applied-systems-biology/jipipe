@@ -35,8 +35,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
+import org.hkijena.jipipe.plugins.omero.OMEROCredentialAccessNode;
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialsEnvironment;
-import org.hkijena.jipipe.plugins.omero.OMEROPluginApplicationSettings;
 import org.hkijena.jipipe.plugins.omero.OptionalOMEROCredentialsEnvironment;
 import org.hkijena.jipipe.plugins.omero.datatypes.OMERODatasetReferenceData;
 import org.hkijena.jipipe.plugins.omero.parameters.OMEROKeyValuePairToAnnotationImporter;
@@ -53,7 +53,7 @@ import java.util.List;
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For OMERO")
 @AddJIPipeInputSlot(value = OMERODatasetReferenceData.class, slotName = "Datasets", create = true)
 @AddJIPipeOutputSlot(value = OMERODatasetReferenceData.class, slotName = "Datasets", create = true)
-public class AnnotateOMERODatasetReferenceAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class AnnotateOMERODatasetReferenceAlgorithm extends JIPipeSimpleIteratingAlgorithm implements OMEROCredentialAccessNode {
 
     private final OMEROKeyValuePairToAnnotationImporter keyValuePairToAnnotationImporter;
     private final OMEROTagToAnnotationImporter tagToAnnotationImporter;
@@ -84,7 +84,7 @@ public class AnnotateOMERODatasetReferenceAlgorithm extends JIPipeSimpleIteratin
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        OMEROCredentialsEnvironment environment = overrideCredentials.getContentOrDefault(OMEROPluginApplicationSettings.getInstance().getDefaultCredentials());
+        OMEROCredentialsEnvironment environment = getConfiguredOMEROCredentialsEnvironment();
         LoginCredentials credentials = environment.toLoginCredentials();
         progressInfo.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
 
@@ -174,7 +174,8 @@ public class AnnotateOMERODatasetReferenceAlgorithm extends JIPipeSimpleIteratin
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         super.reportValidity(reportContext, report);
-        OMEROCredentialsEnvironment environment = overrideCredentials.getContentOrDefault(OMEROPluginApplicationSettings.getInstance().getDefaultCredentials());
+
+        OMEROCredentialsEnvironment environment = getConfiguredOMEROCredentialsEnvironment();
         report.report(new GraphNodeValidationReportContext(reportContext, this), environment);
     }
 

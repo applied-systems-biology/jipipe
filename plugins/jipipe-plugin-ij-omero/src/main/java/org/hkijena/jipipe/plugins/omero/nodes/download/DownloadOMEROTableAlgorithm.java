@@ -37,6 +37,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
+import org.hkijena.jipipe.plugins.omero.OMEROCredentialAccessNode;
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialsEnvironment;
 import org.hkijena.jipipe.plugins.omero.OMEROPluginApplicationSettings;
 import org.hkijena.jipipe.plugins.omero.OptionalOMEROCredentialsEnvironment;
@@ -57,7 +58,7 @@ import java.util.List;
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = OMEROImageReferenceData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
-public class DownloadOMEROTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class DownloadOMEROTableAlgorithm extends JIPipeSimpleIteratingAlgorithm  implements OMEROCredentialAccessNode {
 
     private final OMEROKeyValuePairToAnnotationImporter keyValuePairToAnnotationImporter;
     private final OMEROTagToAnnotationImporter tagToAnnotationImporter;
@@ -85,7 +86,7 @@ public class DownloadOMEROTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        OMEROCredentialsEnvironment environment = overrideCredentials.getContentOrDefault(OMEROPluginApplicationSettings.getInstance().getDefaultCredentials());
+        OMEROCredentialsEnvironment environment = getConfiguredOMEROCredentialsEnvironment();
         OMEROImageReferenceData imageReferenceData = iterationStep.getInputData(getFirstInputSlot(), OMEROImageReferenceData.class, progressInfo);
         try (OMEROGateway gateway = new OMEROGateway(environment.toLoginCredentials(), progressInfo)) {
             TablesFacility tablesFacility = gateway.getGateway().getFacility(TablesFacility.class);
@@ -155,7 +156,7 @@ public class DownloadOMEROTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         super.reportValidity(reportContext, report);
-        OMEROCredentialsEnvironment environment = overrideCredentials.getContentOrDefault(OMEROPluginApplicationSettings.getInstance().getDefaultCredentials());
+        OMEROCredentialsEnvironment environment = getConfiguredOMEROCredentialsEnvironment();
         report.report(new GraphNodeValidationReportContext(reportContext, this), environment);
     }
 }

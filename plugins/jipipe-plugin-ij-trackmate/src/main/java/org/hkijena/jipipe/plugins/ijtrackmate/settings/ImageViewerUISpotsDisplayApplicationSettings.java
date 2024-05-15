@@ -74,11 +74,11 @@ public class ImageViewerUISpotsDisplayApplicationSettings extends JIPipeDefaultA
 
     @Override
     public String getName() {
-        return "Tracks display";
+        return "Spots display";
     }
 
     @Override
     public String getDescription() {
-        return "Settings for the track manager component of the JIPipe image viewer";
+        return "Settings for the spots manager component of the JIPipe image viewer";
     }
 }

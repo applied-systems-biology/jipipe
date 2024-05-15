@@ -20,6 +20,7 @@ import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
@@ -63,14 +64,14 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     /**
      * Runs Ilastik
      *
-     * @param environment  the environment. can be null (then the {@link JIPipeIlastikPluginApplicationSettings} environment is taken)
+     * @param environment  the environment. can be null (then the {@link IlastikPluginApplicationSettings} environment is taken)
      * @param parameters   the cli parameters
      * @param progressInfo the progress info
      * @param detached     if the process is launched detached
      */
-    public static void runIlastik(ProcessEnvironment environment, List<String> parameters, JIPipeProgressInfo progressInfo, boolean detached) {
+    public static void runIlastik(IlastikEnvironment environment, List<String> parameters, JIPipeProgressInfo progressInfo, boolean detached) {
         if (environment == null) {
-            environment = JIPipeIlastikPluginApplicationSettings.getInstance().getEnvironment();
+            environment = IlastikPluginApplicationSettings.getInstance().getDefaultEnvironment();
         }
 
         // CLI
@@ -79,19 +80,33 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         // Environment variables
         Map<String, String> environmentVariables = new HashMap<>();
-        if (JIPipeIlastikPluginApplicationSettings.getInstance().getMaxThreads() > 0) {
-            environmentVariables.put("LAZYFLOW_THREADS", String.valueOf(JIPipeIlastikPluginApplicationSettings.getInstance().getMaxThreads()));
+        if (IlastikPluginApplicationSettings.getInstance().getMaxThreads() > 0) {
+            environmentVariables.put("LAZYFLOW_THREADS", String.valueOf(IlastikPluginApplicationSettings.getInstance().getMaxThreads()));
         }
-        environmentVariables.put("LAZYFLOW_TOTAL_RAM_MB", String.valueOf(Math.max(256, JIPipeIlastikPluginApplicationSettings.getInstance().getMaxMemory())));
+        environmentVariables.put("LAZYFLOW_TOTAL_RAM_MB", String.valueOf(Math.max(256, IlastikPluginApplicationSettings.getInstance().getMaxMemory())));
         environmentVariables.put("LANG", "en_US.UTF-8");
         environmentVariables.put("LC_ALL", "en_US.UTF-8");
         environmentVariables.put("LC_CTYPE", "en_US.UTF-8");
 
+        ProcessEnvironment processEnvironment = new ProcessEnvironment();
+        if(true)
+            throw new UnsupportedOperationException("Not implemented yet");
+
         if (detached) {
-            ProcessUtils.launchProcess(environment, variables, environmentVariables, false, progressInfo);
+            ProcessUtils.launchProcess(processEnvironment, variables, environmentVariables, false, progressInfo);
         } else {
-            ProcessUtils.runProcess(environment, variables, environmentVariables, false, progressInfo);
+            ProcessUtils.runProcess(processEnvironment, variables, environmentVariables, false, progressInfo);
         }
+    }
+
+    public static IlastikEnvironment getEnvironment(JIPipeProject project, OptionalIlastikEnvironment nodeEnvironment) {
+        if(nodeEnvironment.isEnabled()) {
+            return nodeEnvironment.getContent();
+        }
+        if(project != null && project.getSettingsSheet(IlastikPluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
+            return project.getSettingsSheet(IlastikPluginProjectSettings.class).getProjectDefaultEnvironment().getContent();
+        }
+        return IlastikPluginApplicationSettings.getInstance().getDefaultEnvironment();
     }
 
     @Override
@@ -297,14 +312,31 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerApplicationSettingsSheet(new JIPipeIlastikPluginApplicationSettings());
+        IlastikPluginApplicationSettings settings = new IlastikPluginApplicationSettings();
+        registerApplicationSettingsSheet(settings);
+        registerProjectSettingsSheet(IlastikPluginProjectSettings.class);
         registerMenuExtension(RunIlastikDesktopMenuExtension.class);
         registerDatatype("ilastik-model", IlastikModelData.class, RESOURCES.getIcon16URLFromResources("ilastik-model.png"));
 
+        registerEnvironment(IlastikEnvironment.class,
+                IlastikEnvironment.List.class,
+                settings,
+                "ilastik-environment",
+                "Ilastik environment",
+                "An Ilastik environment",
+                RESOURCES.getIconFromResources("ilastik.png"));
+        registerParameterType("optional-ilastik-environment",
+                OptionalIlastikEnvironment.class,
+                null,
+                null,
+                "Optional Ilastik environment",
+                "An optional Ilastik environment",
+                null);
         registerEnumParameterType("ilastik-project-validation-mode",
                 IlastikProjectValidationMode.class,
                 "Ilastik project validation mode",
                 "Determines how Ilastik projects are checked");
+
 
         registerNodeType("import-ilastik-model", ImportIlastikModel.class);
         registerNodeType("import-ilastik-hdf5-image", ImportIlastikHDF5ImageAlgorithm.class);

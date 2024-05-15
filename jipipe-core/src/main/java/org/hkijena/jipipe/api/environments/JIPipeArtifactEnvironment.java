@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.api.environments;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -38,11 +40,13 @@ public abstract class JIPipeArtifactEnvironment extends JIPipeEnvironment {
     @SetJIPipeDocumentation(name = "Load from artifact", description = "If enabled, this environment will be configured from an artifact. This is recommended " +
             "to ensure reproducibility.")
     @JIPipeParameter(value = "load-from-artifact", uiOrder = -199, important = true)
+    @JsonGetter("load-from-artifact")
     public boolean isLoadFromArtifact() {
         return loadFromArtifact;
     }
 
     @JIPipeParameter("load-from-artifact")
+    @JsonSetter("load-from-artifact")
     public void setLoadFromArtifact(boolean loadFromArtifact) {
         this.loadFromArtifact = loadFromArtifact;
         emitParameterUIChangedEvent();
@@ -50,11 +54,13 @@ public abstract class JIPipeArtifactEnvironment extends JIPipeEnvironment {
 
     @SetJIPipeDocumentation(name = "Artifact", description = "The artifact to load for this environment")
     @JIPipeParameter(value = "artifact-query", uiOrder = -190, important = true)
+    @JsonGetter("artifact-query")
     public JIPipeArtifactQueryParameter getArtifactQuery() {
         return artifactQuery;
     }
 
     @JIPipeParameter("artifact-query")
+    @JsonSetter("artifact-query")
     public void setArtifactQuery(JIPipeArtifactQueryParameter artifactQuery) {
         this.artifactQuery = artifactQuery;
     }

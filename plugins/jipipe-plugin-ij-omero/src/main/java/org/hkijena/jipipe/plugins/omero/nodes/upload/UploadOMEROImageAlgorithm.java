@@ -38,6 +38,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.expressions.DataExportExpressionParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
+import org.hkijena.jipipe.plugins.omero.OMEROCredentialAccessNode;
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialsEnvironment;
 import org.hkijena.jipipe.plugins.omero.OMEROPluginApplicationSettings;
 import org.hkijena.jipipe.plugins.omero.OptionalOMEROCredentialsEnvironment;
@@ -58,7 +59,7 @@ import java.util.*;
 @AddJIPipeInputSlot(value = OMEImageData.class, slotName = "Images", create = true, description = "The image(s) to upload")
 @AddJIPipeInputSlot(value = OMERODatasetReferenceData.class, slotName = "Target dataset", create = true, description = "The data set where the image(s) will be stored")
 @AddJIPipeOutputSlot(value = OMEROImageReferenceData.class, slotName = "Images", create = true, description = "Reference to the uploaded image(s)")
-public class UploadOMEROImageAlgorithm extends JIPipeIteratingAlgorithm {
+public class UploadOMEROImageAlgorithm extends JIPipeIteratingAlgorithm implements OMEROCredentialAccessNode {
     private final AnnotationsToOMEROKeyValuePairExporter keyValuePairExporter;
     private final AnnotationsToOMEROTagExporter tagExporter;
     private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
@@ -113,7 +114,7 @@ public class UploadOMEROImageAlgorithm extends JIPipeIteratingAlgorithm {
         tagExporter.createTags(tags, iterationStep.getMergedTextAnnotations().values());
 
         // Upload to OMERO
-        OMEROCredentialsEnvironment environment = overrideCredentials.getContentOrDefault(OMEROPluginApplicationSettings.getInstance().getDefaultCredentials());
+        OMEROCredentialsEnvironment environment = getConfiguredOMEROCredentialsEnvironment();
         LoginCredentials credentials = environment.toLoginCredentials();
 
         try (OMEROGateway gateway = new OMEROGateway(credentials, progressInfo)) {
@@ -180,7 +181,7 @@ public class UploadOMEROImageAlgorithm extends JIPipeIteratingAlgorithm {
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         super.reportValidity(reportContext, report);
-        OMEROCredentialsEnvironment environment = overrideCredentials.getContentOrDefault(OMEROPluginApplicationSettings.getInstance().getDefaultCredentials());
+        OMEROCredentialsEnvironment environment = getConfiguredOMEROCredentialsEnvironment();
         report.report(new GraphNodeValidationReportContext(reportContext, this), environment);
     }
 }

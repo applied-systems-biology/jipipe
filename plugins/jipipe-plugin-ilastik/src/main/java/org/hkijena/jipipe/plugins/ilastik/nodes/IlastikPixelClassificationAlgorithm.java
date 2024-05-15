@@ -45,15 +45,13 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.plugins.ilastik.IlastikPlugin;
-import org.hkijena.jipipe.plugins.ilastik.JIPipeIlastikPluginApplicationSettings;
+import org.hkijena.jipipe.plugins.ilastik.*;
 import org.hkijena.jipipe.plugins.ilastik.datatypes.IlastikModelData;
 import org.hkijena.jipipe.plugins.ilastik.parameters.IlastikProjectValidationMode;
 import org.hkijena.jipipe.plugins.ilastik.utils.IlastikUtils;
 import org.hkijena.jipipe.plugins.ilastik.utils.hdf5.Hdf5;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.processes.OptionalProcessEnvironment;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -79,7 +77,7 @@ import static org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils.*;
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Uncertainty", description = "Image where pixel intensity is proportional to the uncertainty found when trying to classify that pixel")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Features", description = "Multi-channel image where each channel represents one of the computed pixel features")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Labels", description = "Image representing the users’ manually created annotations")
-public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAlgorithm {
+public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAlgorithm implements IlastikEnvironmentAccessNode {
 
     public static final String PROJECT_TYPE = "PixelClassification";
 
@@ -107,7 +105,7 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
 
     private final OutputParameters outputParameters;
     private boolean cleanUpAfterwards = true;
-    private OptionalProcessEnvironment overrideEnvironment = new OptionalProcessEnvironment();
+    private OptionalIlastikEnvironment overrideEnvironment = new OptionalIlastikEnvironment();
 
     private IlastikProjectValidationMode projectValidationMode = IlastikProjectValidationMode.CrashOnError;
 
@@ -122,7 +120,7 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
         super(other);
         this.cleanUpAfterwards = other.cleanUpAfterwards;
         this.projectValidationMode = other.projectValidationMode;
-        this.overrideEnvironment = new OptionalProcessEnvironment(other.overrideEnvironment);
+        this.overrideEnvironment = new OptionalIlastikEnvironment(other.overrideEnvironment);
         this.outputParameters = new OutputParameters(other.outputParameters);
         registerSubParameter(outputParameters);
         updateSlots();
@@ -219,7 +217,8 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
                 }
 
                 // Run ilastik
-                IlastikPlugin.runIlastik(overrideEnvironment.getContentOrDefault(JIPipeIlastikPluginApplicationSettings.getInstance().getEnvironment()),
+                IlastikEnvironment environment = getConfiguredIlastikEnvironment();
+                IlastikPlugin.runIlastik(environment,
                         args,
                         exportSourceProgress.resolve("Run Ilastik"),
                         false);
@@ -262,11 +261,7 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         super.reportValidity(reportContext, report);
         if (!isPassThrough()) {
-            if (overrideEnvironment.isEnabled()) {
-                report.report(reportContext, overrideEnvironment.getContent());
-            } else {
-                JIPipeIlastikPluginApplicationSettings.checkIlastikSettings(reportContext, report);
-            }
+            report.report(reportContext, getConfiguredIlastikEnvironment());
         }
     }
 
@@ -303,12 +298,12 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
     @SetJIPipeDocumentation(name = "Override Ilastik environment", description = "If enabled, a different Ilastik environment is used for this node. Otherwise " +
             "the one in the Project > Application settings > Extensions > Ilastik is used.")
     @JIPipeParameter("override-environment")
-    public OptionalProcessEnvironment getOverrideEnvironment() {
+    public OptionalIlastikEnvironment getOverrideEnvironment() {
         return overrideEnvironment;
     }
 
     @JIPipeParameter("override-environment")
-    public void setOverrideEnvironment(OptionalProcessEnvironment overrideEnvironment) {
+    public void setOverrideEnvironment(OptionalIlastikEnvironment overrideEnvironment) {
         this.overrideEnvironment = overrideEnvironment;
     }
 

@@ -24,6 +24,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.plugins.settings.JIPipeNodeTemplateApplicationSettings;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -62,8 +63,7 @@ public class NodeTemplateMenu extends JMenu implements JIPipeDesktopWorkbenchAcc
             for (Map.Entry<String, Set<JIPipeNodeTemplate>> entry : byMenuPath.entrySet()) {
                 JMenu subMenu = menuTree.get(entry.getKey());
                 entry.getValue().stream().sorted(Comparator.comparing(JIPipeNodeTemplate::getName)).forEach(template -> {
-                    ImageIcon icon = UIUtils.getIconFromResources(template.getIcon().getIconName());
-                    JMenuItem item = new JMenuItem(template.getName(), icon);
+                    JMenuItem item = new JMenuItem(template.getName(), template.getIconImage());
                     item.setToolTipText("<html>" + TooltipUtils.getAlgorithmTooltip(template, true) + "</html>");
                     item.addActionListener(e -> addTemplateIntoGraph(template));
                     subMenu.add(item);

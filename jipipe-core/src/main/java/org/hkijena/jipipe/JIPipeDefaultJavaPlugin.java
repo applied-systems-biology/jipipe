@@ -900,7 +900,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * Will also register a settings page for the environment
      *
      * @param environmentClass the environment class. Must be JSON-serializable. Will be registered as parameter type
-     * @param listClass        the list list. Will be registered as parameter type with ID [id]-list
+     * @param listClass        the list. Will be registered as parameter type with ID [id]-list
      * @param settings         Settings page that stores the user's presets
      * @param id               the ID of the environment class. Will be used as parameter type ID
      * @param name             the name of the environment

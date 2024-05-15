@@ -26,6 +26,10 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
+import org.hkijena.jipipe.plugins.omero.OMEROCredentialAccessNode;
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialsEnvironment;
 import org.hkijena.jipipe.plugins.omero.OMEROPluginApplicationSettings;
 import org.hkijena.jipipe.plugins.omero.OptionalOMEROCredentialsEnvironment;
@@ -36,7 +40,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.list.LongList;
 @SetJIPipeDocumentation(name = "Define dataset IDs", description = "Manually defines OMERO dataset ids.")
 @AddJIPipeOutputSlot(value = OMERODatasetReferenceData.class, slotName = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class, menuPath = "OMERO")
-public class OMERODatasetReferenceDataSource extends JIPipeSimpleIteratingAlgorithm {
+public class OMERODatasetReferenceDataSource extends JIPipeSimpleIteratingAlgorithm implements OMEROCredentialAccessNode  {
 
     private LongList datasetIds = new LongList();
     private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
@@ -54,7 +58,7 @@ public class OMERODatasetReferenceDataSource extends JIPipeSimpleIteratingAlgori
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        OMEROCredentialsEnvironment environment = overrideCredentials.getContentOrDefault(OMEROPluginApplicationSettings.getInstance().getDefaultCredentials());
+        OMEROCredentialsEnvironment environment = getConfiguredOMEROCredentialsEnvironment();
         LoginCredentials credentials = environment.toLoginCredentials();
         progressInfo.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
         try (OMEROGateway gateway = new OMEROGateway(credentials, progressInfo)) {
@@ -86,5 +90,13 @@ public class OMERODatasetReferenceDataSource extends JIPipeSimpleIteratingAlgori
     @JIPipeParameter("override-credentials")
     public void setOverrideCredentials(OptionalOMEROCredentialsEnvironment overrideCredentials) {
         this.overrideCredentials = overrideCredentials;
+    }
+
+    @Override
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
+
+        OMEROCredentialsEnvironment environment = getConfiguredOMEROCredentialsEnvironment();
+        report.report(new GraphNodeValidationReportContext(reportContext, this), environment);
     }
 }

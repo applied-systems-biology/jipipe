@@ -324,6 +324,19 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
         return ImmutableMap.copyOf(settingsSheets);
     }
 
+    public <T extends JIPipeProjectSettingsSheet> T getSettingsSheet(String id, Class<T> klass) {
+        return (T)settingsSheets.getOrDefault(id, null);
+    }
+
+    public <T extends JIPipeProjectSettingsSheet> T getSettingsSheet(Class<T> klass) {
+        for (JIPipeProjectSettingsSheet settingsSheet : settingsSheets.values()) {
+            if(klass.isAssignableFrom(settingsSheet.getClass())) {
+                return (T)settingsSheet;
+            }
+        }
+        return null;
+    }
+
     public JIPipeGraphNode.BaseDirectoryChangedEventEmitter getBaseDirectoryChangedEventEmitter() {
         return baseDirectoryChangedEventEmitter;
     }

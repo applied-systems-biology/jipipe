@@ -13,10 +13,12 @@
 
 package org.hkijena.jipipe.plugins.ilastik;
 
+import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
-import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
+import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
@@ -26,23 +28,27 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.plugins.processes.ProcessEnvironment;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 
 import javax.swing.*;
+import java.util.List;
 
-public class JIPipeIlastikPluginApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet {
+public class IlastikPluginApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet implements ExternalEnvironmentSettings {
 
-    public static String ID = "org.hkijena.jipipe:ilastik";
-    private ProcessEnvironment environment = new ProcessEnvironment();
+    public static final String ID = "org.hkijena.jipipe:ilastik";
+    private IlastikEnvironment defaultEnvironment = new IlastikEnvironment();
+    private IlastikEnvironment.List presets = new IlastikEnvironment.List();
     private int maxThreads = -1;
     private int maxMemory = 4096;
 
-    public JIPipeIlastikPluginApplicationSettings() {
-        environment.setArguments(new JIPipeExpressionParameter("cli_parameters"));
+    public IlastikPluginApplicationSettings() {
+        defaultEnvironment.setLoadFromArtifact(true);
+        defaultEnvironment.setArtifactQuery(new JIPipeArtifactQueryParameter("org.embl.ilastik:*"));
+        defaultEnvironment.setArguments(new JIPipeExpressionParameter("cli_parameters"));
     }
 
-    public static JIPipeIlastikPluginApplicationSettings getInstance() {
-        return JIPipe.getSettings().getById(ID, JIPipeIlastikPluginApplicationSettings.class);
+    public static IlastikPluginApplicationSettings getInstance() {
+        return JIPipe.getSettings().getById(ID, IlastikPluginApplicationSettings.class);
     }
 
     /**
@@ -52,9 +58,9 @@ public class JIPipeIlastikPluginApplicationSettings extends JIPipeDefaultApplica
      */
     public static boolean environmentSettingsAreValid() {
         if (JIPipe.getInstance() != null) {
-            JIPipeIlastikPluginApplicationSettings instance = getInstance();
+            IlastikPluginApplicationSettings instance = getInstance();
             JIPipeValidationReport report = new JIPipeValidationReport();
-            instance.getEnvironment().reportValidity(new UnspecifiedValidationReportContext(), report);
+            instance.getDefaultEnvironment().reportValidity(new UnspecifiedValidationReportContext(), report);
             return report.isValid();
         }
         return false;
@@ -77,15 +83,26 @@ public class JIPipeIlastikPluginApplicationSettings extends JIPipeDefaultApplica
     }
 
     @SetJIPipeDocumentation(name = "Ilastik environment", description = "Contains information about the location of the Ilastik installation.")
-    @JIPipeParameter("environment")
-    @ExternalEnvironmentParameterSettings(showCategory = "Ilastik")
-    public ProcessEnvironment getEnvironment() {
-        return environment;
+    @JIPipeParameter("default-environment")
+    @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = { "org.embl.ilastik:*" })
+    public IlastikEnvironment getDefaultEnvironment() {
+        return defaultEnvironment;
     }
 
-    @JIPipeParameter("environment")
-    public void setEnvironment(ProcessEnvironment environment) {
-        this.environment = environment;
+    @JIPipeParameter("default-environment")
+    public void setDefaultEnvironment(IlastikEnvironment defaultEnvironment) {
+        this.defaultEnvironment = defaultEnvironment;
+    }
+
+    @SetJIPipeDocumentation(name = "Presets", description = "List of Ilastik environment presets")
+    @JIPipeParameter("presets")
+    public IlastikEnvironment.List getPresets() {
+        return presets;
+    }
+
+    @JIPipeParameter("presets")
+    public void setPresets(IlastikEnvironment.List presets) {
+        this.presets = presets;
     }
 
     @SetJIPipeDocumentation(name = "Maximum number of threads", description = "The maximum number of threads Ilastik will utilize. Negative or zero values indicate no limitation.")
@@ -132,6 +149,19 @@ public class JIPipeIlastikPluginApplicationSettings extends JIPipeDefaultApplica
 
     @Override
     public String getDescription() {
-        return "Connect existing Ilastik installations to JIPipe or automatically install a new Ilastik environment if none is available";
+        return "Settings related to the Ilastik integration";
+    }
+
+    @Override
+    public List<JIPipeEnvironment> getPresetsListInterface(Class<?> environmentClass) {
+        return ImmutableList.copyOf(presets);
+    }
+
+    @Override
+    public void setPresetsListInterface(List<JIPipeEnvironment> presets, Class<?> environmentClass) {
+        this.presets.clear();
+        for (JIPipeEnvironment preset : presets) {
+            this.presets.add((IlastikEnvironment) preset);
+        }
     }
 }

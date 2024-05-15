@@ -33,6 +33,8 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.parameters.library.references.IconRef;
 import org.hkijena.jipipe.plugins.parameters.library.references.IconRefDesktopParameterEditorUI;
 import org.hkijena.jipipe.plugins.settings.JIPipeNodeTemplateApplicationSettings;
+import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
@@ -303,6 +305,19 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
     @Override
     public int hashCode() {
         return Objects.hash(name, description, data);
+    }
+
+    public ImageIcon getIconImage() {
+        ImageIcon icon = UIUtils.getIconFromResources("actions/configure.png");
+        if(getIcon() != null && !StringUtils.isNullOrEmpty(getIcon().getIconName())) {
+            try {
+                icon = UIUtils.getIconFromResources(getIcon().getIconName());
+            }
+            catch (Throwable e) {
+
+            }
+        }
+        return icon;
     }
 
     public static class List extends ListParameter<JIPipeNodeTemplate> {
