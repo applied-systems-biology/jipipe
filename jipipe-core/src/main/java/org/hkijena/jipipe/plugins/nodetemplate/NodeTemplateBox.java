@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.nodetemplate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 import com.google.common.primitives.Ints;
 import ij.IJ;
 import org.hkijena.jipipe.JIPipe;
@@ -58,7 +59,7 @@ import java.util.Set;
 public class NodeTemplateBox extends JIPipeDesktopWorkbenchPanel implements NodeTemplatesRefreshedEventListener {
 
     private final JIPipeProject project;
-    private final Set<JIPipeNodeTemplate> projectOwnedTemplates = new HashSet<>();
+    private final Set<JIPipeNodeTemplate> projectOwnedTemplates = Sets.newIdentityHashSet();
     private final JIPipeDesktopMarkdownReader documentationReader = new JIPipeDesktopMarkdownReader(false);
     private final JToolBar toolBar = new JToolBar();
     private final boolean isDocked;
@@ -359,9 +360,11 @@ public class NodeTemplateBox extends JIPipeDesktopWorkbenchPanel implements Node
         }
         Set<JIPipeNodeTemplate> copied = new HashSet<>();
         for (JIPipeNodeTemplate template : ImmutableList.copyOf(templateJList.getSelectedValuesList())) {
-           if(JIPipe.getNodeTemplates().addToGlobal(template)) {
-               copied.add(template);
-           }
+            if (!JIPipe.getNodeTemplates().isInGlobal(template)) {
+                if (JIPipe.getNodeTemplates().addToGlobal(new JIPipeNodeTemplate(template))) {
+                    copied.add(template);
+                }
+            }
         }
         if (!copied.isEmpty()) {
             if (JOptionPane.showConfirmDialog(this, "Successfully copied " + copied.size() + " templates into the global storage.\n" +
@@ -388,8 +391,10 @@ public class NodeTemplateBox extends JIPipeDesktopWorkbenchPanel implements Node
         }
         Set<JIPipeNodeTemplate> copied = new HashSet<>();
         for (JIPipeNodeTemplate template : ImmutableList.copyOf(templateJList.getSelectedValuesList())) {
-            if(JIPipe.getNodeTemplates().addToProject(template, project)) {
-                copied.add(template);
+            if (!JIPipe.getNodeTemplates().isInProject(template, project)) {
+                if (JIPipe.getNodeTemplates().addToProject(new JIPipeNodeTemplate(template), project)) {
+                    copied.add(template);
+                }
             }
         }
         if (!copied.isEmpty()) {

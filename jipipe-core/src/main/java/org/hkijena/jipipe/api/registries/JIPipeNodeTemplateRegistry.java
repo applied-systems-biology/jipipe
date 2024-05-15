@@ -26,6 +26,7 @@ import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatesRefreshedEventEmitte
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -111,8 +112,21 @@ public class JIPipeNodeTemplateRegistry {
         if (isPluginTemplate(template)) {
             return false;
         }
-        // TODO: check if already in global
+        if(globalTemplates.contains(template)){
+           return false;
+        }
+        globalTemplates.add(template);
+        Path targetPath = getStoragePath().resolve(UUID.randomUUID() + ".json");
+        JsonUtils.saveToFile(template, targetPath);
         return true;
+    }
+
+    public boolean isInGlobal(JIPipeNodeTemplate template) {
+        return globalTemplates.contains(template);
+    }
+
+    public boolean isInProject(JIPipeNodeTemplate template, JIPipeProject project) {
+        return project.getMetadata().getNodeTemplates().contains(template);
     }
 
     public boolean addToGlobal(JIPipeNodeTemplate template) {
@@ -134,8 +148,11 @@ public class JIPipeNodeTemplateRegistry {
         if (isPluginTemplate(template)) {
             return false;
         }
+        if(project.getMetadata().getNodeTemplates().contains(template)){
+            return false;
+        }
 
-        // TODO: check if already in project
+        project.getMetadata().getNodeTemplates().add(template);
 
         return true;
     }
@@ -144,6 +161,7 @@ public class JIPipeNodeTemplateRegistry {
         if (addToProject_(template, project)) {
             project.getMetadata().emitParameterChangedEvent("node-templates");
             emitRefreshedEvent();
+            return true;
         }
         return false;
     }
@@ -184,7 +202,17 @@ public class JIPipeNodeTemplateRegistry {
 
     public boolean removeFromGlobal(JIPipeNodeTemplate template) {
         if (globalTemplates.contains(template)) {
-            // TODO
+            globalTemplates.remove(template);
+            Path targetPath = globalTemplatesPaths.get(template);
+            if(targetPath != null && Files.isRegularFile(targetPath)) {
+                try {
+                    Files.delete(targetPath);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            emitRefreshedEvent();
+            return true;
         }
         return false;
     }
