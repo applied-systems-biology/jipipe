@@ -13,15 +13,21 @@
 
 package org.hkijena.jipipe.plugins.python;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultProjectSettingsSheet;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultProjectSettingsSheetCategory;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
+import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonAdapterLibraryEnvironment;
+import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonPluginAdapterApplicationSettings;
 import org.hkijena.jipipe.plugins.python.adapter.OptionalJIPipePythonAdapterLibraryEnvironment;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.util.List;
 
 public class PythonPluginProjectSettings extends JIPipeDefaultProjectSettingsSheet {
 
@@ -31,7 +37,40 @@ public class PythonPluginProjectSettings extends JIPipeDefaultProjectSettingsShe
     private OptionalJIPipePythonAdapterLibraryEnvironment projectPythonAdapterLibraryEnvironment = new OptionalJIPipePythonAdapterLibraryEnvironment();
 
     public PythonPluginProjectSettings() {
+        autoConfigureDefaultEnvironment();
+        autoConfigureAdapterLibraryEnvironment();
+    }
 
+    private void autoConfigureAdapterLibraryEnvironment() {
+        if(JIPipePythonPluginAdapterApplicationSettings.getInstance().getDefaultPythonAdapterLibraryEnvironment().isLoadFromArtifact()) {
+            List<JIPipeArtifact> artifacts = JIPipe.getArtifacts().queryCachedArtifacts(JIPipePythonPluginAdapterApplicationSettings.getInstance().getDefaultPythonAdapterLibraryEnvironment().getArtifactQuery().getQuery());
+            artifacts.removeIf(artifact -> !artifact.isCompatible());
+            if(!artifacts.isEmpty()) {
+                JIPipeArtifact target = artifacts.get(0);
+                JIPipePythonAdapterLibraryEnvironment environment = new JIPipePythonAdapterLibraryEnvironment();
+                environment.setLoadFromArtifact(true);
+                environment.setArtifactQuery(new JIPipeArtifactQueryParameter(target.getFullId()));
+
+                projectPythonAdapterLibraryEnvironment.setEnabled(true);
+                projectPythonAdapterLibraryEnvironment.setContent(environment);
+            }
+        }
+    }
+
+    private void autoConfigureDefaultEnvironment() {
+        if(PythonPluginApplicationSettings.getInstance().getDefaultPythonEnvironment().isLoadFromArtifact()) {
+            List<JIPipeArtifact> artifacts = JIPipe.getArtifacts().queryCachedArtifacts(PythonPluginApplicationSettings.getInstance().getDefaultPythonEnvironment().getArtifactQuery().getQuery());
+            artifacts.removeIf(artifact -> !artifact.isCompatible());
+            if(!artifacts.isEmpty()) {
+                JIPipeArtifact target = artifacts.get(0);
+                PythonEnvironment environment = new PythonEnvironment();
+                environment.setLoadFromArtifact(true);
+                environment.setArtifactQuery(new JIPipeArtifactQueryParameter(target.getFullId()));
+
+                projectDefaultEnvironment.setEnabled(true);
+                projectDefaultEnvironment.setContent(environment);
+            }
+        }
     }
 
     @SetJIPipeDocumentation(name = "Project default environment", description = "If enabled, overwrite the application-wide Python environment and store them inside the project.")

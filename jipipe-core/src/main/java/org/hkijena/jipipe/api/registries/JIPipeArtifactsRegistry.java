@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.registries;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.SystemUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.artifacts.*;
@@ -167,8 +168,14 @@ public class JIPipeArtifactsRegistry {
         long stamp = lock.writeLock();
         try {
             cachedArtifacts.clear();
-            for (JIPipeRemoteArtifact artifact : queryRemoteRepositories(null, null, null, progressInfo.resolve("Remote repository"))) {
-                cachedArtifacts.put(artifact.getFullId(), artifact);
+            try {
+                for (JIPipeRemoteArtifact artifact : queryRemoteRepositories(null, null, null, progressInfo.resolve("Remote repository"))) {
+                    cachedArtifacts.put(artifact.getFullId(), artifact);
+                }
+            }
+            catch (Throwable e) {
+                e.printStackTrace();
+                progressInfo.log(ExceptionUtils.getStackTrace(e));
             }
             for (JIPipeLocalArtifact artifact : queryLocalRepositories(null, null, null, progressInfo.resolve("Local repository"))) {
                 cachedArtifacts.put(artifact.getFullId(), artifact);

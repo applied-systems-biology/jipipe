@@ -47,21 +47,6 @@ public class PythonPluginApplicationSettings extends JIPipeDefaultApplicationsSe
         return JIPipe.getSettings().getById(ID, PythonPluginApplicationSettings.class);
     }
 
-    /**
-     * Checks the Python settings
-     *
-     * @return if the settings are correct
-     */
-    public static boolean pythonSettingsAreValid(JIPipeValidationReportContext context) {
-        if (JIPipe.getInstance() != null) {
-            PythonPluginApplicationSettings instance = getInstance();
-            JIPipeValidationReport report = new JIPipeValidationReport();
-            instance.getDefaultPythonEnvironment().reportValidity(context, report);
-            return report.isValid();
-        }
-        return false;
-    }
-
     @SetJIPipeDocumentation(name = "Presets", description = "List of presets stored for Python environments.")
     @JIPipeParameter("presets")
     public PythonEnvironment.List getPresets() {
