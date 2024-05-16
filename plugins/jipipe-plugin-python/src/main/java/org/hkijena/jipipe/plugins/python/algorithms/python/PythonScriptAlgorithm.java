@@ -11,20 +11,19 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.python.algorithms;
+package org.hkijena.jipipe.plugins.python.algorithms.python;
 
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
-import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
@@ -33,10 +32,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScript;
 import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
-import org.hkijena.jipipe.plugins.python.PythonEnvironmentAccessNode;
-import org.hkijena.jipipe.plugins.python.PythonPluginApplicationSettings;
 import org.hkijena.jipipe.plugins.python.PythonUtils;
-import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonPluginAdapterApplicationSettings;
 import org.hkijena.jipipe.utils.scripting.JythonUtils;
 
 import java.nio.file.Path;
@@ -47,10 +43,10 @@ import java.util.Map;
 /**
  * An algorithm that allows to run Python code
  */
-@SetJIPipeDocumentation(name = "Python script (iterating)", description = "Runs a Python script that iterates through each data batch in the input slots. " +
+@SetJIPipeDocumentation(name = "Python script (multi-parameter capable, custom)", description = "Runs a Python script that is executed once and has access to all incoming data. " +
         "This node uses an existing dedicated Python interpreter that must be set up in the application settings.\n\nTo learn more about the JIPipe Python API, visit https://jipipe.hki-jena.de/apidocs/python-current/index.html")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
-public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm implements PythonEnvironmentAccessNode {
+public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm implements PythonEnvironmentAccessNode {
 
     private PythonScript code = new PythonScript();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
@@ -65,7 +61,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm imp
      *
      * @param info the info
      */
-    public IteratingPythonScriptAlgorithm(JIPipeNodeInfo info) {
+    public PythonScriptAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().build());
         registerSubParameter(scriptParameters);
     }
@@ -75,7 +71,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm imp
      *
      * @param other the info
      */
-    public IteratingPythonScriptAlgorithm(IteratingPythonScriptAlgorithm other) {
+    public PythonScriptAlgorithm(PythonScriptAlgorithm other) {
         super(other);
         this.code = new PythonScript(other.code);
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);
@@ -84,29 +80,6 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm imp
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.suppressLogs = other.suppressLogs;
         registerSubParameter(scriptParameters);
-    }
-
-    @SetJIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
-            "the processing was finished. Disable this to make it possible to debug your scripts. The directories are accessible via the logs (Tools &gt; Logs).")
-    @JIPipeParameter("cleanup-afterwards")
-    public boolean isCleanUpAfterwards() {
-        return cleanUpAfterwards;
-    }
-
-    @JIPipeParameter("cleanup-afterwards")
-    public void setCleanUpAfterwards(boolean cleanUpAfterwards) {
-        this.cleanUpAfterwards = cleanUpAfterwards;
-    }
-
-    @SetJIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node.")
-    @JIPipeParameter("override-environment")
-    public OptionalPythonEnvironment getOverrideEnvironment() {
-        return overrideEnvironment;
-    }
-
-    @JIPipeParameter("override-environment")
-    public void setOverrideEnvironment(OptionalPythonEnvironment overrideEnvironment) {
-        this.overrideEnvironment = overrideEnvironment;
     }
 
     @SetJIPipeDocumentation(name = "Suppress logs", description = "If enabled, the node will not log the status of the Python operation. " +
@@ -121,44 +94,61 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm imp
         this.suppressLogs = suppressLogs;
     }
 
-    @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, report);
-        JythonUtils.checkScriptParametersValidity(scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script parameters", "script-parameters"), report);
-        if (!isPassThrough()) {
-            report.report(reportContext, getConfiguredPythonEnvironment());
-            report.report(reportContext, getConfiguredPythonAdapterEnvironment());
-        }
+    @SetJIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node. Otherwise " +
+            "the one in the Project > Application settings > Extensions > Python is used.")
+    @JIPipeParameter("override-environment")
+    public OptionalPythonEnvironment getOverrideEnvironment() {
+        return overrideEnvironment;
+    }
+
+    @JIPipeParameter("override-environment")
+    public void setOverrideEnvironment(OptionalPythonEnvironment overrideEnvironment) {
+        this.overrideEnvironment = overrideEnvironment;
+    }
+
+    @SetJIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
+            "the processing was finished. Disable this to make it possible to debug your scripts. The directories are accessible via the logs (Tools &gt; Logs).")
+    @JIPipeParameter("cleanup-afterwards")
+    public boolean isCleanUpAfterwards() {
+        return cleanUpAfterwards;
+    }
+
+    @JIPipeParameter("cleanup-afterwards")
+    public void setCleanUpAfterwards(boolean cleanUpAfterwards) {
+        this.cleanUpAfterwards = cleanUpAfterwards;
     }
 
     @Override
     public void getExternalEnvironments(List<JIPipeEnvironment> target) {
         super.getExternalEnvironments(target);
-        if (overrideEnvironment.isEnabled()) {
-            target.add(overrideEnvironment.getContent());
-        } else {
-            target.add(PythonPluginApplicationSettings.getInstance().getDefaultPythonEnvironment());
-        }
-        target.add(JIPipePythonPluginAdapterApplicationSettings.getInstance().getDefaultPythonAdapterLibraryEnvironment());
+        target.add(getConfiguredPythonEnvironment());
+        target.add(getConfiguredPythonAdapterEnvironment());
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
+        JythonUtils.checkScriptParametersValidity(scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script parameters", "script-parameters"), report);
+        if (!isPassThrough()) {
+           report.report(reportContext, getConfiguredPythonEnvironment());
+           report.report(reportContext, getConfiguredPythonAdapterEnvironment());
+        }
+    }
+
+    @Override
+    public void runParameterSet(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
         StringBuilder code = new StringBuilder();
 
         // Install the adapter that provides the JIPipe API
-        PythonUtils.installAdapterCodeIfNeeded(code);
+        PythonUtils.installAdapterCodeIfNeeded(getConfiguredPythonAdapterEnvironment(), code);
 
         // Add user variables
         PythonUtils.parametersToPython(code, scriptParameters);
 
-        // Add annotations
-        PythonUtils.annotationsToPython(code, iterationStep.getMergedTextAnnotations().values());
-
         Path workDirectory = getNewScratch();
 
         // Install input slots
-        Map<String, Path> inputSlotPaths = PythonUtils.installInputSlots(code, iterationStep, this, getDataInputSlots(), workDirectory, progressInfo);
+        Map<String, Path> inputSlotPaths = PythonUtils.installInputSlots(code, getDataInputSlots(), workDirectory, progressInfo);
 
         // Install output slots
         Map<String, Path> outputSlotPaths = PythonUtils.installOutputSlots(code, getOutputSlots(), workDirectory, progressInfo);
@@ -171,11 +161,11 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm imp
 
         // Run Python
         PythonUtils.runPython(code.toString(),
-                getOverrideEnvironment().isEnabled() ? getOverrideEnvironment().getContent() : PythonPluginApplicationSettings.getInstance().getDefaultPythonEnvironment(),
+                getConfiguredPythonEnvironment(),
                 Collections.emptyList(), suppressLogs, progressInfo);
 
         // Extract outputs
-        PythonUtils.extractOutputs(iterationStep, outputSlotPaths, getOutputSlots(), annotationMergeStrategy, progressInfo);
+        PythonUtils.extractOutputs(outputSlotPaths, getOutputSlots(), progressInfo);
 
         // Clean up
         if (cleanUpAfterwards) {
@@ -194,7 +184,6 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm imp
             "<ul>" +
             "<li><code>jipipe_inputs</code> is a dict of input slots.</li>" +
             "<li><code>jipipe_outputs</code> is a dict of output slots.</li>" +
-            "<li><code>jipipe_annotations</code> is a dict of annotation variables of the current data batch.</li>" +
             "<li><code>jipipe_variables</code> is a dict of variables passed from the script parameters.</li>" +
             "</ul>" +
             "The script is designed to be used with the JIPipe Python API (supplied automatically by default). " +
@@ -226,5 +215,4 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm imp
     public void setAnnotationMergeStrategy(JIPipeTextAnnotationMergeMode annotationMergeStrategy) {
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
-
 }

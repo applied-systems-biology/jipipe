@@ -11,10 +11,13 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.python;
+package org.hkijena.jipipe.plugins.python.algorithms.python;
 
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
+import org.hkijena.jipipe.plugins.python.PythonEnvironment;
+import org.hkijena.jipipe.plugins.python.PythonPlugin;
 import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonAdapterLibraryEnvironment;
 
 /**

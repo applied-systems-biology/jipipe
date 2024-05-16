@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.python.algorithms;
+package org.hkijena.jipipe.plugins.python.algorithms.python;
 
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -33,9 +33,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScript;
 import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
-import org.hkijena.jipipe.plugins.python.PythonPluginApplicationSettings;
 import org.hkijena.jipipe.plugins.python.PythonUtils;
-import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonPluginAdapterApplicationSettings;
 import org.hkijena.jipipe.utils.scripting.JythonUtils;
 
 import java.nio.file.Path;
@@ -49,7 +47,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Python script (merging)", description = "Runs a Python script that iterates through each data batch in the input slots. " +
         "This node uses an existing dedicated Python interpreter that must be set up in the application settings.\n\nTo learn more about the JIPipe Python API, visit https://jipipe.hki-jena.de/apidocs/python-current/index.html")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
-public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
+public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm implements PythonEnvironmentAccessNode {
 
     private PythonScript code = new PythonScript();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
@@ -123,12 +121,8 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
     @Override
     public void getExternalEnvironments(List<JIPipeEnvironment> target) {
         super.getExternalEnvironments(target);
-        if (overrideEnvironment.isEnabled()) {
-            target.add(overrideEnvironment.getContent());
-        } else {
-            target.add(PythonPluginApplicationSettings.getInstance().getDefaultPythonEnvironment());
-        }
-        target.add(JIPipePythonPluginAdapterApplicationSettings.getInstance().getDefaultPythonAdapterLibraryEnvironment());
+        target.add(getConfiguredPythonEnvironment());
+        target.add(getConfiguredPythonAdapterEnvironment());
     }
 
     @Override
@@ -136,11 +130,8 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
         super.reportValidity(reportContext, report);
         JythonUtils.checkScriptParametersValidity(scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script parameters", "script-parameters"), report);
         if (!isPassThrough()) {
-            if (overrideEnvironment.isEnabled()) {
-                report.report(new ParameterValidationReportContext(reportContext, this, "Override Python environment", "override-python-environment"), overrideEnvironment.getContent());
-            } else {
-                PythonPluginApplicationSettings.checkPythonSettings(reportContext, report);
-            }
+            report.report(reportContext, getConfiguredPythonEnvironment());
+            report.report(reportContext, getConfiguredPythonAdapterEnvironment());
         }
     }
 
@@ -149,7 +140,7 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
         StringBuilder code = new StringBuilder();
 
         // Install the adapter that provides the JIPipe API
-        PythonUtils.installAdapterCodeIfNeeded(code);
+        PythonUtils.installAdapterCodeIfNeeded(getConfiguredPythonAdapterEnvironment(), code);
 
         // Add user variables
         PythonUtils.parametersToPython(code, scriptParameters);
@@ -173,7 +164,7 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
 
         // Run code
         PythonUtils.runPython(code.toString(),
-                getOverrideEnvironment().isEnabled() ? getOverrideEnvironment().getContent() : PythonPluginApplicationSettings.getInstance().getDefaultPythonEnvironment(),
+                getConfiguredPythonEnvironment(),
                 Collections.emptyList(), suppressLogs, progressInfo);
 
         // Extract outputs

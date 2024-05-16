@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.python.algorithms;
+package org.hkijena.jipipe.plugins.python.algorithms.jython;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -21,10 +21,10 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
-import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
@@ -43,13 +43,14 @@ import java.util.ArrayList;
 /**
  * An algorithm that allows to run Python code
  */
-@SetJIPipeDocumentation(name = "Jython script (iterating)", description = "Runs a Python script that iterates through each data batch in the input slots. " +
-        "This node uses Jython, a Java interpreter for Python that currently does not support native functions (e.g. Numpy), but can access all Java types. " +
+@SetJIPipeDocumentation(name = "Jython script (merging)", description = "Runs a Python script that iterates through each data batch in the input slots. " +
+        "This node uses Jython, a Java interpreter for Python that currently does not support native functions (e.g. Numpy), but can access all Java types." +
+        "Each data batch contains multiple input and output data items." +
         "Access to the data batch is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations. " +
         "Input slots can be accessed from variables 'input_slots' (array), 'input_slots_map' (map from name to slot). " +
         "Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot).")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
-public class IteratingJythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
+public class MergingJythonScriptAlgorithm extends JIPipeMergingAlgorithm {
 
     private PythonScript code = new PythonScript();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
@@ -60,7 +61,7 @@ public class IteratingJythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
      *
      * @param info the info
      */
-    public IteratingJythonScriptAlgorithm(JIPipeNodeInfo info) {
+    public MergingJythonScriptAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().build());
         registerSubParameter(scriptParameters);
     }
@@ -70,7 +71,7 @@ public class IteratingJythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
      *
      * @param other the info
      */
-    public IteratingJythonScriptAlgorithm(IteratingJythonScriptAlgorithm other) {
+    public MergingJythonScriptAlgorithm(MergingJythonScriptAlgorithm other) {
         super(other);
         this.code = new PythonScript(other.code);
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);
@@ -91,7 +92,7 @@ public class IteratingJythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         PythonInterpreter pythonInterpreter = new PythonInterpreter();
         JythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
         pythonInterpreter.set("data_batch", iterationStep);
