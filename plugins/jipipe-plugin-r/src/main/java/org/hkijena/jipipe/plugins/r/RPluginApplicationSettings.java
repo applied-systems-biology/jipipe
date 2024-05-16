@@ -50,36 +50,6 @@ public class RPluginApplicationSettings extends JIPipeDefaultApplicationsSetting
 
     }
 
-    /**
-     * Checks if the R settings are valid or reports an invalid state
-     *
-     * @param context the context
-     * @param report  the report
-     */
-    public static void checkRSettings(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        if (!RSettingsAreValid()) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context, "R is not configured!",
-                    "This node requires an installation of R. Either R is not installed or JIPipe cannot find R.",
-                    "Please install R from https://www.r-project.org/. If R is installed, go to Project > Application settings > Extensions > R  integration and " +
-                            "manually override R executable and RScript executable (please refer to the documentation in the settings page)."));
-        }
-    }
-
-    /**
-     * Checks the R settings
-     *
-     * @return if the settings are correct
-     */
-    public static boolean RSettingsAreValid() {
-        if (JIPipe.getInstance() != null) {
-            RPluginApplicationSettings instance = getInstance();
-            JIPipeValidationReport report = new JIPipeValidationReport();
-            instance.getDefaultEnvironment().reportValidity(new UnspecifiedValidationReportContext(), report);
-            return report.isValid();
-        }
-        return false;
-    }
-
     @SetJIPipeDocumentation(name = "R environment", description = "Describes the R environment to use.")
     @JIPipeParameter("default-r-environment")
     @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = { "org.r.*" })
@@ -138,6 +108,6 @@ public class RPluginApplicationSettings extends JIPipeDefaultApplicationsSetting
 
     @Override
     public String getDescription() {
-        return "Connect existing R installations to JIPipe or automatically install a new R environment if none is available";
+        return "Settings related to the R integration";
     }
 }

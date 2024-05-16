@@ -51,6 +51,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.omnipose.OmniposeEnvironmentAccessNode;
 import org.hkijena.jipipe.plugins.omnipose.OmniposeModel;
 import org.hkijena.jipipe.plugins.omnipose.OmniposePlugin;
 import org.hkijena.jipipe.plugins.omnipose.OmniposePluginApplicationSettings;
@@ -89,7 +90,7 @@ import java.util.*;
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Probabilities")
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
-public class OmniposeInferenceAlgorithm extends JIPipeSingleIterationAlgorithm {
+public class OmniposeInferenceAlgorithm extends JIPipeSingleIterationAlgorithm implements OmniposeEnvironmentAccessNode {
 
     public static final JIPipeDataSlotInfo INPUT_PRETRAINED_MODEL = new JIPipeDataSlotInfo(CellposeModelData.class, JIPipeSlotType.Input, "Pretrained Model", "A custom pretrained model");
     //    public static final JIPipeDataSlotInfo INPUT_SIZE_MODEL = new JIPipeDataSlotInfo(CellposeSizeModelData.class, JIPipeSlotType.Input, "Size Model", "A custom size model", null, true);
@@ -161,11 +162,7 @@ public class OmniposeInferenceAlgorithm extends JIPipeSingleIterationAlgorithm {
     @Override
     public void getExternalEnvironments(List<JIPipeEnvironment> target) {
         super.getExternalEnvironments(target);
-        if (overrideEnvironment.isEnabled()) {
-            target.add(overrideEnvironment.getContent());
-        } else {
-            target.add(OmniposePluginApplicationSettings.getInstance().getDefaultOmniposeEnvironment());
-        }
+        target.add(getConfiguredOmniposeEnvironment());
     }
 
     @SetJIPipeDocumentation(name = "Suppress logs", description = "If enabled, the node will not log the status of the Python operation. " +
@@ -223,11 +220,7 @@ public class OmniposeInferenceAlgorithm extends JIPipeSingleIterationAlgorithm {
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         super.reportValidity(reportContext, report);
         if (!isPassThrough()) {
-            if (overrideEnvironment.isEnabled()) {
-                report.report(reportContext, overrideEnvironment.getContent());
-            } else {
-                OmniposePluginApplicationSettings.checkPythonSettings(reportContext, report);
-            }
+            report.report(reportContext, getConfiguredOmniposeEnvironment());
         }
     }
 
@@ -267,19 +260,19 @@ public class OmniposeInferenceAlgorithm extends JIPipeSingleIterationAlgorithm {
         if (!runWith2D.isEmpty()) {
             if (!customModelPaths.isEmpty()) {
                 for (Path customModelPath : customModelPaths) {
-                    runCellpose(progressInfo.resolve("Omnipose"), io2DPath, false, customModelPath);
+                    runOmnipose(progressInfo.resolve("Omnipose"), io2DPath, false, customModelPath);
                 }
             } else {
-                runCellpose(progressInfo.resolve("Omnipose"), io2DPath, false, null);
+                runOmnipose(progressInfo.resolve("Omnipose"), io2DPath, false, null);
             }
         }
         if (!runWith3D.isEmpty()) {
             if (!customModelPaths.isEmpty()) {
                 for (Path customModelPath : customModelPaths) {
-                    runCellpose(progressInfo.resolve("Omnipose"), io3DPath, true, customModelPath);
+                    runOmnipose(progressInfo.resolve("Omnipose"), io3DPath, true, customModelPath);
                 }
             } else {
-                runCellpose(progressInfo.resolve("Omnipose"), io3DPath, true, null);
+                runOmnipose(progressInfo.resolve("Omnipose"), io3DPath, true, null);
             }
         }
 
@@ -421,7 +414,7 @@ public class OmniposeInferenceAlgorithm extends JIPipeSingleIterationAlgorithm {
         }
     }
 
-    private void runCellpose(JIPipeProgressInfo progressInfo, Path ioPath, boolean with3D, Path customModelPath) {
+    private void runOmnipose(JIPipeProgressInfo progressInfo, Path ioPath, boolean with3D, Path customModelPath) {
         List<String> arguments = new ArrayList<>();
         Map<String, String> envVars = new HashMap<>();
 
@@ -532,8 +525,12 @@ public class OmniposeInferenceAlgorithm extends JIPipeSingleIterationAlgorithm {
         arguments.add(ioPath.toString());
 
         // Run the module
-        PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                OmniposePluginApplicationSettings.getInstance().getDefaultOmniposeEnvironment(), Collections.emptyList(), envVars, suppressLogs, progressInfo);
+        PythonUtils.runPython(arguments.toArray(new String[0]),
+                getConfiguredOmniposeEnvironment(),
+                Collections.emptyList(),
+                envVars,
+                suppressLogs,
+                progressInfo);
     }
 
     private void saveInputImages(JIPipeMultiIterationStep iterationStep, JIPipeProgressInfo progressInfo, Path io2DPath, Path io3DPath, List<CellposeImageInfo> runWith2D, List<CellposeImageInfo> runWith3D) {

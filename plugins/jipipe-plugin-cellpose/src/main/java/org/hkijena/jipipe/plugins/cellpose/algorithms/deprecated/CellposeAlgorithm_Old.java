@@ -18,6 +18,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -87,6 +88,7 @@ import java.util.stream.Collectors;
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning\nDeprecated")
 @Deprecated
+@LabelAsJIPipeHidden
 public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
 
     private CellposeSegmentationModelSettings_Old segmentationModelSettings = new CellposeSegmentationModelSettings_Old();

@@ -20,7 +20,10 @@ import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
+import org.hkijena.jipipe.plugins.cellpose.CellposePluginApplicationSettings;
+import org.hkijena.jipipe.plugins.cellpose.CellposePluginProjectSettings;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.imagejalgorithms.ImageJAlgorithmsPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
@@ -29,6 +32,8 @@ import org.hkijena.jipipe.plugins.omnipose.algorithms.OmniposeTrainingAlgorithm;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
+import org.hkijena.jipipe.plugins.python.PythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonPlugin;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.scijava.Context;
@@ -116,6 +121,16 @@ public class OmniposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         return strings;
     }
 
+    public static PythonEnvironment getEnvironment(JIPipeProject project, OptionalPythonEnvironment nodeEnvironment) {
+        if(nodeEnvironment.isEnabled()) {
+            return nodeEnvironment.getContent();
+        }
+        if(project != null && project.getSettingsSheet(OmniposePluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
+            return project.getSettingsSheet(OmniposePluginProjectSettings.class).getProjectDefaultEnvironment().getContent();
+        }
+        return OmniposePluginApplicationSettings.getInstance().getDefaultOmniposeEnvironment();
+    }
+
     @Override
     public String getName() {
         return "Omnipose integration";
@@ -139,6 +154,8 @@ public class OmniposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerApplicationSettingsSheet(new OmniposePluginApplicationSettings());
+        registerProjectSettingsSheet(OmniposePluginProjectSettings.class);
+
         registerEnumParameterType("omnipose-model", OmniposeModel.class, "Omnipose model", "An Omnipose model");
         registerEnumParameterType("omnipose-pretrained-model", OmniposePretrainedModel.class, "Omnipose pre-trained model", "A pretrained model for Omnipose");
 

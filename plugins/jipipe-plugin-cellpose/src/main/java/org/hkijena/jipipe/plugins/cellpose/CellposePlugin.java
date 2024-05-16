@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.ui.FileImageJDataImporterUI;
 import org.hkijena.jipipe.api.compat.ui.FolderImageJDataExporterUI;
+import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.cellpose.algorithms.Cellpose2InferenceAlgorithm;
 import org.hkijena.jipipe.plugins.cellpose.algorithms.Cellpose2TrainingAlgorithm;
@@ -41,7 +42,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.plugins.python.PythonPlugin;
+import org.hkijena.jipipe.plugins.python.*;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
@@ -66,6 +67,16 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     public CellposePlugin() {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_DEEP_LEARNING, PluginCategoriesEnumParameter.CATEGORY_SEGMENTATION, PluginCategoriesEnumParameter.CATEGORY_MACHINE_LEARNING);
+    }
+
+    public static PythonEnvironment getEnvironment(JIPipeProject project, OptionalPythonEnvironment nodeEnvironment) {
+        if(nodeEnvironment.isEnabled()) {
+            return nodeEnvironment.getContent();
+        }
+        if(project != null && project.getSettingsSheet(CellposePluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
+            return project.getSettingsSheet(CellposePluginProjectSettings.class).getProjectDefaultEnvironment().getContent();
+        }
+        return CellposePluginApplicationSettings.getInstance().getDefaultCellposeEnvironment();
     }
 
     @Override
@@ -144,6 +155,7 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerApplicationSettingsSheet(new CellposePluginApplicationSettings());
+        registerProjectSettingsSheet(CellposePluginProjectSettings.class);
 
         registerEnumParameterType("cellpose-model", CellposeModel.class, "Cellpose model", "A Cellpose model");
         registerEnumParameterType("cellpose-pretrained-model", CellposePretrainedModel.class, "Cellpose pre-trained model", "A pretrained model for Cellpose");

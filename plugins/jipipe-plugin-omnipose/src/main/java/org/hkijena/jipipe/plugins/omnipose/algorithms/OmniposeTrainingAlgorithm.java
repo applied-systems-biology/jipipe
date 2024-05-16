@@ -32,9 +32,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
-import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeSizeModelData;
@@ -50,6 +48,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.greyscale.ImagePl
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.omnipose.OmniposeEnvironmentAccessNode;
 import org.hkijena.jipipe.plugins.omnipose.OmniposePlugin;
 import org.hkijena.jipipe.plugins.omnipose.OmniposePretrainedModel;
 import org.hkijena.jipipe.plugins.omnipose.OmniposePluginApplicationSettings;
@@ -75,7 +74,7 @@ import java.util.stream.Collectors;
 @AddJIPipeInputSlot(value = CellposeModelData.class)
 @AddJIPipeOutputSlot(value = CellposeModelData.class, slotName = "Model", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
-public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
+public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm implements OmniposeEnvironmentAccessNode {
 
     public static final JIPipeDataSlotInfo INPUT_PRETRAINED_MODEL = new JIPipeDataSlotInfo(CellposeModelData.class, JIPipeSlotType.Input, "Pretrained Model", "A custom pretrained model");
 
@@ -137,11 +136,7 @@ public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     @Override
     public void getExternalEnvironments(List<JIPipeEnvironment> target) {
         super.getExternalEnvironments(target);
-        if (overrideEnvironment.isEnabled()) {
-            target.add(overrideEnvironment.getContent());
-        } else {
-            target.add(OmniposePluginApplicationSettings.getInstance().getDefaultOmniposeEnvironment());
-        }
+        target.add(getConfiguredOmniposeEnvironment());
     }
 
     @SetJIPipeDocumentation(name = "Train size model", description = "If enabled, also train a size model")
@@ -451,8 +446,12 @@ public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         arguments.add(tweaksSettings.getMinTrainMasks() + "");
 
         // Run the module
-        PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                OmniposePluginApplicationSettings.getInstance().getDefaultOmniposeEnvironment(), Collections.emptyList(), envVars, suppressLogs, progressInfo);
+        PythonUtils.runPython(arguments.toArray(new String[0]),
+                getConfiguredOmniposeEnvironment(),
+                Collections.emptyList(),
+                envVars,
+                suppressLogs,
+                progressInfo);
 
         // Extract the model
         Path modelsPath = trainingDir.resolve("models");
@@ -551,5 +550,11 @@ public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     @JIPipeParameter("epochs")
     public void setNumEpochs(int numEpochs) {
         this.numEpochs = numEpochs;
+    }
+
+    @Override
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
+        report.report(reportContext, getConfiguredOmniposeEnvironment());
     }
 }

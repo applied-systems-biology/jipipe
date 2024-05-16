@@ -21,6 +21,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
@@ -100,6 +101,16 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         return Arrays.asList(UIUtils.getIcon32FromResources("apps/rlogo_icon.png"));
     }
 
+    public static REnvironment getEnvironment(JIPipeProject project, OptionalREnvironment nodeEnvironment) {
+        if(nodeEnvironment.isEnabled()) {
+            return nodeEnvironment.getContent();
+        }
+        if(project != null && project.getSettingsSheet(RPluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
+            return project.getSettingsSheet(RPluginProjectSettings.class).getProjectDefaultEnvironment().getContent();
+        }
+        return RPluginApplicationSettings.getInstance().getDefaultEnvironment();
+    }
+
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         RPluginApplicationSettings extensionSettings = new RPluginApplicationSettings();
@@ -118,6 +129,7 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Optional R environment",
                 "An optional R environment",
                 null);
+        registerProjectSettingsSheet(RPluginProjectSettings.class);
 
         AbstractTokenMakerFactory atmf = (AbstractTokenMakerFactory) TokenMakerFactory.getDefaultInstance();
         atmf.putMapping("text/x-r-script", RTokenMaker.class.getName());

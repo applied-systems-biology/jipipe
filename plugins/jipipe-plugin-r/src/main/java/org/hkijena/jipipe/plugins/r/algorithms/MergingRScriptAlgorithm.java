@@ -39,6 +39,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.plugins.r.OptionalREnvironment;
+import org.hkijena.jipipe.plugins.r.REnvironmentAccessNode;
 import org.hkijena.jipipe.plugins.r.RPluginApplicationSettings;
 import org.hkijena.jipipe.plugins.r.RUtils;
 import org.hkijena.jipipe.plugins.r.parameters.RScriptParameter;
@@ -80,7 +81,7 @@ import java.util.Map;
 @AddJIPipeInputSlot(ResultsTableData.class)
 @AddJIPipeOutputSlot(ImagePlusColorRGBData.class)
 @AddJIPipeOutputSlot(ResultsTableData.class)
-public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
+public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm implements REnvironmentAccessNode {
 
     private RScriptParameter script = new RScriptParameter();
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
@@ -106,11 +107,7 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
     @Override
     public void getExternalEnvironments(List<JIPipeEnvironment> target) {
         super.getExternalEnvironments(target);
-        if (overrideEnvironment.isEnabled()) {
-            target.add(overrideEnvironment.getContent());
-        } else {
-            target.add(RPluginApplicationSettings.getInstance().getDefaultEnvironment());
-        }
+        target.add(getConfiguredREnvironment());
     }
 
     @SetJIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
@@ -129,14 +126,7 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         super.reportValidity(reportContext, report);
         if (!isPassThrough()) {
-            if (overrideEnvironment.isEnabled()) {
-                report.report(new ParameterValidationReportContext(reportContext,
-                        this,
-                        "Override R environment",
-                        "override-environment"), overrideEnvironment.getContent());
-            } else {
-                RPluginApplicationSettings.checkRSettings(reportContext, report);
-            }
+          report.report(reportContext, getConfiguredREnvironment());
         }
     }
 
@@ -203,7 +193,7 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
 
         // Export as script and run it
         RUtils.runR(code.toString(),
-                overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() : RPluginApplicationSettings.getInstance().getDefaultEnvironment(),
+                getConfiguredREnvironment(),
                 progressInfo);
 
         for (JIPipeOutputDataSlot outputSlot : getOutputSlots()) {

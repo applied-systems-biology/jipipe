@@ -115,6 +115,6 @@ public class CellposePluginApplicationSettings extends JIPipeDefaultApplications
 
     @Override
     public String getDescription() {
-        return "Connect existing Cellpose installations to JIPipe or automatically install a new Cellpose environment if none is available";
+        return "Settings related to the Cellpose integration";
     }
 }

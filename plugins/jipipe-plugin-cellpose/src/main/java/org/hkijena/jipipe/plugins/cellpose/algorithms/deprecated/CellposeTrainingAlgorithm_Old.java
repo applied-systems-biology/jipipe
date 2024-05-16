@@ -19,6 +19,7 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
@@ -76,6 +77,7 @@ import java.util.stream.Collectors;
 @AddJIPipeInputSlot(value = CellposeModelData.class)
 @AddJIPipeOutputSlot(value = CellposeModelData.class, slotName = "Model", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning\nDeprecated")
+@LabelAsJIPipeHidden
 public class CellposeTrainingAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
 
 
