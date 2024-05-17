@@ -52,7 +52,6 @@ import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportCon
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.plugins.settings.JIPipeNodeTemplateApplicationSettings;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
@@ -325,13 +324,13 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
     }
 
     public <T extends JIPipeProjectSettingsSheet> T getSettingsSheet(String id, Class<T> klass) {
-        return (T)settingsSheets.getOrDefault(id, null);
+        return (T) settingsSheets.getOrDefault(id, null);
     }
 
     public <T extends JIPipeProjectSettingsSheet> T getSettingsSheet(Class<T> klass) {
         for (JIPipeProjectSettingsSheet settingsSheet : settingsSheets.values()) {
-            if(klass.isAssignableFrom(settingsSheet.getClass())) {
-                return (T)settingsSheet;
+            if (klass.isAssignableFrom(settingsSheet.getClass())) {
+                return (T) settingsSheet;
             }
         }
         return null;
@@ -677,7 +676,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
             generator.writeEndObject();
         }
         for (Map.Entry<String, JsonNode> entry : unloadedSettingsSheets.entrySet()) {
-            if(!settingsSheets.containsKey(entry.getKey())) {
+            if (!settingsSheets.containsKey(entry.getKey())) {
                 generator.writeObjectField(entry.getKey(), entry.getValue());
             }
         }
@@ -752,13 +751,12 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
             }
 
             // Load settings sheets
-            if(jsonNode.has("settings")) {
+            if (jsonNode.has("settings")) {
                 for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.get("settings").fields())) {
                     try {
-                        if(settingsSheets.containsKey(entry.getKey())) {
+                        if (settingsSheets.containsKey(entry.getKey())) {
                             settingsSheets.get(entry.getKey()).deserializeFromJsonNode(entry.getValue());
-                        }
-                        else {
+                        } else {
                             unloadedSettingsSheets.put(entry.getKey(), entry.getValue());
                             report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
                                     new UnspecifiedValidationReportContext(),
@@ -767,8 +765,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
                                             "The data will be backed up, so ",
                                     "Please check if all required plugins are up-to-date and activated."));
                         }
-                    }
-                    catch (Throwable e) {
+                    } catch (Throwable e) {
                         e.printStackTrace();
                         report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                                 new UnspecifiedValidationReportContext(),

@@ -19,7 +19,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
@@ -27,7 +26,10 @@ import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashSet;
@@ -186,19 +188,21 @@ public interface JIPipeParameterCollection {
 
     /**
      * Serializes this parameter collection into a {@link JsonGenerator}
+     *
      * @param generator the generator
      * @throws IOException thrown by the generator
      */
     default void serializeToJsonGenerator(JsonGenerator generator) throws IOException {
-        ParameterUtils.serializeParametersToJson(this,generator);
+        ParameterUtils.serializeParametersToJson(this, generator);
     }
 
     /**
      * Serializes this parameter collection to a JSON file
+     *
      * @param jsonFile the file
      */
     default void serializeToJsonFile(Path jsonFile) throws IOException {
-        try(BufferedWriter writer = new BufferedWriter(new FileWriter(jsonFile.toFile()))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(jsonFile.toFile()))) {
             JsonFactory factory = JsonUtils.getObjectMapper().getFactory();
             JsonGenerator generator = factory.createGenerator(writer);
             generator.useDefaultPrettyPrinter();
@@ -226,6 +230,7 @@ public interface JIPipeParameterCollection {
 
     /**
      * Deserializes the information from given JSON node
+     *
      * @param jsonNode JSON node
      */
     default void deserializeFromJsonNode(JsonNode jsonNode) {

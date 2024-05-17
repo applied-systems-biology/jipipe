@@ -28,10 +28,8 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialAccessNode;
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialsEnvironment;
-import org.hkijena.jipipe.plugins.omero.OMEROPluginApplicationSettings;
 import org.hkijena.jipipe.plugins.omero.OptionalOMEROCredentialsEnvironment;
 import org.hkijena.jipipe.plugins.omero.datatypes.OMERODatasetReferenceData;
 import org.hkijena.jipipe.plugins.omero.util.OMEROGateway;
@@ -40,7 +38,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.list.LongList;
 @SetJIPipeDocumentation(name = "Define dataset IDs", description = "Manually defines OMERO dataset ids.")
 @AddJIPipeOutputSlot(value = OMERODatasetReferenceData.class, slotName = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class, menuPath = "OMERO")
-public class OMERODatasetReferenceDataSource extends JIPipeSimpleIteratingAlgorithm implements OMEROCredentialAccessNode  {
+public class OMERODatasetReferenceDataSource extends JIPipeSimpleIteratingAlgorithm implements OMEROCredentialAccessNode {
 
     private LongList datasetIds = new LongList();
     private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
@@ -95,8 +93,8 @@ public class OMERODatasetReferenceDataSource extends JIPipeSimpleIteratingAlgori
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         super.reportValidity(reportContext, report);
-
-        OMEROCredentialsEnvironment environment = getConfiguredOMEROCredentialsEnvironment();
-        report.report(new GraphNodeValidationReportContext(reportContext, this), environment);
+        if (!isPassThrough()) {
+            reportConfiguredOMEROEnvironmentValidity(reportContext, report);
+        }
     }
 }

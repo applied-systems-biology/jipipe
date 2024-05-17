@@ -659,6 +659,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
 
     /**
      * Registers a new project settings sheet
+     *
      * @param settingsSheetClass the settings sheet class. must have a default constructor.
      */
     public void registerProjectSettingsSheet(Class<? extends JIPipeProjectSettingsSheet> settingsSheetClass) {

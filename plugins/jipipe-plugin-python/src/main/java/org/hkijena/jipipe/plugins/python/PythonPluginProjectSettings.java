@@ -42,10 +42,10 @@ public class PythonPluginProjectSettings extends JIPipeDefaultProjectSettingsShe
     }
 
     private void autoConfigureAdapterLibraryEnvironment() {
-        if(JIPipePythonPluginAdapterApplicationSettings.getInstance().getDefaultPythonAdapterLibraryEnvironment().isLoadFromArtifact()) {
+        if (JIPipePythonPluginAdapterApplicationSettings.getInstance().getDefaultPythonAdapterLibraryEnvironment().isLoadFromArtifact()) {
             List<JIPipeArtifact> artifacts = JIPipe.getArtifacts().queryCachedArtifacts(JIPipePythonPluginAdapterApplicationSettings.getInstance().getDefaultPythonAdapterLibraryEnvironment().getArtifactQuery().getQuery());
             artifacts.removeIf(artifact -> !artifact.isCompatible());
-            if(!artifacts.isEmpty()) {
+            if (!artifacts.isEmpty()) {
                 JIPipeArtifact target = artifacts.get(0);
                 JIPipePythonAdapterLibraryEnvironment environment = new JIPipePythonAdapterLibraryEnvironment();
                 environment.setName("");
@@ -59,10 +59,10 @@ public class PythonPluginProjectSettings extends JIPipeDefaultProjectSettingsShe
     }
 
     private void autoConfigureDefaultEnvironment() {
-        if(PythonPluginApplicationSettings.getInstance().getDefaultPythonEnvironment().isLoadFromArtifact()) {
+        if (PythonPluginApplicationSettings.getInstance().getDefaultPythonEnvironment().isLoadFromArtifact()) {
             List<JIPipeArtifact> artifacts = JIPipe.getArtifacts().queryCachedArtifacts(PythonPluginApplicationSettings.getInstance().getDefaultPythonEnvironment().getArtifactQuery().getQuery());
             artifacts.removeIf(artifact -> !artifact.isCompatible());
-            if(!artifacts.isEmpty()) {
+            if (!artifacts.isEmpty()) {
                 JIPipeArtifact target = artifacts.get(0);
                 PythonEnvironment environment = new PythonEnvironment();
                 environment.setLoadFromArtifact(true);
@@ -76,7 +76,7 @@ public class PythonPluginProjectSettings extends JIPipeDefaultProjectSettingsShe
 
     @SetJIPipeDocumentation(name = "Project default environment", description = "If enabled, overwrite the application-wide Python environment and store them inside the project.")
     @JIPipeParameter("project-default-environment")
-    @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = { "org.python.*" })
+    @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = {"org.python.*"})
     public OptionalPythonEnvironment getProjectDefaultEnvironment() {
         return projectDefaultEnvironment;
     }

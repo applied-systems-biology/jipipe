@@ -14,7 +14,10 @@
 package org.hkijena.jipipe.desktop.app.settings;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultProjectSettingsSheet;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultProjectSettingsSheetCategory;
@@ -35,7 +38,6 @@ import java.util.stream.Collectors;
 /**
  * Provides components for the project settings.
  * This is not a panel, as the project overview UI splits the tree and the content
- *
  */
 public class JIPipeDesktopProjectSettingsComponents {
 
@@ -266,10 +268,10 @@ public class JIPipeDesktopProjectSettingsComponents {
 
         @Override
         public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
-            if(subParameter == project.getMetadata().getPermissions()) {
+            if (subParameter == project.getMetadata().getPermissions()) {
                 return false;
             }
-            if(subParameter == project.getMetadata().getDirectories()) {
+            if (subParameter == project.getMetadata().getDirectories()) {
                 return false;
             }
             return super.isParameterUIVisible(tree, subParameter);
@@ -277,10 +279,10 @@ public class JIPipeDesktopProjectSettingsComponents {
 
         @Override
         public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-            if("template-description".equals(access.getKey())) {
+            if ("template-description".equals(access.getKey())) {
                 return false;
             }
-            if("node-templates".equals(access.getKey())) {
+            if ("node-templates".equals(access.getKey())) {
                 return false;
             }
             return super.isParameterUIVisible(tree, access);
@@ -322,7 +324,7 @@ public class JIPipeDesktopProjectSettingsComponents {
 
         @Override
         public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
-            if(subParameter == project.getMetadata().getPermissions()) {
+            if (subParameter == project.getMetadata().getPermissions()) {
                 return true;
             }
             return false;

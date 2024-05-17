@@ -225,10 +225,9 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         add(splitPane, BorderLayout.CENTER);
 
         tabPane.getTabbedPane().addChangeListener(e -> {
-            if("SETTINGS".equals(tabPane.getCurrentlySelectedSingletonTabId())) {
+            if ("SETTINGS".equals(tabPane.getCurrentlySelectedSingletonTabId())) {
                 switchToSettings();
-            }
-            else {
+            } else {
                 switchToDescription();
             }
         });

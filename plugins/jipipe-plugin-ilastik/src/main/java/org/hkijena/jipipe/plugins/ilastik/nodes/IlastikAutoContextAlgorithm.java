@@ -45,14 +45,16 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.plugins.ilastik.*;
+import org.hkijena.jipipe.plugins.ilastik.IlastikEnvironment;
+import org.hkijena.jipipe.plugins.ilastik.IlastikEnvironmentAccessNode;
+import org.hkijena.jipipe.plugins.ilastik.IlastikPlugin;
+import org.hkijena.jipipe.plugins.ilastik.OptionalIlastikEnvironment;
 import org.hkijena.jipipe.plugins.ilastik.datatypes.IlastikModelData;
 import org.hkijena.jipipe.plugins.ilastik.parameters.IlastikProjectValidationMode;
 import org.hkijena.jipipe.plugins.ilastik.utils.IlastikUtils;
 import org.hkijena.jipipe.plugins.ilastik.utils.hdf5.Hdf5;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.processes.OptionalProcessEnvironment;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -324,7 +326,7 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         super.reportValidity(reportContext, report);
         if (!isPassThrough()) {
-            report.report(reportContext, getConfiguredIlastikEnvironment());
+            reportConfiguredIlastikEnvironmentValidity(reportContext, report);
         }
     }
 

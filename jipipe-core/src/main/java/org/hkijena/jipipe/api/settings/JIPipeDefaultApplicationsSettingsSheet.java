@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.api.settings;
 
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 
@@ -25,6 +24,7 @@ public abstract class JIPipeDefaultApplicationsSettingsSheet extends AbstractJIP
 
     /**
      * Returns one of the predefined categories
+     *
      * @return the category
      */
     public abstract JIPipeDefaultApplicationSettingsSheetCategory getDefaultCategory();

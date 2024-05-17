@@ -45,7 +45,10 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.plugins.ilastik.*;
+import org.hkijena.jipipe.plugins.ilastik.IlastikEnvironment;
+import org.hkijena.jipipe.plugins.ilastik.IlastikEnvironmentAccessNode;
+import org.hkijena.jipipe.plugins.ilastik.IlastikPlugin;
+import org.hkijena.jipipe.plugins.ilastik.OptionalIlastikEnvironment;
 import org.hkijena.jipipe.plugins.ilastik.datatypes.IlastikModelData;
 import org.hkijena.jipipe.plugins.ilastik.parameters.IlastikProjectValidationMode;
 import org.hkijena.jipipe.plugins.ilastik.utils.IlastikUtils;
@@ -261,7 +264,7 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         super.reportValidity(reportContext, report);
         if (!isPassThrough()) {
-            report.report(reportContext, getConfiguredIlastikEnvironment());
+            reportConfiguredIlastikEnvironmentValidity(reportContext, report);
         }
     }
 

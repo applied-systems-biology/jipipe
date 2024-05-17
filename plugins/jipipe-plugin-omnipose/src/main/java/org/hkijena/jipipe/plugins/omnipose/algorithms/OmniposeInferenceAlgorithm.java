@@ -54,7 +54,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.omnipose.OmniposeEnvironmentAccessNode;
 import org.hkijena.jipipe.plugins.omnipose.OmniposeModel;
 import org.hkijena.jipipe.plugins.omnipose.OmniposePlugin;
-import org.hkijena.jipipe.plugins.omnipose.OmniposePluginApplicationSettings;
 import org.hkijena.jipipe.plugins.omnipose.parameters.OmniposeSegmentationThresholdSettings;
 import org.hkijena.jipipe.plugins.omnipose.parameters.OmniposeSegmentationTweaksSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
@@ -220,7 +219,7 @@ public class OmniposeInferenceAlgorithm extends JIPipeSingleIterationAlgorithm i
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         super.reportValidity(reportContext, report);
         if (!isPassThrough()) {
-            report.report(reportContext, getConfiguredOmniposeEnvironment());
+            reportConfiguredOmniposeEnvironmentValidity(reportContext, report);
         }
     }
 
@@ -287,8 +286,12 @@ public class OmniposeInferenceAlgorithm extends JIPipeSingleIterationAlgorithm i
                 arguments.add("--skip-roi");
             arguments.add(io2DPath.toString());
             arguments.add(io2DPath.toString());
-            PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                    OmniposePluginApplicationSettings.getInstance().getDefaultOmniposeEnvironment(), Collections.emptyList(), Collections.emptyMap(), suppressLogs, progressInfo.resolve("Extract Omnipose results (2D)"));
+            PythonUtils.runPython(arguments.toArray(new String[0]),
+                    getConfiguredOmniposeEnvironment(),
+                    Collections.emptyList(),
+                    Collections.emptyMap(),
+                    suppressLogs,
+                    progressInfo.resolve("Extract Omnipose results (2D)"));
         }
         if (!runWith3D.isEmpty()) {
             List<String> arguments = new ArrayList<>();
@@ -297,8 +300,12 @@ public class OmniposeInferenceAlgorithm extends JIPipeSingleIterationAlgorithm i
                 arguments.add("--skip-roi");
             arguments.add(io3DPath.toString());
             arguments.add(io3DPath.toString());
-            PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                    OmniposePluginApplicationSettings.getInstance().getDefaultOmniposeEnvironment(), Collections.emptyList(), Collections.emptyMap(), suppressLogs, progressInfo.resolve("Extract Omnipose results (3D)"));
+            PythonUtils.runPython(arguments.toArray(new String[0]),
+                    getConfiguredOmniposeEnvironment(),
+                    Collections.emptyList(),
+                    Collections.emptyMap(),
+                    suppressLogs,
+                    progressInfo.resolve("Extract Omnipose results (3D)"));
         }
 
         // Fetch the data from the directory

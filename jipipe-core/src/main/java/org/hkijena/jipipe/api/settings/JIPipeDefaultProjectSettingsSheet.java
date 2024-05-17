@@ -24,6 +24,7 @@ public abstract class JIPipeDefaultProjectSettingsSheet extends AbstractJIPipePa
 
     /**
      * Returns one of the predefined categories
+     *
      * @return the category
      */
     public abstract JIPipeDefaultProjectSettingsSheetCategory getDefaultCategory();

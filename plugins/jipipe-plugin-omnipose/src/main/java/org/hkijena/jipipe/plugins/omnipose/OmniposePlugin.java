@@ -22,8 +22,6 @@ import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
-import org.hkijena.jipipe.plugins.cellpose.CellposePluginApplicationSettings;
-import org.hkijena.jipipe.plugins.cellpose.CellposePluginProjectSettings;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.imagejalgorithms.ImageJAlgorithmsPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
@@ -60,6 +58,15 @@ public class OmniposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_DEEP_LEARNING, PluginCategoriesEnumParameter.CATEGORY_SEGMENTATION, PluginCategoriesEnumParameter.CATEGORY_MACHINE_LEARNING);
     }
 
+    public static PythonEnvironment getEnvironment(JIPipeProject project, OptionalPythonEnvironment nodeEnvironment) {
+        if (nodeEnvironment.isEnabled()) {
+            return nodeEnvironment.getContent();
+        }
+        if (project != null && project.getSettingsSheet(OmniposePluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
+            return project.getSettingsSheet(OmniposePluginProjectSettings.class).getProjectDefaultEnvironment().getContent();
+        }
+        return OmniposePluginApplicationSettings.getInstance().getDefaultOmniposeEnvironment();
+    }
 
     @Override
     public StringList getDependencyProvides() {
@@ -119,16 +126,6 @@ public class OmniposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         StringList strings = new StringList();
         strings.add("Kevin J. Cutler, Carsen Stringer, Paul A. Wiggins, Joseph D. Mougous bioRxiv 2021.11.03.467199; doi: https://doi.org/10.1101/2021.11.03.467199");
         return strings;
-    }
-
-    public static PythonEnvironment getEnvironment(JIPipeProject project, OptionalPythonEnvironment nodeEnvironment) {
-        if(nodeEnvironment.isEnabled()) {
-            return nodeEnvironment.getContent();
-        }
-        if(project != null && project.getSettingsSheet(OmniposePluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
-            return project.getSettingsSheet(OmniposePluginProjectSettings.class).getProjectDefaultEnvironment().getContent();
-        }
-        return OmniposePluginApplicationSettings.getInstance().getDefaultOmniposeEnvironment();
     }
 
     @Override

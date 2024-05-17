@@ -41,10 +41,10 @@ public class JIPipeArtifact implements Comparable<JIPipeArtifact> {
 
     public JIPipeArtifact(String fullArtifactId) {
         String[] component = StringUtils.split(fullArtifactId, ":.");
-        if(component.length < 3) {
+        if (component.length < 3) {
             throw new IllegalArgumentException("Invalid artifact ID: " + fullArtifactId);
         }
-        String[] versionClassifierItems =  component[component.length - 1].split("-");
+        String[] versionClassifierItems = component[component.length - 1].split("-");
         this.version = versionClassifierItems[0];
         this.classifier = versionClassifierItems[1];
         this.artifactId = component[component.length - 2];
@@ -102,51 +102,45 @@ public class JIPipeArtifact implements Comparable<JIPipeArtifact> {
     /**
      * Returns true if this artifact is compatible with the current system
      * Includes non-native compatibility (e.g., x86 is compatible to amd64)
+     *
      * @return if the artifact is compatible
      */
     public boolean isCompatible() {
         if ("any".equalsIgnoreCase(getClassifier())) {
             return true;
         } else if (SystemUtils.IS_OS_WINDOWS) {
-            if(!getClassifier().contains("windows")) {
+            if (!getClassifier().contains("windows")) {
                 return false;
             }
-            if(SystemUtils.OS_ARCH == null) {
+            if (SystemUtils.OS_ARCH == null) {
                 return true;
-            }
-            else if(SystemUtils.OS_ARCH.equals("amd64") || SystemUtils.OS_ARCH.equals("x86_64")) {
+            } else if (SystemUtils.OS_ARCH.equals("amd64") || SystemUtils.OS_ARCH.equals("x86_64")) {
                 return getClassifier().contains("amd64") || getClassifier().contains("x86");
-            }
-            else {
+            } else {
                 return getClassifier().contains("x86");
             }
         } else if (SystemUtils.IS_OS_LINUX) {
-            if(!getClassifier().contains("linux")) {
+            if (!getClassifier().contains("linux")) {
                 return false;
             }
-            if(SystemUtils.OS_ARCH == null) {
+            if (SystemUtils.OS_ARCH == null) {
                 return true;
-            }
-            else if(SystemUtils.OS_ARCH.equals("amd64") || SystemUtils.OS_ARCH.equals("x86_64")) {
+            } else if (SystemUtils.OS_ARCH.equals("amd64") || SystemUtils.OS_ARCH.equals("x86_64")) {
                 return getClassifier().contains("amd64") || getClassifier().contains("x86");
-            }
-            else {
+            } else {
                 return getClassifier().contains("x86");
             }
         } else if (SystemUtils.IS_OS_MAC) {
-            if(!getClassifier().contains("macos")) {
+            if (!getClassifier().contains("macos")) {
                 return false;
             }
-            if(SystemUtils.OS_ARCH == null) {
+            if (SystemUtils.OS_ARCH == null) {
                 return true;
-            }
-            else if(SystemUtils.OS_ARCH.equals("arm64")) {
+            } else if (SystemUtils.OS_ARCH.equals("arm64")) {
                 return getClassifier().contains("arm64") || getClassifier().contains("amd64") || getClassifier().contains("x86");
-            }
-            else if(SystemUtils.OS_ARCH.equals("amd64") || SystemUtils.OS_ARCH.equals("x86_64")) {
+            } else if (SystemUtils.OS_ARCH.equals("amd64") || SystemUtils.OS_ARCH.equals("x86_64")) {
                 return getClassifier().contains("amd64") || getClassifier().contains("x86");
-            }
-            else {
+            } else {
                 return getClassifier().contains("x86");
             }
         }
@@ -155,51 +149,45 @@ public class JIPipeArtifact implements Comparable<JIPipeArtifact> {
 
     /**
      * Returns true if the artifact is perfectly compatible with the current system (excludes translation layers like x86 to amd64)
+     *
      * @return if the artifact is perfectly compatible
      */
     public boolean isNative() {
         if ("any".equalsIgnoreCase(getClassifier())) {
             return true;
         } else if (SystemUtils.IS_OS_WINDOWS) {
-            if(!getClassifier().contains("windows")) {
+            if (!getClassifier().contains("windows")) {
                 return false;
             }
-            if(SystemUtils.OS_ARCH == null) {
+            if (SystemUtils.OS_ARCH == null) {
                 return true;
-            }
-            else if(SystemUtils.OS_ARCH.equals("amd64") || SystemUtils.OS_ARCH.equals("x86_64")) {
+            } else if (SystemUtils.OS_ARCH.equals("amd64") || SystemUtils.OS_ARCH.equals("x86_64")) {
                 return getClassifier().contains("amd64");
-            }
-            else {
+            } else {
                 return getClassifier().contains("x86");
             }
         } else if (SystemUtils.IS_OS_LINUX) {
-            if(!getClassifier().contains("linux")) {
+            if (!getClassifier().contains("linux")) {
                 return false;
             }
-            if(SystemUtils.OS_ARCH == null) {
+            if (SystemUtils.OS_ARCH == null) {
                 return true;
-            }
-            else if(SystemUtils.OS_ARCH.equals("amd64") || SystemUtils.OS_ARCH.equals("x86_64")) {
+            } else if (SystemUtils.OS_ARCH.equals("amd64") || SystemUtils.OS_ARCH.equals("x86_64")) {
                 return getClassifier().contains("amd64");
-            }
-            else {
+            } else {
                 return getClassifier().contains("x86");
             }
         } else if (SystemUtils.IS_OS_MAC) {
-            if(!getClassifier().contains("macos")) {
+            if (!getClassifier().contains("macos")) {
                 return false;
             }
-            if(SystemUtils.OS_ARCH == null) {
+            if (SystemUtils.OS_ARCH == null) {
                 return true;
-            }
-            else if(SystemUtils.OS_ARCH.equals("arm64")) {
+            } else if (SystemUtils.OS_ARCH.equals("arm64")) {
                 return getClassifier().contains("arm64");
-            }
-            else if(SystemUtils.OS_ARCH.equals("amd64") || SystemUtils.OS_ARCH.equals("x86_64")) {
+            } else if (SystemUtils.OS_ARCH.equals("amd64") || SystemUtils.OS_ARCH.equals("x86_64")) {
                 return getClassifier().contains("amd64");
-            }
-            else {
+            } else {
                 return getClassifier().contains("x86");
             }
         }

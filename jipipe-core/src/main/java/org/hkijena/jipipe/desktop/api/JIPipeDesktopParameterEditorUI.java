@@ -125,6 +125,7 @@ public abstract class JIPipeDesktopParameterEditorUI extends JIPipeDesktopWorkbe
 
     /**
      * Returns the field class of the parameter
+     *
      * @return the field class
      */
     public Class<?> getParameterFieldClass() {
@@ -133,6 +134,7 @@ public abstract class JIPipeDesktopParameterEditorUI extends JIPipeDesktopWorkbe
 
     /**
      * Returns the info for the current parameter type
+     *
      * @return the parameter type info
      */
     public JIPipeParameterTypeInfo getParameterTypeInfo() {

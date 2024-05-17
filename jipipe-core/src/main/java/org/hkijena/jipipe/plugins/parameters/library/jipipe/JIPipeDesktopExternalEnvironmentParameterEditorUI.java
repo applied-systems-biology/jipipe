@@ -126,10 +126,10 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
         if (configureMenu.getComponentCount() > 0) {
             configureMenu.addSeparator();
         }
-        if(settings != null && settings.allowArtifact() && JIPipeArtifactEnvironment.class.isAssignableFrom(getParameterAccess().getFieldClass())) {
+        if (settings != null && settings.allowArtifact() && JIPipeArtifactEnvironment.class.isAssignableFrom(getParameterAccess().getFieldClass())) {
             boolean addedArtifact = false;
             for (JIPipeArtifact artifact : JIPipe.getArtifacts().queryCachedArtifacts(settings.artifactFilters())) {
-                if(artifact.isCompatible()) {
+                if (artifact.isCompatible()) {
                     configureMenu.add(UIUtils.createMenuItem("Artifact " + artifact.getFullId(), "Uses the predefined artifact " + artifact.getFullId(),
                             UIUtils.getIconFromResources("actions/run-install.png"), () -> {
                                 loadArtifact(artifact);
@@ -137,7 +137,7 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
                     addedArtifact = true;
                 }
             }
-            if(addedArtifact) {
+            if (addedArtifact) {
                 configureMenu.addSeparator();
             }
         }

@@ -16,7 +16,6 @@ package org.hkijena.jipipe.plugins.settings;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -64,7 +63,7 @@ public class JIPipeExtensionApplicationSettings extends JIPipeDefaultApplication
                 JIPipeParameterTree tree = new JIPipeParameterTree(result);
                 for (Map.Entry<String, JIPipeParameterAccess> entry : tree.getParameters().entrySet()) {
                     JsonNode entryNode = node.path(ID).path(entry.getKey());
-                    if(!entryNode.isMissingNode()) {
+                    if (!entryNode.isMissingNode()) {
                         Object value = JsonUtils.getObjectMapper().readerFor(entry.getValue().getFieldClass()).readValue(entryNode);
                         entry.getValue().set(value);
                     }

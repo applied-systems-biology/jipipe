@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.api.settings;
 
-import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
 /**

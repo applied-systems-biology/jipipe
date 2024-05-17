@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -70,7 +69,7 @@ public class REnvironment extends JIPipeArtifactEnvironment {
 
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
-        if(!isLoadFromArtifact()) {
+        if (!isLoadFromArtifact()) {
             if (StringUtils.isNullOrEmpty(getRExecutablePath()) || !Files.isRegularFile(getRExecutablePath())) {
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                         new UnspecifiedValidationReportContext(),
@@ -90,10 +89,10 @@ public class REnvironment extends JIPipeArtifactEnvironment {
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if("r-executable-path".equals(access.getKey())) {
+        if ("r-executable-path".equals(access.getKey())) {
             return !isLoadFromArtifact();
         }
-        if("rscript-executable-path".equals(access.getKey())) {
+        if ("rscript-executable-path".equals(access.getKey())) {
             return !isLoadFromArtifact();
         }
         return super.isParameterUIVisible(tree, access);
@@ -157,20 +156,18 @@ public class REnvironment extends JIPipeArtifactEnvironment {
 
     @Override
     public Icon getIcon() {
-        if(isLoadFromArtifact()) {
+        if (isLoadFromArtifact()) {
             return UIUtils.getIconFromResources("actions/run-install.png");
-        }
-        else {
+        } else {
             return UIUtils.getIconFromResources("apps/rlogo_icon.png");
         }
     }
 
     @Override
     public String getInfo() {
-        if(isLoadFromArtifact()) {
+        if (isLoadFromArtifact()) {
             return getArtifactQuery().getQuery();
-        }
-        else {
+        } else {
             return StringUtils.orElse(RExecutablePath, "<Not set>");
         }
     }

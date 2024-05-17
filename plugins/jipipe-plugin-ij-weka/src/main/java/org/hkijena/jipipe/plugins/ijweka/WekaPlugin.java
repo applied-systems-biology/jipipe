@@ -33,11 +33,9 @@ import org.hkijena.jipipe.plugins.ijweka.parameters.features.WekaFeatureSet2D;
 import org.hkijena.jipipe.plugins.ijweka.parameters.features.WekaFeatureSet3D;
 import org.hkijena.jipipe.plugins.imagejalgorithms.ImageJAlgorithmsPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
-import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.utils.ResourceUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 

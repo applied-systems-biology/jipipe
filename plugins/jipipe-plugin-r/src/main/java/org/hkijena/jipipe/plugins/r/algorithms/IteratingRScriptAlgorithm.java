@@ -36,11 +36,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.plugins.r.OptionalREnvironment;
 import org.hkijena.jipipe.plugins.r.REnvironmentAccessNode;
-import org.hkijena.jipipe.plugins.r.RPluginApplicationSettings;
 import org.hkijena.jipipe.plugins.r.RUtils;
 import org.hkijena.jipipe.plugins.r.parameters.RScriptParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -107,7 +105,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm implemen
     @Override
     public void getExternalEnvironments(List<JIPipeEnvironment> target) {
         super.getExternalEnvironments(target);
-       target.add(getConfiguredREnvironment());
+        target.add(getConfiguredREnvironment());
     }
 
     @SetJIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
@@ -126,7 +124,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm implemen
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         super.reportValidity(reportContext, report);
         if (!isPassThrough()) {
-           report.report(reportContext, getConfiguredREnvironment());
+            reportConfiguredREnvironmentValidity(reportContext, report);
         }
     }
 

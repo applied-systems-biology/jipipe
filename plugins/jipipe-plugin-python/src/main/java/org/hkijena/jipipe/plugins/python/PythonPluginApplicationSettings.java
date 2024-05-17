@@ -22,10 +22,6 @@ import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -61,7 +57,7 @@ public class PythonPluginApplicationSettings extends JIPipeDefaultApplicationsSe
     @SetJIPipeDocumentation(name = "Default Python environment", description = "The default Python environment that is associated to newly created projects. " +
             "Leave at default (<code>org.python.python_prepackaged:*</code>) to automatically select the best available Python environment from an artifact.")
     @JIPipeParameter("default-python-environment")
-    @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = { "org.python.*" })
+    @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = {"org.python.*"})
     public PythonEnvironment getDefaultPythonEnvironment() {
         return defaultPythonEnvironment;
     }

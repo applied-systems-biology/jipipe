@@ -23,10 +23,10 @@ public class RPluginProjectSettings extends JIPipeDefaultProjectSettingsSheet {
     }
 
     private void autoConfigureDefaultEnvironment() {
-        if(RPluginApplicationSettings.getInstance().getDefaultEnvironment().isLoadFromArtifact()) {
+        if (RPluginApplicationSettings.getInstance().getDefaultEnvironment().isLoadFromArtifact()) {
             List<JIPipeArtifact> artifacts = JIPipe.getArtifacts().queryCachedArtifacts(RPluginApplicationSettings.getInstance().getDefaultEnvironment().getArtifactQuery().getQuery());
             artifacts.removeIf(artifact -> !artifact.isCompatible());
-            if(!artifacts.isEmpty()) {
+            if (!artifacts.isEmpty()) {
                 JIPipeArtifact target = artifacts.get(0);
                 REnvironment environment = new REnvironment();
                 environment.setLoadFromArtifact(true);
@@ -40,7 +40,7 @@ public class RPluginProjectSettings extends JIPipeDefaultProjectSettingsSheet {
 
     @SetJIPipeDocumentation(name = "Project default environment", description = "If enabled, overwrite the application-wide R environment and store them inside the project.")
     @JIPipeParameter("project-default-environment")
-    @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = { "org.r.*" })
+    @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = {"org.r.*"})
     public OptionalREnvironment getProjectDefaultEnvironment() {
         return projectDefaultEnvironment;
     }

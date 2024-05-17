@@ -22,36 +22,42 @@ public interface JIPipeSettingsSheet {
 
     /**
      * The unique ID of the settings sheet
+     *
      * @return the ID
      */
     String getId();
 
     /**
      * The icon of the settings sheet
+     *
      * @return the icon
      */
     Icon getIcon();
 
     /**
      * The name of the settings sheet as displayed in the UI
+     *
      * @return the name
      */
     String getName();
 
     /**
      * The category of the settings sheet as displayed in the UI
+     *
      * @return the category
      */
     String getCategory();
 
     /**
      * The icon for the category as displayed in the UI
+     *
      * @return the category icon
      */
     Icon getCategoryIcon();
 
     /**
      * Description of this settings sheet
+     *
      * @return the description
      */
     String getDescription();

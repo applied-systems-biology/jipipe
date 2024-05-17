@@ -89,7 +89,7 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         environmentVariables.put("LC_CTYPE", "en_US.UTF-8");
 
         ProcessEnvironment processEnvironment = new ProcessEnvironment();
-        if(true)
+        if (true)
             throw new UnsupportedOperationException("Not implemented yet");
 
         if (detached) {
@@ -100,10 +100,10 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     public static IlastikEnvironment getEnvironment(JIPipeProject project, OptionalIlastikEnvironment nodeEnvironment) {
-        if(nodeEnvironment.isEnabled()) {
+        if (nodeEnvironment.isEnabled()) {
             return nodeEnvironment.getContent();
         }
-        if(project != null && project.getSettingsSheet(IlastikPluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
+        if (project != null && project.getSettingsSheet(IlastikPluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
             return project.getSettingsSheet(IlastikPluginProjectSettings.class).getProjectDefaultEnvironment().getContent();
         }
         return IlastikPluginApplicationSettings.getInstance().getDefaultEnvironment();

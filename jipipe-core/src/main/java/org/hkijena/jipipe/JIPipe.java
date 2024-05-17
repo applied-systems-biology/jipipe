@@ -1073,7 +1073,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 JsonNode jsonNode = JsonUtils.readFromFile(legacySettingsPath, JsonNode.class);
 
                 JsonNode nodeTemplatesListNode = jsonNode.path("node-templates/node-templates");
-                if(!nodeTemplatesListNode.isMissingNode()) {
+                if (!nodeTemplatesListNode.isMissingNode()) {
                     progressInfo.log("Found legacy node templates!");
                     Path targetDir = nodeTemplateRegistry.getStoragePath();
                     Files.createDirectories(targetDir);

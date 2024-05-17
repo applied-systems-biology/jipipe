@@ -15,6 +15,10 @@ package org.hkijena.jipipe.plugins.r;
 
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 
 /**
  * Interface that should be used by nodes that access the OMERO credentials environments
@@ -25,14 +29,31 @@ public interface REnvironmentAccessNode {
     /**
      * Gets the correct R environment.
      * Adheres to the chain of overrides.
+     *
      * @return the environment
      */
     default REnvironment getConfiguredREnvironment() {
         JIPipeGraphNode node = (JIPipeGraphNode) this;
         JIPipeProject project = node.getRuntimeProject();
-        if(project == null) {
+        if (project == null) {
             project = node.getParentGraph().getProject();
         }
         return RPlugin.getEnvironment(project, getOverrideEnvironment());
+    }
+
+    /**
+     * Generates a validity report entry if the configured environment has an issue
+     *
+     * @param context the context
+     * @param report  the report
+     */
+    default void reportConfiguredREnvironmentValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        if (!getConfiguredREnvironment().generateValidityReport(context).isValid()) {
+            report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    context,
+                    "R not configured",
+                    "The R integration is not configured correctly.",
+                    "Go to the Project > Project settings/overview > Settings > Plugins > R and setup an appropriate default R environment."));
+        }
     }
 }

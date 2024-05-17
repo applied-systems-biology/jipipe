@@ -17,7 +17,6 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -31,7 +30,6 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
-import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.utils.EnvironmentVariablesSource;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -143,7 +141,7 @@ public class PythonEnvironment extends JIPipeArtifactEnvironment {
 
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
-        if(!isLoadFromArtifact()) {
+        if (!isLoadFromArtifact()) {
             if (StringUtils.isNullOrEmpty(getExecutablePath()) || !Files.isRegularFile(getAbsoluteExecutablePath())) {
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext,
                         "Executable does not exist",
@@ -155,7 +153,7 @@ public class PythonEnvironment extends JIPipeArtifactEnvironment {
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if("executable-path".equals(access.getKey())) {
+        if ("executable-path".equals(access.getKey())) {
             return !isLoadFromArtifact();
         }
         return super.isParameterUIVisible(tree, access);
@@ -163,20 +161,18 @@ public class PythonEnvironment extends JIPipeArtifactEnvironment {
 
     @Override
     public Icon getIcon() {
-        if(isLoadFromArtifact()) {
+        if (isLoadFromArtifact()) {
             return UIUtils.getIconFromResources("actions/run-install.png");
-        }
-        else {
+        } else {
             return UIUtils.getIconFromResources("apps/python.png");
         }
     }
 
     @Override
     public String getInfo() {
-        if(isLoadFromArtifact()) {
+        if (isLoadFromArtifact()) {
             return StringUtils.orElse(getArtifactQuery().getQuery(), "<Not set>");
-        }
-        else {
+        } else {
             return StringUtils.orElse(getExecutablePath(), "<Not set>");
         }
     }

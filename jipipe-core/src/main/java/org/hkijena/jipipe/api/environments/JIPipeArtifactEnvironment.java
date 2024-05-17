@@ -67,7 +67,7 @@ public abstract class JIPipeArtifactEnvironment extends JIPipeEnvironment {
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if("artifact-query".equals(access.getKey())) {
+        if ("artifact-query".equals(access.getKey())) {
             return isLoadFromArtifact();
         }
         return super.isParameterUIVisible(tree, access);

@@ -46,10 +46,10 @@ public class JIPipeDesktopInvalidProjectDependenciesInfoDialog extends JDialog i
     private boolean continueLoading = false;
 
     /**
-     * @param workbench          the workbench
-     * @param fileName           the project file or folder. Only for informational purposes
-     * @param missingDependencySet      the unsatisfied dependencies
-     * @param missingUpdateSites the missing update sites
+     * @param workbench            the workbench
+     * @param fileName             the project file or folder. Only for informational purposes
+     * @param missingDependencySet the unsatisfied dependencies
+     * @param missingUpdateSites   the missing update sites
      */
     public JIPipeDesktopInvalidProjectDependenciesInfoDialog(JIPipeDesktopWorkbench workbench, Path fileName, Set<JIPipeDependency> missingDependencySet, Set<JIPipeImageJUpdateSiteDependency> missingUpdateSites) {
         super(workbench.getWindow());

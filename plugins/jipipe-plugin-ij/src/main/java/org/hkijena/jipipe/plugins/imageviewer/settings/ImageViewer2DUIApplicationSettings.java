@@ -110,7 +110,7 @@ public class ImageViewer2DUIApplicationSettings extends JIPipeDefaultApplication
 
     @Override
     public Icon getIcon() {
-        return  UIUtils.getIconFromResources("data-types/imgplus-2d.png");
+        return UIUtils.getIconFromResources("data-types/imgplus-2d.png");
     }
 
     @Override

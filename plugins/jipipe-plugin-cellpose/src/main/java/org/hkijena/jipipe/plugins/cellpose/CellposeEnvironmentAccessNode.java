@@ -15,10 +15,12 @@ package org.hkijena.jipipe.plugins.cellpose;
 
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonEnvironment;
-import org.hkijena.jipipe.plugins.python.PythonPlugin;
-import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonAdapterLibraryEnvironment;
 
 /**
  * Interface that should be used by nodes that access the OMERO credentials environments
@@ -29,14 +31,31 @@ public interface CellposeEnvironmentAccessNode {
     /**
      * Gets the correct Python environment.
      * Adheres to the chain of overrides.
+     *
      * @return the environment
      */
     default PythonEnvironment getConfiguredCellposeEnvironment() {
         JIPipeGraphNode node = (JIPipeGraphNode) this;
         JIPipeProject project = node.getRuntimeProject();
-        if(project == null) {
+        if (project == null) {
             project = node.getParentGraph().getProject();
         }
         return CellposePlugin.getEnvironment(project, getOverrideEnvironment());
+    }
+
+    /**
+     * Generates a validity report entry if the configured environment has an issue
+     *
+     * @param context the context
+     * @param report  the report
+     */
+    default void reportConfiguredCellposeEnvironmentValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        if (!getConfiguredCellposeEnvironment().generateValidityReport(context).isValid()) {
+            report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    context,
+                    "Cellpose not configured",
+                    "The Cellpose integration is not configured correctly.",
+                    "Go to the Project > Project settings/overview > Settings > Plugins > Cellpose and setup an appropriate Cellpose environment."));
+        }
     }
 }

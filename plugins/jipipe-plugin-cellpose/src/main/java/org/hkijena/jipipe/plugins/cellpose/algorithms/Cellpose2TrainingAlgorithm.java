@@ -35,8 +35,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.cellpose.CellposeEnvironmentAccessNode;
-import org.hkijena.jipipe.plugins.cellpose.CellposePretrainedModel;
 import org.hkijena.jipipe.plugins.cellpose.CellposePluginApplicationSettings;
+import org.hkijena.jipipe.plugins.cellpose.CellposePretrainedModel;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeSizeModelData;
 import org.hkijena.jipipe.plugins.cellpose.parameters.CellposeChannelSettings;
@@ -541,7 +541,7 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         super.reportValidity(reportContext, report);
         if (!isPassThrough()) {
-            report.report(reportContext, getConfiguredCellposeEnvironment());
+            reportConfiguredCellposeEnvironmentValidity(reportContext, report);
         }
     }
 }

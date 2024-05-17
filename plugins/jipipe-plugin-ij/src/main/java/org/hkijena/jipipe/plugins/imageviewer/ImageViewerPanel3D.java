@@ -150,14 +150,14 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
         }
 
         return good;
-    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
+    }
 
     private static void incrementSlider(JSlider slider) {
         int value = slider.getValue();
         int maximum = slider.getMaximum();
         int newIndex = ((value) % maximum) + 1;
         slider.setValue(newIndex);
-    }
+    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
 
     private static void decrementSlider(JSlider slider) {
         int value = slider.getValue();

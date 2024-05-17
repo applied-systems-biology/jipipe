@@ -23,7 +23,7 @@ public class OptionalIlastikEnvironment extends OptionalParameter<IlastikEnviron
     public OptionalIlastikEnvironment(OptionalIlastikEnvironment other) {
         super(IlastikEnvironment.class);
         setEnabled(other.isEnabled());
-        if(other.getContent() != null) {
+        if (other.getContent() != null) {
             setContent(new IlastikEnvironment(other.getContent()));
         }
     }

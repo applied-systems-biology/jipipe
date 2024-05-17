@@ -16,7 +16,6 @@ package org.hkijena.jipipe.plugins.cellpose;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
-import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
@@ -80,10 +79,10 @@ public class CellposePluginApplicationSettings extends JIPipeDefaultApplications
         }
     }
 
-    @SetJIPipeDocumentation(name = "Default Cellpose environment", description ="The default Cellpose environment that is associated to newly created projects. " +
+    @SetJIPipeDocumentation(name = "Default Cellpose environment", description = "The default Cellpose environment that is associated to newly created projects. " +
             "Leave at default (<code>com.github.mouseland.cellpose:*</code>) to automatically select the best available environment from an artifact.")
     @JIPipeParameter("default-cellpose-environment")
-    @ExternalEnvironmentParameterSettings(showCategory = "Cellpose", allowArtifact = true, artifactFilters = { "com.github.mouseland.cellpose:*" })
+    @ExternalEnvironmentParameterSettings(showCategory = "Cellpose", allowArtifact = true, artifactFilters = {"com.github.mouseland.cellpose:*"})
     public PythonEnvironment getDefaultCellposeEnvironment() {
         return defaultCellposeEnvironment;
     }

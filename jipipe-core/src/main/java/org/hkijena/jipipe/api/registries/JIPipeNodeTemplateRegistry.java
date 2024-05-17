@@ -112,8 +112,8 @@ public class JIPipeNodeTemplateRegistry {
         if (isPluginTemplate(template)) {
             return false;
         }
-        if(globalTemplates.contains(template)){
-           return false;
+        if (globalTemplates.contains(template)) {
+            return false;
         }
         globalTemplates.add(template);
         Path targetPath = getStoragePath().resolve(UUID.randomUUID() + ".json");
@@ -148,7 +148,7 @@ public class JIPipeNodeTemplateRegistry {
         if (isPluginTemplate(template)) {
             return false;
         }
-        if(project.getMetadata().getNodeTemplates().contains(template)){
+        if (project.getMetadata().getNodeTemplates().contains(template)) {
             return false;
         }
 
@@ -204,7 +204,7 @@ public class JIPipeNodeTemplateRegistry {
         if (globalTemplates.contains(template)) {
             globalTemplates.remove(template);
             Path targetPath = globalTemplatesPaths.get(template);
-            if(targetPath != null && Files.isRegularFile(targetPath)) {
+            if (targetPath != null && Files.isRegularFile(targetPath)) {
                 try {
                     Files.delete(targetPath);
                 } catch (IOException e) {

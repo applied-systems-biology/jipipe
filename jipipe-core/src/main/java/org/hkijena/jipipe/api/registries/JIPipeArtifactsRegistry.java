@@ -49,6 +49,38 @@ public class JIPipeArtifactsRegistry {
         this.jiPipe = jiPipe;
     }
 
+    /**
+     * Selects a preferred artifact by class
+     *
+     * @param candidates the candidates
+     * @return the best candidate
+     */
+    public static JIPipeArtifact selectPreferredArtifactByClassifier(List<JIPipeArtifact> candidates) {
+        JIPipeArtifact bestCandidate = null;
+        for (JIPipeArtifact candidate : candidates) {
+            if (candidate.isCompatible()) {
+                if (bestCandidate == null) {
+                    bestCandidate = candidate;
+                } else if (bestCandidate.isNative()) {
+                    if (candidate.isNative()) {
+                        if (JIPipeArtifactApplicationSettings.getInstance().isPreferGPU() && !bestCandidate.isRequireGPU() && candidate.isRequireGPU()) {
+                            bestCandidate = candidate;
+                        } else if (!JIPipeArtifactApplicationSettings.getInstance().isPreferGPU() && bestCandidate.isRequireGPU() && !candidate.isRequireGPU()) {
+                            bestCandidate = candidate;
+                        }
+                    }
+                } else {
+                    if (JIPipeArtifactApplicationSettings.getInstance().isPreferGPU() && !bestCandidate.isRequireGPU() && candidate.isRequireGPU()) {
+                        bestCandidate = candidate;
+                    } else if (!JIPipeArtifactApplicationSettings.getInstance().isPreferGPU() && bestCandidate.isRequireGPU() && !candidate.isRequireGPU()) {
+                        bestCandidate = candidate;
+                    }
+                }
+            }
+        }
+        return bestCandidate;
+    }
+
     public JIPipe getJiPipe() {
         return jiPipe;
     }
@@ -59,6 +91,7 @@ public class JIPipeArtifactsRegistry {
 
     /**
      * Finds the closest compatible artifact to the provided full artifact ID.
+     *
      * @param fullArtifactId full artifact ID
      * @return matching artifact or null
      */
@@ -68,19 +101,19 @@ public class JIPipeArtifactsRegistry {
             List<JIPipeArtifact> candidates = Collections.emptyList();
 
             // If the parsed artifact is compatible, try to match it exactly
-            if(parsedArtifact.isCompatible()) {
+            if (parsedArtifact.isCompatible()) {
                 candidates = queryCachedArtifacts(fullArtifactId);
             }
-            if(!candidates.isEmpty()) {
+            if (!candidates.isEmpty()) {
                 return candidates.get(0);
             }
 
             // Try same version with different classifiers (select GPU versions etc.)
             candidates = queryCachedArtifacts(parsedArtifact.getGroupId() + "." + parsedArtifact.getArtifactId() + ":" + parsedArtifact.getVersion() + "-*");
-            if(!candidates.isEmpty()) {
+            if (!candidates.isEmpty()) {
                 JIPipeArtifact bestCandidate = selectPreferredArtifactByClassifier(candidates);
 
-                if(bestCandidate != null) {
+                if (bestCandidate != null) {
                     return bestCandidate;
                 }
             }
@@ -91,7 +124,7 @@ public class JIPipeArtifactsRegistry {
             List<String> sortedVersions = byVersion.keySet().stream().sorted((o1, o2) -> -VersionUtils.compareVersions(o1, o2)).collect(Collectors.toList());
             for (String sortedVersion : sortedVersions) {
                 JIPipeArtifact bestCandidate = selectPreferredArtifactByClassifier(byVersion.get(sortedVersion));
-                if(bestCandidate != null) {
+                if (bestCandidate != null) {
                     return bestCandidate;
                 }
             }
@@ -99,50 +132,15 @@ public class JIPipeArtifactsRegistry {
             // Nothing found
             return null;
 
-        }
-        catch (Throwable e) {
+        } catch (Throwable e) {
             e.printStackTrace();
             return null;
         }
     }
 
     /**
-     * Selects a preferred artifact by class
-     * @param candidates the candidates
-     * @return the best candidate
-     */
-    public static JIPipeArtifact selectPreferredArtifactByClassifier(List<JIPipeArtifact> candidates) {
-        JIPipeArtifact bestCandidate = null;
-        for (JIPipeArtifact candidate : candidates) {
-            if(candidate.isCompatible()) {
-                if(bestCandidate == null) {
-                    bestCandidate = candidate;
-                }
-                else if(bestCandidate.isNative()) {
-                    if(candidate.isNative()) {
-                        if(JIPipeArtifactApplicationSettings.getInstance().isPreferGPU() && !bestCandidate.isRequireGPU() && candidate.isRequireGPU()) {
-                            bestCandidate = candidate;
-                        }
-                        else if(!JIPipeArtifactApplicationSettings.getInstance().isPreferGPU() && bestCandidate.isRequireGPU() && !candidate.isRequireGPU()) {
-                            bestCandidate = candidate;
-                        }
-                    }
-                }
-                else {
-                    if(JIPipeArtifactApplicationSettings.getInstance().isPreferGPU() && !bestCandidate.isRequireGPU() && candidate.isRequireGPU()) {
-                        bestCandidate = candidate;
-                    }
-                    else if(!JIPipeArtifactApplicationSettings.getInstance().isPreferGPU() && bestCandidate.isRequireGPU() && !candidate.isRequireGPU()) {
-                        bestCandidate = candidate;
-                    }
-                }
-            }
-        }
-        return bestCandidate;
-    }
-
-    /**
      * Queries all cached artifacts (local and remote)
+     *
      * @param filters list of filters (connected with OR), using glob syntax
      * @return the list of matched artifacts, sorted
      */
@@ -151,7 +149,7 @@ public class JIPipeArtifactsRegistry {
         for (String filter : filters) {
             String regex = StringUtils.convertGlobToRegex(filter);
             for (JIPipeArtifact artifact : cachedArtifacts.values()) {
-                if(artifact.getFullId().matches(regex)) {
+                if (artifact.getFullId().matches(regex)) {
                     available.add(artifact);
                 }
             }
@@ -167,8 +165,7 @@ public class JIPipeArtifactsRegistry {
                 for (JIPipeRemoteArtifact artifact : queryRemoteRepositories(null, null, null, progressInfo.resolve("Remote repository"))) {
                     cachedArtifacts.put(artifact.getFullId(), artifact);
                 }
-            }
-            catch (Throwable e) {
+            } catch (Throwable e) {
                 e.printStackTrace();
                 progressInfo.log(ExceptionUtils.getStackTrace(e));
             }

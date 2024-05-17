@@ -446,7 +446,7 @@ public class JIPipeDesktopParameterPanel extends JIPipeDesktopFormPanel implemen
                     groupHeaderPanel.getDescriptionArea().setText(DocumentationUtils.getDocumentationDescription(documentation));
                 }
 
-                if(node != null) {
+                if (node != null) {
                     for (JIPipeParameterCollectionContextAction action : node.getActions()) {
                         Icon icon = action.getIconURL() != null ? new ImageIcon(action.getIconURL()) : null;
                         JButton actionButton = new JButton(action.getDocumentation().name(), icon);

@@ -59,6 +59,16 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_SCRIPTING);
     }
 
+    public static REnvironment getEnvironment(JIPipeProject project, OptionalREnvironment nodeEnvironment) {
+        if (nodeEnvironment.isEnabled()) {
+            return nodeEnvironment.getContent();
+        }
+        if (project != null && project.getSettingsSheet(RPluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
+            return project.getSettingsSheet(RPluginProjectSettings.class).getProjectDefaultEnvironment().getContent();
+        }
+        return RPluginApplicationSettings.getInstance().getDefaultEnvironment();
+    }
+
     @Override
     public boolean isBeta() {
         return true;
@@ -99,16 +109,6 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public List<ImageIcon> getSplashIcons() {
         return Arrays.asList(UIUtils.getIcon32FromResources("apps/rlogo_icon.png"));
-    }
-
-    public static REnvironment getEnvironment(JIPipeProject project, OptionalREnvironment nodeEnvironment) {
-        if(nodeEnvironment.isEnabled()) {
-            return nodeEnvironment.getContent();
-        }
-        if(project != null && project.getSettingsSheet(RPluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
-            return project.getSettingsSheet(RPluginProjectSettings.class).getProjectDefaultEnvironment().getContent();
-        }
-        return RPluginApplicationSettings.getInstance().getDefaultEnvironment();
     }
 
     @Override

@@ -51,7 +51,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.omnipose.OmniposeEnvironmentAccessNode;
 import org.hkijena.jipipe.plugins.omnipose.OmniposePlugin;
 import org.hkijena.jipipe.plugins.omnipose.OmniposePretrainedModel;
-import org.hkijena.jipipe.plugins.omnipose.OmniposePluginApplicationSettings;
 import org.hkijena.jipipe.plugins.omnipose.parameters.OmniposeTrainingTweaksSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataInfoRef;
@@ -555,6 +554,8 @@ public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm im
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         super.reportValidity(reportContext, report);
-        report.report(reportContext, getConfiguredOmniposeEnvironment());
+        if (!isPassThrough()) {
+            reportConfiguredOmniposeEnvironmentValidity(reportContext, report);
+        }
     }
 }

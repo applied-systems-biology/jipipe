@@ -10,7 +10,6 @@ import org.hkijena.jipipe.api.settings.JIPipeDefaultProjectSettingsSheetCategory
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonEnvironment;
-import org.hkijena.jipipe.plugins.python.PythonPluginApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -25,10 +24,10 @@ public class CellposePluginProjectSettings extends JIPipeDefaultProjectSettingsS
     }
 
     private void autoConfigureDefaultEnvironment() {
-        if(CellposePluginApplicationSettings.getInstance().getDefaultCellposeEnvironment().isLoadFromArtifact()) {
+        if (CellposePluginApplicationSettings.getInstance().getDefaultCellposeEnvironment().isLoadFromArtifact()) {
             List<JIPipeArtifact> artifacts = JIPipe.getArtifacts().queryCachedArtifacts(CellposePluginApplicationSettings.getInstance().getDefaultCellposeEnvironment().getArtifactQuery().getQuery());
             artifacts.removeIf(artifact -> !artifact.isCompatible());
-            if(!artifacts.isEmpty()) {
+            if (!artifacts.isEmpty()) {
                 JIPipeArtifact target = artifacts.get(0);
                 PythonEnvironment environment = new PythonEnvironment();
                 environment.setLoadFromArtifact(true);
@@ -42,7 +41,7 @@ public class CellposePluginProjectSettings extends JIPipeDefaultProjectSettingsS
 
     @SetJIPipeDocumentation(name = "Project default environment", description = "If enabled, overwrite the application-wide Cellpose environment and store them inside the project.")
     @JIPipeParameter("project-default-environment")
-    @ExternalEnvironmentParameterSettings(showCategory = "Cellpose", allowArtifact = true, artifactFilters = { "com.github.mouseland.cellpose:*" })
+    @ExternalEnvironmentParameterSettings(showCategory = "Cellpose", allowArtifact = true, artifactFilters = {"com.github.mouseland.cellpose:*"})
     public OptionalPythonEnvironment getProjectDefaultEnvironment() {
         return projectDefaultEnvironment;
     }

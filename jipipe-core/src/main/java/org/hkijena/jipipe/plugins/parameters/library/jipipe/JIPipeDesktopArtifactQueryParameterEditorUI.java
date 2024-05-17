@@ -26,9 +26,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class JIPipeDesktopArtifactQueryParameterEditorUI extends JIPipeDesktopParameterEditorUI {
@@ -51,13 +49,13 @@ public class JIPipeDesktopArtifactQueryParameterEditorUI extends JIPipeDesktopPa
     }
 
     private void reloadArtifacts() {
-        String[] filters = { "*" };
+        String[] filters = {"*"};
         JIPipeArtifactQueryParameterSettings annotation = getParameterAccess().getAnnotationOfType(JIPipeArtifactQueryParameterSettings.class);
-        if(annotation != null) {
+        if (annotation != null) {
             filters = annotation.getFilters();
         }
         availableArtifacts.clear();
-        availableArtifacts.addAll( JIPipe.getArtifacts().queryCachedArtifacts(filters));
+        availableArtifacts.addAll(JIPipe.getArtifacts().queryCachedArtifacts(filters));
     }
 
     private void initialize() {
@@ -101,7 +99,7 @@ public class JIPipeDesktopArtifactQueryParameterEditorUI extends JIPipeDesktopPa
 
         @Override
         public String getLabel(Object value) {
-            if(value instanceof JIPipeArtifact) {
+            if (value instanceof JIPipeArtifact) {
                 return ((JIPipeArtifact) value).getFullId();
             }
             return "<None>";
@@ -109,7 +107,7 @@ public class JIPipeDesktopArtifactQueryParameterEditorUI extends JIPipeDesktopPa
 
         @Override
         public String getTooltip(Object value) {
-            if(value instanceof JIPipeArtifact) {
+            if (value instanceof JIPipeArtifact) {
                 return "<html>Name: " + ((JIPipeArtifact) value).getArtifactId() + "<br/>"
                         + "Publisher: " + ((JIPipeArtifact) value).getGroupId() + "<br/>"
                         + "Version: " + ((JIPipeArtifact) value).getVersion() + "<br/>"

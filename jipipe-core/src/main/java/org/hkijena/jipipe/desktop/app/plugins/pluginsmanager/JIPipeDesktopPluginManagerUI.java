@@ -50,15 +50,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
 
     private static JFrame CURRENT_WINDOW = null;
+    private static boolean SHOW_RESTART_PROMPT;
     private final List<PluginEntry> pluginEntryList = new ArrayList<>();
     private final JList<PluginEntry> pluginEntryJList = new JList<>();
     private final JIPipeDesktopFormPanel propertyPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
     private final JCheckBox onlyNewToggle = new JCheckBox("Only new", false);
     private final JIPipeDesktopSearchTextField searchTextField = new JIPipeDesktopSearchTextField();
-    private JScrollPane pluginsListScrollPane;
-    private static boolean SHOW_RESTART_PROMPT;
     private final JIPipeDesktopImageJUpdateSitesRepository updateSitesRepository;
     private final JPanel managerPanel = new JPanel(new BorderLayout());
+    private JScrollPane pluginsListScrollPane;
 
     public JIPipeDesktopPluginManagerUI(JIPipeDesktopWorkbench desktopWorkbench) {
         super(desktopWorkbench);
@@ -70,28 +70,6 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
         switchToManager();
         JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribe(this);
         JIPipeRunnableQueue.getInstance().getInterruptedEventEmitter().subscribe(this);
-    }
-
-    private void switchToManager() {
-        removeAll();
-        add(managerPanel, BorderLayout.CENTER);
-        revalidate();
-        repaint();
-    }
-
-    private void loadAvailablePlugins() {
-        Set<String> newPlugins = new HashSet<>(JIPipe.getInstance().getPluginRegistry().getNewPlugins());
-        newPlugins.removeAll(JIPipe.getInstance().getPluginRegistry().getSettings().getSilencedPlugins());
-        if (!newPlugins.isEmpty()) {
-            onlyNewToggle.setSelected(true);
-        }
-        for (JIPipePlugin plugin : JIPipe.getInstance().getPluginRegistry().getKnownPluginsList()) {
-            PluginEntry pluginEntry = new PluginEntry(plugin);
-            pluginEntry.setNewPlugin(newPlugins.contains(plugin.getDependencyId()));
-            pluginEntryList.add(pluginEntry);
-        }
-        pluginEntryList.sort(Comparator.comparing((PluginEntry entry) -> entry.getPlugin().isCorePlugin()).thenComparing((PluginEntry entry) -> entry.getPlugin().getMetadata().getName()));
-        JIPipe.getInstance().getPluginRegistry().dismissNewPlugins();
     }
 
     public static void show(JIPipeDesktopWorkbench desktopWorkbench) {
@@ -118,6 +96,28 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
             CURRENT_WINDOW = frame;
         }
 
+    }
+
+    private void switchToManager() {
+        removeAll();
+        add(managerPanel, BorderLayout.CENTER);
+        revalidate();
+        repaint();
+    }
+
+    private void loadAvailablePlugins() {
+        Set<String> newPlugins = new HashSet<>(JIPipe.getInstance().getPluginRegistry().getNewPlugins());
+        newPlugins.removeAll(JIPipe.getInstance().getPluginRegistry().getSettings().getSilencedPlugins());
+        if (!newPlugins.isEmpty()) {
+            onlyNewToggle.setSelected(true);
+        }
+        for (JIPipePlugin plugin : JIPipe.getInstance().getPluginRegistry().getKnownPluginsList()) {
+            PluginEntry pluginEntry = new PluginEntry(plugin);
+            pluginEntry.setNewPlugin(newPlugins.contains(plugin.getDependencyId()));
+            pluginEntryList.add(pluginEntry);
+        }
+        pluginEntryList.sort(Comparator.comparing((PluginEntry entry) -> entry.getPlugin().isCorePlugin()).thenComparing((PluginEntry entry) -> entry.getPlugin().getMetadata().getName()));
+        JIPipe.getInstance().getPluginRegistry().dismissNewPlugins();
     }
 
     private void initialize() {

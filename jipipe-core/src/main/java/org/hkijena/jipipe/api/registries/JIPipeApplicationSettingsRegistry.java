@@ -17,19 +17,13 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.MissingNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
 import ij.IJ;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeCustomParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.settings.JIPipeApplicationSettingsSheet;
 import org.hkijena.jipipe.api.settings.JIPipeSettingsSheet;
-import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -86,13 +80,13 @@ public class JIPipeApplicationSettingsRegistry {
      * @param sheet the sheet
      */
     public void register(JIPipeApplicationSettingsSheet sheet) {
-        if(StringUtils.isNullOrEmpty(sheet.getId())) {
+        if (StringUtils.isNullOrEmpty(sheet.getId())) {
             throw new IllegalArgumentException("Invalid ID for settings sheet " + sheet);
         }
-        if(StringUtils.isNullOrEmpty(sheet.getIcon())) {
+        if (StringUtils.isNullOrEmpty(sheet.getIcon())) {
             throw new IllegalArgumentException("Invalid icon for settings sheet " + sheet);
         }
-        if(StringUtils.isNullOrEmpty(sheet.getCategory()) || sheet.getCategoryIcon() == null) {
+        if (StringUtils.isNullOrEmpty(sheet.getCategory()) || sheet.getCategoryIcon() == null) {
             throw new IllegalArgumentException("Invalid category for settings sheet " + sheet);
         }
         registeredSheets.put(sheet.getId(), sheet);
@@ -144,7 +138,7 @@ public class JIPipeApplicationSettingsRegistry {
      * @param file the file path
      */
     public void save(Path file) {
-        try(BufferedWriter writer = new BufferedWriter(new FileWriter(file.toFile()))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file.toFile()))) {
             JsonFactory factory = JsonUtils.getObjectMapper().getFactory();
             JsonGenerator generator = factory.createGenerator(writer);
             generator.useDefaultPrettyPrinter();
@@ -181,11 +175,10 @@ public class JIPipeApplicationSettingsRegistry {
         try {
             JsonNode objectNode = JsonUtils.getObjectMapper().readTree(file.toFile());
             for (Map.Entry<String, JIPipeApplicationSettingsSheet> entry : registeredSheets.entrySet()) {
-                if(objectNode.has(entry.getKey())) {
+                if (objectNode.has(entry.getKey())) {
                     try {
                         entry.getValue().deserializeFromJsonNode(objectNode.get(entry.getKey()));
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         IJ.handleException(e);
                         e.printStackTrace();
                     }

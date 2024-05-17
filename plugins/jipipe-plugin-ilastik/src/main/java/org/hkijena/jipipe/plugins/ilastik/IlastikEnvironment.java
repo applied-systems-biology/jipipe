@@ -24,7 +24,9 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
-import org.hkijena.jipipe.plugins.expressions.*;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
@@ -37,8 +39,6 @@ import javax.swing.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Parameter that describes a Python environment
@@ -108,7 +108,7 @@ public class IlastikEnvironment extends JIPipeArtifactEnvironment {
 
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
-        if(!isLoadFromArtifact()) {
+        if (!isLoadFromArtifact()) {
             if (StringUtils.isNullOrEmpty(getExecutablePath()) || !Files.isRegularFile(getAbsoluteExecutablePath())) {
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext,
                         "Executable does not exist",
@@ -120,7 +120,7 @@ public class IlastikEnvironment extends JIPipeArtifactEnvironment {
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if("executable-path".equals(access.getKey())) {
+        if ("executable-path".equals(access.getKey())) {
             return !isLoadFromArtifact();
         }
         return super.isParameterUIVisible(tree, access);
@@ -128,20 +128,18 @@ public class IlastikEnvironment extends JIPipeArtifactEnvironment {
 
     @Override
     public Icon getIcon() {
-        if(isLoadFromArtifact()) {
+        if (isLoadFromArtifact()) {
             return UIUtils.getIconFromResources("actions/run-install.png");
-        }
-        else {
+        } else {
             return IlastikPlugin.RESOURCES.getIconFromResources("ilastik.png");
         }
     }
 
     @Override
     public String getInfo() {
-        if(isLoadFromArtifact()) {
+        if (isLoadFromArtifact()) {
             return StringUtils.orElse(getArtifactQuery().getQuery(), "<Not set>");
-        }
-        else {
+        } else {
             return StringUtils.orElse(getExecutablePath(), "<Not set>");
         }
     }

@@ -27,12 +27,10 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumItemInfo;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
 import org.hkijena.jipipe.plugins.r.OptionalREnvironment;
 import org.hkijena.jipipe.plugins.r.REnvironmentAccessNode;
-import org.hkijena.jipipe.plugins.r.RPluginApplicationSettings;
 import org.hkijena.jipipe.plugins.r.RUtils;
 import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -65,14 +63,14 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm impl
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         super.reportValidity(reportContext, report);
         if (!isPassThrough()) {
-          report.report(reportContext, getConfiguredREnvironment());
+            reportConfiguredREnvironmentValidity(reportContext, report);
         }
     }
 
     @Override
     public void getExternalEnvironments(List<JIPipeEnvironment> target) {
         super.getExternalEnvironments(target);
-       target.add(getConfiguredREnvironment());
+        target.add(getConfiguredREnvironment());
     }
 
     @SetJIPipeDocumentation(name = "Override R environment", description = "If enabled, a different R environment is used for this Node.")

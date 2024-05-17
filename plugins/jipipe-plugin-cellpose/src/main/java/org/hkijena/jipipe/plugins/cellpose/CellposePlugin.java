@@ -42,7 +42,9 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.plugins.python.*;
+import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
+import org.hkijena.jipipe.plugins.python.PythonEnvironment;
+import org.hkijena.jipipe.plugins.python.PythonPlugin;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
@@ -70,10 +72,10 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     public static PythonEnvironment getEnvironment(JIPipeProject project, OptionalPythonEnvironment nodeEnvironment) {
-        if(nodeEnvironment.isEnabled()) {
+        if (nodeEnvironment.isEnabled()) {
             return nodeEnvironment.getContent();
         }
-        if(project != null && project.getSettingsSheet(CellposePluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
+        if (project != null && project.getSettingsSheet(CellposePluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
             return project.getSettingsSheet(CellposePluginProjectSettings.class).getProjectDefaultEnvironment().getContent();
         }
         return CellposePluginApplicationSettings.getInstance().getDefaultCellposeEnvironment();

@@ -47,7 +47,10 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.expressions.DataAnnotationQueryExpression;
-import org.hkijena.jipipe.plugins.ilastik.*;
+import org.hkijena.jipipe.plugins.ilastik.IlastikEnvironment;
+import org.hkijena.jipipe.plugins.ilastik.IlastikEnvironmentAccessNode;
+import org.hkijena.jipipe.plugins.ilastik.IlastikPlugin;
+import org.hkijena.jipipe.plugins.ilastik.OptionalIlastikEnvironment;
 import org.hkijena.jipipe.plugins.ilastik.datatypes.IlastikModelData;
 import org.hkijena.jipipe.plugins.ilastik.parameters.IlastikProjectValidationMode;
 import org.hkijena.jipipe.plugins.ilastik.utils.IlastikUtils;
@@ -324,11 +327,7 @@ public class IlastikSegmentationImageObjectClassificationAlgorithm extends JIPip
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         super.reportValidity(reportContext, report);
         if (!isPassThrough()) {
-            if (overrideEnvironment.isEnabled()) {
-                report.report(reportContext, overrideEnvironment.getContent());
-            } else {
-                IlastikPluginApplicationSettings.checkIlastikSettings(reportContext, report);
-            }
+            reportConfiguredIlastikEnvironmentValidity(reportContext, report);
         }
     }
 

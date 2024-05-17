@@ -30,7 +30,6 @@ import org.hkijena.jipipe.plugins.opencv.nodes.generators.GaussianKernelGenerato
 import org.hkijena.jipipe.plugins.opencv.utils.OpenCvBorderType;
 import org.hkijena.jipipe.plugins.opencv.utils.OpenCvDepth;
 import org.hkijena.jipipe.plugins.opencv.utils.OpenCvType;
-import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;

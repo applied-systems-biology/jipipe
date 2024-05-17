@@ -678,7 +678,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
         registerParameterType("artifact-query",
                 JIPipeArtifactQueryParameter.class,
                 JIPipeArtifactQueryParameter::new,
-                p -> new JIPipeArtifactQueryParameter((JIPipeArtifactQueryParameter)p),
+                p -> new JIPipeArtifactQueryParameter((JIPipeArtifactQueryParameter) p),
                 "Artifact query",
                 "Queries an artifact from the artifact repository. " +
                         "Should be formatted as GroupId.ArtifactId:Version-Classifier",

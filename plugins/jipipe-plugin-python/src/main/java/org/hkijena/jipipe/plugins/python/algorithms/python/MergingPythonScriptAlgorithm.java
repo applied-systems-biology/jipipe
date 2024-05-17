@@ -130,8 +130,7 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm impleme
         super.reportValidity(reportContext, report);
         JythonUtils.checkScriptParametersValidity(scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script parameters", "script-parameters"), report);
         if (!isPassThrough()) {
-            report.report(reportContext, getConfiguredPythonEnvironment());
-            report.report(reportContext, getConfiguredPythonAdapterEnvironment());
+            reportConfiguredPythonEnvironmentValidity(reportContext, report);
         }
     }
 

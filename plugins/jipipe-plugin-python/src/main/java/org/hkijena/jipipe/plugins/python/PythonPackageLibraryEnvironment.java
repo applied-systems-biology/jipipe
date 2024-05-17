@@ -82,7 +82,7 @@ public abstract class PythonPackageLibraryEnvironment extends JIPipeArtifactEnvi
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if("library-directory".equals(access.getKey())) {
+        if ("library-directory".equals(access.getKey())) {
             return !isLoadFromArtifact();
         }
         return super.isParameterUIVisible(tree, access);
@@ -91,7 +91,7 @@ public abstract class PythonPackageLibraryEnvironment extends JIPipeArtifactEnvi
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         if (!isProvidedByEnvironment()) {
-            if(!isLoadFromArtifact()) {
+            if (!isLoadFromArtifact()) {
                 if (!Files.isDirectory(getAbsoluteLibraryDirectory())) {
                     report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                             reportContext,
@@ -109,23 +109,20 @@ public abstract class PythonPackageLibraryEnvironment extends JIPipeArtifactEnvi
 
     @Override
     public Icon getIcon() {
-        if(isLoadFromArtifact()) {
+        if (isLoadFromArtifact()) {
             return UIUtils.getIconFromResources("actions/run-install.png");
-        }
-        else {
+        } else {
             return UIUtils.getIconFromResources("actions/plugins.png");
         }
     }
 
     @Override
     public String getInfo() {
-        if(isLoadFromArtifact()) {
+        if (isLoadFromArtifact()) {
             return StringUtils.orElse(getArtifactQuery().getQuery(), "<Not set>");
-        }
-        else if(isProvidedByEnvironment()) {
+        } else if (isProvidedByEnvironment()) {
             return "<Internal>";
-        }
-        else {
+        } else {
             return StringUtils.orElse(getLibraryDirectory(), "<Not set>");
         }
     }

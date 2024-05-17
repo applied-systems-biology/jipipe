@@ -459,10 +459,9 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
      */
     public int getUISourceOrder(JIPipeParameterCollection source) {
         Node node = nodeMap.getOrDefault(source, null);
-        if(node != null) {
+        if (node != null) {
             return node.getUiOrder();
-        }
-        else {
+        } else {
             return 0;
         }
     }
@@ -475,14 +474,13 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
      */
     public String getSourceDocumentationName(JIPipeParameterCollection source) {
         Node node = nodeMap.getOrDefault(source, null);
-        if(node != null) {
+        if (node != null) {
             if (!StringUtils.isNullOrEmpty(node.getName())) {
                 return node.getName();
             } else {
                 return String.join("/", node.getPath());
             }
-        }
-        else {
+        } else {
             return "[Unknown source]";
         }
 
@@ -496,10 +494,9 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
      */
     public boolean isSourceHidden(JIPipeParameterCollection source) {
         Node node = nodeMap.getOrDefault(source, null);
-        if(node != null) {
+        if (node != null) {
             return node.isHidden();
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -512,10 +509,9 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
      */
     public int getSourceUIOrder(JIPipeParameterCollection source) {
         Node node = nodeMap.getOrDefault(source, null);
-        if(node != null) {
+        if (node != null) {
             return node.getUiOrder();
-        }
-        else {
+        } else {
             return 0;
         }
     }
@@ -528,10 +524,9 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
      */
     public boolean getSourceCollapsed(JIPipeParameterCollection source) {
         Node node = nodeMap.getOrDefault(source, null);
-        if(node != null) {
+        if (node != null) {
             return node.collapsed;
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -544,14 +539,13 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
      */
     public SetJIPipeDocumentation getSourceDocumentation(JIPipeParameterCollection source) {
         Node node = nodeMap.getOrDefault(source, null);
-        if(node != null) {
+        if (node != null) {
             String name = getSourceDocumentationName(source);
             HTMLText description = node.getDescription();
             if (description == null)
                 description = new HTMLText();
             return new JIPipeDocumentation(name, description.getBody());
-        }
-        else {
+        } else {
             return new JIPipeDocumentation("[Unknown source]", "");
         }
     }
@@ -564,7 +558,7 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
      */
     public void setSourceDocumentation(JIPipeParameterCollection source, JIPipeDocumentation documentation) {
         Node node = nodeMap.getOrDefault(source, null);
-        if(node != null) {
+        if (node != null) {
             node.setName(documentation.name());
             node.setDescription(new HTMLText(DocumentationUtils.getDocumentationDescription(documentation)));
         }

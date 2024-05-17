@@ -151,7 +151,7 @@ public class JIPipeGeneralDataApplicationSettings extends JIPipeDefaultApplicati
 
     @Override
     public Icon getIcon() {
-        return  UIUtils.getIconFromResources("actions/settings.png");
+        return UIUtils.getIconFromResources("actions/settings.png");
     }
 
     @Override

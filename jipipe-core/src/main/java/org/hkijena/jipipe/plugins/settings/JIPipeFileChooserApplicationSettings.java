@@ -766,7 +766,7 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
 
     @Override
     public Icon getIcon() {
-        return  UIUtils.getIconFromResources("actions/quickopen-file.png");
+        return UIUtils.getIconFromResources("actions/quickopen-file.png");
     }
 
     @Override

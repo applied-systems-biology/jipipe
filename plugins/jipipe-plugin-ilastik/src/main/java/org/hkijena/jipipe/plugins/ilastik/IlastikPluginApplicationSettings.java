@@ -84,7 +84,7 @@ public class IlastikPluginApplicationSettings extends JIPipeDefaultApplicationsS
 
     @SetJIPipeDocumentation(name = "Ilastik environment", description = "Contains information about the location of the Ilastik installation.")
     @JIPipeParameter("default-environment")
-    @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = { "org.embl.ilastik:*" })
+    @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = {"org.embl.ilastik:*"})
     public IlastikEnvironment getDefaultEnvironment() {
         return defaultEnvironment;
     }

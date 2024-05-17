@@ -46,7 +46,7 @@ public class JIPipeDesktopApplyPluginManagerRun extends AbstractJIPipeRunnable {
     @Override
     public void run() {
         // Update sites
-        if(!updateSitesToInstall.isEmpty()) {
+        if (!updateSitesToInstall.isEmpty()) {
             JIPipeDesktopImageJUpdateSitesRepository.ActivateDeactivateRun run =
                     new JIPipeDesktopImageJUpdateSitesRepository.ActivateDeactivateRun(pluginManagerUI.getUpdateSitesRepository(),
                             Collections.emptyList(),
@@ -54,7 +54,7 @@ public class JIPipeDesktopApplyPluginManagerRun extends AbstractJIPipeRunnable {
             run.run();
         }
 
-        if(!pluginsToDeactivate.isEmpty()) {
+        if (!pluginsToDeactivate.isEmpty()) {
             getProgressInfo().log("Deactivating plugins ...");
             for (JIPipePlugin plugin : pluginsToDeactivate) {
                 getProgressInfo().log("-> " + plugin.getDependencyId());
@@ -62,7 +62,7 @@ public class JIPipeDesktopApplyPluginManagerRun extends AbstractJIPipeRunnable {
             }
         }
 
-        if(!pluginsToActivate.isEmpty()) {
+        if (!pluginsToActivate.isEmpty()) {
             getProgressInfo().log("Activating plugins ...");
             for (JIPipePlugin plugin : pluginsToActivate) {
                 getProgressInfo().log("-> " + plugin.getDependencyId());

@@ -24,8 +24,8 @@ import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnum
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonAdapterLibraryEnvironment;
-import org.hkijena.jipipe.plugins.python.adapter.OptionalJIPipePythonAdapterLibraryEnvironment;
 import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonPluginAdapterApplicationSettings;
+import org.hkijena.jipipe.plugins.python.adapter.OptionalJIPipePythonAdapterLibraryEnvironment;
 import org.hkijena.jipipe.plugins.python.algorithms.jython.IteratingJythonScriptAlgorithm;
 import org.hkijena.jipipe.plugins.python.algorithms.jython.JythonScriptAlgorithm;
 import org.hkijena.jipipe.plugins.python.algorithms.jython.MergingJythonScriptAlgorithm;
@@ -65,17 +65,17 @@ public class PythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     public static PythonEnvironment getEnvironment(JIPipeProject project, OptionalPythonEnvironment nodeEnvironment) {
-        if(nodeEnvironment.isEnabled()) {
+        if (nodeEnvironment.isEnabled()) {
             return nodeEnvironment.getContent();
         }
-        if(project != null && project.getSettingsSheet(PythonPluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
+        if (project != null && project.getSettingsSheet(PythonPluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
             return project.getSettingsSheet(PythonPluginProjectSettings.class).getProjectDefaultEnvironment().getContent();
         }
         return PythonPluginApplicationSettings.getInstance().getDefaultPythonEnvironment();
     }
 
     public static JIPipePythonAdapterLibraryEnvironment getAdapterEnvironment(JIPipeProject project) {
-        if(project != null && project.getSettingsSheet(PythonPluginProjectSettings.class).getProjectPythonAdapterLibraryEnvironment().isEnabled()) {
+        if (project != null && project.getSettingsSheet(PythonPluginProjectSettings.class).getProjectPythonAdapterLibraryEnvironment().isEnabled()) {
             return project.getSettingsSheet(PythonPluginProjectSettings.class).getProjectPythonAdapterLibraryEnvironment().getContent();
         }
         return JIPipePythonPluginAdapterApplicationSettings.getInstance().getDefaultPythonAdapterLibraryEnvironment();

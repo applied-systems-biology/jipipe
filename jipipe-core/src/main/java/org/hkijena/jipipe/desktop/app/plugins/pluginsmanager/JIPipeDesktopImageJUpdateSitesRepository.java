@@ -47,26 +47,23 @@ public class JIPipeDesktopImageJUpdateSitesRepository {
     }
 
     private void ensureUpdateSites(JIPipeProgressInfo progressInfo) {
-        if(status == RepositoryStatus.NotLoaded) {
+        if (status == RepositoryStatus.NotLoaded) {
             try {
                 progressInfo.log("Rebuilding update site index ...");
                 rebuildUpdateSites(progressInfo);
                 progressInfo.log("Checking for conflicts ...");
                 resolveConflicts();
                 status = RepositoryStatus.Loaded;
-            }
-            catch (Throwable e) {
+            } catch (Throwable e) {
                 status = RepositoryStatus.Failed;
                 progressInfo.log(ExceptionUtils.getStackTrace(e));
                 progressInfo.getNotifications().push(new JIPipeNotification("ij-update-site:error", "Error while initializing ImageJ update sites!",
                         "An error happened while loading the ImageJ update sites service. " +
                                 "Please refer to the log to learn more about this error."));
             }
-        }
-        else if(status == RepositoryStatus.Loaded) {
+        } else if (status == RepositoryStatus.Loaded) {
             progressInfo.log("ImageJ update sites are already loaded");
-        }
-        else {
+        } else {
             progressInfo.log("[!!!] IMAGEJ UPDATE SITES COULD NOT BE LOADED");
         }
     }
@@ -91,8 +88,8 @@ public class JIPipeDesktopImageJUpdateSitesRepository {
     public void resolveConflicts() {
         final List<Conflicts.Conflict> conflicts = updateSites.getConflicts();
         if (conflicts != null && !conflicts.isEmpty()) {
-            if(JOptionPane.showConfirmDialog(pluginManager, "The ImageJ updater detected conflicts, which you are recommended to resolve.\n" +
-                     "Continue with the conflict resolution?", "Conflicts detected", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+            if (JOptionPane.showConfirmDialog(pluginManager, "The ImageJ updater detected conflicts, which you are recommended to resolve.\n" +
+                    "Continue with the conflict resolution?", "Conflicts detected", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
                 JIPipeDesktopImageJUpdaterConflictDialog dialog = new JIPipeDesktopImageJUpdaterConflictDialog(SwingUtilities.getWindowAncestor(pluginManager), "Conflicting versions") {
                     private static final long serialVersionUID = 1L;
 
@@ -145,13 +142,13 @@ public class JIPipeDesktopImageJUpdateSitesRepository {
             JIPipeProgressInfo progressInfo = getProgressInfo();
             repository.ensureUpdateSites(progressInfo);
 
-            if(!toDeactivate.isEmpty()) {
+            if (!toDeactivate.isEmpty()) {
                 for (UpdateSite updateSite : toDeactivate) {
                     repository.updateSites.deactivateUpdateSite(updateSite);
                 }
             }
 
-            if(!toActivate.isEmpty()) {
+            if (!toActivate.isEmpty()) {
                 for (UpdateSite updateSite : toActivate) {
                     try {
                         repository.updateSites.activateUpdateSite(updateSite, new JIPipeDesktopImageJUpdaterProgressAdapter2(progressInfo));

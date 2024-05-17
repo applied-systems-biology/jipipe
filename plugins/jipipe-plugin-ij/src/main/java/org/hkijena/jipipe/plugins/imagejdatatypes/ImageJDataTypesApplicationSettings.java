@@ -80,7 +80,7 @@ public class ImageJDataTypesApplicationSettings extends JIPipeDefaultApplication
 
     @Override
     public Icon getIcon() {
-        return  UIUtils.getIconFromResources("apps/imagej.png");
+        return UIUtils.getIconFromResources("apps/imagej.png");
     }
 
     @Override

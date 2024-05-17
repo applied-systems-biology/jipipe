@@ -123,8 +123,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm imp
         super.reportValidity(reportContext, report);
         JythonUtils.checkScriptParametersValidity(scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script parameters", "script-parameters"), report);
         if (!isPassThrough()) {
-            report.report(reportContext, getConfiguredPythonEnvironment());
-            report.report(reportContext, getConfiguredPythonAdapterEnvironment());
+            reportConfiguredPythonEnvironmentValidity(reportContext, report);
         }
     }
 

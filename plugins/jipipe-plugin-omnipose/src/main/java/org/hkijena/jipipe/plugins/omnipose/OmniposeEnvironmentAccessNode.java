@@ -15,7 +15,10 @@ package org.hkijena.jipipe.plugins.omnipose;
 
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
-import org.hkijena.jipipe.plugins.cellpose.CellposePlugin;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonEnvironment;
 
@@ -28,14 +31,31 @@ public interface OmniposeEnvironmentAccessNode {
     /**
      * Gets the correct Python environment.
      * Adheres to the chain of overrides.
+     *
      * @return the environment
      */
     default PythonEnvironment getConfiguredOmniposeEnvironment() {
         JIPipeGraphNode node = (JIPipeGraphNode) this;
         JIPipeProject project = node.getRuntimeProject();
-        if(project == null) {
+        if (project == null) {
             project = node.getParentGraph().getProject();
         }
         return OmniposePlugin.getEnvironment(project, getOverrideEnvironment());
+    }
+
+    /**
+     * Generates a validity report entry if the configured environment has an issue
+     *
+     * @param context the context
+     * @param report  the report
+     */
+    default void reportConfiguredOmniposeEnvironmentValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        if (!getConfiguredOmniposeEnvironment().generateValidityReport(context).isValid()) {
+            report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    context,
+                    "Omnipose not configured",
+                    "The Omnipose integration is not configured correctly.",
+                    "Go to the Project > Project settings/overview > Settings > Plugins > Omnipose and setup an appropriate default Omnipose environment."));
+        }
     }
 }

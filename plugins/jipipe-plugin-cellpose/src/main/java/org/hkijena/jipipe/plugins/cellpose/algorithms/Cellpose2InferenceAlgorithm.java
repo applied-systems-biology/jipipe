@@ -221,7 +221,7 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         super.reportValidity(reportContext, report);
         if (!isPassThrough()) {
-            report.report(reportContext, getConfiguredCellposeEnvironment());
+            reportConfiguredCellposeEnvironmentValidity(reportContext, report);
         }
     }
 
@@ -307,8 +307,12 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
                 arguments.add("--skip-roi");
             arguments.add(io2DPath.toString());
             arguments.add(io2DPath.toString());
-            PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                    CellposePluginApplicationSettings.getInstance().getDefaultCellposeEnvironment(), Collections.emptyList(), Collections.emptyMap(), suppressLogs, progressInfo.resolve("Extract Cellpose results (2D)"));
+            PythonUtils.runPython(arguments.toArray(new String[0]),
+                    getConfiguredCellposeEnvironment(),
+                    Collections.emptyList(),
+                    Collections.emptyMap(),
+                    suppressLogs,
+                    progressInfo.resolve("Extract Cellpose results (2D)"));
         }
         if (!runWith3D.isEmpty()) {
             List<String> arguments = new ArrayList<>();
@@ -317,8 +321,12 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
                 arguments.add("--skip-roi");
             arguments.add(io3DPath.toString());
             arguments.add(io3DPath.toString());
-            PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                    CellposePluginApplicationSettings.getInstance().getDefaultCellposeEnvironment(), Collections.emptyList(), Collections.emptyMap(), suppressLogs, progressInfo.resolve("Extract Cellpose results (3D)"));
+            PythonUtils.runPython(arguments.toArray(new String[0]),
+                    getConfiguredCellposeEnvironment(),
+                    Collections.emptyList(),
+                    Collections.emptyMap(),
+                    suppressLogs,
+                    progressInfo.resolve("Extract Cellpose results (3D)"));
         }
 
         // Fetch the data from the directory

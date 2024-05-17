@@ -305,7 +305,7 @@ public class IlastikObjectClassificationAlgorithm extends JIPipeSingleIterationA
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         super.reportValidity(reportContext, report);
         if (!isPassThrough()) {
-            report.report(reportContext, getConfiguredIlastikEnvironment());
+            reportConfiguredIlastikEnvironmentValidity(reportContext, report);
         }
     }
 
