@@ -32,10 +32,9 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
-import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
+import org.hkijena.jipipe.plugins.cellpose.CellposeEnvironmentAccessNode;
 import org.hkijena.jipipe.plugins.cellpose.CellposePretrainedModel;
 import org.hkijena.jipipe.plugins.cellpose.CellposePluginApplicationSettings;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
@@ -75,7 +74,7 @@ import java.util.stream.Collectors;
 @AddJIPipeInputSlot(value = CellposeModelData.class)
 @AddJIPipeOutputSlot(value = CellposeModelData.class, slotName = "Model", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
-public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
+public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm implements CellposeEnvironmentAccessNode {
 
     public static final JIPipeDataSlotInfo INPUT_PRETRAINED_MODEL = new JIPipeDataSlotInfo(CellposeModelData.class, JIPipeSlotType.Input, "Pretrained Model", "A custom pretrained model");
 
@@ -267,20 +266,6 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     @JIPipeParameter("pretrained-model")
     public void setPretrainedModel(CellposePretrainedModel pretrainedModel) {
         this.pretrainedModel = pretrainedModel;
-
-        // Update diameter
-//        switch (pretrainedModel) {
-//            case Cytoplasm:
-//                if (diameter.getContent() != 30) {
-//                    ParameterUtils.setParameter(this, "diameter", new OptionalDoubleParameter(30, true));
-//                }
-//                break;
-//            case Nucleus:
-//                if (diameter.getContent() != 17) {
-//                    ParameterUtils.setParameter(this, "diameter", 17.0);
-//                }
-//                break;
-//        }
         updateSlots();
     }
 
@@ -451,8 +436,7 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         arguments.add(tweaksSettings.getMinTrainMasks() + "");
 
         // Run the module
-        PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                CellposePluginApplicationSettings.getInstance().getDefaultCellposeEnvironment(), Collections.emptyList(), Collections.emptyMap(), suppressLogs, progressInfo);
+        PythonUtils.runPython(arguments.toArray(new String[0]), getConfiguredCellposeEnvironment(), Collections.emptyList(), Collections.emptyMap(), suppressLogs, progressInfo);
 
         // Extract the model
         Path modelsPath = trainingDir.resolve("models");
@@ -551,5 +535,13 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     @JIPipeParameter("epochs")
     public void setNumEpochs(int numEpochs) {
         this.numEpochs = numEpochs;
+    }
+
+    @Override
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
+        if (!isPassThrough()) {
+            report.report(reportContext, getConfiguredCellposeEnvironment());
+        }
     }
 }
