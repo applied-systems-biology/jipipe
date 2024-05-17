@@ -392,15 +392,6 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         statusBar.add(statusText);
         statusBar.add(Box.createHorizontalGlue(), new JXStatusBar.Constraint(JXStatusBar.Constraint.ResizeBehavior.FILL));
 
-        // Artifact download control
-        JIPipeDesktopRunnableQueueButton artifactQueueButton = new JIPipeDesktopRunnableQueueButton(this, JIPipeThumbnailGenerationQueue.getInstance().getRunnerQueue());
-        artifactQueueButton.makeFlat();
-        artifactQueueButton.setReadyLabel("Artifacts");
-        artifactQueueButton.setTasksFinishedLabel("Artifacts");
-        artifactQueueButton.setTaskSingleRunningLabel("Downloading Artifacts");
-        artifactQueueButton.setTaskSingleEnqueuedRunningLabel("Downloading artifacts (%d)");
-        statusBar.add(artifactQueueButton);
-
         // Thumbnail generation control
         JIPipeDesktopRunnableQueueButton thumbnailQueueButton = new JIPipeDesktopRunnableQueueButton(this, JIPipeThumbnailGenerationQueue.getInstance().getRunnerQueue());
         thumbnailQueueButton.makeFlat();

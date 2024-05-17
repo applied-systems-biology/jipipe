@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.artifacts.*;
 import org.hkijena.jipipe.api.registries.JIPipeArtifactsRegistry;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
+import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
@@ -56,7 +57,7 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
     public JIPipeDesktopArtifactManagerUI(JIPipeDesktopWorkbench desktopWorkbench) {
         super(desktopWorkbench);
         initialize();
-        artifactsRegistry.getQueue().getFinishedEventEmitter().subscribe(this);
+        JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribe(this);
         artifactsRegistry.enqueueUpdateCachedArtifacts();
         updateSelectionPanel();
     }
@@ -71,12 +72,9 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
                 @Override
                 public void windowClosing(WindowEvent e) {
                     super.windowClosing(e);
-
-                    if (JIPipe.getArtifacts().getQueue().isEmpty()) {
-                        frame.setVisible(false);
-                        frame.dispose();
-                        CURRENT_WINDOW = null;
-                    }
+                    frame.setVisible(false);
+                    frame.dispose();
+                    CURRENT_WINDOW = null;
                 }
             });
             frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -102,7 +100,7 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
         onlyCompatibleToggle.setToolTipText("Only show compatible artifacts");
         onlyCompatibleToggle.addActionListener(e -> updateArtifactsList());
 
-        toolbar.add(new JIPipeDesktopRunnableQueueButton(getDesktopWorkbench(), JIPipe.getArtifacts().getQueue()));
+        toolbar.add(new JIPipeDesktopRunnableQueueButton(getDesktopWorkbench(), JIPipeRunnableQueue.getInstance()));
         add(toolbar, BorderLayout.NORTH);
 
         artifactListScrollPane = new JScrollPane(artifactEntryJList);
@@ -235,7 +233,7 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
         message.append("\nDo you want to continue?");
         if (JOptionPane.showConfirmDialog(this, message.toString(), "Apply changes", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             JIPipeArtifactRepositoryApplyInstallUninstallRun run = new JIPipeArtifactRepositoryApplyInstallUninstallRun(toInstall, toUninstall);
-            JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, run, JIPipe.getArtifacts().getQueue());
+            JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, run, JIPipeRunnableQueue.getInstance());
         }
     }
 

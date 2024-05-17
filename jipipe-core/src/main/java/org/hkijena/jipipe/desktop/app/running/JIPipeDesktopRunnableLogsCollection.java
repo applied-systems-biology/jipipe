@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.desktop.app.running;
 
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
@@ -40,8 +39,8 @@ public class JIPipeDesktopRunnableLogsCollection implements JIPipeRunnable.Finis
         JIPipeRunnableQueue.getInstance().getInterruptedEventEmitter().subscribe(this);
 
         // Listen for artifacts queue
-        JIPipe.getArtifacts().getQueue().getFinishedEventEmitter().subscribe(this);
-        JIPipe.getArtifacts().getQueue().getInterruptedEventEmitter().subscribe(this);
+        JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribe(this);
+        JIPipeRunnableQueue.getInstance().getInterruptedEventEmitter().subscribe(this);
     }
 
     public static JIPipeDesktopRunnableLogsCollection getInstance() {

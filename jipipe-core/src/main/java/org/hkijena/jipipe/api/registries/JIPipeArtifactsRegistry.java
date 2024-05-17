@@ -42,7 +42,6 @@ import java.util.stream.Collectors;
 
 public class JIPipeArtifactsRegistry {
     private final JIPipe jiPipe;
-    private final JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Artifacts");
     private final Map<String, JIPipeArtifact> cachedArtifacts = new HashMap<>();
     private final StampedLock lock = new StampedLock();
 
@@ -52,10 +51,6 @@ public class JIPipeArtifactsRegistry {
 
     public JIPipe getJiPipe() {
         return jiPipe;
-    }
-
-    public JIPipeRunnableQueue getQueue() {
-        return queue;
     }
 
     public Map<String, JIPipeArtifact> getCachedArtifacts() {
@@ -367,7 +362,7 @@ public class JIPipeArtifactsRegistry {
     }
 
     public void enqueueUpdateCachedArtifacts() {
-        queue.enqueue(new JIPipeArtifactRepositoryUpdateCachedArtifactsRun());
+        JIPipeRunnableQueue.getInstance().enqueue(new JIPipeArtifactRepositoryUpdateCachedArtifactsRun());
     }
 
 }

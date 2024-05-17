@@ -104,12 +104,9 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
                 @Override
                 public void windowClosing(WindowEvent e) {
                     super.windowClosing(e);
-
-                    if (JIPipe.getArtifacts().getQueue().isEmpty()) {
-                        frame.setVisible(false);
-                        frame.dispose();
-                        CURRENT_WINDOW = null;
-                    }
+                    frame.setVisible(false);
+                    frame.dispose();
+                    CURRENT_WINDOW = null;
                 }
             });
             frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
