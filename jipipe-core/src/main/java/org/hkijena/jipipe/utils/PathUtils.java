@@ -447,4 +447,19 @@ public class PathUtils {
             return alternative;
         }
     }
+
+    /**
+     * Marks all files in that directory as Unix executable
+     * @param dir the directory
+     * @param progressInfo the progress
+     */
+    public static void makeAllUnixExecutable(Path dir, JIPipeProgressInfo progressInfo) {
+        progressInfo.log("Postprocess: Marking all files in " + dir + " as executable");
+        for (Path path : PathUtils.findFilesByExtensionIn(dir)) {
+            if (Files.isRegularFile(path)) {
+                progressInfo.log(" - chmod +x " + path);
+                PathUtils.makeUnixExecutable(path);
+            }
+        }
+    }
 }

@@ -16,7 +16,9 @@ package org.hkijena.jipipe.plugins.r;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.apache.commons.lang3.SystemUtils;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
 import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -96,6 +98,23 @@ public class REnvironment extends JIPipeArtifactEnvironment {
             return !isLoadFromArtifact();
         }
         return super.isParameterUIVisible(tree, access);
+    }
+
+    @Override
+    public void applyConfigurationFromArtifact(JIPipeLocalArtifact artifact, JIPipeProgressInfo progressInfo) {
+        setArguments(new JIPipeExpressionParameter("ARRAY(script_file)"));
+        Path binaryDir = artifact.getLocalPath().resolve("bin");
+        if (SystemUtils.IS_OS_WINDOWS) {
+            setRExecutablePath(binaryDir.resolve("R.exe"));
+            setRScriptExecutablePath(binaryDir.resolve("Rscript.exe"));
+        } else {
+            setRExecutablePath(binaryDir.resolve("R"));
+            setRScriptExecutablePath(binaryDir.resolve("Rscript"));
+
+            // Do chmod +x for all executables
+            PathUtils.makeAllUnixExecutable(binaryDir, progressInfo);
+        }
+
     }
 
     @SetJIPipeDocumentation(name = "R executable", description = "The main R executable (R.exe on Windows)")

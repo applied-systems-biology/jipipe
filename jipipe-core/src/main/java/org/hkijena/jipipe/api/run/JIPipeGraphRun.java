@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryApplyInstallUninstallRun;
+import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
@@ -193,26 +194,38 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
 
         if (parent == null) {
             progressInfo.log("Preparing artifacts ...");
-            Set<String> artifactIds = new HashSet<>();
-            List<JIPipeEnvironment> dependencies = new ArrayList<>();
+
+            // Gather all environments from all active nodes
+            List<JIPipeEnvironment> allEnvironments = new ArrayList<>();
             for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
-                graphNode.getEnvironmentDependencies(dependencies);
+                graphNode.getEnvironmentDependencies(allEnvironments);
             }
-            for (JIPipeEnvironment dependency : dependencies) {
+
+            // Gather all requested artifact Ids
+            Set<String> allRequestedArtifactIds = new HashSet<>();
+            Map<String, String> requestedToTargetArtifactIds = new HashMap<>();
+            Map<JIPipeArtifactEnvironment, String> environmentTargetArtifactIds = new HashMap<>();
+
+            for (JIPipeEnvironment dependency : allEnvironments) {
                 if (dependency instanceof JIPipeArtifactEnvironment) {
                     JIPipeArtifactEnvironment artifactEnvironment = (JIPipeArtifactEnvironment) dependency;
                     if (artifactEnvironment.isLoadFromArtifact()) {
-                        artifactIds.add(artifactEnvironment.getArtifactQuery().getQuery());
+                        String query = artifactEnvironment.getArtifactQuery().getQuery();
+                        allRequestedArtifactIds.add(query);
+                        requestedToTargetArtifactIds.put(query, query);
+                        environmentTargetArtifactIds.put(artifactEnvironment, query);
                     }
                 }
             }
 
-            if (!artifactIds.isEmpty()) {
+            // Resolve the artifact IDs into the final ones
+            // Then download if necessary
+            if (!allRequestedArtifactIds.isEmpty()) {
                 Set<String> remoteArtifactsToDownload = new HashSet<>();
 
-                for (String artifactId : artifactIds) {
-                    JIPipeProgressInfo artifactProgress = progressInfo.resolve("Artifacts").resolveAndLog(artifactId);
-                    List<JIPipeArtifact> artifacts = JIPipe.getArtifacts().queryCachedArtifacts(artifactId);
+                for (String requestedArtifactId : allRequestedArtifactIds) {
+                    JIPipeProgressInfo artifactProgress = progressInfo.resolve("Artifacts").resolveAndLog(requestedArtifactId);
+                    List<JIPipeArtifact> artifacts = JIPipe.getArtifacts().queryCachedArtifacts(requestedArtifactId);
                     artifacts.removeIf(artifact -> !artifact.isCompatible());
                     artifactProgress.log("Found " + artifacts.size() + " compatible matching artifacts");
                     JIPipeArtifact targetArtifact = null;
@@ -220,7 +233,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                     if (artifacts.isEmpty()) {
                         // Find alternative
                         artifactProgress.log("Unable to find compatible matching artifact! Finding alternative!");
-                        artifacts = JIPipe.getArtifacts().queryCachedArtifacts(artifactId);
+                        artifacts = JIPipe.getArtifacts().queryCachedArtifacts(requestedArtifactId);
                         for (JIPipeArtifact artifact : artifacts) {
                             JIPipeArtifact closestCompatibleArtifact = JIPipe.getArtifacts().findClosestCompatibleArtifact(artifact.getFullId());
                             if (closestCompatibleArtifact != null) {
@@ -239,7 +252,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                     }
 
                     if (targetArtifact == null) {
-                        throw new RuntimeException("Unable to find matching compatible artifact for " + artifactId + ". Unable to continue.");
+                        throw new RuntimeException("Unable to find matching compatible artifact for " + requestedArtifactId + ". Unable to continue.");
                     }
 
                     artifactProgress.log("Matched artifact: " + targetArtifact.getFullId());
@@ -247,8 +260,12 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                         artifactProgress.log("Artifact is not downloaded. Added to download queue.");
                         remoteArtifactsToDownload.add(targetArtifact.getFullId());
                     }
+
+                    // Update the target map
+                    requestedToTargetArtifactIds.put(requestedArtifactId, targetArtifact.getFullId());
                 }
 
+                // Download all missing artifacts
                 if(!remoteArtifactsToDownload.isEmpty()) {
                     JIPipeProgressInfo artifactsProgress = progressInfo.resolve("Artifacts");
                     artifactsProgress.log("Artifacts to download: "+ String.join(", ", remoteArtifactsToDownload));
@@ -258,7 +275,22 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                     run.setProgressInfo(artifactsProgress.resolve("Download"));
                     run.run();
                 }
+
             }
+
+            // Configure the environments
+            progressInfo.log("Applying artifact configuration to environments ...");
+            for (Map.Entry<JIPipeArtifactEnvironment, String> entry : environmentTargetArtifactIds.entrySet()) {
+                String queryArtifactId = entry.getValue();
+                String targetArtifactId = requestedToTargetArtifactIds.get(queryArtifactId);
+                JIPipeArtifact artifact = JIPipe.getArtifacts().getCachedArtifacts().get(targetArtifactId);
+                if(!(artifact instanceof JIPipeLocalArtifact)) {
+                    throw new RuntimeException("Unable to find local artifact " + targetArtifactId + ", which was queried from " + queryArtifactId);
+                }
+                progressInfo.log("-> " + entry.getKey());
+                entry.getKey().applyConfigurationFromArtifact((JIPipeLocalArtifact) artifact, progressInfo);
+            }
+
         }
 
         try (JIPipeFixedThreadPool threadPool = new JIPipeFixedThreadPool(configuration.getNumThreads())) {

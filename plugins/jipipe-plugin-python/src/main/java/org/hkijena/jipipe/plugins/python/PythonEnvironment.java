@@ -15,7 +15,10 @@ package org.hkijena.jipipe.plugins.python;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.apache.commons.lang3.SystemUtils;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
 import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -37,6 +40,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -157,6 +161,20 @@ public class PythonEnvironment extends JIPipeArtifactEnvironment {
             return !isLoadFromArtifact();
         }
         return super.isParameterUIVisible(tree, access);
+    }
+
+    @Override
+    public void applyConfigurationFromArtifact(JIPipeLocalArtifact artifact, JIPipeProgressInfo progressInfo) {
+        setType(PythonEnvironmentType.System);
+        setArguments(new JIPipeExpressionParameter("ARRAY(\"-u\", script_file)"));
+        if (SystemUtils.IS_OS_WINDOWS) {
+            setExecutablePath(artifact.getLocalPath().resolve("python").resolve("python.exe"));
+        } else {
+            setExecutablePath(artifact.getLocalPath().resolve("python").resolve("bin").resolve("python3"));
+
+            // Do chmod +x for all executables
+            PathUtils.makeAllUnixExecutable(artifact.getLocalPath().resolve("python").resolve("bin"), progressInfo);
+        }
     }
 
     @Override

@@ -15,7 +15,9 @@ package org.hkijena.jipipe.api.environments;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -72,4 +74,9 @@ public abstract class JIPipeArtifactEnvironment extends JIPipeEnvironment {
         }
         return super.isParameterUIVisible(tree, access);
     }
+
+    /**
+     * Applies the artifact configuration to the current environment if isLoadFromArtifact() is true
+     */
+    public abstract void applyConfigurationFromArtifact(JIPipeLocalArtifact artifact, JIPipeProgressInfo progressInfo);
 }

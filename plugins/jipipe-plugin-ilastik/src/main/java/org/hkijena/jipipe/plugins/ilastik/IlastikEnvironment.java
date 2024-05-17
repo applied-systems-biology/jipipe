@@ -15,7 +15,10 @@ package org.hkijena.jipipe.plugins.ilastik;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.apache.commons.lang3.SystemUtils;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
 import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -124,6 +127,29 @@ public class IlastikEnvironment extends JIPipeArtifactEnvironment {
             return !isLoadFromArtifact();
         }
         return super.isParameterUIVisible(tree, access);
+    }
+
+    @Override
+    public void applyConfigurationFromArtifact(JIPipeLocalArtifact artifact, JIPipeProgressInfo progressInfo) {
+        Path ilastikDir = artifact.getLocalPath().resolve("ilastik");
+        Path binaryDir = artifact.getLocalPath().resolve("ilastik").resolve("bin");
+        if (SystemUtils.IS_OS_WINDOWS) {
+            setExecutablePath(ilastikDir.resolve("ilastik.exe"));
+            setArguments(new JIPipeExpressionParameter("cli_parameters"));
+        } else if (SystemUtils.IS_OS_LINUX) {
+            setExecutablePath(ilastikDir.resolve("run_ilastik.sh"));
+            setArguments(new JIPipeExpressionParameter("cli_parameters"));
+
+            PathUtils.makeUnixExecutable(getExecutablePath());
+            PathUtils.makeAllUnixExecutable(binaryDir, progressInfo);
+        } else {
+            setExecutablePath(ilastikDir.resolve("run_ilastik.sh"));
+            setArguments(new JIPipeExpressionParameter("cli_parameters"));
+
+            PathUtils.makeUnixExecutable(getExecutablePath());
+            PathUtils.makeAllUnixExecutable(binaryDir, progressInfo);
+        }
+
     }
 
     @Override
