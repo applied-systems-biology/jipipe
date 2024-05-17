@@ -25,10 +25,15 @@ import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
+import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryApplyInstallUninstallRun;
+import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
+import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.grouping.JIPipeGraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithmIterationStepGenerationSettings;
@@ -184,6 +189,76 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
         initializeSlotStoragePaths();
         if (parent == null) {
             progressInfo.log("Outputs will be written to " + configuration.getOutputPath());
+        }
+
+        if (parent == null) {
+            progressInfo.log("Preparing artifacts ...");
+            Set<String> artifactIds = new HashSet<>();
+            List<JIPipeEnvironment> dependencies = new ArrayList<>();
+            for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
+                graphNode.getEnvironmentDependencies(dependencies);
+            }
+            for (JIPipeEnvironment dependency : dependencies) {
+                if (dependency instanceof JIPipeArtifactEnvironment) {
+                    JIPipeArtifactEnvironment artifactEnvironment = (JIPipeArtifactEnvironment) dependency;
+                    if (artifactEnvironment.isLoadFromArtifact()) {
+                        artifactIds.add(artifactEnvironment.getArtifactQuery().getQuery());
+                    }
+                }
+            }
+
+            if (!artifactIds.isEmpty()) {
+                Set<String> remoteArtifactsToDownload = new HashSet<>();
+
+                for (String artifactId : artifactIds) {
+                    JIPipeProgressInfo artifactProgress = progressInfo.resolve("Artifacts").resolveAndLog(artifactId);
+                    List<JIPipeArtifact> artifacts = JIPipe.getArtifacts().queryCachedArtifacts(artifactId);
+                    artifacts.removeIf(artifact -> !artifact.isCompatible());
+                    artifactProgress.log("Found " + artifacts.size() + " compatible matching artifacts");
+                    JIPipeArtifact targetArtifact = null;
+
+                    if (artifacts.isEmpty()) {
+                        // Find alternative
+                        artifactProgress.log("Unable to find compatible matching artifact! Finding alternative!");
+                        artifacts = JIPipe.getArtifacts().queryCachedArtifacts(artifactId);
+                        for (JIPipeArtifact artifact : artifacts) {
+                            JIPipeArtifact closestCompatibleArtifact = JIPipe.getArtifacts().findClosestCompatibleArtifact(artifact.getFullId());
+                            if (closestCompatibleArtifact != null) {
+                                artifactProgress.log("SUCCEEDED in finding closest compatible artifact to " + artifact.getFullId() + " as " + closestCompatibleArtifact.getFullId());
+                                targetArtifact = closestCompatibleArtifact;
+                                break;
+                            } else {
+                                artifactProgress.log("FAILED to find closest compatible artifact to " + artifact.getFullId());
+                            }
+                        }
+                    } else if (artifacts.size() > 1) {
+                        artifactProgress.log("Warning: found " + artifacts.size() + " matching artifacts. Selecting first available one!");
+                        targetArtifact = artifacts.get(0);
+                    } else {
+                        targetArtifact = artifacts.get(0);
+                    }
+
+                    if (targetArtifact == null) {
+                        throw new RuntimeException("Unable to find matching compatible artifact for " + artifactId + ". Unable to continue.");
+                    }
+
+                    artifactProgress.log("Matched artifact: " + targetArtifact.getFullId());
+                    if (targetArtifact instanceof JIPipeRemoteArtifact) {
+                        artifactProgress.log("Artifact is not downloaded. Added to download queue.");
+                        remoteArtifactsToDownload.add(targetArtifact.getFullId());
+                    }
+                }
+
+                if(!remoteArtifactsToDownload.isEmpty()) {
+                    JIPipeProgressInfo artifactsProgress = progressInfo.resolve("Artifacts");
+                    artifactsProgress.log("Artifacts to download: "+ String.join(", ", remoteArtifactsToDownload));
+                    List<JIPipeRemoteArtifact> toInstall = remoteArtifactsToDownload.stream().map(id -> (JIPipeRemoteArtifact) JIPipe.getArtifacts().queryCachedArtifacts(id).get(0)).collect(Collectors.toList());
+                    JIPipeArtifactRepositoryApplyInstallUninstallRun run = new JIPipeArtifactRepositoryApplyInstallUninstallRun(
+                           toInstall, Collections.emptyList());
+                    run.setProgressInfo(artifactsProgress.resolve("Download"));
+                    run.run();
+                }
+            }
         }
 
         try (JIPipeFixedThreadPool threadPool = new JIPipeFixedThreadPool(configuration.getNumThreads())) {

@@ -35,7 +35,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.cellpose.CellposeEnvironmentAccessNode;
-import org.hkijena.jipipe.plugins.cellpose.CellposePluginApplicationSettings;
 import org.hkijena.jipipe.plugins.cellpose.CellposePretrainedModel;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeSizeModelData;
@@ -141,13 +140,9 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
     }
 
     @Override
-    public void getExternalEnvironments(List<JIPipeEnvironment> target) {
-        super.getExternalEnvironments(target);
-        if (overrideEnvironment.isEnabled()) {
-            target.add(overrideEnvironment.getContent());
-        } else {
-            target.add(CellposePluginApplicationSettings.getInstance().getDefaultCellposeEnvironment());
-        }
+    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+        super.getEnvironmentDependencies(target);
+        target.add(getConfiguredCellposeEnvironment());
     }
 
     private void updateSlots() {

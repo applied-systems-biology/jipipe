@@ -255,7 +255,7 @@ public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchP
 
             List<JIPipeEnvironment> externalEnvironments = new ArrayList<>();
             for (JIPipeGraphNode graphNode : project.getGraph().getGraphNodes()) {
-                graphNode.getExternalEnvironments(externalEnvironments);
+                graphNode.getEnvironmentDependencies(externalEnvironments);
             }
             if (!externalEnvironments.isEmpty()) {
                 stringBuilder.append("<h3>External environments</h3>");

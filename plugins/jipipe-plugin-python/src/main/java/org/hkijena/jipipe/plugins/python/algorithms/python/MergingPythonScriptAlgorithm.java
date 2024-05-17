@@ -119,8 +119,8 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm impleme
     }
 
     @Override
-    public void getExternalEnvironments(List<JIPipeEnvironment> target) {
-        super.getExternalEnvironments(target);
+    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+        super.getEnvironmentDependencies(target);
         target.add(getConfiguredPythonEnvironment());
         target.add(getConfiguredPythonAdapterEnvironment());
     }

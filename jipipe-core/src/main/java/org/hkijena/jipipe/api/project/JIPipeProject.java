@@ -686,7 +686,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
         // Write list of external environments
         List<JIPipeEnvironment> externalEnvironments = new ArrayList<>();
         for (JIPipeGraphNode graphNode : getGraph().getGraphNodes()) {
-            graphNode.getExternalEnvironments(externalEnvironments);
+            graphNode.getEnvironmentDependencies(externalEnvironments);
         }
         generator.writeArrayFieldStart("external-environments");
         for (JIPipeEnvironment environment : Sets.newHashSet(externalEnvironments)) {

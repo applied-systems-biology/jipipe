@@ -1129,7 +1129,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      *
      * @param target the list where the external environments will be gathered
      */
-    public void getExternalEnvironments(List<JIPipeEnvironment> target) {
+    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
 
     }
 

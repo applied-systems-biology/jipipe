@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -47,6 +48,7 @@ import org.hkijena.jipipe.plugins.omero.util.OMEROGateway;
 import org.hkijena.jipipe.plugins.omero.util.OMEROUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @SetJIPipeDocumentation(name = "List OMERO projects", description = "Returns the ID(s) of project(s) according to search criteria.")
 @AddJIPipeInputSlot(value = OMEROGroupReferenceData.class, slotName = "Group", create = true, description = "The group to be utilized. If not provided, the user's default group is used.", optional = true)
@@ -144,5 +146,11 @@ public class OMEROListProjectsAlgorithm extends JIPipeSingleIterationAlgorithm i
         if (!isPassThrough()) {
             reportConfiguredOMEROEnvironmentValidity(reportContext, report);
         }
+    }
+
+    @Override
+    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+        super.getEnvironmentDependencies(target);
+        target.add(getConfiguredOMEROCredentialsEnvironment());
     }
 }

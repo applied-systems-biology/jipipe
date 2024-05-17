@@ -159,8 +159,8 @@ public class OmniposeInferenceAlgorithm extends JIPipeSingleIterationAlgorithm i
     }
 
     @Override
-    public void getExternalEnvironments(List<JIPipeEnvironment> target) {
-        super.getExternalEnvironments(target);
+    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+        super.getEnvironmentDependencies(target);
         target.add(getConfiguredOmniposeEnvironment());
     }
 

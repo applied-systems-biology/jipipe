@@ -68,8 +68,8 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm impl
     }
 
     @Override
-    public void getExternalEnvironments(List<JIPipeEnvironment> target) {
-        super.getExternalEnvironments(target);
+    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+        super.getEnvironmentDependencies(target);
         target.add(getConfiguredREnvironment());
     }
 

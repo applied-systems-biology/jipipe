@@ -18,6 +18,7 @@ import omero.gateway.model.ProjectData;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -35,6 +36,8 @@ import org.hkijena.jipipe.plugins.omero.OptionalOMEROCredentialsEnvironment;
 import org.hkijena.jipipe.plugins.omero.datatypes.OMEROProjectReferenceData;
 import org.hkijena.jipipe.plugins.omero.util.OMEROGateway;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.LongList;
+
+import java.util.List;
 
 @SetJIPipeDocumentation(name = "Define project IDs", description = "Manually defines OMERO project ids.")
 @AddJIPipeOutputSlot(value = OMEROProjectReferenceData.class, slotName = "Output", create = true)
@@ -97,5 +100,11 @@ public class OMEROProjectReferenceDataSource extends JIPipeSimpleIteratingAlgori
         if (!isPassThrough()) {
             reportConfiguredOMEROEnvironmentValidity(reportContext, report);
         }
+    }
+
+    @Override
+    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+        super.getEnvironmentDependencies(target);
+        target.add(getConfiguredOMEROCredentialsEnvironment());
     }
 }

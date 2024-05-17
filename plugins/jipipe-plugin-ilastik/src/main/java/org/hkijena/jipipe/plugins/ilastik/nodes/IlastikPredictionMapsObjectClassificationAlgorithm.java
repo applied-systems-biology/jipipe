@@ -32,6 +32,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -328,6 +329,12 @@ public class IlastikPredictionMapsObjectClassificationAlgorithm extends JIPipeSi
         if (!isPassThrough()) {
             report.report(reportContext, getConfiguredIlastikEnvironment());
         }
+    }
+
+    @Override
+    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+        super.getEnvironmentDependencies(target);
+        target.add(getConfiguredIlastikEnvironment());
     }
 
     @SetJIPipeDocumentation(name = "Segmentation image data annotation", description = "The name of the data annotation that contains the segmentation image.")

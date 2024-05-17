@@ -157,13 +157,9 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
     }
 
     @Override
-    public void getExternalEnvironments(List<JIPipeEnvironment> target) {
-        super.getExternalEnvironments(target);
-        if (overrideEnvironment.isEnabled()) {
-            target.add(overrideEnvironment.getContent());
-        } else {
-            target.add(CellposePluginApplicationSettings.getInstance().getDefaultCellposeEnvironment());
-        }
+    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+        super.getEnvironmentDependencies(target);
+        target.add(getConfiguredCellposeEnvironment());
     }
 
     @SetJIPipeDocumentation(name = "Suppress logs", description = "If enabled, the node will not log the status of the Cellpose operation. " +

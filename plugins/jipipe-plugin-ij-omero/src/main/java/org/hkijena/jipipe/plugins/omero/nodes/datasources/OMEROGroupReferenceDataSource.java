@@ -62,4 +62,6 @@ public class OMEROGroupReferenceDataSource extends JIPipeSimpleIteratingAlgorith
     public void setGroupIds(LongList groupIds) {
         this.groupIds = groupIds;
     }
+
+
 }

@@ -22,6 +22,7 @@ import omero.gateway.model.ProjectData;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -46,10 +47,7 @@ import org.hkijena.jipipe.plugins.omero.parameters.AnnotationsToOMEROKeyValuePai
 import org.hkijena.jipipe.plugins.omero.parameters.AnnotationsToOMEROTagExporter;
 import org.hkijena.jipipe.plugins.omero.util.OMEROGateway;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @SetJIPipeDocumentation(name = "Create OMERO dataset", description = "Creates a new OMERO data set an associates it to an existing project")
 @ConfigureJIPipeNode(nodeTypeCategory = FileSystemNodeTypeCategory.class, menuPath = "OMERO")
@@ -159,5 +157,11 @@ public class OMEROCreateDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         if (!isPassThrough()) {
             reportConfiguredOMEROEnvironmentValidity(reportContext, report);
         }
+    }
+
+    @Override
+    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+        super.getEnvironmentDependencies(target);
+        target.add(getConfiguredOMEROCredentialsEnvironment());
     }
 }

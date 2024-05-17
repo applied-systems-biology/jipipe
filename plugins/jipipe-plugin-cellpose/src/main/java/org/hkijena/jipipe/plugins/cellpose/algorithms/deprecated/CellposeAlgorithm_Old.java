@@ -203,8 +203,8 @@ public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
     }
 
     @Override
-    public void getExternalEnvironments(List<JIPipeEnvironment> target) {
-        super.getExternalEnvironments(target);
+    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+        super.getEnvironmentDependencies(target);
         if (overrideEnvironment.isEnabled()) {
             target.add(overrideEnvironment.getContent());
         } else {
