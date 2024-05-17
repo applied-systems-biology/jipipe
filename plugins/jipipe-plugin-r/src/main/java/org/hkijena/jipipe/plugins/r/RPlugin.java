@@ -129,7 +129,7 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Optional R environment",
                 "An optional R environment",
                 null);
-        registerProjectSettingsSheet(RPluginProjectSettings.class);
+
 
         AbstractTokenMakerFactory atmf = (AbstractTokenMakerFactory) TokenMakerFactory.getDefaultInstance();
         atmf.putMapping("text/x-r-script", RTokenMaker.class.getName());
@@ -142,6 +142,9 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "An R script",
                 null);
         registerApplicationSettingsSheet(extensionSettings);
+        registerProjectSettingsSheet(RPluginProjectSettings.class);
+
+
         registerNodeType("r-script-iterating", IteratingRScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/rlogo_icon.png"));
         registerNodeType("r-script-merging", MergingRScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/rlogo_icon.png"));
 

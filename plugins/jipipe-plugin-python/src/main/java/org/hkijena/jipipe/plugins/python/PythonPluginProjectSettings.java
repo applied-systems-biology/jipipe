@@ -48,6 +48,7 @@ public class PythonPluginProjectSettings extends JIPipeDefaultProjectSettingsShe
             if(!artifacts.isEmpty()) {
                 JIPipeArtifact target = artifacts.get(0);
                 JIPipePythonAdapterLibraryEnvironment environment = new JIPipePythonAdapterLibraryEnvironment();
+                environment.setName("");
                 environment.setLoadFromArtifact(true);
                 environment.setArtifactQuery(new JIPipeArtifactQueryParameter(target.getFullId()));
 
