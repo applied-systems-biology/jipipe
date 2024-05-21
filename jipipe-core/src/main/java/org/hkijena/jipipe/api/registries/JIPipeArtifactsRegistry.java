@@ -90,6 +90,34 @@ public class JIPipeArtifactsRegistry {
     }
 
     /**
+     * Given a glob-like query, looks for the closest, newest artifact that matches it
+     * @param query the query
+     * @return the artifact
+     */
+    public JIPipeArtifact searchClosestCompatibleArtifactFromQuery(String query) {
+        List<JIPipeArtifact> artifacts = queryCachedArtifacts(query);
+        artifacts.removeIf(artifact -> !artifact.isCompatible());
+
+        JIPipeArtifact targetArtifact = null;
+
+        if (artifacts.isEmpty()) {
+            // Find alternative
+            artifacts = JIPipe.getArtifacts().queryCachedArtifacts(query);
+            for (JIPipeArtifact artifact : artifacts) {
+                JIPipeArtifact closestCompatibleArtifact = JIPipe.getArtifacts().findClosestCompatibleArtifact(artifact.getFullId());
+                if (closestCompatibleArtifact != null) {
+                    targetArtifact = closestCompatibleArtifact;
+                    break;
+                }
+            }
+        } else {
+            targetArtifact = selectPreferredArtifactByClassifier(artifacts);
+        }
+
+        return targetArtifact;
+    }
+
+    /**
      * Finds the closest compatible artifact to the provided full artifact ID.
      *
      * @param fullArtifactId full artifact ID
@@ -105,7 +133,7 @@ public class JIPipeArtifactsRegistry {
                 candidates = queryCachedArtifacts(fullArtifactId);
             }
             if (!candidates.isEmpty()) {
-                return candidates.get(0);
+                return selectPreferredArtifactByClassifier(candidates);
             }
 
             // Try same version with different classifiers (select GPU versions etc.)
@@ -362,4 +390,13 @@ public class JIPipeArtifactsRegistry {
         JIPipeRunnableQueue.getInstance().enqueue(new JIPipeArtifactRepositoryUpdateCachedArtifactsRun());
     }
 
+    public JIPipeArtifact queryCachedArtifact(String filter) {
+        List<JIPipeArtifact> artifacts = queryCachedArtifacts(filter);
+        if(!artifacts.isEmpty()) {
+            return artifacts.get(0);
+        }
+        else {
+            return null;
+        }
+    }
 }

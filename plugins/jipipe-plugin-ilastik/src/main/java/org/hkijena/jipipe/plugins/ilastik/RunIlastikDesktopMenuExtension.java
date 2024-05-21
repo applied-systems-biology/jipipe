@@ -13,10 +13,17 @@
 
 package org.hkijena.jipipe.plugins.ilastik;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
+import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryInstallArtifactRun;
+import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
+import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -49,17 +56,6 @@ public class RunIlastikDesktopMenuExtension extends JIPipeDesktopMenuExtension i
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (IlastikPluginApplicationSettings.environmentSettingsAreValid()) {
-            JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-            progressInfo.setLogToStdOut(true);
-            getDesktopWorkbench().sendStatusBarText("Launching Ilastik ...");
-            IlastikPlugin.runIlastik(null, Collections.emptyList(), progressInfo, true);
-        } else {
-            JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(),
-                    "Ilastik is currently not installed. Please click Plugins > External dependencies and use the " +
-                            "artifact manager to install an Ilastik version",
-                    "Launch Ilastik",
-                    JOptionPane.ERROR_MESSAGE);
-        }
+      IlastikPlugin.launchIlastik(getDesktopWorkbench(), Collections.emptyList());
     }
 }

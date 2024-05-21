@@ -5,6 +5,7 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.registries.JIPipeArtifactsRegistry;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultProjectSettingsSheet;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultProjectSettingsSheetCategory;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
@@ -27,7 +28,7 @@ public class RPluginProjectSettings extends JIPipeDefaultProjectSettingsSheet {
             List<JIPipeArtifact> artifacts = JIPipe.getArtifacts().queryCachedArtifacts(RPluginApplicationSettings.getInstance().getDefaultEnvironment().getArtifactQuery().getQuery());
             artifacts.removeIf(artifact -> !artifact.isCompatible());
             if (!artifacts.isEmpty()) {
-                JIPipeArtifact target = artifacts.get(0);
+                JIPipeArtifact target = JIPipeArtifactsRegistry.selectPreferredArtifactByClassifier(artifacts);
                 REnvironment environment = new REnvironment();
                 environment.setLoadFromArtifact(true);
                 environment.setArtifactQuery(new JIPipeArtifactQueryParameter(target.getFullId()));

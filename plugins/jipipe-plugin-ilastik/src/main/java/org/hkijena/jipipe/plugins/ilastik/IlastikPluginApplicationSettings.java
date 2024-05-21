@@ -51,37 +51,6 @@ public class IlastikPluginApplicationSettings extends JIPipeDefaultApplicationsS
         return JIPipe.getSettings().getById(ID, IlastikPluginApplicationSettings.class);
     }
 
-    /**
-     * Checks the Python settings
-     *
-     * @return if the settings are correct
-     */
-    public static boolean environmentSettingsAreValid() {
-        if (JIPipe.getInstance() != null) {
-            IlastikPluginApplicationSettings instance = getInstance();
-            JIPipeValidationReport report = new JIPipeValidationReport();
-            instance.getDefaultEnvironment().reportValidity(new UnspecifiedValidationReportContext(), report);
-            return report.isValid();
-        }
-        return false;
-    }
-
-    /**
-     * Checks if the Python settings are valid or reports an invalid state
-     *
-     * @param context the context
-     * @param report  the report
-     */
-    public static void checkIlastikSettings(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        if (!environmentSettingsAreValid()) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context, "Ilastik is not configured!",
-                    "This node requires an installation of Ilastik. You have to point JIPipe to a Ilastik installation.",
-                    "Please install Ilastik from https://www.ilastik.org\n" +
-                            "Then go to Project > Application settings > Extensions > Ilastik and setup the environment. " +
-                            "Alternatively, the settings page will provide you with means to install Ilastik automatically."));
-        }
-    }
-
     @SetJIPipeDocumentation(name = "Ilastik environment", description = "Contains information about the location of the Ilastik installation.")
     @JIPipeParameter("default-environment")
     @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = {"org.embl.ilastik:*"})

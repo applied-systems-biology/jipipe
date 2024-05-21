@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.running;
 
+import com.google.common.base.CharMatcher;
 import org.hkijena.jipipe.api.run.JIPipeRunnableLogEntry;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
@@ -31,11 +32,33 @@ import java.nio.file.Path;
 
 public class JIPipeDesktopLogViewLogUI extends JIPipeDesktopWorkbenchPanel {
     private final JIPipeRunnableLogEntry logEntry;
+    private final JCheckBox displayFullLog = new JCheckBox("Show full log");
+    private JScrollPane scrollPane;
+    private final JTextPane logReader = new JTextPane();
 
     public JIPipeDesktopLogViewLogUI(JIPipeDesktopWorkbench workbench, JIPipeRunnableLogEntry logEntry) {
         super(workbench);
         this.logEntry = logEntry;
         initialize();
+        reloadLog();
+    }
+
+    private void reloadLog() {
+        if(displayFullLog.isSelected() || CharMatcher.is('\n').countIn(logEntry.getLog()) < 100) {
+            logReader.setText(logEntry.getLog());
+        }
+        else {
+            StringBuilder builder = new StringBuilder();
+            builder.append("\n");
+            builder.append("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n");
+            builder.append("Only displaying the last 100 lines\n\n\n");
+            String[] lines = logEntry.getLog().split("\n");
+            for(int i = Math.max(0, lines.length - 100); i < lines.length; ++i) {
+                builder.append(lines[i]).append("\n");
+            }
+            logReader.setText(builder.toString());
+        }
+        SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getMaximum()));
     }
 
     private void initialize() {
@@ -50,11 +73,9 @@ public class JIPipeDesktopLogViewLogUI extends JIPipeDesktopWorkbenchPanel {
         add(tabPane, BorderLayout.CENTER);
 
         // Init reader
-        JTextPane logReader = new JTextPane();
         logReader.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-        JScrollPane scrollPane = new JScrollPane(logReader);
+        scrollPane = new JScrollPane(logReader);
         tabPane.addTab("Log", UIUtils.getIcon32FromResources("actions/rabbitvcs-show_log.png"), scrollPane, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
-        logReader.setText(logEntry.getLog());
 
         // Init notifications
         tabPane.addTab("Notifications",
@@ -63,6 +84,9 @@ public class JIPipeDesktopLogViewLogUI extends JIPipeDesktopWorkbenchPanel {
                 JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
 
         // Init toolbar
+        toolBar.add(displayFullLog);
+        displayFullLog.addActionListener(e -> reloadLog());
+
         toolBar.add(Box.createHorizontalGlue());
 
         JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/document-export.png"));
@@ -72,10 +96,6 @@ public class JIPipeDesktopLogViewLogUI extends JIPipeDesktopWorkbenchPanel {
         JButton openInExternalToolButton = new JButton("Open in external editor", UIUtils.getIconFromResources("actions/open-in-new-window.png"));
         openInExternalToolButton.addActionListener(e -> openLogInExternalTool());
         toolBar.add(openInExternalToolButton);
-
-        SwingUtilities.invokeLater(() -> {
-            scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getMaximum());
-        });
     }
 
     private void openLogInExternalTool() {

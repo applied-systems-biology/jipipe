@@ -46,6 +46,8 @@ import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.runtimepartitioning.RuntimePartitionReferenceParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactApplicationSettings;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -267,6 +269,16 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
 
                 // Download all missing artifacts
                 if(!remoteArtifactsToDownload.isEmpty()) {
+
+                    if(!JIPipeArtifactApplicationSettings.getInstance().isAutoDownload()) {
+                        throw new JIPipeValidationRuntimeException(new UnspecifiedValidationReportContext(),
+                                new UnsupportedOperationException("Artifact auto-download is disabled!"),
+                                "Unable to auto-download artifacts",
+                                "To run the pipeline, JIPipe requires to download external dependencies. " +
+                                        "This feature is turned off in the settings.",
+                                "Enable auto-downloading in Project > Application settings > General > Artifacts");
+                    }
+
                     JIPipeProgressInfo artifactsProgress = progressInfo.resolve("Artifacts");
                     artifactsProgress.log("Artifacts to download: "+ String.join(", ", remoteArtifactsToDownload));
                     List<JIPipeRemoteArtifact> toInstall = remoteArtifactsToDownload.stream().map(id -> (JIPipeRemoteArtifact) JIPipe.getArtifacts().queryCachedArtifacts(id).get(0)).collect(Collectors.toList());

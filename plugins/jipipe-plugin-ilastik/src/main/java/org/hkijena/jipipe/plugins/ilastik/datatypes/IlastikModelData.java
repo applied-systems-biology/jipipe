@@ -100,27 +100,16 @@ public class IlastikModelData implements JIPipeData {
 
     @Override
     public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-        if (IlastikPluginApplicationSettings.environmentSettingsAreValid()) {
-
-            // Export project to a tmp file
-            Path outputFile = JIPipeRuntimeApplicationSettings.generateTempFile("ilastik", ".ilp");
-            try {
-                Files.write(outputFile, data, StandardOpenOption.CREATE);
-            } catch (Exception e) {
-                IJ.handleException(e);
-            }
-
-            JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-            progressInfo.setLogToStdOut(true);
-            desktopWorkbench.sendStatusBarText("Launching Ilastik ...");
-            IlastikPlugin.runIlastik(null, Collections.singletonList(outputFile.toString()), progressInfo, true);
-        } else {
-            JOptionPane.showMessageDialog(desktopWorkbench.getWindow(),
-                    "Ilastik is currently not installed. Please click Plugins > External dependencies and use the " +
-                            "artifact manager to install an Ilastik version",
-                    "Launch Ilastik",
-                    JOptionPane.ERROR_MESSAGE);
+        // Export project to a tmp file
+        Path outputFile = JIPipeRuntimeApplicationSettings.generateTempFile("ilastik", ".ilp");
+        try {
+            Files.write(outputFile, data, StandardOpenOption.CREATE);
+        } catch (Exception e) {
+            IJ.handleException(e);
         }
+
+        // Open project with Ilastik
+        IlastikPlugin.launchIlastik(desktopWorkbench,  Collections.singletonList(outputFile.toString()));
     }
 
     @Override

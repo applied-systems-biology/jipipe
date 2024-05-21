@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.registries.JIPipeArtifactsRegistry;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultProjectSettingsSheet;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultProjectSettingsSheetCategory;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
@@ -46,7 +47,7 @@ public class PythonPluginProjectSettings extends JIPipeDefaultProjectSettingsShe
             List<JIPipeArtifact> artifacts = JIPipe.getArtifacts().queryCachedArtifacts(JIPipePythonPluginAdapterApplicationSettings.getInstance().getDefaultPythonAdapterLibraryEnvironment().getArtifactQuery().getQuery());
             artifacts.removeIf(artifact -> !artifact.isCompatible());
             if (!artifacts.isEmpty()) {
-                JIPipeArtifact target = artifacts.get(0);
+                JIPipeArtifact target = JIPipeArtifactsRegistry.selectPreferredArtifactByClassifier(artifacts);
                 JIPipePythonAdapterLibraryEnvironment environment = new JIPipePythonAdapterLibraryEnvironment();
                 environment.setName("");
                 environment.setLoadFromArtifact(true);
@@ -63,7 +64,7 @@ public class PythonPluginProjectSettings extends JIPipeDefaultProjectSettingsShe
             List<JIPipeArtifact> artifacts = JIPipe.getArtifacts().queryCachedArtifacts(PythonPluginApplicationSettings.getInstance().getDefaultPythonEnvironment().getArtifactQuery().getQuery());
             artifacts.removeIf(artifact -> !artifact.isCompatible());
             if (!artifacts.isEmpty()) {
-                JIPipeArtifact target = artifacts.get(0);
+                JIPipeArtifact target = JIPipeArtifactsRegistry.selectPreferredArtifactByClassifier(artifacts);
                 PythonEnvironment environment = new PythonEnvironment();
                 environment.setLoadFromArtifact(true);
                 environment.setArtifactQuery(new JIPipeArtifactQueryParameter(target.getFullId()));
