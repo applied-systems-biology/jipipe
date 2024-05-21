@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.project;
 
+import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
 import org.hkijena.jipipe.api.project.JIPipeProject;
@@ -23,26 +24,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class JIPipeDesktopSaveProjectAndCacheToZipRun implements JIPipeRunnable {
+public class JIPipeDesktopSaveProjectAndCacheToZipRun extends AbstractJIPipeRunnable {
     private final JIPipeDesktopWorkbench workbench;
     private final JIPipeProject project;
     private final Path zipFile;
-    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
     public JIPipeDesktopSaveProjectAndCacheToZipRun(JIPipeDesktopWorkbench workbench, JIPipeProject project, Path zipFile) {
         this.workbench = workbench;
         this.project = project;
         this.zipFile = zipFile;
-    }
-
-    @Override
-    public JIPipeProgressInfo getProgressInfo() {
-        return progressInfo;
-    }
-
-    @Override
-    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-        this.progressInfo = progressInfo;
     }
 
     @Override
@@ -60,10 +50,10 @@ public class JIPipeDesktopSaveProjectAndCacheToZipRun implements JIPipeRunnable 
             }
         }
 
-        try (JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo, zipFile)) {
+        try (JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(getProgressInfo(), zipFile)) {
             Path outputPath = storage.getFileSystemPath();
             JIPipeDesktopSaveProjectAndCacheToDirectoryRun run = new JIPipeDesktopSaveProjectAndCacheToDirectoryRun(workbench, project, outputPath, false);
-            run.setProgressInfo(progressInfo);
+            run.setProgressInfo(getProgressInfo());
             run.run();
         } catch (IOException e) {
             throw new RuntimeException(e);

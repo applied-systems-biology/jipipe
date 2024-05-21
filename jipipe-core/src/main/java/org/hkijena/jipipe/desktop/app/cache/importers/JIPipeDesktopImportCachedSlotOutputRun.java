@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop.app.cache.importers;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -39,12 +40,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class JIPipeDesktopImportCachedSlotOutputRun implements JIPipeRunnable {
+public class JIPipeDesktopImportCachedSlotOutputRun extends AbstractJIPipeRunnable {
 
     private final JIPipeProject project;
     private final JIPipeGraphNode graphNode;
     private final Path inputFolder;
-    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
     public JIPipeDesktopImportCachedSlotOutputRun(JIPipeProject project, JIPipeGraphNode graphNode, Path inputFolder) {
 
@@ -54,25 +54,16 @@ public class JIPipeDesktopImportCachedSlotOutputRun implements JIPipeRunnable {
     }
 
     @Override
-    public JIPipeProgressInfo getProgressInfo() {
-        return progressInfo;
-    }
-
-    @Override
-    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-        this.progressInfo = progressInfo;
-    }
-
-    @Override
     public String getTaskLabel() {
         return null;
     }
 
     @Override
     public void run() {
+        JIPipeProgressInfo progressInfo = getProgressInfo();
         Map<String, JIPipeDataSlot> loadedSlotMap = new HashMap<>();
         for (int i = 0; i < graphNode.getOutputSlots().size(); i++) {
-            JIPipeProgressInfo slotProgressInfo = this.progressInfo.resolveAndLog("Output slot", i, graphNode.getOutputSlots().size());
+            JIPipeProgressInfo slotProgressInfo = progressInfo.resolveAndLog("Output slot", i, graphNode.getOutputSlots().size());
             JIPipeDataSlot outputSlot = graphNode.getOutputSlots().get(i);
             slotProgressInfo.log("Slot '" + outputSlot.getName() + "'");
             Path slotFolder = inputFolder.resolve(outputSlot.getName());
@@ -93,7 +84,7 @@ public class JIPipeDesktopImportCachedSlotOutputRun implements JIPipeRunnable {
         // Push into cache
         JIPipeLocalProjectMemoryCache cache = project.getCache();
         for (int i = 0; i < graphNode.getOutputSlots().size(); i++) {
-            JIPipeProgressInfo slotProgressInfo = this.progressInfo.resolveAndLog("Storing into cache", i, graphNode.getOutputSlots().size());
+            JIPipeProgressInfo slotProgressInfo = progressInfo.resolveAndLog("Storing into cache", i, graphNode.getOutputSlots().size());
             JIPipeDataSlot outputSlot = graphNode.getOutputSlots().get(i);
             JIPipeDataSlot tempSlot = loadedSlotMap.getOrDefault(outputSlot.getName(), null);
             if (tempSlot == null)
@@ -104,6 +95,7 @@ public class JIPipeDesktopImportCachedSlotOutputRun implements JIPipeRunnable {
     }
 
     private void importIntoTempSlot(JIPipeDataSlot tempSlot, Path dataFolder, JIPipeProgressInfo slotProgressInfo) {
+        JIPipeProgressInfo progressInfo = getProgressInfo();
         slotProgressInfo.log("Importing from " + dataFolder);
         if (!Files.exists(dataFolder.resolve("data-table.json"))) {
             slotProgressInfo.log("Error: data-table.json missing");

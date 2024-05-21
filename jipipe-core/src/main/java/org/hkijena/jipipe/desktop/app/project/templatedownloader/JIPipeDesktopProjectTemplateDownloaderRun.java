@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop.app.project.templatedownloader;
 
 import org.apache.commons.io.FilenameUtils;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -36,11 +37,10 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class JIPipeDesktopProjectTemplateDownloaderRun implements JIPipeRunnable {
+public class JIPipeDesktopProjectTemplateDownloaderRun extends AbstractJIPipeRunnable {
 
     private final JIPipeDesktopWorkbench desktopWorkbench;
     private final List<JIPipeDesktopProjectTemplateDownloaderPackage> availablePackages = new ArrayList<>();
-    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private Set<JIPipeDesktopProjectTemplateDownloaderPackage> targetPackages = new HashSet<>();
 
 
@@ -53,22 +53,13 @@ public class JIPipeDesktopProjectTemplateDownloaderRun implements JIPipeRunnable
     }
 
     @Override
-    public JIPipeProgressInfo getProgressInfo() {
-        return progressInfo;
-    }
-
-    @Override
-    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-        this.progressInfo = progressInfo;
-    }
-
-    @Override
     public String getTaskLabel() {
         return "Download project templates";
     }
 
     @Override
     public void run() {
+        JIPipeProgressInfo progressInfo = getProgressInfo();
         progressInfo.setProgress(0, 5);
         loadAvailablePackages(progressInfo.resolve("Load available packages"));
         progressInfo.setProgress(1);
@@ -85,6 +76,7 @@ public class JIPipeDesktopProjectTemplateDownloaderRun implements JIPipeRunnable
     }
 
     private void executeArchiveDownload() throws IOException {
+        JIPipeProgressInfo progressInfo = getProgressInfo();
         progressInfo.log("Downloading selected templates ...");
 
         // Find and create output directory
@@ -115,6 +107,7 @@ public class JIPipeDesktopProjectTemplateDownloaderRun implements JIPipeRunnable
     }
 
     private void executeUserConfiguration() {
+        JIPipeProgressInfo progressInfo = getProgressInfo();
         progressInfo.log("Waiting for user input ...");
         try {
             SwingUtilities.invokeAndWait(this::runSetupDialog);

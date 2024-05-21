@@ -22,9 +22,7 @@ import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class JIPipeDesktopRunnableLogsCollection implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
     private static JIPipeDesktopRunnableLogsCollection INSTANCE;
@@ -32,6 +30,7 @@ public class JIPipeDesktopRunnableLogsCollection implements JIPipeRunnable.Finis
     private final LogEntryAddedEventEmitter logEntryAddedEventEmitter = new LogEntryAddedEventEmitter();
     private final LogClearedEventEmitter logClearedEventEmitter = new LogClearedEventEmitter();
     private final LogUpdatedEventEmitter logUpdatedEventEmitter = new LogUpdatedEventEmitter();
+    private final Set<UUID> addedLogs = new HashSet<>();
 
     public JIPipeDesktopRunnableLogsCollection() {
         // Listen for default queue
@@ -105,12 +104,18 @@ public class JIPipeDesktopRunnableLogsCollection implements JIPipeRunnable.Finis
 
     @Override
     public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
-        pushToLog(event.getRun(), true);
+        if(!addedLogs.contains(event.getRun().getRunUUID())) {
+            addedLogs.add(event.getRun().getRunUUID());
+            pushToLog(event.getRun(), true);
+        }
     }
 
     @Override
     public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
-        pushToLog(event.getRun(), false);
+        if(!addedLogs.contains(event.getRun().getRunUUID())) {
+            addedLogs.add(event.getRun().getRunUUID());
+            pushToLog(event.getRun(), false);
+        }
     }
 
     public LogUpdatedEventEmitter getLogUpdatedEventEmitter() {

@@ -35,14 +35,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class JIPipeDesktopDataTableToFilesByMetadataExporterRun extends JIPipeDesktopWorkbenchPanel implements JIPipeRunnable {
 
+    private final UUID uuid = UUID.randomUUID();
     private final List<? extends JIPipeDataTable> dataTables;
     private final Settings settings;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
@@ -175,6 +174,11 @@ public class JIPipeDesktopDataTableToFilesByMetadataExporterRun extends JIPipeDe
     @Override
     public void setProgressInfo(JIPipeProgressInfo progressInfo) {
         this.progressInfo = progressInfo;
+    }
+
+    @Override
+    public UUID getRunUUID() {
+        return uuid;
     }
 
     @Override

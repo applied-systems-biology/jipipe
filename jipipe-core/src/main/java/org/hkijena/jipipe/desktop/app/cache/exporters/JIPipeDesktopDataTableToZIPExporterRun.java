@@ -25,12 +25,14 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.nio.file.Path;
+import java.util.UUID;
 
 public class JIPipeDesktopDataTableToZIPExporterRun extends JIPipeDesktopWorkbenchPanel implements JIPipeRunnable {
 
     private final Path outputZipFile;
     private JIPipeDataTable dataTable;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+    private final UUID uuid = UUID.randomUUID();
 
     /**
      * @param workbench     the workbench
@@ -88,6 +90,11 @@ public class JIPipeDesktopDataTableToZIPExporterRun extends JIPipeDesktopWorkben
 
     public Path getOutputZipFile() {
         return outputZipFile;
+    }
+
+    @Override
+    public UUID getRunUUID() {
+        return uuid;
     }
 
     @Override

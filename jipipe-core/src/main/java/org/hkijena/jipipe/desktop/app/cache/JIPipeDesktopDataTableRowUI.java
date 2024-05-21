@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop.app.cache;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -408,28 +409,16 @@ public class JIPipeDesktopDataTableRowUI extends JIPipeDesktopWorkbenchPanel {
         }
     }
 
-    private static class ExportAsFolderRun implements JIPipeRunnable {
+    private static class ExportAsFolderRun extends AbstractJIPipeRunnable {
 
         private final int row;
         private final Path path;
         private JIPipeDataTable dataTable;
-        private JIPipeProgressInfo progressInfo;
 
         public ExportAsFolderRun(int row, JIPipeDataTable dataTable, Path path) {
             this.row = row;
             this.dataTable = dataTable;
             this.path = path;
-            progressInfo = new JIPipeProgressInfo();
-        }
-
-        @Override
-        public JIPipeProgressInfo getProgressInfo() {
-            return progressInfo;
-        }
-
-        @Override
-        public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-            this.progressInfo = progressInfo;
         }
 
         @Override
@@ -439,6 +428,7 @@ public class JIPipeDesktopDataTableRowUI extends JIPipeDesktopWorkbenchPanel {
 
         @Override
         public void run() {
+            JIPipeProgressInfo progressInfo = getProgressInfo();
             try {
                 JIPipeData data = dataTable.getData(row, JIPipeData.class, progressInfo);
                 data.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, path), "data", false, progressInfo);
@@ -450,28 +440,16 @@ public class JIPipeDesktopDataTableRowUI extends JIPipeDesktopWorkbenchPanel {
 
     }
 
-    private static class ExportToFolderRun implements JIPipeRunnable {
+    private static class ExportToFolderRun extends AbstractJIPipeRunnable {
 
         private final int row;
         private final Path path;
         private JIPipeDataTable dataTable;
-        private JIPipeProgressInfo progressInfo;
 
         public ExportToFolderRun(int row, JIPipeDataTable dataTable, Path path) {
             this.row = row;
             this.dataTable = dataTable;
             this.path = path;
-            progressInfo = new JIPipeProgressInfo();
-        }
-
-        @Override
-        public JIPipeProgressInfo getProgressInfo() {
-            return progressInfo;
-        }
-
-        @Override
-        public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-            this.progressInfo = progressInfo;
         }
 
         @Override
@@ -481,6 +459,7 @@ public class JIPipeDesktopDataTableRowUI extends JIPipeDesktopWorkbenchPanel {
 
         @Override
         public void run() {
+            JIPipeProgressInfo progressInfo = getProgressInfo();
             try {
                 JIPipeData data = dataTable.getData(row, JIPipeData.class, progressInfo);
                 data.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, path.getParent()), path.getFileName().toString(), true, progressInfo);

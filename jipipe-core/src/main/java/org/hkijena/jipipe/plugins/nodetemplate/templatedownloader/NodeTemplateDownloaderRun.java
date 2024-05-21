@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.nodetemplate.templatedownloader;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
@@ -36,11 +37,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
-public class NodeTemplateDownloaderRun implements JIPipeRunnable {
+public class NodeTemplateDownloaderRun extends AbstractJIPipeRunnable {
 
     private final JIPipeDesktopWorkbench workbench;
     private final List<NodeTemplateDownloaderPackage> availablePackages = new ArrayList<>();
-    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private Set<NodeTemplateDownloaderPackage> targetPackages = new HashSet<>();
 
     private boolean toProject = false;
@@ -54,22 +54,13 @@ public class NodeTemplateDownloaderRun implements JIPipeRunnable {
     }
 
     @Override
-    public JIPipeProgressInfo getProgressInfo() {
-        return progressInfo;
-    }
-
-    @Override
-    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-        this.progressInfo = progressInfo;
-    }
-
-    @Override
     public String getTaskLabel() {
         return "Download project templates";
     }
 
     @Override
     public void run() {
+        JIPipeProgressInfo progressInfo = getProgressInfo();
         progressInfo.setProgress(0, 5);
         loadAvailablePackages(progressInfo.resolve("Load available packages"));
         progressInfo.setProgress(1);
@@ -86,6 +77,7 @@ public class NodeTemplateDownloaderRun implements JIPipeRunnable {
     }
 
     private void executeArchiveDownload() throws IOException {
+        JIPipeProgressInfo progressInfo = getProgressInfo();
         progressInfo.log("Downloading selected templates ...");
 
         for (NodeTemplateDownloaderPackage targetPackage : targetPackages) {
@@ -131,6 +123,7 @@ public class NodeTemplateDownloaderRun implements JIPipeRunnable {
     }
 
     private void executeUserConfiguration() {
+        JIPipeProgressInfo progressInfo = getProgressInfo();
         progressInfo.log("Waiting for user input ...");
         try {
             SwingUtilities.invokeAndWait(this::runSetupDialog);

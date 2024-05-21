@@ -15,29 +15,19 @@ package org.hkijena.jipipe.plugins.imageviewer.runs;
 
 import ij.IJ;
 import ij.ImagePlus;
+import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 
 import java.nio.file.Path;
 
-public class RawImage2DExporterRun implements JIPipeRunnable {
+public class RawImage2DExporterRun extends AbstractJIPipeRunnable {
     private final ImagePlus imagePlus;
     private final Path outputPath;
-    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
     public RawImage2DExporterRun(ImagePlus imagePlus, Path outputPath) {
         this.imagePlus = imagePlus;
         this.outputPath = outputPath;
-    }
-
-    @Override
-    public JIPipeProgressInfo getProgressInfo() {
-        return progressInfo;
-    }
-
-    @Override
-    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-        this.progressInfo = progressInfo;
     }
 
     @Override
@@ -47,6 +37,7 @@ public class RawImage2DExporterRun implements JIPipeRunnable {
 
     @Override
     public void run() {
+        JIPipeProgressInfo progressInfo = getProgressInfo();
         progressInfo.setProgress(0, 1);
         progressInfo.log("Saving " + imagePlus + " to " + outputPath);
         IJ.saveAs(imagePlus, "TIFF", outputPath.toString());

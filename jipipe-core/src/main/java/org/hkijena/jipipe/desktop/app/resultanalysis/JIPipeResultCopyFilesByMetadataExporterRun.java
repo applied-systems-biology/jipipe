@@ -36,6 +36,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeDesktopWorkbenchPanel implements JIPipeRunnable {
@@ -45,6 +46,7 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeDesktopWor
     private final JIPipeDataByMetadataExporter exporter;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private Path outputPath;
+    private final UUID uuid = UUID.randomUUID();
 
     /**
      * @param workbench   the workbench
@@ -207,6 +209,11 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeDesktopWor
 
     public List<JIPipeDataSlot> getSlots() {
         return slots;
+    }
+
+    @Override
+    public UUID getRunUUID() {
+        return uuid;
     }
 
     @Override

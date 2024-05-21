@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.pipelinerender;
 import com.google.common.collect.ImmutableList;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
+import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.history.JIPipeDummyGraphHistoryJournal;
@@ -44,11 +45,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class RenderPipelineRun implements JIPipeRunnable {
+public class RenderPipelineRun extends AbstractJIPipeRunnable {
     private final JIPipeProject project;
     private final Path outputPath;
     private final RenderPipelineRunSettings settings;
-    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private BufferedImage outputImage;
 
     public RenderPipelineRun(JIPipeProject project, Path outputPath, RenderPipelineRunSettings settings) {
@@ -58,22 +58,13 @@ public class RenderPipelineRun implements JIPipeRunnable {
     }
 
     @Override
-    public JIPipeProgressInfo getProgressInfo() {
-        return progressInfo;
-    }
-
-    @Override
-    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-        this.progressInfo = progressInfo;
-    }
-
-    @Override
     public String getTaskLabel() {
         return "Render whole pipeline";
     }
 
     @Override
     public void run() {
+        JIPipeProgressInfo progressInfo = getProgressInfo();
         JIPipeGraph copyGraph = new JIPipeGraph(project.getGraph());
         ImmutableList<UUID> compartmentUUIDs = ImmutableList.copyOf(project.getCompartments().keySet());
         getProgressInfo().setMaxProgress(compartmentUUIDs.size() + 1);
@@ -392,6 +383,7 @@ public class RenderPipelineRun implements JIPipeRunnable {
     }
 
     private void renderCompartmentInsides(JIPipeGraph copyGraph, ImmutableList<UUID> compartmentUUIDs, Map<UUID, BufferedImage> compartmentRenders) {
+        JIPipeProgressInfo progressInfo = getProgressInfo();
         for (int i = 0; i < compartmentUUIDs.size(); i++) {
             progressInfo.setProgress(i + 1);
             progressInfo.log("Rendering compartment " + compartmentUUIDs.get(i));

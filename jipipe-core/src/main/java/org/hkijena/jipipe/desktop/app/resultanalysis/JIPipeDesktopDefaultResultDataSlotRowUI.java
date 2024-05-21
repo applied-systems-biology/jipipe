@@ -42,6 +42,7 @@ import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Provides a standard result slot UI that can be also further extended.
@@ -210,6 +211,12 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
                 Files.createDirectories(path);
                 JIPipeRunnable runnable = new JIPipeRunnable() {
                     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+                    private final UUID uuid = UUID.randomUUID();
+
+                    @Override
+                    public UUID getRunUUID() {
+                        return uuid;
+                    }
 
                     @Override
                     public JIPipeProgressInfo getProgressInfo() {
@@ -248,6 +255,12 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
         if (path != null) {
             JIPipeRunnable runnable = new JIPipeRunnable() {
                 private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+                private final UUID uuid = UUID.randomUUID();
+
+                @Override
+                public UUID getRunUUID() {
+                    return uuid;
+                }
 
                 @Override
                 public JIPipeProgressInfo getProgressInfo() {
