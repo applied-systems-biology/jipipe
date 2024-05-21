@@ -28,8 +28,6 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
-import java.util.Collections;
-
 /**
  * Extension that provides compartment management functionality
  */
@@ -60,6 +58,7 @@ public class JIPipeCompartmentsPlugin extends JIPipePrepackagedDefaultJavaPlugin
     public StringList getDependencyProvides() {
         return new StringList();
     }
+
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerNodeTypeCategory(new CompartmentNodeTypeCategory());
@@ -71,7 +70,7 @@ public class JIPipeCompartmentsPlugin extends JIPipePrepackagedDefaultJavaPlugin
     }
 
     @Override
-    public boolean isCoreExtension() {
+    public boolean isCorePlugin() {
         return true;
     }
 }

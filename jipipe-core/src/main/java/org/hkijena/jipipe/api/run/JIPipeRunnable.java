@@ -17,10 +17,18 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 
+import java.util.UUID;
+
 /**
  * Runnable that can be scheduled, canceled, and reports progress
  */
 public interface JIPipeRunnable extends Runnable {
+
+    /**
+     * Unique ID of this run
+     * @return the UUID
+     */
+    UUID getRunUUID();
 
     /**
      * The info object that allows communication with the run

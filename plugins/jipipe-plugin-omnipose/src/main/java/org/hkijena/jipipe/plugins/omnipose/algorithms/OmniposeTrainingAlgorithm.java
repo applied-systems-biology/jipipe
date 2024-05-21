@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.plugins.omnipose.algorithms;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
@@ -32,12 +31,8 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSingleIterationAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
-import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
-import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeSizeModelData;
@@ -53,9 +48,9 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.greyscale.ImagePl
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.omnipose.OmniposeEnvironmentAccessNode;
 import org.hkijena.jipipe.plugins.omnipose.OmniposePlugin;
 import org.hkijena.jipipe.plugins.omnipose.OmniposePretrainedModel;
-import org.hkijena.jipipe.plugins.omnipose.OmniposeSettings;
 import org.hkijena.jipipe.plugins.omnipose.parameters.OmniposeTrainingTweaksSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataInfoRef;
@@ -78,7 +73,7 @@ import java.util.stream.Collectors;
 @AddJIPipeInputSlot(value = CellposeModelData.class)
 @AddJIPipeOutputSlot(value = CellposeModelData.class, slotName = "Model", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
-public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
+public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm implements OmniposeEnvironmentAccessNode {
 
     public static final JIPipeDataSlotInfo INPUT_PRETRAINED_MODEL = new JIPipeDataSlotInfo(CellposeModelData.class, JIPipeSlotType.Input, "Pretrained Model", "A custom pretrained model");
 
@@ -94,6 +89,7 @@ public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     private boolean trainSizeModel = false;
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private DataAnnotationQueryExpression labelDataAnnotation = new DataAnnotationQueryExpression("\"Label\"");
+    private boolean suppressLogs = false;
 
     public OmniposeTrainingAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -122,6 +118,7 @@ public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.trainSizeModel = other.trainSizeModel;
         this.labelDataAnnotation = new DataAnnotationQueryExpression(other.labelDataAnnotation);
+        this.suppressLogs = other.suppressLogs;
 
         registerSubParameter(gpuSettings);
         registerSubParameter(tweaksSettings);
@@ -136,13 +133,9 @@ public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     }
 
     @Override
-    public void getExternalEnvironments(List<JIPipeEnvironment> target) {
-        super.getExternalEnvironments(target);
-        if (overrideEnvironment.isEnabled()) {
-            target.add(overrideEnvironment.getContent());
-        } else {
-            target.add(OmniposeSettings.getInstance().getPythonEnvironment());
-        }
+    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+        super.getEnvironmentDependencies(target);
+        target.add(getConfiguredOmniposeEnvironment());
     }
 
     @SetJIPipeDocumentation(name = "Train size model", description = "If enabled, also train a size model")
@@ -172,6 +165,18 @@ public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     @JIPipeParameter("diameter")
     public void setDiameter(OptionalDoubleParameter diameter) {
         this.diameter = diameter;
+    }
+
+    @SetJIPipeDocumentation(name = "Suppress logs", description = "If enabled, the node will not log the status of the Python operation. " +
+            "Can be used to limit memory consumption of JIPipe if larger data sets are used.")
+    @JIPipeParameter("suppress-logs")
+    public boolean isSuppressLogs() {
+        return suppressLogs;
+    }
+
+    @JIPipeParameter("suppress-logs")
+    public void setSuppressLogs(boolean suppressLogs) {
+        this.suppressLogs = suppressLogs;
     }
 
     @SetJIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
@@ -440,8 +445,12 @@ public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         arguments.add(tweaksSettings.getMinTrainMasks() + "");
 
         // Run the module
-        PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                OmniposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), envVars, progressInfo);
+        PythonUtils.runPython(arguments.toArray(new String[0]),
+                getConfiguredOmniposeEnvironment(),
+                Collections.emptyList(),
+                envVars,
+                suppressLogs,
+                progressInfo);
 
         // Extract the model
         Path modelsPath = trainingDir.resolve("models");
@@ -543,8 +552,10 @@ public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     }
 
     @Override
-    protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
-        super.onDeserialized(node, issues, notifications);
-        OmniposePlugin.createMissingPythonNotificationIfNeeded(notifications);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
+        if (!isPassThrough()) {
+            reportConfiguredOmniposeEnvironmentValidity(reportContext, report);
+        }
     }
 }

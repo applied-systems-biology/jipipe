@@ -124,7 +124,7 @@ public class JIPipeDesktopImageJUpdaterManagerUI extends JIPipeDesktopWorkbenchP
                 refreshTable();
             }
         });
-        UIUtils.makeFlat25x25(button);
+        UIUtils.makeButtonFlat25x25(button);
         button.setToolTipText(option.toString());
         viewOptionGroup.add(button);
         toolBar.add(button);

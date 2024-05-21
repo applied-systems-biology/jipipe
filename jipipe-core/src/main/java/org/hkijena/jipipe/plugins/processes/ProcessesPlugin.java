@@ -23,8 +23,6 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
-import java.util.Collections;
-
 @Plugin(type = JIPipeJavaPlugin.class)
 public class ProcessesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
@@ -51,9 +49,10 @@ public class ProcessesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public StringList getDependencyProvides() {
         return new StringList();
     }
+
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        ProcessesExtensionSettings extensionSettings = new ProcessesExtensionSettings();
+        JIPipeProcessesPluginApplicationSettings extensionSettings = new JIPipeProcessesPluginApplicationSettings();
 
         registerEnvironment(ProcessEnvironment.class,
                 ProcessEnvironment.List.class,
@@ -69,17 +68,11 @@ public class ProcessesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Optional process environment",
                 "An optional process environment",
                 null);
-        registerSettingsSheet(ProcessesExtensionSettings.ID,
-                "Processes",
-                "Setup external processes to be used in the 'Run process' nodes",
-                UIUtils.getIconFromResources("apps/utilities-terminal.png"),
-                "Extensions",
-                UIUtils.getIconFromResources("actions/plugins.png"),
-                extensionSettings);
+        registerApplicationSettingsSheet(extensionSettings);
     }
 
     @Override
-    public boolean isCoreExtension() {
+    public boolean isCorePlugin() {
         return true;
     }
 }

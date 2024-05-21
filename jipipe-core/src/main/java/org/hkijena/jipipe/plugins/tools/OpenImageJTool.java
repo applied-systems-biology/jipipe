@@ -45,6 +45,6 @@ public class OpenImageJTool extends JIPipeDesktopMenuExtension {
 
     @Override
     public String getMenuPath() {
-        return "";
+        return "ImageJ";
     }
 }

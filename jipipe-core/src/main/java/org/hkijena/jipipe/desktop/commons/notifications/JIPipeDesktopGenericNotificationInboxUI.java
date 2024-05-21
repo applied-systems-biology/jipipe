@@ -16,10 +16,10 @@ package org.hkijena.jipipe.desktop.commons.notifications;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.plugins.settings.NotificationUISettings;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.plugins.settings.JIPipeNotificationUIApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -50,11 +50,11 @@ public class JIPipeDesktopGenericNotificationInboxUI extends JIPipeDesktopWorkbe
         hiddenNotificationsPanel.clear();
 
         Set<JIPipeNotification> notificationSet = new TreeSet<>();
-        if (NotificationUISettings.getInstance().isEnableNotifications()) {
+        if (JIPipeNotificationUIApplicationSettings.getInstance().isEnableNotifications()) {
             notificationSet.addAll(inbox.getNotifications());
         }
 
-        Set<String> blockedIds = new HashSet<>(NotificationUISettings.getInstance().getBlockedNotifications());
+        Set<String> blockedIds = new HashSet<>(JIPipeNotificationUIApplicationSettings.getInstance().getBlockedNotifications());
 
         boolean hasNotifications = false;
         for (JIPipeNotification notification : notificationSet) {

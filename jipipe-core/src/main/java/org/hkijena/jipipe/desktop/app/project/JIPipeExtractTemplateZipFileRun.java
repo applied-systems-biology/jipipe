@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.project;
 
+import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
@@ -21,25 +22,14 @@ import org.hkijena.jipipe.utils.ArchiveUtils;
 import java.io.IOException;
 import java.nio.file.Path;
 
-public class JIPipeExtractTemplateZipFileRun implements JIPipeRunnable {
+public class JIPipeExtractTemplateZipFileRun extends AbstractJIPipeRunnable {
 
     private final JIPipeProjectTemplate template;
     private final Path targetDirectory;
-    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
     public JIPipeExtractTemplateZipFileRun(JIPipeProjectTemplate template, Path targetDirectory) {
         this.template = template;
         this.targetDirectory = targetDirectory;
-    }
-
-    @Override
-    public JIPipeProgressInfo getProgressInfo() {
-        return progressInfo;
-    }
-
-    @Override
-    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-        this.progressInfo = progressInfo;
     }
 
     @Override

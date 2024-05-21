@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.project;
 
 import com.google.common.collect.ImmutableList;
+import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -26,23 +27,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public abstract class JIPipeArchiveProjectRun implements JIPipeRunnable {
+public abstract class JIPipeArchiveProjectRun extends AbstractJIPipeRunnable {
 
     private final JIPipeProject project;
-    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
     protected JIPipeArchiveProjectRun(JIPipeProject project) {
         this.project = project;
-    }
-
-    @Override
-    public JIPipeProgressInfo getProgressInfo() {
-        return progressInfo;
-    }
-
-    @Override
-    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-        this.progressInfo = progressInfo;
     }
 
     public JIPipeProject getProject() {
@@ -50,6 +40,7 @@ public abstract class JIPipeArchiveProjectRun implements JIPipeRunnable {
     }
 
     protected void archive(JIPipeWriteDataStorage projectStorage, JIPipeWriteDataStorage wrappedExternalStorage) throws IOException {
+        JIPipeProgressInfo progressInfo = getProgressInfo();
         progressInfo.setProgress(0, 3);
         progressInfo.log("Copying project ...");
         // Store the project into a temporary file

@@ -23,7 +23,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.plugins.parameters.library.colors.ColorMap;
 import org.hkijena.jipipe.plugins.parameters.library.colors.ColorMapEnumItemInfo;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -200,7 +200,7 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
 
         JButton addThumbButton = new JButton(UIUtils.getIconFromResources("actions/color-add.png"));
         addThumbButton.setToolTipText("Add color");
-        UIUtils.makeFlat(addThumbButton);
+        UIUtils.makeButtonFlat(addThumbButton);
         addThumbButton.setHorizontalAlignment(SwingConstants.LEFT);
         addThumbButton.addActionListener(e -> addColor());
         centerPanel.add(addThumbButton, new GridBagConstraints(2,
@@ -217,7 +217,7 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
 
         deleteThumbButton = new JButton(UIUtils.getIconFromResources("actions/color-remove.png"));
         deleteThumbButton.setToolTipText("Remove color");
-        UIUtils.makeFlat(deleteThumbButton);
+        UIUtils.makeButtonFlat(deleteThumbButton);
         deleteThumbButton.setHorizontalAlignment(SwingConstants.LEFT);
         deleteThumbButton.addActionListener(e -> removeColor());
         centerPanel.add(deleteThumbButton, new GridBagConstraints(3,
@@ -234,17 +234,17 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
 
         // Menu items
         JButton invertColorsButton = new JButton("Invert", UIUtils.getIconFromResources("actions/object-inverse.png"));
-        UIUtils.makeFlat(invertColorsButton);
+        UIUtils.makeButtonFlat(invertColorsButton);
         invertColorsButton.addActionListener(e -> invertColors());
         toolBar.add(invertColorsButton);
 
         JButton setToColorMapButton = new JButton("Color map", UIUtils.getIconFromResources("actions/color-gradient.png"));
-        UIUtils.makeFlat(setToColorMapButton);
+        UIUtils.makeButtonFlat(setToColorMapButton);
         setToColorMapButton.addActionListener(e -> pickColorsFromColorMap());
         toolBar.add(setToColorMapButton);
 
         JButton moreButton = new JButton("More ...", UIUtils.getIconFromResources("actions/configure.png"));
-        UIUtils.makeFlat(moreButton);
+        UIUtils.makeButtonFlat(moreButton);
         toolBar.add(moreButton);
         JPopupMenu moreMenu = UIUtils.addPopupMenuToButton(moreButton);
 
@@ -283,7 +283,7 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
     }
 
     private void importLUTFromJSON() {
-        Path path = FileChooserSettings.openFile(this, FileChooserSettings.LastDirectoryKey.Data, "Import LUT", UIUtils.EXTENSION_FILTER_JSON);
+        Path path = JIPipeFileChooserApplicationSettings.openFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Import LUT", UIUtils.EXTENSION_FILTER_JSON);
         if (path != null) {
             LUTData lutData = JsonUtils.readFromFile(path, LUTData.class);
             importLUT(lutData);
@@ -292,7 +292,7 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
     }
 
     private void exportLUTToJSON() {
-        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export LUT", UIUtils.EXTENSION_FILTER_JSON);
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export LUT", UIUtils.EXTENSION_FILTER_JSON);
         if (path != null) {
             LUTData lutData = new LUTData();
             for (int i = 0; i < slider.getModel().getThumbCount(); i++) {
@@ -304,7 +304,7 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
     }
 
     private void importLUTFromPNG() {
-        Path path = FileChooserSettings.openFile(this, FileChooserSettings.LastDirectoryKey.Data, "Import LUT", UIUtils.EXTENSION_FILTER_PNG);
+        Path path = JIPipeFileChooserApplicationSettings.openFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Import LUT", UIUtils.EXTENSION_FILTER_PNG);
         if (path != null) {
             ImagePlus img = IJ.openImage(path.toString());
             LUT lut = ImageJUtils.lutFromImage(img);
@@ -314,7 +314,7 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
     }
 
     private void exportLUTToPNG() {
-        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export LUT", UIUtils.EXTENSION_FILTER_PNG);
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export LUT", UIUtils.EXTENSION_FILTER_PNG);
         if (path != null) {
             LUT lut = generateLUT();
             ImagePlus img = ImageJUtils.lutToImage(lut, 256, 1);

@@ -15,8 +15,11 @@ package org.hkijena.jipipe.plugins.python;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.apache.commons.lang3.SystemUtils;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
+import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -37,6 +40,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -46,7 +50,7 @@ import java.util.Set;
 /**
  * Parameter that describes a Python environment
  */
-public class PythonEnvironment extends JIPipeEnvironment {
+public class PythonEnvironment extends JIPipeArtifactEnvironment {
 
     public static final String ENVIRONMENT_ID = "python";
 
@@ -77,7 +81,7 @@ public class PythonEnvironment extends JIPipeEnvironment {
             "Depending on the environment, you need to set the executable path to the Python executable, " +
             "to the Conda executable, or the environment directory (venv).")
     @JsonGetter("environment-type")
-    @JIPipeParameter("environment-type")
+    @JIPipeParameter(value = "environment-type", important = true, uiOrder = -100)
     public PythonEnvironmentType getType() {
         return type;
     }
@@ -86,6 +90,7 @@ public class PythonEnvironment extends JIPipeEnvironment {
     @JsonSetter("environment-type")
     public void setType(PythonEnvironmentType type) {
         this.type = type;
+        emitParameterUIChangedEvent();
     }
 
     @SetJIPipeDocumentation(name = "Arguments", description = "Arguments passed to the Python/Conda executable (depending on the environment type). " +
@@ -107,7 +112,7 @@ public class PythonEnvironment extends JIPipeEnvironment {
     @SetJIPipeDocumentation(name = "Executable path", description = "Points to the main executable or directory used by Python. " +
             "For system environments, point it to the Python executable. For Conda environments, point it to the Conda executable. " +
             "For virtual environments, point it to the Python executable inside ")
-    @JIPipeParameter("executable-path")
+    @JIPipeParameter(value = "executable-path", uiOrder = -90, important = true)
     @JsonGetter("executable-path")
     public Path getExecutablePath() {
         return executablePath;
@@ -137,32 +142,67 @@ public class PythonEnvironment extends JIPipeEnvironment {
         this.environmentVariables = environmentVariables;
     }
 
+
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
-        if (StringUtils.isNullOrEmpty(getExecutablePath()) || !Files.isRegularFile(getAbsoluteExecutablePath())) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext,
-                    "Executable does not exist",
-                    "You need to provide a Python executable",
-                    "Provide a Python executable"));
+        if (!isLoadFromArtifact()) {
+            if (StringUtils.isNullOrEmpty(getExecutablePath()) || !Files.isRegularFile(getAbsoluteExecutablePath())) {
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext,
+                        "Executable does not exist",
+                        "You need to provide a Python executable",
+                        "Provide a Python executable"));
+            }
+        }
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        if ("executable-path".equals(access.getKey())) {
+            return !isLoadFromArtifact();
+        }
+        return super.isParameterUIVisible(tree, access);
+    }
+
+    @Override
+    public void applyConfigurationFromArtifact(JIPipeLocalArtifact artifact, JIPipeProgressInfo progressInfo) {
+        setType(PythonEnvironmentType.System);
+        setArguments(new JIPipeExpressionParameter("ARRAY(\"-u\", script_file)"));
+        if (SystemUtils.IS_OS_WINDOWS) {
+            setExecutablePath(artifact.getLocalPath().resolve("python").resolve("python.exe"));
+        } else {
+            setExecutablePath(artifact.getLocalPath().resolve("python").resolve("bin").resolve("python3"));
+
+            // Do chmod +x for all executables
+            PathUtils.makeAllUnixExecutable(artifact.getLocalPath().resolve("python").resolve("bin"), progressInfo);
         }
     }
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("apps/python.png");
+        if (isLoadFromArtifact()) {
+            return UIUtils.getIconFromResources("actions/run-install.png");
+        } else {
+            return UIUtils.getIconFromResources("apps/python.png");
+        }
     }
 
     @Override
     public String getInfo() {
-        return StringUtils.orElse(getExecutablePath(), "<Not set>");
+        if (isLoadFromArtifact()) {
+            return StringUtils.orElse(getArtifactQuery().getQuery(), "<Not set>");
+        } else {
+            return StringUtils.orElse(getExecutablePath(), "<Not set>");
+        }
     }
 
     @Override
     public String toString() {
-        return "Python environment {" +
-                "Type=" + type +
-                ", Arguments=" + arguments +
-                ", Executable=" + executablePath +
+        return "PythonEnvironment{" +
+                "type=" + type +
+                ", arguments=" + arguments +
+                ", executablePath=" + executablePath +
+                ", environmentVariables=" + environmentVariables +
+                ", artifactQuery=" + getArtifactQuery() +
                 '}';
     }
 

@@ -36,7 +36,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
-import org.hkijena.jipipe.plugins.settings.DataExporterSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeDataExporterApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.*;
 
@@ -64,7 +64,7 @@ public class ExportTableAsXLSXAlgorithm extends JIPipeMergingAlgorithm {
 
     public ExportTableAsXLSXAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.exporter = new JIPipeDataByMetadataExporter(DataExporterSettings.getInstance());
+        this.exporter = new JIPipeDataByMetadataExporter(JIPipeDataExporterApplicationSettings.getInstance());
         registerSubParameter(exporter);
     }
 

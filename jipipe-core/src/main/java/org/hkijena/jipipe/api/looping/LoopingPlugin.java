@@ -24,8 +24,6 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
-import java.util.Collections;
-
 /**
  * Extension for anything that is related to {@link JIPipeGraphWrapperAlgorithm}
  */
@@ -64,7 +62,7 @@ public class LoopingPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public boolean isCoreExtension() {
+    public boolean isCorePlugin() {
         return true;
     }
 }

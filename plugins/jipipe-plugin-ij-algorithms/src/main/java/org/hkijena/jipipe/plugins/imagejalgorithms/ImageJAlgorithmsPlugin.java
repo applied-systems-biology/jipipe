@@ -139,7 +139,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSe
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.Measurement;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.MeasurementColumn;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.MeasurementColumnSortOrder;
-import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -147,7 +146,6 @@ import org.hkijena.jipipe.plugins.strings.StringsPlugin;
 import org.hkijena.jipipe.plugins.tables.TablesPlugin;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
-import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
@@ -178,11 +176,6 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public static final OMEAccessorStorage OME_ACCESSOR_STORAGE = new OMEAccessorStorage();
 
     public ImageJAlgorithmsPlugin() {
-    }
-
-    @Override
-    public ImageParameter getThumbnail() {
-        return new ImageParameter(ResourceUtils.getPluginResource("thumbnails/fiji.png"));
     }
 
     @Override

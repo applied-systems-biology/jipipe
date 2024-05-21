@@ -32,13 +32,12 @@ import org.hkijena.jipipe.plugins.ijtrackmate.nodes.converters.SpotsToRoiConvert
 import org.hkijena.jipipe.plugins.ijtrackmate.nodes.spots.*;
 import org.hkijena.jipipe.plugins.ijtrackmate.nodes.tracks.*;
 import org.hkijena.jipipe.plugins.ijtrackmate.parameters.*;
-import org.hkijena.jipipe.plugins.ijtrackmate.settings.ImageViewerUISpotsDisplaySettings;
-import org.hkijena.jipipe.plugins.ijtrackmate.settings.ImageViewerUITracksDisplaySettings;
+import org.hkijena.jipipe.plugins.ijtrackmate.settings.ImageViewerUISpotsDisplayApplicationSettings;
+import org.hkijena.jipipe.plugins.ijtrackmate.settings.ImageViewerUITracksDisplayApplicationSettings;
 import org.hkijena.jipipe.plugins.ijtrackmate.utils.TrackDrawer;
 import org.hkijena.jipipe.plugins.ijtrackmate.utils.TrackMateUtils;
 import org.hkijena.jipipe.plugins.imagejalgorithms.ImageJAlgorithmsPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
-import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -81,11 +80,6 @@ public class TrackMatePlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public PluginCategoriesEnumParameter.List getCategories() {
         return new PluginCategoriesEnumParameter.List(PluginCategoriesEnumParameter.CATEGORY_SEGMENTATION, PluginCategoriesEnumParameter.CATEGORY_TRACKING);
-    }
-
-    @Override
-    public ImageParameter getThumbnail() {
-        return new ImageParameter(RESOURCES.getResourceURL("thumbnail.png"));
     }
 
     @Override
@@ -208,20 +202,8 @@ public class TrackMatePlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     private void registerSettings() {
-        registerSettingsSheet(ImageViewerUISpotsDisplaySettings.ID,
-                "Spots display",
-                "Settings for the spots manager component of the JIPipe image viewer",
-                RESOURCES.getIconFromResources("trackmate-spots.png"),
-                "Image viewer",
-                UIUtils.getIconFromResources("actions/viewimage.png"),
-                new ImageViewerUISpotsDisplaySettings());
-        registerSettingsSheet(ImageViewerUITracksDisplaySettings.ID,
-                "Tracks display",
-                "Settings for the track manager component of the JIPipe image viewer",
-                RESOURCES.getIconFromResources("trackmate-tracker.png"),
-                "Image viewer",
-                UIUtils.getIconFromResources("actions/viewimage.png"),
-                new ImageViewerUITracksDisplaySettings());
+        registerApplicationSettingsSheet(new ImageViewerUISpotsDisplayApplicationSettings());
+        registerApplicationSettingsSheet(new ImageViewerUITracksDisplayApplicationSettings());
     }
 
     private void registerNodes() {

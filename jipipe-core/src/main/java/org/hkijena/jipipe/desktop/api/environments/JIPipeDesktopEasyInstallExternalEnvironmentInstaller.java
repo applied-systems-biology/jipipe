@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.ArchiveUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.WebUtils;
@@ -116,7 +116,7 @@ public abstract class JIPipeDesktopEasyInstallExternalEnvironmentInstaller<T ext
                 SwingUtilities.invokeLater(() -> {
                     writeEnvironmentToParameters(generatedEnvironment, getParameterAccess());
                     if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                        JIPipe.getInstance().getSettingsRegistry().save();
+                        JIPipe.getInstance().getApplicationSettingsRegistry().save();
                     }
                 });
             }
@@ -179,7 +179,7 @@ public abstract class JIPipeDesktopEasyInstallExternalEnvironmentInstaller<T ext
             for (int i = 0; i < urlMultiPart.size(); i++) {
                 JIPipeProgressInfo partProgress = progressInfo.resolveAndLog("Download part", i, urlMultiPart.size());
                 String url = urlMultiPart.get(i);
-                Path multiPartTmpFile = RuntimeSettings.generateTempFile("repository", extension);
+                Path multiPartTmpFile = JIPipeRuntimeApplicationSettings.generateTempFile("repository", extension);
 
                 try {
                     WebUtils.download(new URL(url), multiPartTmpFile, "Download part", partProgress);
@@ -191,7 +191,7 @@ public abstract class JIPipeDesktopEasyInstallExternalEnvironmentInstaller<T ext
             }
 
             // Concat the multipart files
-            outputFile = RuntimeSettings.generateTempFile("repository", extension);
+            outputFile = JIPipeRuntimeApplicationSettings.generateTempFile("repository", extension);
             progressInfo.log("Following files will be combined into " + outputFile);
             for (Path multiPartFile : multiPartFiles) {
                 progressInfo.log(" - " + multiPartFile);
@@ -232,7 +232,7 @@ public abstract class JIPipeDesktopEasyInstallExternalEnvironmentInstaller<T ext
             }
 
             // Set output file and download directly
-            outputFile = RuntimeSettings.generateTempFile("repository", extension);
+            outputFile = JIPipeRuntimeApplicationSettings.generateTempFile("repository", extension);
             try {
                 WebUtils.download(new URL(targetPackage.getUrl()), outputFile, "Download package", progressInfo.resolve("Download package"));
             } catch (MalformedURLException e) {

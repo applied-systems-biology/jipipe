@@ -41,7 +41,6 @@ public class JIPipeNodeRegistry implements JIPipeValidatable, JIPipeService.Data
     private final Map<String, JIPipeNodeInfo> registeredNodeInfos = new HashMap<>();
     private final Multimap<Class<? extends JIPipeGraphNode>, JIPipeNodeInfo> registeredNodeClasses = HashMultimap.create();
     private final Multimap<String, JIPipeNodeExample> registeredExamples = HashMultimap.create();
-    private final List<JIPipeNodeTemplate> registeredTemplates = new ArrayList<>();
     private final Set<JIPipeNodeRegistrationTask> registrationTasks = new HashSet<>();
     private final Map<String, JIPipeDependency> registeredNodeInfoSources = new HashMap<>();
     private final BiMap<String, JIPipeNodeTypeCategory> registeredCategories = HashBiMap.create();
@@ -314,14 +313,9 @@ public class JIPipeNodeRegistry implements JIPipeValidatable, JIPipeService.Data
      */
     public void registerTemplate(JIPipeNodeTemplate nodeTemplate) {
         if (nodeTemplate.getGraph() != null) {
-            nodeTemplate.setSource(JIPipeNodeTemplate.SOURCE_EXTENSION);
-            registeredTemplates.add(nodeTemplate);
-            jiPipe.getProgressInfo().log("Registered extension-provided template '" + nodeTemplate.getName() + "'");
+            jiPipe.getNodeTemplateRegistry().addFromPlugin(nodeTemplate);
+            jiPipe.getProgressInfo().log("Registered plugin-provided template '" + nodeTemplate.getName() + "'");
         }
-    }
-
-    public List<JIPipeNodeTemplate> getRegisteredTemplates() {
-        return Collections.unmodifiableList(registeredTemplates);
     }
 
     /**
@@ -417,6 +411,4 @@ public class JIPipeNodeRegistry implements JIPipeValidatable, JIPipeService.Data
         }
         scheduledRegisterTemplates.clear();
     }
-
-
 }

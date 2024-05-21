@@ -15,13 +15,13 @@ package org.hkijena.jipipe.desktop.commons.ijupdater;
 
 import net.imagej.updater.FilesCollection;
 import net.imagej.updater.Installer;
+import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 
-public class JIPipeDesktopImageJUpdaterApplyRun implements JIPipeRunnable {
+public class JIPipeDesktopImageJUpdaterApplyRun extends AbstractJIPipeRunnable {
 
     private final FilesCollection filesCollection;
-    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
     public JIPipeDesktopImageJUpdaterApplyRun(FilesCollection filesCollection) {
         this.filesCollection = filesCollection;
@@ -29,6 +29,7 @@ public class JIPipeDesktopImageJUpdaterApplyRun implements JIPipeRunnable {
 
     @Override
     public void run() {
+        JIPipeProgressInfo progressInfo = getProgressInfo();
         final Installer installer =
                 new Installer(filesCollection, new JIPipeDesktopImageJUpdaterProgressAdapter2(progressInfo));
         try {
@@ -40,16 +41,6 @@ public class JIPipeDesktopImageJUpdaterApplyRun implements JIPipeRunnable {
         } finally {
             installer.done();
         }
-    }
-
-    @Override
-    public JIPipeProgressInfo getProgressInfo() {
-        return progressInfo;
-    }
-
-    @Override
-    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-        this.progressInfo = progressInfo;
     }
 
     @Override

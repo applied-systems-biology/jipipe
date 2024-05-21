@@ -15,7 +15,9 @@ package org.hkijena.jipipe.desktop.commons.components.tabs;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.dnd.*;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DragSource;
+import java.awt.dnd.DropTarget;
 import java.awt.image.BufferedImage;
 import java.util.Objects;
 import java.util.Optional;

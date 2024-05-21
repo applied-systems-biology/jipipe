@@ -19,7 +19,6 @@ package org.hkijena.jipipe.desktop.api;
 public enum JIPipeMenuExtensionTarget {
     None,
     ProjectMainMenu,
-    ProjectPluginsMenu,
     ProjectToolsMenu,
     ProjectHelpMenu,
     ExtensionBuilderMainMenu,

@@ -13,9 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app;
 
-import net.imagej.ui.swing.updater.ImageJUpdater;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeJsonPlugin;
 import org.hkijena.jipipe.JIPipeService;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
@@ -36,13 +34,13 @@ import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.backups.JIPipeDesktopBackupManagerPanel;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheBrowserUI;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheManagerUI;
-import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopAlgorithmCompendiumUI;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDataTypeCompendiumUI;
+import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopAlgorithmCompendiumUI;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopWelcomePanel;
-import org.hkijena.jipipe.desktop.app.extensions.JIPipeDesktopModernPluginManagerUI;
-import org.hkijena.jipipe.desktop.app.extensions.JIPipeDesktopPluginValidityCheckerPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.compartments.JIPipeCompartmentsGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.JIPipePipelineGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.plugins.JIPipeDesktopPluginValidityCheckerPanel;
+import org.hkijena.jipipe.desktop.app.plugins.pluginsmanager.JIPipeDesktopManagePluginsButton;
 import org.hkijena.jipipe.desktop.app.project.JIPipeDesktopJIPipeProjectTabMetadata;
 import org.hkijena.jipipe.desktop.app.project.JIPipeDesktopLoadResultDirectoryIntoCacheRun;
 import org.hkijena.jipipe.desktop.app.project.JIPipeDesktopLoadResultZipIntoCacheRun;
@@ -55,18 +53,16 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopMemoryOptionsC
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopMemoryStatusUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopRecentProjectsMenu;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopReloadableValidityChecker;
-import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
-import org.hkijena.jipipe.desktop.commons.ijupdater.JIPipeDesktopImageJUpdaterPluginManagerUI;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopNotificationButton;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopWorkbenchNotificationInboxUI;
-import org.hkijena.jipipe.desktop.jsonextensionbuilder.JIPipeDesktopJsonExtensionWindow;
 import org.hkijena.jipipe.desktop.jsonextensionbuilder.extensionbuilder.JIPipeDesktopJsonExporter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
-import org.hkijena.jipipe.plugins.settings.GeneralUISettings;
-import org.hkijena.jipipe.plugins.settings.ProjectsSettings;
+import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeProjectDefaultsApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
@@ -91,12 +87,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * UI around an {@link JIPipeProject}
  */
-public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDesktopWorkbench, JIPipeProject.CompartmentRemovedEventListener, JIPipeService.ExtensionRegisteredEventListener {
+public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDesktopWorkbench, JIPipeProject.CompartmentRemovedEventListener, JIPipeService.PluginRegisteredEventListener {
 
     public static final String TAB_INTRODUCTION = "INTRODUCTION";
     public static final String TAB_LICENSE = "LICENSE";
     public static final String TAB_COMPARTMENT_EDITOR = "COMPARTMENT_EDITOR";
-    public static final String TAB_PLUGIN_MANAGER = "PLUGIN_MANAGER";
     public static final String TAB_VALIDITY_CHECK = "VALIDITY_CHECK";
     public static final String TAB_PLUGIN_VALIDITY_CHECK = "PLUGIN_VALIDITY_CHECK";
     public static final String TAB_NOTIFICATIONS = "NOTIFICATIONS";
@@ -136,9 +131,9 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         validatePlugins(true);
 
         restoreStandardTabs(showIntroduction, isNewProject);
-        if (ProjectsSettings.getInstance().isRestoreTabs())
+        if (JIPipeProjectDefaultsApplicationSettings.getInstance().isRestoreTabs())
             restoreTabs();
-        if (GeneralUISettings.getInstance().isShowIntroduction() && showIntroduction)
+        if (JIPipeGeneralUIApplicationSettings.getInstance().isShowIntroduction() && showIntroduction)
             documentTabPane.selectSingletonTab(TAB_INTRODUCTION);
 
         // Register modification state watchers
@@ -202,10 +197,10 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     }
 
     public void restoreStandardTabs(boolean showIntroduction, boolean isNewProject) {
-        if (GeneralUISettings.getInstance().isShowIntroduction() && showIntroduction)
+        if (JIPipeGeneralUIApplicationSettings.getInstance().isShowIntroduction() && showIntroduction)
             documentTabPane.selectSingletonTab(TAB_INTRODUCTION);
         else {
-            if (GeneralUISettings.getInstance().isShowProjectInfo() && !isNewProject) {
+            if (JIPipeGeneralUIApplicationSettings.getInstance().isShowProjectInfo() && !isNewProject) {
                 documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW);
             } else {
                 documentTabPane.selectSingletonTab(TAB_COMPARTMENT_EDITOR);
@@ -241,12 +236,12 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
                 "Getting started",
                 UIUtils.getIconFromResources("actions/help-info.png"),
                 () -> new JIPipeDesktopWelcomePanel(this),
-                (GeneralUISettings.getInstance().isShowIntroduction() && showIntroduction) ? JIPipeDesktopTabPane.SingletonTabMode.Present : JIPipeDesktopTabPane.SingletonTabMode.Hidden);
+                (JIPipeGeneralUIApplicationSettings.getInstance().isShowIntroduction() && showIntroduction) ? JIPipeDesktopTabPane.SingletonTabMode.Present : JIPipeDesktopTabPane.SingletonTabMode.Hidden);
         documentTabPane.registerSingletonTab(TAB_PROJECT_OVERVIEW,
                 "Project",
                 UIUtils.getIconFromResources("actions/configure.png"),
                 () -> new JIPipeDesktopProjectOverviewUI(this),
-                (GeneralUISettings.getInstance().isShowProjectInfo() && !isNewProject) ? JIPipeDesktopTabPane.SingletonTabMode.Present : JIPipeDesktopTabPane.SingletonTabMode.Hidden);
+                (JIPipeGeneralUIApplicationSettings.getInstance().isShowProjectInfo() && !isNewProject) ? JIPipeDesktopTabPane.SingletonTabMode.Present : JIPipeDesktopTabPane.SingletonTabMode.Hidden);
         documentTabPane.registerSingletonTab(TAB_LICENSE,
                 "License",
                 UIUtils.getIconFromResources("actions/license.png"),
@@ -256,11 +251,6 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
                 "Compartments",
                 UIUtils.getIconFromResources("actions/graph-compartments.png"),
                 () -> new JIPipeCompartmentsGraphEditorUI(this),
-                JIPipeDesktopTabPane.SingletonTabMode.Hidden);
-        documentTabPane.registerSingletonTab(TAB_PLUGIN_MANAGER,
-                "Plugin manager",
-                UIUtils.getIconFromResources("actions/plugins.png"),
-                () -> new JIPipeDesktopModernPluginManagerUI(this),
                 JIPipeDesktopTabPane.SingletonTabMode.Hidden);
         validityCheckerPanel = new JIPipeDesktopReloadableValidityChecker(this, project);
         documentTabPane.registerSingletonTab(TAB_VALIDITY_CHECK,
@@ -405,15 +395,15 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         // Thumbnail generation control
         JIPipeDesktopRunnableQueueButton thumbnailQueueButton = new JIPipeDesktopRunnableQueueButton(this, JIPipeThumbnailGenerationQueue.getInstance().getRunnerQueue());
         thumbnailQueueButton.makeFlat();
-        thumbnailQueueButton.setReadyLabel("");
-        thumbnailQueueButton.setTasksFinishedLabel("");
+        thumbnailQueueButton.setReadyLabel("Thumbnails");
+        thumbnailQueueButton.setTasksFinishedLabel("Thumbnails");
         thumbnailQueueButton.setTaskSingleRunningLabel("Generating thumbnail");
         thumbnailQueueButton.setTaskSingleEnqueuedRunningLabel("Generating thumbnails (%d)");
         statusBar.add(thumbnailQueueButton);
 
         // Memory control
         JButton optionsButton = memoryOptionsControl.createOptionsButton();
-        UIUtils.makeFlat(optionsButton);
+        UIUtils.makeButtonFlat(optionsButton);
         statusBar.add(optionsButton);
         statusBar.add(Box.createHorizontalStrut(4));
         statusBar.add(new JIPipeDesktopMemoryStatusUI());
@@ -483,7 +473,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         saveProjectButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
         saveProjectButton.addActionListener(e -> {
             window.saveProjectAs(true);
-            if (GeneralUISettings.getInstance().isValidateOnSave()) {
+            if (JIPipeGeneralUIApplicationSettings.getInstance().isValidateOnSave()) {
                 validateProject(true);
             }
         });
@@ -495,7 +485,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         saveProjectAsButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK + KeyEvent.SHIFT_DOWN_MASK));
         saveProjectAsButton.addActionListener(e -> {
             window.saveProjectAs(false);
-            if (GeneralUISettings.getInstance().isValidateOnSave()) {
+            if (JIPipeGeneralUIApplicationSettings.getInstance().isValidateOnSave()) {
                 validateProject(true);
             }
         });
@@ -576,41 +566,6 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
         menu.add(projectMenu);
 
-        // Plugins menu
-        JMenu pluginsMenu = new JMenu("Plugins");
-
-        JMenuItem newPluginButton = new JMenuItem("New JSON extension ...", UIUtils.getIconFromResources("actions/document-new.png"));
-        newPluginButton.setToolTipText("Opens the extension builder");
-        newPluginButton.addActionListener(e -> {
-            JIPipeDesktopJsonExtensionWindow window = JIPipeDesktopJsonExtensionWindow.newWindow(context, new JIPipeJsonPlugin(), true);
-            window.setTitle("New extension");
-        });
-        pluginsMenu.add(newPluginButton);
-
-        JMenuItem installPluginButton = new JMenuItem("Install ...", UIUtils.getIconFromResources("actions/run-install.png"));
-        installPluginButton.addActionListener(e -> JIPipeDesktopJsonExtensionWindow.installExtensions(this));
-        pluginsMenu.add(installPluginButton);
-
-        JMenuItem managePluginsButton = new JMenuItem("Manage JIPipe plugins", UIUtils.getIconFromResources("apps/jipipe.png"));
-        managePluginsButton.addActionListener(e -> managePlugins());
-        pluginsMenu.add(managePluginsButton);
-
-        JMenu pluginsImageJMenu = new JMenu("ImageJ");
-
-        JMenuItem manageImageJPlugins = new JMenuItem("Manage ImageJ plugins (via JIPipe)", UIUtils.getIconFromResources("apps/imagej.png"));
-        manageImageJPlugins.addActionListener(e -> manageImageJPlugins(true));
-        pluginsImageJMenu.add(manageImageJPlugins);
-
-        JMenuItem manageImageJPluginsViaUpdater = new JMenuItem("Run ImageJ updater", UIUtils.getIconFromResources("apps/imagej.png"));
-        manageImageJPluginsViaUpdater.addActionListener(e -> manageImageJPlugins(false));
-        pluginsImageJMenu.add(manageImageJPluginsViaUpdater);
-
-        pluginsMenu.add(pluginsImageJMenu);
-
-        UIUtils.installMenuExtension(this, pluginsMenu, JIPipeMenuExtensionTarget.ProjectPluginsMenu, true);
-
-        menu.add(pluginsMenu);
-
         // Tools menu
         JMenu toolsMenu = new JMenu("Tools");
 
@@ -662,8 +617,11 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         runProjectButton.setToolTipText("Runs the whole pipeline");
         UIUtils.setStandardButtonBorder(runProjectButton);
 
-        runProjectButton.addActionListener(e -> openRunUI());
+        runProjectButton.addActionListener(e -> runWholeProject());
         menu.add(runProjectButton);
+
+        // Plugins/artifacts management
+        menu.add(new JIPipeDesktopManagePluginsButton(this));
 
         // Notification panel
         menu.add(notificationButton);
@@ -817,16 +775,16 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     }
 
     private void archiveProjectAsDirectory() {
-        Path directory = FileChooserSettings.saveDirectory(this, FileChooserSettings.LastDirectoryKey.Projects, "Archive project as directory");
+        Path directory = JIPipeFileChooserApplicationSettings.saveDirectory(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Archive project as directory");
         if (directory != null) {
-            JIPipeDesktopRunExecuterUI.runInDialog(this, this, new JIPipeArchiveProjectToDirectoryRun(getProject(), directory));
+            JIPipeDesktopRunExecuteUI.runInDialog(this, this, new JIPipeArchiveProjectToDirectoryRun(getProject(), directory));
         }
     }
 
     private void archiveProjectAsZIP() {
-        Path file = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Archive project as ZIP", UIUtils.EXTENSION_FILTER_ZIP);
+        Path file = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Archive project as ZIP", UIUtils.EXTENSION_FILTER_ZIP);
         if (file != null) {
-            JIPipeDesktopRunExecuterUI.runInDialog(this, this, new JIPipeArchiveProjectToZIPRun(getProject(), file));
+            JIPipeDesktopRunExecuteUI.runInDialog(this, this, new JIPipeArchiveProjectToZIPRun(getProject(), file));
         }
     }
 
@@ -859,14 +817,14 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
 
     public void restoreCacheFromZIPOrDirectory() {
-        Path path = FileChooserSettings.openPath(this, FileChooserSettings.LastDirectoryKey.Projects, "Select exported cache (ZIP/directory)");
+        Path path = JIPipeFileChooserApplicationSettings.openPath(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Select exported cache (ZIP/directory)");
         if (path != null) {
             if (Files.isRegularFile(path)) {
                 // Load into cache with a run
-                JIPipeDesktopRunExecuterUI.runInDialog(this, this, new JIPipeDesktopLoadResultZipIntoCacheRun(this, project, path, true));
+                JIPipeDesktopRunExecuteUI.runInDialog(this, this, new JIPipeDesktopLoadResultZipIntoCacheRun(this, project, path, true));
             } else {
                 // Load into cache with a run
-                JIPipeDesktopRunExecuterUI.runInDialog(this, this, new JIPipeDesktopLoadResultDirectoryIntoCacheRun(this, project, path, true));
+                JIPipeDesktopRunExecuteUI.runInDialog(this, this, new JIPipeDesktopLoadResultDirectoryIntoCacheRun(this, project, path, true));
             }
         }
     }
@@ -878,27 +836,6 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
             return;
         }
         UIUtils.openFileInNative(getProject().getWorkDirectory());
-    }
-
-    private void manageImageJPlugins(boolean useJIPipeUpdater) {
-        if (useJIPipeUpdater) {
-            List<JIPipeDesktopTabPane.DocumentTab> tabs = getDocumentTabPane().getTabsContaining(JIPipeDesktopImageJUpdaterPluginManagerUI.class);
-            if (!tabs.isEmpty()) {
-                getDocumentTabPane().switchToContent(tabs.get(0).getContent());
-            } else {
-                JIPipeDesktopImageJUpdaterPluginManagerUI pluginManager = new JIPipeDesktopImageJUpdaterPluginManagerUI(this);
-                getDocumentTabPane().addTab("Manage ImageJ plugins",
-                        UIUtils.getIconFromResources("apps/imagej.png"),
-                        pluginManager,
-                        JIPipeDesktopTabPane.CloseMode.withSilentCloseButton,
-                        false);
-                getDocumentTabPane().switchToLastTab();
-            }
-        } else {
-            ImageJUpdater updater = new ImageJUpdater();
-            getContext().inject(updater);
-            updater.run();
-        }
     }
 
     public void openCacheBrowser() {
@@ -951,16 +888,12 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     /**
      * Validates the plugins
      *
-     * @param avoidSwitching Do no switch to the validity checker tab if the plugins are OK
+     * @param avoidSwitching Do not switch to the validity checker tab if the plugins are OK
      */
     public void validatePlugins(boolean avoidSwitching) {
         pluginValidityCheckerPanel.recheckValidity();
         if (!avoidSwitching || !pluginValidityCheckerPanel.getReport().isValid())
             documentTabPane.selectSingletonTab(TAB_PLUGIN_VALIDITY_CHECK);
-    }
-
-    private void managePlugins() {
-        documentTabPane.selectSingletonTab(TAB_PLUGIN_MANAGER);
     }
 
     private void openCompartmentEditor() {
@@ -982,7 +915,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         }
     }
 
-    private void openRunUI() {
+    public void runWholeProject() {
         JIPipeDesktopRunSettingsUI ui = new JIPipeDesktopRunSettingsUI(this);
         documentTabPane.addTab("Run", UIUtils.getIconFromResources("actions/run-build.png"), ui,
                 JIPipeDesktopTabPane.CloseMode.withAskOnCloseButton, true);
@@ -1067,7 +1000,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     }
 
     @Override
-    public void onJIPipeExtensionRegistered(JIPipeService.ExtensionRegisteredEvent event) {
+    public void onJIPipePluginRegistered(JIPipeService.ExtensionRegisteredEvent event) {
         sendStatusBarText("Registered extension: '" + event.getExtension().getMetadata().getName() + "' with id '" + event.getExtension().getDependencyId() + "'. We recommend to restart ImageJ.");
     }
 

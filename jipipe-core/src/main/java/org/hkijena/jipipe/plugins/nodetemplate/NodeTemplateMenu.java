@@ -17,12 +17,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import ij.IJ;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
-import org.hkijena.jipipe.plugins.settings.NodeTemplateSettings;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
-import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -46,11 +45,11 @@ public class NodeTemplateMenu extends JMenu implements JIPipeDesktopWorkbenchAcc
         setText("Templates");
         setIcon(UIUtils.getIconFromResources("actions/starred.png"));
         reloadTemplateList();
-        JIPipe.getInstance().getNodeTemplatesRefreshedEventEmitter().subscribeWeak(this);
+        JIPipe.getNodeTemplates().getNodeTemplatesRefreshedEventEmitter().subscribeWeak(this);
     }
 
     private void reloadTemplateList() {
-        List<JIPipeNodeTemplate> templates = new ArrayList<>(NodeTemplateSettings.getInstance().getNodeTemplates());
+        List<JIPipeNodeTemplate> templates = new ArrayList<>(JIPipe.getNodeTemplates().getGlobalTemplates());
         if (project != null) {
             templates.addAll(project.getMetadata().getNodeTemplates());
         }
@@ -62,8 +61,7 @@ public class NodeTemplateMenu extends JMenu implements JIPipeDesktopWorkbenchAcc
             for (Map.Entry<String, Set<JIPipeNodeTemplate>> entry : byMenuPath.entrySet()) {
                 JMenu subMenu = menuTree.get(entry.getKey());
                 entry.getValue().stream().sorted(Comparator.comparing(JIPipeNodeTemplate::getName)).forEach(template -> {
-                    ImageIcon icon = UIUtils.getIconFromResources(template.getIcon().getIconName());
-                    JMenuItem item = new JMenuItem(template.getName(), icon);
+                    JMenuItem item = new JMenuItem(template.getName(), template.getIconImage());
                     item.setToolTipText("<html>" + TooltipUtils.getAlgorithmTooltip(template, true) + "</html>");
                     item.addActionListener(e -> addTemplateIntoGraph(template));
                     subMenu.add(item);

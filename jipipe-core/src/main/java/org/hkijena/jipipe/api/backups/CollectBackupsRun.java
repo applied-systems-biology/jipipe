@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.api.backups;
 
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
-import org.hkijena.jipipe.plugins.settings.BackupSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeBackupApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -42,7 +42,7 @@ public class CollectBackupsRun extends AbstractJIPipeRunnable {
 
     @Override
     public void run() {
-        Path backupsDir = BackupSettings.getInstance().getCurrentBackupPath();
+        Path backupsDir = JIPipeBackupApplicationSettings.getInstance().getCurrentBackupPath();
         getProgressInfo().log("Reading backups from " + backupsDir);
 
         // Collect all the backup items

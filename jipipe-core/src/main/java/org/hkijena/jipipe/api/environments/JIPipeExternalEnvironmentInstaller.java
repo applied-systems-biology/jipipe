@@ -18,6 +18,8 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 
+import java.util.UUID;
+
 /**
  * Contains instructions to install an environment.
  * Use {@link SetJIPipeDocumentation} to set the name and description for this installer
@@ -26,6 +28,7 @@ public abstract class JIPipeExternalEnvironmentInstaller implements JIPipeRunnab
 
     private final JIPipeWorkbench workbench;
     private final JIPipeParameterAccess parameterAccess;
+    private final UUID uuid = UUID.randomUUID();
 
     /**
      * @param workbench       the workbench
@@ -49,5 +52,10 @@ public abstract class JIPipeExternalEnvironmentInstaller implements JIPipeRunnab
 
     public JIPipeParameterAccess getParameterAccess() {
         return parameterAccess;
+    }
+
+    @Override
+    public UUID getRunUUID() {
+        return uuid;
     }
 }

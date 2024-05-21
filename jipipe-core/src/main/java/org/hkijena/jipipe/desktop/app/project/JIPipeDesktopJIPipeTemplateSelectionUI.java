@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
 import org.hkijena.jipipe.api.registries.JIPipeProjectTemplateRegistry;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.project.templatedownloader.JIPipeDesktopProjectTemplateDownloaderRun;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopTemplateProjectListCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -111,7 +111,7 @@ public class JIPipeDesktopJIPipeTemplateSelectionUI extends JDialog implements J
     }
 
     private void downloadTemplates() {
-        JIPipeDesktopRunExecuterUI.runInDialog(workbench, this, new JIPipeDesktopProjectTemplateDownloaderRun(workbench));
+        JIPipeDesktopRunExecuteUI.runInDialog(workbench, this, new JIPipeDesktopProjectTemplateDownloaderRun(workbench));
     }
 
     private void refreshTemplateProjects() {

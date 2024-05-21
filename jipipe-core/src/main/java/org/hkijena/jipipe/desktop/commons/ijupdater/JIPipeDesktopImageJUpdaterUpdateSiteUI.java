@@ -71,7 +71,7 @@ public class JIPipeDesktopImageJUpdaterUpdateSiteUI extends JPanel {
             });
         }
 
-        JTextArea descriptionArea = UIUtils.makeReadonlyBorderlessTextArea(updateSite.getDescription());
+        JTextArea descriptionArea = UIUtils.createReadonlyBorderlessTextArea(updateSite.getDescription());
         add(descriptionArea, new GridBagConstraints() {
             {
                 gridx = 0;
@@ -84,13 +84,13 @@ public class JIPipeDesktopImageJUpdaterUpdateSiteUI extends JPanel {
 
         JPanel bottomPanel = new JPanel(new BorderLayout());
 
-        JTextField urlField = UIUtils.makeReadonlyBorderlessTextField(updateSite.getURL());
+        JTextField urlField = UIUtils.createReadonlyBorderlessTextField(updateSite.getURL());
         urlField.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
         bottomPanel.add(urlField, BorderLayout.CENTER);
 
         JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/delete.png"));
         removeButton.addActionListener(e -> removeUpdateSite());
-        UIUtils.makeFlat25x25(removeButton);
+        UIUtils.makeButtonFlat25x25(removeButton);
         bottomPanel.add(removeButton, BorderLayout.WEST);
 
         add(bottomPanel, new GridBagConstraints() {

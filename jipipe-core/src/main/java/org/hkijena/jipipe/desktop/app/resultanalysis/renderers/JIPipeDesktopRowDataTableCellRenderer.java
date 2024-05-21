@@ -17,9 +17,9 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadata;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
-import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultDataSlotPreview;
-import org.hkijena.jipipe.plugins.settings.GeneralDataSettings;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
+import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultDataSlotPreview;
+import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
@@ -34,11 +34,11 @@ public class JIPipeDesktopRowDataTableCellRenderer implements TableCellRenderer 
 
     private final JTable table;
     private final JScrollPane scrollPane;
-    private final GeneralDataSettings dataSettings = GeneralDataSettings.getInstance();
+    private final JIPipeGeneralDataApplicationSettings dataSettings = JIPipeGeneralDataApplicationSettings.getInstance();
     private JIPipeDesktopProjectWorkbench workbenchUI;
     private JIPipeDataSlot slot;
     private List<JIPipeDesktopResultDataSlotPreview> previewCache = new ArrayList<>();
-    private int previewCacheSize = GeneralDataSettings.getInstance().getPreviewSize();
+    private int previewCacheSize = JIPipeGeneralDataApplicationSettings.getInstance().getPreviewSize();
 
     /**
      * @param workbenchUI the workbench

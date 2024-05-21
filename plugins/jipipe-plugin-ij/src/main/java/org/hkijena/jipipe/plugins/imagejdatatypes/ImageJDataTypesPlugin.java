@@ -76,16 +76,15 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis.ImageDataPrevie
 import org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis.ImportImageJPathDataOperation;
 import org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis.OMEImageDataPreview;
 import org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis.ROIDataPreview;
-import org.hkijena.jipipe.plugins.imagejdatatypes.settings.ImageViewerUIROI2DDisplaySettings;
+import org.hkijena.jipipe.plugins.imagejdatatypes.settings.ImageViewerUIROI2DDisplayApplicationSettings;
 import org.hkijena.jipipe.plugins.imagejdatatypes.tools.BioFormatsConfigTool;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.BitDepth;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.OptionalBitDepth;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ROIElementDrawingMode;
-import org.hkijena.jipipe.plugins.imageviewer.settings.ImageViewer2DUISettings;
-import org.hkijena.jipipe.plugins.imageviewer.settings.ImageViewer3DUISettings;
-import org.hkijena.jipipe.plugins.imageviewer.settings.ImageViewerGeneralUISettings;
-import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
+import org.hkijena.jipipe.plugins.imageviewer.settings.ImageViewer2DUIApplicationSettings;
+import org.hkijena.jipipe.plugins.imageviewer.settings.ImageViewer3DUIApplicationSettings;
+import org.hkijena.jipipe.plugins.imageviewer.settings.ImageViewerGeneralUIApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -134,11 +133,6 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public PluginCategoriesEnumParameter.List getCategories() {
         return new PluginCategoriesEnumParameter.List(PluginCategoriesEnumParameter.CATEGORY_IMPORT_EXPORT, PluginCategoriesEnumParameter.CATEGORY_IMAGE_ANNOTATION, PluginCategoriesEnumParameter.CATEGORY_OME);
-    }
-
-    @Override
-    public ImageParameter getThumbnail() {
-        return new ImageParameter(ResourceUtils.getPluginResource("thumbnails/fiji.png"));
     }
 
     @Override
@@ -379,13 +373,7 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerSettingsSheet(ImageJDataTypesSettings.ID,
-                "ImageJ data types",
-                "Settings on how ImageJ data types are imported/exported",
-                UIUtils.getIconFromResources("apps/imagej.png"),
-                "Extensions",
-                UIUtils.getIconFromResources("actions/plugins.png"),
-                new ImageJDataTypesSettings());
+        registerApplicationSettingsSheet(new ImageJDataTypesApplicationSettings());
         registerEnumParameterType("ome-tiff-compression",
                 OMETIFFCompression.class,
                 "OME TIFF Compression",
@@ -408,20 +396,8 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Determines how ROI elements are drawn");
 
         // Register settings
-        registerSettingsSheet(ImageViewer2DUISettings.ID,
-                "2D image viewer",
-                "Settings for the JIPipe 2D image viewer",
-                UIUtils.getIconFromResources("data-types/imgplus-2d.png"),
-                "Image viewer",
-                UIUtils.getIconFromResources("actions/viewimage.png"),
-                new ImageViewer2DUISettings());
-        registerSettingsSheet(ImageViewer3DUISettings.ID,
-                "3D image viewer",
-                "Settings for the JIPipe 2D image viewer",
-                UIUtils.getIconFromResources("data-types/imgplus-3d.png"),
-                "Image viewer",
-                UIUtils.getIconFromResources("actions/viewimage.png"),
-                new ImageViewer3DUISettings());
+        registerApplicationSettingsSheet(new ImageViewer2DUIApplicationSettings());
+        registerApplicationSettingsSheet(new ImageViewer3DUIApplicationSettings());
 
         // Register data types
         registerDatatype("imagej-ome",
@@ -550,20 +526,8 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerMenuExtension(BioFormatsConfigTool.class);
 
-        registerSettingsSheet(ImageViewerUIROI2DDisplaySettings.ID,
-                "2D ROI display",
-                "Settings for the ROI manager component of the JIPipe image viewer",
-                UIUtils.getIconFromResources("actions/roi.png"),
-                "Image viewer",
-                UIUtils.getIconFromResources("actions/viewimage.png"),
-                new ImageViewerUIROI2DDisplaySettings());
-        registerSettingsSheet(ImageViewerGeneralUISettings.ID,
-                "General",
-                "General settings for the image viewer",
-                UIUtils.getIconFromResources("actions/configure.png"),
-                "Image viewer",
-                UIUtils.getIconFromResources("actions/viewimage.png"),
-                new ImageViewerGeneralUISettings());
+        registerApplicationSettingsSheet(new ImageViewerUIROI2DDisplayApplicationSettings());
+        registerApplicationSettingsSheet(new ImageViewerGeneralUIApplicationSettings());
 
     }
 

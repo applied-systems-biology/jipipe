@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.filesystem;
 
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 
@@ -46,5 +46,5 @@ public @interface PathParameterSettings {
     /**
      * @return The key for the starting location
      */
-    FileChooserSettings.LastDirectoryKey key() default FileChooserSettings.LastDirectoryKey.Parameters;
+    JIPipeFileChooserApplicationSettings.LastDirectoryKey key() default JIPipeFileChooserApplicationSettings.LastDirectoryKey.Parameters;
 }

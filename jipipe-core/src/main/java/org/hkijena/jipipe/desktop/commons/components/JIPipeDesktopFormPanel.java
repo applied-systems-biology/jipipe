@@ -16,10 +16,10 @@ package org.hkijena.jipipe.desktop.commons.components;
 import com.google.common.collect.Sets;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
-import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
+import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -65,6 +65,11 @@ public class JIPipeDesktopFormPanel extends JXPanel {
      * Flag that makes the backgrounds of the components transparent (non-opaque) if possible
      */
     public static final int TRANSPARENT_BACKGROUND = 32;
+
+    /**
+     * Flag that makes the form panel limit the width of components
+     */
+    public static final int WITH_LIMIT_WIDTH = 64;
 
     /**
      * Flag that makes the content be wrapped in a {@link JScrollPane}
@@ -131,7 +136,7 @@ public class JIPipeDesktopFormPanel extends JXPanel {
         helpToolbar.setFloatable(false);
 
         JButton switchToDefaultHelpButton = new JButton(UIUtils.getIconFromResources("actions/go-home.png"));
-        UIUtils.makeFlat25x25(switchToDefaultHelpButton);
+        UIUtils.makeButtonFlat25x25(switchToDefaultHelpButton);
         switchToDefaultHelpButton.addActionListener(e -> switchToDefaultHelp());
         helpToolbar.add(switchToDefaultHelpButton);
 
@@ -146,7 +151,6 @@ public class JIPipeDesktopFormPanel extends JXPanel {
         contentPanel.setScrollableHeightHint(ScrollableSizeHint.VERTICAL_STRETCH);
         contentPanel.setOpaque(opaque);
         setOpaque(opaque);
-
 
         // Determine the component that will be displayed in the help pane
         Component helpComponent;
@@ -735,7 +739,7 @@ public class JIPipeDesktopFormPanel extends JXPanel {
             });
             ++columnCount;
 
-            descriptionArea = UIUtils.makeBorderlessReadonlyTextPane("", true);
+            descriptionArea = UIUtils.createBorderlessReadonlyTextPane("", true);
             descriptionArea.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
             descriptionArea.setOpaque(false);
             descriptionArea.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 4));

@@ -44,7 +44,7 @@ import org.hkijena.jipipe.plugins.imageviewer.plugins2d.roimanager.ROIManagerPlu
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2D;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2DTool;
 import org.hkijena.jipipe.plugins.parameters.library.ranges.*;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -312,8 +312,8 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D implements Ima
     }
 
     private void importMask() {
-        Path selectedFile = FileChooserSettings.openFile(getViewerPanel(),
-                FileChooserSettings.LastDirectoryKey.Data,
+        Path selectedFile = JIPipeFileChooserApplicationSettings.openFile(getViewerPanel(),
+                JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
                 "Import mask",
                 UIUtils.EXTENSION_FILTER_TIFF);
         if (selectedFile != null) {
@@ -344,8 +344,8 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D implements Ima
     }
 
     private void exportMask() {
-        Path selectedFile = FileChooserSettings.saveFile(getViewerPanel(),
-                FileChooserSettings.LastDirectoryKey.Data,
+        Path selectedFile = JIPipeFileChooserApplicationSettings.saveFile(getViewerPanel(),
+                JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
                 "Export mask",
                 UIUtils.EXTENSION_FILTER_TIFF);
         if (selectedFile != null) {

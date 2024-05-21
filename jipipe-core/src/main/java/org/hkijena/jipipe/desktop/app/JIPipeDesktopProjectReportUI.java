@@ -18,9 +18,11 @@ import com.google.common.escape.Escaper;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.JIPipePlugin;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
-import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.JIPipePlugin;
+import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -30,20 +32,20 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueueButton;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
+import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchPanel implements JIPipeRunnable.FinishedEventListener, JIPipeParameterCollection.ParameterChangedEventListener {
@@ -195,7 +197,7 @@ public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchP
 
             // Collect dependencies
             for (JIPipeDependency dependency : project.getSimplifiedMinimalDependencies()) {
-                JIPipePlugin fullInstance = JIPipe.getInstance().getExtensionRegistry().getKnownExtensionById(dependency.getDependencyId());
+                JIPipePlugin fullInstance = JIPipe.getInstance().getPluginRegistry().getKnownPluginById(dependency.getDependencyId());
                 if (!StringUtils.isNullOrEmpty(fullInstance.getMetadata().getCitation())) {
                     citations.add(fullInstance.getMetadata().getCitation());
                 }
@@ -228,7 +230,7 @@ public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchP
             stringBuilder.append("<table>");
             stringBuilder.append("<tr><th>Name</th><th>Version</th><th>Author(s)</th></tr>");
             for (JIPipeDependency dependency : project.getSimplifiedMinimalDependencies()) {
-                JIPipePlugin fullInstance = JIPipe.getInstance().getExtensionRegistry().getKnownExtensionById(dependency.getDependencyId());
+                JIPipePlugin fullInstance = JIPipe.getInstance().getPluginRegistry().getKnownPluginById(dependency.getDependencyId());
                 stringBuilder.append("<tr>");
                 stringBuilder.append("<td><strong>").append(escaper.escape(fullInstance.getMetadata().getName())).append("</strong></td>");
                 stringBuilder.append("<td>").append(escaper.escape(fullInstance.getDependencyVersion())).append("</td>");
@@ -241,7 +243,7 @@ public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchP
             stringBuilder.append("<table>");
             stringBuilder.append("<tr><th>Name</th><th>URL</th></tr>");
             for (JIPipeDependency dependency : project.getSimplifiedMinimalDependencies()) {
-                JIPipePlugin fullInstance = JIPipe.getInstance().getExtensionRegistry().getKnownExtensionById(dependency.getDependencyId());
+                JIPipePlugin fullInstance = JIPipe.getInstance().getPluginRegistry().getKnownPluginById(dependency.getDependencyId());
                 for (JIPipeImageJUpdateSiteDependency siteDependency : fullInstance.getImageJUpdateSiteDependencies()) {
                     stringBuilder.append("<tr>");
                     stringBuilder.append("<td><strong>").append(escaper.escape(siteDependency.getName())).append("</strong></td>");
@@ -253,7 +255,7 @@ public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchP
 
             List<JIPipeEnvironment> externalEnvironments = new ArrayList<>();
             for (JIPipeGraphNode graphNode : project.getGraph().getGraphNodes()) {
-                graphNode.getExternalEnvironments(externalEnvironments);
+                graphNode.getEnvironmentDependencies(externalEnvironments);
             }
             if (!externalEnvironments.isEmpty()) {
                 stringBuilder.append("<h3>External environments</h3>");

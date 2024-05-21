@@ -128,7 +128,7 @@ public class JIPipeDesktopNodeDatabaseSearchBox extends JIPipeDesktopWorkbenchPa
         clearButton.setOpaque(false);
         clearButton.setToolTipText("Clear");
         clearButton.addActionListener(e -> clearSearch());
-        UIUtils.makeFlat25x25(clearButton);
+        UIUtils.makeButtonFlat25x25(clearButton);
         clearButton.setBorder(null);
         add(clearButton, BorderLayout.EAST);
 

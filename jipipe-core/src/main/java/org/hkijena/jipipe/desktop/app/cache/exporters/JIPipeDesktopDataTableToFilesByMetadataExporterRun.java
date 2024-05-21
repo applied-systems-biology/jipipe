@@ -26,8 +26,8 @@ import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
-import org.hkijena.jipipe.plugins.settings.DataExporterSettings;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeDataExporterApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -35,14 +35,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class JIPipeDesktopDataTableToFilesByMetadataExporterRun extends JIPipeDesktopWorkbenchPanel implements JIPipeRunnable {
 
+    private final UUID uuid = UUID.randomUUID();
     private final List<? extends JIPipeDataTable> dataTables;
     private final Settings settings;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
@@ -66,7 +65,7 @@ public class JIPipeDesktopDataTableToFilesByMetadataExporterRun extends JIPipeDe
      * @return if setup was confirmed
      */
     public boolean setup() {
-        outputPath = FileChooserSettings.openDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Export data as files");
+        outputPath = JIPipeFileChooserApplicationSettings.openDirectory(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export data as files");
         if (outputPath == null)
             return false;
 
@@ -106,7 +105,7 @@ public class JIPipeDesktopDataTableToFilesByMetadataExporterRun extends JIPipeDe
 
         if (confirmation.get() && settings.rememberSettings) {
             try {
-                DataExporterSettings.getInstance().copyFrom(settings.exporter);
+                JIPipeDataExporterApplicationSettings.getInstance().copyFrom(settings.exporter);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -178,12 +177,17 @@ public class JIPipeDesktopDataTableToFilesByMetadataExporterRun extends JIPipeDe
     }
 
     @Override
+    public UUID getRunUUID() {
+        return uuid;
+    }
+
+    @Override
     public String getTaskLabel() {
         return "Export cached data to files";
     }
 
     public static class Settings extends AbstractJIPipeParameterCollection {
-        private JIPipeDataByMetadataExporter exporter = new JIPipeDataByMetadataExporter(DataExporterSettings.getInstance());
+        private JIPipeDataByMetadataExporter exporter = new JIPipeDataByMetadataExporter(JIPipeDataExporterApplicationSettings.getInstance());
         private boolean splitBySlotName = false;
 
         private boolean rememberSettings = false;

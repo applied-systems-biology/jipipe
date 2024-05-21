@@ -16,19 +16,19 @@ package org.hkijena.jipipe.desktop.jsonextensionbuilder;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJsonPlugin;
 import org.hkijena.jipipe.JIPipeService;
-import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.desktop.jsonextensionbuilder.extensionbuilder.JIPipeDesktopJsonExtensionContentListUI;
-import org.hkijena.jipipe.desktop.jsonextensionbuilder.extensionbuilder.JIPipeDesktopJsonExtensionProjectValidation;
+import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopJsonExtensionSettingsUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopRecentJsonExtensionsMenu;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopReloadableValidityChecker;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopSplashScreen;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
-import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
+import org.hkijena.jipipe.desktop.jsonextensionbuilder.extensionbuilder.JIPipeDesktopJsonExtensionContentListUI;
 import org.hkijena.jipipe.desktop.jsonextensionbuilder.extensionbuilder.JIPipeDesktopJsonExtensionGraphUI;
-import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopJsonExtensionSettingsUI;
+import org.hkijena.jipipe.desktop.jsonextensionbuilder.extensionbuilder.JIPipeDesktopJsonExtensionProjectValidation;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXStatusBar;
 import org.scijava.Context;
@@ -44,7 +44,7 @@ import java.util.Set;
 /**
  * UI around a {@link JIPipeJsonPlugin}
  */
-public class JIPipeDesktopJsonExtensionWorkbench extends JPanel implements JIPipeDesktopWorkbench, JIPipeService.ExtensionRegisteredEventListener, JIPipeService.ExtensionContentRemovedEventListener {
+public class JIPipeDesktopJsonExtensionWorkbench extends JPanel implements JIPipeDesktopWorkbench, JIPipeService.PluginRegisteredEventListener, JIPipeService.PluginContentRemovedEventListener {
     private final JIPipeDesktopJsonExtensionWindow window;
     private final Context context;
     private final JIPipeJsonPlugin pluginProject;
@@ -78,7 +78,7 @@ public class JIPipeDesktopJsonExtensionWorkbench extends JPanel implements JIPip
      * @param event the event
      */
     @Override
-    public void onJIPipeExtensionRegistered(JIPipe.ExtensionRegisteredEvent event) {
+    public void onJIPipePluginRegistered(JIPipe.ExtensionRegisteredEvent event) {
         sendStatusBarText("Registered extension: '" + event.getExtension().getMetadata().getName() + "' with id '" + event.getExtension().getDependencyId() + "'. We recommend to restart ImageJ.");
     }
 
@@ -330,7 +330,7 @@ public class JIPipeDesktopJsonExtensionWorkbench extends JPanel implements JIPip
     }
 
     @Override
-    public void onJIPipeExtensionContentRemoved(JIPipeService.ExtensionContentRemovedEvent event) {
+    public void onJIPipePluginContentRemoved(JIPipeService.ExtensionContentRemovedEvent event) {
         removeUnnecessaryAlgorithmGraphEditors();
     }
 }

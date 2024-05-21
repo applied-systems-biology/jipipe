@@ -21,8 +21,8 @@ import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.desktop.jsonextensionbuilder.JIPipeDesktopJsonExtensionWorkbenchPanel;
 import org.hkijena.jipipe.desktop.jsonextensionbuilder.JIPipeDesktopJsonExtensionWorkbench;
+import org.hkijena.jipipe.desktop.jsonextensionbuilder.JIPipeDesktopJsonExtensionWorkbenchPanel;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -34,8 +34,8 @@ import java.util.stream.Collectors;
 /**
  * Lists the content of an {@link JIPipeJsonPlugin}
  */
-public class JIPipeDesktopJsonExtensionContentListUI extends JIPipeDesktopJsonExtensionWorkbenchPanel implements JIPipeService.ExtensionContentAddedEventListener,
-        JIPipeService.ExtensionContentRemovedEventListener, JIPipeParameterCollection.ParameterChangedEventListener {
+public class JIPipeDesktopJsonExtensionContentListUI extends JIPipeDesktopJsonExtensionWorkbenchPanel implements JIPipeService.PluginContentAddedEventListener,
+        JIPipeService.PluginContentRemovedEventListener, JIPipeParameterCollection.ParameterChangedEventListener {
     private JList<Object> list;
     private JSplitPane splitPane;
     private Object currentlySelectedValue;
@@ -129,7 +129,7 @@ public class JIPipeDesktopJsonExtensionContentListUI extends JIPipeDesktopJsonEx
      * @param event Generated event
      */
     @Override
-    public void onJIPipeExtensionContentRemoved(JIPipe.ExtensionContentRemovedEvent event) {
+    public void onJIPipePluginContentRemoved(JIPipe.ExtensionContentRemovedEvent event) {
         reload();
     }
 
@@ -157,7 +157,7 @@ public class JIPipeDesktopJsonExtensionContentListUI extends JIPipeDesktopJsonEx
     }
 
     @Override
-    public void onJIPipeExtensionContentAdded(JIPipeService.ExtensionContentAddedEvent event) {
+    public void onJIPipePluginContentAdded(JIPipeService.ExtensionContentAddedEvent event) {
         reload();
     }
 }

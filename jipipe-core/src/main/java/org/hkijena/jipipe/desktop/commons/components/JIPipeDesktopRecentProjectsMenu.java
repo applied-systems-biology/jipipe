@@ -15,9 +15,9 @@ package org.hkijena.jipipe.desktop.commons.components;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.project.JIPipeProject;
-import org.hkijena.jipipe.plugins.settings.ProjectsSettings;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopRecentProjectsListPanel;
+import org.hkijena.jipipe.plugins.settings.JIPipeProjectDefaultsApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -40,12 +40,12 @@ public class JIPipeDesktopRecentProjectsMenu extends JMenu implements JIPipePara
         this.setIcon(icon);
         this.workbenchWindow = workbenchWindow;
         reload();
-        ProjectsSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(this);
+        JIPipeProjectDefaultsApplicationSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(this);
     }
 
     private void reload() {
         removeAll();
-        if (ProjectsSettings.getInstance().getRecentProjects().isEmpty()) {
+        if (JIPipeProjectDefaultsApplicationSettings.getInstance().getRecentProjects().isEmpty()) {
             JMenuItem noProject = new JMenuItem("No recent projects");
             noProject.setEnabled(false);
             add(noProject);
@@ -53,7 +53,7 @@ public class JIPipeDesktopRecentProjectsMenu extends JMenu implements JIPipePara
             JMenuItem searchItem = new JMenuItem("Search ...", UIUtils.getIconFromResources("actions/search.png"));
             searchItem.addActionListener(e -> openProjectSearch());
             add(searchItem);
-            for (Path path : ProjectsSettings.getInstance().getRecentProjects()) {
+            for (Path path : JIPipeProjectDefaultsApplicationSettings.getInstance().getRecentProjects()) {
                 JMenuItem openProjectItem = new JMenuItem(path.toString());
                 openProjectItem.addActionListener(e -> openProject(path));
                 add(openProjectItem);

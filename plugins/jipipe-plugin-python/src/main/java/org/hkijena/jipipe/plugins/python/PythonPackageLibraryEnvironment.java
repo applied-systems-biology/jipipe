@@ -17,18 +17,17 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
-import org.hkijena.jipipe.utils.PathIOMode;
-import org.hkijena.jipipe.utils.PathType;
-import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;
 
 import javax.swing.*;
@@ -39,7 +38,7 @@ import java.nio.file.Paths;
 /**
  * An environment-like type that points to a package
  */
-public abstract class PythonPackageLibraryEnvironment extends JIPipeEnvironment {
+public abstract class PythonPackageLibraryEnvironment extends JIPipeArtifactEnvironment {
 
     private Path libraryDirectory = Paths.get("library");
     private boolean providedByEnvironment = false;
@@ -56,7 +55,7 @@ public abstract class PythonPackageLibraryEnvironment extends JIPipeEnvironment 
 
     @SetJIPipeDocumentation(name = "Library directory", description = "The directory that contains the Python packages. Ignored if the Python packages are provided by the Python environment.")
     @JIPipeParameter("library-directory")
-    @PathParameterSettings(key = FileChooserSettings.LastDirectoryKey.External, pathMode = PathType.DirectoriesOnly, ioMode = PathIOMode.Open)
+    @PathParameterSettings(key = JIPipeFileChooserApplicationSettings.LastDirectoryKey.External, pathMode = PathType.DirectoriesOnly, ioMode = PathIOMode.Open)
     @JsonGetter("library-directory")
     public Path getLibraryDirectory() {
         return libraryDirectory;
@@ -82,14 +81,24 @@ public abstract class PythonPackageLibraryEnvironment extends JIPipeEnvironment 
     }
 
     @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        if ("library-directory".equals(access.getKey())) {
+            return !isLoadFromArtifact();
+        }
+        return super.isParameterUIVisible(tree, access);
+    }
+
+    @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         if (!isProvidedByEnvironment()) {
-            if (!Files.isDirectory(getAbsoluteLibraryDirectory())) {
-                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                        reportContext,
-                        "Missing Python adapter library!",
-                        "The Python integration requires an adapter library. It was not found at " + getAbsoluteLibraryDirectory(),
-                        "Install the Python adapter library by navigating to Project > Application settings > Extensions > Python integration (adapter) or configure the adapter to be provided by the Python environment if applicable."));
+            if (!isLoadFromArtifact()) {
+                if (!Files.isDirectory(getAbsoluteLibraryDirectory())) {
+                    report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                            reportContext,
+                            "Missing Python adapter library!",
+                            "The Python integration requires an adapter library. It was not found at " + getAbsoluteLibraryDirectory(),
+                            "Install the Python adapter library by navigating to Project > Application settings > Extensions > Python integration (adapter) or configure the adapter to be provided by the Python environment if applicable."));
+                }
             }
         }
     }
@@ -100,15 +109,21 @@ public abstract class PythonPackageLibraryEnvironment extends JIPipeEnvironment 
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/plugins.png");
+        if (isLoadFromArtifact()) {
+            return UIUtils.getIconFromResources("actions/run-install.png");
+        } else {
+            return UIUtils.getIconFromResources("actions/plugins.png");
+        }
     }
 
     @Override
     public String getInfo() {
-        if (providedByEnvironment) {
-            return "Provided by Python environment";
+        if (isLoadFromArtifact()) {
+            return StringUtils.orElse(getArtifactQuery().getQuery(), "<Not set>");
+        } else if (isProvidedByEnvironment()) {
+            return "<Internal>";
         } else {
-            return libraryDirectory.toString();
+            return StringUtils.orElse(getLibraryDirectory(), "<Not set>");
         }
     }
 

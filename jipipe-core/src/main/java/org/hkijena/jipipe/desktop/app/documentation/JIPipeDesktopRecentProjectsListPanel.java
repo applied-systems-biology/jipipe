@@ -21,7 +21,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopRecentProjectListCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
-import org.hkijena.jipipe.plugins.settings.ProjectsSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeProjectDefaultsApplicationSettings;
 
 import javax.swing.*;
 import java.awt.*;
@@ -37,7 +37,7 @@ public class JIPipeDesktopRecentProjectsListPanel extends JIPipeDesktopProjectWo
     public JIPipeDesktopRecentProjectsListPanel(JIPipeDesktopProjectWorkbench workbench) {
         super(workbench);
         initialize();
-        ProjectsSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(this);
+        JIPipeProjectDefaultsApplicationSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(this);
         refreshRecentProjects();
     }
 
@@ -75,7 +75,7 @@ public class JIPipeDesktopRecentProjectsListPanel extends JIPipeDesktopProjectWo
 
     private void refreshRecentProjects() {
         DefaultListModel<Path> model = new DefaultListModel<>();
-        for (Path path : ProjectsSettings.getInstance().getRecentProjects()) {
+        for (Path path : JIPipeProjectDefaultsApplicationSettings.getInstance().getRecentProjects()) {
             if (recentProjectsSearch.test(path.toString())) {
                 model.addElement(path);
             }

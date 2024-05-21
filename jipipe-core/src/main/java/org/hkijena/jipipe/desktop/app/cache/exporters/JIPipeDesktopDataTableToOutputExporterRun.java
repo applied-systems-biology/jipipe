@@ -30,13 +30,11 @@ import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class JIPipeDesktopDataTableToOutputExporterRun extends JIPipeDesktopWorkbenchPanel implements JIPipeRunnable {
 
+    private final UUID uuid = UUID.randomUUID();
     private final Path outputPath;
     private final List<? extends JIPipeDataTable> dataTables;
     private final boolean splitBySlot;
@@ -56,6 +54,11 @@ public class JIPipeDesktopDataTableToOutputExporterRun extends JIPipeDesktopWork
         this.dataTables = new ArrayList<>(dataTables);
         this.splitBySlot = splitBySlot;
         this.clearDirectory = clearDirectory;
+    }
+
+    @Override
+    public UUID getRunUUID() {
+        return uuid;
     }
 
     @Override

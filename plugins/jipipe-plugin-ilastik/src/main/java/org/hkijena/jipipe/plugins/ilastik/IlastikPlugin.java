@@ -14,34 +14,32 @@
 package org.hkijena.jipipe.plugins.ilastik;
 
 import com.google.common.collect.Sets;
+import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeWorkbench;
-import org.hkijena.jipipe.api.notifications.JIPipeNotification;
-import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
-import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
+import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryInstallArtifactRun;
+import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
+import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
+import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.ilastik.datatypes.IlastikModelData;
-import org.hkijena.jipipe.plugins.ilastik.installers.IlastikEasyInstaller;
 import org.hkijena.jipipe.plugins.ilastik.nodes.*;
 import org.hkijena.jipipe.plugins.ilastik.parameters.IlastikProjectValidationMode;
 import org.hkijena.jipipe.plugins.imagejalgorithms.ImageJAlgorithmsPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
-import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.processes.ProcessEnvironment;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
@@ -70,55 +68,17 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 PluginCategoriesEnumParameter.CATEGORY_SEGMENTATION,
                 PluginCategoriesEnumParameter.CATEGORY_CLASSIFICATION,
                 PluginCategoriesEnumParameter.CATEGORY_MACHINE_LEARNING);
-        getMetadata().setThumbnail(new ImageParameter(RESOURCES.getResourceURL("thumbnail.png")));
-    }
-
-    private static void easyInstallIlastik(JIPipeWorkbench workbench) {
-        IlastikSettings settings = IlastikSettings.getInstance();
-        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
-        JIPipeParameterAccess parameterAccess = tree.getParameters().get("environment");
-        IlastikEasyInstaller installer = new IlastikEasyInstaller(((JIPipeDesktopWorkbench) workbench), parameterAccess);
-        JIPipeDesktopRunExecuterUI.runInDialog((JIPipeDesktopWorkbench) workbench, ((JIPipeDesktopWorkbench) workbench).getWindow(), installer);
-    }
-
-    private static void configureIlastik(JIPipeWorkbench workbench) {
-        if (workbench instanceof JIPipeDesktopProjectWorkbench) {
-            ((JIPipeDesktopProjectWorkbench) workbench).openApplicationSettings("/Extensions/Ilastik");
-        }
-    }
-
-    public static void createMissingIlastikNotificationIfNeeded(JIPipeNotificationInbox inbox) {
-        if (!IlastikSettings.getInstance().getEnvironment().generateValidityReport(new UnspecifiedValidationReportContext()).isValid()) {
-            JIPipeNotification notification = new JIPipeNotification(AS_DEPENDENCY.getDependencyId() + ":ilastik-not-configured");
-            notification.setHeading("Ilastik is not configured");
-            notification.setDescription("You need to point JIPipe to an Ilastik installation." + "Click 'Install Ilastik' to let JIPipe setup automatically. " +
-                    "You can choose between the standard CPU and GPU-accelerated installation (choose CPU if you are unsure). " +
-                    "Alternatively, click 'Configure' to visit the settings page with more options, including the selection of an existing Ilastik installation.");
-            notification.getActions().add(new JIPipeNotificationAction("Install Ilastik",
-                    "Installs Ilastik via the EasyInstaller",
-                    UIUtils.getIconInvertedFromResources("actions/download.png"),
-                    JIPipeNotificationAction.Style.Success,
-                    IlastikPlugin::easyInstallIlastik));
-            notification.getActions().add(new JIPipeNotificationAction("Open settings",
-                    "Opens the applications settings page",
-                    UIUtils.getIconFromResources("actions/configure.png"),
-                    IlastikPlugin::configureIlastik));
-            inbox.push(notification);
-        }
     }
 
     /**
      * Runs Ilastik
      *
-     * @param environment  the environment. can be null (then the {@link IlastikSettings} environment is taken)
+     * @param environment  the environment. can be null (then the {@link IlastikPluginApplicationSettings} environment is taken)
      * @param parameters   the cli parameters
      * @param progressInfo the progress info
      * @param detached     if the process is launched detached
      */
-    public static void runIlastik(ProcessEnvironment environment, List<String> parameters, JIPipeProgressInfo progressInfo, boolean detached) {
-        if (environment == null) {
-            environment = IlastikSettings.getInstance().getEnvironment();
-        }
+    public static void runIlastik(IlastikEnvironment environment, List<String> parameters, JIPipeProgressInfo progressInfo, boolean detached) {
 
         // CLI
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
@@ -126,19 +86,83 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         // Environment variables
         Map<String, String> environmentVariables = new HashMap<>();
-        if (IlastikSettings.getInstance().getMaxThreads() > 0) {
-            environmentVariables.put("LAZYFLOW_THREADS", String.valueOf(IlastikSettings.getInstance().getMaxThreads()));
+        if (IlastikPluginApplicationSettings.getInstance().getMaxThreads() > 0) {
+            environmentVariables.put("LAZYFLOW_THREADS", String.valueOf(IlastikPluginApplicationSettings.getInstance().getMaxThreads()));
         }
-        environmentVariables.put("LAZYFLOW_TOTAL_RAM_MB", String.valueOf(Math.max(256, IlastikSettings.getInstance().getMaxMemory())));
+        environmentVariables.put("LAZYFLOW_TOTAL_RAM_MB", String.valueOf(Math.max(256, IlastikPluginApplicationSettings.getInstance().getMaxMemory())));
         environmentVariables.put("LANG", "en_US.UTF-8");
         environmentVariables.put("LC_ALL", "en_US.UTF-8");
         environmentVariables.put("LC_CTYPE", "en_US.UTF-8");
 
-        if (detached) {
-            ProcessUtils.launchProcess(environment, variables, environmentVariables, false, progressInfo);
-        } else {
-            ProcessUtils.runProcess(environment, variables, environmentVariables, false, progressInfo);
+        ProcessEnvironment processEnvironment = new ProcessEnvironment();
+        processEnvironment.setArguments(environment.getArguments());
+        processEnvironment.setEnvironmentVariables(environment.getEnvironmentVariables());
+        if(SystemUtils.IS_OS_WINDOWS) {
+            processEnvironment.setExecutablePathWindows(environment.getAbsoluteExecutablePath());
         }
+        else if(SystemUtils.IS_OS_LINUX) {
+            processEnvironment.setExecutablePathLinux(environment.getAbsoluteExecutablePath());
+        }
+        else if(SystemUtils.IS_OS_MAC) {
+            processEnvironment.setExecutablePathOSX(environment.getAbsoluteExecutablePath());
+        }
+        else {
+            throw new UnsupportedOperationException("Unsupported OS: " + SystemUtils.OS_NAME);
+        }
+
+        if (detached) {
+            ProcessUtils.launchProcess(processEnvironment, variables, environmentVariables, false, progressInfo);
+        } else {
+            ProcessUtils.runProcess(processEnvironment, variables, environmentVariables, false, progressInfo);
+        }
+    }
+
+    public static IlastikEnvironment getEnvironment(JIPipeProject project, OptionalIlastikEnvironment nodeEnvironment) {
+        if (nodeEnvironment != null && nodeEnvironment.isEnabled()) {
+            return nodeEnvironment.getContent();
+        }
+        if (project != null && project.getSettingsSheet(IlastikPluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
+            return project.getSettingsSheet(IlastikPluginProjectSettings.class).getProjectDefaultEnvironment().getContent();
+        }
+        return IlastikPluginApplicationSettings.getInstance().getDefaultEnvironment();
+    }
+
+    public static void launchIlastik(JIPipeDesktopWorkbench workbench, List<String> arguments) {
+        IlastikEnvironment environment = IlastikPlugin.getEnvironment(workbench.getProject(), null);
+        if(!environment.generateValidityReport(new UnspecifiedValidationReportContext()).isValid()) {
+            JOptionPane.showMessageDialog(workbench.getWindow(),
+                    "Ilastik is currently not correctly installed. Please check the project/application settings and ensure that Ilastik is setup correctly.",
+                    "Launch Ilastik",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if(environment.isLoadFromArtifact()) {
+            JIPipeArtifact artifact = JIPipe.getArtifacts().searchClosestCompatibleArtifactFromQuery(environment.getArtifactQuery().getQuery());
+            if(artifact instanceof JIPipeLocalArtifact) {
+                environment.applyConfigurationFromArtifact((JIPipeLocalArtifact) artifact, new JIPipeProgressInfo());
+            }
+            else if(artifact instanceof JIPipeRemoteArtifact) {
+                if(JOptionPane.showConfirmDialog(workbench.getWindow(), "The Ilastik version " + artifact.getVersion() + " is currently not downloaded. " +
+                        "Download it now?", "Run Ilastik", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    JIPipeArtifactRepositoryInstallArtifactRun run = new JIPipeArtifactRepositoryInstallArtifactRun((JIPipeRemoteArtifact) artifact);
+                    JIPipeDesktopRunExecuteUI.runInDialog(workbench, workbench.getWindow(), run);
+                    artifact = JIPipe.getArtifacts().queryCachedArtifact(artifact.getFullId());
+                    if(artifact instanceof JIPipeLocalArtifact) {
+                        environment.applyConfigurationFromArtifact((JIPipeLocalArtifact) artifact, new JIPipeProgressInfo());
+                    }
+                    else {
+                        return;
+                    }
+                }
+                else {
+                    return;
+                }
+            }
+        }
+        JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+        progressInfo.setLogToStdOut(true);
+        workbench.sendStatusBarText("Launching Ilastik ...");
+        IlastikPlugin.runIlastik(environment, arguments, progressInfo, true);
     }
 
     @Override
@@ -344,21 +368,31 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerSettingsSheet(IlastikSettings.ID,
-                "Ilastik",
-                "Connect existing Ilastik installations to JIPipe or automatically install a new Ilastik environment if none is available",
-                RESOURCES.getIconFromResources("ilastik.png"),
-                "Extensions",
-                UIUtils.getIconFromResources("actions/plugins.png"),
-                new IlastikSettings());
-        registerEnvironmentInstaller(ProcessEnvironment.class, IlastikEasyInstaller.class, UIUtils.getIconFromResources("emblems/vcs-normal.png"));
+        IlastikPluginApplicationSettings settings = new IlastikPluginApplicationSettings();
+        registerApplicationSettingsSheet(settings);
+        registerProjectSettingsSheet(IlastikPluginProjectSettings.class);
         registerMenuExtension(RunIlastikDesktopMenuExtension.class);
         registerDatatype("ilastik-model", IlastikModelData.class, RESOURCES.getIcon16URLFromResources("ilastik-model.png"));
 
+        registerEnvironment(IlastikEnvironment.class,
+                IlastikEnvironment.List.class,
+                settings,
+                "ilastik-environment",
+                "Ilastik environment",
+                "An Ilastik environment",
+                RESOURCES.getIconFromResources("ilastik.png"));
+        registerParameterType("optional-ilastik-environment",
+                OptionalIlastikEnvironment.class,
+                null,
+                null,
+                "Optional Ilastik environment",
+                "An optional Ilastik environment",
+                null);
         registerEnumParameterType("ilastik-project-validation-mode",
                 IlastikProjectValidationMode.class,
                 "Ilastik project validation mode",
                 "Determines how Ilastik projects are checked");
+
 
         registerNodeType("import-ilastik-model", ImportIlastikModel.class);
         registerNodeType("import-ilastik-hdf5-image", ImportIlastikHDF5ImageAlgorithm.class);
@@ -366,10 +400,5 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ilastik-pixel-classification", IlastikPixelClassificationAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ilastik-autocontext", IlastikAutoContextAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ilastik-object-classification", IlastikObjectClassificationAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-    }
-
-    @Override
-    public void postprocess(JIPipeProgressInfo progressInfo) {
-        createMissingIlastikNotificationIfNeeded(JIPipeNotificationInbox.getInstance());
     }
 }

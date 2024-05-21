@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.plugins.python.adapter;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.plugins.python.PythonPackageLibraryEnvironment;
 
@@ -28,6 +30,12 @@ public class JIPipePythonAdapterLibraryEnvironment extends PythonPackageLibraryE
     public JIPipePythonAdapterLibraryEnvironment() {
         this.setName("Default");
         this.setLibraryDirectory(Paths.get("jipipe").resolve("lib-jipipe-python"));
+    }
+
+    @Override
+    public void applyConfigurationFromArtifact(JIPipeLocalArtifact artifact, JIPipeProgressInfo progressInfo) {
+        setProvidedByEnvironment(false);
+        setLibraryDirectory(artifact.getLocalPath().resolve("jipipe-python-main"));
     }
 
     public JIPipePythonAdapterLibraryEnvironment(PythonPackageLibraryEnvironment other) {

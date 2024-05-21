@@ -62,14 +62,14 @@ public class JIPipeDesktopGenericNotificationUI extends JIPipeDesktopWorkbenchPa
 
         if (!dismissed && !blocked) {
             JButton dismissButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
-            UIUtils.makeFlat25x25(dismissButton);
+            UIUtils.makeButtonFlat25x25(dismissButton);
             dismissButton.setToolTipText("Dismisses this notification");
             dismissButton.addActionListener(e -> notification.dismiss());
             headerPanel.add(dismissButton);
         }
 
         // Add content
-        JTextPane textPane = UIUtils.makeBorderlessReadonlyTextPane(new MarkdownText(notification.getDescription()).getRenderedHTML(), true);
+        JTextPane textPane = UIUtils.createBorderlessReadonlyTextPane(new MarkdownText(notification.getDescription()).getRenderedHTML(), true);
         textPane.setOpaque(false);
         textPane.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         add(textPane, BorderLayout.CENTER);

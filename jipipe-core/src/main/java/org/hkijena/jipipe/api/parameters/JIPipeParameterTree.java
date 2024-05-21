@@ -458,7 +458,12 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
      * @return ui order
      */
     public int getUISourceOrder(JIPipeParameterCollection source) {
-        return nodeMap.get(source).getUiOrder();
+        Node node = nodeMap.getOrDefault(source, null);
+        if (node != null) {
+            return node.getUiOrder();
+        } else {
+            return 0;
+        }
     }
 
     /**
@@ -468,12 +473,17 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
      * @return name
      */
     public String getSourceDocumentationName(JIPipeParameterCollection source) {
-        Node node = nodeMap.get(source);
-        if (!StringUtils.isNullOrEmpty(node.getName())) {
-            return node.getName();
+        Node node = nodeMap.getOrDefault(source, null);
+        if (node != null) {
+            if (!StringUtils.isNullOrEmpty(node.getName())) {
+                return node.getName();
+            } else {
+                return String.join("/", node.getPath());
+            }
         } else {
-            return String.join("/", node.getPath());
+            return "[Unknown source]";
         }
+
     }
 
     /**
@@ -483,7 +493,12 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
      * @return visibility
      */
     public boolean isSourceHidden(JIPipeParameterCollection source) {
-        return nodeMap.get(source).isHidden();
+        Node node = nodeMap.getOrDefault(source, null);
+        if (node != null) {
+            return node.isHidden();
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -493,7 +508,12 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
      * @return source UI order
      */
     public int getSourceUIOrder(JIPipeParameterCollection source) {
-        return nodeMap.get(source).getUiOrder();
+        Node node = nodeMap.getOrDefault(source, null);
+        if (node != null) {
+            return node.getUiOrder();
+        } else {
+            return 0;
+        }
     }
 
     /**
@@ -503,7 +523,12 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
      * @return if the source is collapsed by default
      */
     public boolean getSourceCollapsed(JIPipeParameterCollection source) {
-        return nodeMap.get(source).collapsed;
+        Node node = nodeMap.getOrDefault(source, null);
+        if (node != null) {
+            return node.collapsed;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -513,12 +538,16 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
      * @return source documentation
      */
     public SetJIPipeDocumentation getSourceDocumentation(JIPipeParameterCollection source) {
-        Node node = nodeMap.get(source);
-        String name = getSourceDocumentationName(source);
-        HTMLText description = node.getDescription();
-        if (description == null)
-            description = new HTMLText();
-        return new JIPipeDocumentation(name, description.getBody());
+        Node node = nodeMap.getOrDefault(source, null);
+        if (node != null) {
+            String name = getSourceDocumentationName(source);
+            HTMLText description = node.getDescription();
+            if (description == null)
+                description = new HTMLText();
+            return new JIPipeDocumentation(name, description.getBody());
+        } else {
+            return new JIPipeDocumentation("[Unknown source]", "");
+        }
     }
 
     /**
@@ -528,9 +557,11 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
      * @param documentation documentation
      */
     public void setSourceDocumentation(JIPipeParameterCollection source, JIPipeDocumentation documentation) {
-        Node node = nodeMap.get(source);
-        node.setName(documentation.name());
-        node.setDescription(new HTMLText(DocumentationUtils.getDocumentationDescription(documentation)));
+        Node node = nodeMap.getOrDefault(source, null);
+        if (node != null) {
+            node.setName(documentation.name());
+            node.setDescription(new HTMLText(DocumentationUtils.getDocumentationDescription(documentation)));
+        }
     }
 
     /**

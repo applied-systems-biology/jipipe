@@ -32,7 +32,7 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, Contextual, JIPipeService.ExtensionDiscoveredEventListener {
+public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, Contextual, JIPipeService.PluginDiscoveredEventListener {
 
     private static final Object instanceLock = new Object();
     private static volatile JIPipeDesktopSplashScreen instance;
@@ -129,7 +129,7 @@ public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, C
     }
 
     @Override
-    public void onJIPipeExtensionDiscovered(JIPipe.ExtensionDiscoveredEvent event) {
+    public void onJIPipePluginDiscovered(JIPipe.ExtensionDiscoveredEvent event) {
         if (event.getExtension() instanceof JIPipeJavaPlugin) {
             SwingUtilities.invokeLater(() -> {
                 for (ImageIcon icon : ((JIPipeJavaPlugin) event.getExtension()).getSplashIcons()) {

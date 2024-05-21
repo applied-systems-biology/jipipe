@@ -59,13 +59,13 @@ public class JIPipeDesktopPlotSeriesEditorUI extends JIPipeDesktopWorkbenchPanel
         titlePanel.setOpaque(true);
 
         moveDownButton = new JButton(UIUtils.getIconFromResources("actions/caret-down.png"));
-        UIUtils.makeBorderlessWithoutMargin(moveDownButton);
+        UIUtils.makeButtonBorderlessWithoutMargin(moveDownButton);
         moveDownButton.setToolTipText("Move down");
         moveDownButton.addActionListener(e -> seriesBuilder.getPlotBuilderUI().moveSeriesDown(seriesBuilder));
         titlePanel.add(moveDownButton);
 
         moveUpButton = new JButton(UIUtils.getIconFromResources("actions/caret-up.png"));
-        UIUtils.makeBorderlessWithoutMargin(moveUpButton);
+        UIUtils.makeButtonBorderlessWithoutMargin(moveUpButton);
         moveUpButton.setToolTipText("Move up");
         moveUpButton.addActionListener(e -> seriesBuilder.getPlotBuilderUI().moveSeriesUp(seriesBuilder));
         titlePanel.add(moveUpButton);
@@ -76,11 +76,11 @@ public class JIPipeDesktopPlotSeriesEditorUI extends JIPipeDesktopWorkbenchPanel
         removeButton = new JButton(UIUtils.getIconFromResources("actions/delete.png"));
         removeButton.setToolTipText("Remove series");
         removeButton.addActionListener(e -> removeSeries());
-        UIUtils.makeBorderlessWithoutMargin(removeButton);
+        UIUtils.makeButtonBorderlessWithoutMargin(removeButton);
         titlePanel.add(removeButton);
 
         enableToggleButton = new JButton();
-        UIUtils.makeBorderlessWithoutMargin(enableToggleButton);
+        UIUtils.makeButtonBorderlessWithoutMargin(enableToggleButton);
         enableToggleButton.addActionListener(e -> toggleEnableDisable());
         titlePanel.add(Box.createHorizontalStrut(4));
         titlePanel.add(enableToggleButton);

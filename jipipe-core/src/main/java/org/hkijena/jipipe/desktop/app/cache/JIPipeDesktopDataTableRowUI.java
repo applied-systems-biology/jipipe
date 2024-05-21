@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop.app.cache;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -29,12 +30,12 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.datatracer.JIPipeDesktopDataTracerUI;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionEvaluator;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.DynamicDataDisplayOperationIdEnumParameter;
-import org.hkijena.jipipe.plugins.settings.DefaultCacheDisplaySettings;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeDefaultCacheDisplayApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -92,7 +93,7 @@ public class JIPipeDesktopDataTableRowUI extends JIPipeDesktopWorkbenchPanel {
         List<JIPipeDataDisplayOperation> displayOperations = JIPipe.getInstance().getDatatypeRegistry().getSortedDisplayOperationsFor(dataTypeId);
         if (!displayOperations.isEmpty()) {
             JIPipeDataDisplayOperation result = displayOperations.get(0);
-            DynamicDataDisplayOperationIdEnumParameter parameter = DefaultCacheDisplaySettings.getInstance().getValue(dataTypeId, DynamicDataDisplayOperationIdEnumParameter.class);
+            DynamicDataDisplayOperationIdEnumParameter parameter = JIPipeDefaultCacheDisplayApplicationSettings.getInstance().getValue(dataTypeId, DynamicDataDisplayOperationIdEnumParameter.class);
             if (parameter != null) {
                 String defaultName = parameter.getValue();
                 for (JIPipeDataDisplayOperation operation : displayOperations) {
@@ -263,15 +264,15 @@ public class JIPipeDesktopDataTableRowUI extends JIPipeDesktopWorkbenchPanel {
     private void exportAsFolder() {
         if (dataTableStore.isPresent()) {
             JIPipeDataTable dataTable = dataTableStore.get();
-            Path path = FileChooserSettings.saveDirectory(getDesktopWorkbench().getWindow(),
-                    FileChooserSettings.LastDirectoryKey.Data,
+            Path path = JIPipeFileChooserApplicationSettings.saveDirectory(getDesktopWorkbench().getWindow(),
+                    JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
                     "Export " + dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "") +
                             "/" + dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "") + "/" + row);
             if (path != null) {
                 try {
                     Files.createDirectories(path);
                     JIPipeRunnable runnable = new ExportAsFolderRun(row, dataTable, path);
-                    JIPipeDesktopRunExecuterUI.runInDialog(getDesktopWorkbench(), getDesktopWorkbench().getWindow(), runnable);
+                    JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), getDesktopWorkbench().getWindow(), runnable);
                 } catch (Exception e) {
                     UIUtils.openErrorDialog(getDesktopWorkbench(), getDesktopWorkbench().getWindow(), e);
                 }
@@ -282,13 +283,13 @@ public class JIPipeDesktopDataTableRowUI extends JIPipeDesktopWorkbenchPanel {
     private void exportToFolder() {
         JIPipeDataTable dataTable = dataTableStore.get();
         if (dataTable != null) {
-            Path path = FileChooserSettings.saveFile(getDesktopWorkbench().getWindow(),
-                    FileChooserSettings.LastDirectoryKey.Data,
+            Path path = JIPipeFileChooserApplicationSettings.saveFile(getDesktopWorkbench().getWindow(),
+                    JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
                     "Export " + dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "") + "/"
                             + dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "") + "/" + row);
             if (path != null) {
                 JIPipeRunnable runnable = new ExportToFolderRun(row, dataTable, path);
-                JIPipeDesktopRunExecuterUI.runInDialog(getDesktopWorkbench(), getDesktopWorkbench().getWindow(), runnable);
+                JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), getDesktopWorkbench().getWindow(), runnable);
             }
         }
     }
@@ -326,7 +327,7 @@ public class JIPipeDesktopDataTableRowUI extends JIPipeDesktopWorkbenchPanel {
             if (!displayOperations.isEmpty()) {
                 JIPipeDataDisplayOperation result = displayOperations.get(0);
                 String dataTypeId = JIPipe.getDataTypes().getIdOf(dataTable.getAcceptedDataType());
-                DynamicDataDisplayOperationIdEnumParameter parameter = DefaultCacheDisplaySettings.getInstance().getValue(dataTypeId, DynamicDataDisplayOperationIdEnumParameter.class);
+                DynamicDataDisplayOperationIdEnumParameter parameter = JIPipeDefaultCacheDisplayApplicationSettings.getInstance().getValue(dataTypeId, DynamicDataDisplayOperationIdEnumParameter.class);
                 if (parameter != null) {
                     String defaultName = parameter.getValue();
                     for (JIPipeDataDisplayOperation operation : displayOperations) {
@@ -408,28 +409,16 @@ public class JIPipeDesktopDataTableRowUI extends JIPipeDesktopWorkbenchPanel {
         }
     }
 
-    private static class ExportAsFolderRun implements JIPipeRunnable {
+    private static class ExportAsFolderRun extends AbstractJIPipeRunnable {
 
         private final int row;
         private final Path path;
         private JIPipeDataTable dataTable;
-        private JIPipeProgressInfo progressInfo;
 
         public ExportAsFolderRun(int row, JIPipeDataTable dataTable, Path path) {
             this.row = row;
             this.dataTable = dataTable;
             this.path = path;
-            progressInfo = new JIPipeProgressInfo();
-        }
-
-        @Override
-        public JIPipeProgressInfo getProgressInfo() {
-            return progressInfo;
-        }
-
-        @Override
-        public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-            this.progressInfo = progressInfo;
         }
 
         @Override
@@ -439,6 +428,7 @@ public class JIPipeDesktopDataTableRowUI extends JIPipeDesktopWorkbenchPanel {
 
         @Override
         public void run() {
+            JIPipeProgressInfo progressInfo = getProgressInfo();
             try {
                 JIPipeData data = dataTable.getData(row, JIPipeData.class, progressInfo);
                 data.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, path), "data", false, progressInfo);
@@ -450,28 +440,16 @@ public class JIPipeDesktopDataTableRowUI extends JIPipeDesktopWorkbenchPanel {
 
     }
 
-    private static class ExportToFolderRun implements JIPipeRunnable {
+    private static class ExportToFolderRun extends AbstractJIPipeRunnable {
 
         private final int row;
         private final Path path;
         private JIPipeDataTable dataTable;
-        private JIPipeProgressInfo progressInfo;
 
         public ExportToFolderRun(int row, JIPipeDataTable dataTable, Path path) {
             this.row = row;
             this.dataTable = dataTable;
             this.path = path;
-            progressInfo = new JIPipeProgressInfo();
-        }
-
-        @Override
-        public JIPipeProgressInfo getProgressInfo() {
-            return progressInfo;
-        }
-
-        @Override
-        public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-            this.progressInfo = progressInfo;
         }
 
         @Override
@@ -481,6 +459,7 @@ public class JIPipeDesktopDataTableRowUI extends JIPipeDesktopWorkbenchPanel {
 
         @Override
         public void run() {
+            JIPipeProgressInfo progressInfo = getProgressInfo();
             try {
                 JIPipeData data = dataTable.getData(row, JIPipeData.class, progressInfo);
                 data.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, path.getParent()), path.getFileName().toString(), true, progressInfo);

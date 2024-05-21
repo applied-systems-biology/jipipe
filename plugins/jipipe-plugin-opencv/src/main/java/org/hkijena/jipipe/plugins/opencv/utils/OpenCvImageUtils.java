@@ -15,7 +15,9 @@ package org.hkijena.jipipe.plugins.opencv.utils;
 
 import ij.ImagePlus;
 import ij.process.*;
-import org.bytedeco.javacpp.indexer.*;
+import org.bytedeco.javacpp.indexer.FloatRawIndexer;
+import org.bytedeco.javacpp.indexer.UByteRawIndexer;
+import org.bytedeco.javacpp.indexer.UShortRawIndexer;
 import org.bytedeco.javacpp.opencv_core;
 import org.bytedeco.javacpp.opencv_imgproc;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -93,19 +95,15 @@ public class OpenCvImageUtils {
 //        ImagePlus imagePlus = new ImagePlus("img", processor);
 //        Img wrapped = ImageJFunctions.wrap(imagePlus);
 //        return ImgToMatConverter.toMat(wrapped);
-        if(processor instanceof ByteProcessor) {
+        if (processor instanceof ByteProcessor) {
             return convertByteProcessorToMat((ByteProcessor) processor);
-        }
-        else if(processor instanceof FloatProcessor) {
+        } else if (processor instanceof FloatProcessor) {
             return convertFloatProcessorToMat((FloatProcessor) processor);
-        }
-        else if(processor instanceof ColorProcessor) {
+        } else if (processor instanceof ColorProcessor) {
             return convertColorProcessorToMat((ColorProcessor) processor);
-        }
-        else if(processor instanceof  ShortProcessor) {
+        } else if (processor instanceof ShortProcessor) {
             return convertShortProcessorToMat((ShortProcessor) processor);
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException("Unknown processor type: " + processor);
         }
     }
@@ -160,8 +158,8 @@ public class OpenCvImageUtils {
                 }
             }
         } else {
-            opencv_core.Mat processor = img.getImage(0,0,0);
-            ImageSliceIndex index = new ImageSliceIndex(0,0,0);
+            opencv_core.Mat processor = img.getImage(0, 0, 0);
+            ImageSliceIndex index = new ImageSliceIndex(0, 0, 0);
             result.put(index, function.apply(processor, index));
         }
         return new OpenCvImageData(result);
@@ -169,21 +167,17 @@ public class OpenCvImageUtils {
 
     public static ImageProcessor toProcessor(opencv_core.Mat mat) {
 //        return ImageJFunctions.wrap((RandomAccessibleInterval) MatToImgConverter.convert(mat), "img").getProcessor();
-        if(mat.channels() == 3) {
+        if (mat.channels() == 3) {
             return convertMatToColorProcessor(mat);
-        }
-        else if(mat.channels() == 1) {
-            if(mat.depth() == opencv_core.CV_8U) {
+        } else if (mat.channels() == 1) {
+            if (mat.depth() == opencv_core.CV_8U) {
                 return convertMatToByteProcessor(mat);
-            }
-            else  if(mat.depth() == opencv_core.CV_16U) {
+            } else if (mat.depth() == opencv_core.CV_16U) {
                 return convertMatToShortProcessor(mat);
-            }
-            else {
+            } else {
                 return convertMatToFloatProcessor(mat);
             }
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException("Unable to convert non-grayscale images of unsupported types to ImageJ processor!");
         }
     }
@@ -193,15 +187,14 @@ public class OpenCvImageUtils {
     }
 
     public static opencv_core.Mat toGrayscale(opencv_core.Mat src, int type) {
-        if(src.type() != type) {
+        if (src.type() != type) {
             opencv_core.Mat dst = new opencv_core.Mat();
-            if(src.channels() == 3) {
+            if (src.channels() == 3) {
                 opencv_imgproc.cvtColor(src, dst, opencv_imgproc.COLOR_BGR2GRAY);
             }
-            if(dst.type() != type) {
+            if (dst.type() != type) {
                 dst.convertTo(src, type);
-            }
-            else {
+            } else {
                 return dst;
             }
         }
@@ -215,16 +208,15 @@ public class OpenCvImageUtils {
             allowedTypesList.add(allowedType.getNativeValue());
         }
 
-        if(!allowedTypesList.contains(src.type())) {
+        if (!allowedTypesList.contains(src.type())) {
             opencv_core.Mat dst = new opencv_core.Mat();
 
             // Channel conversion
-            if(src.channels() == 3 && dst.channels() == 1) {
+            if (src.channels() == 3 && dst.channels() == 1) {
                 // BGR2GRAY
                 opencv_imgproc.cvtColor(src, dst, opencv_imgproc.COLOR_BGR2GRAY);
                 opencv_core.swap(src, dst);
-            }
-            else if(src.channels() != type.getChannels()) {
+            } else if (src.channels() != type.getChannels()) {
                 // Expand the channels
                 opencv_core.MatVector toMerge = new opencv_core.MatVector();
                 for (int c = 0; c < type.getChannels(); c++) {
@@ -240,8 +232,7 @@ public class OpenCvImageUtils {
             // Depth conversion
             src.convertTo(dst, type.getDepth());
             return dst;
-        }
-        else {
+        } else {
             return src;
         }
     }

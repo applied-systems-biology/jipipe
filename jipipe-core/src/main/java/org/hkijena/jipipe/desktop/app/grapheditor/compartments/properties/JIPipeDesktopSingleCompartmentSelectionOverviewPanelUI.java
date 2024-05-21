@@ -33,7 +33,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeToggleButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
-import org.hkijena.jipipe.plugins.settings.GraphEditorUISettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -108,7 +108,7 @@ public class JIPipeDesktopSingleCompartmentSelectionOverviewPanelUI extends JIPi
     private void initializeCompartment(JIPipeDesktopFormPanel formPanel) {
         JIPipeDesktopFormPanel.GroupHeaderPanel groupHeader = formPanel.addGroupHeader("Compartments", UIUtils.getIconFromResources("actions/help-info.png"));
         groupHeader.addColumn(UIUtils.createButton("Edit", UIUtils.getIconFromResources("actions/edit.png"), this::editCompartmentContents));
-        formPanel.addWideToForm(UIUtils.makeBorderlessReadonlyTextPane("Graph compartments organize the pipeline into units, which is helpful for larger workflows. " +
+        formPanel.addWideToForm(UIUtils.createBorderlessReadonlyTextPane("Graph compartments organize the pipeline into units, which is helpful for larger workflows. " +
                 "To edit the steps that are executed in a compartment, double-click the compartment in the interface or click the 'Edit' button.", false));
     }
 
@@ -133,7 +133,7 @@ public class JIPipeDesktopSingleCompartmentSelectionOverviewPanelUI extends JIPi
         if (!JIPipeDesktopProjectWorkbench.canAddOrDeleteNodes(canvasUI.getDesktopWorkbench()))
             return;
         Set<JIPipeGraphNode> selection = Collections.singleton(compartment);
-        if (!GraphEditorUISettings.getInstance().isAskOnDeleteCompartment() || JOptionPane.showConfirmDialog(canvasUI.getDesktopWorkbench().getWindow(),
+        if (!JIPipeGraphEditorUIApplicationSettings.getInstance().isAskOnDeleteCompartment() || JOptionPane.showConfirmDialog(canvasUI.getDesktopWorkbench().getWindow(),
                 "Do you really want to remove the following compartment: " +
                         selection.stream().filter(node -> !node.isUiLocked()).map(JIPipeGraphNode::getName).collect(Collectors.joining(", ")), "Delete compartments",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
@@ -193,7 +193,7 @@ public class JIPipeDesktopSingleCompartmentSelectionOverviewPanelUI extends JIPi
 
     private void initializeCache(JIPipeDesktopFormPanel formPanel, Map<String, JIPipeDataTable> query) {
         JIPipeDesktopFormPanel.GroupHeaderPanel groupHeader = formPanel.addGroupHeader("Results available", UIUtils.getIconFromResources("actions/database.png"));
-        formPanel.addWideToForm(UIUtils.makeBorderlessReadonlyTextPane("Previously generated results are stored in the memory cache. Click the 'Show results' button to review the results.", false));
+        formPanel.addWideToForm(UIUtils.createBorderlessReadonlyTextPane("Previously generated results are stored in the memory cache. Click the 'Show results' button to review the results.", false));
         groupHeader.addColumn(UIUtils.createButton("Show results", UIUtils.getIconFromResources("actions/open-in-new-window.png"), this::openCacheBrowser));
 
         JIPipeDesktopFormPanel ioTable = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.NONE);
@@ -205,7 +205,7 @@ public class JIPipeDesktopSingleCompartmentSelectionOverviewPanelUI extends JIPi
             } else {
                 infoString = "0 items";
             }
-            ioTable.addToForm(UIUtils.makeBorderlessReadonlyTextPane(infoString, false),
+            ioTable.addToForm(UIUtils.createBorderlessReadonlyTextPane(infoString, false),
                     new JLabel("Out: " + StringUtils.orElse(outputSlot.getInfo().getCustomName(), outputSlot.getName()), JIPipe.getDataTypes().getIconFor(outputSlot.getAcceptedDataType()), JLabel.LEFT));
         }
 

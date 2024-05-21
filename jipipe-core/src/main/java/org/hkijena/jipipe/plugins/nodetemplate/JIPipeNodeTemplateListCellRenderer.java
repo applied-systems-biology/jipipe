@@ -16,8 +16,6 @@ package org.hkijena.jipipe.plugins.nodetemplate;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopColorIcon;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -112,17 +110,17 @@ public class JIPipeNodeTemplateListCellRenderer extends JPanel implements ListCe
         nodeColor.setBorderColor(template.getBorderColor());
         nameLabel.setText(template.getName());
         nodeNameLabel.setText(("Templates\n" + String.join("\n", template.getMenuPath())).replace("\n\n", "\n").trim().replace("\n", " > "));
-        nodeIcon.setIcon(UIUtils.getIconFromResources(StringUtils.orElse(template.getIcon().getIconName(), "actions/configure.png")));
+        nodeIcon.setIcon(template.getIconImage());
 
         if (template.isFromExtension()) {
             storageLabel.setForeground(COLOR_EXTENSION);
-            storageLabel.setText("Extension");
+            storageLabel.setText("Plugin");
         } else if (projectTemplateList.contains(template)) {
             storageLabel.setForeground(COLOR_PROJECT);
-            storageLabel.setText("Project storage");
+            storageLabel.setText("Project");
         } else {
             storageLabel.setForeground(COLOR_GLOBAL);
-            storageLabel.setText("Global storage");
+            storageLabel.setText("Global");
         }
 
         if (isSelected) {

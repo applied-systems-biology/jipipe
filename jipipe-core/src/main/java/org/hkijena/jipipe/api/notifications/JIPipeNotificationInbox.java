@@ -17,7 +17,7 @@ import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
-import org.hkijena.jipipe.plugins.settings.NotificationUISettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeNotificationUIApplicationSettings;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -130,7 +130,7 @@ public class JIPipeNotificationInbox {
     public boolean hasNotifications() {
         Set<String> blocked = new HashSet<>();
         if (JIPipe.isInstantiated()) {
-            NotificationUISettings settings = NotificationUISettings.getInstance();
+            JIPipeNotificationUIApplicationSettings settings = JIPipeNotificationUIApplicationSettings.getInstance();
             if (settings != null) {
                 blocked.addAll(settings.getBlockedNotifications());
             }

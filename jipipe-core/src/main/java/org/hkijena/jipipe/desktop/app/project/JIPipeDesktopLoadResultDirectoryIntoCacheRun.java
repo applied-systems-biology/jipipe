@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.project;
 
+import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -24,13 +25,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
-public class JIPipeDesktopLoadResultDirectoryIntoCacheRun implements JIPipeRunnable {
+public class JIPipeDesktopLoadResultDirectoryIntoCacheRun extends AbstractJIPipeRunnable {
     private final JIPipeWorkbench workbench;
     private final JIPipeProject project;
     private final Path resultPath;
 
     private final boolean clearBefore;
-    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
     public JIPipeDesktopLoadResultDirectoryIntoCacheRun(JIPipeWorkbench workbench, JIPipeProject project, Path resultPath, boolean clearBefore) {
         this.workbench = workbench;
@@ -40,22 +40,13 @@ public class JIPipeDesktopLoadResultDirectoryIntoCacheRun implements JIPipeRunna
     }
 
     @Override
-    public JIPipeProgressInfo getProgressInfo() {
-        return progressInfo;
-    }
-
-    @Override
-    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-        this.progressInfo = progressInfo;
-    }
-
-    @Override
     public String getTaskLabel() {
         return "Load exported data into cache";
     }
 
     @Override
     public void run() {
+        JIPipeProgressInfo progressInfo = getProgressInfo();
         ArrayList<JIPipeGraphNode> nodes = new ArrayList<>(project.getGraph().getGraphNodes());
         progressInfo.setProgress(0, nodes.size());
         if (clearBefore) {
@@ -63,7 +54,7 @@ public class JIPipeDesktopLoadResultDirectoryIntoCacheRun implements JIPipeRunna
             project.getCache().clearAll(progressInfo.resolve("Clear cache"));
         }
         for (int i = 0; i < nodes.size(); i++) {
-            if (getProgressInfo().isCancelled())
+            if (progressInfo.isCancelled())
                 return;
             JIPipeGraphNode node = nodes.get(i);
             progressInfo.setProgress(i, nodes.size());

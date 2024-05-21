@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.plugins.imageviewer.runs;
 
 import ij.ImagePlus;
+import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
@@ -25,13 +26,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class Stack2DExporterRun implements JIPipeRunnable {
+public class Stack2DExporterRun extends AbstractJIPipeRunnable {
     private final JIPipeImageViewer viewerPanel;
     private final Path outputFolder;
     private final String baseName;
     private final String formatName;
     private final double magnification;
-    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
     public Stack2DExporterRun(JIPipeImageViewer viewerPanel, Path outputFolder, String baseName, String formatName) {
         this.viewerPanel = viewerPanel;
@@ -42,21 +42,13 @@ public class Stack2DExporterRun implements JIPipeRunnable {
     }
 
     @Override
-    public JIPipeProgressInfo getProgressInfo() {
-        return progressInfo;
-    }
-
-    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-        this.progressInfo = progressInfo;
-    }
-
-    @Override
     public String getTaskLabel() {
         return "Image viewer: Export stack";
     }
 
     @Override
     public void run() {
+        JIPipeProgressInfo progressInfo = getProgressInfo();
         if (!Files.isDirectory(outputFolder)) {
             try {
                 Files.createDirectories(outputFolder);

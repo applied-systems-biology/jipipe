@@ -57,7 +57,7 @@ public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<St
         button.setToolTipText(name);
         button.setOpaque(false);
         button.addActionListener(e -> action.accept(this));
-        UIUtils.makeFlat25x25(button);
+        UIUtils.makeButtonFlat25x25(button);
         button.setBorder(null);
         buttonPanel.add(button);
     }

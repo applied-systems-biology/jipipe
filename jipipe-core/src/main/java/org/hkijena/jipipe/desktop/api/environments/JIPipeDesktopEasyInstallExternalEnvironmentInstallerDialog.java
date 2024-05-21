@@ -47,7 +47,7 @@ public class JIPipeDesktopEasyInstallExternalEnvironmentInstallerDialog extends 
         formPanel.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
 
         formPanel.addWideToForm(UIUtils.createJLabel(installer.getDialogHeading(), UIUtils.getIcon32FromResources("install.png"), 28));
-        formPanel.addWideToForm(UIUtils.makeBorderlessReadonlyTextPane(installer.getDialogDescription().getHtml(), false));
+        formPanel.addWideToForm(UIUtils.createBorderlessReadonlyTextPane(installer.getDialogDescription().getHtml(), false));
 
         formPanel.addWideToForm(Box.createVerticalStrut(16));
         formPanel.addWideToForm(UIUtils.createJLabel("Please be aware that some downloads can be multiple gigabytes", UIUtils.getIconFromResources("emblems/emblem-important-blue.png")));
@@ -90,10 +90,10 @@ public class JIPipeDesktopEasyInstallExternalEnvironmentInstallerDialog extends 
         } else {
             urlText = availablePackage.getUrl();
         }
-        JTextArea idField = UIUtils.makeReadonlyBorderlessTextArea(urlText);
+        JTextArea idField = UIUtils.createReadonlyBorderlessTextArea(urlText);
         idField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 11));
         panel.add(idField, new GridBagConstraints(0, 2, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
-        panel.add(UIUtils.makeBorderlessReadonlyTextPane(availablePackage.getDescription(), false), new GridBagConstraints(0, 1, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
+        panel.add(UIUtils.createBorderlessReadonlyTextPane(availablePackage.getDescription(), false), new GridBagConstraints(0, 1, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
 
         JButton installButton = new JButton("Install now", UIUtils.getIconFromResources("emblems/vcs-normal.png"));
         installButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 22));

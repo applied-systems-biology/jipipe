@@ -35,13 +35,13 @@ import org.hkijena.jipipe.plugins.ijtrackmate.TrackMatePlugin;
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.plugins.ijtrackmate.nodes.spots.MeasureSpotsNode;
 import org.hkijena.jipipe.plugins.ijtrackmate.parameters.SpotFeature;
-import org.hkijena.jipipe.plugins.ijtrackmate.settings.ImageViewerUISpotsDisplaySettings;
+import org.hkijena.jipipe.plugins.ijtrackmate.settings.ImageViewerUISpotsDisplayApplicationSettings;
 import org.hkijena.jipipe.plugins.ijtrackmate.utils.SpotDrawer;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewerPlugin2D;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -76,7 +76,7 @@ public class SpotsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     }
 
     private void initializeDefaults() {
-        ImageViewerUISpotsDisplaySettings settings = ImageViewerUISpotsDisplaySettings.getInstance();
+        ImageViewerUISpotsDisplayApplicationSettings settings = ImageViewerUISpotsDisplayApplicationSettings.getInstance();
         spotDrawer = new SpotDrawer(settings.getSpotDrawer());
         displaySpotsViewMenuItem.setState(settings.isShowSpots());
         displayLabelsViewMenuItem.setState(spotDrawer.getLabelSettings().isDrawLabels());
@@ -285,7 +285,7 @@ public class SpotsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
                 "Do you want to save the spot display settings as default?",
                 "Save settings as default",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            ImageViewerUISpotsDisplaySettings settings = ImageViewerUISpotsDisplaySettings.getInstance();
+            ImageViewerUISpotsDisplayApplicationSettings settings = ImageViewerUISpotsDisplayApplicationSettings.getInstance();
             settings.getSpotDrawer().copyFrom(spotDrawer);
             settings.setShowSpots(displaySpotsViewMenuItem.getState());
             if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
@@ -300,7 +300,7 @@ public class SpotsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     }
 
     private void importSpotsFromFile() {
-        Path path = FileChooserSettings.openFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Data, "Import spots", UIUtils.EXTENSION_FILTER_ZIP);
+        Path path = JIPipeFileChooserApplicationSettings.openFile(getViewerPanel(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Import spots", UIUtils.EXTENSION_FILTER_ZIP);
         if (path != null && displaySpotsViewMenuItem.getState()) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             try (JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo, path)) {
@@ -314,7 +314,7 @@ public class SpotsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
 
     private void exportSpotsToFile(SpotsCollectionData rois) {
         FileNameExtensionFilter[] fileNameExtensionFilters = new FileNameExtensionFilter[]{UIUtils.EXTENSION_FILTER_ZIP};
-        Path path = FileChooserSettings.saveFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Data, "Export spots", fileNameExtensionFilters);
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(getViewerPanel(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export spots", fileNameExtensionFilters);
         if (path != null) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             try (JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo, path)) {

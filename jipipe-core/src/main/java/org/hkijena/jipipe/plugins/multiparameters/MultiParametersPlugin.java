@@ -27,8 +27,6 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
-import java.util.Collections;
-
 /**
  * Extension that provides capabilities to run multiple parameters
  */
@@ -66,13 +64,14 @@ public class MultiParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public StringList getDependencyProvides() {
         return new StringList();
     }
+
     @Override
     public String getDependencyId() {
         return "org.hkijena.jipipe:multi-parameters";
     }
 
     @Override
-    public boolean isCoreExtension() {
+    public boolean isCorePlugin() {
         return true;
     }
 

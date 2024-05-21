@@ -32,7 +32,7 @@ import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
 import org.hkijena.jipipe.plugins.forms.utils.SingleAnnotationIOSettings;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -164,8 +164,8 @@ public class PathFormData extends ParameterFormData {
                     }
 
                     @Override
-                    public FileChooserSettings.LastDirectoryKey key() {
-                        return FileChooserSettings.LastDirectoryKey.Parameters;
+                    public JIPipeFileChooserApplicationSettings.LastDirectoryKey key() {
+                        return JIPipeFileChooserApplicationSettings.LastDirectoryKey.Parameters;
                     }
                 })
                 .build();

@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.*;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeGraphType;
@@ -44,13 +45,13 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartitionConfiguration;
+import org.hkijena.jipipe.api.settings.JIPipeProjectSettingsSheet;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.plugins.settings.NodeTemplateSettings;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
@@ -90,6 +91,8 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
     private JIPipeProjectMetadata metadata = new JIPipeProjectMetadata();
     private JIPipeRuntimePartitionConfiguration runtimePartitions = new JIPipeRuntimePartitionConfiguration();
     private Map<String, JIPipeMetadataObject> additionalMetadata = new HashMap<>();
+    private Map<String, JIPipeProjectSettingsSheet> settingsSheets = new HashMap<>();
+    private Map<String, JsonNode> unloadedSettingsSheets = new HashMap<>();
     private Path workDirectory;
     private boolean isCleaningUp;
     private boolean isLoading;
@@ -136,6 +139,13 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
             this.runtimePartitions.add(postprocessingPartition);
         }
 
+        // Init default settings
+        for (Map.Entry<String, Class<? extends JIPipeProjectSettingsSheet>> entry : JIPipe.getInstance().getProjectSettingsRegistry().getRegisteredSheetTypes().entrySet()) {
+            JIPipeProjectSettingsSheet sheet = (JIPipeProjectSettingsSheet) ReflectionUtils.newInstance(entry.getValue());
+            settingsSheets.put(entry.getKey(), sheet);
+        }
+
+        // Update the graph compartments
         compartmentGraph.getGraphChangedEventEmitter().subscribe(this);
     }
 
@@ -307,6 +317,23 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
 
     public CompartmentRemovedEventEmitter getCompartmentRemovedEventEmitter() {
         return compartmentRemovedEventEmitter;
+    }
+
+    public Map<String, JIPipeProjectSettingsSheet> getSettingsSheets() {
+        return ImmutableMap.copyOf(settingsSheets);
+    }
+
+    public <T extends JIPipeProjectSettingsSheet> T getSettingsSheet(String id, Class<T> klass) {
+        return (T) settingsSheets.getOrDefault(id, null);
+    }
+
+    public <T extends JIPipeProjectSettingsSheet> T getSettingsSheet(Class<T> klass) {
+        for (JIPipeProjectSettingsSheet settingsSheet : settingsSheets.values()) {
+            if (klass.isAssignableFrom(settingsSheet.getClass())) {
+                return (T) settingsSheet;
+            }
+        }
+        return null;
     }
 
     public JIPipeGraphNode.BaseDirectoryChangedEventEmitter getBaseDirectoryChangedEventEmitter() {
@@ -632,17 +659,34 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
      * @throws IOException thrown by {@link JsonGenerator}
      */
     public void toJson(JsonGenerator generator) throws IOException {
-//        cleanupGraph();
+
         generator.writeStartObject();
+        // Write standard metadata
         generator.writeStringField("jipipe:project-type", "project");
         generator.writeNumberField("jipipe:project-format-version", CURRENT_PROJECT_FORMAT_VERSION);
         generator.writeObjectField("metadata", metadata);
         generator.writeObjectField("dependencies", getSimplifiedMinimalDependencies());
         generator.writeObjectField("runtime-partitions", runtimePartitions);
 
+        // Write settings
+        generator.writeObjectFieldStart("settings");
+        for (Map.Entry<String, JIPipeProjectSettingsSheet> entry : settingsSheets.entrySet()) {
+            generator.writeObjectFieldStart(entry.getKey());
+            entry.getValue().serializeToJsonGenerator(generator);
+            generator.writeEndObject();
+        }
+        for (Map.Entry<String, JsonNode> entry : unloadedSettingsSheets.entrySet()) {
+            if (!settingsSheets.containsKey(entry.getKey())) {
+                generator.writeObjectField(entry.getKey(), entry.getValue());
+            }
+        }
+
+        generator.writeEndObject();
+
+        // Write list of external environments
         List<JIPipeEnvironment> externalEnvironments = new ArrayList<>();
         for (JIPipeGraphNode graphNode : getGraph().getGraphNodes()) {
-            graphNode.getExternalEnvironments(externalEnvironments);
+            graphNode.getEnvironmentDependencies(externalEnvironments);
         }
         generator.writeArrayFieldStart("external-environments");
         for (JIPipeEnvironment environment : Sets.newHashSet(externalEnvironments)) {
@@ -650,12 +694,13 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
         }
         generator.writeEndArray();
 
+        // Write additional metadata
         if (!getAdditionalMetadata().isEmpty()) {
             generator.writeObjectFieldStart("additional-metadata");
             for (Map.Entry<String, JIPipeMetadataObject> entry : getAdditionalMetadata().entrySet()) {
                 String typeId = JIPipe.getInstance().getMetadataRegistry().getId(entry.getValue().getClass());
 
-                if(typeId != null) {
+                if (typeId != null) {
                     if (entry.getValue() instanceof JIPipeParameterCollection) {
                         generator.writeObjectFieldStart(entry.getKey());
                         generator.writeObjectField("jipipe:type", typeId);
@@ -667,13 +712,14 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
                         generator.writeObjectField("data", entry.getValue());
                         generator.writeEndObject();
                     }
-                }
-                else {
+                } else {
                     System.err.println("Unable to serialize " + entry.getValue() + " as metadata object: not registered!");
                 }
             }
             generator.writeEndObject();
         }
+
+        // Write graph and compartments
         generator.writeObjectField("graph", graph);
         generator.writeFieldName("compartments");
         generator.writeStartObject();
@@ -693,13 +739,42 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
         try {
             isLoading = true;
 
+            // Load metadata
             if (jsonNode.has("metadata")) {
                 metadata = JsonUtils.getObjectMapper().readerFor(JIPipeProjectMetadata.class).readValue(jsonNode.get("metadata"));
             }
 
+            // Load partitions
             if (jsonNode.has("runtime-partitions")) {
                 JsonNode sub = jsonNode.get("runtime-partitions");
                 this.runtimePartitions = JsonUtils.getObjectMapper().convertValue(sub, JIPipeRuntimePartitionConfiguration.class);
+            }
+
+            // Load settings sheets
+            if (jsonNode.has("settings")) {
+                for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.get("settings").fields())) {
+                    try {
+                        if (settingsSheets.containsKey(entry.getKey())) {
+                            settingsSheets.get(entry.getKey()).deserializeFromJsonNode(entry.getValue());
+                        } else {
+                            unloadedSettingsSheets.put(entry.getKey(), entry.getValue());
+                            report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
+                                    new UnspecifiedValidationReportContext(),
+                                    "Unable to load settings",
+                                    "The project settings for the sheet with the ID '" + entry.getKey() + "' are not known to JIPipe. " +
+                                            "The data will be backed up, so ",
+                                    "Please check if all required plugins are up-to-date and activated."));
+                        }
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                        report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                                new UnspecifiedValidationReportContext(),
+                                "Unable to load settings",
+                                "The project settings for the sheet with the ID '" + entry.getKey() + "' could not be loaded.",
+                                "Please check if you are using an up-to-date JIPipe version.",
+                                ExceptionUtils.getStackTrace(e)));
+                    }
+                }
             }
 
             // Deserialize additional metadata
@@ -709,7 +784,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
                     String typeId = metadataEntry.getValue().get("jipipe:type").textValue();
                     Class<? extends JIPipeMetadataObject> metadataClass = JIPipe.getInstance().getMetadataRegistry().findById(typeId);
 
-                    if(metadataClass == null) {
+                    if (metadataClass == null) {
                         throw new NullPointerException("Unable to find metadata object ID '" + typeId + "'");
                     }
 
@@ -934,7 +1009,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
      */
     public List<JIPipeNodeExample> getNodeExamples(String nodeTypeId) {
         List<JIPipeNodeExample> result = new ArrayList<>(JIPipe.getNodes().getNodeExamples(nodeTypeId));
-        for (JIPipeNodeTemplate nodeTemplate : NodeTemplateSettings.getInstance().getNodeTemplates()) {
+        for (JIPipeNodeTemplate nodeTemplate : JIPipe.getInstance().getNodeTemplateRegistry().getGlobalTemplates()) {
             JIPipeNodeExample example = new JIPipeNodeExample(nodeTemplate);
             if (Objects.equals(example.getNodeId(), nodeTypeId)) {
                 example.setSourceInfo("From node templates (global)");

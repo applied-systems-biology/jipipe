@@ -35,13 +35,17 @@ public interface JIPipeService extends Service, JIPipeValidatable {
 
     JIPipeNodeRegistry getNodeRegistry();
 
+    JIPipeNodeTemplateRegistry getNodeTemplateRegistry();
+
     JIPipeDatatypeRegistry getDatatypeRegistry();
 
     JIPipeParameterTypeRegistry getParameterTypeRegistry();
 
     JIPipeCustomMenuRegistry getCustomMenuRegistry();
 
-    JIPipeApplicationSettingsRegistry getSettingsRegistry();
+    JIPipeApplicationSettingsRegistry getApplicationSettingsRegistry();
+
+    JIPipeProjectSettingsRegistry getProjectSettingsRegistry();
 
     JIPipeMetadataRegistry getMetadataRegistry();
 
@@ -51,13 +55,15 @@ public interface JIPipeService extends Service, JIPipeValidatable {
 
     JIPipeExternalEnvironmentRegistry getExternalEnvironmentRegistry();
 
-    JIPipeExtensionRegistry getExtensionRegistry();
+    JIPipePluginRegistry getPluginRegistry();
 
     JIPipeProjectTemplateRegistry getProjectTemplateRegistry();
 
     JIPipeGraphEditorToolRegistry getGraphEditorToolRegistry();
 
     JIPipeExpressionRegistry getTableOperationRegistry();
+
+    JIPipeArtifactsRegistry getArtifactsRegistry();
 
     Set<String> getRegisteredExtensionIds();
 
@@ -75,34 +81,34 @@ public interface JIPipeService extends Service, JIPipeValidatable {
 
     NodeInfoRegisteredEventEmitter getNodeInfoRegisteredEventEmitter();
 
-    public interface DatatypeRegisteredEventListener {
+    interface DatatypeRegisteredEventListener {
         void onJIPipeDatatypeRegistered(DatatypeRegisteredEvent event);
     }
 
-    public interface ExtensionContentAddedEventListener {
-        void onJIPipeExtensionContentAdded(ExtensionContentAddedEvent event);
+    interface PluginContentAddedEventListener {
+        void onJIPipePluginContentAdded(ExtensionContentAddedEvent event);
     }
 
-    public interface ExtensionContentRemovedEventListener {
-        void onJIPipeExtensionContentRemoved(ExtensionContentRemovedEvent event);
+    interface PluginContentRemovedEventListener {
+        void onJIPipePluginContentRemoved(ExtensionContentRemovedEvent event);
     }
 
-    public interface ExtensionDiscoveredEventListener {
-        void onJIPipeExtensionDiscovered(ExtensionDiscoveredEvent event);
+    interface PluginDiscoveredEventListener {
+        void onJIPipePluginDiscovered(ExtensionDiscoveredEvent event);
     }
 
-    public interface ExtensionRegisteredEventListener {
-        void onJIPipeExtensionRegistered(ExtensionRegisteredEvent event);
+    interface PluginRegisteredEventListener {
+        void onJIPipePluginRegistered(ExtensionRegisteredEvent event);
     }
 
-    public interface NodeInfoRegisteredEventListener {
+    interface NodeInfoRegisteredEventListener {
         void onJIPipeNodeInfoRegistered(NodeInfoRegisteredEvent event);
     }
 
     /**
      * Triggered when a new data type is registered
      */
-    public static class DatatypeRegisteredEvent extends AbstractJIPipeEvent {
+    class DatatypeRegisteredEvent extends AbstractJIPipeEvent {
         private final JIPipe registry;
         private final String id;
 
@@ -121,7 +127,7 @@ public interface JIPipeService extends Service, JIPipeValidatable {
         }
     }
 
-    public static class DatatypeRegisteredEventEmitter extends JIPipeEventEmitter<DatatypeRegisteredEvent, DatatypeRegisteredEventListener> {
+    class DatatypeRegisteredEventEmitter extends JIPipeEventEmitter<DatatypeRegisteredEvent, DatatypeRegisteredEventListener> {
         @Override
         protected void call(DatatypeRegisteredEventListener datatypeRegisteredEventListener, DatatypeRegisteredEvent event) {
             datatypeRegisteredEventListener.onJIPipeDatatypeRegistered(event);
@@ -131,7 +137,7 @@ public interface JIPipeService extends Service, JIPipeValidatable {
     /**
      * Generated when content is added to an {@link JIPipeJsonPlugin}
      */
-    public static class ExtensionContentAddedEvent extends AbstractJIPipeEvent {
+    class ExtensionContentAddedEvent extends AbstractJIPipeEvent {
         private final JIPipeJsonPlugin extension;
         private final Object content;
 
@@ -154,17 +160,17 @@ public interface JIPipeService extends Service, JIPipeValidatable {
         }
     }
 
-    public static class ExtensionContentAddedEventEmitter extends JIPipeEventEmitter<ExtensionContentAddedEvent, ExtensionContentAddedEventListener> {
+    class ExtensionContentAddedEventEmitter extends JIPipeEventEmitter<ExtensionContentAddedEvent, PluginContentAddedEventListener> {
         @Override
-        protected void call(ExtensionContentAddedEventListener extensionContentAddedEventListener, ExtensionContentAddedEvent event) {
-            extensionContentAddedEventListener.onJIPipeExtensionContentAdded(event);
+        protected void call(PluginContentAddedEventListener pluginContentAddedEventListener, ExtensionContentAddedEvent event) {
+            pluginContentAddedEventListener.onJIPipePluginContentAdded(event);
         }
     }
 
     /**
      * Generated when content is removed from an {@link JIPipeJsonPlugin}
      */
-    public static class ExtensionContentRemovedEvent extends AbstractJIPipeEvent {
+    class ExtensionContentRemovedEvent extends AbstractJIPipeEvent {
         private final JIPipeJsonPlugin extension;
         private final Object content;
 
@@ -187,18 +193,18 @@ public interface JIPipeService extends Service, JIPipeValidatable {
         }
     }
 
-    public static class ExtensionContentRemovedEventEmitter extends JIPipeEventEmitter<ExtensionContentRemovedEvent, ExtensionContentRemovedEventListener> {
+    class ExtensionContentRemovedEventEmitter extends JIPipeEventEmitter<ExtensionContentRemovedEvent, PluginContentRemovedEventListener> {
 
         @Override
-        protected void call(ExtensionContentRemovedEventListener extensionContentRemovedEventListener, ExtensionContentRemovedEvent event) {
-            extensionContentRemovedEventListener.onJIPipeExtensionContentRemoved(event);
+        protected void call(PluginContentRemovedEventListener pluginContentRemovedEventListener, ExtensionContentRemovedEvent event) {
+            pluginContentRemovedEventListener.onJIPipePluginContentRemoved(event);
         }
     }
 
     /**
      * Triggered when a new extension was discovered
      */
-    public static class ExtensionDiscoveredEvent extends AbstractJIPipeEvent {
+    class ExtensionDiscoveredEvent extends AbstractJIPipeEvent {
         private final JIPipe registry;
         private final JIPipeDependency extension;
 
@@ -217,18 +223,18 @@ public interface JIPipeService extends Service, JIPipeValidatable {
         }
     }
 
-    public static class ExtensionDiscoveredEventEmitter extends JIPipeEventEmitter<ExtensionDiscoveredEvent, ExtensionDiscoveredEventListener> {
+    class ExtensionDiscoveredEventEmitter extends JIPipeEventEmitter<ExtensionDiscoveredEvent, PluginDiscoveredEventListener> {
 
         @Override
-        protected void call(ExtensionDiscoveredEventListener extensionDiscoveredEventListener, ExtensionDiscoveredEvent event) {
-            extensionDiscoveredEventListener.onJIPipeExtensionDiscovered(event);
+        protected void call(PluginDiscoveredEventListener pluginDiscoveredEventListener, ExtensionDiscoveredEvent event) {
+            pluginDiscoveredEventListener.onJIPipePluginDiscovered(event);
         }
     }
 
     /**
      * Triggered by {@link JIPipeService} when an extension is registered
      */
-    public static class ExtensionRegisteredEvent extends AbstractJIPipeEvent {
+    class ExtensionRegisteredEvent extends AbstractJIPipeEvent {
         private final JIPipeService registry;
         private final JIPipeDependency extension;
 
@@ -251,18 +257,18 @@ public interface JIPipeService extends Service, JIPipeValidatable {
         }
     }
 
-    public static class ExtensionRegisteredEventEmitter extends JIPipeEventEmitter<ExtensionRegisteredEvent, ExtensionRegisteredEventListener> {
+    class ExtensionRegisteredEventEmitter extends JIPipeEventEmitter<ExtensionRegisteredEvent, PluginRegisteredEventListener> {
 
         @Override
-        protected void call(ExtensionRegisteredEventListener extensionRegisteredEventListener, ExtensionRegisteredEvent event) {
-            extensionRegisteredEventListener.onJIPipeExtensionRegistered(event);
+        protected void call(PluginRegisteredEventListener pluginRegisteredEventListener, ExtensionRegisteredEvent event) {
+            pluginRegisteredEventListener.onJIPipePluginRegistered(event);
         }
     }
 
     /**
      * Triggered when an algorithm is registered
      */
-    public static class NodeInfoRegisteredEvent extends AbstractJIPipeEvent {
+    class NodeInfoRegisteredEvent extends AbstractJIPipeEvent {
 
         private final JIPipeService registry;
         private final JIPipeNodeInfo nodeInfo;
@@ -282,7 +288,7 @@ public interface JIPipeService extends Service, JIPipeValidatable {
         }
     }
 
-    public static class NodeInfoRegisteredEventEmitter extends JIPipeEventEmitter<NodeInfoRegisteredEvent, NodeInfoRegisteredEventListener> {
+    class NodeInfoRegisteredEventEmitter extends JIPipeEventEmitter<NodeInfoRegisteredEvent, NodeInfoRegisteredEventListener> {
 
         @Override
         protected void call(NodeInfoRegisteredEventListener nodeInfoRegisteredEventListener, NodeInfoRegisteredEvent event) {

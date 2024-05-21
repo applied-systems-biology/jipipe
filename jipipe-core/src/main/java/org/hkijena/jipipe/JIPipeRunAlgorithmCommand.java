@@ -24,9 +24,9 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
-import org.hkijena.jipipe.plugins.settings.ExtensionSettings;
 import org.hkijena.jipipe.desktop.app.compat.JIPipeDesktopRunSingleAlgorithmWindow;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopSplashScreen;
+import org.hkijena.jipipe.plugins.settings.JIPipeExtensionApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Initializable;
@@ -79,7 +79,7 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
 
     private void initializeRegistry(boolean withSplash) {
         JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
-        ExtensionSettings extensionSettings = ExtensionSettings.getInstanceFromRaw();
+        JIPipeExtensionApplicationSettings extensionSettings = JIPipeExtensionApplicationSettings.getInstanceFromRaw();
         if (!JIPipe.isInstantiated()) {
             UIUtils.loadLookAndFeelFromSettings();
             if (!JIPipe.isInstantiated() && withSplash) {

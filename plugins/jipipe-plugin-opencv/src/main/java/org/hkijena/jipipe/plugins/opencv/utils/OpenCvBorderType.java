@@ -10,7 +10,8 @@ public enum OpenCvBorderType {
     Wrap(opencv_core.BORDER_WRAP),
     Reflect101(opencv_core.BORDER_REFLECT_101),
     Transparent(opencv_core.BORDER_TRANSPARENT),
-    Isolated(opencv_core.BORDER_ISOLATED),;
+    Isolated(opencv_core.BORDER_ISOLATED),
+    ;
 
     private final int nativeValue;
 

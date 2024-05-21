@@ -35,7 +35,7 @@ import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportCon
 import org.hkijena.jipipe.plugins.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
-import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.plugins.utils.datatypes.JIPipeOutputData;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
@@ -61,7 +61,7 @@ public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public RunJIPipeProjectAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        threads.setContent(RuntimeSettings.getInstance().getDefaultRunThreads());
+        threads.setContent(JIPipeRuntimeApplicationSettings.getInstance().getDefaultRunThreads());
     }
 
     public RunJIPipeProjectAlgorithm(RunJIPipeProjectAlgorithm other) {
@@ -132,7 +132,7 @@ public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         settings.setOutputPath(rowStoragePath);
         settings.setStoreToCache(false);
         settings.setLoadFromCache(false);
-        settings.setNumThreads(threads.isEnabled() ? threads.getContent() : RuntimeSettings.getInstance().getDefaultRunThreads());
+        settings.setNumThreads(threads.isEnabled() ? threads.getContent() : JIPipeRuntimeApplicationSettings.getInstance().getDefaultRunThreads());
         JIPipeGraphRun run = new JIPipeGraphRun(project, settings);
         run.setProgressInfo(progressInfo.resolve("Project " + projectFile.getFileName().toString()));
 

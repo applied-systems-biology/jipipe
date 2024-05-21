@@ -36,7 +36,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
-import org.hkijena.jipipe.plugins.settings.DataExporterSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeDataExporterApplicationSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -75,7 +75,7 @@ public class ExportImageAlgorithm extends JIPipeIteratingAlgorithm {
 
     public ExportImageAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.exporter = new JIPipeDataByMetadataExporter(DataExporterSettings.getInstance());
+        this.exporter = new JIPipeDataByMetadataExporter(JIPipeDataExporterApplicationSettings.getInstance());
         registerSubParameter(exporter);
     }
 

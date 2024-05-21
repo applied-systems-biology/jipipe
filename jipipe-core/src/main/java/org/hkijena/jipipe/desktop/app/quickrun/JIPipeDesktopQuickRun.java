@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.quickrun;
 
+import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
@@ -27,18 +28,17 @@ import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.plugins.settings.GeneralDataSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
 
 import java.util.*;
 
 /**
  * Allows to test one algorithm with multiple parameters
  */
-public class JIPipeDesktopQuickRun implements JIPipeRunnable, JIPipeValidatable {
+public class JIPipeDesktopQuickRun extends AbstractJIPipeRunnable implements JIPipeValidatable {
     private final JIPipeProject project;
     private final JIPipeGraphNode targetNode;
     private final JIPipeDesktopQuickRunSettings settings;
-    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private JIPipeGraphRun run;
     private JIPipeGraphNode targetNodeCopy;
 
@@ -70,7 +70,7 @@ public class JIPipeDesktopQuickRun implements JIPipeRunnable, JIPipeValidatable 
         configuration.setIgnoreDeactivatedInputs(true);
 
         run = new JIPipeGraphRun(project, configuration);
-        run.setProgressInfo(progressInfo);
+        run.setProgressInfo(getProgressInfo());
         targetNodeCopy = run.getGraph().getEquivalentNode(targetNode);
         ((JIPipeAlgorithm) targetNodeCopy).setEnabled(true);
 
@@ -152,7 +152,7 @@ public class JIPipeDesktopQuickRun implements JIPipeRunnable, JIPipeValidatable 
     public void run() {
 
         // Remove outdated cache if needed
-        if (GeneralDataSettings.getInstance().isAutoRemoveOutdatedCachedData()) {
+        if (JIPipeGeneralDataApplicationSettings.getInstance().isAutoRemoveOutdatedCachedData()) {
             project.getCache().clearOutdated(getProgressInfo().resolveAndLog("Remove outdated cache"));
         }
 
@@ -180,7 +180,7 @@ public class JIPipeDesktopQuickRun implements JIPipeRunnable, JIPipeValidatable 
 
         // Remove the benched algorithm from cache. This is a workaround.
         if (settings.isLoadFromCache()) {
-            getProject().getCache().softClear(targetNode.getUUIDInParentGraph(), progressInfo);
+            getProject().getCache().softClear(targetNode.getUUIDInParentGraph(), getProgressInfo());
         }
 
         // Run the internal graph runner
@@ -246,16 +246,6 @@ public class JIPipeDesktopQuickRun implements JIPipeRunnable, JIPipeValidatable 
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         targetNodeCopy.reportValidity(reportContext, report);
-    }
-
-    @Override
-    public JIPipeProgressInfo getProgressInfo() {
-        return progressInfo;
-    }
-
-    @Override
-    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-        this.progressInfo = progressInfo;
     }
 
     @Override

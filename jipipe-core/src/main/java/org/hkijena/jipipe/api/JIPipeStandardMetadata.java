@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import org.apache.commons.text.WordUtils;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
@@ -45,7 +44,6 @@ public class JIPipeStandardMetadata extends AbstractJIPipeParameterCollection im
     private String citation = "";
     private StringList dependencyCitations = new StringList();
 
-    private ImageParameter thumbnail = new ImageParameter();
 
     private PluginCategoriesEnumParameter.List categories = new PluginCategoriesEnumParameter.List();
 
@@ -70,7 +68,6 @@ public class JIPipeStandardMetadata extends AbstractJIPipeParameterCollection im
         this.license = other.license;
         this.citation = other.citation;
         this.dependencyCitations = new StringList(other.dependencyCitations);
-        this.thumbnail = new ImageParameter(other.thumbnail);
         this.categories = new PluginCategoriesEnumParameter.List(other.categories);
     }
 
@@ -301,18 +298,5 @@ public class JIPipeStandardMetadata extends AbstractJIPipeParameterCollection im
     public void setDependencyCitations(StringList dependencyCitations) {
         this.dependencyCitations = dependencyCitations;
 
-    }
-
-    @SetJIPipeDocumentation(name = "Thumbnail", description = "A thumbnail image for various purposes")
-    @JIPipeParameter("thumbnail")
-    @JsonGetter("thumbnail")
-    public ImageParameter getThumbnail() {
-        return thumbnail;
-    }
-
-    @JIPipeParameter("thumbnail")
-    @JsonSetter("thumbnail")
-    public void setThumbnail(ImageParameter thumbnail) {
-        this.thumbnail = thumbnail;
     }
 }

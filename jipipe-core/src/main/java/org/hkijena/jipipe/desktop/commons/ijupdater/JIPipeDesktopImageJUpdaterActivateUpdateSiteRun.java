@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop.commons.ijupdater;
 
 import net.imagej.updater.FilesCollection;
 import net.imagej.updater.UpdateSite;
+import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.xml.sax.SAXException;
@@ -23,11 +24,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.List;
 
-public class JIPipeDesktopImageJUpdaterActivateUpdateSiteRun implements JIPipeRunnable {
+public class JIPipeDesktopImageJUpdaterActivateUpdateSiteRun extends AbstractJIPipeRunnable {
 
     private final FilesCollection filesCollection;
     private final List<UpdateSite> updateSites;
-    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
     public JIPipeDesktopImageJUpdaterActivateUpdateSiteRun(FilesCollection filesCollection, List<UpdateSite> updateSites) {
         this.filesCollection = filesCollection;
@@ -36,6 +36,7 @@ public class JIPipeDesktopImageJUpdaterActivateUpdateSiteRun implements JIPipeRu
 
     @Override
     public void run() {
+        JIPipeProgressInfo progressInfo = getProgressInfo();
         try {
             for (UpdateSite updateSite : updateSites) {
                 filesCollection.activateUpdateSite(updateSite, new JIPipeDesktopImageJUpdaterProgressAdapter2(progressInfo));
@@ -43,16 +44,6 @@ public class JIPipeDesktopImageJUpdaterActivateUpdateSiteRun implements JIPipeRu
         } catch (ParserConfigurationException | IOException | SAXException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public JIPipeProgressInfo getProgressInfo() {
-        return progressInfo;
-    }
-
-    @Override
-    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-        this.progressInfo = progressInfo;
     }
 
     @Override

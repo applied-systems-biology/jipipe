@@ -37,13 +37,13 @@ import org.hkijena.jipipe.api.project.JIPipeProjectInfoParameters;
 import org.hkijena.jipipe.api.run.JIPipeGraphRunPartitionInheritedBoolean;
 import org.hkijena.jipipe.desktop.app.grapheditor.JIPipeNodeHotKeyStorage;
 import org.hkijena.jipipe.desktop.app.project.JIPipeDesktopJIPipeProjectTabMetadata;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.data.CopyContainingFolderDataImportOperation;
 import org.hkijena.jipipe.plugins.core.data.DefaultDataDisplayOperation;
 import org.hkijena.jipipe.plugins.core.data.OpenContainingFolderDataImportOperation;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
@@ -85,6 +85,7 @@ public class CorePlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public StringList getDependencyProvides() {
         return new StringList();
     }
+
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerDatatype("jipipe:data",
@@ -209,7 +210,7 @@ public class CorePlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public boolean isCoreExtension() {
+    public boolean isCorePlugin() {
         return true;
     }
 

@@ -16,10 +16,10 @@ package org.hkijena.jipipe.desktop.commons.notifications;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.plugins.settings.NotificationUISettings;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.icons.JIPipeDesktopAnimatedIcon;
+import org.hkijena.jipipe.plugins.settings.JIPipeNotificationUIApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.Timer;
@@ -65,12 +65,12 @@ public class JIPipeDesktopNotificationButton extends JButton implements JIPipeNo
         timer.stop();
 
         // Add global and local (JIPipeProjectWorkbench) notifications
-        if (NotificationUISettings.getInstance().isEnableNotifications()) {
+        if (JIPipeNotificationUIApplicationSettings.getInstance().isEnableNotifications()) {
             notificationSet.addAll(JIPipeNotificationInbox.getInstance().getNotifications());
             notificationSet.addAll(getWorkbench().getNotificationInbox().getNotifications());
         }
-        if (!NotificationUISettings.getInstance().getBlockedNotifications().isEmpty()) {
-            Set<String> ids = new HashSet<>(NotificationUISettings.getInstance().getBlockedNotifications());
+        if (!JIPipeNotificationUIApplicationSettings.getInstance().getBlockedNotifications().isEmpty()) {
+            Set<String> ids = new HashSet<>(JIPipeNotificationUIApplicationSettings.getInstance().getBlockedNotifications());
             for (JIPipeNotification notification : ImmutableList.copyOf(notificationSet)) {
                 if (ids.contains(notification.getId())) {
                     notificationSet.remove(notification);

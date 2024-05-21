@@ -16,14 +16,15 @@ package org.hkijena.jipipe.plugins.nodetemplate.templatedownloader;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.plugins.settings.NodeTemplateSettings;
-import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
+import org.hkijena.jipipe.plugins.settings.JIPipeNodeTemplateApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.WebUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -36,11 +37,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
-public class NodeTemplateDownloaderRun implements JIPipeRunnable {
+public class NodeTemplateDownloaderRun extends AbstractJIPipeRunnable {
 
     private final JIPipeDesktopWorkbench workbench;
     private final List<NodeTemplateDownloaderPackage> availablePackages = new ArrayList<>();
-    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private Set<NodeTemplateDownloaderPackage> targetPackages = new HashSet<>();
 
     private boolean toProject = false;
@@ -54,22 +54,13 @@ public class NodeTemplateDownloaderRun implements JIPipeRunnable {
     }
 
     @Override
-    public JIPipeProgressInfo getProgressInfo() {
-        return progressInfo;
-    }
-
-    @Override
-    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-        this.progressInfo = progressInfo;
-    }
-
-    @Override
     public String getTaskLabel() {
         return "Download project templates";
     }
 
     @Override
     public void run() {
+        JIPipeProgressInfo progressInfo = getProgressInfo();
         progressInfo.setProgress(0, 5);
         loadAvailablePackages(progressInfo.resolve("Load available packages"));
         progressInfo.setProgress(1);
@@ -86,12 +77,13 @@ public class NodeTemplateDownloaderRun implements JIPipeRunnable {
     }
 
     private void executeArchiveDownload() throws IOException {
+        JIPipeProgressInfo progressInfo = getProgressInfo();
         progressInfo.log("Downloading selected templates ...");
 
         for (NodeTemplateDownloaderPackage targetPackage : targetPackages) {
             progressInfo.log("The following URL will be downloaded: " + targetPackage.getUrl());
 
-            Path outputFile = RuntimeSettings.generateTempFile("template", ".json");
+            Path outputFile = JIPipeRuntimeApplicationSettings.generateTempFile("template", ".json");
             try {
                 WebUtils.download(new URL(targetPackage.getUrl()), outputFile, "Download repository", progressInfo.resolve("Download template"));
             } catch (MalformedURLException e) {
@@ -111,17 +103,11 @@ public class NodeTemplateDownloaderRun implements JIPipeRunnable {
                     templates.add(template);
                 }
                 if (workbench instanceof JIPipeDesktopProjectWorkbench && toProject) {
-                    ((JIPipeDesktopProjectWorkbench) workbench).getProject().getMetadata().getNodeTemplates().addAll(templates);
-                    ((JIPipeDesktopProjectWorkbench) workbench).getProject().getMetadata().emitParameterChangedEvent("node-templates");
+                    JIPipe.getNodeTemplates().addToProject(templates, workbench.getProject());
                 } else {
                     // Store globally
-                    NodeTemplateSettings.getInstance().getNodeTemplates().addAll(templates);
-                    NodeTemplateSettings.getInstance().emitParameterChangedEvent("node-templates");
-                    if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                        JIPipe.getSettings().save();
-                    }
+                    JIPipe.getNodeTemplates().addToGlobal(templates);
                 }
-                NodeTemplateSettings.triggerRefreshedEvent();
             } catch (IOException e) {
                 progressInfo.log("Could not read template " + outputFile);
                 progressInfo.log(e.toString());
@@ -137,6 +123,7 @@ public class NodeTemplateDownloaderRun implements JIPipeRunnable {
     }
 
     private void executeUserConfiguration() {
+        JIPipeProgressInfo progressInfo = getProgressInfo();
         progressInfo.log("Waiting for user input ...");
         try {
             SwingUtilities.invokeAndWait(this::runSetupDialog);
@@ -153,7 +140,7 @@ public class NodeTemplateDownloaderRun implements JIPipeRunnable {
     }
 
     private void loadAvailablePackages(JIPipeProgressInfo progressInfo) {
-        StringList repositories = NodeTemplateSettings.getInstance().getNodeTemplateDownloadRepositories();
+        StringList repositories = JIPipeNodeTemplateApplicationSettings.getInstance().getNodeTemplateDownloadRepositories();
 
         if (repositories.isEmpty()) {
             throw new UnsupportedOperationException("No repositories set! Cancelling.");
@@ -166,7 +153,7 @@ public class NodeTemplateDownloaderRun implements JIPipeRunnable {
         for (int i = 0; i < repositories.size(); i++) {
             String repositoryURL = repositories.get(i);
             JIPipeProgressInfo repositoryProgress = progressInfo.resolve("Repository " + i);
-            Path outputFile = RuntimeSettings.generateTempFile("repository", ".json");
+            Path outputFile = JIPipeRuntimeApplicationSettings.generateTempFile("repository", ".json");
             try {
                 WebUtils.download(new URL(repositoryURL), outputFile, "Download repository", repositoryProgress);
             } catch (MalformedURLException e) {

@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.desktop.commons.components;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.plugins.settings.GeneralDataSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -23,7 +23,7 @@ import java.util.Optional;
 
 public class JIPipeDesktopDataPreviewControlUI extends JPanel implements JIPipeParameterCollection.ParameterChangedEventListener {
 
-    private final GeneralDataSettings dataSettings = GeneralDataSettings.getInstance();
+    private final JIPipeGeneralDataApplicationSettings dataSettings = JIPipeGeneralDataApplicationSettings.getInstance();
     private final JButton zoomStatusButton = new JButton();
 
     public JIPipeDesktopDataPreviewControlUI() {
@@ -40,17 +40,17 @@ public class JIPipeDesktopDataPreviewControlUI extends JPanel implements JIPipeP
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
         JButton zoomOutButton = new JButton(UIUtils.getIconFromResources("actions/square-minus.png"));
-        UIUtils.makeFlat25x25(zoomOutButton);
+        UIUtils.makeButtonFlat25x25(zoomOutButton);
         zoomOutButton.addActionListener(e -> decreaseSize());
         add(zoomOutButton);
 
-        UIUtils.makeBorderlessWithoutMargin(zoomStatusButton);
+        UIUtils.makeButtonBorderlessWithoutMargin(zoomStatusButton);
         JPopupMenu zoomMenu = UIUtils.addPopupMenuToButton(zoomStatusButton);
         initializeZoomMenu(zoomMenu);
         add(zoomStatusButton);
 
         JButton zoomInButton = new JButton(UIUtils.getIconFromResources("actions/square-plus.png"));
-        UIUtils.makeFlat25x25(zoomInButton);
+        UIUtils.makeButtonFlat25x25(zoomInButton);
         zoomInButton.addActionListener(e -> increaseSize());
         add(zoomInButton);
     }

@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis;
 
 import ij.ImagePlus;
+import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -24,7 +25,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 
 import java.nio.file.Path;
 
-public class ImagePlusResultImportRun implements JIPipeRunnable {
+public class ImagePlusResultImportRun extends AbstractJIPipeRunnable {
 
     private final JIPipeDataSlot slot;
     private final JIPipeDataTableMetadataRow row;
@@ -33,7 +34,6 @@ public class ImagePlusResultImportRun implements JIPipeRunnable {
     private final String algorithmName;
     private final String displayName;
     private final JIPipeWorkbench workbench;
-    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private ImagePlus image;
 
     public ImagePlusResultImportRun(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
@@ -47,21 +47,13 @@ public class ImagePlusResultImportRun implements JIPipeRunnable {
     }
 
     @Override
-    public JIPipeProgressInfo getProgressInfo() {
-        return progressInfo;
-    }
-
-    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-        this.progressInfo = progressInfo;
-    }
-
-    @Override
     public String getTaskLabel() {
         return "Import image";
     }
 
     @Override
     public void run() {
+        JIPipeProgressInfo progressInfo = getProgressInfo();
         progressInfo.setProgress(1, 3);
         progressInfo.log("Importing image from " + rowStorageFolder);
         ImagePlusData data = ImagePlusData.importData(new JIPipeFileSystemReadDataStorage(progressInfo, rowStorageFolder), progressInfo);

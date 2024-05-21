@@ -13,13 +13,17 @@
 
 package org.hkijena.jipipe.plugins.ilastik;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
+import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryInstallArtifactRun;
+import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
+import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopGenericNotificationInboxUI;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -52,23 +56,6 @@ public class RunIlastikDesktopMenuExtension extends JIPipeDesktopMenuExtension i
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (IlastikSettings.environmentSettingsAreValid()) {
-            JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-            progressInfo.setLogToStdOut(true);
-            getDesktopWorkbench().sendStatusBarText("Launching Ilastik ...");
-            IlastikPlugin.runIlastik(null, Collections.emptyList(), progressInfo, true);
-        } else {
-            JIPipeNotificationInbox inbox = new JIPipeNotificationInbox();
-            IlastikPlugin.createMissingIlastikNotificationIfNeeded(inbox);
-            JIPipeDesktopGenericNotificationInboxUI ui = new JIPipeDesktopGenericNotificationInboxUI(getDesktopWorkbench(), inbox);
-            JFrame dialog = new JFrame();
-            dialog.setTitle("Run Ilastik");
-            dialog.setContentPane(ui);
-            dialog.setIconImage(UIUtils.getJIPipeIcon128());
-            dialog.pack();
-            dialog.setSize(800, 600);
-            dialog.setLocationRelativeTo(getDesktopWorkbench().getWindow());
-            dialog.setVisible(true);
-        }
+      IlastikPlugin.launchIlastik(getDesktopWorkbench(), Collections.emptyList());
     }
 }

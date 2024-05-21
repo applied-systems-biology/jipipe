@@ -35,11 +35,11 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGr
 import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.actions.JIPipeDesktopUpdateCacheAction;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRun;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRunSettings;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.WeakStore;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -219,7 +219,7 @@ public class JIPipeDesktopAlgorithmCacheBrowserUI extends JIPipeDesktopProjectWo
             JOptionPane.showMessageDialog(this, "There is no cached data to export!", "Export cache", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        Path outputFolder = FileChooserSettings.saveDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Export cache");
+        Path outputFolder = JIPipeFileChooserApplicationSettings.saveDirectory(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export cache");
         if (outputFolder != null) {
             // Save the node's state to a file
             Path nodeStateFile = outputFolder.resolve("node.json");
@@ -231,12 +231,12 @@ public class JIPipeDesktopAlgorithmCacheBrowserUI extends JIPipeDesktopProjectWo
             }
             JIPipeDesktopDataTableToOutputExporterRun run = new JIPipeDesktopDataTableToOutputExporterRun(getDesktopWorkbench(), outputFolder,
                     new ArrayList<>(slotMap.values()), true, false);
-            JIPipeDesktopRunExecuterUI.runInDialog(getDesktopWorkbench(), getDesktopWorkbench().getWindow(), run);
+            JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), getDesktopWorkbench().getWindow(), run);
         }
     }
 
     private void importCache() {
-        Path inputFolder = FileChooserSettings.openDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Import cache");
+        Path inputFolder = JIPipeFileChooserApplicationSettings.openDirectory(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Import cache");
         // Temporarily removed
 //        Path nodeStateFile = inputFolder.resolve("node.json");
 //        if (Files.exists(nodeStateFile)) {
@@ -314,7 +314,7 @@ public class JIPipeDesktopAlgorithmCacheBrowserUI extends JIPipeDesktopProjectWo
             }
         }
         JIPipeDesktopImportCachedSlotOutputRun run = new JIPipeDesktopImportCachedSlotOutputRun(getDesktopProjectWorkbench().getProject(), graphNode, inputFolder);
-        JIPipeDesktopRunExecuterUI.runInDialog(getDesktopWorkbench(), getDesktopWorkbench().getWindow(), run);
+        JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), getDesktopWorkbench().getWindow(), run);
     }
 
     @Override

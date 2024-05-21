@@ -44,6 +44,6 @@ public class CloseAllImageJWindowsTool extends JIPipeDesktopMenuExtension {
 
     @Override
     public String getMenuPath() {
-        return "";
+        return "ImageJ";
     }
 }

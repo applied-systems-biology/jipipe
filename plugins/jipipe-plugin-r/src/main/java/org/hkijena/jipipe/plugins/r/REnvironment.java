@@ -16,8 +16,10 @@ package org.hkijena.jipipe.plugins.r;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.apache.commons.lang3.SystemUtils;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
+import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -45,7 +47,7 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
-public class REnvironment extends JIPipeEnvironment {
+public class REnvironment extends JIPipeArtifactEnvironment {
     public static final String ENVIRONMENT_ID = "r";
     private Path RExecutablePath = Paths.get("");
     private Path RScriptExecutablePath = Paths.get("");
@@ -69,20 +71,50 @@ public class REnvironment extends JIPipeEnvironment {
 
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
-        if (StringUtils.isNullOrEmpty(getRExecutablePath()) || !Files.isRegularFile(getRExecutablePath())) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new UnspecifiedValidationReportContext(),
-                    "R executable does not exist",
-                    "You need to provide a R executable",
-                    "Provide a R executable"));
+        if (!isLoadFromArtifact()) {
+            if (StringUtils.isNullOrEmpty(getRExecutablePath()) || !Files.isRegularFile(getRExecutablePath())) {
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                        new UnspecifiedValidationReportContext(),
+                        "R executable does not exist",
+                        "You need to provide a R executable",
+                        "Provide a R executable"));
+            }
+            if (StringUtils.isNullOrEmpty(getRScriptExecutablePath()) || !Files.isRegularFile(getRScriptExecutablePath())) {
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                        new UnspecifiedValidationReportContext(),
+                        "RScript executable does not exist",
+                        "You need to provide a RScript executable",
+                        "Provide a RScript executable"));
+            }
         }
-        if (StringUtils.isNullOrEmpty(getRScriptExecutablePath()) || !Files.isRegularFile(getRScriptExecutablePath())) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new UnspecifiedValidationReportContext(),
-                    "RScript executable does not exist",
-                    "You need to provide a RScript executable",
-                    "Provide a RScript executable"));
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        if ("r-executable-path".equals(access.getKey())) {
+            return !isLoadFromArtifact();
         }
+        if ("rscript-executable-path".equals(access.getKey())) {
+            return !isLoadFromArtifact();
+        }
+        return super.isParameterUIVisible(tree, access);
+    }
+
+    @Override
+    public void applyConfigurationFromArtifact(JIPipeLocalArtifact artifact, JIPipeProgressInfo progressInfo) {
+        setArguments(new JIPipeExpressionParameter("ARRAY(script_file)"));
+        Path binaryDir = artifact.getLocalPath().resolve("bin");
+        if (SystemUtils.IS_OS_WINDOWS) {
+            setRExecutablePath(binaryDir.resolve("R.exe"));
+            setRScriptExecutablePath(binaryDir.resolve("Rscript.exe"));
+        } else {
+            setRExecutablePath(binaryDir.resolve("R"));
+            setRScriptExecutablePath(binaryDir.resolve("Rscript"));
+
+            // Do chmod +x for all executables
+            PathUtils.makeAllUnixExecutable(binaryDir, progressInfo);
+        }
+
     }
 
     @SetJIPipeDocumentation(name = "R executable", description = "The main R executable (R.exe on Windows)")
@@ -143,12 +175,20 @@ public class REnvironment extends JIPipeEnvironment {
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("apps/rlogo_icon.png");
+        if (isLoadFromArtifact()) {
+            return UIUtils.getIconFromResources("actions/run-install.png");
+        } else {
+            return UIUtils.getIconFromResources("apps/rlogo_icon.png");
+        }
     }
 
     @Override
     public String getInfo() {
-        return StringUtils.orElse(RExecutablePath, "<Not set>");
+        if (isLoadFromArtifact()) {
+            return getArtifactQuery().getQuery();
+        } else {
+            return StringUtils.orElse(RExecutablePath, "<Not set>");
+        }
     }
 
     public static class RArgumentsVariablesInfo implements ExpressionParameterVariablesInfo {

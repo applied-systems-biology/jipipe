@@ -23,7 +23,7 @@ import org.hkijena.jipipe.plugins.ij3d.compat.ROI3DImageJExporter;
 import org.hkijena.jipipe.plugins.ij3d.compat.ROI3DImageJImporter;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.plugins.ij3d.display.AddROI3DToManagerOperation;
-import org.hkijena.jipipe.plugins.ij3d.imageviewer.ImageViewerUIROI3DDisplaySettings;
+import org.hkijena.jipipe.plugins.ij3d.imageviewer.ImageViewerUIROI3DDisplayApplicationSettings;
 import org.hkijena.jipipe.plugins.ij3d.imageviewer.ROIManagerPlugin3D;
 import org.hkijena.jipipe.plugins.ij3d.nodes.ImportROI3DAlgorithm;
 import org.hkijena.jipipe.plugins.ij3d.nodes.binary.DistanceMap3DAlgorithm;
@@ -130,13 +130,7 @@ public class IJ3DPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
 
-        registerSettingsSheet(ImageViewerUIROI3DDisplaySettings.ID,
-                "3D ROI display",
-                "Settings for the ROI manager component of the JIPipe image viewer",
-                IJ3DPlugin.RESOURCES.getIconFromResources("data-type-roi3d.png"),
-                "Image viewer",
-                UIUtils.getIconFromResources("actions/viewimage.png"),
-                new ImageViewerUIROI3DDisplaySettings());
+        registerApplicationSettingsSheet(new ImageViewerUIROI3DDisplayApplicationSettings());
         JIPipeImageViewer.registerDefaultPlugin(ROIManagerPlugin3D.class);
 
         registerEnumParameterType("ij3d-measurement", ROI3DMeasurement.class, "3D Measurement", "A 3D object measurement");

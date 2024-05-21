@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
-import org.hkijena.jipipe.plugins.settings.DataExporterSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeDataExporterApplicationSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -59,7 +59,7 @@ public class ExportROIAlgorithm extends JIPipeIteratingAlgorithm {
 
     public ExportROIAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.exporter = new JIPipeDataByMetadataExporter(DataExporterSettings.getInstance());
+        this.exporter = new JIPipeDataByMetadataExporter(JIPipeDataExporterApplicationSettings.getInstance());
         registerSubParameter(exporter);
     }
 

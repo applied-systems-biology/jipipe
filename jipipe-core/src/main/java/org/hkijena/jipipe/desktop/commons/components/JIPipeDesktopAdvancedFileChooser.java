@@ -17,7 +17,7 @@ import ij.Prefs;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.FileChooserBookmark;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -169,7 +169,7 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
             drillDownEditMode = false;
             trySetCurrentDirectory(pathField.getText());
         });
-        UIUtils.makeFlat25x25(acceptButton);
+        UIUtils.makeButtonFlat25x25(acceptButton);
         drillDownToolBar.add(acceptButton, BorderLayout.EAST);
     }
 
@@ -339,7 +339,7 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
         JToggleButton listViewButton = new JToggleButton(UIUtils.getIconFromResources("actions/view-list.png"));
         listViewButton.setToolTipText("Display as list of items");
         listViewButton.setSelected(true);
-        UIUtils.makeFlat25x25(listViewButton);
+        UIUtils.makeButtonFlat25x25(listViewButton);
         listViewButton.addActionListener(filePane.getViewTypeAction(FilePane.VIEWTYPE_LIST));
         actionToolbar.add(listViewButton);
         viewButtonGroup.add(listViewButton);
@@ -347,7 +347,7 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
         // Details Button
         JToggleButton detailsViewButton = new JToggleButton(UIUtils.getIconFromResources("actions/view-list-details.png"));
         detailsViewButton.setToolTipText("Display as detailed list of items");
-        UIUtils.makeFlat25x25(detailsViewButton);
+        UIUtils.makeButtonFlat25x25(detailsViewButton);
         detailsViewButton.addActionListener(filePane.getViewTypeAction(FilePane.VIEWTYPE_DETAILS));
         actionToolbar.add(detailsViewButton);
         viewButtonGroup.add(detailsViewButton);
@@ -370,7 +370,7 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
 
     private void toggleBookmark(File directory, boolean bookmarked) {
         if (JIPipe.isInstantiated() && !JIPipe.getInstance().isInitializing()) {
-            FileChooserSettings settings = FileChooserSettings.getInstance();
+            JIPipeFileChooserApplicationSettings settings = JIPipeFileChooserApplicationSettings.getInstance();
             Path path = directory.toPath();
             if (bookmarked) {
                 if (settings.getBookmarks().stream().noneMatch(bookmark -> Objects.equals(path, bookmark.getPath()))) {
@@ -499,12 +499,12 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
                 Paths.get(Prefs.getImageJDir() != null ? Prefs.getImageJDir() : "").toAbsolutePath().toFile());
 
         if (JIPipe.isInstantiated() && !JIPipe.getInstance().isInitializing()) {
-            FileChooserSettings settings = FileChooserSettings.getInstance();
+            JIPipeFileChooserApplicationSettings settings = JIPipeFileChooserApplicationSettings.getInstance();
 
             // Last directories
             Set<Path> lastDirectories = new HashSet<>();
             Path defaultDir = Paths.get("").toAbsolutePath();
-            for (FileChooserSettings.LastDirectoryKey key : FileChooserSettings.LastDirectoryKey.values()) {
+            for (JIPipeFileChooserApplicationSettings.LastDirectoryKey key : JIPipeFileChooserApplicationSettings.LastDirectoryKey.values()) {
                 Path path = settings.getLastDirectoryBy(key);
                 if (!Objects.equals(path, defaultDir) && Files.isDirectory(path)) {
                     lastDirectories.add(path);
@@ -573,7 +573,7 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
 
     private void updateBookmarkToggle() {
         if (JIPipe.isInstantiated() && !JIPipe.getInstance().isInitializing()) {
-            FileChooserSettings settings = FileChooserSettings.getInstance();
+            JIPipeFileChooserApplicationSettings settings = JIPipeFileChooserApplicationSettings.getInstance();
             if (fileChooserComponent.getCurrentDirectory() != null) {
                 bookmarkToggle.setSelected(settings.getBookmarks().stream().anyMatch(bookmark -> Objects.equals(fileChooserComponent.getCurrentDirectory().toPath(), bookmark.getPath())));
             }

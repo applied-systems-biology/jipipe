@@ -57,7 +57,7 @@ public class CreateLaunchersTool extends JIPipeDesktopMenuExtension {
 
     @Override
     public String getMenuPath() {
-        return "";
+        return "JIPipe";
     }
 
     private void createLaunchers() {

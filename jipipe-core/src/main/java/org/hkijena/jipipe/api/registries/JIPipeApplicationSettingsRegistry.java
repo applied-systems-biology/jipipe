@@ -13,20 +13,22 @@
 
 package org.hkijena.jipipe.api.registries;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.MissingNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
 import ij.IJ;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.api.settings.JIPipeApplicationSettingsSheet;
+import org.hkijena.jipipe.api.settings.JIPipeSettingsSheet;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
-import javax.swing.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -37,10 +39,11 @@ import java.util.Map;
  * Registry for settings.
  * Settings are organized in "sheets" (parameter collections)
  */
-public class JIPipeApplicationSettingsRegistry extends AbstractJIPipeParameterCollection implements JIPipeCustomParameterCollection {
+public class JIPipeApplicationSettingsRegistry {
 
     private final JIPipe jiPipe;
-    private final BiMap<String, Sheet> registeredSheets = HashBiMap.create();
+    private final BiMap<String, JIPipeApplicationSettingsSheet> registeredSheets = HashBiMap.create();
+    private final Map<Class<? extends JIPipeApplicationSettingsSheet>, JIPipeApplicationSettingsSheet> registeredSheetsByType = new HashMap<>();
 
     public JIPipeApplicationSettingsRegistry(JIPipe jiPipe) {
         this.jiPipe = jiPipe;
@@ -67,82 +70,67 @@ public class JIPipeApplicationSettingsRegistry extends AbstractJIPipeParameterCo
      * @return The location of the file where the settings are stored
      */
     public static Path getPropertyFile() {
-        return JIPipe.getJIPipeUserDir().resolve("jipipe.properties.json");
+        return JIPipe.getJIPipeUserDir().resolve("settings.json");
     }
+
 
     /**
      * Registers a new settings sheet
      *
-     * @param id                  unique ID of the sheet
-     * @param name                sheet name
-     * @param icon                sheet icon
-     * @param category            sheet category. If left null or empty, it will default to "General"
-     * @param categoryIcon        optional icon. If null, a wrench icon is used.
-     * @param parameterCollection the object that holds the parameters
+     * @param sheet the sheet
      */
-    public void register(String id, String name, Icon icon, String category, Icon categoryIcon, JIPipeParameterCollection parameterCollection) {
-        register(id, name, "", icon, category, categoryIcon, parameterCollection);
-    }
-
-    /**
-     * Registers a new settings sheet
-     *
-     * @param id                  unique ID of the sheet
-     * @param name                sheet name
-     * @param description         sheet description
-     * @param icon                sheet icon
-     * @param category            sheet category. If left null or empty, it will default to "General"
-     * @param categoryIcon        optional icon. If null, a wrench icon is used.
-     * @param parameterCollection the object that holds the parameters
-     */
-    public void register(String id, String name, String description, Icon icon, String category, Icon categoryIcon, JIPipeParameterCollection parameterCollection) {
-        if (StringUtils.isNullOrEmpty(category)) {
-            category = "General";
+    public void register(JIPipeApplicationSettingsSheet sheet) {
+        if (StringUtils.isNullOrEmpty(sheet.getId())) {
+            throw new IllegalArgumentException("Invalid ID for settings sheet " + sheet);
         }
-        if (icon == null) {
-            icon = UIUtils.getIconFromResources("actions/view-paged.png");
+        if (StringUtils.isNullOrEmpty(sheet.getIcon())) {
+            throw new IllegalArgumentException("Invalid icon for settings sheet " + sheet);
         }
-        if (categoryIcon == null) {
-            categoryIcon = UIUtils.getIconFromResources("actions/wrench.png");
+        if (StringUtils.isNullOrEmpty(sheet.getCategory()) || sheet.getCategoryIcon() == null) {
+            throw new IllegalArgumentException("Invalid category for settings sheet " + sheet);
         }
-        Sheet sheet = new Sheet(name, description, icon, category, categoryIcon, parameterCollection);
-        parameterCollection.getParameterChangedEventEmitter().subscribe(this);
-        registeredSheets.put(id, sheet);
-        getJIPipe().getProgressInfo().log("Registered settings sheet id=" + id + " in category '" + category + "' object=" + parameterCollection);
+        registeredSheets.put(sheet.getId(), sheet);
+        registeredSheetsByType.put(sheet.getClass(), sheet);
+        getJIPipe().getProgressInfo().log("Registered application settings sheet id=" + sheet.getId() + " in category '" + sheet.getCategory() + "' object=" + sheet);
     }
 
     /**
      * Gets the settings instance with given ID
      *
-     * @param id            the ID
-     * @param settingsClass the settings class
-     * @param <T>           the settings class
+     * @param id    the ID
+     * @param klass the settings class
+     * @param <T>   the settings class
      * @return the settings instance.
      */
-    public <T extends JIPipeParameterCollection> T getSettings(String id, Class<T> settingsClass) {
-        Sheet sheet = registeredSheets.getOrDefault(id, null);
+    public <T extends JIPipeSettingsSheet> T getById(String id, Class<T> klass) {
+        JIPipeApplicationSettingsSheet sheet = registeredSheets.getOrDefault(id, null);
         if (sheet != null) {
-            return (T) sheet.getParameterCollection();
+            return (T) sheet;
         } else {
             return null;
         }
     }
 
-    public BiMap<String, Sheet> getRegisteredSheets() {
+    /**
+     * Gets the settings instance with given ID
+     *
+     * @param klass the settings class
+     * @param <T>   the settings class
+     * @return the settings instance.
+     */
+    public <T extends JIPipeSettingsSheet> T getByType(Class<T> klass) {
+        JIPipeApplicationSettingsSheet sheet = registeredSheetsByType.getOrDefault(klass, null);
+        if (sheet != null) {
+            return (T) sheet;
+        } else {
+            return null;
+        }
+    }
+
+    public BiMap<String, JIPipeApplicationSettingsSheet> getRegisteredSheets() {
         return ImmutableBiMap.copyOf(registeredSheets);
     }
 
-    @Override
-    public Map<String, JIPipeParameterAccess> getParameters() {
-        Map<String, JIPipeParameterAccess> result = new HashMap<>();
-        for (Map.Entry<String, Sheet> entry : registeredSheets.entrySet()) {
-            JIPipeParameterTree traversedParameterCollection = new JIPipeParameterTree(entry.getValue().getParameterCollection());
-            for (Map.Entry<String, JIPipeParameterAccess> accessEntry : traversedParameterCollection.getParameters().entrySet()) {
-                result.put(entry.getKey() + "/" + accessEntry.getKey(), accessEntry.getValue());
-            }
-        }
-        return result;
-    }
 
     /**
      * Saves the settings to the specified file
@@ -150,12 +138,18 @@ public class JIPipeApplicationSettingsRegistry extends AbstractJIPipeParameterCo
      * @param file the file path
      */
     public void save(Path file) {
-        ObjectNode objectNode = JsonUtils.getObjectMapper().getNodeFactory().objectNode();
-        for (Map.Entry<String, JIPipeParameterAccess> entry : getParameters().entrySet()) {
-            objectNode.set(entry.getKey(), JsonUtils.getObjectMapper().convertValue(entry.getValue().get(Object.class), JsonNode.class));
-        }
-        try {
-            JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(file.toFile(), objectNode);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file.toFile()))) {
+            JsonFactory factory = JsonUtils.getObjectMapper().getFactory();
+            JsonGenerator generator = factory.createGenerator(writer);
+            generator.useDefaultPrettyPrinter();
+            generator.writeStartObject();
+            for (Map.Entry<String, JIPipeApplicationSettingsSheet> entry : registeredSheets.entrySet()) {
+                generator.writeObjectFieldStart(entry.getKey());
+                entry.getValue().serializeToJsonGenerator(generator);
+                generator.writeEndObject();
+            }
+            generator.writeEndObject();
+            generator.close();
         } catch (IOException e) {
             IJ.handleException(e);
             e.printStackTrace();
@@ -175,15 +169,19 @@ public class JIPipeApplicationSettingsRegistry extends AbstractJIPipeParameterCo
      * @param file the file
      */
     public void load(Path file) {
-        if (!Files.isRegularFile(file))
+        if (!Files.isRegularFile(file)) {
             return;
+        }
         try {
             JsonNode objectNode = JsonUtils.getObjectMapper().readTree(file.toFile());
-            for (Map.Entry<String, JIPipeParameterAccess> entry : getParameters().entrySet()) {
-                JsonNode node = objectNode.path(entry.getKey());
-                if (!node.isMissingNode() && !node.isNull()) {
-                    Object value = JsonUtils.getObjectMapper().readerFor(entry.getValue().getFieldClass()).readValue(node);
-                    entry.getValue().set(value);
+            for (Map.Entry<String, JIPipeApplicationSettingsSheet> entry : registeredSheets.entrySet()) {
+                if (objectNode.has(entry.getKey())) {
+                    try {
+                        entry.getValue().deserializeFromJsonNode(objectNode.get(entry.getKey()));
+                    } catch (Exception e) {
+                        IJ.handleException(e);
+                        e.printStackTrace();
+                    }
                 }
             }
         } catch (Exception e) {
@@ -200,71 +198,6 @@ public class JIPipeApplicationSettingsRegistry extends AbstractJIPipeParameterCo
 
     public JIPipe getJIPipe() {
         return jiPipe;
-    }
-
-    @Override
-    public void onParameterChanged(ParameterChangedEvent event) {
-//        if (!isLoading) {
-//            if (JIPipe.getInstance() != null && JIPipe.getInstance().isInitializing())
-//                return;
-//            save();
-//        }
-    }
-
-    /**
-     * A settings sheet
-     */
-    public static class Sheet {
-        private final String name;
-
-        private final String description;
-        private final String category;
-        private final Icon icon;
-        private final Icon categoryIcon;
-        private final JIPipeParameterCollection parameterCollection;
-
-        /**
-         * Creates a new instance
-         *
-         * @param name                name shown in UI
-         * @param description         description
-         * @param icon                icon for this sheet
-         * @param category            category shown in UI
-         * @param categoryIcon        category icon
-         * @param parameterCollection object that holds the parameter
-         */
-        public Sheet(String name, String description, Icon icon, String category, Icon categoryIcon, JIPipeParameterCollection parameterCollection) {
-            this.name = name;
-            this.description = description;
-            this.icon = icon;
-            this.category = category;
-            this.categoryIcon = categoryIcon;
-            this.parameterCollection = parameterCollection;
-        }
-
-        public Icon getIcon() {
-            return icon;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getCategory() {
-            return category;
-        }
-
-        public Icon getCategoryIcon() {
-            return categoryIcon;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        public JIPipeParameterCollection getParameterCollection() {
-            return parameterCollection;
-        }
     }
 
 }

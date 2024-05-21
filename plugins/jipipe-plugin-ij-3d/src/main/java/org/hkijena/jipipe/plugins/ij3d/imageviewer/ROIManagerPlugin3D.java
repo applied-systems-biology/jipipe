@@ -48,7 +48,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewerPlugin3D;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer3d.Image3DRenderType;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.vecmath.Color3f;
@@ -89,7 +89,7 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D implements JIP
     }
 
     private void loadDefaults() {
-        ImageViewerUIROI3DDisplaySettings settings = ImageViewerUIROI3DDisplaySettings.getInstance();
+        ImageViewerUIROI3DDisplayApplicationSettings settings = ImageViewerUIROI3DDisplayApplicationSettings.getInstance();
         displayROIViewMenuItem.setSelected(settings.isShowROI());
         displayROIAsVolumeItem.setSelected(settings.isRenderROIAsVolume());
     }
@@ -404,7 +404,7 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D implements JIP
                 "Do you want to save the ROI display settings as default?",
                 "Save settings as default",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            ImageViewerUIROI3DDisplaySettings settings = ImageViewerUIROI3DDisplaySettings.getInstance();
+            ImageViewerUIROI3DDisplayApplicationSettings settings = ImageViewerUIROI3DDisplayApplicationSettings.getInstance();
             settings.setShowROI(displayROIViewMenuItem.getState());
             settings.setRenderROIAsVolume(displayROIAsVolumeItem.getState());
             if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
@@ -414,7 +414,7 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D implements JIP
     }
 
     private void importROIsFromFile() {
-        Path path = FileChooserSettings.openFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Data, "Import ROI", UIUtils.EXTENSION_FILTER_ROIS);
+        Path path = JIPipeFileChooserApplicationSettings.openFile(getViewerPanel(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Import ROI", UIUtils.EXTENSION_FILTER_ROIS);
         if (path != null) {
             ROIListData importedROIs = ROIListData.loadRoiListFromFile(path);
             importROIs(importedROIs);
@@ -429,7 +429,7 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D implements JIP
     }
 
     private void exportROIsToFile(ROI3DListData rois) {
-        Path path = FileChooserSettings.saveFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Data, "Export ROI", UIUtils.EXTENSION_FILTER_ROI_ZIP);
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(getViewerPanel(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export ROI", UIUtils.EXTENSION_FILTER_ROI_ZIP);
         if (path != null) {
             rois.save(path);
         }

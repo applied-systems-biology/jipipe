@@ -29,11 +29,11 @@ import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRun;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRunSettings;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultUI;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopLogViewer;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.commons.components.*;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -152,13 +152,13 @@ public class JIPipeDesktopQuickRunSetupUI extends JIPipeDesktopProjectWorkbenchP
     }
 
     private void addSelectionPanelItem(JIPipeDesktopFormPanel formPanel, String name, ImageIcon icon, String description, Runnable action, boolean suggested) {
-        JTextArea descriptionArea = UIUtils.makeReadonlyBorderlessTextArea(description);
+        JTextArea descriptionArea = UIUtils.createReadonlyBorderlessTextArea(description);
         descriptionArea.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 
         JButton actionButton = new JButton(name, icon);
         actionButton.addActionListener(e -> action.run());
         if (suggested) {
-            UIUtils.makeHighlightedSuccess(actionButton);
+            UIUtils.makeButtonHighlightedSuccess(actionButton);
         }
 
         formPanel.addToForm(descriptionArea, actionButton);
@@ -316,7 +316,7 @@ public class JIPipeDesktopQuickRunSetupUI extends JIPipeDesktopProjectWorkbenchP
 
     private void openLogInExternalEditor() {
         if (currentQuickRun != null) {
-            Path tempFile = RuntimeSettings.generateTempFile("log", ".txt");
+            Path tempFile = JIPipeRuntimeApplicationSettings.generateTempFile("log", ".txt");
             try {
                 Files.write(tempFile, currentQuickRun.getProgressInfo().getLog().toString().getBytes(StandardCharsets.UTF_8));
                 Desktop.getDesktop().open(tempFile.toFile());
@@ -348,11 +348,11 @@ public class JIPipeDesktopQuickRunSetupUI extends JIPipeDesktopProjectWorkbenchP
         }
 
         currentQuickRun = new JIPipeDesktopQuickRun(getProject(), algorithm, currentSettings);
-        RuntimeSettings.getInstance().setDefaultQuickRunThreads(currentSettings.getNumThreads());
+        JIPipeRuntimeApplicationSettings.getInstance().setDefaultQuickRunThreads(currentSettings.getNumThreads());
         showNextResults = showResults;
 
         removeAll();
-        JIPipeDesktopRunExecuterUI executerUI = new JIPipeDesktopRunExecuterUI(getDesktopWorkbench(), currentQuickRun);
+        JIPipeDesktopRunExecuteUI executerUI = new JIPipeDesktopRunExecuteUI(getDesktopWorkbench(), currentQuickRun);
         add(executerUI, BorderLayout.CENTER);
         revalidate();
         repaint();

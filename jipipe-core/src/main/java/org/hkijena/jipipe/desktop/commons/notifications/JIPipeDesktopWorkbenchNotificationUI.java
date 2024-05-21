@@ -15,10 +15,10 @@ package org.hkijena.jipipe.desktop.commons.notifications;
 
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
-import org.hkijena.jipipe.plugins.settings.NotificationUISettings;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopRoundedButtonUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.plugins.settings.JIPipeNotificationUIApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
@@ -64,20 +64,20 @@ public class JIPipeDesktopWorkbenchNotificationUI extends JIPipeDesktopWorkbench
 
         if (this.blocked) {
             JButton unblockButton = new JButton("Unblock", UIUtils.getIconFromResources("actions/eye.png"));
-            UIUtils.makeBorderlessWithoutMargin(unblockButton);
+            UIUtils.makeButtonBorderlessWithoutMargin(unblockButton);
             unblockButton.setToolTipText("Unblocks this type of notification");
             unblockButton.addActionListener(e -> unblock());
             headerPanel.add(unblockButton);
         } else {
             JButton blockButton = new JButton(UIUtils.getIconFromResources("actions/eye-slash.png"));
-            UIUtils.makeFlat25x25(blockButton);
+            UIUtils.makeButtonFlat25x25(blockButton);
             blockButton.setToolTipText("Blocks this type of notification");
             blockButton.addActionListener(e -> block());
             headerPanel.add(blockButton);
 
             if (!dismissed) {
                 JButton dismissButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
-                UIUtils.makeFlat25x25(dismissButton);
+                UIUtils.makeButtonFlat25x25(dismissButton);
                 dismissButton.setToolTipText("Dismisses this notification");
                 dismissButton.addActionListener(e -> notification.dismiss());
                 headerPanel.add(dismissButton);
@@ -85,7 +85,7 @@ public class JIPipeDesktopWorkbenchNotificationUI extends JIPipeDesktopWorkbench
         }
 
         // Add content
-        JTextPane textPane = UIUtils.makeBorderlessReadonlyTextPane(new MarkdownText(notification.getDescription()).getRenderedHTML(), true);
+        JTextPane textPane = UIUtils.createBorderlessReadonlyTextPane(new MarkdownText(notification.getDescription()).getRenderedHTML(), true);
         textPane.setOpaque(false);
         textPane.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         add(textPane, BorderLayout.CENTER);
@@ -124,14 +124,14 @@ public class JIPipeDesktopWorkbenchNotificationUI extends JIPipeDesktopWorkbench
     private void block() {
         if (JOptionPane.showConfirmDialog(getDesktopWorkbench().getWindow(), "Do you really want to block all future notifications of " +
                 "the type '" + notification.getHeading() + "'?", "Block notification", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            NotificationUISettings.getInstance().getBlockedNotifications().add(notification.getId());
-            NotificationUISettings.getInstance().emitParameterChangedEvent("blocked-action-notifications");
+            JIPipeNotificationUIApplicationSettings.getInstance().getBlockedNotifications().add(notification.getId());
+            JIPipeNotificationUIApplicationSettings.getInstance().emitParameterChangedEvent("blocked-action-notifications");
             notification.dismiss();
         }
     }
 
     private void unblock() {
-        NotificationUISettings.getInstance().getBlockedNotifications().remove(notification.getId());
-        NotificationUISettings.getInstance().emitParameterChangedEvent("blocked-action-notifications");
+        JIPipeNotificationUIApplicationSettings.getInstance().getBlockedNotifications().remove(notification.getId());
+        JIPipeNotificationUIApplicationSettings.getInstance().emitParameterChangedEvent("blocked-action-notifications");
     }
 }

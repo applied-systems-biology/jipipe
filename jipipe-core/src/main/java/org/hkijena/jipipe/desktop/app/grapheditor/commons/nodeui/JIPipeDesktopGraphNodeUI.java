@@ -939,10 +939,9 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
     private void paintSlot(Graphics2D g2, JIPipeDesktopGraphNodeUISlotActiveArea slotState, int realSlotHeight, double startX, int slotWidth, Color indicatorColor, Color indicatorTextColor, int slotY, int indicatorY, int centerY) {
 
-        if(slotState.isSlotLabelIsCustom()) {
+        if (slotState.isSlotLabelIsCustom()) {
             g2.setFont(zoomedHighlightedSecondaryFont);
-        }
-        else {
+        } else {
             g2.setFont(zoomedSecondaryFont);
         }
 

@@ -34,8 +34,8 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.search.JIPipeDesktopNo
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopVerticalToolBar;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopColorIcon;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
-import org.hkijena.jipipe.plugins.settings.GraphEditorUISettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -80,7 +80,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
     public static final KeyStroke KEY_STROKE_MOVE_SELECTION_RIGHT = KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0, false);
     public static final KeyStroke KEY_STROKE_MOVE_SELECTION_UP = KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0, false);
     public static final KeyStroke KEY_STROKE_MOVE_SELECTION_DOWN = KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0, false);
-    private final GraphEditorUISettings graphUISettings;
+    private final JIPipeGraphEditorUIApplicationSettings graphUISettings;
     private final JIPipeDesktopGraphCanvasUI canvasUI;
     private final JIPipeGraph graph;
     private final JIPipeHistoryJournal historyJournal;
@@ -106,7 +106,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
      * @param historyJournal object that tracks the history of this graph. Set to null to disable the undo feature.
      * @param flags          additional flags
      */
-    public JIPipeDesktopGraphEditorUI(JIPipeDesktopWorkbench workbenchUI, JIPipeGraph graph, UUID compartment, JIPipeHistoryJournal historyJournal, GraphEditorUISettings settings, int flags) {
+    public JIPipeDesktopGraphEditorUI(JIPipeDesktopWorkbench workbenchUI, JIPipeGraph graph, UUID compartment, JIPipeHistoryJournal historyJournal, JIPipeGraphEditorUIApplicationSettings settings, int flags) {
         super(workbenchUI);
         this.graph = graph;
         this.historyJournal = historyJournal;
@@ -133,7 +133,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
      * @param historyJournal object that tracks the history of this graph. Set to null to disable the undo feature.
      */
     public JIPipeDesktopGraphEditorUI(JIPipeDesktopWorkbench workbenchUI, JIPipeGraph graph, UUID compartment, JIPipeHistoryJournal historyJournal) {
-        this(workbenchUI, graph, compartment, historyJournal, GraphEditorUISettings.getInstance(), JIPipeDesktopGraphEditorUI.FLAGS_NONE);
+        this(workbenchUI, graph, compartment, historyJournal, JIPipeGraphEditorUIApplicationSettings.getInstance(), JIPipeDesktopGraphEditorUI.FLAGS_NONE);
     }
 
     public static void installContextActionsInto(JToolBar toolBar, Set<JIPipeDesktopGraphNodeUI> selection, List<NodeUIContextAction> actionList, JIPipeDesktopGraphCanvasUI canvasUI) {
@@ -160,7 +160,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
 
         if (menu.getComponentCount() > 0) {
             JButton button = new JButton(UIUtils.getIconFromResources("actions/open-menu.png"));
-            UIUtils.makeFlat25x25(button);
+            UIUtils.makeButtonFlat25x25(button);
             button.setToolTipText("Shows the context menu for the selected node. Alternatively, you can also right-click the node");
             UIUtils.addPopupMenuToButton(button, menu);
             toolBar.add(Box.createHorizontalStrut(4), 0);
@@ -184,7 +184,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         return graphMenu;
     }
 
-    public GraphEditorUISettings getGraphUISettings() {
+    public JIPipeGraphEditorUIApplicationSettings getGraphUISettings() {
         return graphUISettings;
     }
 
@@ -298,7 +298,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
                 toggleButton.setToolTipText("<html><strong>" + tool.getName() + "</strong><br/><br/>" + tool.getTooltip() +
                         (keyBinding != null ? "<br><br>Shortcut: <i><strong>" + UIUtils.keyStrokeToString(keyBinding) + "</strong></i>" : "") + "</html>");
                 toggleButton.addActionListener(e -> selectTool(tool));
-                UIUtils.makeFlat25x25(toggleButton);
+                UIUtils.makeButtonFlat25x25(toggleButton);
                 toolBar.add(toggleButton);
                 toolToggles.put(toggleableGraphEditorTool, toggleButton);
 
@@ -307,7 +307,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
                 button.setToolTipText("<html><strong>" + tool.getName() + "</strong><br/><br/>" + tool.getTooltip() +
                         (keyBinding != null ? "<br><br>Shortcut: <i><strong>" + UIUtils.keyStrokeToString(keyBinding) + "</strong></i>" : "") + "</html>");
                 button.addActionListener(e -> selectTool(tool));
-                UIUtils.makeFlat25x25(button);
+                UIUtils.makeButtonFlat25x25(button);
                 toolBar.add(button);
             }
 
@@ -383,7 +383,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
 
         List<JIPipeDesktopGraphEditorToolBarButtonExtension> graphEditorToolBarButtonExtensions = JIPipe.getCustomMenus().graphEditorToolBarButtonExtensionsFor(this);
         for (JIPipeDesktopGraphEditorToolBarButtonExtension extension : graphEditorToolBarButtonExtensions) {
-            UIUtils.makeFlat25x25(extension);
+            UIUtils.makeButtonFlat25x25(extension);
             menuBar.add(extension);
         }
 
@@ -393,13 +393,13 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         if (getHistoryJournal() != null) {
             JButton undoButton = new JButton(UIUtils.getIconFromResources("actions/undo.png"));
             undoButton.setToolTipText("<html>Undo<br><i>Ctrl-Z</i></html>");
-            UIUtils.makeFlat25x25(undoButton);
+            UIUtils.makeButtonFlat25x25(undoButton);
             undoButton.addActionListener(e -> undo());
             menuBar.add(undoButton);
 
             JButton redoButton = new JButton(UIUtils.getIconFromResources("actions/edit-redo.png"));
             redoButton.setToolTipText("<html>Redo<br><i>Ctrl-Shift-Z</i></html>");
-            UIUtils.makeFlat25x25(redoButton);
+            UIUtils.makeButtonFlat25x25(redoButton);
             redoButton.addActionListener(e -> redo());
             menuBar.add(redoButton);
         }
@@ -431,7 +431,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
 
     private void initializeZoomMenu() {
         JButton zoomOutButton = new JButton(UIUtils.getIconFromResources("actions/square-minus.png"));
-        UIUtils.makeFlat25x25(zoomOutButton);
+        UIUtils.makeButtonFlat25x25(zoomOutButton);
         zoomOutButton.setToolTipText("<html>Zoom out<br><i>Ctrl-NumPad -</i></html>");
         zoomOutButton.addActionListener(e -> canvasUI.zoomOut());
         menuBar.add(zoomOutButton);
@@ -469,7 +469,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         menuBar.add(zoomButton);
 
         JButton zoomInButton = new JButton(UIUtils.getIconFromResources("actions/square-plus.png"));
-        UIUtils.makeFlat25x25(zoomInButton);
+        UIUtils.makeButtonFlat25x25(zoomInButton);
         zoomInButton.setToolTipText("<html>Zoom in<br><i>Ctrl-NumPad +</i></html>");
         zoomInButton.addActionListener(e -> canvasUI.zoomIn());
         menuBar.add(zoomInButton);
@@ -485,7 +485,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         searchEnabledItem.addActionListener(e -> {
             graphUISettings.getSearchSettings().setEnableSearch(searchEnabledItem.isSelected());
             if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                JIPipe.getInstance().getSettingsRegistry().save();
+                JIPipe.getInstance().getApplicationSettingsRegistry().save();
             }
             nodeDatabaseSearchBox.setVisible(graphUISettings.getSearchSettings().isEnableSearch());
             menuBar.revalidate();
@@ -497,7 +497,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         searchFindNewNodes.addActionListener(e -> {
             graphUISettings.getSearchSettings().setSearchFindNewNodes(searchFindNewNodes.isSelected());
             if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                JIPipe.getInstance().getSettingsRegistry().save();
+                JIPipe.getInstance().getApplicationSettingsRegistry().save();
             }
             nodeDatabaseSearchBox.setAllowNew(searchFindNewNodes.isSelected());
         });
@@ -508,7 +508,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         searchFindExistingNodes.addActionListener(e -> {
             graphUISettings.getSearchSettings().setSearchFindExistingNodes(searchFindExistingNodes.isSelected());
             if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                JIPipe.getInstance().getSettingsRegistry().save();
+                JIPipe.getInstance().getApplicationSettingsRegistry().save();
             }
             nodeDatabaseSearchBox.setAllowExisting(searchFindExistingNodes.isSelected());
         });
@@ -564,20 +564,20 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
 
         JCheckBoxMenuItem layoutOnConnectItem = new JCheckBoxMenuItem("Layout nodes on connect",
                 UIUtils.getIconFromResources("actions/connector-avoid.png"),
-                GraphEditorUISettings.getInstance().isLayoutAfterConnect());
+                JIPipeGraphEditorUIApplicationSettings.getInstance().isLayoutAfterConnect());
         layoutOnConnectItem.setToolTipText("Auto-layout layout on making data slot connections");
         layoutOnConnectItem.addActionListener(e -> {
-            GraphEditorUISettings.getInstance().setLayoutAfterConnect(layoutOnConnectItem.isSelected());
+            JIPipeGraphEditorUIApplicationSettings.getInstance().setLayoutAfterConnect(layoutOnConnectItem.isSelected());
         });
 
         layoutMenu.add(layoutOnConnectItem);
 
         JCheckBoxMenuItem layoutOnAlgorithmFinderItem = new JCheckBoxMenuItem("Layout nodes on 'Find matching algorithm'",
                 UIUtils.getIconFromResources("actions/connector-avoid.png"),
-                GraphEditorUISettings.getInstance().isLayoutAfterAlgorithmFinder());
+                JIPipeGraphEditorUIApplicationSettings.getInstance().isLayoutAfterAlgorithmFinder());
         layoutOnAlgorithmFinderItem.setToolTipText("Auto-layout layout on utilizing the 'Find matching algorithm' feature");
         layoutOnAlgorithmFinderItem.addActionListener(e -> {
-            GraphEditorUISettings.getInstance().setLayoutAfterAlgorithmFinder(layoutOnAlgorithmFinderItem.isSelected());
+            JIPipeGraphEditorUIApplicationSettings.getInstance().setLayoutAfterAlgorithmFinder(layoutOnAlgorithmFinderItem.isSelected());
         });
         layoutMenu.add(layoutOnAlgorithmFinderItem);
     }
@@ -630,7 +630,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
 
     private void createScreenshotSVG() {
         SVGGraphics2D screenshot = canvasUI.createScreenshotSVG();
-        Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Export graph as SVG (*.svg)", UIUtils.EXTENSION_FILTER_SVG);
+        Path selectedPath = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export graph as SVG (*.svg)", UIUtils.EXTENSION_FILTER_SVG);
         if (selectedPath != null) {
             try {
                 SVGUtils.writeToSVG(selectedPath.toFile(), screenshot.getSVGElement());
@@ -643,7 +643,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
 
     private void createScreenshotPNG() {
         BufferedImage screenshot = canvasUI.createScreenshotPNG();
-        Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Export graph as PNG (*.png)", UIUtils.EXTENSION_FILTER_PNG);
+        Path selectedPath = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export graph as PNG (*.png)", UIUtils.EXTENSION_FILTER_PNG);
         if (selectedPath != null) {
             try {
                 ImageIO.write(screenshot, "PNG", selectedPath.toFile());

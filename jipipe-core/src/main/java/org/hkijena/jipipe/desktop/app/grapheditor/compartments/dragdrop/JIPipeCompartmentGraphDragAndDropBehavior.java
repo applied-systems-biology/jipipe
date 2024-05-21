@@ -15,7 +15,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.compartments.dragdrop;
 
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphDragAndDropBehavior;
-import org.hkijena.jipipe.plugins.settings.GraphEditorUISettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 
 import javax.swing.*;
 import java.awt.*;
@@ -75,7 +75,7 @@ public class JIPipeCompartmentGraphDragAndDropBehavior implements JIPipeDesktopG
 //        } catch (Throwable t) {
 //            t.printStackTrace();
 //        }
-        if (canvas.getCurrentConnectionDragSource() == null && GraphEditorUISettings.getInstance().isNotifyInvalidDragAndDrop()) {
+        if (canvas.getCurrentConnectionDragSource() == null && JIPipeGraphEditorUIApplicationSettings.getInstance().isNotifyInvalidDragAndDrop()) {
             String message = "<html>You probably wanted to drop some data into this graph.<br/>" +
                     "This is not possible, as the <strong>Compartment Graph</strong> only organizes your project into " +
                     "multiple sections.<br/><br/>Please double-click a node inside this graph to edit the pipeline.</html>";

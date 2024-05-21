@@ -13,13 +13,13 @@
 
 package org.hkijena.jipipe.desktop.commons.components;
 
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
-import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
-import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
+import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -199,7 +199,7 @@ public class JIPipeDesktopUserFriendlyErrorUI extends JIPipeDesktopFormPanel imp
         formPanel.addWideToForm(titleLabel);
 
         if (!StringUtils.isNullOrEmpty(entry.getExplanation())) {
-            JTextArea textArea = UIUtils.makeReadonlyBorderlessTextArea(entry.getExplanation());
+            JTextArea textArea = UIUtils.createReadonlyBorderlessTextArea(entry.getExplanation());
             textArea.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 0));
             formPanel.addWideToForm(textArea);
         }

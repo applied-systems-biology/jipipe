@@ -14,12 +14,12 @@
 package org.hkijena.jipipe.plugins.parameters.library.collections;
 
 import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameterSettings;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
@@ -229,7 +229,7 @@ public class DesktopParameterCollectionListEditorUI extends JIPipeDesktopParamet
             if (reorderModeButton.isSelected()) {
                 JButton moveUpButton = new JButton(UIUtils.getIconFromResources("actions/sort-up.png"));
                 moveUpButton.setToolTipText("Move entry up");
-                UIUtils.makeFlat25x25(moveUpButton);
+                UIUtils.makeButtonFlat25x25(moveUpButton);
                 moveUpButton.addActionListener(e -> moveEntryUp(entry));
                 buttonPanel.add(moveUpButton, new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 
@@ -241,7 +241,7 @@ public class DesktopParameterCollectionListEditorUI extends JIPipeDesktopParamet
 
                 JButton moveDownButton = new JButton(UIUtils.getIconFromResources("actions/sort-down.png"));
                 moveDownButton.setToolTipText("Move entry down");
-                UIUtils.makeFlat25x25(moveDownButton);
+                UIUtils.makeButtonFlat25x25(moveDownButton);
                 moveDownButton.addActionListener(e -> moveEntryDown(entry));
                 buttonPanel.add(moveDownButton, new GridBagConstraints(0, 2, 1, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
             }
@@ -249,7 +249,7 @@ public class DesktopParameterCollectionListEditorUI extends JIPipeDesktopParamet
             JButton handleButton = new JButton(UIUtils.getIconInvertedFromResources("actions/grip-lines.png"));
             handleButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             handleButton.setOpaque(false);
-            UIUtils.makeFlat25x25(handleButton);
+            UIUtils.makeButtonFlat25x25(handleButton);
             handleButton.setToolTipText("Select/Deselect this entry");
             int finalI = i;
             handleButton.addActionListener(e -> {

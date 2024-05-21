@@ -17,6 +17,7 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.plugin.filter.AVI_Writer;
 import ij.process.ColorProcessor;
+import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.AVICompression;
@@ -28,7 +29,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
 
-public class Video2DExporterRun implements JIPipeRunnable {
+public class Video2DExporterRun extends AbstractJIPipeRunnable {
     private final JIPipeImageViewer viewerPanel;
     private final Path outputFile;
     private final ImageSliceIndex referencePosition;
@@ -37,7 +38,6 @@ public class Video2DExporterRun implements JIPipeRunnable {
     private final AVICompression compression;
     private final int jpegQuality;
     private final double magnification;
-    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
     public Video2DExporterRun(JIPipeImageViewer viewerPanel, Path outputFile, ImageSliceIndex referencePosition, HyperstackDimension followedDimension, int timePerFrame, AVICompression compression, int jpegQuality) {
         this.viewerPanel = viewerPanel;
@@ -51,21 +51,13 @@ public class Video2DExporterRun implements JIPipeRunnable {
     }
 
     @Override
-    public JIPipeProgressInfo getProgressInfo() {
-        return progressInfo;
-    }
-
-    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-        this.progressInfo = progressInfo;
-    }
-
-    @Override
     public String getTaskLabel() {
         return "Image viewer: Export video";
     }
 
     @Override
     public void run() {
+        JIPipeProgressInfo progressInfo = getProgressInfo();
         ImagePlus image = viewerPanel.getImagePlus();
         ImageStack generatedStack = null;
 

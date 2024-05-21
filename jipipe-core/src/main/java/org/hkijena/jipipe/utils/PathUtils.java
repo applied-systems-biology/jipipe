@@ -13,8 +13,9 @@
 
 package org.hkijena.jipipe.utils;
 
+import ij.IJ;
+import ij.Prefs;
 import org.apache.commons.lang3.SystemUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 
 import javax.swing.*;
@@ -288,8 +289,45 @@ public class PathUtils {
         return null;
     }
 
+    /**
+     * Gets the JIPipe user-writable directory.
+     * Can be overwritten by setting the JIPIPE_USER_DIR environment variable to deploy JIPipe into a read-only environment
+     *
+     * @return the JIPipe user directory
+     */
     public static Path getJIPipeUserDir() {
-        return JIPipe.getJIPipeUserDir();
+        String environmentVar = System.getenv().getOrDefault("JIPIPE_USER_DIR", null);
+        Path result;
+        if (environmentVar != null) {
+            result = Paths.get(environmentVar);
+        } else {
+            result = PathUtils.getImageJDir().resolve("jipipe");
+        }
+        try {
+            Files.createDirectories(result);
+        } catch (IOException e) {
+            IJ.handleException(e);
+        }
+        return result;
+    }
+
+    /**
+     * Gets the ImageJ directory
+     *
+     * @return the ImageJ directory
+     */
+    public static Path getImageJDir() {
+        Path imageJDir = Paths.get(Prefs.getImageJDir());
+        if (!imageJDir.isAbsolute())
+            imageJDir = imageJDir.toAbsolutePath();
+        if (!Files.isDirectory(imageJDir)) {
+            try {
+                Files.createDirectories(imageJDir);
+            } catch (IOException e) {
+                IJ.handleException(e);
+            }
+        }
+        return imageJDir;
     }
 
     public static Path absoluteToJIPipeUserDirRelative(Path path) {
@@ -407,6 +445,21 @@ public class PathUtils {
             return firstChoice;
         } else {
             return alternative;
+        }
+    }
+
+    /**
+     * Marks all files in that directory as Unix executable
+     * @param dir the directory
+     * @param progressInfo the progress
+     */
+    public static void makeAllUnixExecutable(Path dir, JIPipeProgressInfo progressInfo) {
+        progressInfo.log("Postprocess: Marking all files in " + dir + " as executable");
+        for (Path path : PathUtils.findFilesByExtensionIn(dir)) {
+            if (Files.isRegularFile(path)) {
+                progressInfo.log(" - chmod +x " + path);
+                PathUtils.makeUnixExecutable(path);
+            }
         }
     }
 }

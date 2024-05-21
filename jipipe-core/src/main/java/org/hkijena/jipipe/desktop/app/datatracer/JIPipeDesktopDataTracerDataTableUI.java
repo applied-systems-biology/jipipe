@@ -30,13 +30,13 @@ import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopDataInfoCellRenderer;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopDataTableRowUI;
 import org.hkijena.jipipe.desktop.app.cache.exporters.JIPipeDesktopDataExporterRun;
 import org.hkijena.jipipe.desktop.app.resultanalysis.renderers.JIPipeDesktopAnnotationTableCellRenderer;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopComponentCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.plugins.expressions.ui.ExpressionBuilderUI;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
-import org.hkijena.jipipe.plugins.settings.GeneralDataSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.Store;
@@ -72,7 +72,7 @@ public class JIPipeDesktopDataTracerDataTableUI extends JIPipeDesktopWorkbenchPa
 
         initialize();
         reloadTable();
-        GeneralDataSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(this);
+        JIPipeGeneralDataApplicationSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(this);
     }
 
     public JIPipeDataTable getDataTable() {
@@ -87,8 +87,8 @@ public class JIPipeDesktopDataTracerDataTableUI extends JIPipeDesktopWorkbenchPa
     private void reloadTable() {
         dataTableModel = new JIPipeDesktopDataTracerTableModel(table, dataTableStore);
         table.setModel(dataTableModel);
-        if (GeneralDataSettings.getInstance().isGenerateCachePreviews())
-            table.setRowHeight(GeneralDataSettings.getInstance().getPreviewSize());
+        if (JIPipeGeneralDataApplicationSettings.getInstance().isGenerateCachePreviews())
+            table.setRowHeight(JIPipeGeneralDataApplicationSettings.getInstance().getPreviewSize());
         else
             table.setRowHeight(25);
         TableColumnModel columnModel = table.getColumnModel();
@@ -98,7 +98,7 @@ public class JIPipeDesktopDataTracerDataTableUI extends JIPipeDesktopWorkbenchPa
         }
         table.setAutoCreateRowSorter(true);
         UIUtils.packDataTable(table);
-        columnModel.getColumn(1).setPreferredWidth(GeneralDataSettings.getInstance().getPreviewSize());
+        columnModel.getColumn(1).setPreferredWidth(JIPipeGeneralDataApplicationSettings.getInstance().getPreviewSize());
         SwingUtilities.invokeLater(dataTableModel::updateRenderedPreviews);
 
         if (dataTableModel.getColumnCount() > 0) {
@@ -107,7 +107,7 @@ public class JIPipeDesktopDataTracerDataTableUI extends JIPipeDesktopWorkbenchPa
             table.getColumnExt(0).setPreferredWidth(100);
         }
         if (dataTableModel.getColumnCount() > 1) {
-            int previewSize = GeneralDataSettings.getInstance().getPreviewSize() * 2;
+            int previewSize = JIPipeGeneralDataApplicationSettings.getInstance().getPreviewSize() * 2;
             table.getColumnExt(1).setMinWidth(previewSize);
             table.getColumnExt(1).setMaxWidth(previewSize);
             table.getColumnExt(1).setPreferredWidth(previewSize);
@@ -117,8 +117,8 @@ public class JIPipeDesktopDataTracerDataTableUI extends JIPipeDesktopWorkbenchPa
     private void initialize() {
         setLayout(new BorderLayout());
         table = new JXTable();
-        if (GeneralDataSettings.getInstance().isGenerateCachePreviews())
-            table.setRowHeight(GeneralDataSettings.getInstance().getPreviewSize());
+        if (JIPipeGeneralDataApplicationSettings.getInstance().isGenerateCachePreviews())
+            table.setRowHeight(JIPipeGeneralDataApplicationSettings.getInstance().getPreviewSize());
         else
             table.setRowHeight(25);
         table.setDefaultRenderer(JIPipeDataInfo.class, new JIPipeDesktopDataInfoCellRenderer());
@@ -238,13 +238,13 @@ public class JIPipeDesktopDataTracerDataTableUI extends JIPipeDesktopWorkbenchPa
 
             popupMenu.add(UIUtils.createMenuItem("Export", "Exports the data", UIUtils.getIconFromResources("actions/document-export.png"),
                     () -> {
-                        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export row " + modelRow);
+                        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export row " + modelRow);
                         if (path != null) {
                             Path directory = path.getParent();
                             String name = path.getFileName().toString();
                             JIPipeDesktopDataExporterRun run = new JIPipeDesktopDataExporterRun(dataTable.getData(modelRow, JIPipeData.class, new JIPipeProgressInfo()),
                                     directory, name);
-                            JIPipeDesktopRunExecuterUI.runInDialog(getDesktopWorkbench(), SwingUtilities.getWindowAncestor(this), run, new JIPipeRunnableQueue("Export"));
+                            JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), SwingUtilities.getWindowAncestor(this), run, new JIPipeRunnableQueue("Export"));
                         }
                     }));
 
@@ -252,13 +252,13 @@ public class JIPipeDesktopDataTracerDataTableUI extends JIPipeDesktopWorkbenchPa
                 JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(modelRow, dataAnnotationColumn);
                 popupMenu.add(UIUtils.createMenuItem("Export " + dataAnnotation.getName(), "Exports the data annotation '" + dataAnnotation.getName() + "'", UIUtils.getIconFromResources("actions/document-export.png"),
                         () -> {
-                            Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export row " + modelRow);
+                            Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export row " + modelRow);
                             if (path != null) {
                                 Path directory = path.getParent();
                                 String name = path.getFileName().toString();
                                 JIPipeDesktopDataExporterRun run = new JIPipeDesktopDataExporterRun(dataAnnotation.getData(JIPipeData.class, new JIPipeProgressInfo()),
                                         directory, name);
-                                JIPipeDesktopRunExecuterUI.runInDialog(getDesktopWorkbench(), SwingUtilities.getWindowAncestor(this), run, new JIPipeRunnableQueue("Export"));
+                                JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), SwingUtilities.getWindowAncestor(this), run, new JIPipeRunnableQueue("Export"));
                             }
                         }));
             }

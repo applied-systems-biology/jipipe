@@ -19,7 +19,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanv
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -45,7 +45,7 @@ public class ExportCompartmentAsJsonNodeUIContextAction implements NodeUIContext
 
         if (JOptionPane.showConfirmDialog(canvasUI.getDesktopWorkbench().getWindow(), metadataEditor, "Export compartment",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION) {
-            Path selectedPath = FileChooserSettings.saveFile(canvasUI, FileChooserSettings.LastDirectoryKey.Projects, "Save JIPipe graph compartment (*.jipc)", UIUtils.EXTENSION_FILTER_JIPC);
+            Path selectedPath = JIPipeFileChooserApplicationSettings.saveFile(canvasUI, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Save JIPipe graph compartment (*.jipc)", UIUtils.EXTENSION_FILTER_JIPC);
             if (selectedPath != null) {
                 try {
                     exportedCompartment.saveToJson(selectedPath);

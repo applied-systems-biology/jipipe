@@ -17,10 +17,10 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -45,7 +45,7 @@ public class ExportNodeJsonsTool extends JIPipeDesktopMenuExtension {
     }
 
     private void runExportTool() {
-        Path outputDirectory = FileChooserSettings.saveDirectory(getDesktopWorkbench().getWindow(), FileChooserSettings.LastDirectoryKey.External, "Output directory");
+        Path outputDirectory = JIPipeFileChooserApplicationSettings.saveDirectory(getDesktopWorkbench().getWindow(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.External, "Output directory");
         if (outputDirectory != null) {
             for (Map.Entry<String, JIPipeNodeInfo> entry : JIPipe.getNodes().getRegisteredNodeInfos().entrySet()) {
                 System.out.println("Export " + entry.getKey());

@@ -13,12 +13,12 @@
 
 package org.hkijena.jipipe.plugins.parameters.api.enums;
 
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.DefaultJIPipeParameterGenerator;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.DynamicStringSetParameter;
-import org.hkijena.jipipe.api.JIPipeWorkbench;
 
 import java.awt.*;
 import java.util.ArrayList;

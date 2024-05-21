@@ -24,7 +24,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.JIPipePipelineGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.project.templatedownloader.JIPipeDesktopProjectTemplateDownloaderRun;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopImageFrameComponent;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopTemplateProjectListCellRenderer;
@@ -118,7 +118,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
 
         actionPanel.add(Box.createHorizontalGlue());
 
-        JTextPane textPane = UIUtils.makeBorderlessReadonlyTextPane("<html>... or <a href=\"https://www.jipipe.org/tutorials/\">learn</a> how to use JIPipe (online tutorials)" +
+        JTextPane textPane = UIUtils.createBorderlessReadonlyTextPane("<html>... or <a href=\"https://www.jipipe.org/tutorials/\">learn</a> how to use JIPipe (online tutorials)" +
                 "</html>", false);
         textPane.setMaximumSize(new Dimension(300, 40));
         actionPanel.add(textPane);
@@ -256,16 +256,16 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
         JIPipeDesktopFormPanel technicalInfo = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.TRANSPARENT_BACKGROUND);
         technicalInfo.addVerticalGlue();
 
-        technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(StringUtils.orElse(getClass().getPackage().getImplementationVersion(), "Development")), new JLabel("Version"), null);
+        technicalInfo.addToForm(UIUtils.createReadonlyBorderlessTextField(StringUtils.orElse(getClass().getPackage().getImplementationVersion(), "Development")), new JLabel("Version"), null);
         Attributes manifestAttributes = ReflectionUtils.getManifestAttributes();
         if (manifestAttributes != null) {
             String implementationDateString = manifestAttributes.getValue("Implementation-Date");
-            technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(StringUtils.orElse(implementationDateString, "N/A")), new JLabel("Build time"), null);
+            technicalInfo.addToForm(UIUtils.createReadonlyBorderlessTextField(StringUtils.orElse(implementationDateString, "N/A")), new JLabel("Build time"), null);
         }
-        technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(StringUtils.orElse(IJ.getVersion(), "N/A")), new JLabel("ImageJ"), null);
-        technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(StringUtils.orElse(System.getProperty("java.version"), "N/A")), new JLabel("Java"), null);
-        technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(JIPipe.getNodes().getRegisteredNodeInfos().size() + " algorithms"), new JLabel("Registered node types"), null);
-        technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(JIPipe.getDataTypes().getRegisteredDataTypes().size() + " types"), new JLabel("Registered data types"), null);
+        technicalInfo.addToForm(UIUtils.createReadonlyBorderlessTextField(StringUtils.orElse(IJ.getVersion(), "N/A")), new JLabel("ImageJ"), null);
+        technicalInfo.addToForm(UIUtils.createReadonlyBorderlessTextField(StringUtils.orElse(System.getProperty("java.version"), "N/A")), new JLabel("Java"), null);
+        technicalInfo.addToForm(UIUtils.createReadonlyBorderlessTextField(JIPipe.getNodes().getRegisteredNodeInfos().size() + " algorithms"), new JLabel("Registered node types"), null);
+        technicalInfo.addToForm(UIUtils.createReadonlyBorderlessTextField(JIPipe.getDataTypes().getRegisteredDataTypes().size() + " types"), new JLabel("Registered data types"), null);
 
         technicalInfo.setMaximumSize(new Dimension(300, 200));
 
@@ -335,7 +335,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
     }
 
     private void downloadTemplates() {
-        JIPipeDesktopRunExecuterUI.runInDialog(getDesktopWorkbench(), getDesktopWorkbench().getWindow(), new JIPipeDesktopProjectTemplateDownloaderRun(getDesktopWorkbench()));
+        JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), getDesktopWorkbench().getWindow(), new JIPipeDesktopProjectTemplateDownloaderRun(getDesktopWorkbench()));
     }
 
     private void initRecentProjects(JIPipeDesktopTabPane tabPane) {

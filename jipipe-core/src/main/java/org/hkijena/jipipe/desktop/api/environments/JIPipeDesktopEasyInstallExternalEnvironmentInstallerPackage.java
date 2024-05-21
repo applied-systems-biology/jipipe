@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.WebUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -112,7 +112,7 @@ public class JIPipeDesktopEasyInstallExternalEnvironmentInstallerPackage {
         for (int i = 0; i < repositories.size(); i++) {
             String repository = repositories.get(i);
             JIPipeProgressInfo repositoryProgress = progressInfo.resolve("Repository " + i);
-            Path outputFile = RuntimeSettings.generateTempFile("repository", ".json");
+            Path outputFile = JIPipeRuntimeApplicationSettings.generateTempFile("repository", ".json");
             try {
                 WebUtils.download(new URL(repository), outputFile, "Download repository", repositoryProgress);
             } catch (MalformedURLException e) {

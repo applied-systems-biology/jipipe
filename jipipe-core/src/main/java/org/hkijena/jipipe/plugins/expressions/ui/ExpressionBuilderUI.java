@@ -20,12 +20,12 @@ import org.fife.ui.rsyntaxtextarea.TokenMaker;
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
-import org.hkijena.jipipe.plugins.expressions.*;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
-import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.plugins.expressions.*;
+import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -195,13 +195,13 @@ public class ExpressionBuilderUI extends JPanel {
         expressionAdditionalButtonsPanel.setFloatable(false);
 
         JButton insertVariableButton = new JButton("Insert variable", UIUtils.getIconFromResources("actions/variable.png"));
-        UIUtils.makeFlat(insertVariableButton);
+        UIUtils.makeButtonFlat(insertVariableButton);
         insertVariableButton.addActionListener(e -> insertCustomVariable());
         insertVariableButton.setToolTipText("Inserts a custom variable");
         expressionAdditionalButtonsPanel.add(insertVariableButton);
 
         JButton insertPathButton = new JButton("Insert path", UIUtils.getIconFromResources("actions/fileopen.png"));
-        UIUtils.makeFlat(insertPathButton);
+        UIUtils.makeButtonFlat(insertPathButton);
         insertPathButton.addActionListener(e -> insertPath());
         insertPathButton.setToolTipText("Inserts a path as raw string");
         expressionAdditionalButtonsPanel.add(insertPathButton);
@@ -209,7 +209,7 @@ public class ExpressionBuilderUI extends JPanel {
         expressionAdditionalButtonsPanel.add(Box.createHorizontalGlue());
 
         JButton insertBracketsButton = new JButton("Bracket selection", UIUtils.getIconFromResources("actions/object-group.png"));
-        UIUtils.makeFlat(insertBracketsButton);
+        UIUtils.makeButtonFlat(insertBracketsButton);
         insertBracketsButton.addActionListener(e -> insertBrackets());
         expressionAdditionalButtonsPanel.add(insertBracketsButton);
 
@@ -232,7 +232,7 @@ public class ExpressionBuilderUI extends JPanel {
     }
 
     private void insertPath() {
-        Path path = FileChooserSettings.openPath(this, FileChooserSettings.LastDirectoryKey.Data, "Insert path");
+        Path path = JIPipeFileChooserApplicationSettings.openPath(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Insert path");
         if (path != null) {
             insertAtCaret(path.toString().replace('\\', '/'), false);
         }

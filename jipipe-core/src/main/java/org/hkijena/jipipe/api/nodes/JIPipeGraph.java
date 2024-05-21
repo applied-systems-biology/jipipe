@@ -48,7 +48,7 @@ import org.hkijena.jipipe.api.validation.contexts.GraphNodeSlotValidationReportC
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.GraphValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
-import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.GraphUtils;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
@@ -963,7 +963,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 String typeId = metadataEntry.getValue().get("jipipe:type").textValue();
                 Class<? extends JIPipeMetadataObject> metadataClass = JIPipe.getInstance().getMetadataRegistry().findById(typeId);
 
-                if(metadataClass == null) {
+                if (metadataClass == null) {
                     throw new NullPointerException("Unable to find metadata object ID '" + typeId + "'");
                 }
 
@@ -1486,7 +1486,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
             }
             report.report(new GraphNodeValidationReportContext(reportContext, node), node);
         }
-        if (!RuntimeSettings.getInstance().isAllowSkipAlgorithmsWithoutInput()) {
+        if (!JIPipeRuntimeApplicationSettings.getInstance().isAllowSkipAlgorithmsWithoutInput()) {
             for (JIPipeDataSlot slot : graph.vertexSet()) {
                 if (!slot.getNode().getInfo().isRunnable())
                     continue;
@@ -2091,11 +2091,11 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 for (Map.Entry<String, JIPipeMetadataObject> entry : algorithmGraph.additionalMetadata.entrySet()) {
                     String typeId = JIPipe.getInstance().getMetadataRegistry().getId(entry.getValue().getClass());
 
-                    if(typeId != null) {
+                    if (typeId != null) {
 
                         if (entry.getValue() instanceof JIPipeParameterCollection) {
                             generator.writeObjectFieldStart(entry.getKey());
-                            generator.writeObjectField("jipipe:type",typeId);
+                            generator.writeObjectField("jipipe:type", typeId);
                             ParameterUtils.serializeParametersToJson((JIPipeParameterCollection) entry.getValue(), generator);
                             generator.writeEndObject();
                         } else {
@@ -2105,8 +2105,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                             generator.writeEndObject();
                         }
 
-                    }
-                    else {
+                    } else {
                         System.err.println("Unable to serialize " + entry.getValue() + " as metadata object: not registered!");
                     }
                 }

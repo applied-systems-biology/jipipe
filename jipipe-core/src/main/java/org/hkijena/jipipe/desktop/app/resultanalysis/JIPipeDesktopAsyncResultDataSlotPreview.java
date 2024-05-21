@@ -18,8 +18,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
-import org.hkijena.jipipe.plugins.settings.GeneralDataSettings;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
+import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -105,7 +105,7 @@ public abstract class JIPipeDesktopAsyncResultDataSlotPreview extends JIPipeDesk
         private final JIPipeDesktopAsyncResultDataSlotPreview parent;
         private final Path slotStoragePath;
         private final Path storageFolder;
-        private final int previewSize = GeneralDataSettings.getInstance().getPreviewSize();
+        private final int previewSize = JIPipeGeneralDataApplicationSettings.getInstance().getPreviewSize();
 
         private Worker(JIPipeDesktopAsyncResultDataSlotPreview parent, Path slotStoragePath, Path storageFolder) {
             this.parent = parent;

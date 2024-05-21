@@ -27,7 +27,7 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallBu
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallToggleButtonRibbonAction;
 import org.hkijena.jipipe.plugins.ijfilaments.FilamentsPlugin;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
-import org.hkijena.jipipe.plugins.ijfilaments.settings.ImageViewerUIFilamentDisplaySettings;
+import org.hkijena.jipipe.plugins.ijfilaments.settings.ImageViewerUIFilamentDisplayApplicationSettings;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentsDrawer;
@@ -35,7 +35,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewerPlugin2D;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jgrapht.alg.connectivity.ConnectivityInspector;
@@ -69,7 +69,7 @@ public class FilamentsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     }
 
     private void initializeDefaults() {
-        ImageViewerUIFilamentDisplaySettings settings = ImageViewerUIFilamentDisplaySettings.getInstance();
+        ImageViewerUIFilamentDisplayApplicationSettings settings = ImageViewerUIFilamentDisplayApplicationSettings.getInstance();
         filamentsDrawer = new FilamentsDrawer(settings.getFilamentDrawer());
         displayFilamentsViewMenuItem.setState(settings.isShowFilaments());
     }
@@ -225,7 +225,7 @@ public class FilamentsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
                 "Do you want to save the filament display settings as default?",
                 "Save settings as default",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            ImageViewerUIFilamentDisplaySettings settings = ImageViewerUIFilamentDisplaySettings.getInstance();
+            ImageViewerUIFilamentDisplayApplicationSettings settings = ImageViewerUIFilamentDisplayApplicationSettings.getInstance();
             settings.getFilamentDrawer().copyFrom(filamentsDrawer);
             settings.setShowFilaments(displayFilamentsViewMenuItem.getState());
             if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
@@ -240,7 +240,7 @@ public class FilamentsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     }
 
     private void importFilamentsFromFile() {
-        Path path = FileChooserSettings.openFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Data, "Import filaments", UIUtils.EXTENSION_FILTER_ZIP);
+        Path path = JIPipeFileChooserApplicationSettings.openFile(getViewerPanel(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Import filaments", UIUtils.EXTENSION_FILTER_ZIP);
         if (path != null && displayFilamentsViewMenuItem.getState()) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             try (JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo, path)) {
@@ -259,7 +259,7 @@ public class FilamentsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
 
     private void exportFilamentsToFile(Filaments3DData filaments) {
         FileNameExtensionFilter[] fileNameExtensionFilters = new FileNameExtensionFilter[]{UIUtils.EXTENSION_FILTER_ZIP};
-        Path path = FileChooserSettings.saveFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Data, "Export filaments", fileNameExtensionFilters);
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(getViewerPanel(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export filaments", fileNameExtensionFilters);
         if (path != null) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             try (JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo, path)) {

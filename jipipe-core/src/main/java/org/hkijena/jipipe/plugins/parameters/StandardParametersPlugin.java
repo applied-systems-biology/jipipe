@@ -26,34 +26,36 @@ import org.hkijena.jipipe.api.grouping.JIPipeGraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollectionVisibilities;
-import org.hkijena.jipipe.api.runtimepartitioning.RuntimePartitionReferenceParameter;
 import org.hkijena.jipipe.api.runtimepartitioning.RuntimePartitionReferenceDesktopParameterEditorUI;
+import org.hkijena.jipipe.api.runtimepartitioning.RuntimePartitionReferenceParameter;
+import org.hkijena.jipipe.desktop.app.grapheditor.JIPipeGraphViewMode;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.layout.JIPipepGraphAutoLayoutMethod;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.expressions.NumericFunctionExpression;
 import org.hkijena.jipipe.plugins.nodetemplate.JIPipeNodeTemplateDesktopParameterEditorUI;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListDesktopParameterEditorUI;
+import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.enums.*;
-import org.hkijena.jipipe.plugins.parameters.api.functions.FunctionParameter;
 import org.hkijena.jipipe.plugins.parameters.api.functions.FunctionDesktopParameterEditorUI;
+import org.hkijena.jipipe.plugins.parameters.api.functions.FunctionParameter;
 import org.hkijena.jipipe.plugins.parameters.api.functions.StringPatternExtractionFunction;
 import org.hkijena.jipipe.plugins.parameters.api.matrix.Matrix2D;
 import org.hkijena.jipipe.plugins.parameters.api.matrix.Matrix2DDesktopParameterEditorUI;
-import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
 import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalDesktopParameterEditorUI;
-import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameter;
+import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairDesktopParameterEditorUI;
-import org.hkijena.jipipe.plugins.parameters.api.scripts.ScriptParameter;
+import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameter;
 import org.hkijena.jipipe.plugins.parameters.api.scripts.ScriptDesktopParameterEditorUI;
-import org.hkijena.jipipe.plugins.parameters.library.auth.PasswordParameter;
+import org.hkijena.jipipe.plugins.parameters.api.scripts.ScriptParameter;
 import org.hkijena.jipipe.plugins.parameters.library.auth.PasswordDesktopParameterEditorUI;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
+import org.hkijena.jipipe.plugins.parameters.library.auth.PasswordParameter;
 import org.hkijena.jipipe.plugins.parameters.library.collections.DesktopParameterCollectionListEditorUI;
+import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.plugins.parameters.library.colors.*;
 import org.hkijena.jipipe.plugins.parameters.library.editors.JIPipeParameterCollectionVisibilitiesDesktopParameterEditorUI;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.*;
-import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.plugins.parameters.library.images.ImageDesktopParameterEditorUI;
+import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.*;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLTextDesktopParameterEditorUI;
@@ -71,18 +73,16 @@ import org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.QuantityDesktopParameterEditorUI;
 import org.hkijena.jipipe.plugins.parameters.library.ranges.FloatNumberRangeParameter;
 import org.hkijena.jipipe.plugins.parameters.library.ranges.IntNumberRangeParameter;
-import org.hkijena.jipipe.plugins.parameters.library.ranges.NumberRangeParameter;
 import org.hkijena.jipipe.plugins.parameters.library.ranges.NumberRangeDesktopParameterEditorUI;
+import org.hkijena.jipipe.plugins.parameters.library.ranges.NumberRangeParameter;
 import org.hkijena.jipipe.plugins.parameters.library.references.*;
 import org.hkijena.jipipe.plugins.parameters.library.roi.*;
 import org.hkijena.jipipe.plugins.parameters.library.scripts.ImageJMacro;
 import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScript;
-import org.hkijena.jipipe.plugins.parameters.library.table.ParameterTable;
 import org.hkijena.jipipe.plugins.parameters.library.table.DesktopParameterTableEditorUI;
+import org.hkijena.jipipe.plugins.parameters.library.table.ParameterTable;
 import org.hkijena.jipipe.plugins.parameters.library.util.LogicalOperation;
 import org.hkijena.jipipe.plugins.parameters.library.util.SortOrder;
-import org.hkijena.jipipe.desktop.app.grapheditor.JIPipeGraphViewMode;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.layout.JIPipepGraphAutoLayoutMethod;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.SizeFitMode;
@@ -95,7 +95,6 @@ import java.awt.*;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
 
 /**
  * Provides some standard parameters
@@ -676,6 +675,14 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 "Runtime partition",
                 "A reference to a project runtime partition",
                 RuntimePartitionReferenceDesktopParameterEditorUI.class);
+        registerParameterType("artifact-query",
+                JIPipeArtifactQueryParameter.class,
+                JIPipeArtifactQueryParameter::new,
+                p -> new JIPipeArtifactQueryParameter((JIPipeArtifactQueryParameter) p),
+                "Artifact query",
+                "Queries an artifact from the artifact repository. " +
+                        "Should be formatted as GroupId.ArtifactId:Version-Classifier",
+                JIPipeDesktopArtifactQueryParameterEditorUI.class);
 
         // Icon types
         registerParameterType("algorithm-type-icon",
@@ -791,7 +798,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
     }
 
     @Override
-    public boolean isCoreExtension() {
+    public boolean isCorePlugin() {
         return true;
     }
 }

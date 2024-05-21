@@ -299,7 +299,7 @@ See the LICENSE file provided with this code for the full license.
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-plugin-cellpose2</artifactId>
+                <artifactId>jipipe-plugin-cellpose</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -381,7 +381,7 @@ See the LICENSE file provided with this code for the full license.
         <module>plugins/jipipe-plugin-utils</module>
         <module>plugins/jipipe-plugin-forms</module>
         <module>plugins/jipipe-plugin-r</module>
-        <module>plugins/jipipe-plugin-cellpose2</module>
+        <module>plugins/jipipe-plugin-cellpose</module>
         <module>plugins/jipipe-plugin-omnipose</module>
         <module>plugins/jipipe-plugin-ij-weka</module>
         <module>plugins/jipipe-plugin-ij-trackmate</module>

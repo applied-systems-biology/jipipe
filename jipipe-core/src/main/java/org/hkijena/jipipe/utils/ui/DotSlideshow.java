@@ -67,7 +67,7 @@ public class DotSlideshow extends JPanel {
 
         bottomPanel.add(Box.createHorizontalGlue());
         JButton previousButton = new JButton(UIUtils.getIconFromResources("actions/caret-left.png"));
-        UIUtils.makeFlat25x25(previousButton);
+        UIUtils.makeButtonFlat25x25(previousButton);
         previousButton.addActionListener(e -> previousSlide());
         bottomPanel.add(previousButton);
         for (String key : slideOrder) {
@@ -83,7 +83,7 @@ public class DotSlideshow extends JPanel {
             dots.put(key, radioButton);
         }
         JButton nextButton = new JButton(UIUtils.getIconFromResources("actions/caret-right.png"));
-        UIUtils.makeFlat25x25(nextButton);
+        UIUtils.makeButtonFlat25x25(nextButton);
         nextButton.addActionListener(e -> nextSlide());
         bottomPanel.add(nextButton);
         bottomPanel.add(Box.createHorizontalGlue());

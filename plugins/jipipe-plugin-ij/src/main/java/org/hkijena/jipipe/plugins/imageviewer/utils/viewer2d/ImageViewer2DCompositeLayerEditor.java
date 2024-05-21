@@ -45,7 +45,7 @@ public class ImageViewer2DCompositeLayerEditor extends JPanel {
         JPanel priorityControlsPanel = new JPanel(new BorderLayout());
 
         JButton priorityUpButton = new JButton(UIUtils.getIconFromResources("actions/caret-up.png"));
-        UIUtils.makeFlat25x25(priorityUpButton);
+        UIUtils.makeButtonFlat25x25(priorityUpButton);
         priorityUpButton.addActionListener(e -> moveLayerPriorityUp());
         priorityControlsPanel.add(priorityUpButton, BorderLayout.NORTH);
 
@@ -55,7 +55,7 @@ public class ImageViewer2DCompositeLayerEditor extends JPanel {
         priorityControlsPanel.add(channelLabel, BorderLayout.CENTER);
 
         JButton priorityDownButton = new JButton(UIUtils.getIconFromResources("actions/caret-down.png"));
-        UIUtils.makeFlat25x25(priorityDownButton);
+        UIUtils.makeButtonFlat25x25(priorityDownButton);
         priorityDownButton.addActionListener(e -> moveLayerPriorityDown());
         priorityControlsPanel.add(priorityDownButton, BorderLayout.SOUTH);
 

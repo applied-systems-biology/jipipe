@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStepGenerator;
-import org.hkijena.jipipe.plugins.settings.ExtensionSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeExtensionApplicationSettings;
 import org.hkijena.jipipe.plugins.strings.StringData;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -40,7 +40,7 @@ public class BatchGenerationTests {
     public static void setupJIPipe() {
         ImageJ imageJ = new ImageJ();
         JIPipe jiPipe = JIPipe.createInstance(imageJ.context());
-        ExtensionSettings settings = new ExtensionSettings();
+        JIPipeExtensionApplicationSettings settings = new JIPipeExtensionApplicationSettings();
         JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
         jiPipe.initialize(settings, issues);
     }

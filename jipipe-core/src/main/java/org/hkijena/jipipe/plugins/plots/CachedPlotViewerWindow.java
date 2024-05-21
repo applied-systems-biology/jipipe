@@ -17,11 +17,11 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.plugins.plots.datatypes.PlotData;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheDataViewerWindow;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCachedDataViewerAnnotationInfoPanel;
-import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.app.ploteditor.JIPipeDesktopPlotEditorUI;
+import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.plugins.plots.datatypes.PlotData;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

@@ -38,13 +38,13 @@ import org.hkijena.jipipe.plugins.ijtrackmate.nodes.tracks.MeasureEdgesNode;
 import org.hkijena.jipipe.plugins.ijtrackmate.nodes.tracks.MeasureTracksNode;
 import org.hkijena.jipipe.plugins.ijtrackmate.parameters.EdgeFeature;
 import org.hkijena.jipipe.plugins.ijtrackmate.parameters.TrackFeature;
-import org.hkijena.jipipe.plugins.ijtrackmate.settings.ImageViewerUITracksDisplaySettings;
+import org.hkijena.jipipe.plugins.ijtrackmate.settings.ImageViewerUITracksDisplayApplicationSettings;
 import org.hkijena.jipipe.plugins.ijtrackmate.utils.TrackDrawer;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewerPlugin2D;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -79,7 +79,7 @@ public class TracksManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     }
 
     private void initializeDefaults() {
-        ImageViewerUITracksDisplaySettings settings = ImageViewerUITracksDisplaySettings.getInstance();
+        ImageViewerUITracksDisplayApplicationSettings settings = ImageViewerUITracksDisplayApplicationSettings.getInstance();
         displayTracksViewMenuItem.setState(settings.isShowTracks());
         trackDrawer = new TrackDrawer(settings.getTrackDrawer());
     }
@@ -262,7 +262,7 @@ public class TracksManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     }
 
     private void importTracksFromFile() {
-        Path path = FileChooserSettings.openFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Data, "Import tracks", UIUtils.EXTENSION_FILTER_ZIP);
+        Path path = JIPipeFileChooserApplicationSettings.openFile(getViewerPanel(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Import tracks", UIUtils.EXTENSION_FILTER_ZIP);
         if (path != null && displayTracksViewMenuItem.getState()) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             try (JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo, path)) {
@@ -279,7 +279,7 @@ public class TracksManagerPlugin2D extends JIPipeImageViewerPlugin2D {
                 "Do you want to save the spot display settings as default?",
                 "Save settings as default",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            ImageViewerUITracksDisplaySettings settings = ImageViewerUITracksDisplaySettings.getInstance();
+            ImageViewerUITracksDisplayApplicationSettings settings = ImageViewerUITracksDisplayApplicationSettings.getInstance();
             settings.getTrackDrawer().copyFrom(trackDrawer);
             settings.setShowTracks(displayTracksViewMenuItem.getState());
             if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
@@ -295,7 +295,7 @@ public class TracksManagerPlugin2D extends JIPipeImageViewerPlugin2D {
 
     private void exportTracksToFile(TrackCollectionData rois) {
         FileNameExtensionFilter[] fileNameExtensionFilters = new FileNameExtensionFilter[]{UIUtils.EXTENSION_FILTER_ZIP};
-        Path path = FileChooserSettings.saveFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Data, "Export tracks", fileNameExtensionFilters);
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(getViewerPanel(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export tracks", fileNameExtensionFilters);
         if (path != null) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             try (JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo, path)) {

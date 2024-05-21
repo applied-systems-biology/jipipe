@@ -101,7 +101,7 @@ public class StringOrDoubleDesktopParameterEditorUI extends JIPipeDesktopParamet
 
     private JToggleButton addToggle(ButtonGroup group, Icon icon, String description) {
         JToggleButton toggleButton = new JToggleButton(icon);
-        UIUtils.makeFlat25x25(toggleButton);
+        UIUtils.makeButtonFlat25x25(toggleButton);
         toggleButton.addActionListener(e -> writeValueToParameter());
         toggleButton.setToolTipText(description);
         group.add(toggleButton);

@@ -15,7 +15,7 @@ package org.hkijena.jipipe.api.data.storage;
 
 import org.apache.commons.io.FilenameUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.ArchiveUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 
@@ -96,7 +96,7 @@ public class JIPipeZIPReadDataStorage implements JIPipeReadDataStorage {
             return parent.getOrCreateTemporaryStorageRoot();
         }
         if (temporaryStorage == null) {
-            temporaryStorage = RuntimeSettings.generateTempDirectory("zip");
+            temporaryStorage = JIPipeRuntimeApplicationSettings.generateTempDirectory("zip");
             progressInfo.log("Temporary storage requested: " + temporaryStorage);
             try {
                 ArchiveUtils.decompressZipFile(zipFilePath, temporaryStorage, progressInfo.resolve("Extract ZIP"));

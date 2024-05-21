@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.plugins.r.algorithms;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -25,18 +24,15 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumItemInfo;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
 import org.hkijena.jipipe.plugins.r.OptionalREnvironment;
-import org.hkijena.jipipe.plugins.r.RExtensionSettings;
-import org.hkijena.jipipe.plugins.r.RPlugin;
+import org.hkijena.jipipe.plugins.r.REnvironmentAccessNode;
 import org.hkijena.jipipe.plugins.r.RUtils;
-import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;
@@ -48,7 +44,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "R data set", description = "Imports a standard R data set (datasets package) as table.")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
-public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm implements REnvironmentAccessNode {
 
     private Dataset dataset = Dataset.iris;
     private OptionalREnvironment overrideEnvironment = new OptionalREnvironment();
@@ -67,25 +63,14 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         super.reportValidity(reportContext, report);
         if (!isPassThrough()) {
-            if (overrideEnvironment.isEnabled()) {
-                report.report(new ParameterValidationReportContext(reportContext,
-                        this,
-                        "Override R environment",
-                        "override-environment"), overrideEnvironment.getContent());
-            } else {
-                RExtensionSettings.checkRSettings(reportContext, report);
-            }
+            reportConfiguredREnvironmentValidity(reportContext, report);
         }
     }
 
     @Override
-    public void getExternalEnvironments(List<JIPipeEnvironment> target) {
-        super.getExternalEnvironments(target);
-        if (overrideEnvironment.isEnabled()) {
-            target.add(overrideEnvironment.getContent());
-        } else {
-            target.add(RExtensionSettings.getInstance().getEnvironment());
-        }
+    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+        super.getEnvironmentDependencies(target);
+        target.add(getConfiguredREnvironment());
     }
 
     @SetJIPipeDocumentation(name = "Override R environment", description = "If enabled, a different R environment is used for this Node.")
@@ -101,11 +86,11 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        Path tempFile = RuntimeSettings.generateTempFile("jipipe-r", ".csv");
+        Path tempFile = JIPipeRuntimeApplicationSettings.generateTempFile("jipipe-r", ".csv");
         String code = "library(datasets)\n" +
                 "write.csv(" + dataset.variableName + ", row.names = FALSE, file=\"" + MacroUtils.escapeString(tempFile.toAbsolutePath().toString()) + "\")\n";
         RUtils.runR(code,
-                overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() : RExtensionSettings.getInstance().getEnvironment(),
+                getConfiguredREnvironment(),
                 progressInfo);
         ResultsTableData resultsTableData = ResultsTableData.fromCSV(tempFile);
         iterationStep.addOutputData(getFirstOutputSlot(), resultsTableData, progressInfo);
@@ -121,12 +106,6 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("dataset")
     public void setDataset(Dataset dataset) {
         this.dataset = dataset;
-    }
-
-    @Override
-    protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
-        super.onDeserialized(node, issues, notifications);
-        RPlugin.createMissingRNotificationIfNeeded(notifications);
     }
 
     public enum Dataset {

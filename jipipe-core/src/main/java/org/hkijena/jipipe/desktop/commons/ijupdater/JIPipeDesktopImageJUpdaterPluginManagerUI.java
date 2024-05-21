@@ -19,11 +19,11 @@ import net.imagej.updater.FilesCollection;
 import net.imagej.updater.UpdateSite;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
+import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopMessagePanel;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.CoreImageJUtils;
 import org.hkijena.jipipe.utils.NetworkUtils;
@@ -123,7 +123,7 @@ public class JIPipeDesktopImageJUpdaterPluginManagerUI extends JIPipeDesktopWork
                     "Apply changes", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        final JIPipeDesktopImageJUpdaterResolveDependencies resolver = new JIPipeDesktopImageJUpdaterResolveDependencies(getDesktopWorkbench().getWindow(), currentFilesCollection);
+        final JIPipeDesktopImageJUpdaterResolveDependenciesDialog resolver = new JIPipeDesktopImageJUpdaterResolveDependenciesDialog(getDesktopWorkbench().getWindow(), currentFilesCollection);
         if (!resolver.resolve())
             return;
         applyRun = new JIPipeDesktopImageJUpdaterApplyRun(currentFilesCollection);
@@ -132,7 +132,7 @@ public class JIPipeDesktopImageJUpdaterPluginManagerUI extends JIPipeDesktopWork
     }
 
     private void enqueueRun(JIPipeRunnable runnable) {
-        JIPipeDesktopRunExecuterUI ui = new JIPipeDesktopRunExecuterUI(getDesktopWorkbench(), runnable);
+        JIPipeDesktopRunExecuteUI ui = new JIPipeDesktopRunExecuteUI(getDesktopWorkbench(), runnable);
         managerUI.setOptionPanelContent(null);
         managerUI.setMainPanelContent(ui);
         ui.startRun();

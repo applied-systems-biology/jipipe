@@ -31,6 +31,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -45,15 +46,16 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
+import org.hkijena.jipipe.plugins.ilastik.IlastikEnvironment;
+import org.hkijena.jipipe.plugins.ilastik.IlastikEnvironmentAccessNode;
 import org.hkijena.jipipe.plugins.ilastik.IlastikPlugin;
-import org.hkijena.jipipe.plugins.ilastik.IlastikSettings;
+import org.hkijena.jipipe.plugins.ilastik.OptionalIlastikEnvironment;
 import org.hkijena.jipipe.plugins.ilastik.datatypes.IlastikModelData;
 import org.hkijena.jipipe.plugins.ilastik.parameters.IlastikProjectValidationMode;
 import org.hkijena.jipipe.plugins.ilastik.utils.IlastikUtils;
 import org.hkijena.jipipe.plugins.ilastik.utils.hdf5.Hdf5;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.processes.OptionalProcessEnvironment;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -89,7 +91,7 @@ import static org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils.*;
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Labels Stage 2", description = "Image representing the users’ manually created annotations")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Input Stage 1", description = "Raw input image that was fed into the first stage of the workflow")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Input Stage 2", description = "Input received by the second Pixel Classification stage in the workflow")
-public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm {
+public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm implements IlastikEnvironmentAccessNode {
 
     public static final String PROJECT_TYPE = "PixelClassification01";
 
@@ -150,7 +152,7 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
 
     private final OutputParameters outputParameters;
     private boolean cleanUpAfterwards = true;
-    private OptionalProcessEnvironment overrideEnvironment = new OptionalProcessEnvironment();
+    private OptionalIlastikEnvironment overrideEnvironment = new OptionalIlastikEnvironment();
 
     private IlastikProjectValidationMode projectValidationMode = IlastikProjectValidationMode.CrashOnError;
 
@@ -165,7 +167,7 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
         super(other);
         this.cleanUpAfterwards = other.cleanUpAfterwards;
         this.projectValidationMode = other.projectValidationMode;
-        this.overrideEnvironment = new OptionalProcessEnvironment(other.overrideEnvironment);
+        this.overrideEnvironment = new OptionalIlastikEnvironment(other.overrideEnvironment);
         this.outputParameters = new OutputParameters(other.outputParameters);
         registerSubParameter(outputParameters);
         updateSlots();
@@ -281,7 +283,8 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
                 }
 
                 // Run ilastik
-                IlastikPlugin.runIlastik(overrideEnvironment.getContentOrDefault(IlastikSettings.getInstance().getEnvironment()),
+                IlastikEnvironment environment = getConfiguredIlastikEnvironment();
+                IlastikPlugin.runIlastik(environment,
                         args,
                         exportSourceProgress.resolve("Run Ilastik"),
                         false);
@@ -324,11 +327,7 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         super.reportValidity(reportContext, report);
         if (!isPassThrough()) {
-            if (overrideEnvironment.isEnabled()) {
-                report.report(reportContext, overrideEnvironment.getContent());
-            } else {
-                IlastikSettings.checkIlastikSettings(reportContext, report);
-            }
+            reportConfiguredIlastikEnvironmentValidity(reportContext, report);
         }
     }
 
@@ -365,12 +364,12 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
     @SetJIPipeDocumentation(name = "Override Ilastik environment", description = "If enabled, a different Ilastik environment is used for this node. Otherwise " +
             "the one in the Project > Application settings > Extensions > Ilastik is used.")
     @JIPipeParameter("override-environment")
-    public OptionalProcessEnvironment getOverrideEnvironment() {
+    public OptionalIlastikEnvironment getOverrideEnvironment() {
         return overrideEnvironment;
     }
 
     @JIPipeParameter("override-environment")
-    public void setOverrideEnvironment(OptionalProcessEnvironment overrideEnvironment) {
+    public void setOverrideEnvironment(OptionalIlastikEnvironment overrideEnvironment) {
         this.overrideEnvironment = overrideEnvironment;
     }
 
@@ -380,6 +379,12 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
         if (event.getSource() == outputParameters) {
             updateSlots();
         }
+    }
+
+    @Override
+    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+        super.getEnvironmentDependencies(target);
+        target.add(getConfiguredIlastikEnvironment());
     }
 
     private void updateSlots() {

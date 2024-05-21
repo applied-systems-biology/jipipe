@@ -21,15 +21,12 @@ import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
-import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopGenericNotificationInboxUI;
 import org.hkijena.jipipe.plugins.ilastik.IlastikPlugin;
-import org.hkijena.jipipe.plugins.ilastik.IlastikSettings;
-import org.hkijena.jipipe.plugins.settings.RuntimeSettings;
+import org.hkijena.jipipe.plugins.ilastik.IlastikPluginApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -103,33 +100,16 @@ public class IlastikModelData implements JIPipeData {
 
     @Override
     public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-        if (IlastikSettings.environmentSettingsAreValid()) {
-
-            // Export project to a tmp file
-            Path outputFile = RuntimeSettings.generateTempFile("ilastik", ".ilp");
-            try {
-                Files.write(outputFile, data, StandardOpenOption.CREATE);
-            } catch (Exception e) {
-                IJ.handleException(e);
-            }
-
-            JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-            progressInfo.setLogToStdOut(true);
-            desktopWorkbench.sendStatusBarText("Launching Ilastik ...");
-            IlastikPlugin.runIlastik(null, Collections.singletonList(outputFile.toString()), progressInfo, true);
-        } else {
-            JIPipeNotificationInbox inbox = new JIPipeNotificationInbox();
-            IlastikPlugin.createMissingIlastikNotificationIfNeeded(inbox);
-            JIPipeDesktopGenericNotificationInboxUI ui = new JIPipeDesktopGenericNotificationInboxUI(desktopWorkbench, inbox);
-            JFrame dialog = new JFrame();
-            dialog.setTitle("View Ilastik project");
-            dialog.setContentPane(ui);
-            dialog.setIconImage(UIUtils.getJIPipeIcon128());
-            dialog.pack();
-            dialog.setSize(800, 600);
-            dialog.setLocationRelativeTo(desktopWorkbench.getWindow());
-            dialog.setVisible(true);
+        // Export project to a tmp file
+        Path outputFile = JIPipeRuntimeApplicationSettings.generateTempFile("ilastik", ".ilp");
+        try {
+            Files.write(outputFile, data, StandardOpenOption.CREATE);
+        } catch (Exception e) {
+            IJ.handleException(e);
         }
+
+        // Open project with Ilastik
+        IlastikPlugin.launchIlastik(desktopWorkbench,  Collections.singletonList(outputFile.toString()));
     }
 
     @Override

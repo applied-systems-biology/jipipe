@@ -19,12 +19,12 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
-import org.hkijena.jipipe.plugins.settings.ExtensionSettings;
-import org.hkijena.jipipe.plugins.settings.NotificationUISettings;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopSplashScreen;
 import org.hkijena.jipipe.desktop.commons.ijupdater.JIPipeDesktopImageJUpdaterMissingRegistrationUpdateSiteResolver;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopWorkbenchNotificationInboxUI;
+import org.hkijena.jipipe.plugins.settings.JIPipeExtensionApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeNotificationUIApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.command.Command;
@@ -79,7 +79,7 @@ public class JIPipeGUICommand implements Command {
         }
 
         // Run registration
-        ExtensionSettings extensionSettings = ExtensionSettings.getInstanceFromRaw();
+        JIPipeExtensionApplicationSettings extensionSettings = JIPipeExtensionApplicationSettings.getInstanceFromRaw();
         JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
         try {
             if (JIPipe.getInstance() == null) {
@@ -119,7 +119,7 @@ public class JIPipeGUICommand implements Command {
                     true);
 
             // Show notifications
-            if (NotificationUISettings.getInstance().isShowNotificationsAfterFirstStart()) {
+            if (JIPipeNotificationUIApplicationSettings.getInstance().isShowNotificationsAfterFirstStart()) {
                 if (!JIPipeNotificationInbox.getInstance().hasNotifications()) {
                     SwingUtilities.invokeLater(() -> {
                         for (JIPipeNotification notification : JIPipeNotificationInbox.getInstance().getNotifications()) {
@@ -143,7 +143,7 @@ public class JIPipeGUICommand implements Command {
                         JCheckBox showMessageCheckbox = new JCheckBox("Show notifications on JIPipe startup");
                         showMessageCheckbox.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
                         showMessageCheckbox.setSelected(true);
-                        showMessageCheckbox.addActionListener(e -> NotificationUISettings.getInstance().setShowNotificationsAfterFirstStart(showMessageCheckbox.isSelected()));
+                        showMessageCheckbox.addActionListener(e -> JIPipeNotificationUIApplicationSettings.getInstance().setShowNotificationsAfterFirstStart(showMessageCheckbox.isSelected()));
                         panel.add(showMessageCheckbox, BorderLayout.SOUTH);
 
                         JIPipeNotificationInbox.getInstance().getUpdatedEventEmitter().subscribeLambda((emitter, event) -> {

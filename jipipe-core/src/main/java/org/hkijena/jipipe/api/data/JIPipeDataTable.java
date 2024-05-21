@@ -37,7 +37,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.datatable.JIPipeDesktopExtendedDataTableUI;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.IntegerAndIntegerPairParameter;
-import org.hkijena.jipipe.plugins.settings.GeneralDataSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -1242,7 +1242,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
 
         // Calculate the preview sizes
         List<Dimension> previewSizes = new ArrayList<>();
-        for (IntegerAndIntegerPairParameter entry : GeneralDataSettings.getInstance().getExportedPreviewSizes()) {
+        for (IntegerAndIntegerPairParameter entry : JIPipeGeneralDataApplicationSettings.getInstance().getExportedPreviewSizes()) {
             previewSizes.add(new Dimension(entry.getKey(), entry.getValue()));
         }
 

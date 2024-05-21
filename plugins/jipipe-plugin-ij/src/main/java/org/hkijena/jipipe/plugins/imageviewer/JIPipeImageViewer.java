@@ -30,7 +30,7 @@ import org.hkijena.jipipe.plugins.imageviewer.plugins2d.*;
 import org.hkijena.jipipe.plugins.imageviewer.plugins2d.maskdrawer.MeasurementDrawerPlugin2D;
 import org.hkijena.jipipe.plugins.imageviewer.plugins2d.roimanager.ROIManagerPlugin2D;
 import org.hkijena.jipipe.plugins.imageviewer.plugins3d.*;
-import org.hkijena.jipipe.plugins.imageviewer.settings.ImageViewerGeneralUISettings;
+import org.hkijena.jipipe.plugins.imageviewer.settings.ImageViewerGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Disposable;
@@ -81,7 +81,7 @@ public class JIPipeImageViewer extends JPanel implements JIPipeDesktopWorkbenchA
     private final JButton switchModeButton = new JButton();
     private final JLabel imageInfoLabel = new JLabel();
     private final List<Object> overlays = new ArrayList<>();
-    private final ImageViewerGeneralUISettings settings;
+    private final ImageViewerGeneralUIApplicationSettings settings;
     private ImagePlusData image;
     private JIPipeDataSource dataSource;
 
@@ -96,9 +96,9 @@ public class JIPipeImageViewer extends JPanel implements JIPipeDesktopWorkbenchA
         imageViewerPanel2D = new ImageViewerPanel2D(this);
         imageViewerPanel3D = new ImageViewerPanel3D(this);
         if (JIPipe.isInstantiated()) {
-            settings = ImageViewerGeneralUISettings.getInstance();
+            settings = ImageViewerGeneralUIApplicationSettings.getInstance();
         } else {
-            settings = new ImageViewerGeneralUISettings();
+            settings = new ImageViewerGeneralUIApplicationSettings();
         }
         initializePlugins(pluginTypes);
         initialize();

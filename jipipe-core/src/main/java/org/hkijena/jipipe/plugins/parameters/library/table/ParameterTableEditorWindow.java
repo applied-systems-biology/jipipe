@@ -16,19 +16,15 @@ package org.hkijena.jipipe.plugins.parameters.library.table;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopAddParameterDialog;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFlexContentPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterTreeUI;
-import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.desktop.commons.components.*;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
-import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
@@ -201,7 +197,7 @@ public class ParameterTableEditorWindow extends JFrame {
                     palettePanel.addWideToForm(editor, JIPipeDesktopParameterPanel.generateParameterDocumentation(multiParameterAccess, null));
                 }
 
-                JTextField keyInfo = UIUtils.makeReadonlyBorderlessTextField(parameterTable.getColumnInfo(selectedColumns[0]).getKey());
+                JTextField keyInfo = UIUtils.createReadonlyBorderlessTextField(parameterTable.getColumnInfo(selectedColumns[0]).getKey());
                 keyInfo.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
                 JLabel keyInfoLabel = new JLabel("Will be written into");
                 keyInfoLabel.setIcon(UIUtils.getIconFromResources("actions/dialog-xml-editor.png"));

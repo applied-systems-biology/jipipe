@@ -20,30 +20,20 @@ import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeWorkbench;
-import org.hkijena.jipipe.api.notifications.JIPipeNotification;
-import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
-import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
+import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.imagejalgorithms.ImageJAlgorithmsPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
-import org.hkijena.jipipe.plugins.omnipose.algorithms.OmniposeAlgorithm;
+import org.hkijena.jipipe.plugins.omnipose.algorithms.OmniposeInferenceAlgorithm;
 import org.hkijena.jipipe.plugins.omnipose.algorithms.OmniposeTrainingAlgorithm;
-import org.hkijena.jipipe.plugins.omnipose.installers.OmniposeEasyInstaller;
-import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonPlugin;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -66,47 +56,21 @@ public class OmniposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     public OmniposePlugin() {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_DEEP_LEARNING, PluginCategoriesEnumParameter.CATEGORY_SEGMENTATION, PluginCategoriesEnumParameter.CATEGORY_MACHINE_LEARNING);
-        getMetadata().setThumbnail(new ImageParameter(RESOURCES.getResourceURL("thumbnail.png")));
     }
 
-    private static void easyInstallOmnipose(JIPipeWorkbench workbench) {
-        OmniposeSettings settings = OmniposeSettings.getInstance();
-        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
-        JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
-        OmniposeEasyInstaller installer = new OmniposeEasyInstaller((JIPipeDesktopWorkbench) workbench, parameterAccess);
-        JIPipeDesktopRunExecuterUI.runInDialog((JIPipeDesktopWorkbench) workbench, ((JIPipeDesktopWorkbench) workbench).getWindow(), installer);
-    }
-
-    private static void configureOmnipose(JIPipeWorkbench workbench) {
-        if (workbench instanceof JIPipeDesktopProjectWorkbench) {
-            ((JIPipeDesktopProjectWorkbench) workbench).openApplicationSettings("/Extensions/Omnipose");
+    public static PythonEnvironment getEnvironment(JIPipeProject project, OptionalPythonEnvironment nodeEnvironment) {
+        if (nodeEnvironment.isEnabled()) {
+            return nodeEnvironment.getContent();
         }
+        if (project != null && project.getSettingsSheet(OmniposePluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
+            return project.getSettingsSheet(OmniposePluginProjectSettings.class).getProjectDefaultEnvironment().getContent();
+        }
+        return OmniposePluginApplicationSettings.getInstance().getDefaultOmniposeEnvironment();
     }
 
     @Override
     public StringList getDependencyProvides() {
         return new StringList();
-    }
-
-    public static void createMissingPythonNotificationIfNeeded(JIPipeNotificationInbox inbox) {
-        if (!OmniposeSettings.pythonSettingsAreValid()) {
-            JIPipeNotification notification = new JIPipeNotification(AS_DEPENDENCY.getDependencyId() + ":python-not-configured");
-            notification.setHeading("Omnipose is not configured");
-            notification.setDescription("You need to setup a Python environment that contains Omnipose." + "Click 'Install Omnipose' to let JIPipe setup a Python distribution with Omnipose automatically. " +
-                    "You can choose between the standard CPU and GPU-accelerated installation (choose CPU if you are unsure). " +
-                    "Alternatively, click 'Configure' to visit the settings page with more options, including the selection of an existing Python environment.\n\n" +
-                    "For more information, please visit https://www.jipipe.org/installation/third-party/omnipose/");
-            notification.getActions().add(new JIPipeNotificationAction("Install Omnipose",
-                    "Installs Omnipose via the EasyInstaller",
-                    UIUtils.getIconInvertedFromResources("actions/download.png"),
-                    JIPipeNotificationAction.Style.Success,
-                    OmniposePlugin::easyInstallOmnipose));
-            notification.getActions().add(new JIPipeNotificationAction("Open settings",
-                    "Opens the applications settings page",
-                    UIUtils.getIconFromResources("actions/configure.png"),
-                    OmniposePlugin::configureOmnipose));
-            inbox.push(notification);
-        }
     }
 
     @Override
@@ -186,24 +150,15 @@ public class OmniposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerSettingsSheet(OmniposeSettings.ID,
-                "Omnipose",
-                "Connect existing Omnipose installations to JIPipe or automatically install a new Omnipose environment if none is available",
-                RESOURCES.getIconFromResources("omnipose.png"),
-                "Extensions",
-                UIUtils.getIconFromResources("actions/plugins.png"),
-                new OmniposeSettings());
+        registerApplicationSettingsSheet(new OmniposePluginApplicationSettings());
+        registerProjectSettingsSheet(OmniposePluginProjectSettings.class);
+
         registerEnumParameterType("omnipose-model", OmniposeModel.class, "Omnipose model", "An Omnipose model");
         registerEnumParameterType("omnipose-pretrained-model", OmniposePretrainedModel.class, "Omnipose pre-trained model", "A pretrained model for Omnipose");
 
-        registerNodeType("omnipose", OmniposeAlgorithm.class, RESOURCES.getIcon16URLFromResources("omnipose.png"));
+        registerNodeType("omnipose", OmniposeInferenceAlgorithm.class, RESOURCES.getIcon16URLFromResources("omnipose.png"));
         registerNodeType("omnipose-training", OmniposeTrainingAlgorithm.class, RESOURCES.getIcon16URLFromResources("omnipose.png"));
 
-        registerEnvironmentInstaller(PythonEnvironment.class, OmniposeEasyInstaller.class, UIUtils.getIconFromResources("emblems/vcs-normal.png"));
     }
 
-    @Override
-    public void postprocess(JIPipeProgressInfo progressInfo) {
-        createMissingPythonNotificationIfNeeded(JIPipeNotificationInbox.getInstance());
-    }
 }

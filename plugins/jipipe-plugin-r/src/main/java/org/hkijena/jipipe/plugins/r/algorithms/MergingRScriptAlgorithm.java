@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.plugins.r.algorithms;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -32,17 +31,14 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
-import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.plugins.r.OptionalREnvironment;
-import org.hkijena.jipipe.plugins.r.RExtensionSettings;
-import org.hkijena.jipipe.plugins.r.RPlugin;
+import org.hkijena.jipipe.plugins.r.REnvironmentAccessNode;
 import org.hkijena.jipipe.plugins.r.RUtils;
 import org.hkijena.jipipe.plugins.r.parameters.RScriptParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -83,7 +79,7 @@ import java.util.Map;
 @AddJIPipeInputSlot(ResultsTableData.class)
 @AddJIPipeOutputSlot(ImagePlusColorRGBData.class)
 @AddJIPipeOutputSlot(ResultsTableData.class)
-public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
+public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm implements REnvironmentAccessNode {
 
     private RScriptParameter script = new RScriptParameter();
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
@@ -107,13 +103,9 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    public void getExternalEnvironments(List<JIPipeEnvironment> target) {
-        super.getExternalEnvironments(target);
-        if (overrideEnvironment.isEnabled()) {
-            target.add(overrideEnvironment.getContent());
-        } else {
-            target.add(RExtensionSettings.getInstance().getEnvironment());
-        }
+    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+        super.getEnvironmentDependencies(target);
+        target.add(getConfiguredREnvironment());
     }
 
     @SetJIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
@@ -132,14 +124,7 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         super.reportValidity(reportContext, report);
         if (!isPassThrough()) {
-            if (overrideEnvironment.isEnabled()) {
-                report.report(new ParameterValidationReportContext(reportContext,
-                        this,
-                        "Override R environment",
-                        "override-environment"), overrideEnvironment.getContent());
-            } else {
-                RExtensionSettings.checkRSettings(reportContext, report);
-            }
+            reportConfiguredREnvironmentValidity(reportContext, report);
         }
     }
 
@@ -152,12 +137,6 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
     @JIPipeParameter("override-environment")
     public void setOverrideEnvironment(OptionalREnvironment overrideEnvironment) {
         this.overrideEnvironment = overrideEnvironment;
-    }
-
-    @Override
-    protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
-        super.onDeserialized(node, issues, notifications);
-        RPlugin.createMissingRNotificationIfNeeded(notifications);
     }
 
     @Override
@@ -212,7 +191,7 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
 
         // Export as script and run it
         RUtils.runR(code.toString(),
-                overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() : RExtensionSettings.getInstance().getEnvironment(),
+                getConfiguredREnvironment(),
                 progressInfo);
 
         for (JIPipeOutputDataSlot outputSlot : getOutputSlots()) {

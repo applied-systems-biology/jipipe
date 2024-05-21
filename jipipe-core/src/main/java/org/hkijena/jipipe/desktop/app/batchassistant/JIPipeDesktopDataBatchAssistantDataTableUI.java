@@ -19,31 +19,31 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
+import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopDataInfoCellRenderer;
+import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopDataTableRowUI;
 import org.hkijena.jipipe.desktop.app.cache.exporters.JIPipeDesktopDataExporterRun;
 import org.hkijena.jipipe.desktop.app.cache.exporters.JIPipeDesktopDataTableToFilesByMetadataExporterRun;
 import org.hkijena.jipipe.desktop.app.cache.exporters.JIPipeDesktopDataTableToOutputExporterRun;
 import org.hkijena.jipipe.desktop.app.cache.exporters.JIPipeDesktopDataTableToZIPExporterRun;
-import org.hkijena.jipipe.plugins.batchassistant.DataBatchStatusData;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
-import org.hkijena.jipipe.plugins.expressions.ui.ExpressionBuilderUI;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
-import org.hkijena.jipipe.plugins.settings.GeneralDataSettings;
-import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
-import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopDataInfoCellRenderer;
-import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopDataTableRowUI;
+import org.hkijena.jipipe.desktop.app.resultanalysis.renderers.JIPipeDesktopAnnotationTableCellRenderer;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
+import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDataPreviewControlUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopComponentCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextFieldTableRowFilter;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
-import org.hkijena.jipipe.desktop.app.resultanalysis.renderers.JIPipeDesktopAnnotationTableCellRenderer;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuterUI;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
-import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
+import org.hkijena.jipipe.plugins.batchassistant.DataBatchStatusData;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
+import org.hkijena.jipipe.plugins.expressions.ui.ExpressionBuilderUI;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
+import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.MenuManager;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -91,7 +91,7 @@ public class JIPipeDesktopDataBatchAssistantDataTableUI extends JIPipeDesktopWor
 
         initialize();
         reloadTable();
-        GeneralDataSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(this);
+        JIPipeGeneralDataApplicationSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(this);
         showDataRows(new int[0]);
     }
 
@@ -123,8 +123,8 @@ public class JIPipeDesktopDataBatchAssistantDataTableUI extends JIPipeDesktopWor
         dataTableModel = new JIPipeDesktopDataBatchAssistantTableModel(table, dataTable);
         table.setModel(dataTableModel);
         dataTableModel.setScrollPane(scrollPane);
-        if (GeneralDataSettings.getInstance().isGenerateCachePreviews())
-            table.setRowHeight(GeneralDataSettings.getInstance().getPreviewSize());
+        if (JIPipeGeneralDataApplicationSettings.getInstance().isGenerateCachePreviews())
+            table.setRowHeight(JIPipeGeneralDataApplicationSettings.getInstance().getPreviewSize());
         else
             table.setRowHeight(25);
         table.setRowFilter(new JIPipeDesktopSearchTextFieldTableRowFilter(searchTextField));
@@ -135,7 +135,7 @@ public class JIPipeDesktopDataBatchAssistantDataTableUI extends JIPipeDesktopWor
         }
         table.setAutoCreateRowSorter(true);
         if (columnModel.getColumnCount() > 1) {
-            columnModel.getColumn(1).setPreferredWidth(GeneralDataSettings.getInstance().getPreviewSize());
+            columnModel.getColumn(1).setPreferredWidth(JIPipeGeneralDataApplicationSettings.getInstance().getPreviewSize());
         }
         SwingUtilities.invokeLater(() -> {
             dataTableModel.updateRenderedPreviews();
@@ -147,8 +147,8 @@ public class JIPipeDesktopDataBatchAssistantDataTableUI extends JIPipeDesktopWor
     private void initialize() {
         setLayout(new BorderLayout());
         table = new JXTable();
-        if (GeneralDataSettings.getInstance().isGenerateCachePreviews())
-            table.setRowHeight(GeneralDataSettings.getInstance().getPreviewSize());
+        if (JIPipeGeneralDataApplicationSettings.getInstance().isGenerateCachePreviews())
+            table.setRowHeight(JIPipeGeneralDataApplicationSettings.getInstance().getPreviewSize());
         else
             table.setRowHeight(25);
         table.setDefaultRenderer(Integer.class, new BatchIndexCellRenderer());
@@ -341,13 +341,13 @@ public class JIPipeDesktopDataBatchAssistantDataTableUI extends JIPipeDesktopWor
 
             popupMenu.add(UIUtils.createMenuItem("Export", "Exports the data", UIUtils.getIconFromResources("actions/document-export.png"),
                     () -> {
-                        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export row " + modelRow);
+                        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export row " + modelRow);
                         if (path != null) {
                             Path directory = path.getParent();
                             String name = path.getFileName().toString();
                             JIPipeDesktopDataExporterRun run = new JIPipeDesktopDataExporterRun(dataTable.getData(modelRow, JIPipeData.class, new JIPipeProgressInfo()),
                                     directory, name);
-                            JIPipeDesktopRunExecuterUI.runInDialog(getDesktopWorkbench(), SwingUtilities.getWindowAncestor(this), run, new JIPipeRunnableQueue("Export"));
+                            JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), SwingUtilities.getWindowAncestor(this), run, new JIPipeRunnableQueue("Export"));
                         }
                     }));
 
@@ -355,13 +355,13 @@ public class JIPipeDesktopDataBatchAssistantDataTableUI extends JIPipeDesktopWor
                 JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(modelRow, dataAnnotationColumn);
                 popupMenu.add(UIUtils.createMenuItem("Export " + dataAnnotation.getName(), "Exports the data annotation '" + dataAnnotation.getName() + "'", UIUtils.getIconFromResources("actions/document-export.png"),
                         () -> {
-                            Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export row " + modelRow);
+                            Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export row " + modelRow);
                             if (path != null) {
                                 Path directory = path.getParent();
                                 String name = path.getFileName().toString();
                                 JIPipeDesktopDataExporterRun run = new JIPipeDesktopDataExporterRun(dataAnnotation.getData(JIPipeData.class, new JIPipeProgressInfo()),
                                         directory, name);
-                                JIPipeDesktopRunExecuterUI.runInDialog(getDesktopWorkbench(), SwingUtilities.getWindowAncestor(this), run, new JIPipeRunnableQueue("Export"));
+                                JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), SwingUtilities.getWindowAncestor(this), run, new JIPipeRunnableQueue("Export"));
                             }
                         }));
             }
@@ -395,7 +395,7 @@ public class JIPipeDesktopDataBatchAssistantDataTableUI extends JIPipeDesktopWor
     }
 
     private void exportAsJIPipeSlotDirectory() {
-        Path directory = FileChooserSettings.saveDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Export as JIPipe data table");
+        Path directory = JIPipeFileChooserApplicationSettings.saveDirectory(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export as JIPipe data table");
         if (directory != null) {
             try {
                 if (Files.isDirectory(directory) && Files.list(directory).findAny().isPresent()) {
@@ -416,7 +416,7 @@ public class JIPipeDesktopDataBatchAssistantDataTableUI extends JIPipeDesktopWor
     }
 
     private void exportAsJIPipeSlotZIP() {
-        Path outputZipFile = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export as JIPipe data table (*.zip)", UIUtils.EXTENSION_FILTER_ZIP);
+        Path outputZipFile = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export as JIPipe data table (*.zip)", UIUtils.EXTENSION_FILTER_ZIP);
         if (outputZipFile != null) {
             if (Files.isRegularFile(outputZipFile)) {
                 if (JOptionPane.showConfirmDialog(getDesktopWorkbench().getWindow(),
@@ -434,7 +434,7 @@ public class JIPipeDesktopDataBatchAssistantDataTableUI extends JIPipeDesktopWor
     }
 
     private void exportAsCSV() {
-        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Export as *.csv", UIUtils.EXTENSION_FILTER_CSV);
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export as *.csv", UIUtils.EXTENSION_FILTER_CSV);
         if (path != null) {
             ResultsTableData tableData = dataTableModel.getDataTable().toAnnotationTable(true);
             tableData.saveAsCSV(path);

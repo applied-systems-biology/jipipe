@@ -75,7 +75,7 @@ public class PencilMaskDrawer2DTool extends MaskDrawer2DTool implements MouseCli
         pencilSizeYSpinner = new JSpinner(pencilSizeYModel);
         pencilSizeYLinkToggle = new JToggleButton(UIUtils.getIconFromResources("actions/edit-link.png"), DEFAULT_SETTING_PENCIL_LINK_Y);
         pencilSizeYLinkToggle.setToolTipText("Keep the Y size the same as the X size");
-        UIUtils.makeFlat25x25(pencilSizeYLinkToggle);
+        UIUtils.makeButtonFlat25x25(pencilSizeYLinkToggle);
 
         pencilSizeXModel.addChangeListener(e -> {
             DEFAULT_SETTING_PENCIL_SIZE_X = Math.max(1, pencilSizeXModel.getNumber().intValue());

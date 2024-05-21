@@ -22,8 +22,6 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
-import java.util.Collections;
-
 /**
  * Extension containing some additional tools
  */
@@ -53,6 +51,7 @@ public class ToolsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerMenuExtension(DissolveCompartmentsTool.class);
         registerMenuExtension(OpenImageJConsoleTool.class);
         registerMenuExtension(RestartJIPipeDesktopTool.class);
+        registerMenuExtension(OpenImageJUpdateManagerTool.class);
     }
 
     @Override
@@ -66,7 +65,7 @@ public class ToolsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public boolean isCoreExtension() {
+    public boolean isCorePlugin() {
         return true;
     }
 

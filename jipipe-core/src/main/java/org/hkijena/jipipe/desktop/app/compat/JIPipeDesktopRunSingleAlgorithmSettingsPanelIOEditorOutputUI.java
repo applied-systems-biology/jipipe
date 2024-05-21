@@ -58,8 +58,8 @@ public class JIPipeDesktopRunSingleAlgorithmSettingsPanelIOEditorOutputUI extend
         JButton pickExporterButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
         pickExporterButton.addActionListener(e -> pickExporter());
         editExporterPanel.add(pickExporterButton, BorderLayout.EAST);
-        UIUtils.makeFlat25x25(pickExporterButton);
-        UIUtils.makeFlat(selectExporterButton);
+        UIUtils.makeButtonFlat25x25(pickExporterButton);
+        UIUtils.makeButtonFlat(selectExporterButton);
         titlePanel.add(editExporterPanel, BorderLayout.EAST);
         add(titlePanel);
 

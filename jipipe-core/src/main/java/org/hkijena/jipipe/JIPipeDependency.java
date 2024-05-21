@@ -19,7 +19,6 @@ import org.hkijena.jipipe.api.JIPipeStandardMetadata;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 
 import java.nio.file.Path;
@@ -70,9 +69,9 @@ public interface JIPipeDependency extends JIPipeValidatable {
             if (visited.contains(dependency.getDependencyId()))
                 continue;
             JIPipeMutableDependency copy = new JIPipeMutableDependency(dependency);
-            if (minimize) {
-                copy.getMetadata().setThumbnail(new ImageParameter());
-            }
+//            if (minimize) {
+//                copy.getMetadata().setThumbnail(new ImageParameter());
+//            }
             copy.setDependencies(new HashSet<>());
             result.add(copy);
             stack.addAll(dependency.getDependencies());
@@ -95,6 +94,7 @@ public interface JIPipeDependency extends JIPipeValidatable {
 
     /**
      * The list of alternative IDs that are covered by this dependency
+     *
      * @return alternative IDs
      */
     @JsonGetter("provides")

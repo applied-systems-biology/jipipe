@@ -17,6 +17,7 @@ import net.imagej.ui.swing.updater.SwingAuthenticator;
 import net.imagej.updater.FilesCollection;
 import net.imagej.updater.util.AvailableSites;
 import net.imagej.updater.util.UpdaterUtil;
+import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.utils.CoreImageJUtils;
@@ -28,9 +29,7 @@ import java.net.Authenticator;
 /**
  * A run that is used for the updater
  */
-public class JIPipeDesktopImageJUpdaterRefreshRepositoryRun implements JIPipeRunnable {
-
-    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+public class JIPipeDesktopImageJUpdaterRefreshRepositoryRun extends AbstractJIPipeRunnable {
     private FilesCollection filesCollection;
     private String conflictWarnings;
 
@@ -44,7 +43,7 @@ public class JIPipeDesktopImageJUpdaterRefreshRepositoryRun implements JIPipeRun
 
         // Look for conflicts
         try {
-            conflictWarnings = filesCollection.downloadIndexAndChecksum(new JIPipeDesktopImageJUpdaterProgressAdapter2(progressInfo));
+            conflictWarnings = filesCollection.downloadIndexAndChecksum(new JIPipeDesktopImageJUpdaterProgressAdapter2(getProgressInfo()));
         } catch (ParserConfigurationException | SAXException e) {
             throw new RuntimeException(e);
         }
@@ -58,16 +57,6 @@ public class JIPipeDesktopImageJUpdaterRefreshRepositoryRun implements JIPipeRun
 
     public String getConflictWarnings() {
         return conflictWarnings;
-    }
-
-    @Override
-    public JIPipeProgressInfo getProgressInfo() {
-        return progressInfo;
-    }
-
-    @Override
-    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-        this.progressInfo = progressInfo;
     }
 
     @Override

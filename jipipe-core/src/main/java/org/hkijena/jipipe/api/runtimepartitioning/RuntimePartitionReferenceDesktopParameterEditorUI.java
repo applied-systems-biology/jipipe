@@ -32,7 +32,7 @@ import java.awt.*;
 public class RuntimePartitionReferenceDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI implements JIPipeRunnable.FinishedEventListener {
 
     private final JButton nameLabel = new JButton();
-    private final JTextField pathLabel = UIUtils.makeReadonlyBorderlessTextField("");
+    private final JTextField pathLabel = UIUtils.createReadonlyBorderlessTextField("");
     private final JPopupMenu configureMenu = new JPopupMenu();
 
     /**

@@ -37,7 +37,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopProjectOutputTreePanel;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
-import org.hkijena.jipipe.plugins.settings.FileChooserSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.utils.datatypes.JIPipeOutputData;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -119,7 +119,7 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
     @SetJIPipeDocumentation(name = "Set output slot", description = "Loads parameters from a project file")
     public void importParametersFromProject(JIPipeWorkbench workbench) {
         Window window = ((JIPipeDesktopWorkbench) workbench).getWindow();
-        Path projectFile = FileChooserSettings.openFile(window, FileChooserSettings.LastDirectoryKey.Projects, "Import JIPipe project", UIUtils.EXTENSION_FILTER_JIP);
+        Path projectFile = JIPipeFileChooserApplicationSettings.openFile(window, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Import JIPipe project", UIUtils.EXTENSION_FILTER_JIP);
         if (projectFile != null) {
             try {
                 JIPipeProject project = JIPipeProject.loadProject(projectFile, new UnspecifiedValidationReportContext(), new JIPipeValidationReport(), new JIPipeNotificationInbox());

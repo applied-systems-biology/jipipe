@@ -21,10 +21,10 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.plugins.settings.GeneralUISettings;
-import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopDynamicParameterEditorDialog;
+import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
+import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Context;
@@ -62,7 +62,7 @@ public class JIPipeDesktopParameterPanel extends JIPipeDesktopFormPanel implemen
 
     /**
      * With this flag, there will be a search bar for parameters.
-     * {@link org.hkijena.jipipe.plugins.settings.GeneralUISettings}.isShowParameterSearchBar() will override this setting
+     * {@link JIPipeGeneralUIApplicationSettings}.isShowParameterSearchBar() will override this setting
      */
     public static final int WITH_SEARCH_BAR = 512;
 
@@ -75,6 +75,7 @@ public class JIPipeDesktopParameterPanel extends JIPipeDesktopFormPanel implemen
      * With this flag, collapsing is disabled
      */
     public static final int WITHOUT_COLLAPSE = 2048;
+
 
     /**
      * Flags suitable for standalone dialogs
@@ -106,7 +107,7 @@ public class JIPipeDesktopParameterPanel extends JIPipeDesktopFormPanel implemen
      * @param flags               Flags
      */
     public JIPipeDesktopParameterPanel(JIPipeDesktopWorkbench desktopWorkbench, JIPipeParameterCollection displayedParameters, JIPipeParameterTree parentTree, MarkdownText documentation, int flags) {
-        super(documentation, flags);
+        super(documentation, flags | WITH_LIMIT_WIDTH);
         this.parentTree = parentTree;
         this.noGroupHeaders = (flags & NO_GROUP_HEADERS) == NO_GROUP_HEADERS;
         this.noEmptyGroupHeaders = (flags & NO_EMPTY_GROUP_HEADERS) == NO_EMPTY_GROUP_HEADERS;
@@ -404,11 +405,11 @@ public class JIPipeDesktopParameterPanel extends JIPipeDesktopFormPanel implemen
         collapseButton.setOpaque(false);
         collapseButton.setIcon(UIUtils.getIconFromResources("actions/caret-right.png"));
         collapseButton.setSelectedIcon(UIUtils.getIconFromResources("actions/caret-down.png"));
-        collapseButton.setSelected(!node.isCollapsed());
+        collapseButton.setSelected(node != null && !node.isCollapsed());
         collapseButton.setText(collapseButton.isSelected() ? "Hide content" : "Show content");
         collapseButton.addActionListener(e -> collapseButton.setText(collapseButton.isSelected() ? "Hide content" : "Show content"));
         if (!collapseButton.isSelected()) {
-            if (!GeneralUISettings.getInstance().isAllowDefaultCollapsedParameters()) {
+            if (!JIPipeGeneralUIApplicationSettings.getInstance().isAllowDefaultCollapsedParameters()) {
                 collapseButton.setSelected(true);
             }
         }
@@ -417,7 +418,7 @@ public class JIPipeDesktopParameterPanel extends JIPipeDesktopFormPanel implemen
             SetJIPipeDocumentation documentation = tree.getSourceDocumentation(parameterCollection);
             boolean documentationIsEmpty = documentation == null || (StringUtils.isNullOrEmpty(documentation.name())
                     && StringUtils.isNullOrEmpty(DocumentationUtils.getDocumentationDescription(documentation)));
-            boolean groupHeaderIsEmpty = documentationIsEmpty && !isModifiable && node.getActions().isEmpty();
+            boolean groupHeaderIsEmpty = documentationIsEmpty && !isModifiable && (node == null || node.getActions().isEmpty());
 
             if (!noEmptyGroupHeaders || !groupHeaderIsEmpty) {
                 Component[] leftComponents;
@@ -426,10 +427,10 @@ public class JIPipeDesktopParameterPanel extends JIPipeDesktopFormPanel implemen
                 else
                     leftComponents = new Component[0];
                 Icon groupIcon;
-                if (UIUtils.DARK_THEME && !StringUtils.isNullOrEmpty(node.getDarkIconURL())) {
+                if (UIUtils.DARK_THEME && node != null && node.getResourceClass() != null && !StringUtils.isNullOrEmpty(node.getDarkIconURL())) {
                     groupIcon = new ImageIcon(node.getResourceClass().getResource(node.getDarkIconURL()));
                 } else {
-                    if (!StringUtils.isNullOrEmpty(node.getIconURL())) {
+                    if (node != null && !StringUtils.isNullOrEmpty(node.getIconURL())) {
                         groupIcon = new ImageIcon(node.getResourceClass().getResource(node.getIconURL()));
                     } else {
                         groupIcon = UIUtils.getIconFromResources("actions/configure.png");
@@ -445,13 +446,15 @@ public class JIPipeDesktopParameterPanel extends JIPipeDesktopFormPanel implemen
                     groupHeaderPanel.getDescriptionArea().setText(DocumentationUtils.getDocumentationDescription(documentation));
                 }
 
-                for (JIPipeParameterCollectionContextAction action : node.getActions()) {
-                    Icon icon = action.getIconURL() != null ? new ImageIcon(action.getIconURL()) : null;
-                    JButton actionButton = new JButton(action.getDocumentation().name(), icon);
-                    actionButton.setToolTipText(DocumentationUtils.getDocumentationDescription(action.getDocumentation()));
-                    actionButton.addActionListener(e -> action.accept(desktopWorkbench));
-                    UIUtils.setStandardButtonBorder(actionButton);
-                    groupHeaderPanel.addColumn(actionButton);
+                if (node != null) {
+                    for (JIPipeParameterCollectionContextAction action : node.getActions()) {
+                        Icon icon = action.getIconURL() != null ? new ImageIcon(action.getIconURL()) : null;
+                        JButton actionButton = new JButton(action.getDocumentation().name(), icon);
+                        actionButton.setToolTipText(DocumentationUtils.getDocumentationDescription(action.getDocumentation()));
+                        actionButton.addActionListener(e -> action.accept(desktopWorkbench));
+                        UIUtils.setStandardButtonBorder(actionButton);
+                        groupHeaderPanel.addColumn(actionButton);
+                    }
                 }
 
                 if (isModifiable) {

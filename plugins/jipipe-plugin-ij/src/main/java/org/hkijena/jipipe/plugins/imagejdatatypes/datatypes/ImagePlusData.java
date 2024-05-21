@@ -32,7 +32,7 @@ import org.hkijena.jipipe.api.data.thumbnails.JIPipeImageThumbnailData;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesSettings;
+import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesApplicationSettings;
 import org.hkijena.jipipe.plugins.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.plugins.imagejdatatypes.colorspace.RGBColorSpace;
 import org.hkijena.jipipe.plugins.imagejdatatypes.display.CachedImagePlusDataViewerWindow;
@@ -92,7 +92,7 @@ public class ImagePlusData implements JIPipeData {
         }
         String fileName = targetFile.toString().toLowerCase();
         ImagePlus outputImage;
-        if ((fileName.endsWith(".tiff") || fileName.endsWith(".tif")) && ImageJDataTypesSettings.getInstance().isUseBioFormats()) {
+        if ((fileName.endsWith(".tiff") || fileName.endsWith(".tif")) && ImageJDataTypesApplicationSettings.getInstance().isUseBioFormats()) {
             OMEImageData omeImageData = OMEImageData.importData(storage, progressInfo);
             outputImage = omeImageData.getImage();
         } else {
@@ -293,7 +293,7 @@ public class ImagePlusData implements JIPipeData {
 
     @Override
     public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
-        if (ImageJDataTypesSettings.getInstance().isUseBioFormats() && !(image.getType() == ImagePlus.COLOR_RGB && ImageJDataTypesSettings.getInstance().isSaveRGBWithImageJ())) {
+        if (ImageJDataTypesApplicationSettings.getInstance().isUseBioFormats() && !(image.getType() == ImagePlus.COLOR_RGB && ImageJDataTypesApplicationSettings.getInstance().isSaveRGBWithImageJ())) {
             Path outputPath = PathUtils.ensureExtension(storage.getFileSystemPath().resolve(name), ".ome.tif", ".ome.tiff");
             OMEImageData.simpleOMEExport(image, outputPath);
         } else {

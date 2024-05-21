@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.api.history;
 
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.plugins.settings.HistoryJournalSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeHistoryJournalApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class JIPipeDedicatedGraphHistoryJournal implements JIPipeHistoryJournal {
-    private final HistoryJournalSettings settings;
+    private final JIPipeHistoryJournalApplicationSettings settings;
     private final List<Snapshot> undoStack = new ArrayList<>();
     private final List<Snapshot> redoStack = new ArrayList<>();
     private final JIPipeGraph graph;
@@ -33,7 +33,7 @@ public class JIPipeDedicatedGraphHistoryJournal implements JIPipeHistoryJournal 
 
     public JIPipeDedicatedGraphHistoryJournal(JIPipeGraph graph) {
         this.graph = graph;
-        this.settings = HistoryJournalSettings.getInstance();
+        this.settings = JIPipeHistoryJournalApplicationSettings.getInstance();
     }
 
     @Override

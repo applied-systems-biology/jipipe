@@ -62,7 +62,7 @@ import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopDrop
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
 import org.hkijena.jipipe.plugins.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
-import org.hkijena.jipipe.plugins.settings.GraphEditorUISettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -130,7 +130,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     private final JIPipeGraph graph;
     private final BiMap<JIPipeGraphNode, JIPipeDesktopGraphNodeUI> nodeUIs = HashBiMap.create();
     private final Set<JIPipeDesktopGraphNodeUI> selection = new LinkedHashSet<>();
-    private final GraphEditorUISettings settings;
+    private final JIPipeGraphEditorUIApplicationSettings settings;
     private final JIPipeHistoryJournal historyJournal;
     private final UUID compartment;
     private final Map<JIPipeDesktopGraphNodeUI, Point> currentlyDraggedOffsets = new HashMap<>();
@@ -200,7 +200,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         this.graph = graph;
         this.nodeHotKeyStorage = JIPipeNodeHotKeyStorage.getInstance(graph);
         this.compartment = compartment;
-        this.settings = GraphEditorUISettings.getInstance();
+        this.settings = JIPipeGraphEditorUIApplicationSettings.getInstance();
 
         this.autoMuteEdges = settings.isAutoMuteEdgesEnabled();
 
@@ -377,7 +377,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         return graphEditorUI;
     }
 
-    public GraphEditorUISettings getSettings() {
+    public JIPipeGraphEditorUIApplicationSettings getSettings() {
         return settings;
     }
 
@@ -903,7 +903,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         x -= targetAlgorithmUI.getSlotLocation(target).center.x;
         int y = (int) Math.round(sourceAlgorithmUI.getBottomY() + viewMode.getGridHeight() * zoom);
         Point targetPoint = new Point(x, y);
-        if (GraphEditorUISettings.getInstance().isAutoLayoutMovesOtherNodes()) {
+        if (JIPipeGraphEditorUIApplicationSettings.getInstance().isAutoLayoutMovesOtherNodes()) {
             if (!targetAlgorithmUI.moveToClosestGridPoint(targetPoint, false, true)) {
                 if (nodesAfter.isEmpty())
                     return;

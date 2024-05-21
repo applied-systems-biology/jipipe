@@ -32,7 +32,8 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterS
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.parameters.library.references.IconRef;
 import org.hkijena.jipipe.plugins.parameters.library.references.IconRefDesktopParameterEditorUI;
-import org.hkijena.jipipe.plugins.settings.NodeTemplateSettings;
+import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
@@ -127,17 +128,11 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
                 JIPipeDesktopParameterPanel.WITH_SCROLLING | JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION)) {
             if (result == JOptionPane.YES_OPTION) {
                 // Store globally
-                NodeTemplateSettings.getInstance().getNodeTemplates().add(template);
-                NodeTemplateSettings.getInstance().emitParameterChangedEvent("node-templates");
-                if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                    JIPipe.getSettings().save();
-                }
+                JIPipe.getNodeTemplates().addToGlobal(template);
             } else {
                 // Store locally
-                canvasUI.getGraph().getProject().getMetadata().getNodeTemplates().add(template);
-                canvasUI.getGraph().getProject().getMetadata().emitParameterChangedEvent("node-templates");
+                JIPipe.getNodeTemplates().addToProject(template, canvasUI.getGraph().getProject());
             }
-            NodeTemplateSettings.triggerRefreshedEvent();
         }
     }
 
@@ -159,7 +154,7 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
     }
 
     public boolean isFromExtension() {
-        return SOURCE_EXTENSION.equals(source);
+        return JIPipe.getNodeTemplates().isPluginTemplate(this);
     }
 
     @SetJIPipeDocumentation(name = "Name", description = "Name of the template")
@@ -309,6 +304,18 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
     @Override
     public int hashCode() {
         return Objects.hash(name, description, data);
+    }
+
+    public ImageIcon getIconImage() {
+        ImageIcon icon = UIUtils.getIconFromResources("actions/configure.png");
+        if (getIcon() != null && !StringUtils.isNullOrEmpty(getIcon().getIconName())) {
+            try {
+                icon = UIUtils.getIconFromResources(getIcon().getIconName());
+            } catch (Throwable e) {
+
+            }
+        }
+        return icon;
     }
 
     public static class List extends ListParameter<JIPipeNodeTemplate> {

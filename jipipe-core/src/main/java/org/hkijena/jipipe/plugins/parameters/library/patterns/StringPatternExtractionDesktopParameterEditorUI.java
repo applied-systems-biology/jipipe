@@ -15,9 +15,9 @@ package org.hkijena.jipipe.plugins.parameters.library.patterns;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
-import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTextField;
 
@@ -152,7 +152,7 @@ public class StringPatternExtractionDesktopParameterEditorUI extends JIPipeDeskt
 
     private void addFilterModeSelection(StringPatternExtraction filter, ButtonGroup group, Icon icon, StringPatternExtraction.Mode mode, String description) {
         JToggleButton toggleButton = new JToggleButton(icon);
-        UIUtils.makeFlat25x25(toggleButton);
+        UIUtils.makeButtonFlat25x25(toggleButton);
         toggleButton.setSelected(filter.getMode() == mode);
         toggleButton.addActionListener(e -> {
             if (toggleButton.isSelected()) {

@@ -1,4 +1,6 @@
 .*
+*.bak
+*.old
 dependencies.txt
 !.gitignore
 target

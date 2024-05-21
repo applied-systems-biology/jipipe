@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.processes.ProcessEnvironment;
-import org.hkijena.jipipe.plugins.settings.DownloadSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeDownloadsApplicationSettings;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -49,9 +49,9 @@ public class WebUtils {
     public static void download(URL url, Path outputFile, String label, JIPipeProgressInfo progressInfo) {
         boolean useExternalDownloader;
         if (JIPipe.isInstantiated()) {
-            DownloadSettings settings = null;
+            JIPipeDownloadsApplicationSettings settings = null;
             try {
-                settings = DownloadSettings.getInstance();
+                settings = JIPipeDownloadsApplicationSettings.getInstance();
             } catch (Throwable ex) {
                 ex.printStackTrace();
             }

@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.project;
 
+import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.cache.JIPipeLocalProjectMemoryCache;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
@@ -21,7 +22,7 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.cache.exporters.JIPipeDesktopDataTableToOutputExporterRun;
-import org.hkijena.jipipe.plugins.settings.ProjectsSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeProjectDefaultsApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import java.io.IOException;
@@ -30,12 +31,11 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class JIPipeDesktopSaveProjectAndCacheToDirectoryRun implements JIPipeRunnable {
+public class JIPipeDesktopSaveProjectAndCacheToDirectoryRun extends AbstractJIPipeRunnable {
     private final JIPipeDesktopWorkbench workbench;
     private final JIPipeProject project;
     private final Path outputPath;
     private final boolean addAsRecentProject;
-    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
     public JIPipeDesktopSaveProjectAndCacheToDirectoryRun(JIPipeDesktopWorkbench workbench, JIPipeProject project, Path outputPath, boolean addAsRecentProject) {
         this.workbench = workbench;
@@ -45,22 +45,13 @@ public class JIPipeDesktopSaveProjectAndCacheToDirectoryRun implements JIPipeRun
     }
 
     @Override
-    public JIPipeProgressInfo getProgressInfo() {
-        return progressInfo;
-    }
-
-    @Override
-    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-        this.progressInfo = progressInfo;
-    }
-
-    @Override
     public String getTaskLabel() {
         return "Save project and cache (directory)";
     }
 
     @Override
     public void run() {
+        JIPipeProgressInfo progressInfo = getProgressInfo();
         if (Files.isDirectory(outputPath)) {
             PathUtils.deleteDirectoryRecursively(outputPath, getProgressInfo().resolve("Delete existing files"));
         }
@@ -68,7 +59,7 @@ public class JIPipeDesktopSaveProjectAndCacheToDirectoryRun implements JIPipeRun
             Files.createDirectories(outputPath);
             project.saveProject(outputPath.resolve("project.jip"));
             if (addAsRecentProject)
-                ProjectsSettings.getInstance().addRecentProject(outputPath);
+                JIPipeProjectDefaultsApplicationSettings.getInstance().addRecentProject(outputPath);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

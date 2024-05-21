@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.project;
 
+import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPReadDataStorage;
@@ -22,12 +23,11 @@ import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import java.io.IOException;
 import java.nio.file.Path;
 
-public class JIPipeDesktopLoadResultZipIntoCacheRun implements JIPipeRunnable {
+public class JIPipeDesktopLoadResultZipIntoCacheRun extends AbstractJIPipeRunnable {
     private final JIPipeWorkbench workbench;
     private final JIPipeProject project;
     private final Path resultPath;
     private final boolean clearBefore;
-    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
     public JIPipeDesktopLoadResultZipIntoCacheRun(JIPipeWorkbench workbench, JIPipeProject project, Path resultPath, boolean clearBefore) {
         this.workbench = workbench;
@@ -37,22 +37,13 @@ public class JIPipeDesktopLoadResultZipIntoCacheRun implements JIPipeRunnable {
     }
 
     @Override
-    public JIPipeProgressInfo getProgressInfo() {
-        return progressInfo;
-    }
-
-    @Override
-    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-        this.progressInfo = progressInfo;
-    }
-
-    @Override
     public String getTaskLabel() {
         return "Load exported data into cache";
     }
 
     @Override
     public void run() {
+        JIPipeProgressInfo progressInfo = getProgressInfo();
         progressInfo.log("Extracting ZIP file ...");
         try (JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo, resultPath)) {
             Path fileSystemPath = storage.getFileSystemPath();

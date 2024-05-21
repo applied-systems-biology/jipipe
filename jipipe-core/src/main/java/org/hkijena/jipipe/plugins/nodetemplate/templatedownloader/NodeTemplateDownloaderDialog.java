@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.plugins.nodetemplate.templatedownloader;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
-import org.hkijena.jipipe.plugins.settings.NodeTemplateSettings;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -61,11 +61,11 @@ public class NodeTemplateDownloaderDialog extends JDialog {
         formPanel.addWideToForm(UIUtils.createJLabel("Available templates", 22));
 
         Set<String> allSources = new HashSet<>();
-        for (JIPipeNodeTemplate nodeTemplate : NodeTemplateSettings.getInstance().getNodeTemplates()) {
+        for (JIPipeNodeTemplate nodeTemplate : JIPipe.getNodeTemplates().getGlobalTemplates()) {
             allSources.add(StringUtils.orElse(nodeTemplate.getSource(), JIPipeNodeTemplate.SOURCE_USER));
         }
         if (installer.getWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
-            for (JIPipeNodeTemplate nodeTemplate : ((JIPipeDesktopProjectWorkbench) installer.getWorkbench()).getProject().getMetadata().getNodeTemplates()) {
+            for (JIPipeNodeTemplate nodeTemplate : installer.getWorkbench().getProject().getMetadata().getNodeTemplates()) {
                 allSources.add(StringUtils.orElse(nodeTemplate.getSource(), JIPipeNodeTemplate.SOURCE_USER));
             }
         }
@@ -102,12 +102,12 @@ public class NodeTemplateDownloaderDialog extends JDialog {
         panel.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2), BorderFactory.createEmptyBorder(8, 8, 8, 8)));
         panel.add(UIUtils.createJLabel(availablePackage.getName(), UIUtils.getIcon32FromResources("data-types/node.png"), 16), new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
 
-        panel.add(UIUtils.makeBorderlessReadonlyTextPane(availablePackage.getDescription(), false), new GridBagConstraints(0, 1, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
-        panel.add(UIUtils.makeBorderlessReadonlyTextPane("<html><a href=\"" + availablePackage.getWebsite() + "\">" + availablePackage.getWebsite() + "</a></html>", false),
+        panel.add(UIUtils.createBorderlessReadonlyTextPane(availablePackage.getDescription(), false), new GridBagConstraints(0, 1, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
+        panel.add(UIUtils.createBorderlessReadonlyTextPane("<html><a href=\"" + availablePackage.getWebsite() + "\">" + availablePackage.getWebsite() + "</a></html>", false),
                 new GridBagConstraints(0, 2, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
-        panel.add(UIUtils.makeBorderlessReadonlyTextPane(availablePackage.getSizeInfo(), false), new GridBagConstraints(0, 3, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
+        panel.add(UIUtils.createBorderlessReadonlyTextPane(availablePackage.getSizeInfo(), false), new GridBagConstraints(0, 3, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
 
-        JTextArea idField = UIUtils.makeReadonlyBorderlessTextArea(availablePackage.getUrl());
+        JTextArea idField = UIUtils.createReadonlyBorderlessTextArea(availablePackage.getUrl());
         idField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 11));
         panel.add(idField, new GridBagConstraints(0, 4, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
 

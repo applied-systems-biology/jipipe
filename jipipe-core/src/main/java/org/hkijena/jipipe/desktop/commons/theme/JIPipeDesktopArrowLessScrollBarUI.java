@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.desktop.commons.theme;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.plugins.settings.GeneralUISettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
 
 import javax.swing.*;
 import javax.swing.plaf.ComponentUI;
@@ -29,7 +29,7 @@ public class JIPipeDesktopArrowLessScrollBarUI extends BasicScrollBarUI {
     @Override
     protected JButton createDecreaseButton(int orientation) {
         try {
-            if (JIPipe.getInstance() == null || GeneralUISettings.getInstance() == null || GeneralUISettings.getInstance().getTheme().isModern())
+            if (JIPipe.getInstance() == null || JIPipeGeneralUIApplicationSettings.getInstance() == null || JIPipeGeneralUIApplicationSettings.getInstance().getTheme().isModern())
                 return createZeroButton();
             else
                 return super.createDecreaseButton(orientation);
@@ -41,7 +41,7 @@ public class JIPipeDesktopArrowLessScrollBarUI extends BasicScrollBarUI {
     @Override
     protected JButton createIncreaseButton(int orientation) {
         try {
-            if (JIPipe.getInstance() == null || GeneralUISettings.getInstance() == null || GeneralUISettings.getInstance().getTheme().isModern())
+            if (JIPipe.getInstance() == null || JIPipeGeneralUIApplicationSettings.getInstance() == null || JIPipeGeneralUIApplicationSettings.getInstance().getTheme().isModern())
                 return createZeroButton();
             else
                 return super.createIncreaseButton(orientation);

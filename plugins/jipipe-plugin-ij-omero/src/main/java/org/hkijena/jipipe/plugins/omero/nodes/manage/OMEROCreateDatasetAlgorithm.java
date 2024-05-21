@@ -22,6 +22,7 @@ import omero.gateway.model.ProjectData;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -33,13 +34,12 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.omero.OMEROCredentialAccessNode;
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialsEnvironment;
-import org.hkijena.jipipe.plugins.omero.OMEROSettings;
 import org.hkijena.jipipe.plugins.omero.OptionalOMEROCredentialsEnvironment;
 import org.hkijena.jipipe.plugins.omero.datatypes.OMERODatasetReferenceData;
 import org.hkijena.jipipe.plugins.omero.datatypes.OMEROProjectReferenceData;
@@ -47,16 +47,13 @@ import org.hkijena.jipipe.plugins.omero.parameters.AnnotationsToOMEROKeyValuePai
 import org.hkijena.jipipe.plugins.omero.parameters.AnnotationsToOMEROTagExporter;
 import org.hkijena.jipipe.plugins.omero.util.OMEROGateway;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @SetJIPipeDocumentation(name = "Create OMERO dataset", description = "Creates a new OMERO data set an associates it to an existing project")
 @ConfigureJIPipeNode(nodeTypeCategory = FileSystemNodeTypeCategory.class, menuPath = "OMERO")
 @AddJIPipeInputSlot(value = OMEROProjectReferenceData.class, slotName = "Project", description = "The project that will contain the dataset", create = true)
 @AddJIPipeOutputSlot(value = OMERODatasetReferenceData.class, slotName = "Dataset", description = "The created dataset", create = true)
-public class OMEROCreateDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class OMEROCreateDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm implements OMEROCredentialAccessNode {
     private final AnnotationsToOMEROKeyValuePairExporter keyValuePairExporter;
     private final AnnotationsToOMEROTagExporter tagExporter;
     private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
@@ -83,7 +80,7 @@ public class OMEROCreateDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         long projectId = iterationStep.getInputData(getFirstInputSlot(), OMEROProjectReferenceData.class, progressInfo).getProjectId();
-        OMEROCredentialsEnvironment environment = overrideCredentials.getContentOrDefault(OMEROSettings.getInstance().getDefaultCredentials());
+        OMEROCredentialsEnvironment environment = getConfiguredOMEROCredentialsEnvironment();
         progressInfo.log("Connecting to " + environment);
 
         // Generate tags and kv-pairs
@@ -157,7 +154,14 @@ public class OMEROCreateDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         super.reportValidity(reportContext, report);
-        OMEROCredentialsEnvironment environment = overrideCredentials.getContentOrDefault(OMEROSettings.getInstance().getDefaultCredentials());
-        report.report(new GraphNodeValidationReportContext(reportContext, this), environment);
+        if (!isPassThrough()) {
+            reportConfiguredOMEROEnvironmentValidity(reportContext, report);
+        }
+    }
+
+    @Override
+    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+        super.getEnvironmentDependencies(target);
+        target.add(getConfiguredOMEROCredentialsEnvironment());
     }
 }

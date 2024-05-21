@@ -20,6 +20,7 @@ import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
@@ -44,13 +45,11 @@ import org.hkijena.jipipe.plugins.omero.nodes.navigate.OMEROListImagesAlgorithm;
 import org.hkijena.jipipe.plugins.omero.nodes.navigate.OMEROListProjectsAlgorithm;
 import org.hkijena.jipipe.plugins.omero.nodes.upload.UploadOMEROImageAlgorithm;
 import org.hkijena.jipipe.plugins.omero.nodes.upload.UploadOMEROTableAlgorithm;
-import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.ReflectionUtils;
-import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
@@ -78,6 +77,16 @@ public class OMEROPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public OMEROPlugin() {
     }
 
+    public static OMEROCredentialsEnvironment getEnvironment(JIPipeProject project, OptionalOMEROCredentialsEnvironment nodeEnvironment) {
+        if (nodeEnvironment.isEnabled()) {
+            return nodeEnvironment.getContent();
+        }
+        if (project != null && project.getSettingsSheet(OMEROPluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
+            return project.getSettingsSheet(OMEROPluginProjectSettings.class).getProjectDefaultEnvironment().getContent();
+        }
+        return OMEROPluginApplicationSettings.getInstance().getDefaultCredentials();
+    }
+
     @Override
     public PluginCategoriesEnumParameter.List getCategories() {
         return new PluginCategoriesEnumParameter.List(PluginCategoriesEnumParameter.CATEGORY_IMPORT_EXPORT, PluginCategoriesEnumParameter.CATEGORY_SCIJAVA, PluginCategoriesEnumParameter.CATEGORY_OME);
@@ -86,11 +95,6 @@ public class OMEROPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public StringList getDependencyProvides() {
         return new StringList();
-    }
-
-    @Override
-    public ImageParameter getThumbnail() {
-        return new ImageParameter(ResourceUtils.getPluginResource("thumbnails/omero.png"));
     }
 
     @Override
@@ -188,14 +192,8 @@ public class OMEROPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        OMEROSettings omeroSettings = new OMEROSettings();
-        registerSettingsSheet(OMEROSettings.ID,
-                "OMERO",
-                "Settings for the OMERO integration (e.g., default credentials)",
-                UIUtils.getIconFromResources("apps/omero.png"),
-                "Extensions",
-                null,
-                omeroSettings);
+        OMEROPluginApplicationSettings omeroSettings = new OMEROPluginApplicationSettings();
+        registerApplicationSettingsSheet(omeroSettings);
         registerEnvironment(OMEROCredentialsEnvironment.class,
                 OMEROCredentialsEnvironment.List.class,
                 omeroSettings,
@@ -207,6 +205,7 @@ public class OMEROPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 OptionalOMEROCredentialsEnvironment.class,
                 "Optimal OMERO credentials",
                 "Optional OMERO credentials");
+        registerProjectSettingsSheet(OMEROPluginProjectSettings.class);
 
         // Data types
         registerDatatype("omero-group-id", OMEROGroupReferenceData.class, RESOURCES.getIconURLFromResources("omero-group.png"));

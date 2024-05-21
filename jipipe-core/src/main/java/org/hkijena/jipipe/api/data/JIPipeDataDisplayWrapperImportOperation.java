@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.data;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
@@ -82,13 +83,12 @@ public class JIPipeDataDisplayWrapperImportOperation implements JIPipeDataImport
         return displayOperation.getIcon();
     }
 
-    public static class ImportDataRun implements JIPipeRunnable, Disposable {
+    public static class ImportDataRun extends AbstractJIPipeRunnable implements Disposable {
 
         private final Path rowStorageFolder;
         private final Class<? extends JIPipeData> dataType;
         private final JIPipeDataTableMetadataRow metadataRow;
         private JIPipeDataTable outputTable;
-        private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
         public ImportDataRun(Path rowStorageFolder, Class<? extends JIPipeData> dataType, JIPipeDataTableMetadataRow metadataRow) {
             this.rowStorageFolder = rowStorageFolder;
@@ -98,22 +98,13 @@ public class JIPipeDataDisplayWrapperImportOperation implements JIPipeDataImport
         }
 
         @Override
-        public JIPipeProgressInfo getProgressInfo() {
-            return progressInfo;
-        }
-
-        @Override
-        public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-            this.progressInfo = progressInfo;
-        }
-
-        @Override
         public String getTaskLabel() {
             return "Import data for display";
         }
 
         @Override
         public void run() {
+            JIPipeProgressInfo progressInfo = getProgressInfo();
             JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(progressInfo, rowStorageFolder), dataType, progressInfo);
             outputTable.addData(data, metadataRow.getTextAnnotations(), JIPipeTextAnnotationMergeMode.OverwriteExisting, metadataRow.getDataContext(), progressInfo);
         }

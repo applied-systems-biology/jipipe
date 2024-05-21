@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -44,7 +43,7 @@ import java.util.stream.Collectors;
  * Extension that loads {@link JIPipeJsonPlugin}
  */
 @Plugin(type = JIPipeJavaPlugin.class)
-public class JsonExtensionLoaderPlugin extends JIPipePrepackagedDefaultJavaPlugin implements JIPipeService.ExtensionRegisteredEventListener {
+public class JsonExtensionLoaderPlugin extends JIPipePrepackagedDefaultJavaPlugin implements JIPipeService.PluginRegisteredEventListener {
 
     private final Set<JsonExtensionRegistrationTask> registrationTasks = new HashSet<>();
 
@@ -138,12 +137,12 @@ public class JsonExtensionLoaderPlugin extends JIPipePrepackagedDefaultJavaPlugi
     public void runRegistrationTask(JsonExtensionRegistrationTask task) {
         try {
             JIPipeJsonPlugin extension = JsonUtils.getObjectMapper().readerFor(JIPipeJsonPlugin.class).readValue(task.getJsonNode());
-            JIPipe.getInstance().getExtensionRegistry().registerKnownExtension(extension);
+            JIPipe.getInstance().getPluginRegistry().registerKnownPlugin(extension);
             if (!JIPipe.isValidExtensionId(extension.getDependencyId())) {
                 System.err.println("Invalid extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension.");
                 getRegistry().getProgressInfo().log("Invalid extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension.");
             }
-            if (!JIPipe.getInstance().getExtensionRegistry().getStartupExtensions().contains(extension.getDependencyId())) {
+            if (!JIPipe.getInstance().getPluginRegistry().getStartupPlugins().contains(extension.getDependencyId())) {
                 getRegistry().getProgressInfo().log("Skipping registration of JSON extension " + extension.getDependencyId() + " (deactivated in extension manager)");
                 return;
             }
@@ -207,12 +206,12 @@ public class JsonExtensionLoaderPlugin extends JIPipePrepackagedDefaultJavaPlugi
     }
 
     @Override
-    public boolean isCoreExtension() {
+    public boolean isCorePlugin() {
         return true;
     }
 
     @Override
-    public void onJIPipeExtensionRegistered(JIPipeService.ExtensionRegisteredEvent event) {
+    public void onJIPipePluginRegistered(JIPipeService.ExtensionRegisteredEvent event) {
         updateRegistrationTasks();
     }
 }

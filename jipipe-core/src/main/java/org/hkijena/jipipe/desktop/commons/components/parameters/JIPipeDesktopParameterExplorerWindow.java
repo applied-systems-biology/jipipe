@@ -17,8 +17,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterTreeUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopReadonlyCopyableTextField;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
@@ -99,7 +99,7 @@ public class JIPipeDesktopParameterExplorerWindow extends JFrame implements JIPi
         nameIdLabel = new JIPipeDesktopReadonlyCopyableTextField("", true);
         typeLabel = new JIPipeDesktopReadonlyCopyableTextField("", false);
         typeIdLabel = new JIPipeDesktopReadonlyCopyableTextField("", true);
-        typeDescriptionLabel = UIUtils.makeReadonlyTextPane("");
+        typeDescriptionLabel = UIUtils.createReadonlyTextPane("");
 
         formPanel.addGroupHeader("General info", UIUtils.getIconFromResources("actions/help-info.png"));
         formPanel.addToForm(nameLabel, new JLabel("Name"), new MarkdownText("The name of the parameter"));

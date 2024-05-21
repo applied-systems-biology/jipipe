@@ -15,12 +15,12 @@ package org.hkijena.jipipe.desktop.jsonextensionbuilder;
 
 import ij.IJ;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.plugins.settings.ProjectsSettings;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopImageFrameComponent;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopRecentProjectListCellRenderer;
-import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
+import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.plugins.settings.JIPipeProjectDefaultsApplicationSettings;
 import org.hkijena.jipipe.utils.*;
 
 import javax.swing.*;
@@ -48,12 +48,12 @@ public class JIPipeDesktopDesktopJsonExtensionInfoUI extends JIPipeDesktopJsonEx
         super(workbenchUI);
         initialize();
         refreshRecentProjects();
-        ProjectsSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(this);
+        JIPipeProjectDefaultsApplicationSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(this);
     }
 
     private void refreshRecentProjects() {
         DefaultListModel<Path> model = new DefaultListModel<>();
-        for (Path path : ProjectsSettings.getInstance().getRecentJsonExtensionProjects()) {
+        for (Path path : JIPipeProjectDefaultsApplicationSettings.getInstance().getRecentJsonExtensionProjects()) {
             if (Files.exists(path)) {
                 model.addElement(path);
             }
@@ -126,14 +126,14 @@ public class JIPipeDesktopDesktopJsonExtensionInfoUI extends JIPipeDesktopJsonEx
         technicalInfo.setOpaque(false);
         technicalInfo.getContentPanel().setOpaque(false);
 
-        technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(VersionUtils.getVersionString(getClass())), new JLabel("Version"), null);
+        technicalInfo.addToForm(UIUtils.createReadonlyBorderlessTextField(VersionUtils.getVersionString(getClass())), new JLabel("Version"), null);
         Attributes manifestAttributes = ReflectionUtils.getManifestAttributes();
         if (manifestAttributes != null) {
             String implementationDateString = manifestAttributes.getValue("Implementation-Date");
-            technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(StringUtils.orElse(implementationDateString, "N/A")), new JLabel("Build time"), null);
+            technicalInfo.addToForm(UIUtils.createReadonlyBorderlessTextField(StringUtils.orElse(implementationDateString, "N/A")), new JLabel("Build time"), null);
         }
-        technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(StringUtils.orElse(IJ.getVersion(), "N/A")), new JLabel("ImageJ"), null);
-        technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(StringUtils.orElse(System.getProperty("java.version"), "N/A")), new JLabel("Java"), null);
+        technicalInfo.addToForm(UIUtils.createReadonlyBorderlessTextField(StringUtils.orElse(IJ.getVersion(), "N/A")), new JLabel("ImageJ"), null);
+        technicalInfo.addToForm(UIUtils.createReadonlyBorderlessTextField(StringUtils.orElse(System.getProperty("java.version"), "N/A")), new JLabel("Java"), null);
         technicalInfo.addVerticalGlue();
 
         headerPanel.add(technicalInfo, BorderLayout.EAST);

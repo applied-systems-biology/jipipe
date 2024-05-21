@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.run.JIPipeRunnableWorker;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
-import org.hkijena.jipipe.plugins.settings.NotificationUISettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeNotificationUIApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import java.awt.*;
@@ -29,10 +29,10 @@ import java.awt.*;
 public class JIPipeDesktopRunnableQueueNotifier implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
 
     private static JIPipeDesktopRunnableQueueNotifier INSTANCE;
-    private final NotificationUISettings settings;
+    private final JIPipeNotificationUIApplicationSettings settings;
 
     private JIPipeDesktopRunnableQueueNotifier() {
-        this.settings = NotificationUISettings.getInstance();
+        this.settings = JIPipeNotificationUIApplicationSettings.getInstance();
         JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribeWeak(this);
         JIPipeRunnableQueue.getInstance().getInterruptedEventEmitter().subscribeWeak(this);
     }

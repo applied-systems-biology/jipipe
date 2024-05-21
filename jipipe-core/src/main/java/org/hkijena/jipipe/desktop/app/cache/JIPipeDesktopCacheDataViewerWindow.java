@@ -29,7 +29,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFlexContentPanel;
 import org.hkijena.jipipe.desktop.commons.components.window.JIPipeDesktopAlwaysOnTopToggle;
-import org.hkijena.jipipe.plugins.settings.GeneralUISettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.Store;
@@ -87,7 +87,7 @@ public abstract class JIPipeDesktopCacheDataViewerWindow extends JFrame implemen
             this.algorithm = null;
         }
 
-        alwaysOnTopToggle.addActionListener(e -> GeneralUISettings.getInstance().setOpenDataWindowsAlwaysOnTop(alwaysOnTopToggle.isSelected()));
+        alwaysOnTopToggle.addActionListener(e -> JIPipeGeneralUIApplicationSettings.getInstance().setOpenDataWindowsAlwaysOnTop(alwaysOnTopToggle.isSelected()));
 
         if (algorithm != null) {
             project.getCache().getModifiedEventEmitter().subscribeWeak(this);
@@ -102,11 +102,11 @@ public abstract class JIPipeDesktopCacheDataViewerWindow extends JFrame implemen
         previousRowButton = new JButton(UIUtils.getIconFromResources("actions/caret-up.png"));
         previousRowButton.setToolTipText("<html>Go to previous data row<br/>Ctrl+Up</html>");
         previousRowButton.addActionListener(e -> gotoPreviousRow());
-        UIUtils.makeFlat25x25(previousRowButton);
+        UIUtils.makeButtonFlat25x25(previousRowButton);
         nextRowButton = new JButton(UIUtils.getIconFromResources("actions/caret-down.png"));
         nextRowButton.setToolTipText("<html>Go to next data row<br/>Ctrl+Down</html>");
         nextRowButton.addActionListener(e -> gotoNextRow());
-        UIUtils.makeFlat25x25(nextRowButton);
+        UIUtils.makeButtonFlat25x25(nextRowButton);
         rowInfoLabel = new JButton("?/?");
         rowInfoLabel.setBorder(null);
         UIUtils.addReloadablePopupMenuToButton(rowInfoLabel, rowInfoLabelMenu, this::reloadInfoLabelMenu);

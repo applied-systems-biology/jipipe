@@ -22,8 +22,6 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
-import java.util.Collections;
-
 /**
  * Extension containing some additional tools
  */
@@ -58,8 +56,9 @@ public class PipelineRenderPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public StringList getDependencyProvides() {
         return new StringList();
     }
+
     @Override
-    public boolean isCoreExtension() {
+    public boolean isCorePlugin() {
         return true;
     }
 
