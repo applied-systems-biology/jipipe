@@ -138,6 +138,7 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
                     finalLocation.height + top + bottom));
             roiProperties.applyTo(backgroundRoi, variables);
             backgroundRoi.setFillColor(backgroundColor.getContent());
+            backgroundRoi.setStrokeColor(backgroundColor.getContent());
             target.add(backgroundRoi);
         }
 

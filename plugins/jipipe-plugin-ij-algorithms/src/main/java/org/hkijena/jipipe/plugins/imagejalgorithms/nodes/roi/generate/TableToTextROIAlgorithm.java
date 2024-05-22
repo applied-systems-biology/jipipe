@@ -175,6 +175,7 @@ public class TableToTextROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                         height + top + bottom));
                 roiProperties.applyTo(backgroundRoi, variables);
                 backgroundRoi.setFillColor(backgroundColor.getContent());
+                backgroundRoi.setStrokeColor(backgroundColor.getContent());
                 rois.add(backgroundRoi);
             }
 
