@@ -71,11 +71,11 @@ public class TableColumnSourceExpressionParameter extends PairParameter<TableCol
      * Picks or generates a table column based on selecting by name, matching one column by boolean expressions, or using a mathematical expression.
      * Operations are applied in order until a column is generated
      *
-     * @param table the table
+     * @param table     the table
+     * @param variables expression variables
      * @return the column
      */
-    public TableColumn pickOrGenerateColumn(ResultsTableData table) {
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
+    public TableColumn pickOrGenerateColumn(ResultsTableData table, JIPipeExpressionVariablesMap variables) {
         variables.set("num_rows", table.getRowCount());
         variables.set("num_cols", table.getColumnCount());
 

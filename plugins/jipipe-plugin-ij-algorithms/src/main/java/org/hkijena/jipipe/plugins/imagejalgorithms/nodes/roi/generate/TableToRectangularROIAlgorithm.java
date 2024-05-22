@@ -19,11 +19,9 @@ import ij.gui.ShapeRoi;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
@@ -31,7 +29,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.TableColumnSourceExpressionParameter;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.draw.VisualROIProperties;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
@@ -43,6 +43,7 @@ import java.awt.*;
  */
 @SetJIPipeDocumentation(name = "Table to rectangular/oval ROIs", description = "Converts data from a table to rectangular or oval ROIs. This node provides more options than the 'Table to circular ROIs' node.")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Convert")
+@AddJIPipeNodeAlias(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Draw", aliasName = "Draw rectangular ROIs from table")
 @AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
@@ -64,6 +65,8 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
     private Anchor anchor = Anchor.TopLeft;
     private Mode mode = Mode.Rectangle;
 
+    private final VisualROIProperties roiProperties;
+
     /**
      * Instantiates a new node type.
      *
@@ -71,6 +74,8 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
      */
     public TableToRectangularROIAlgorithm(JIPipeNodeInfo info) {
         super(info);
+        this.roiProperties = new VisualROIProperties();
+        registerSubParameter(roiProperties);
     }
 
     /**
@@ -80,6 +85,8 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
      */
     public TableToRectangularROIAlgorithm(TableToRectangularROIAlgorithm other) {
         super(other);
+        this.roiProperties = new VisualROIProperties(other.roiProperties);
+        registerSubParameter(roiProperties);
         this.anchor = other.anchor;
         this.mode = other.mode;
         this.columnX1 = new TableColumnSourceExpressionParameter(other.columnX1);
@@ -115,11 +122,14 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
         ResultsTableData table = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         ROIListData rois = new ROIListData();
 
-        TableColumn colX1 = columnX1.pickOrGenerateColumn(table);
-        TableColumn colY1 = columnY1.pickOrGenerateColumn(table);
-        TableColumn colZ = columnZ.pickOrGenerateColumn(table);
-        TableColumn colC = columnC.pickOrGenerateColumn(table);
-        TableColumn colT = columnT.pickOrGenerateColumn(table);
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+
+        TableColumn colX1 = columnX1.pickOrGenerateColumn(table, variables);
+        TableColumn colY1 = columnY1.pickOrGenerateColumn(table, variables);
+        TableColumn colZ = columnZ.pickOrGenerateColumn(table, variables);
+        TableColumn colC = columnC.pickOrGenerateColumn(table, variables);
+        TableColumn colT = columnT.pickOrGenerateColumn(table, variables);
 
         ensureColumnExists(colX1, table, "X1");
         ensureColumnExists(colY1, table, "Y1");
@@ -129,8 +139,8 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
 
         if (anchor == Anchor.TopLeft || anchor == Anchor.Center) {
 
-            TableColumn colWidth = columnWidth.pickOrGenerateColumn(table);
-            TableColumn colHeight = columnHeight.pickOrGenerateColumn(table);
+            TableColumn colWidth = columnWidth.pickOrGenerateColumn(table, variables);
+            TableColumn colHeight = columnHeight.pickOrGenerateColumn(table, variables);
 
             ensureColumnExists(colWidth, table, "Width");
             ensureColumnExists(colHeight, table, "Height");
@@ -152,11 +162,11 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
                 int z = (int) colZ.getRowAsDouble(row) + (oneBasedPositions ? 0 : 1);
                 int c = (int) colC.getRowAsDouble(row) + (oneBasedPositions ? 0 : 1);
                 int t = (int) colT.getRowAsDouble(row) + (oneBasedPositions ? 0 : 1);
-                createROI(rois, w, h, x, y, z, c, t);
+                createROI(rois, w, h, x, y, z, c, t, variables);
             }
         } else {
-            TableColumn colX2 = columnX2.pickOrGenerateColumn(table);
-            TableColumn colY2 = columnY2.pickOrGenerateColumn(table);
+            TableColumn colX2 = columnX2.pickOrGenerateColumn(table, variables);
+            TableColumn colY2 = columnY2.pickOrGenerateColumn(table, variables);
 
             ensureColumnExists(colX2, table, "X1");
             ensureColumnExists(colY2, table, "Y1");
@@ -173,14 +183,14 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
                 int z = (int) colZ.getRowAsDouble(row) + (oneBasedPositions ? 0 : 1);
                 int c = (int) colC.getRowAsDouble(row) + (oneBasedPositions ? 0 : 1);
                 int t = (int) colT.getRowAsDouble(row) + (oneBasedPositions ? 0 : 1);
-                createROI(rois, w, h, x, y, z, c, t);
+                createROI(rois, w, h, x, y, z, c, t, variables);
             }
         }
 
         iterationStep.addOutputData(getFirstOutputSlot(), rois, progressInfo);
     }
 
-    private void createROI(ROIListData rois, int w, int h, int x, int y, int z, int c, int t) {
+    private void createROI(ROIListData rois, int w, int h, int x, int y, int z, int c, int t, JIPipeExpressionVariablesMap variables) {
         Roi roi;
         switch (mode) {
             case Rectangle:
@@ -207,6 +217,7 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
                 throw new UnsupportedOperationException();
         }
         roi.setPosition(c, z, t);
+        roiProperties.applyTo(roi, variables);
         rois.add(roi);
     }
 
@@ -218,6 +229,12 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
                     "The algorithm requires a column that provides coordinate " + name + ".",
                     "Please check if the settings are correct and if your table contains the requested column."));
         }
+    }
+
+    @SetJIPipeDocumentation(name = "ROI properties", description = "Use the following settings to customize the generated ROI")
+    @JIPipeParameter("roi-properties")
+    public VisualROIProperties getRoiProperties() {
+        return roiProperties;
     }
 
     @SetJIPipeDocumentation(name = "Column 'X1'", description = "The table column that is used for the X1 coordinate.")

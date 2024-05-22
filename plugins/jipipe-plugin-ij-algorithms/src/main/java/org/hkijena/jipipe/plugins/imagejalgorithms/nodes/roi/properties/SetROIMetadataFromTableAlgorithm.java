@@ -26,6 +26,7 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
@@ -61,7 +62,7 @@ public class SetROIMetadataFromTableAlgorithm extends JIPipeIteratingAlgorithm {
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROIListData rois = new ROIListData(iterationStep.getInputData("ROI", ROIListData.class, progressInfo));
         ResultsTableData metadata = iterationStep.getInputData("Metadata", ResultsTableData.class, progressInfo);
-        TableColumn indexColumn = roiIndexColumn.pickOrGenerateColumn(metadata);
+        TableColumn indexColumn = roiIndexColumn.pickOrGenerateColumn(metadata, new JIPipeExpressionVariablesMap());
 
         for (int i = 0; i < indexColumn.getRows(); i++) {
             int roiIndex = (int) indexColumn.getRowAsDouble(i);

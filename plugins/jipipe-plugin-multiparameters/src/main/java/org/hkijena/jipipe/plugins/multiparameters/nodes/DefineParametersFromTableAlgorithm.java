@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.plugins.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
@@ -70,7 +71,7 @@ public class DefineParametersFromTableAlgorithm extends JIPipeSimpleIteratingAlg
         Map<String, List<Object>> valueMap = new HashMap<>();
         int nRow = 0;
         for (Column column : columns.mapToCollection(Column.class)) {
-            TableColumn tableColumn = column.getTableColumn().pickOrGenerateColumn(inputData);
+            TableColumn tableColumn = column.getTableColumn().pickOrGenerateColumn(inputData, new JIPipeExpressionVariablesMap());
             List<Object> values = new ArrayList<>();
             for (int i = 0; i < tableColumn.getRows(); i++) {
                 values.add(parseColumnValue(tableColumn.getRowAsObject(i), column));

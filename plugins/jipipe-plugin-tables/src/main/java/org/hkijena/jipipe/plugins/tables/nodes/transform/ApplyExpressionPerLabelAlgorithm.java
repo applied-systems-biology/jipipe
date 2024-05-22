@@ -80,8 +80,8 @@ public class ApplyExpressionPerLabelAlgorithm extends JIPipeSimpleIteratingAlgor
         TDoubleObjectHashMap<TDoubleList> bucketedValues = new TDoubleObjectHashMap<>();
 
         // Copy the buckets
-        TableColumn keyColumn_ = keyColumn.pickOrGenerateColumn(inputTable);
-        TableColumn valueColumn_ = valueColumn.pickOrGenerateColumn(inputTable);
+        TableColumn keyColumn_ = keyColumn.pickOrGenerateColumn(inputTable, new JIPipeExpressionVariablesMap());
+        TableColumn valueColumn_ = valueColumn.pickOrGenerateColumn(inputTable, new JIPipeExpressionVariablesMap());
 
         for (int row = 0; row < inputTable.getRowCount(); row++) {
             double key = keyColumn_.getRowAsDouble(row);

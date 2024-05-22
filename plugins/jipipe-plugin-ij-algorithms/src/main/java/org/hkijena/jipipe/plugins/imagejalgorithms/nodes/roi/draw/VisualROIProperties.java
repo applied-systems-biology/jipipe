@@ -29,65 +29,22 @@ import java.awt.*;
 /**
  * Limited version of {@link ROIEditor} that only contains properties for creating ROI
  */
-public class ROIProperties extends AbstractJIPipeParameterCollection {
+public class VisualROIProperties extends AbstractJIPipeParameterCollection {
 
     private JIPipeExpressionParameter roiName = new JIPipeExpressionParameter("\"unnamed\"");
-    private int positionZ = 0;
-    private int positionC = 0;
-    private int positionT = 0;
     private OptionalColorParameter fillColor = new OptionalColorParameter(Color.RED, false);
     private OptionalColorParameter lineColor = new OptionalColorParameter(Color.YELLOW, true);
     private double lineWidth = 1;
 
-    public ROIProperties() {
+    public VisualROIProperties() {
 
     }
 
-    public ROIProperties(ROIProperties other) {
+    public VisualROIProperties(VisualROIProperties other) {
         this.roiName = new JIPipeExpressionParameter(other.roiName);
-        this.positionZ = other.positionZ;
-        this.positionC = other.positionC;
-        this.positionT = other.positionT;
         this.fillColor = new OptionalColorParameter(other.fillColor);
         this.lineColor = new OptionalColorParameter(other.lineColor);
         this.lineWidth = other.lineWidth;
-    }
-
-    @SetJIPipeDocumentation(name = "Slice position (Z)", description = "Allows to relocate the ROI to a different Z-position. " +
-            "The first index is 1. If set to zero, the ROI is located on all slices.")
-    @JIPipeParameter("position-z")
-    public int getPositionZ() {
-        return positionZ;
-    }
-
-    @JIPipeParameter("position-z")
-    public void setPositionZ(int positionZ) {
-        this.positionZ = positionZ;
-    }
-
-    @SetJIPipeDocumentation(name = "Slice position (Channel)", description = "Allows to relocate the ROI to a different channel-position. Please note " +
-            "that 'Channel' refers to an image slice and not to a pixel channel. " +
-            "The first index is 1. If set to zero, the ROI is located on all channels.")
-    @JIPipeParameter("position-c")
-    public int getPositionC() {
-        return positionC;
-    }
-
-    @JIPipeParameter("position-c")
-    public void setPositionC(int positionC) {
-        this.positionC = positionC;
-    }
-
-    @SetJIPipeDocumentation(name = "Slice position (Frame)", description = "Allows to relocate the ROI to a different frame/time-position. " +
-            "The first index is 1. If set to zero, the ROI is located on all frames.")
-    @JIPipeParameter("position-t")
-    public int getPositionT() {
-        return positionT;
-    }
-
-    @JIPipeParameter("position-t")
-    public void setPositionT(int positionT) {
-        this.positionT = positionT;
     }
 
     @SetJIPipeDocumentation(name = "Fill color", description = "Allows to change the fill color when rendered as RGB and within ImageJ")
@@ -141,7 +98,6 @@ public class ROIProperties extends AbstractJIPipeParameterCollection {
      * @param target target
      */
     public void applyToRoiReference(Roi target, JIPipeExpressionVariablesMap variables) {
-        target.setPosition(positionC, positionZ, positionT);
         if (fillColor.isEnabled())
             target.setFillColor(fillColor.getContent());
         if (lineColor.isEnabled())
@@ -153,7 +109,6 @@ public class ROIProperties extends AbstractJIPipeParameterCollection {
     public void applyTo(Roi roi, JIPipeExpressionVariablesMap variables) {
         roi.setName(getRoiName().evaluateToString(variables));
         roi.setStrokeWidth(getLineWidth());
-        roi.setPosition(getPositionC(), getPositionZ(), getPositionT());
         if (getFillColor().isEnabled()) {
             roi.setFillColor(getFillColor().getContent());
         }

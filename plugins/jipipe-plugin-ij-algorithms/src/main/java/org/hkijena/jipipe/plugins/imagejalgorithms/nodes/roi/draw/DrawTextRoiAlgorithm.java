@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.draw;
 
+import ij.gui.Roi;
+import ij.gui.ShapeRoi;
 import ij.gui.TextRoi;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -32,9 +34,11 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.FontFamilyParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.FontStyleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.roi.FixedMargin;
+import org.hkijena.jipipe.plugins.parameters.library.roi.InnerMargin;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -46,7 +50,7 @@ import java.awt.geom.Rectangle2D;
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Draw")
 public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private final ROIProperties roiProperties;
+    private final VisualLocationROIProperties roiProperties;
     private JIPipeExpressionParameter text = new JIPipeExpressionParameter("\"your text here\"");
 
     private FixedMargin location = new FixedMargin();
@@ -59,15 +63,20 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     private boolean antialiased = true;
 
+    private OptionalColorParameter backgroundColor = new OptionalColorParameter(Color.BLACK, false);
+    private InnerMargin backgroundMargin = new InnerMargin(2,2,2,2);
+
 
     public DrawTextRoiAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.roiProperties = new ROIProperties();
+        this.roiProperties = new VisualLocationROIProperties();
+        registerSubParameter(roiProperties);
     }
 
     public DrawTextRoiAlgorithm(DrawTextRoiAlgorithm other) {
         super(other);
-        this.roiProperties = new ROIProperties(other.roiProperties);
+        this.roiProperties = new VisualLocationROIProperties(other.roiProperties);
+        registerSubParameter(roiProperties);
         this.fontFamily = new FontFamilyParameter(other.fontFamily);
         this.fontSize = other.fontSize;
         this.fontStyle = other.fontStyle;
@@ -76,6 +85,8 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.angle = other.angle;
         this.antialiased = other.antialiased;
         this.text = new JIPipeExpressionParameter(other.text);
+        this.backgroundColor = new OptionalColorParameter(other.backgroundColor);
+        this.backgroundMargin = new InnerMargin(other.backgroundMargin);
     }
 
     @Override
@@ -115,6 +126,21 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
             finalLocation.y -= finalLocation.height / 2;
         }
 
+        // Generate background
+        if(backgroundColor.isEnabled()) {
+            int left = backgroundMargin.getLeft().evaluateToInteger(variables);
+            int top = backgroundMargin.getTop().evaluateToInteger(variables);
+            int right = backgroundMargin.getRight().evaluateToInteger(variables);
+            int bottom = backgroundMargin.getBottom().evaluateToInteger(variables);
+            Roi backgroundRoi = new ShapeRoi(new Rectangle(finalLocation.x - left,
+                    finalLocation.y - top,
+                    finalLocation.width + left + right,
+                    finalLocation.height + top + bottom));
+            roiProperties.applyTo(backgroundRoi, variables);
+            backgroundRoi.setFillColor(backgroundColor.getContent());
+            target.add(backgroundRoi);
+        }
+
         // Generate items
         TextRoi textRoi = new TextRoi(finalLocation.x, finalLocation.y, finalLocation.width, finalLocation.height, finalText, font);
         textRoi.setAngle(angle);
@@ -127,9 +153,33 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), target, progressInfo);
     }
 
+
+
+    @SetJIPipeDocumentation(name = "Background color", description = "If enabled, draw a rectangular background ROI behind the text")
+    @JIPipeParameter("background-color")
+    public OptionalColorParameter getBackgroundColor() {
+        return backgroundColor;
+    }
+
+    @JIPipeParameter("background-color")
+    public void setBackgroundColor(OptionalColorParameter backgroundColor) {
+        this.backgroundColor = backgroundColor;
+    }
+
+    @SetJIPipeDocumentation(name = "Background margin", description = "If 'Background color' is enabled, set the distance between the text and the background")
+    @JIPipeParameter("background-margin")
+    public InnerMargin getBackgroundMargin() {
+        return backgroundMargin;
+    }
+
+    @JIPipeParameter("background-margin")
+    public void setBackgroundMargin(InnerMargin backgroundMargin) {
+        this.backgroundMargin = backgroundMargin;
+    }
+
     @SetJIPipeDocumentation(name = "ROI properties", description = "Use the following settings to customize the generated ROI")
     @JIPipeParameter("roi-properties")
-    public ROIProperties getRoiProperties() {
+    public VisualLocationROIProperties getRoiProperties() {
         return roiProperties;
     }
 

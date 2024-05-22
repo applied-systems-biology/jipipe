@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscale32FData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -52,7 +53,7 @@ public class TableColumnToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData tableData = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
-        TableColumn tableColumn = selectedColumn.pickOrGenerateColumn(tableData);
+        TableColumn tableColumn = selectedColumn.pickOrGenerateColumn(tableData, new JIPipeExpressionVariablesMap());
         FloatProcessor processor = new FloatProcessor(1, tableColumn.getRows());
         for (int i = 0; i < tableColumn.getRows(); i++) {
             processor.setf(i, (float) tableColumn.getRowAsDouble(i));

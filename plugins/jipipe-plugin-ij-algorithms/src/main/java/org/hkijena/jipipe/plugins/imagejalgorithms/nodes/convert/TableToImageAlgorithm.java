@@ -29,6 +29,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.plugins.imagejdatatypes.colorspace.GreyscaleColorSpace;
@@ -100,8 +101,8 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         // Standard columns
         TableColumnSourceExpressionParameter xColumnSource = columnAssignment.getValue("x", TableColumnSourceExpressionParameter.class);
         TableColumnSourceExpressionParameter yColumnSource = columnAssignment.getValue("y", TableColumnSourceExpressionParameter.class);
-        TableColumn xColumn = xColumnSource.pickOrGenerateColumn(table);
-        TableColumn yColumn = yColumnSource.pickOrGenerateColumn(table);
+        TableColumn xColumn = xColumnSource.pickOrGenerateColumn(table, new JIPipeExpressionVariablesMap());
+        TableColumn yColumn = yColumnSource.pickOrGenerateColumn(table, new JIPipeExpressionVariablesMap());
 
         // Extended columns
         TableColumn zColumn = new ZeroTableColumn();
@@ -112,16 +113,16 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             TableColumnSourceExpressionParameter zColumnSource = columnAssignment.getValue("z", TableColumnSourceExpressionParameter.class);
             TableColumnSourceExpressionParameter cColumnSource = columnAssignment.getValue("c", TableColumnSourceExpressionParameter.class);
             TableColumnSourceExpressionParameter tColumnSource = columnAssignment.getValue("t", TableColumnSourceExpressionParameter.class);
-            zColumn = zColumnSource.pickOrGenerateColumn(table);
-            cColumn = cColumnSource.pickOrGenerateColumn(table);
-            tColumn = tColumnSource.pickOrGenerateColumn(table);
+            zColumn = zColumnSource.pickOrGenerateColumn(table, new JIPipeExpressionVariablesMap());
+            cColumn = cColumnSource.pickOrGenerateColumn(table, new JIPipeExpressionVariablesMap());
+            tColumn = tColumnSource.pickOrGenerateColumn(table, new JIPipeExpressionVariablesMap());
         }
 
         progressInfo.log("Generating image from " + table.getRowCount() + " rows (this might take long)");
 
         if (colorSpace instanceof GreyscaleColorSpace) {
             TableColumnSourceExpressionParameter valueColumnSource = columnAssignment.getValue("value", TableColumnSourceExpressionParameter.class);
-            TableColumn valueColumn = valueColumnSource.pickOrGenerateColumn(table);
+            TableColumn valueColumn = valueColumnSource.pickOrGenerateColumn(table, new JIPipeExpressionVariablesMap());
 
             ImageProcessor lastProcessor = null;
             int lastZ = -1;
@@ -153,7 +154,7 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             int[] buffer = new int[colorSpace.getNChannels()];
             TableColumn[] channelColumns = new TableColumn[colorSpace.getNChannels()];
             for (int i = 0; i < colorSpace.getNChannels(); i++) {
-                channelColumns[i] = columnAssignment.getValue(colorSpace.getChannelName(i), TableColumnSourceExpressionParameter.class).pickOrGenerateColumn(table);
+                channelColumns[i] = columnAssignment.getValue(colorSpace.getChannelName(i), TableColumnSourceExpressionParameter.class).pickOrGenerateColumn(table, new JIPipeExpressionVariablesMap());
             }
 
             ImageProcessor lastProcessor = null;
@@ -200,7 +201,7 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     private int findSizeFromTable(ResultsTableData table, TableColumnSourceExpressionParameter columnSource) {
-        TableColumn tableColumn = columnSource.pickOrGenerateColumn(table);
+        TableColumn tableColumn = columnSource.pickOrGenerateColumn(table, new JIPipeExpressionVariablesMap());
         int max = 0;
         for (int i = 0; i < tableColumn.getRows(); i++) {
             max = Math.max(max, (int) tableColumn.getRowAsDouble(i));

@@ -40,6 +40,18 @@ public class InnerMargin extends AbstractJIPipeParameterCollection {
         this.bottom.ensureExactValue(true);
     }
 
+
+    public InnerMargin(double left, double top, double right, double bottom) {
+        this.left.ensureExactValue(true);
+        this.left.setExactValue(left);
+        this.top.ensureExactValue(true);
+        this.top.setExactValue(top);
+        this.right.ensureExactValue(true);
+        this.right.setExactValue(right);
+        this.bottom.ensureExactValue(true);
+        this.bottom.setExactValue(bottom);
+    }
+
     /**
      * Creates a copy
      *

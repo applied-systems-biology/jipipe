@@ -43,7 +43,7 @@ import java.awt.geom.RoundRectangle2D;
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Draw")
 public class DrawRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private final ROIProperties roiProperties;
+    private final VisualLocationROIProperties roiProperties;
 
     private Margin.List rectangles = new Margin.List();
 
@@ -55,14 +55,14 @@ public class DrawRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     public DrawRectangleRoiAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.roiProperties = new ROIProperties();
+        this.roiProperties = new VisualLocationROIProperties();
         rectangles.setCustomInstanceGenerator(this::createNewDefinition);
         rectangles.addNewInstance();
     }
 
     public DrawRectangleRoiAlgorithm(DrawRectangleRoiAlgorithm other) {
         super(other);
-        this.roiProperties = new ROIProperties(other.roiProperties);
+        this.roiProperties = new VisualLocationROIProperties(other.roiProperties);
         this.rectangles = new Margin.List(other.rectangles);
         this.center = other.center;
         this.arcWidth = other.arcWidth;
@@ -137,7 +137,7 @@ public class DrawRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "ROI properties", description = "Use the following settings to customize the generated ROI")
     @JIPipeParameter("roi-properties")
-    public ROIProperties getRoiProperties() {
+    public VisualLocationROIProperties getRoiProperties() {
         return roiProperties;
     }
 

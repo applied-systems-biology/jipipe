@@ -57,10 +57,10 @@ public class NumericFunctionExpression extends JIPipeExpressionParameter {
     /**
      * Sets the expression to an exact value
      *
-     * @param x the exact value
+     * @param value the exact value
      */
-    public void setExactValue(double x) {
-        setExpression(x + "");
+    public void setExactValue(double value) {
+        setExpression(value + "");
     }
 
     public static class VariablesInfo implements ExpressionParameterVariablesInfo {

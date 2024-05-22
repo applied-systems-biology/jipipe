@@ -114,8 +114,8 @@ public class ReplaceLabelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
         ResultsTableData mappingsTable = iterationStep.getInputData("Mappings", ResultsTableData.class, progressInfo);
 
         TFloatFloatMap mapping = new TFloatFloatHashMap();
-        TableColumn mappingOld = oldLabelColumn.pickOrGenerateColumn(mappingsTable);
-        TableColumn mappingNew = newLabelColumn.pickOrGenerateColumn(mappingsTable);
+        TableColumn mappingOld = oldLabelColumn.pickOrGenerateColumn(mappingsTable, new JIPipeExpressionVariablesMap());
+        TableColumn mappingNew = newLabelColumn.pickOrGenerateColumn(mappingsTable, new JIPipeExpressionVariablesMap());
 
         for (int i = 0; i < mappingOld.getRows(); i++) {
             mapping.put((float) mappingOld.getRowAsDouble(i), (float) mappingNew.getRowAsDouble(i));

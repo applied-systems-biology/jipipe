@@ -880,6 +880,13 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         double minZRadius = Double.POSITIVE_INFINITY;
         double maxZRadius = Double.NEGATIVE_INFINITY;
 
+        // Sum X, Y, Z, C, T
+        double sumX = 0;
+        double sumY = 0;
+        double sumZ = 0;
+        double sumC = 0;
+        double sumT = 0;
+
         for (FilamentVertex vertex : vertices) {
             minXCenter = Math.min(vertex.getXMin(false), minXCenter);
             minYCenter = Math.min(vertex.getYMin(false), minYCenter);
@@ -893,7 +900,18 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
             maxXRadius = Math.max(vertex.getXMax(true), maxXRadius);
             maxYRadius = Math.max(vertex.getYMax(true), maxYRadius);
             maxZRadius = Math.max(vertex.getZMax(true), maxZRadius);
+            sumX += vertex.getSpatialLocation().getX();
+            sumY += vertex.getSpatialLocation().getY();
+            sumZ += vertex.getSpatialLocation().getZ();
+            sumC += vertex.getNonSpatialLocation().getChannel();
+            sumT += vertex.getNonSpatialLocation().getFrame();
         }
+
+        double centroidX = sumX / vertices.size();
+        double centroidY = sumY / vertices.size();
+        double centroidZ = sumZ / vertices.size();
+        double centroidC = sumC / vertices.size();
+        double centroidT = sumT / vertices.size();
 
         int row = measurements.addRow();
         measurements.setValueAt(row, row, "Component");
@@ -932,6 +950,12 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         measurements.setValueAt(maxXRadius, row, "sphereMaxX");
         measurements.setValueAt(maxYRadius, row, "sphereMaxY");
         measurements.setValueAt(maxZRadius, row, "sphereMaxZ");
+
+        measurements.setValueAt(centroidX, row, "centroidX");
+        measurements.setValueAt(centroidY, row, "centroidY");
+        measurements.setValueAt(centroidZ, row, "centroidZ");
+        measurements.setValueAt(centroidC, row, "centroidC");
+        measurements.setValueAt(centroidT, row, "centroidT");
 
         measurements.setValueAt(minEdgeLengthPixels, row, "minEdgeLengthPixels");
         measurements.setValueAt(minEdgeLengthUnit, row, "minEdgeLengthUnit");

@@ -27,7 +27,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
-@SetJIPipeDocumentation(name = "Measure filaments", description = "Measures all components in the filament graph. " +
+@SetJIPipeDocumentation(name = "Measure filament components", description = "Measures all components in the filament graph. " +
         "Produces the following measurements: " +
         "<ul>" +
         "<li>number of vertices</li>" +
@@ -36,8 +36,9 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
         "<li>skeletonization-corrected length (adding 2 * radius for each vertex with degree 0 and 1 x radius for each vertex with degree 1)</li>" +
         "<li>confinement ratio (length of the simplified graph divided by the length)</li>" +
         "<li>number of vertices with specific degrees</li>" +
-        "<li>min/max centroid x/y/z</li>" +
-        "<li>min/max x/y/z (with sphere radius)</li>" +
+        "<li>min/max centroid x/y/z (per vertex) center[min/max][x/y/z]</li>" +
+        "<li>min/max x/y/z (with sphere radius) sphere[min/max][x/y/z]</li>" +
+        "<li>centroid x/y/z/c/t</li>" +
         "<li>min/max/avg radius/value</li>" +
         "</ul>")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Measure")

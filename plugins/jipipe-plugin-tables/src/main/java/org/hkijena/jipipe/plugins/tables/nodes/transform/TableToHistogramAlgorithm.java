@@ -78,7 +78,7 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData inputTable = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
-        TableColumn inputColumn = this.inputColumn.pickOrGenerateColumn(inputTable);
+        TableColumn inputColumn = this.inputColumn.pickOrGenerateColumn(inputTable, new JIPipeExpressionVariablesMap());
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
 

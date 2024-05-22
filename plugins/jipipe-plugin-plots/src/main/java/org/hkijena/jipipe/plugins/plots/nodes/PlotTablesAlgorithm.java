@@ -118,7 +118,7 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
             // Generate series
             for (Map.Entry<String, JIPipeParameterAccess> entry : inputColumns.getParameters().entrySet()) {
                 TableColumnSourceExpressionParameter parameter = entry.getValue().get(TableColumnSourceExpressionParameter.class);
-                seriesTable.setColumn(entry.getKey(), parameter.pickOrGenerateColumn(inputData), plotColumns.get(entry.getKey()).isNumeric());
+                seriesTable.setColumn(entry.getKey(), parameter.pickOrGenerateColumn(inputData, new JIPipeExpressionVariablesMap()), plotColumns.get(entry.getKey()).isNumeric());
             }
 
             PlotDataSeries series = new PlotDataSeries(seriesTable.getTable());
