@@ -51,6 +51,7 @@ public class JIPipeDesktopApplyPluginManagerRun extends AbstractJIPipeRunnable {
                     new JIPipeDesktopImageJUpdateSitesRepository.ActivateDeactivateRun(pluginManagerUI.getUpdateSitesRepository(),
                             Collections.emptyList(),
                             new ArrayList<>(updateSitesToInstall));
+            run.setProgressInfo(getProgressInfo().resolve("Update sites"));
             run.run();
         }
 

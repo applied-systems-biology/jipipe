@@ -180,8 +180,9 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
                     "You need to restart ImageJ/JIPipe",
                     false,
                     false,
-                    UIUtils.createButton("Close", UIUtils.getIconFromResources("actions/gtk-close.png"), this::closeImageJ));
+                    UIUtils.createButton("Close JIPipe", UIUtils.getIconFromResources("actions/gtk-close.png"), this::closeImageJ));
             propertyPanel.addWideToForm(messagePanel);
+            propertyPanel.addVerticalGlue();
             return;
         }
 
