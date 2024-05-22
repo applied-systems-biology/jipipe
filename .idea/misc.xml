@@ -7,6 +7,7 @@
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/jipipe-ij-3d/pom.xml" />
         <option value="$PROJECT_DIR$/jipipe-ilastik/pom.xml" />
+        <option value="$PROJECT_DIR$/plugins/jipipe-plugin-cellpose/pom.xml" />
       </list>
     </option>
   </component>

@@ -6,6 +6,8 @@ dependencies.txt
 target
 /jipipe.properties.json
 /jipipe.extensions.json
+/jipipe/plugins.json
+/jipipe/settings.json
 /jars/
 /update/
 /dist/jipipe-linux-installer/AppDir/
