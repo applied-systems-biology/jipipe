@@ -17,7 +17,7 @@ import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.cache.JIPipeCache;
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeStaticCompartmentOutput;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
@@ -51,7 +51,7 @@ public class JIPipeDesktopSingleCompartmentSelectionOverviewPanelUI extends JIPi
     private final JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
     private final JIPipeDesktopRibbon ribbon = new JIPipeDesktopRibbon(2);
     private final JIPipeProjectCompartment compartment;
-    private final JIPipeStaticCompartmentOutput compartmentOutput;
+    private final List<JIPipeCompartmentOutput> compartmentOutputs;
     private final JIPipeDesktopGraphCanvasUI canvasUI;
 
     public JIPipeDesktopSingleCompartmentSelectionOverviewPanelUI(JIPipeDesktopSingleCompartmentSelectionPanelUI parentPanel) {
@@ -59,7 +59,7 @@ public class JIPipeDesktopSingleCompartmentSelectionOverviewPanelUI extends JIPi
         this.parentPanel = parentPanel;
         this.canvasUI = parentPanel.getCanvas();
         this.compartment = parentPanel.getCompartment();
-        this.compartmentOutput = compartment.getStaticOutputNode();
+        this.compartmentOutputs = compartment.getSortedOutputNodes();
 
         initialize();
         reload();
@@ -93,12 +93,13 @@ public class JIPipeDesktopSingleCompartmentSelectionOverviewPanelUI extends JIPi
         formPanel.clear();
         initializeCompartment(formPanel);
 
-        if (compartmentOutput != null) {
+        for (JIPipeCompartmentOutput compartmentOutput : compartmentOutputs) {
             Map<String, JIPipeDataTable> query = getProject().getCache().query(compartmentOutput, compartmentOutput.getUUIDInParentGraph(), new JIPipeProgressInfo());
             if (!query.isEmpty()) {
-                initializeCache(formPanel, query);
+                initializeCache(formPanel, query, compartmentOutput);
             }
         }
+
         formPanel.addVerticalGlue();
 
         revalidate();
@@ -155,7 +156,7 @@ public class JIPipeDesktopSingleCompartmentSelectionOverviewPanelUI extends JIPi
 
     private void initializeRibbonNodeTask(JIPipeDesktopRibbon ribbon) {
         JIPipeDesktopRibbon.Task nodeTask = ribbon.addTask("Node");
-        if (compartmentOutput != null) {
+        if (compartmentOutputs != null) {
             JIPipeDesktopRibbon.Band workloadBand = nodeTask.addBand("Workload");
             List<JMenuItem> runMenuItems = new ArrayList<>();
             for (NodeUIContextAction entry : JIPipeDesktopGraphNodeUI.RUN_NODE_CONTEXT_MENU_ENTRIES) {
@@ -191,8 +192,8 @@ public class JIPipeDesktopSingleCompartmentSelectionOverviewPanelUI extends JIPi
         getDesktopProjectWorkbench().getOrOpenPipelineEditorTab(compartment, true);
     }
 
-    private void initializeCache(JIPipeDesktopFormPanel formPanel, Map<String, JIPipeDataTable> query) {
-        JIPipeDesktopFormPanel.GroupHeaderPanel groupHeader = formPanel.addGroupHeader("Results available", UIUtils.getIconFromResources("actions/database.png"));
+    private void initializeCache(JIPipeDesktopFormPanel formPanel, Map<String, JIPipeDataTable> query, JIPipeCompartmentOutput compartmentOutput) {
+        JIPipeDesktopFormPanel.GroupHeaderPanel groupHeader = formPanel.addGroupHeader("Results available in '" + compartmentOutput.getOutputSlotName() + "'", UIUtils.getIconFromResources("actions/database.png"));
         formPanel.addWideToForm(UIUtils.createBorderlessReadonlyTextPane("Previously generated results are stored in the memory cache. Click the 'Show results' button to review the results.", false));
         groupHeader.addColumn(UIUtils.createButton("Show results", UIUtils.getIconFromResources("actions/open-in-new-window.png"), this::openCacheBrowser));
 

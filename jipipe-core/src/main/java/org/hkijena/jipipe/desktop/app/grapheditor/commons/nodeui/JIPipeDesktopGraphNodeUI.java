@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.JIPipeGraphType;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.cache.JIPipeCache;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeStaticCompartmentOutput;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
@@ -376,21 +376,19 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             if (node instanceof JIPipeAlgorithm) {
                 partition = ((JIPipeAlgorithm) node).getRuntimePartition().getIndex();
             } else if (node instanceof JIPipeProjectCompartment) {
-                // Color after output
-                JIPipeStaticCompartmentOutput outputNode = ((JIPipeProjectCompartment) node).getStaticOutputNode();
-                partition = outputNode.getRuntimePartition().getIndex();
+//                // Color after output
+//                JIPipeCompartmentOutput outputNode = ((JIPipeProjectCompartment) node).getOutputNodes();
+//                partition = outputNode.getRuntimePartition().getIndex();
+                partition = 0; // Do no coloring
             }
-            JIPipeRuntimePartition runtimePartition = ((JIPipeDesktopProjectWorkbench) getDesktopWorkbench()).getProject().getRuntimePartitions().get(partition);
+            JIPipeRuntimePartition runtimePartition = getDesktopWorkbench().getProject().getRuntimePartitions().get(partition);
             if (runtimePartition.getColor().isEnabled()) {
-//                this.nodeBorderColor = runtimePartition.getColor().getContent();
                 this.partitionColor = runtimePartition.getColor().getContent();
             } else {
-//                this.nodeBorderColor = UIUtils.getBorderColorFor(node.getInfo());
                 this.partitionColor = null;
             }
         } else {
             this.partitionColor = null;
-//            this.nodeBorderColor = UIUtils.getBorderColorFor(node.getInfo());
         }
 
         this.buttonFillColor = ColorUtils.multiplyHSB(slotFillColor, 1, 1, 0.95f);
@@ -1209,11 +1207,13 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
         // Special case for project compartments
         if (graph != null && graph.getProject() != null && node instanceof JIPipeProjectCompartment) {
-            JIPipeStaticCompartmentOutput outputNode = ((JIPipeProjectCompartment) node).getStaticOutputNode();
-            cachedData = graph.getProject().getCache().query(outputNode, outputNode.getUUIDInParentGraph(), new JIPipeProgressInfo());
-            if (cachedData != null && !cachedData.isEmpty()) {
-                for (JIPipeDesktopGraphNodeUISlotActiveArea activeArea : outputSlotMap.values()) {
-                    activeArea.setSlotStatus(SlotStatus.Cached);
+            for (Map.Entry<String, JIPipeDesktopGraphNodeUISlotActiveArea> entry : outputSlotMap.entrySet()) {
+                JIPipeCompartmentOutput outputNode = ((JIPipeProjectCompartment) node).getOutputNode(entry.getKey());
+                if(outputNode != null) {
+                    cachedData = graph.getProject().getCache().query(outputNode, outputNode.getUUIDInParentGraph(), new JIPipeProgressInfo());
+                    if (cachedData != null && !cachedData.isEmpty()) {
+                        entry.getValue().setSlotStatus(SlotStatus.Cached);
+                    }
                 }
             }
         }

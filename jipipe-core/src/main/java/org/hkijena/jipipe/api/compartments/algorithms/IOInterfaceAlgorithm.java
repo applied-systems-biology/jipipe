@@ -83,51 +83,11 @@ public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
     }
 
     /**
-     * Replaces a {@link JIPipeStaticCompartmentOutput} by an equivalent interface
+     * Replaces a {@link JIPipeCompartmentOutput} by an equivalent interface
      *
      * @param compartmentOutput the output to be replaced
      */
-    public static void replaceCompartmentOutput(JIPipeStaticCompartmentOutput compartmentOutput) {
-        JIPipeGraph graph = compartmentOutput.getParentGraph();
-        UUID uuid = compartmentOutput.getUUIDInParentGraph();
-        IOInterfaceAlgorithm ioInterfaceAlgorithm = JIPipe.createNode("io-interface");
-        ioInterfaceAlgorithm.setCustomName(compartmentOutput.getName());
-        ioInterfaceAlgorithm.setCustomDescription(compartmentOutput.getCustomDescription());
-        ioInterfaceAlgorithm.getSlotConfiguration().setTo(compartmentOutput.getSlotConfiguration());
-
-        Multimap<String, JIPipeDataSlot> inputSourceMap = HashMultimap.create();
-        Map<String, Set<JIPipeDataSlot>> outputTargetMap = new HashMap<>();
-        for (JIPipeDataSlot inputSlot : compartmentOutput.getInputSlots()) {
-            Set<JIPipeDataSlot> sourceSlots = graph.getInputIncomingSourceSlots(inputSlot);
-            for (JIPipeDataSlot sourceSlot : sourceSlots) {
-                inputSourceMap.put(inputSlot.getName(), sourceSlot);
-            }
-        }
-        for (JIPipeDataSlot outputSlot : compartmentOutput.getOutputSlots()) {
-            outputTargetMap.put(outputSlot.getName(), graph.getOutputOutgoingTargetSlots(outputSlot));
-        }
-        graph.removeNode(compartmentOutput, false);
-        graph.insertNode(uuid, ioInterfaceAlgorithm, compartmentOutput.getCompartmentUUIDInParentGraph());
-        for (Map.Entry<String, Collection<JIPipeDataSlot>> entry : inputSourceMap.asMap().entrySet()) {
-            JIPipeDataSlot target = ioInterfaceAlgorithm.getInputSlot(entry.getKey());
-            for (JIPipeDataSlot source : entry.getValue()) {
-                graph.connect(source, target);
-            }
-        }
-        for (Map.Entry<String, Set<JIPipeDataSlot>> entry : outputTargetMap.entrySet()) {
-            JIPipeDataSlot source = ioInterfaceAlgorithm.getOutputSlot(entry.getKey());
-            for (JIPipeDataSlot target : entry.getValue()) {
-                graph.connect(source, target);
-            }
-        }
-    }
-
-    /**
-     * Replaces a {@link JIPipeUserCompartmentOutput} by an equivalent interface
-     *
-     * @param compartmentOutput the output to be replaced
-     */
-    public static void replaceCompartmentOutput(JIPipeUserCompartmentOutput compartmentOutput) {
+    public static void replaceCompartmentOutput(JIPipeCompartmentOutput compartmentOutput) {
         JIPipeGraph graph = compartmentOutput.getParentGraph();
         UUID uuid = compartmentOutput.getUUIDInParentGraph();
         IOInterfaceAlgorithm ioInterfaceAlgorithm = JIPipe.createNode("io-interface");

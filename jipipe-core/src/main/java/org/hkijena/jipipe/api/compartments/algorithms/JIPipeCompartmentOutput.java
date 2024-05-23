@@ -17,12 +17,17 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
 /**
  * A graph compartment output
  * Transfers data 1:1 from input to output
  */
-public abstract class JIPipeCompartmentOutput extends IOInterfaceAlgorithm {
+@SetJIPipeDocumentation(name = "Compartment output", description = "Output of a compartment")
+@ConfigureJIPipeNode()
+public class JIPipeCompartmentOutput extends IOInterfaceAlgorithm {
+
+    private String outputSlotName;
 
     /**
      * Creates a new instance.
@@ -41,5 +46,16 @@ public abstract class JIPipeCompartmentOutput extends IOInterfaceAlgorithm {
      */
     public JIPipeCompartmentOutput(JIPipeCompartmentOutput other) {
         super(other);
+        this.outputSlotName = other.outputSlotName;
+    }
+
+    @JIPipeParameter(value = "jipipe:compartment:output-slot-name", hidden = true)
+    public String getOutputSlotName() {
+        return outputSlotName;
+    }
+
+    @JIPipeParameter("jipipe:compartment:output-slot-name")
+    public void setOutputSlotName(String outputSlotName) {
+        this.outputSlotName = outputSlotName;
     }
 }

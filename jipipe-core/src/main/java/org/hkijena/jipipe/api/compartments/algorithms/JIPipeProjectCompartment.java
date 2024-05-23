@@ -13,9 +13,14 @@
 
 package org.hkijena.jipipe.api.compartments.algorithms;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableBiMap;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.compartments.datatypes.JIPipeCompartmentOutputData;
+import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceAccessGroupList;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
 import org.hkijena.jipipe.api.nodes.*;
@@ -32,11 +37,11 @@ import java.util.*;
  */
 @SetJIPipeDocumentation(name = "Graph compartment", description = "A compartment in the analysis graph")
 @AddJIPipeInputSlot(value = JIPipeCompartmentOutputData.class, slotName = "Input", create = true, optional = true)
-@AddJIPipeOutputSlot(value = JIPipeCompartmentOutputData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = JIPipeCompartmentOutputData.class)
 public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeCustomParameterCollection {
 
     private JIPipeProject project;
-    private JIPipeStaticCompartmentOutput staticOutputNode;
+    private BiMap<String, JIPipeCompartmentOutput> outputNodes = HashBiMap.create();
 
     private GraphNodeParameterReferenceGroupCollection exportedParameters = new GraphNodeParameterReferenceGroupCollection();
 
@@ -48,7 +53,11 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
      * @param info Algorithm info
      */
     public JIPipeProjectCompartment(JIPipeNodeInfo info) {
-        super(info);
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
+                .addInputSlot("Input", "Incoming data from other compartments", JIPipeCompartmentOutputData.class, true)
+                .restrictOutputTo(JIPipeCompartmentOutputData.class)
+                .sealInput()
+                .build());
         registerSubParameter(exportedParameters);
     }
 
@@ -76,17 +85,9 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
      * @return If the compartment is initialized
      */
     public boolean isInitialized() {
-        return project != null && staticOutputNode != null;
+        return project != null && outputNodes != null;
     }
 
-    @Override
-    @JIPipeParameter(value = "jipipe:node:name", functional = false)
-    public void setCustomName(String customName) {
-        super.setCustomName(customName);
-        if (staticOutputNode != null) {
-            staticOutputNode.setCustomName(getName() + " output");
-        }
-    }
 
     @Override
     public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
@@ -135,54 +136,16 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
         updateExportedParameters();
     }
 
-    /**
-     * @return The compartment output
-     */
-    public JIPipeStaticCompartmentOutput getStaticOutputNode() {
-        return staticOutputNode;
+    public JIPipeCompartmentOutput getOutputNode(String outputName) {
+        return outputNodes.get(outputName);
     }
 
-    /**
-     * Returns all output nodes (user and static)
-     * @return all output nodes
-     */
-    public List<JIPipeCompartmentOutput> getOutputNodes() {
-        List<JIPipeCompartmentOutput> result = new ArrayList<>();
-        result.add(staticOutputNode);
-        for (JIPipeGraphNode graphNode : project.getGraph().getGraphNodes()) {
-            if(graphNode instanceof JIPipeUserCompartmentOutput) {
-                if(Objects.equals(graphNode.getCompartmentUUIDInParentGraph(), getProjectCompartmentUUID())) {
-                    result.add((JIPipeCompartmentOutput) graphNode);
-                }
-            }
-        }
-        return result;
+    public BiMap<String, JIPipeCompartmentOutput> getOutputNodes() {
+        return outputNodes;
     }
 
-    /**
-     * Returns all output nodes (user and static)
-     * @return all output nodes
-     */
-    public List<JIPipeUserCompartmentOutput> getUserOutputNodes() {
-        List<JIPipeUserCompartmentOutput> result = new ArrayList<>();
-        for (JIPipeGraphNode graphNode : project.getGraph().getGraphNodes()) {
-            if(graphNode instanceof JIPipeUserCompartmentOutput) {
-                if(Objects.equals(graphNode.getCompartmentUUIDInParentGraph(), getProjectCompartmentUUID())) {
-                    result.add((JIPipeUserCompartmentOutput) graphNode);
-                }
-            }
-        }
-        return result;
-    }
-
-
-    /**
-     * Sets the compartment output. Internal use only.
-     *
-     * @param staticOutputNode the compartment output
-     */
-    public void setStaticOutputNode(JIPipeStaticCompartmentOutput staticOutputNode) {
-        this.staticOutputNode = staticOutputNode;
+    public void setOutputNodes(BiMap<String, JIPipeCompartmentOutput> outputNodes) {
+        this.outputNodes = outputNodes;
     }
 
     @Override
@@ -237,5 +200,13 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
             }
         }
         return super.isParameterUIVisible(tree, access);
+    }
+
+    public List<JIPipeCompartmentOutput> getSortedOutputNodes() {
+        List<JIPipeCompartmentOutput> result = new ArrayList<>();
+        for (JIPipeOutputDataSlot outputSlot : getOutputSlots()) {
+            result.add(getOutputNode(outputSlot.getName()));
+        }
+        return result;
     }
 }

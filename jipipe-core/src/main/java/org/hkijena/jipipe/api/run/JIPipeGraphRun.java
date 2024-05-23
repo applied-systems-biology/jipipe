@@ -30,9 +30,7 @@ import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryApplyInstallUnin
 import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeStaticCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeUserCompartmentOutput;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;

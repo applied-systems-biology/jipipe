@@ -13,8 +13,9 @@
 
 package org.hkijena.jipipe.desktop.app.grapheditor.compartments.properties;
 
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeStaticCompartmentOutput;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
+import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
@@ -35,8 +36,10 @@ import org.scijava.Disposable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * UI for a single {@link JIPipeProjectCompartment}
@@ -147,8 +150,15 @@ public class JIPipeDesktopSingleCompartmentSelectionPanelUI extends JIPipeDeskto
     }
 
     private Component createQuickRunPanel() {
-        JIPipeStaticCompartmentOutput node = compartment.getStaticOutputNode();
-        return new JIPipeDesktopQuickRunSetupUI(getDesktopProjectWorkbench(), node);
+        JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.TabPlacement.Bottom);
+        for (JIPipeOutputDataSlot outputSlot : compartment.getOutputSlots()) {
+            JIPipeCompartmentOutput outputNode = compartment.getOutputNode(outputSlot.getName());
+            tabbedPane.addTab(outputNode.getOutputSlotName(),
+                    UIUtils.getIconFromResources("actions/graph-compartment.png"),
+                            new JIPipeDesktopQuickRunSetupUI(getDesktopProjectWorkbench(), outputNode),
+                    JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+        }
+        return tabPane;
     }
 
     private Component createCurrentRunInfo() {
@@ -156,32 +166,16 @@ public class JIPipeDesktopSingleCompartmentSelectionPanelUI extends JIPipeDeskto
     }
 
     private Component createCacheBrowser() {
-        JIPipeStaticCompartmentOutput node = compartment.getStaticOutputNode();
-        return new JIPipeDesktopAlgorithmCacheBrowserUI(getDesktopProjectWorkbench(),
-                node,
-                graphEditorUI.getCanvasUI());
+        JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.TabPlacement.Bottom);
+        for (JIPipeOutputDataSlot outputSlot : compartment.getOutputSlots()) {
+            JIPipeCompartmentOutput outputNode = compartment.getOutputNode(outputSlot.getName());
+            tabbedPane.addTab(outputNode.getOutputSlotName(),
+                    UIUtils.getIconFromResources("actions/graph-compartment.png"),
+                    new JIPipeDesktopAlgorithmCacheBrowserUI(getDesktopProjectWorkbench(), outputNode, graphEditorUI.getCanvasUI()),
+                    JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+        }
+        return tabPane;
     }
-
-//    private void initializeToolbar() {
-//        JToolBar toolBar = new JToolBar();
-//        toolBar.setFloatable(false);
-//        JLabel nameLabel = new JLabel(compartment.getName(), new SolidColorIcon(16, 16, UIUtils.getFillColorFor(compartment.getInfo())), JLabel.LEFT);
-//        nameLabel.setToolTipText(TooltipUtils.getProjectCompartmentTooltip(compartment, getProject().getGraph()));
-//        toolBar.add(nameLabel);
-//
-//        toolBar.add(Box.createHorizontalGlue());
-//
-//        JIPipeGraphEditorUI.installContextActionsInto(toolBar,
-//                canvas.getNodeUIsFor(Collections.singleton(compartment)),
-//                canvas.getContextActions(),
-//                canvas);
-//
-//        JButton openButton = new JButton("Open in editor", UIUtils.getIconFromResources("actions/edit.png"));
-//        openButton.addActionListener(e -> openInEditor());
-//        toolBar.add(openButton);
-//
-//        add(toolBar, BorderLayout.NORTH);
-//    }
 
     private void openInEditor() {
         getDesktopProjectWorkbench().getOrOpenPipelineEditorTab(compartment, true);
@@ -201,11 +195,20 @@ public class JIPipeDesktopSingleCompartmentSelectionPanelUI extends JIPipeDeskto
      * @param excludeSelected          if the current algorithm should be excluded
      */
     public void executeQuickRun(boolean showResults, boolean showCache, boolean saveToDisk, boolean storeIntermediateOutputs, boolean excludeSelected) {
-        if (compartment.getStaticOutputNode().getOutputSlots().isEmpty()) {
-            JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "<html>The output node of the compartment '" + compartment.getName() + "' transfers no data.<br/>" +
-                    "This means that the there will be no outputs generated for the compartment.<br/><br/>" +
-                    "Please edit the compartment via a double-click and add inputs into the '" + compartment.getStaticOutputNode().getName() + "' node.</html>", "No outputs to generate", JOptionPane.WARNING_MESSAGE);
+
+        List<String> outputsWithoutSlots = new ArrayList<>();
+        for (JIPipeCompartmentOutput output : compartment.getOutputNodes().values()) {
+            if(output.getOutputSlots().isEmpty()) {
+                outputsWithoutSlots.add(output.getOutputSlotName());
+            }
         }
+
+        if(outputsWithoutSlots.isEmpty()) {
+            JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "<html>The following output nodes transfer no data: " + String.join(", " + outputsWithoutSlots) + "<br/>" +
+                    "This means that the there will be no outputs generated for the compartment.<br/><br/>" +
+                    "Please edit the compartment via a double-click and add inputs into the respective nodes.</html>", "No data passed to outputs", JOptionPane.WARNING_MESSAGE);
+        }
+
         // Activate the quick run
         tabbedPane.selectSingletonTab("QUICK_RUN");
         JIPipeDesktopQuickRunSetupUI testBenchSetupUI = (JIPipeDesktopQuickRunSetupUI) tabbedPane.getCurrentContent();

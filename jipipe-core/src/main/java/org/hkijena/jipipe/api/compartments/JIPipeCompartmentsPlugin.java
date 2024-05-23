@@ -17,9 +17,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compartments.algorithms.CompartmentNodeTypeCategory;
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeStaticCompartmentOutput;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeUserCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.datatypes.JIPipeCompartmentOutputData;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -63,8 +62,7 @@ public class JIPipeCompartmentsPlugin extends JIPipePrepackagedDefaultJavaPlugin
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerNodeTypeCategory(new CompartmentNodeTypeCategory());
-        registerNodeType("jipipe:compartment-output", JIPipeStaticCompartmentOutput.class, UIUtils.getIconURLFromResources("actions/graph-compartment.png"));
-        registerNodeType("jipipe:user-compartment-output", JIPipeUserCompartmentOutput.class, UIUtils.getIconURLFromResources("actions/graph-compartment.png"));
+        registerNodeType("jipipe:compartment-output", JIPipeCompartmentOutput.class, UIUtils.getIconURLFromResources("actions/graph-compartment.png"));
         registerNodeType("jipipe:project-compartment", JIPipeProjectCompartment.class, UIUtils.getIconURLFromResources("actions/graph-compartment.png"));
 
         registerDatatype("jipipe:compartment-output", JIPipeCompartmentOutputData.class,

@@ -14,8 +14,7 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.compartments.contextmenu.clipboard.clipboard;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeStaticCompartmentOutput;
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeUserCompartmentOutput;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
@@ -23,7 +22,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
-import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -53,7 +51,7 @@ public class AlgorithmGraphDuplicateWithInputConnectionsNodeUIContextAction impl
             for (Map.Entry<UUID, JIPipeGraphNode> entry : pastedNodes.entrySet()) {
                 JIPipeGraphNode copyNode = entry.getValue();
                 JIPipeGraphNode originalNode = canvasUI.getGraph().getNodeByUUID(entry.getKey());
-                if (originalNode == null || originalNode instanceof JIPipeUserCompartmentOutput) {
+                if (originalNode == null || originalNode instanceof JIPipeCompartmentOutput) {
                     continue;
                 }
                 for (JIPipeInputDataSlot originalInputSlot : originalNode.getInputSlots()) {
