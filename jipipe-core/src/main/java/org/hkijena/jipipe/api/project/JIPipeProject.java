@@ -477,38 +477,29 @@ public class JIPipeProject implements JIPipeValidatable {
         boolean changed = false;
 
         // Remember old visibilities and clear the existing map
-        Map<JIPipeProjectCompartment, Set<UUID>> oldVisibleCompartments = new HashMap<>();
-        for (JIPipeProjectCompartment compartment : compartments.values()) {
-            JIPipeProjectCompartmentOutput outputNode = compartment.getOutputNodes();
-            Set<UUID> visibleCompartmentUUIDs = graph.getVisibleCompartmentUUIDsOf(outputNode);
-            oldVisibleCompartments.put(compartment, new HashSet<>(visibleCompartmentUUIDs));
-            visibleCompartmentUUIDs.clear();
+        Map<JIPipeProjectCompartmentOutput, Set<UUID>> oldVisibleCompartments = new HashMap<>();
 
-            // Clear also user compartment visibilities
-            for (JIPipeUserCompartmentOutput userOutputNode : compartment.getUserOutputNodes()) {
-                graph.getVisibleCompartmentUUIDsOf(userOutputNode).clear();
+        for (JIPipeProjectCompartment compartment : compartments.values()) {
+            for (JIPipeProjectCompartmentOutput compartmentOutput : compartment.getOutputNodes().values()) {
+                Set<UUID> visibleCompartmentUUIDs = graph.getVisibleCompartmentUUIDsOf(compartmentOutput);
+                oldVisibleCompartments.put(compartmentOutput, new HashSet<>(visibleCompartmentUUIDs));
+                visibleCompartmentUUIDs.clear();
             }
         }
 
         // Add the visibilities back in
-        for (JIPipeGraphNode targetNode : compartmentGraph.getGraphNodes()) {
-            if (targetNode instanceof JIPipeProjectCompartment) {
-                JIPipeProjectCompartment targetProjectCompartment = (JIPipeProjectCompartment) targetNode;
+        for (JIPipeGraphNode edgeTarget : compartmentGraph.getGraphNodes()) {
+            if (edgeTarget instanceof JIPipeProjectCompartment) {
+                JIPipeProjectCompartment targetProjectCompartment = (JIPipeProjectCompartment) edgeTarget;
                 for (JIPipeDataSlot sourceSlot : compartmentGraph.getInputIncomingSourceSlots(targetProjectCompartment.getFirstInputSlot())) {
                     if (sourceSlot.getNode() instanceof JIPipeProjectCompartment) {
-                        JIPipeProjectCompartment sourceProjectCompartment = (JIPipeProjectCompartment) sourceSlot.getNode();
+                        JIPipeProjectCompartment edgeSource = (JIPipeProjectCompartment) sourceSlot.getNode();
+                        String outputNameToShow = sourceSlot.getName();
 
-                        // Copy into static output node
-                        {
-                            Set<UUID> visibleCompartmentUUIDs = graph.getVisibleCompartmentUUIDsOf(sourceProjectCompartment.getOutputNodes());
-                            visibleCompartmentUUIDs.add(targetProjectCompartment.getProjectCompartmentUUID());
-                        }
-
-                        // Copy settings into user output nodes
-                        for (JIPipeUserCompartmentOutput userOutputNode : sourceProjectCompartment.getUserOutputNodes()) {
-                            Set<UUID> visibleCompartmentUUIDs = graph.getVisibleCompartmentUUIDsOf(userOutputNode);
-                            visibleCompartmentUUIDs.add(targetProjectCompartment.getProjectCompartmentUUID());
-                        }
+                        // Grab the output of the edgeSource that we want to show in edgeTarget
+                        JIPipeProjectCompartmentOutput outputToShow = edgeSource.getOutputNode(outputNameToShow);
+                        Set<UUID> visibleCompartmentUUIDs = graph.getVisibleCompartmentUUIDsOf(outputToShow);
+                        visibleCompartmentUUIDs.add(targetProjectCompartment.getProjectCompartmentUUID());
                     }
                 }
             }
@@ -516,10 +507,12 @@ public class JIPipeProject implements JIPipeValidatable {
 
         // Check for changes
         for (JIPipeProjectCompartment compartment : compartments.values()) {
-            Set<UUID> visibleCompartmentUUIDs = graph.getVisibleCompartmentUUIDsOf(compartment.getOutputNodes());
-            if (!Objects.equals(visibleCompartmentUUIDs, oldVisibleCompartments.get(compartment))) {
-                changed = true;
-                break;
+            for (JIPipeProjectCompartmentOutput compartmentOutput : compartment.getOutputNodes().values()) {
+                Set<UUID> visibleCompartmentUUIDs = graph.getVisibleCompartmentUUIDsOf(compartmentOutput);
+                if (!Objects.equals(visibleCompartmentUUIDs, oldVisibleCompartments.get(compartmentOutput))) {
+                    changed = true;
+                    break;
+                }
             }
         }
 
