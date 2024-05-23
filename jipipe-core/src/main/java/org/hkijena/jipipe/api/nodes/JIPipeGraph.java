@@ -172,7 +172,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
      * @return a unique alias ID for the node
      */
     public String generateAliasIdFor(JIPipeGraphNode node) {
-        String jsonify = StringUtils.safeJsonify(node.getName());
+        String jsonify = StringUtils.safeJsonify(StringUtils.orElse(node.getName(), node.getInfo().getName()));
         // Limit length for filesystem compatibility
         if (jsonify.length() > 30) {
             jsonify = jsonify.substring(0, 31);

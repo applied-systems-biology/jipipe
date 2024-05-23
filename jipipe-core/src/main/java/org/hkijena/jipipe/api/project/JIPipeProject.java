@@ -381,19 +381,6 @@ public class JIPipeProject implements JIPipeValidatable {
     }
 
     /**
-     * Adds an existing compartment instance
-     *
-     * @param compartment Compartment
-     * @param uuid        the UUID of the compartment
-     * @return The compartment
-     */
-    public JIPipeProjectCompartment addCompartment(JIPipeProjectCompartment compartment, UUID uuid) {
-        compartment.setRuntimeProject(this);
-        compartmentGraph.insertNode(uuid == null ? UUID.randomUUID() : uuid, compartment, null);
-        return compartment;
-    }
-
-    /**
      * Connects two compartments
      *
      * @param source Source compartment
