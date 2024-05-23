@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeStandardMetadata;
 import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
@@ -72,7 +72,7 @@ public class JIPipeExportedCompartment {
         UUID compartmentId = compartment.getProjectCompartmentUUID();
         for (JIPipeGraphNode algorithm : sourceGraph.getGraphNodes()) {
             if (!Objects.equals(algorithm.getCompartmentUUIDInParentGraph(), compartmentId)) {
-                if (algorithm instanceof JIPipeCompartmentOutput) {
+                if (algorithm instanceof JIPipeProjectCompartmentOutput) {
                     boolean found = false;
                     for (JIPipeOutputDataSlot outputSlot : algorithm.getOutputSlots()) {
                         for (JIPipeDataSlot targetSlot : sourceGraph.getOutputOutgoingTargetSlots(outputSlot)) {
@@ -150,11 +150,11 @@ public class JIPipeExportedCompartment {
      */
     public JIPipeProjectCompartment addTo(JIPipeProject project, String compartmentName) {
         JIPipeProjectCompartment compartment = project.addCompartment(compartmentName);
-        JIPipeCompartmentOutput projectOutputNode = compartment.getOutputNodes();
+        JIPipeProjectCompartmentOutput projectOutputNode = compartment.getOutputNodes();
 
         String locationCompartment = "";
         for (JIPipeGraphNode algorithm : outputGraph.getGraphNodes()) {
-            if (!(algorithm instanceof JIPipeCompartmentOutput)) {
+            if (!(algorithm instanceof JIPipeProjectCompartmentOutput)) {
                 if (!algorithm.getLocations().keySet().isEmpty())
                     locationCompartment = algorithm.getLocations().keySet().iterator().next();
             }
@@ -169,14 +169,14 @@ public class JIPipeExportedCompartment {
             if (map != null) {
                 locations.put(algorithm, map);
             }
-            if (algorithm instanceof JIPipeCompartmentOutput) {
+            if (algorithm instanceof JIPipeProjectCompartmentOutput) {
                 outputLocation = map;
             }
         }
 
         Map<UUID, JIPipeGraphNode> copies = new HashMap<>();
         for (JIPipeGraphNode algorithm : outputGraph.getGraphNodes()) {
-            if (algorithm instanceof JIPipeCompartmentOutput) {
+            if (algorithm instanceof JIPipeProjectCompartmentOutput) {
                 // We just assign the existing project output
                 copies.put(algorithm.getUUIDInParentGraph(), projectOutputNode);
 

@@ -15,7 +15,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu;
 
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.JIPipeGraphType;
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -61,7 +61,7 @@ public class UpdateCacheShowIntermediateNodeUIContextAction implements NodeUICon
             JIPipeGraphNode node = nodeUI.getNode();
             JIPipeProject project = node.getParentGraph().getProject();
             if (node instanceof JIPipeProjectCompartment) {
-                for (JIPipeCompartmentOutput output : ((JIPipeProjectCompartment) node).getOutputNodes().values()) {
+                for (JIPipeProjectCompartmentOutput output : ((JIPipeProjectCompartment) node).getOutputNodes().values()) {
                     enqueue(output, project);
                 }
             } else if (node instanceof JIPipeAlgorithm || node.getInfo().isRunnable()) {

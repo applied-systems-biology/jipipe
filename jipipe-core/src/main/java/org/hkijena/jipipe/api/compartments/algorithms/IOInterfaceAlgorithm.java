@@ -83,11 +83,11 @@ public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
     }
 
     /**
-     * Replaces a {@link JIPipeCompartmentOutput} by an equivalent interface
+     * Replaces a {@link JIPipeProjectCompartmentOutput} by an equivalent interface
      *
      * @param compartmentOutput the output to be replaced
      */
-    public static void replaceCompartmentOutput(JIPipeCompartmentOutput compartmentOutput) {
+    public static void replaceCompartmentOutput(JIPipeProjectCompartmentOutput compartmentOutput) {
         JIPipeGraph graph = compartmentOutput.getParentGraph();
         UUID uuid = compartmentOutput.getUUIDInParentGraph();
         IOInterfaceAlgorithm ioInterfaceAlgorithm = JIPipe.createNode("io-interface");

@@ -15,7 +15,6 @@ package org.hkijena.jipipe.api.compartments.algorithms;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableBiMap;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.compartments.datatypes.JIPipeCompartmentOutputData;
@@ -41,7 +40,7 @@ import java.util.*;
 public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeCustomParameterCollection {
 
     private JIPipeProject project;
-    private BiMap<String, JIPipeCompartmentOutput> outputNodes = HashBiMap.create();
+    private BiMap<String, JIPipeProjectCompartmentOutput> outputNodes = HashBiMap.create();
 
     private GraphNodeParameterReferenceGroupCollection exportedParameters = new GraphNodeParameterReferenceGroupCollection();
 
@@ -136,15 +135,15 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
         updateExportedParameters();
     }
 
-    public JIPipeCompartmentOutput getOutputNode(String outputName) {
+    public JIPipeProjectCompartmentOutput getOutputNode(String outputName) {
         return outputNodes.get(outputName);
     }
 
-    public BiMap<String, JIPipeCompartmentOutput> getOutputNodes() {
+    public BiMap<String, JIPipeProjectCompartmentOutput> getOutputNodes() {
         return outputNodes;
     }
 
-    public void setOutputNodes(BiMap<String, JIPipeCompartmentOutput> outputNodes) {
+    public void setOutputNodes(BiMap<String, JIPipeProjectCompartmentOutput> outputNodes) {
         this.outputNodes = outputNodes;
     }
 
@@ -202,8 +201,8 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
         return super.isParameterUIVisible(tree, access);
     }
 
-    public List<JIPipeCompartmentOutput> getSortedOutputNodes() {
-        List<JIPipeCompartmentOutput> result = new ArrayList<>();
+    public List<JIPipeProjectCompartmentOutput> getSortedOutputNodes() {
+        List<JIPipeProjectCompartmentOutput> result = new ArrayList<>();
         for (JIPipeOutputDataSlot outputSlot : getOutputSlots()) {
             result.add(getOutputNode(outputSlot.getName()));
         }

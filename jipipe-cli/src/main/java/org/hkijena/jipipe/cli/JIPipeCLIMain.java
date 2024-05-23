@@ -19,7 +19,7 @@ import com.google.common.collect.ImmutableList;
 import net.imagej.ImageJ;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeRegistryIssues;
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
@@ -221,7 +221,7 @@ public class JIPipeCLIMain {
         settings.setStoreToCache(false);
         if (saveToDisk && saveToDiskOnlyCompartments) {
             for (JIPipeGraphNode graphNode : project.getGraph().getGraphNodes()) {
-                if (!(graphNode instanceof JIPipeCompartmentOutput) && !(graphNode instanceof JIPipeUserCompartmentOutput)) {
+                if (!(graphNode instanceof JIPipeProjectCompartmentOutput) && !(graphNode instanceof JIPipeUserCompartmentOutput)) {
                     settings.getDisableStoreToDiskNodes().add(graphNode.getUUIDInParentGraph());
                 }
             }

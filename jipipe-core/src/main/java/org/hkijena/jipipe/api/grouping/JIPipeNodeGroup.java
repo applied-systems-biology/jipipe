@@ -20,7 +20,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEvent;
@@ -112,8 +112,8 @@ public class JIPipeNodeGroup extends JIPipeGraphWrapperAlgorithm implements JIPi
 
         // Replace all JIPipeCompartmentOutput by IOInterfaceAlgorithm
         for (JIPipeGraphNode node : ImmutableList.copyOf(graph.getGraphNodes())) {
-            if (node instanceof JIPipeCompartmentOutput) {
-                IOInterfaceAlgorithm.replaceCompartmentOutput((JIPipeCompartmentOutput) node);
+            if (node instanceof JIPipeProjectCompartmentOutput) {
+                IOInterfaceAlgorithm.replaceCompartmentOutput((JIPipeProjectCompartmentOutput) node);
             }
         }
 

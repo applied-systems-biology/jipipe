@@ -16,7 +16,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.pipeline;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
@@ -430,7 +430,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeDesktopGraphEditorUI {
             if (getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
                 JIPipeDesktopNodeGroupUI.openGroupNodeGraph(getDesktopWorkbench(), (JIPipeNodeGroup) node, true);
             }
-        } else if (node instanceof JIPipeCompartmentOutput) {
+        } else if (node instanceof JIPipeProjectCompartmentOutput) {
             // Open the compartment
             if (!Objects.equals(getCompartment(), node.getCompartmentUUIDInParentGraph()) && getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
                 // This is an input

@@ -22,7 +22,6 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
 
@@ -53,7 +52,7 @@ public class DissolveCompartmentsTool extends JIPipeDesktopMenuExtension {
             JIPipeGraph graph = new JIPipeGraph(workbench.getProject().getGraph());
             // Replace project compartment with IOInterface
             for (JIPipeGraphNode node : ImmutableList.copyOf(graph.getGraphNodes())) {
-                if (node instanceof JIPipeCompartmentOutput) {
+                if (node instanceof JIPipeProjectCompartmentOutput) {
                     IOInterfaceAlgorithm replacement = new IOInterfaceAlgorithm((IOInterfaceAlgorithm) node);
                     replacement.setInfo(JIPipe.getNodes().getInfoById("io-interface"));
                     graph.replaceNode(node, replacement);

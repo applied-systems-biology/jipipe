@@ -17,7 +17,7 @@ import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.cache.JIPipeCache;
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
@@ -51,7 +51,7 @@ public class JIPipeDesktopSingleCompartmentSelectionOverviewPanelUI extends JIPi
     private final JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
     private final JIPipeDesktopRibbon ribbon = new JIPipeDesktopRibbon(2);
     private final JIPipeProjectCompartment compartment;
-    private final List<JIPipeCompartmentOutput> compartmentOutputs;
+    private final List<JIPipeProjectCompartmentOutput> compartmentOutputs;
     private final JIPipeDesktopGraphCanvasUI canvasUI;
 
     public JIPipeDesktopSingleCompartmentSelectionOverviewPanelUI(JIPipeDesktopSingleCompartmentSelectionPanelUI parentPanel) {
@@ -93,7 +93,7 @@ public class JIPipeDesktopSingleCompartmentSelectionOverviewPanelUI extends JIPi
         formPanel.clear();
         initializeCompartment(formPanel);
 
-        for (JIPipeCompartmentOutput compartmentOutput : compartmentOutputs) {
+        for (JIPipeProjectCompartmentOutput compartmentOutput : compartmentOutputs) {
             Map<String, JIPipeDataTable> query = getProject().getCache().query(compartmentOutput, compartmentOutput.getUUIDInParentGraph(), new JIPipeProgressInfo());
             if (!query.isEmpty()) {
                 initializeCache(formPanel, query, compartmentOutput);
@@ -192,7 +192,7 @@ public class JIPipeDesktopSingleCompartmentSelectionOverviewPanelUI extends JIPi
         getDesktopProjectWorkbench().getOrOpenPipelineEditorTab(compartment, true);
     }
 
-    private void initializeCache(JIPipeDesktopFormPanel formPanel, Map<String, JIPipeDataTable> query, JIPipeCompartmentOutput compartmentOutput) {
+    private void initializeCache(JIPipeDesktopFormPanel formPanel, Map<String, JIPipeDataTable> query, JIPipeProjectCompartmentOutput compartmentOutput) {
         JIPipeDesktopFormPanel.GroupHeaderPanel groupHeader = formPanel.addGroupHeader("Results available in '" + compartmentOutput.getOutputSlotName() + "'", UIUtils.getIconFromResources("actions/database.png"));
         formPanel.addWideToForm(UIUtils.createBorderlessReadonlyTextPane("Previously generated results are stored in the memory cache. Click the 'Show results' button to review the results.", false));
         groupHeader.addColumn(UIUtils.createButton("Show results", UIUtils.getIconFromResources("actions/open-in-new-window.png"), this::openCacheBrowser));

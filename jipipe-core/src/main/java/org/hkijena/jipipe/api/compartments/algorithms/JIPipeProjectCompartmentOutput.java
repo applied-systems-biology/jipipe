@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
  */
 @SetJIPipeDocumentation(name = "Compartment output", description = "Output of a compartment")
 @ConfigureJIPipeNode()
-public class JIPipeCompartmentOutput extends IOInterfaceAlgorithm {
+public class JIPipeProjectCompartmentOutput extends IOInterfaceAlgorithm {
 
     private String outputSlotName;
 
@@ -35,7 +35,7 @@ public class JIPipeCompartmentOutput extends IOInterfaceAlgorithm {
      *
      * @param info The algorithm info
      */
-    public JIPipeCompartmentOutput(JIPipeNodeInfo info) {
+    public JIPipeProjectCompartmentOutput(JIPipeNodeInfo info) {
         super(info);
     }
 
@@ -44,9 +44,16 @@ public class JIPipeCompartmentOutput extends IOInterfaceAlgorithm {
      *
      * @param other The original
      */
-    public JIPipeCompartmentOutput(JIPipeCompartmentOutput other) {
+    public JIPipeProjectCompartmentOutput(JIPipeProjectCompartmentOutput other) {
         super(other);
         this.outputSlotName = other.outputSlotName;
+    }
+
+    @Override
+    @JIPipeParameter(value = "jipipe:node:name", uiOrder = -9999, pinned = true, functional = false, hidden = true)
+    @SetJIPipeDocumentation(name = "Name", description = "Custom algorithm name.")
+    public String getName() {
+        return outputSlotName;
     }
 
     @JIPipeParameter(value = "jipipe:compartment:output-slot-name", hidden = true)

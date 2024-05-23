@@ -406,20 +406,71 @@ public class JIPipeProject implements JIPipeValidatable {
 
     private void initializeCompartment(JIPipeProjectCompartment compartment) {
         compartment.setRuntimeProject(this);
-        JIPipeCompartmentOutput compartmentOutput = null;
+        updateCompartmentOutputs(compartment);
+    }
+
+    private void updateCompartmentOutputs(JIPipeProjectCompartment compartment) {
+
         UUID compartmentUUID = compartment.getProjectCompartmentUUID();
-        for (JIPipeGraphNode node : graph.getGraphNodes()) {
-            if (node instanceof JIPipeCompartmentOutput && Objects.equals(compartmentUUID, graph.getCompartmentUUIDOf(node))) {
-                compartmentOutput = (JIPipeCompartmentOutput) node;
-            }
-        }
-        if (compartmentOutput == null) {
-            compartmentOutput = JIPipe.createNode("jipipe:compartment-output");
-            compartmentOutput.setCustomName(compartment.getName() + " output");
-            graph.insertNode(compartmentOutput, compartmentUUID);
+
+        // Ensure that the names are correct
+        for (Map.Entry<String, JIPipeProjectCompartmentOutput> entry : compartment.getOutputNodes().entrySet()) {
+            entry.getValue().setOutputSlotName(entry.getKey());
         }
 
-        compartment.setOutputNodes(compartmentOutput);
+        // Find all outputs that should be deleted
+        Set<JIPipeProjectCompartmentOutput> toDelete = new HashSet<>();
+        for (Map.Entry<String, JIPipeProjectCompartmentOutput> entry : compartment.getOutputNodes().entrySet()) {
+            if(!compartment.getOutputNodes().containsKey(entry.getKey())) {
+                toDelete.add(entry.getValue());
+            }
+        }
+
+        // Delete the outputs
+        for (JIPipeProjectCompartmentOutput compartmentOutput : toDelete) {
+            graph.removeNode(compartmentOutput, false);
+            compartment.getOutputNodes().remove(compartmentOutput.getOutputSlotName());
+        }
+
+        // Add new outputs
+        for (JIPipeOutputDataSlot outputSlot : compartment.getOutputSlots()) {
+            if(!compartment.getOutputNodes().containsKey(outputSlot.getName())) {
+                JIPipeProjectCompartmentOutput node = null;
+
+                // First try to search for an existing node
+                for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
+                    if(graphNode instanceof JIPipeProjectCompartmentOutput &&
+                            Objects.equals(graphNode.getCompartmentUUIDInParentGraph(), compartmentUUID) &&
+                            Objects.equals(((JIPipeProjectCompartmentOutput) graphNode).getOutputSlotName(), outputSlot.getName())) {
+                        node = (JIPipeProjectCompartmentOutput) graphNode;
+                        break;
+                    }
+                }
+
+                // Try to find a legacy (has no output slot name)
+                if(compartment.getOutputSlots().size() == 1) {
+                    for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
+                        if (graphNode instanceof JIPipeProjectCompartmentOutput &&
+                                Objects.equals(graphNode.getCompartmentUUIDInParentGraph(), compartmentUUID) &&
+                                StringUtils.isNullOrEmpty(((JIPipeProjectCompartmentOutput) graphNode).getOutputSlotName())) {
+                            System.out.println("[project loading] Successfully matched legacy compartment output " + graphNode.getUUIDInParentGraph() + " to compartment output slot " + outputSlot.getName());
+                            node = (JIPipeProjectCompartmentOutput) graphNode;
+                            break;
+                        }
+                    }
+                }
+
+                // No node present, so create one
+                if(node == null) {
+                    node =  JIPipe.createNode(JIPipeProjectCompartmentOutput.class);
+                    graph.insertNode(node, compartmentUUID);
+                }
+
+                node.setOutputSlotName(outputSlot.getName());
+                compartment.getOutputNodes().put(outputSlot.getName(), node);
+            }
+        }
+
     }
 
     private void updateCompartmentVisibility() {
@@ -428,7 +479,7 @@ public class JIPipeProject implements JIPipeValidatable {
         // Remember old visibilities and clear the existing map
         Map<JIPipeProjectCompartment, Set<UUID>> oldVisibleCompartments = new HashMap<>();
         for (JIPipeProjectCompartment compartment : compartments.values()) {
-            JIPipeCompartmentOutput outputNode = compartment.getOutputNodes();
+            JIPipeProjectCompartmentOutput outputNode = compartment.getOutputNodes();
             Set<UUID> visibleCompartmentUUIDs = graph.getVisibleCompartmentUUIDsOf(outputNode);
             oldVisibleCompartments.put(compartment, new HashSet<>(visibleCompartmentUUIDs));
             visibleCompartmentUUIDs.clear();
@@ -492,7 +543,7 @@ public class JIPipeProject implements JIPipeValidatable {
             if (fixedCompartments.contains(target.getNode().getCompartmentUUIDInParentGraph())) {
                 continue;
             }
-            if (source.getNode() instanceof JIPipeCompartmentOutput) {
+            if (source.getNode() instanceof JIPipeProjectCompartmentOutput) {
                 if (!(target.getNode() instanceof IOInterfaceAlgorithm) || !source.getNode().getOutputSlotMap().keySet().equals(target.getNode().getInputSlotMap().keySet())) {
                     // Place IOInterface at the same location as the compartment output
                     IOInterfaceAlgorithm ioInterfaceAlgorithm = JIPipe.createNode(IOInterfaceAlgorithm.class);
@@ -555,7 +606,7 @@ public class JIPipeProject implements JIPipeValidatable {
      */
     public void removeCompartment(JIPipeProjectCompartment compartment) {
 
-        JIPipeCompartmentOutput outputNode = compartment.getOutputNodes();
+        JIPipeProjectCompartmentOutput outputNode = compartment.getOutputNodes();
 
         // Search for all targets of the compartment and convert this output into an IOInterface
         for (JIPipeDataSlot outputOutgoingTargetSlot : compartmentGraph.getOutputOutgoingTargetSlots(compartment.getFirstOutputSlot())) {
@@ -981,38 +1032,6 @@ public class JIPipeProject implements JIPipeValidatable {
         }
         result.setProject(this);
         return result;
-    }
-
-    /**
-     * Repairs restored compartment outputs
-     */
-    public void fixCompartmentOutputs() {
-        for (JIPipeGraphNode node : compartmentGraph.getGraphNodes()) {
-            if (node instanceof JIPipeProjectCompartment) {
-                JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) node;
-                UUID projectCompartmentUUID = compartment.getProjectCompartmentUUID();
-                JIPipeCompartmentOutput existingOutputNode = compartment.getOutputNodes();
-                if (!graph.containsNode(existingOutputNode)) {
-                    // Find a new output node
-                    boolean found = false;
-                    for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
-                        if (graphNode instanceof JIPipeCompartmentOutput && Objects.equals(graphNode.getCompartmentUUIDInParentGraph(), projectCompartmentUUID)) {
-                            compartment.setOutputNodes((JIPipeCompartmentOutput) graphNode);
-                            found = true;
-                            break;
-                        }
-                    }
-
-                    // Create a new one
-                    if (!found) {
-                        JIPipeCompartmentOutput compartmentOutput = JIPipe.createNode("jipipe:compartment-output");
-                        compartmentOutput.setCustomName(compartment.getName() + " output");
-                        graph.insertNode(compartmentOutput, compartment.getProjectCompartmentUUID());
-                        compartment.setOutputNodes(compartmentOutput);
-                    }
-                }
-            }
-        }
     }
 
     public JIPipeProjectHistoryJournal getHistoryJournal() {

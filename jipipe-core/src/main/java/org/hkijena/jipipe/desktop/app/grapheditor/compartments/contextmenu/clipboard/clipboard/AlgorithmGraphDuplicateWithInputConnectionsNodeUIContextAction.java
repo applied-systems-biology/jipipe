@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.compartments.contextmenu.clipboard.clipboard;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
@@ -51,7 +51,7 @@ public class AlgorithmGraphDuplicateWithInputConnectionsNodeUIContextAction impl
             for (Map.Entry<UUID, JIPipeGraphNode> entry : pastedNodes.entrySet()) {
                 JIPipeGraphNode copyNode = entry.getValue();
                 JIPipeGraphNode originalNode = canvasUI.getGraph().getNodeByUUID(entry.getKey());
-                if (originalNode == null || originalNode instanceof JIPipeCompartmentOutput) {
+                if (originalNode == null || originalNode instanceof JIPipeProjectCompartmentOutput) {
                     continue;
                 }
                 for (JIPipeInputDataSlot originalInputSlot : originalNode.getInputSlots()) {

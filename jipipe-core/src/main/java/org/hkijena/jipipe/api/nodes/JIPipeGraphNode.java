@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.JIPipeFunctionallyComparable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
@@ -667,7 +667,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      * Sets the {@link JIPipeNodeInfo} that describes this algorithm.
      * Please note that this function can be very dangerous and break everything.
      * This will affect how JIPipe (and especially the UI) handles this algorithm.
-     * A use case is to convert algorithms from internal representations to their public variants (e.g. {@link JIPipeCompartmentOutput}
+     * A use case is to convert algorithms from internal representations to their public variants (e.g. {@link JIPipeProjectCompartmentOutput}
      * to {@link org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm}
      *
      * @param info the info

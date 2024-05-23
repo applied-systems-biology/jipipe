@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.api.grapheditortool;
 
 import org.hkijena.jipipe.api.JIPipeGraphType;
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
@@ -372,7 +372,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
 
             // Prevent rewire to the output of the current compartment
             if (currentRewireDragSource.isOutput() && currentRewireDragTarget != null &&
-                    currentRewireDragTarget.getSlot().getNode() instanceof JIPipeCompartmentOutput &&
+                    currentRewireDragTarget.getSlot().getNode() instanceof JIPipeProjectCompartmentOutput &&
                     Objects.equals(currentRewireDragTarget.getNodeUI().getNode().getCompartmentUUIDInParentGraph(), graphEditorUI.getCompartment())) {
                 currentRewireDragTarget = null;
             }

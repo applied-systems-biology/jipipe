@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.grapheditor.compartments.properties;
 
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
@@ -152,7 +152,7 @@ public class JIPipeDesktopSingleCompartmentSelectionPanelUI extends JIPipeDeskto
     private Component createQuickRunPanel() {
         JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.TabPlacement.Bottom);
         for (JIPipeOutputDataSlot outputSlot : compartment.getOutputSlots()) {
-            JIPipeCompartmentOutput outputNode = compartment.getOutputNode(outputSlot.getName());
+            JIPipeProjectCompartmentOutput outputNode = compartment.getOutputNode(outputSlot.getName());
             tabbedPane.addTab(outputNode.getOutputSlotName(),
                     UIUtils.getIconFromResources("actions/graph-compartment.png"),
                             new JIPipeDesktopQuickRunSetupUI(getDesktopProjectWorkbench(), outputNode),
@@ -168,7 +168,7 @@ public class JIPipeDesktopSingleCompartmentSelectionPanelUI extends JIPipeDeskto
     private Component createCacheBrowser() {
         JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.TabPlacement.Bottom);
         for (JIPipeOutputDataSlot outputSlot : compartment.getOutputSlots()) {
-            JIPipeCompartmentOutput outputNode = compartment.getOutputNode(outputSlot.getName());
+            JIPipeProjectCompartmentOutput outputNode = compartment.getOutputNode(outputSlot.getName());
             tabbedPane.addTab(outputNode.getOutputSlotName(),
                     UIUtils.getIconFromResources("actions/graph-compartment.png"),
                     new JIPipeDesktopAlgorithmCacheBrowserUI(getDesktopProjectWorkbench(), outputNode, graphEditorUI.getCanvasUI()),
@@ -197,7 +197,7 @@ public class JIPipeDesktopSingleCompartmentSelectionPanelUI extends JIPipeDeskto
     public void executeQuickRun(boolean showResults, boolean showCache, boolean saveToDisk, boolean storeIntermediateOutputs, boolean excludeSelected) {
 
         List<String> outputsWithoutSlots = new ArrayList<>();
-        for (JIPipeCompartmentOutput output : compartment.getOutputNodes().values()) {
+        for (JIPipeProjectCompartmentOutput output : compartment.getOutputNodes().values()) {
             if(output.getOutputSlots().isEmpty()) {
                 outputsWithoutSlots.add(output.getOutputSlotName());
             }
