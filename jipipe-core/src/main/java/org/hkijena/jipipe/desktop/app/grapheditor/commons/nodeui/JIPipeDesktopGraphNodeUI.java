@@ -153,15 +153,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         // Node information
         nodeIsRunnable = node.getInfo().isRunnable() || node instanceof JIPipeAlgorithm || node instanceof JIPipeProjectCompartment;
 
-        if (node instanceof JIPipeCompartmentOutput) {
-            if (Objects.equals(node.getCompartmentUUIDInParentGraph(), graphCanvasUI.getCompartment())) {
-                showInputs = true;
-                showOutputs = false;
-            } else {
-                showInputs = false;
-                showOutputs = true;
-            }
-        } else if (node instanceof GraphWrapperAlgorithmInput) {
+        if (node instanceof GraphWrapperAlgorithmInput) {
             showInputs = false;
             showOutputs = true;
         } else if (node instanceof GraphWrapperAlgorithmOutput) {
