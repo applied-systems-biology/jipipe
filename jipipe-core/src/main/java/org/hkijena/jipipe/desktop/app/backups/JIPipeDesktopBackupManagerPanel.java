@@ -14,10 +14,7 @@
 package org.hkijena.jipipe.desktop.app.backups;
 
 import ij.IJ;
-import org.hkijena.jipipe.api.backups.CollectBackupsRun;
-import org.hkijena.jipipe.api.backups.JIPipeProjectBackupItem;
-import org.hkijena.jipipe.api.backups.JIPipeProjectBackupItemCollection;
-import org.hkijena.jipipe.api.backups.PruneBackupsRun;
+import org.hkijena.jipipe.api.backups.*;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
@@ -47,6 +44,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.*;
@@ -129,6 +127,7 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
                 "You can enable/disable backups and change the interval in the application settings.");
 
         propertiesPanel.addWideToForm(UIUtils.createLeftAlignedButton("Open backup directory", UIUtils.getIconFromResources("actions/folder-open.png"), this::openBackupFolder));
+        propertiesPanel.addWideToForm(UIUtils.createLeftAlignedButton("Remove old backups", UIUtils.getIconFromResources("actions/clear-brush.png"), this::removeOldBackups));
         propertiesPanel.addWideToForm(UIUtils.createLeftAlignedButton("Remove backups without project file", UIUtils.getIconFromResources("actions/delete.png"), this::removeUnnamedBackups));
         propertiesPanel.addWideToForm(UIUtils.createLeftAlignedButton("Remove backups with project file", UIUtils.getIconFromResources("actions/delete.png"), this::removeNamedBackups));
 
@@ -156,6 +155,21 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
         }
 
         propertiesPanel.addVerticalGlue();
+    }
+
+    private void removeOldBackups() {
+        JSpinner daySpinner = new JSpinner(new SpinnerNumberModel(60, 1, Short.MAX_VALUE, 1));
+        if(JOptionPane.showConfirmDialog(this, UIUtils.boxHorizontal(new JLabel("Remove backups older than "),
+                daySpinner,
+                new JLabel(" days")),
+                "Remove old backups",
+                JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+            int days = ((Number) daySpinner.getModel().getValue()).intValue();
+            if(days > 0) {
+                DeleteOldBackupsRun run = new DeleteOldBackupsRun(Duration.ofDays(days));
+                JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, run, BACKUP_QUEUE);
+            }
+        }
     }
 
     private void restoreBackup(JIPipeProjectBackupItem backupItem) {
