@@ -132,7 +132,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     private final Set<JIPipeDesktopGraphNodeUI> selection = new LinkedHashSet<>();
     private final JIPipeGraphEditorUIApplicationSettings settings;
     private final JIPipeHistoryJournal historyJournal;
-    private final UUID compartment;
+    private final UUID compartmentUUID;
     private final Map<JIPipeDesktopGraphNodeUI, Point> currentlyDraggedOffsets = new HashMap<>();
     private final JIPipeNodeHotKeyStorage nodeHotKeyStorage;
     private final Color improvedStrokeBackgroundColor = UIManager.getColor("Panel.background");
@@ -189,17 +189,17 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
      * @param desktopWorkbench the workbench
      * @param graphEditorUI    the graph editor UI that contains this canvas. can be null.
      * @param graph            The algorithm graph
-     * @param compartment      The compartment to show
+     * @param compartmentUUID      The compartment to show
      * @param historyJournal   object that tracks the history of this graph. Set to null to disable the undo feature.
      */
-    public JIPipeDesktopGraphCanvasUI(JIPipeDesktopWorkbench desktopWorkbench, JIPipeDesktopGraphEditorUI graphEditorUI, JIPipeGraph graph, UUID compartment, JIPipeHistoryJournal historyJournal) {
+    public JIPipeDesktopGraphCanvasUI(JIPipeDesktopWorkbench desktopWorkbench, JIPipeDesktopGraphEditorUI graphEditorUI, JIPipeGraph graph, UUID compartmentUUID, JIPipeHistoryJournal historyJournal) {
         this.desktopWorkbench = desktopWorkbench;
         this.graphEditorUI = graphEditorUI;
         this.historyJournal = historyJournal;
         setLayout(null);
         this.graph = graph;
         this.nodeHotKeyStorage = JIPipeNodeHotKeyStorage.getInstance(graph);
-        this.compartment = compartment;
+        this.compartmentUUID = compartmentUUID;
         this.settings = JIPipeGraphEditorUIApplicationSettings.getInstance();
 
         this.autoMuteEdges = settings.isAutoMuteEdgesEnabled();
@@ -254,7 +254,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             minY = 0;
 
         // Change the compartment
-        UUID compartment = getCompartment();
+        UUID compartment = getCompartmentUUID();
         for (JIPipeGraphNode node : graph.getGraphNodes()) {
             graph.setCompartment(node.getUUIDInParentGraph(), compartment);
         }
@@ -272,7 +272,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 
         // Add to graph
         if (getHistoryJournal() != null) {
-            getHistoryJournal().snapshotBeforePasteNodes(graph.getGraphNodes(), getCompartment());
+            getHistoryJournal().snapshotBeforePasteNodes(graph.getGraphNodes(), getCompartmentUUID());
         }
         return getGraph().mergeWith(graph);
     }
@@ -404,7 +404,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 if (keyStroke.getModifiers() == 0) {
                     JIPipeNodeHotKeyStorage.Hotkey hotkey = JIPipeNodeHotKeyStorage.Hotkey.fromKeyCode(keyStroke.getKeyCode());
                     if (hotkey != JIPipeNodeHotKeyStorage.Hotkey.None) {
-                        String nodeId = nodeHotKeyStorage.getNodeForHotkey(hotkey, getCompartment());
+                        String nodeId = nodeHotKeyStorage.getNodeForHotkey(hotkey, getCompartmentUUID());
                         JIPipeGraphNode node = graph.findNode(nodeId);
                         if (node != null) {
                             JIPipeDesktopGraphNodeUI nodeUI = nodeUIs.getOrDefault(node, null);
@@ -470,7 +470,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     private void removeOldNodes() {
         Set<JIPipeGraphNode> toRemove = new HashSet<>();
         for (Map.Entry<JIPipeGraphNode, JIPipeDesktopGraphNodeUI> kv : nodeUIs.entrySet()) {
-            if (!graph.containsNode(kv.getKey()) || !kv.getKey().isVisibleIn(getCompartment()))
+            if (!graph.containsNode(kv.getKey()) || !kv.getKey().isVisibleIn(getCompartmentUUID()))
                 toRemove.add(kv.getKey());
         }
         for (JIPipeGraphNode algorithm : toRemove) {
@@ -496,7 +496,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         List<JIPipeDesktopGraphNodeUI> newlyPlacedAlgorithms = new ArrayList<>();
         JIPipeDesktopGraphNodeUI ui = null;
         for (JIPipeGraphNode algorithm : graph.getGraphNodes()) {
-            if (!algorithm.isVisibleIn(getCompartment()))
+            if (!algorithm.isVisibleIn(getCompartmentUUID()))
                 continue;
             if (nodeUIs.containsKey(algorithm))
                 continue;
@@ -597,7 +597,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 if (!updated) {
                     getHistoryJournal().snapshot("Send selected nodes to foreground",
                             "Sent a selection of graph annotations to the foreground",
-                            getCompartment(),
+                            getCompartmentUUID(),
                             UIUtils.getIconFromResources("actions/object-order-front.png"));
                 }
 
@@ -619,7 +619,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 if (!updated) {
                     getHistoryJournal().snapshot("Send selected nodes to background",
                             "Sent a selection of graph annotations to the background",
-                            getCompartment(),
+                            getCompartmentUUID(),
                             UIUtils.getIconFromResources("actions/object-order-back.png"));
                 }
 
@@ -650,7 +650,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         if (!selectedAnnotationGraphNodes.isEmpty()) {
             getHistoryJournal().snapshot("Raise selected nodes",
                     "Raised a selection of graph annotations",
-                    getCompartment(),
+                    getCompartmentUUID(),
                     UIUtils.getIconFromResources("actions/object-order-raise.png"));
         } else {
             return;
@@ -698,7 +698,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         if (!selectedAnnotationGraphNodes.isEmpty()) {
             getHistoryJournal().snapshot("Lowered selected nodes",
                     "Lowered a selection of graph annotations",
-                    getCompartment(),
+                    getCompartmentUUID(),
                     UIUtils.getIconFromResources("actions/object-order-lower.png"));
         } else {
             return;
@@ -932,7 +932,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     private void createMoveSnapshotIfNeeded() {
         if (!hasDragSnapshot) {
             if (getHistoryJournal() != null) {
-                getHistoryJournal().snapshot("Move nodes", "Nodes were dragged with the mouse", getCompartment(), UIUtils.getIconFromResources("actions/transform-move.png"));
+                getHistoryJournal().snapshot("Move nodes", "Nodes were dragged with the mouse", getCompartmentUUID(), UIUtils.getIconFromResources("actions/transform-move.png"));
             }
             hasDragSnapshot = true;
         }
@@ -1604,7 +1604,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                     if (rectangle != null) {
                         if (rectangle.contains(mouseEvent.getPoint())) {
                             JIPipeAnnotationGraphNode node = (JIPipeAnnotationGraphNode) currentResizeTarget.getNode();
-                            Point gridLocation = node.getLocationWithin(StringUtils.nullToEmpty(getCompartment()), viewMode.name());
+                            Point gridLocation = node.getLocationWithin(StringUtils.nullToEmpty(getCompartmentUUID()), viewMode.name());
                             currentResizeOperationStartProperties = new Rectangle(gridLocation.x, gridLocation.y, node.getGridWidth(), node.getGridHeight());
                             currentResizeOperationAnchor = anchor;
                             return;
@@ -1882,7 +1882,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     public void disconnectSlot(JIPipeDataSlot source, JIPipeDataSlot target) {
         if (getGraph().getGraph().containsEdge(source, target)) {
             if (getHistoryJournal() != null) {
-                getHistoryJournal().snapshotBeforeDisconnect(source, target, compartment);
+                getHistoryJournal().snapshotBeforeDisconnect(source, target, compartmentUUID);
             }
             getGraph().disconnect(source, target, true);
         }
@@ -2092,7 +2092,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             currentTool.paintBelowNodesAndEdges(g);
         }
 
-        if (renderOutsideEdges && getCompartment() != null && settings.isDrawOutsideEdges())
+        if (renderOutsideEdges && getCompartmentUUID() != null && settings.isDrawOutsideEdges())
             paintOutsideEdges(g, false, Color.DARK_GRAY, strokeDefault, strokeDefaultBorder);
 
         // Main edge drawing
@@ -2110,7 +2110,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 (selection.isEmpty() || !settings.isAutoMuteBySelection()) ? EdgeMuteMode.Auto : EdgeMuteMode.ForceMuted);
 
         // Outside edges drawing
-        if (renderOutsideEdges && getCompartment() != null && settings.isDrawOutsideEdges()) {
+        if (renderOutsideEdges && getCompartmentUUID() != null && settings.isDrawOutsideEdges()) {
             paintOutsideEdges(g, true, Color.DARK_GRAY, strokeHighlight, null);
         }
 
@@ -2837,7 +2837,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 }
                 Point sourcePoint = new Point();
                 Point targetPoint = new Point();
-                boolean uiIsOutput = getCompartment() == null || getCompartment().equals(ui.getNode().getCompartmentUUIDInParentGraph());
+                boolean uiIsOutput = getCompartmentUUID() == null || getCompartmentUUID().equals(ui.getNode().getCompartmentUUIDInParentGraph());
                 if (uiIsOutput) {
                     // This is an output -> line goes outside
                     targetPoint.x = ui.getX() + ui.getWidth() / 2;
@@ -3032,8 +3032,8 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     /**
      * @return The displayed compartment
      */
-    public UUID getCompartment() {
-        return compartment;
+    public UUID getCompartmentUUID() {
+        return compartmentUUID;
     }
 
     /**

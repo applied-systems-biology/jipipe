@@ -840,7 +840,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
      * @return The displayed graph compartment
      */
     public UUID getCompartment() {
-        return canvasUI.getCompartment();
+        return canvasUI.getCompartmentUUID();
     }
 
     protected JMenuBar getMenuBar() {

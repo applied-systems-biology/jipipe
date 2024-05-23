@@ -52,7 +52,7 @@ public class JIPipeDesktopRewireConnectionsToolUI extends JDialog {
         this.currentSlot = currentSlot;
         this.currentConnections = currentConnections;
         this.enabledConnections.addAll(currentConnections);
-        this.compartment = graphCanvasUI.getCompartment();
+        this.compartment = graphCanvasUI.getCompartmentUUID();
         initialize();
         refreshAlternativesList();
     }

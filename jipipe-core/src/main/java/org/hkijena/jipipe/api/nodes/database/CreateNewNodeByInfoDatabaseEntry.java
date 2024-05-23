@@ -151,9 +151,9 @@ public class CreateNewNodeByInfoDatabaseEntry implements JIPipeNodeDatabaseEntry
     public JIPipeDesktopGraphNodeUI addToGraph(JIPipeDesktopGraphCanvasUI canvasUI) {
         JIPipeGraphNode node = nodeInfo.newInstance();
         if (canvasUI.getHistoryJournal() != null) {
-            canvasUI.getHistoryJournal().snapshotBeforeAddNode(node, canvasUI.getCompartment());
+            canvasUI.getHistoryJournal().snapshotBeforeAddNode(node, canvasUI.getCompartmentUUID());
         }
-        canvasUI.getGraph().insertNode(node, canvasUI.getCompartment());
+        canvasUI.getGraph().insertNode(node, canvasUI.getCompartmentUUID());
         return canvasUI.getNodeUIs().get(node);
     }
 

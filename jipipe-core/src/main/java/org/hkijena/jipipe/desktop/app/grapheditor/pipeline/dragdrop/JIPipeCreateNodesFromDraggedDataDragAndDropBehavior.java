@@ -140,7 +140,7 @@ public class JIPipeCreateNodesFromDraggedDataDragAndDropBehavior implements JIPi
      * @param files the files
      */
     private void processDrop(List<File> files) {
-        UUID compartment = canvas.getCompartment();
+        UUID compartment = canvas.getCompartmentUUID();
         JIPipeGraph graph = canvas.getGraph();
 
         boolean hasFiles = false;

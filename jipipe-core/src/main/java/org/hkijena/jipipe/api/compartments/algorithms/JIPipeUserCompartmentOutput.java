@@ -17,12 +17,18 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 
 /**
- * A graph compartment output
+ * A graph compartment output that can be created by the user
  * Transfers data 1:1 from input to output
  */
-public abstract class JIPipeCompartmentOutput extends IOInterfaceAlgorithm {
+@SetJIPipeDocumentation(name = "Compartment output", description = "Passes all inputs to all compartments connected to the current compartment. " +
+        "Has the same functionality as the standard compartment output that is present in all compartments. " +
+        "Acts as additional output node. " +
+        "Please note that the compartments view does currently not recognize additional outputs.")
+@ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+public class JIPipeUserCompartmentOutput extends JIPipeCompartmentOutput {
 
     /**
      * Creates a new instance.
@@ -30,7 +36,7 @@ public abstract class JIPipeCompartmentOutput extends IOInterfaceAlgorithm {
      *
      * @param info The algorithm info
      */
-    public JIPipeCompartmentOutput(JIPipeNodeInfo info) {
+    public JIPipeUserCompartmentOutput(JIPipeNodeInfo info) {
         super(info);
     }
 
@@ -39,7 +45,7 @@ public abstract class JIPipeCompartmentOutput extends IOInterfaceAlgorithm {
      *
      * @param other The original
      */
-    public JIPipeCompartmentOutput(JIPipeCompartmentOutput other) {
+    public JIPipeUserCompartmentOutput(JIPipeUserCompartmentOutput other) {
         super(other);
     }
 }

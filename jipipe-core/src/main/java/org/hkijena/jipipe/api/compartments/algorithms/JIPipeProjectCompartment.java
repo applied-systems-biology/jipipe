@@ -24,10 +24,7 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * A project compartment.
@@ -39,7 +36,7 @@ import java.util.UUID;
 public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeCustomParameterCollection {
 
     private JIPipeProject project;
-    private JIPipeCompartmentOutput outputNode;
+    private JIPipeStaticCompartmentOutput staticOutputNode;
 
     private GraphNodeParameterReferenceGroupCollection exportedParameters = new GraphNodeParameterReferenceGroupCollection();
 
@@ -79,15 +76,15 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
      * @return If the compartment is initialized
      */
     public boolean isInitialized() {
-        return project != null && outputNode != null;
+        return project != null && staticOutputNode != null;
     }
 
     @Override
     @JIPipeParameter(value = "jipipe:node:name", functional = false)
     public void setCustomName(String customName) {
         super.setCustomName(customName);
-        if (outputNode != null) {
-            outputNode.setCustomName(getName() + " output");
+        if (staticOutputNode != null) {
+            staticOutputNode.setCustomName(getName() + " output");
         }
     }
 
@@ -141,17 +138,51 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
     /**
      * @return The compartment output
      */
-    public JIPipeCompartmentOutput getOutputNode() {
-        return outputNode;
+    public JIPipeStaticCompartmentOutput getStaticOutputNode() {
+        return staticOutputNode;
     }
+
+    /**
+     * Returns all output nodes (user and static)
+     * @return all output nodes
+     */
+    public List<JIPipeCompartmentOutput> getOutputNodes() {
+        List<JIPipeCompartmentOutput> result = new ArrayList<>();
+        result.add(staticOutputNode);
+        for (JIPipeGraphNode graphNode : project.getGraph().getGraphNodes()) {
+            if(graphNode instanceof JIPipeUserCompartmentOutput) {
+                if(Objects.equals(graphNode.getCompartmentUUIDInParentGraph(), getProjectCompartmentUUID())) {
+                    result.add((JIPipeCompartmentOutput) graphNode);
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns all output nodes (user and static)
+     * @return all output nodes
+     */
+    public List<JIPipeUserCompartmentOutput> getUserOutputNodes() {
+        List<JIPipeUserCompartmentOutput> result = new ArrayList<>();
+        for (JIPipeGraphNode graphNode : project.getGraph().getGraphNodes()) {
+            if(graphNode instanceof JIPipeUserCompartmentOutput) {
+                if(Objects.equals(graphNode.getCompartmentUUIDInParentGraph(), getProjectCompartmentUUID())) {
+                    result.add((JIPipeUserCompartmentOutput) graphNode);
+                }
+            }
+        }
+        return result;
+    }
+
 
     /**
      * Sets the compartment output. Internal use only.
      *
-     * @param outputNode the compartment output
+     * @param staticOutputNode the compartment output
      */
-    public void setOutputNode(JIPipeCompartmentOutput outputNode) {
-        this.outputNode = outputNode;
+    public void setStaticOutputNode(JIPipeStaticCompartmentOutput staticOutputNode) {
+        this.staticOutputNode = staticOutputNode;
     }
 
     @Override

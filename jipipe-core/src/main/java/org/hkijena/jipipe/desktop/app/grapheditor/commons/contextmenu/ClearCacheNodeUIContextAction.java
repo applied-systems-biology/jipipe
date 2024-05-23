@@ -52,7 +52,7 @@ public class ClearCacheNodeUIContextAction implements NodeUIContextAction {
             JIPipeGraphNode node = nodeUI.getNode();
             JIPipeProject project = nodeUI.getGraphCanvasUI().getGraph().getProject();
             if (node instanceof JIPipeProjectCompartment) {
-                project.getCache().clearAll(((JIPipeProjectCompartment) node).getOutputNode().getUUIDInParentGraph(), false, new JIPipeProgressInfo());
+                project.getCache().clearAll(((JIPipeProjectCompartment) node).getStaticOutputNode().getUUIDInParentGraph(), false, new JIPipeProgressInfo());
             } else {
                 project.getCache().clearAll(node.getUUIDInParentGraph(), false, new JIPipeProgressInfo());
             }

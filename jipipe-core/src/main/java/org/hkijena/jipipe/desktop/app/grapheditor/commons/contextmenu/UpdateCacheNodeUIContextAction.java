@@ -62,7 +62,7 @@ public class UpdateCacheNodeUIContextAction implements NodeUIContextAction {
             JIPipeGraphNode node = nodeUI.getNode();
             JIPipeProject project = node.getParentGraph().getProject();
             if (node instanceof JIPipeProjectCompartment) {
-                node = ((JIPipeProjectCompartment) node).getOutputNode();
+                node = ((JIPipeProjectCompartment) node).getStaticOutputNode();
             }
             if (node instanceof JIPipeAlgorithm || node.getInfo().isRunnable()) {
                 JIPipeDesktopQuickRunSettings settings = new JIPipeDesktopQuickRunSettings();

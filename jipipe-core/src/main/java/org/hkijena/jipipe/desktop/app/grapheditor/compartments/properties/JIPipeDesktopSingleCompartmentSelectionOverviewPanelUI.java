@@ -17,7 +17,7 @@ import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.cache.JIPipeCache;
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeStaticCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
@@ -51,7 +51,7 @@ public class JIPipeDesktopSingleCompartmentSelectionOverviewPanelUI extends JIPi
     private final JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
     private final JIPipeDesktopRibbon ribbon = new JIPipeDesktopRibbon(2);
     private final JIPipeProjectCompartment compartment;
-    private final JIPipeCompartmentOutput compartmentOutput;
+    private final JIPipeStaticCompartmentOutput compartmentOutput;
     private final JIPipeDesktopGraphCanvasUI canvasUI;
 
     public JIPipeDesktopSingleCompartmentSelectionOverviewPanelUI(JIPipeDesktopSingleCompartmentSelectionPanelUI parentPanel) {
@@ -59,7 +59,7 @@ public class JIPipeDesktopSingleCompartmentSelectionOverviewPanelUI extends JIPi
         this.parentPanel = parentPanel;
         this.canvasUI = parentPanel.getCanvas();
         this.compartment = parentPanel.getCompartment();
-        this.compartmentOutput = compartment.getOutputNode();
+        this.compartmentOutput = compartment.getStaticOutputNode();
 
         initialize();
         reload();

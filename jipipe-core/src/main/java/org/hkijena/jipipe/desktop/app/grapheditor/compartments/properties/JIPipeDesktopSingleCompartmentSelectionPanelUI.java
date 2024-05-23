@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.grapheditor.compartments.properties;
 
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeStaticCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
@@ -147,7 +147,7 @@ public class JIPipeDesktopSingleCompartmentSelectionPanelUI extends JIPipeDeskto
     }
 
     private Component createQuickRunPanel() {
-        JIPipeCompartmentOutput node = compartment.getOutputNode();
+        JIPipeStaticCompartmentOutput node = compartment.getStaticOutputNode();
         return new JIPipeDesktopQuickRunSetupUI(getDesktopProjectWorkbench(), node);
     }
 
@@ -156,7 +156,7 @@ public class JIPipeDesktopSingleCompartmentSelectionPanelUI extends JIPipeDeskto
     }
 
     private Component createCacheBrowser() {
-        JIPipeCompartmentOutput node = compartment.getOutputNode();
+        JIPipeStaticCompartmentOutput node = compartment.getStaticOutputNode();
         return new JIPipeDesktopAlgorithmCacheBrowserUI(getDesktopProjectWorkbench(),
                 node,
                 graphEditorUI.getCanvasUI());
@@ -201,10 +201,10 @@ public class JIPipeDesktopSingleCompartmentSelectionPanelUI extends JIPipeDeskto
      * @param excludeSelected          if the current algorithm should be excluded
      */
     public void executeQuickRun(boolean showResults, boolean showCache, boolean saveToDisk, boolean storeIntermediateOutputs, boolean excludeSelected) {
-        if (compartment.getOutputNode().getOutputSlots().isEmpty()) {
+        if (compartment.getStaticOutputNode().getOutputSlots().isEmpty()) {
             JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "<html>The output node of the compartment '" + compartment.getName() + "' transfers no data.<br/>" +
                     "This means that the there will be no outputs generated for the compartment.<br/><br/>" +
-                    "Please edit the compartment via a double-click and add inputs into the '" + compartment.getOutputNode().getName() + "' node.</html>", "No outputs to generate", JOptionPane.WARNING_MESSAGE);
+                    "Please edit the compartment via a double-click and add inputs into the '" + compartment.getStaticOutputNode().getName() + "' node.</html>", "No outputs to generate", JOptionPane.WARNING_MESSAGE);
         }
         // Activate the quick run
         tabbedPane.selectSingletonTab("QUICK_RUN");

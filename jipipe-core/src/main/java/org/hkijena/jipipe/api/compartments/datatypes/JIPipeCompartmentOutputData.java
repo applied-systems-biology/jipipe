@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.compartments.datatypes;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeStaticCompartmentOutput;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
@@ -24,7 +25,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 
 /**
- * Represents an {@link org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput} in the compartment graph.
+ * Represents an {@link JIPipeStaticCompartmentOutput} in the compartment graph.
  * This is purely structural data.
  */
 @SetJIPipeDocumentation(name = "Output data", description = "Output of a compartment")

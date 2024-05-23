@@ -406,4 +406,16 @@ public class ReflectionUtils {
             return -1;
         }
     }
+
+    public static boolean isInstanceOfAny(Object obj, Class<?>... classes) {
+        if(obj == null) {
+            return false;
+        }
+        for (Class<?> klass : classes) {
+            if(klass.isAssignableFrom(obj.getClass())) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

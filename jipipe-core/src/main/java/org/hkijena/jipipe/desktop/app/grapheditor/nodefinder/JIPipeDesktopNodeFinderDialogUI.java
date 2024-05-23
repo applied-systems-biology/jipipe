@@ -52,7 +52,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
 
     public JIPipeDesktopNodeFinderDialogUI(JIPipeDesktopGraphCanvasUI canvasUI, JIPipeDataSlot querySlot) {
         this.canvasUI = canvasUI;
-        this.queryCompartment = canvasUI.getCompartment();
+        this.queryCompartment = canvasUI.getCompartmentUUID();
         this.querySlot = querySlot;
         this.queryGraph = canvasUI.getGraph();
         initialize();

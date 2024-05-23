@@ -13,10 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.grapheditor.compartments;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import ij.IJ;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.compartments.JIPipeExportedCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -41,18 +38,13 @@ import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.properties.JIPipeDesk
 import org.hkijena.jipipe.desktop.app.history.JIPipeDesktopHistoryJournalUI;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
-import org.hkijena.jipipe.plugins.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -204,60 +196,10 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeDesktopGraphEditorUI 
         addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(info));
         addItem.addActionListener(e -> addCompartment());
         menuBar.add(addItem);
-
-        JButton importItem = new JButton("Import compartment", UIUtils.getIconFromResources("actions/document-open-folder.png"));
-        importItem.setToolTipText("Imports a compartment from a *.jipc file");
-        importItem.addActionListener(e -> importCompartment());
-        menuBar.add(importItem);
-
-//        if (JIPipe.getNodes().hasNodeInfoWithId("jipipe:comment")) {
-//            JButton addCommentItem = new JButton("Add comment", UIUtils.getIconFromResources("actions/edit-comment.png"));
-//            UIUtils.makeFlat(addCommentItem);
-//            addCommentItem.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
-//            addCommentItem.setToolTipText("Add a comment node");
-//            addCommentItem.addActionListener(e -> addComment());
-//            menuBar.add(addCommentItem);
-//        }
-    }
-
-    private void addComment() {
-        if (!JIPipeDesktopProjectWorkbench.canAddOrDeleteNodes(getDesktopWorkbench()))
-            return;
-        JIPipeCommentNode node = JIPipe.createNode(JIPipeCommentNode.class);
-        if (getCanvasUI().getHistoryJournal() != null) {
-            getCanvasUI().getHistoryJournal().snapshotBeforeAddNode(node, null);
-        }
-        getGraph().insertNode(node);
-    }
-
-    private void importCompartment() {
-        if (!JIPipeDesktopProjectWorkbench.canAddOrDeleteNodes(getDesktopWorkbench()))
-            return;
-        Path selectedPath = JIPipeFileChooserApplicationSettings.openFile(this,
-                JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects,
-                "Open JIPipe graph compartment (*.jipc)",
-                UIUtils.EXTENSION_FILTER_JIPC);
-        if (selectedPath != null) {
-            try {
-                ObjectMapper objectMapper = JsonUtils.getObjectMapper();
-                JIPipeExportedCompartment exportedCompartment = objectMapper.readerFor(JIPipeExportedCompartment.class).readValue(selectedPath.toFile());
-
-                String name = UIUtils.getUniqueStringByDialog(this, "Please enter the name of the new compartment:",
-                        exportedCompartment.getSuggestedName(), s -> getProject().getCompartments().containsKey(s));
-                if (name != null && !name.isEmpty()) {
-                    if (getHistoryJournal() != null) {
-                        getHistoryJournal().snapshotBeforeAddCompartment(name);
-                    }
-                    exportedCompartment.addTo(getProject(), name);
-                }
-            } catch (IOException e) {
-                IJ.handleException(e);
-            }
-        }
     }
 
     private JIPipeProject getProject() {
-        return ((JIPipeDesktopProjectWorkbench) getDesktopWorkbench()).getProject();
+        return getDesktopWorkbench().getProject();
     }
 
     private JIPipeDesktopProjectWorkbench getProjectWorkbench() {

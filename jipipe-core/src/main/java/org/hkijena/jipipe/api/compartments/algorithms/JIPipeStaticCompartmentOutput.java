@@ -22,7 +22,9 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
  * A graph compartment output
  * Transfers data 1:1 from input to output
  */
-public abstract class JIPipeCompartmentOutput extends IOInterfaceAlgorithm {
+@SetJIPipeDocumentation(name = "Compartment output", description = "Output of a compartment")
+@ConfigureJIPipeNode()
+public class JIPipeStaticCompartmentOutput extends JIPipeCompartmentOutput {
 
     /**
      * Creates a new instance.
@@ -30,7 +32,7 @@ public abstract class JIPipeCompartmentOutput extends IOInterfaceAlgorithm {
      *
      * @param info The algorithm info
      */
-    public JIPipeCompartmentOutput(JIPipeNodeInfo info) {
+    public JIPipeStaticCompartmentOutput(JIPipeNodeInfo info) {
         super(info);
     }
 
@@ -39,7 +41,7 @@ public abstract class JIPipeCompartmentOutput extends IOInterfaceAlgorithm {
      *
      * @param other The original
      */
-    public JIPipeCompartmentOutput(JIPipeCompartmentOutput other) {
+    public JIPipeStaticCompartmentOutput(JIPipeStaticCompartmentOutput other) {
         super(other);
     }
 }

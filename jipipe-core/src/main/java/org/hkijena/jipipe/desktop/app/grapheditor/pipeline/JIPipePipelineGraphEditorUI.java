@@ -17,7 +17,9 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeStaticCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeUserCompartmentOutput;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.grouping.JIPipeNodeGroup;
@@ -425,23 +427,22 @@ public class JIPipePipelineGraphEditorUI extends JIPipeDesktopGraphEditorUI {
 
     @Override
     public void onDefaultNodeUIActionRequested(JIPipeDesktopGraphNodeUI.DefaultNodeUIActionRequestedEvent event) {
-        if (event.getUi().getNode() instanceof JIPipeNodeGroup) {
-            if (event.getUi().getNode() instanceof JIPipeNodeGroup) {
-                if (getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
-                    JIPipeDesktopNodeGroupUI.openGroupNodeGraph(getDesktopWorkbench(), (JIPipeNodeGroup) event.getUi().getNode(), true);
-                }
+        JIPipeGraphNode node = event.getUi().getNode();
+        if (node instanceof JIPipeNodeGroup) {
+            if (getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
+                JIPipeDesktopNodeGroupUI.openGroupNodeGraph(getDesktopWorkbench(), (JIPipeNodeGroup) node, true);
             }
-        } else if (event.getUi().getNode() instanceof JIPipeCompartmentOutput) {
+        } else if (node instanceof JIPipeCompartmentOutput) {
             // Open the compartment
-            if (!Objects.equals(getCompartment(), event.getUi().getNode().getCompartmentUUIDInParentGraph()) && getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
+            if (!Objects.equals(getCompartment(), node.getCompartmentUUIDInParentGraph()) && getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
                 // This is an input
                 JIPipeDesktopProjectWorkbench projectWorkbench = (JIPipeDesktopProjectWorkbench) getDesktopWorkbench();
-                UUID uuid = event.getUi().getNode().getCompartmentUUIDInParentGraph();
+                UUID uuid = node.getCompartmentUUIDInParentGraph();
                 JIPipeProjectCompartment projectCompartment = projectWorkbench.getProject().getCompartments().get(uuid);
                 projectWorkbench.getOrOpenPipelineEditorTab(projectCompartment, true);
             } else if (getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
                 JIPipeDesktopProjectWorkbench projectWorkbench = (JIPipeDesktopProjectWorkbench) getDesktopWorkbench();
-                UUID uuid = event.getUi().getNode().getCompartmentUUIDInParentGraph();
+                UUID uuid = node.getCompartmentUUIDInParentGraph();
                 JIPipeProjectCompartment projectCompartment = projectWorkbench.getProject().getCompartments().get(uuid);
                 JIPipeOutputDataSlot outputSlot = projectCompartment.getFirstOutputSlot();
                 JIPipeGraph compartmentGraph = projectWorkbench.getProject().getCompartmentGraph();

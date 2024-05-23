@@ -48,7 +48,7 @@ public class SetNodeHotkeyContextAction implements NodeUIContextAction {
                 KeyEvent.VK_NUMPAD4,
                 KeyEvent.VK_NUMPAD5, KeyEvent.VK_NUMPAD6, KeyEvent.VK_NUMPAD7,
                 KeyEvent.VK_NUMPAD8, KeyEvent.VK_NUMPAD9, KeyEvent.VK_NUMPAD0};
-        UUID compartment = canvasUI.getCompartment();
+        UUID compartment = canvasUI.getCompartmentUUID();
         JIPipeGraphNode node = selection.iterator().next().getNode();
         JIPipeNodeHotKeyStorage hotKeyStorage = JIPipeNodeHotKeyStorage.getInstance(canvasUI.getGraph());
         for (int i = 0; i < 10; i++) {

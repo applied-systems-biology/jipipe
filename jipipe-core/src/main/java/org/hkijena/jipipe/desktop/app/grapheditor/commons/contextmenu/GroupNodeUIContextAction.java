@@ -51,7 +51,7 @@ public class GroupNodeUIContextAction implements NodeUIContextAction {
                 graph.removeNode(algorithm, true);
             }
         }
-        graph.insertNode(group, canvasUI.getCompartment());
+        graph.insertNode(group, canvasUI.getCompartmentUUID());
     }
 
     @Override

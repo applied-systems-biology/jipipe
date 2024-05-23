@@ -15,6 +15,8 @@ package org.hkijena.jipipe.api.grapheditortool;
 
 import org.hkijena.jipipe.api.JIPipeGraphType;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeStaticCompartmentOutput;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeUserCompartmentOutput;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
@@ -23,6 +25,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEdit
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.triggers.JIPipeDesktopGraphNodeUISlotActiveArea;
 import org.hkijena.jipipe.utils.PointRange;
+import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -371,7 +374,8 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
             }
 
             // Prevent rewire to the output of the current compartment
-            if (currentRewireDragSource.isOutput() && currentRewireDragTarget != null && currentRewireDragTarget.getSlot().getNode() instanceof JIPipeCompartmentOutput &&
+            if (currentRewireDragSource.isOutput() && currentRewireDragTarget != null &&
+                    currentRewireDragTarget.getSlot().getNode() instanceof JIPipeCompartmentOutput &&
                     Objects.equals(currentRewireDragTarget.getNodeUI().getNode().getCompartmentUUIDInParentGraph(), graphEditorUI.getCompartment())) {
                 currentRewireDragTarget = null;
             }

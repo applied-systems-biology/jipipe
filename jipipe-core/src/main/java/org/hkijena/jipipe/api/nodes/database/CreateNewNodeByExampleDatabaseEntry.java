@@ -144,9 +144,9 @@ public class CreateNewNodeByExampleDatabaseEntry implements JIPipeNodeDatabaseEn
     public JIPipeDesktopGraphNodeUI addToGraph(JIPipeDesktopGraphCanvasUI canvasUI) {
         JIPipeGraphNode copy = example.getNodeTemplate().getGraph().getGraphNodes().iterator().next().duplicate();
         if (canvasUI.getHistoryJournal() != null) {
-            canvasUI.getHistoryJournal().snapshotBeforeAddNode(copy, canvasUI.getCompartment());
+            canvasUI.getHistoryJournal().snapshotBeforeAddNode(copy, canvasUI.getCompartmentUUID());
         }
-        canvasUI.getGraph().insertNode(copy, canvasUI.getCompartment());
+        canvasUI.getGraph().insertNode(copy, canvasUI.getCompartmentUUID());
         return canvasUI.getNodeUIs().get(copy);
     }
 
