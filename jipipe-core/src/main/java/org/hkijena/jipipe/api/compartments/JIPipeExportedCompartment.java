@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.compartments;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -24,8 +25,8 @@ import org.hkijena.jipipe.api.JIPipeStandardMetadata;
 import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
+import org.hkijena.jipipe.api.compartments.datatypes.JIPipeCompartmentOutputData;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
@@ -37,10 +38,8 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
+import java.util.List;
 
 /**
  * Exported {@link JIPipeProjectCompartment}
@@ -48,8 +47,9 @@ import java.util.UUID;
 @JsonSerialize(using = JIPipeExportedCompartment.Serializer.class)
 @JsonDeserialize(using = JIPipeExportedCompartment.Deserializer.class)
 public class JIPipeExportedCompartment {
-    private final JIPipeGraph outputGraph = new JIPipeGraph();
+    private final JIPipeGraph exportedGraph = new JIPipeGraph();
     private JIPipeStandardMetadata metadata = new JIPipeStandardMetadata();
+    private List<String> outputSlots = new ArrayList<>();
 
     /**
      * Creates a new instance
@@ -105,12 +105,12 @@ public class JIPipeExportedCompartment {
                         ioInterfaceAlgorithm.getLocations().put(compartmentId.toString(), pointMap);
                     }
 
-                    outputGraph.insertNode(ioInterfaceAlgorithm);
+                    exportedGraph.insertNode(ioInterfaceAlgorithm);
                     copies.put(algorithm.getUUIDInParentGraph(), ioInterfaceAlgorithm);
                 }
             } else {
                 JIPipeGraphNode copy = algorithm.getInfo().duplicate(algorithm);
-                outputGraph.insertNode(copy);
+                exportedGraph.insertNode(copy);
                 copies.put(algorithm.getUUIDInParentGraph(), copy);
 
                 copy.getLocations().clear();
@@ -125,10 +125,15 @@ public class JIPipeExportedCompartment {
             JIPipeGraphNode copyTarget = copies.getOrDefault(edge.getValue().getNode().getUUIDInParentGraph(), null);
             if (copySource == null || copyTarget == null)
                 continue;
-            outputGraph.connect(copySource.getOutputSlotMap().get(edge.getKey().getName()),
+            exportedGraph.connect(copySource.getOutputSlotMap().get(edge.getKey().getName()),
                     copyTarget.getInputSlotMap().get(edge.getValue().getName()));
         }
         metadata.setName(compartment.getName());
+
+        // Copy over the list of output slots
+        for (JIPipeOutputDataSlot outputSlot : compartment.getOutputSlots()) {
+            outputSlots.add(outputSlot.getName());
+        }
     }
 
     /**
@@ -150,10 +155,9 @@ public class JIPipeExportedCompartment {
      */
     public JIPipeProjectCompartment addTo(JIPipeProject project, String compartmentName) {
         JIPipeProjectCompartment compartment = project.addCompartment(compartmentName);
-        JIPipeProjectCompartmentOutput projectOutputNode = compartment.getOutputNodes();
 
         String locationCompartment = "";
-        for (JIPipeGraphNode algorithm : outputGraph.getGraphNodes()) {
+        for (JIPipeGraphNode algorithm : exportedGraph.getGraphNodes()) {
             if (!(algorithm instanceof JIPipeProjectCompartmentOutput)) {
                 if (!algorithm.getLocations().keySet().isEmpty())
                     locationCompartment = algorithm.getLocations().keySet().iterator().next();
@@ -163,8 +167,8 @@ public class JIPipeExportedCompartment {
         Map<JIPipeGraphNode, Map<String, Point>> locations = new HashMap<>();
         Map<String, Point> outputLocation = null;
         UUID compartmentUUID = compartment.getProjectCompartmentUUID();
-        for (JIPipeGraphNode algorithm : outputGraph.getGraphNodes()) {
-            outputGraph.setCompartment(algorithm.getUUIDInParentGraph(), compartmentUUID);
+        for (JIPipeGraphNode algorithm : exportedGraph.getGraphNodes()) {
+            exportedGraph.setCompartment(algorithm.getUUIDInParentGraph(), compartmentUUID);
             Map<String, Point> map = algorithm.getLocations().getOrDefault(locationCompartment, null);
             if (map != null) {
                 locations.put(algorithm, map);
@@ -174,18 +178,29 @@ public class JIPipeExportedCompartment {
             }
         }
 
+        // Add the output slots
+        for (String outputSlot : outputSlots) {
+            ((JIPipeMutableSlotConfiguration)compartment.getSlotConfiguration()).addSlot(outputSlot, new JIPipeDataSlotInfo(JIPipeCompartmentOutputData.class,
+                    JIPipeSlotType.Output, outputSlot,""), false);
+        }
+
+
         Map<UUID, JIPipeGraphNode> copies = new HashMap<>();
-        for (JIPipeGraphNode algorithm : outputGraph.getGraphNodes()) {
+        for (JIPipeGraphNode algorithm : exportedGraph.getGraphNodes()) {
             if (algorithm instanceof JIPipeProjectCompartmentOutput) {
+
+                JIPipeProjectCompartmentOutput outputNode = compartment.getOutputNode(((JIPipeProjectCompartmentOutput) algorithm).getOutputSlotName());
+
                 // We just assign the existing project output
-                copies.put(algorithm.getUUIDInParentGraph(), projectOutputNode);
+                copies.put(algorithm.getUUIDInParentGraph(), outputNode);
 
                 // Set location
-                if (outputLocation != null)
-                    projectOutputNode.getLocations().put(compartmentUUID.toString(), outputLocation);
+                if (outputLocation != null) {
+                    outputNode.getLocations().put(compartmentUUID.toString(), outputLocation);
+                }
 
                 // Copy the slot configuration over
-                projectOutputNode.getSlotConfiguration().setTo(algorithm.getSlotConfiguration());
+                outputNode.getSlotConfiguration().setTo(algorithm.getSlotConfiguration());
             } else {
                 JIPipeGraphNode copy = algorithm.getInfo().duplicate(algorithm);
                 Map<String, Point> locationMapEntry = locations.getOrDefault(algorithm, null);
@@ -196,7 +211,7 @@ public class JIPipeExportedCompartment {
                 copies.put(algorithm.getUUIDInParentGraph(), copy);
             }
         }
-        for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : outputGraph.getSlotEdges()) {
+        for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : exportedGraph.getSlotEdges()) {
             JIPipeGraphNode copySource = copies.get(edge.getKey().getNode().getUUIDInParentGraph());
             JIPipeGraphNode copyTarget = copies.get(edge.getValue().getNode().getUUIDInParentGraph());
             project.getGraph().connect(copySource.getOutputSlotMap().get(edge.getKey().getName()),
@@ -240,7 +255,8 @@ public class JIPipeExportedCompartment {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("jipipe:project-type", "compartment");
             jsonGenerator.writeObjectField("metadata", exportedCompartment.metadata);
-            jsonGenerator.writeObjectField("graph", exportedCompartment.outputGraph);
+            jsonGenerator.writeObjectField("graph", exportedCompartment.exportedGraph);
+            jsonGenerator.writeObjectField("output-slots", exportedCompartment.outputSlots);
             jsonGenerator.writeEndObject();
         }
     }
@@ -254,9 +270,15 @@ public class JIPipeExportedCompartment {
             JIPipeExportedCompartment exportedCompartment = new JIPipeExportedCompartment();
 
             JsonNode node = jsonParser.readValueAsTree();
-            exportedCompartment.outputGraph.fromJson(node.get("graph"), new UnspecifiedValidationReportContext(), new JIPipeValidationReport(), new JIPipeNotificationInbox());
-            if (node.has("metadata"))
+            exportedCompartment.exportedGraph.fromJson(node.get("graph"), new UnspecifiedValidationReportContext(), new JIPipeValidationReport(), new JIPipeNotificationInbox());
+            if (node.has("metadata")) {
                 exportedCompartment.metadata = JsonUtils.getObjectMapper().readerFor(JIPipeStandardMetadata.class).readValue(node.get("metadata"));
+            }
+            if(node.has("output-slots")) {
+                TypeReference<List<String>> typeReference = new TypeReference<List<String>>() {
+                };
+                exportedCompartment.outputSlots = JsonUtils.getObjectMapper().readerFor(typeReference).readValue(node.get("output-slots"));
+            }
 
             return exportedCompartment;
         }
