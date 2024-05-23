@@ -606,8 +606,25 @@ public class JIPipeProject implements JIPipeValidatable {
      */
     public void removeCompartment(JIPipeProjectCompartment compartment) {
 
-        JIPipeProjectCompartmentOutput outputNode = compartment.getOutputNodes();
+        for (JIPipeProjectCompartmentOutput outputNode : compartment.getOutputNodes().values()) {
+            replaceCompartmentOutputWithIOInterface(compartment, outputNode);
+        }
 
+        // Remove the outputs
+        for (JIPipeProjectCompartmentOutput outputNode : compartment.getOutputNodes().values()) {
+            graph.removeNode(outputNode, false);
+        }
+
+        // Delete the compartment
+        UUID compartmentId = compartment.getProjectCompartmentUUID();
+        graph.removeCompartment(compartmentId);
+        compartments.remove(compartmentId);
+        updateCompartmentVisibility();
+        compartmentGraph.removeNode(compartment, false);
+        compartmentRemovedEventEmitter.emit(new CompartmentRemovedEvent(compartment, compartmentId));
+    }
+
+    private void replaceCompartmentOutputWithIOInterface(JIPipeProjectCompartment compartment, JIPipeProjectCompartmentOutput outputNode) {
         // Search for all targets of the compartment and convert this output into an IOInterface
         for (JIPipeDataSlot outputOutgoingTargetSlot : compartmentGraph.getOutputOutgoingTargetSlots(compartment.getFirstOutputSlot())) {
             if (outputOutgoingTargetSlot.getNode() instanceof JIPipeProjectCompartment) {
@@ -642,15 +659,6 @@ public class JIPipeProject implements JIPipeValidatable {
 
             }
         }
-
-
-        // Delete the compartment
-        UUID compartmentId = compartment.getProjectCompartmentUUID();
-        graph.removeCompartment(compartmentId);
-        compartments.remove(compartmentId);
-        updateCompartmentVisibility();
-        compartmentGraph.removeNode(compartment, false);
-        compartmentRemovedEventEmitter.emit(new CompartmentRemovedEvent(compartment, compartmentId));
     }
 
     /**
