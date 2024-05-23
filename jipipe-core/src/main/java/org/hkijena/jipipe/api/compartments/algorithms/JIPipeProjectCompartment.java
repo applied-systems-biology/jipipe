@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.compartments.datatypes.JIPipeCompartmentOutputData;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceAccessGroupList;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
 import org.hkijena.jipipe.api.nodes.*;
@@ -91,6 +92,15 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
     @Override
     public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
+    }
+
+    @Override
+    public void onSlotConfigurationChanged(JIPipeSlotConfiguration.SlotConfigurationChangedEvent event) {
+        super.onSlotConfigurationChanged(event);
+
+        if(project != null) {
+            project.updateCompartmentOutputs(this);
+        }
     }
 
     @Override

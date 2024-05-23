@@ -221,7 +221,7 @@ public class JIPipeCLIMain {
         settings.setStoreToCache(false);
         if (saveToDisk && saveToDiskOnlyCompartments) {
             for (JIPipeGraphNode graphNode : project.getGraph().getGraphNodes()) {
-                if (!(graphNode instanceof JIPipeProjectCompartmentOutput) && !(graphNode instanceof JIPipeUserCompartmentOutput)) {
+                if (!(graphNode instanceof JIPipeProjectCompartmentOutput)) {
                     settings.getDisableStoreToDiskNodes().add(graphNode.getUUIDInParentGraph());
                 }
             }

@@ -89,8 +89,8 @@ public class JIPipeProject implements JIPipeValidatable {
     private JIPipeProjectMetadata metadata = new JIPipeProjectMetadata();
     private JIPipeRuntimePartitionConfiguration runtimePartitions = new JIPipeRuntimePartitionConfiguration();
     private Map<String, JIPipeMetadataObject> additionalMetadata = new HashMap<>();
-    private Map<String, JIPipeProjectSettingsSheet> settingsSheets = new HashMap<>();
-    private Map<String, JsonNode> unloadedSettingsSheets = new HashMap<>();
+    private final Map<String, JIPipeProjectSettingsSheet> settingsSheets = new HashMap<>();
+    private final Map<String, JsonNode> unloadedSettingsSheets = new HashMap<>();
     private Path workDirectory;
     private boolean isCleaningUp;
     private boolean isLoading;
@@ -155,21 +155,10 @@ public class JIPipeProject implements JIPipeValidatable {
                         JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) algorithm;
                         if (!compartment.isInitialized()) {
                             compartments.put(compartment.getProjectCompartmentUUID(), compartment);
-                            initializeCompartment(compartment);
+                            updateCompartmentOutputs(compartment);
                         }
                     }
                 }
-                updateCompartmentVisibility();
-            }
-        });
-
-        // Listen to graph changes
-        graph.getGraphChangedEventEmitter().subscribe(event -> {
-            if (isCleaningUp)
-                return;
-            if (isLoading)
-                return;
-            if (event.getGraph() == graph) {
                 updateCompartmentVisibility();
             }
         });
@@ -391,13 +380,9 @@ public class JIPipeProject implements JIPipeValidatable {
         compartmentGraph.connect(sourceSlot, target.getFirstInputSlot());
     }
 
-    private void initializeCompartment(JIPipeProjectCompartment compartment) {
+
+    public void updateCompartmentOutputs(JIPipeProjectCompartment compartment) {
         compartment.setRuntimeProject(this);
-        updateCompartmentOutputs(compartment);
-    }
-
-    private void updateCompartmentOutputs(JIPipeProjectCompartment compartment) {
-
         UUID compartmentUUID = compartment.getProjectCompartmentUUID();
 
         // Ensure that the names are correct
@@ -408,7 +393,7 @@ public class JIPipeProject implements JIPipeValidatable {
         // Find all outputs that should be deleted
         Set<JIPipeProjectCompartmentOutput> toDelete = new HashSet<>();
         for (Map.Entry<String, JIPipeProjectCompartmentOutput> entry : compartment.getOutputNodes().entrySet()) {
-            if(!compartment.getOutputNodes().containsKey(entry.getKey())) {
+            if (!compartment.getOutputSlotMap().containsKey(entry.getKey())) {
                 toDelete.add(entry.getValue());
             }
         }
@@ -421,12 +406,12 @@ public class JIPipeProject implements JIPipeValidatable {
 
         // Add new outputs
         for (JIPipeOutputDataSlot outputSlot : compartment.getOutputSlots()) {
-            if(!compartment.getOutputNodes().containsKey(outputSlot.getName())) {
+            if (!compartment.getOutputNodes().containsKey(outputSlot.getName())) {
                 JIPipeProjectCompartmentOutput node = null;
 
                 // First try to search for an existing node
                 for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
-                    if(graphNode instanceof JIPipeProjectCompartmentOutput &&
+                    if (graphNode instanceof JIPipeProjectCompartmentOutput &&
                             Objects.equals(graphNode.getCompartmentUUIDInParentGraph(), compartmentUUID) &&
                             Objects.equals(((JIPipeProjectCompartmentOutput) graphNode).getOutputSlotName(), outputSlot.getName())) {
                         node = (JIPipeProjectCompartmentOutput) graphNode;
@@ -435,7 +420,7 @@ public class JIPipeProject implements JIPipeValidatable {
                 }
 
                 // Try to find a legacy (has no output slot name)
-                if(compartment.getOutputSlots().size() == 1) {
+                if (compartment.getOutputSlots().size() == 1) {
                     for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
                         if (graphNode instanceof JIPipeProjectCompartmentOutput &&
                                 Objects.equals(graphNode.getCompartmentUUIDInParentGraph(), compartmentUUID) &&
@@ -448,12 +433,14 @@ public class JIPipeProject implements JIPipeValidatable {
                 }
 
                 // No node present, so create one
-                if(node == null) {
-                    node =  JIPipe.createNode(JIPipeProjectCompartmentOutput.class);
+                if (node == null) {
+                    node = JIPipe.createNode(JIPipeProjectCompartmentOutput.class);
+                    node.setOutputSlotName(outputSlot.getName());
                     graph.insertNode(node, compartmentUUID);
+                } else {
+                    node.setOutputSlotName(outputSlot.getName());
                 }
 
-                node.setOutputSlotName(outputSlot.getName());
                 compartment.getOutputNodes().put(outputSlot.getName(), node);
             }
         }
@@ -901,7 +888,7 @@ public class JIPipeProject implements JIPipeValidatable {
                     JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) node;
                     compartment.setRuntimeProject(this);
                     compartments.put(compartment.getProjectCompartmentUUID(), compartment);
-                    initializeCompartment(compartment);
+                    updateCompartmentOutputs(compartment);
                 }
             }
 
@@ -950,7 +937,7 @@ public class JIPipeProject implements JIPipeValidatable {
                 JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) node;
                 compartment.setRuntimeProject(this);
                 compartments.put(compartment.getProjectCompartmentUUID(), compartment);
-                initializeCompartment(compartment);
+                updateCompartmentOutputs(compartment);
             }
         }
         updateCompartmentVisibility();

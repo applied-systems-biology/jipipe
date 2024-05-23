@@ -156,7 +156,17 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         // Node information
         nodeIsRunnable = node.getInfo().isRunnable() || node instanceof JIPipeAlgorithm || node instanceof JIPipeProjectCompartment;
 
-        if (node instanceof GraphWrapperAlgorithmInput) {
+        if(node instanceof JIPipeProjectCompartmentOutput)  {
+            if(isDisplayedInForeignCompartment()) {
+                showInputs = false;
+                showOutputs = true;
+            }
+            else {
+                showInputs = true;
+                showOutputs = true;
+            }
+        }
+        else if (node instanceof GraphWrapperAlgorithmInput) {
             showInputs = false;
             showOutputs = true;
         } else if (node instanceof GraphWrapperAlgorithmOutput) {
@@ -481,17 +491,30 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
         FontMetrics mainFontMetrics;
         FontMetrics secondaryFontMetrics;
+        FontMetrics tertiaryFontMetrics;
 
         if (getGraphics() != null) {
             mainFontMetrics = getGraphics().getFontMetrics(nativeMainFont);
             secondaryFontMetrics = getGraphics().getFontMetrics(nativeSecondaryFont);
+            tertiaryFontMetrics = getGraphics().getFontMetrics(nativeTertiaryFont);
         } else {
             Canvas c = new Canvas();
             mainFontMetrics = c.getFontMetrics(nativeMainFont);
             secondaryFontMetrics = c.getFontMetrics(nativeSecondaryFont);
+            tertiaryFontMetrics = c.getFontMetrics(nativeTertiaryFont);
         }
 
-        double mainWidth = (nodeIsRunnable ? 22 : 0) + 22 + mainFontMetrics.stringWidth(node.getName()) + 16;
+        double nameWidth;
+        if(isDisplayedInForeignCompartment()) {
+            JIPipeProject project = getGraphCanvasUI().getWorkbench().getProject();
+            JIPipeProjectCompartment projectCompartment = project.getCompartments().get(node.getCompartmentUUIDInParentGraph());
+            nameWidth = Math.max(tertiaryFontMetrics.stringWidth(node.getName()),
+                    tertiaryFontMetrics.stringWidth("⮤ " + projectCompartment.getName()));
+        }
+        else {
+            nameWidth = mainFontMetrics.stringWidth(node.getName());
+        }
+        double mainWidth = (nodeIsRunnable ? 22 : 0) + 22 + nameWidth + 16;
 
         // Slot widths
         double sumInputSlotWidths = 0;
@@ -1037,7 +1060,19 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         }
         {
             String nameLabel = node.getName();
-            int centerNativeWidth = (int) Math.round((nodeIsRunnable ? 22 : 0) * zoom + 22 * zoom + fontMetrics.stringWidth(nameLabel));
+            double nameWidth;
+
+            if(isDisplayedInForeignCompartment()) {
+                JIPipeProject project = getGraphCanvasUI().getWorkbench().getProject();
+                JIPipeProjectCompartment projectCompartment = project.getCompartments().get(node.getCompartmentUUIDInParentGraph());
+                nameWidth = Math.max(fontMetrics.stringWidth(nameLabel),
+                        fontMetrics.stringWidth("⮤ " + projectCompartment.getName()));
+            }
+            else {
+                nameWidth = fontMetrics.stringWidth(nameLabel);
+            }
+
+            int centerNativeWidth = (int) Math.round((nodeIsRunnable ? 22 : 0) * zoom + 22 * zoom + nameWidth);
             double startX = getWidth() / 2.0 - centerNativeWidth / 2.0;
 
             if (nodeIsRunnable) {
