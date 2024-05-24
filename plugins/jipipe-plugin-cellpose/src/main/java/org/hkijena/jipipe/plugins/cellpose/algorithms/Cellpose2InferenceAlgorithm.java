@@ -104,7 +104,7 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
 
     private final CellposeChannelSettings channelSettings;
 
-    private CellposeModel model = CellposeModel.Cytoplasm;
+    private Cellpose2InferenceModel model = Cellpose2InferenceModel.Cytoplasm;
     private OptionalDoubleParameter diameter = new OptionalDoubleParameter(30.0, true);
     private boolean enable3DSegmentation = true;
     private OptionalTextAnnotationNameParameter diameterAnnotation = new OptionalTextAnnotationNameParameter("Diameter", true);
@@ -209,7 +209,7 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
     }
 
     private void updateInputSlots() {
-        toggleSlot(INPUT_PRETRAINED_MODEL, getModel() == CellposeModel.Custom);
+        toggleSlot(INPUT_PRETRAINED_MODEL, getModel() == Cellpose2InferenceModel.Custom);
 //        toggleSlot(INPUT_SIZE_MODEL, segmentationModelSettings.getModel() == CellposeModel.Custom);
     }
 
@@ -229,7 +229,7 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
         // Save models if needed
         List<Path> customModelPaths = new ArrayList<>();
 //        Path customSizeModelPath = null;
-        if (getModel() == CellposeModel.Custom) {
+        if (getModel() == Cellpose2InferenceModel.Custom) {
             List<CellposeModelData> models = iterationStep.getInputData(INPUT_PRETRAINED_MODEL.getName(), CellposeModelData.class, progressInfo);
             for (int i = 0; i < models.size(); i++) {
                 CellposeModelData modelData = models.get(i);
@@ -485,7 +485,7 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
         }
 
         // Model
-        if (getModel() == CellposeModel.Custom) {
+        if (getModel() == Cellpose2InferenceModel.Custom) {
             arguments.add("--pretrained_model");
             arguments.add(customModelPath.toString());
         } else {
@@ -533,7 +533,10 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
         arguments.add(ioPath.toString());
 
         // Run the module
-        PythonUtils.runPython(arguments.toArray(new String[0]), getConfiguredCellposeEnvironment(), Collections.emptyList(), Collections.emptyMap(), suppressLogs, progressInfo);
+        CellposeUtils.runCellpose(getConfiguredCellposeEnvironment(),
+                arguments,
+                suppressLogs,
+                progressInfo);
     }
 
     private void saveInputImages(JIPipeMultiIterationStep iterationStep, JIPipeProgressInfo progressInfo, Path io2DPath, Path io3DPath, List<CellposeImageInfo> runWith2D, List<CellposeImageInfo> runWith3D) {
@@ -668,12 +671,12 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
 
     @SetJIPipeDocumentation(name = "Model", description = "The model type that should be used.")
     @JIPipeParameter("model")
-    public CellposeModel getModel() {
+    public Cellpose2InferenceModel getModel() {
         return model;
     }
 
     @JIPipeParameter("model")
-    public void setModel(CellposeModel model) {
+    public void setModel(Cellpose2InferenceModel model) {
         if (this.model != model) {
             this.model = model;
             updateInputSlots();

@@ -31,14 +31,15 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorRGBData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale32FData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
+import org.hkijena.jipipe.plugins.python.PythonEnvironment;
+import org.hkijena.jipipe.plugins.python.PythonUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CellposeUtils {
@@ -47,6 +48,27 @@ public class CellposeUtils {
 
     private CellposeUtils() {
 
+    }
+
+    public static void runCellpose(PythonEnvironment environment, List<String> arguments, boolean suppressLogs, JIPipeProgressInfo progressInfo) {
+        Map<String, String> additionalEnvironmentVariables = new HashMap<>();
+
+        // If the environment is provided via a cellpose artifact and has a model directory, override CELLPOSE_LOCAL_MODELS_PATH
+        if(environment.isLoadFromArtifact() && environment.getLastConfiguredArtifact() != null) {
+            Path modelPath = environment.getLastConfiguredArtifact().getLocalPath().resolve("models");
+            if(Files.isDirectory(modelPath)) {
+                progressInfo.log("Configuring CELLPOSE_LOCAL_MODELS_PATH as " + modelPath);
+                additionalEnvironmentVariables.put("CELLPOSE_LOCAL_MODELS_PATH", modelPath.toString());
+            }
+        }
+
+        // Run the module
+        PythonUtils.runPython(arguments.toArray(new String[0]),
+                environment,
+                Collections.emptyList(),
+                additionalEnvironmentVariables,
+                suppressLogs,
+                progressInfo);
     }
 
     public static String getCellposeCustomCode() {

@@ -39,7 +39,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.cellpose.CellposePluginApplicationSettings;
-import org.hkijena.jipipe.plugins.cellpose.CellposePretrainedModel;
+import org.hkijena.jipipe.plugins.cellpose.Cellpose2TrainingModel;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeSizeModelData;
 import org.hkijena.jipipe.plugins.cellpose.parameters.CellposeGPUSettings;
@@ -82,7 +82,7 @@ public class CellposeTrainingAlgorithm_Old extends JIPipeSingleIterationAlgorith
 
 
     private final CellposeGPUSettings gpuSettings;
-    private CellposePretrainedModel pretrainedModel = CellposePretrainedModel.Cytoplasm;
+    private Cellpose2TrainingModel pretrainedModel = Cellpose2TrainingModel.Cytoplasm;
     private int numEpochs = 500;
     private double learningRate = 0.2;
     private double weightDecay = 1e-05;
@@ -142,7 +142,7 @@ public class CellposeTrainingAlgorithm_Old extends JIPipeSingleIterationAlgorith
     }
 
     private void updateSlots() {
-        if (pretrainedModel != CellposePretrainedModel.Custom) {
+        if (pretrainedModel != Cellpose2TrainingModel.Custom) {
             if (getInputSlotMap().containsKey("Pretrained model")) {
                 JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
                 slotConfiguration.removeInputSlot("Pretrained model", false);
@@ -381,12 +381,12 @@ public class CellposeTrainingAlgorithm_Old extends JIPipeSingleIterationAlgorith
             "<li><b>None</b>: This will train from scratch. You can freely set the diameter. You also can set the diameter to 0 to disable scaling.</li>" +
             "</ul>")
     @JIPipeParameter("pretrained-model")
-    public CellposePretrainedModel getPretrainedModel() {
+    public Cellpose2TrainingModel getPretrainedModel() {
         return pretrainedModel;
     }
 
     @JIPipeParameter("pretrained-model")
-    public void setPretrainedModel(CellposePretrainedModel pretrainedModel) {
+    public void setPretrainedModel(Cellpose2TrainingModel pretrainedModel) {
         this.pretrainedModel = pretrainedModel;
 
         // Update diameter
@@ -453,7 +453,7 @@ public class CellposeTrainingAlgorithm_Old extends JIPipeSingleIterationAlgorith
 
         // Extract model if custom
         Path customModelPath = null;
-        if (pretrainedModel == CellposePretrainedModel.Custom) {
+        if (pretrainedModel == Cellpose2TrainingModel.Custom) {
             Set<Integer> pretrainedModelRows = iterationStep.getInputRows("Pretrained model");
             if (pretrainedModelRows.size() != 1) {
                 throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
@@ -516,7 +516,7 @@ public class CellposeTrainingAlgorithm_Old extends JIPipeSingleIterationAlgorith
         }
         if (dataIs3D)
             arguments.add("--do_3D");
-        if (pretrainedModel == CellposePretrainedModel.Custom || pretrainedModel == CellposePretrainedModel.None) {
+        if (pretrainedModel == Cellpose2TrainingModel.Custom || pretrainedModel == Cellpose2TrainingModel.None) {
             arguments.add("--diameter");
             arguments.add(diameter + "");
             arguments.add("--diam_mean");

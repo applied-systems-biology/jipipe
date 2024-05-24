@@ -35,7 +35,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.cellpose.CellposeEnvironmentAccessNode;
-import org.hkijena.jipipe.plugins.cellpose.CellposePretrainedModel;
+import org.hkijena.jipipe.plugins.cellpose.Cellpose2TrainingModel;
+import org.hkijena.jipipe.plugins.cellpose.CellposeUtils;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeSizeModelData;
 import org.hkijena.jipipe.plugins.cellpose.parameters.CellposeChannelSettings;
@@ -81,7 +82,7 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
     private final CellposeGPUSettings gpuSettings;
     private final CellposeTrainingTweaksSettings tweaksSettings;
     private final CellposeChannelSettings channelSettings;
-    private CellposePretrainedModel pretrainedModel = CellposePretrainedModel.Cytoplasm;
+    private Cellpose2TrainingModel pretrainedModel = Cellpose2TrainingModel.Cytoplasm;
     private int numEpochs = 500;
     private boolean enable3DSegmentation = true;
     private boolean cleanUpAfterwards = true;
@@ -146,7 +147,7 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
     }
 
     private void updateSlots() {
-        toggleSlot(INPUT_PRETRAINED_MODEL, pretrainedModel == CellposePretrainedModel.Custom);
+        toggleSlot(INPUT_PRETRAINED_MODEL, pretrainedModel == Cellpose2TrainingModel.Custom);
         toggleSlot(OUTPUT_SIZE_MODEL, trainSizeModel);
     }
 
@@ -254,12 +255,12 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
             "<li><b>None</b>: This will train from scratch. You can freely set the diameter. You also can set the diameter to 0 to disable scaling.</li>" +
             "</ul>")
     @JIPipeParameter("pretrained-model")
-    public CellposePretrainedModel getPretrainedModel() {
+    public Cellpose2TrainingModel getPretrainedModel() {
         return pretrainedModel;
     }
 
     @JIPipeParameter("pretrained-model")
-    public void setPretrainedModel(CellposePretrainedModel pretrainedModel) {
+    public void setPretrainedModel(Cellpose2TrainingModel pretrainedModel) {
         this.pretrainedModel = pretrainedModel;
         updateSlots();
     }
@@ -312,7 +313,7 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
 
         // Extract model if custom
         Path customModelPath = null;
-        if (pretrainedModel == CellposePretrainedModel.Custom) {
+        if (pretrainedModel == Cellpose2TrainingModel.Custom) {
             Set<Integer> pretrainedModelRows = iterationStep.getInputRows(INPUT_PRETRAINED_MODEL.getName());
             if (pretrainedModelRows.size() != 1) {
                 throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
@@ -431,7 +432,10 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
         arguments.add(tweaksSettings.getMinTrainMasks() + "");
 
         // Run the module
-        PythonUtils.runPython(arguments.toArray(new String[0]), getConfiguredCellposeEnvironment(), Collections.emptyList(), Collections.emptyMap(), suppressLogs, progressInfo);
+        CellposeUtils.runCellpose(getConfiguredCellposeEnvironment(),
+                arguments,
+                suppressLogs,
+                progressInfo);
 
         // Extract the model
         Path modelsPath = trainingDir.resolve("models");

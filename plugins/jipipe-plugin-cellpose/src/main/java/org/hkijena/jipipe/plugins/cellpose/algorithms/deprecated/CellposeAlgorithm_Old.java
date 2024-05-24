@@ -38,7 +38,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.plugins.cellpose.CellposeModel;
+import org.hkijena.jipipe.plugins.cellpose.Cellpose2InferenceModel;
 import org.hkijena.jipipe.plugins.cellpose.CellposePluginApplicationSettings;
 import org.hkijena.jipipe.plugins.cellpose.CellposeUtils;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
@@ -169,7 +169,7 @@ public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
     }
 
     private void updateInputSlots() {
-        if (segmentationModelSettings.getModel() != CellposeModel.Custom) {
+        if (segmentationModelSettings.getModel() != Cellpose2InferenceModel.Custom) {
             JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
             if (getInputSlotMap().containsKey("Pretrained model")) {
                 slotConfiguration.removeInputSlot("Pretrained model", false);
@@ -221,7 +221,7 @@ public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
         // Save models if needed
         List<Path> customModelPaths = new ArrayList<>();
         Path customSizeModelPath = null;
-        if (segmentationModelSettings.getModel() == CellposeModel.Custom) {
+        if (segmentationModelSettings.getModel() == Cellpose2InferenceModel.Custom) {
             List<CellposeModelData> models = iterationStep.getInputData("Pretrained model", CellposeModelData.class, progressInfo);
             for (int i = 0; i < models.size(); i++) {
                 CellposeModelData modelData = models.get(i);
@@ -321,7 +321,7 @@ public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
 
 
         // I we provide a custom model, we need to inject custom code (Why?)
-        if (segmentationModelSettings.getModel() == CellposeModel.Custom) {
+        if (segmentationModelSettings.getModel() == Cellpose2InferenceModel.Custom) {
             injectCustomCellposeClass(code);
             setupCustomCellposeModel(code, customModelPaths, customSizeModelPath);
         } else {

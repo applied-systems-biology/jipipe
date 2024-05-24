@@ -300,7 +300,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                     throw new RuntimeException("Unable to find local artifact " + targetArtifactId + ", which was queried from " + queryArtifactId);
                 }
                 progressInfo.log("-> " + entry.getKey());
-                entry.getKey().applyConfigurationFromArtifact((JIPipeLocalArtifact) artifact, progressInfo);
+                entry.getKey().applyConfigurationFromArtifactAndSetLastArtifact((JIPipeLocalArtifact) artifact, progressInfo);
             }
 
         }

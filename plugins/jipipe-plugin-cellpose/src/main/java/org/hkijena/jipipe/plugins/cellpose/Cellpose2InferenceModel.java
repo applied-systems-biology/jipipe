@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.cellpose;
 import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
 
 @AddJIPipeDocumentationDescription(description = "See https://cellpose.readthedocs.io/en/latest/models.html for a description of all models")
-public enum CellposePretrainedModel {
+public enum Cellpose2InferenceModel {
     Cytoplasm("cyto"),
     Cytoplasm2("cyto2"),
     Nucleus("nuclei"),
@@ -29,12 +29,14 @@ public enum CellposePretrainedModel {
     LiveCell2("LC2"),
     LiveCell3("LC3"),
     LiveCell4("LC4"),
-    Custom(""),
-    None("");
+    General("general"),
+    CP("CP"),
+    CPx("CPx"),
+    Custom("");
 
     private final String id;
 
-    CellposePretrainedModel(String id) {
+    Cellpose2InferenceModel(String id) {
         this.id = id;
     }
 

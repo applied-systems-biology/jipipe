@@ -28,6 +28,7 @@ import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryP
  */
 public abstract class JIPipeArtifactEnvironment extends JIPipeEnvironment {
     private boolean loadFromArtifact;
+    private JIPipeLocalArtifact lastConfiguredArtifact;
     private JIPipeArtifactQueryParameter artifactQuery = new JIPipeArtifactQueryParameter();
 
     public JIPipeArtifactEnvironment() {
@@ -36,7 +37,8 @@ public abstract class JIPipeArtifactEnvironment extends JIPipeEnvironment {
     public JIPipeArtifactEnvironment(JIPipeArtifactEnvironment other) {
         super(other);
         this.loadFromArtifact = other.loadFromArtifact;
-        this.artifactQuery = other.artifactQuery;
+        this.artifactQuery = new JIPipeArtifactQueryParameter(other.artifactQuery);
+        this.lastConfiguredArtifact = other.lastConfiguredArtifact;
     }
 
     @SetJIPipeDocumentation(name = "Load from artifact", description = "If enabled, this environment will be configured from an artifact. This is recommended " +
@@ -77,6 +79,25 @@ public abstract class JIPipeArtifactEnvironment extends JIPipeEnvironment {
 
     /**
      * Applies the artifact configuration to the current environment if isLoadFromArtifact() is true
+     * Also sets the last loaded artifact
+     * @param artifact the artifact
+     * @param progressInfo the progress info
+     */
+    public void applyConfigurationFromArtifactAndSetLastArtifact(JIPipeLocalArtifact artifact, JIPipeProgressInfo progressInfo) {
+        this.lastConfiguredArtifact = artifact;
+        applyConfigurationFromArtifact(artifact, progressInfo);
+    }
+
+    /**
+     * Applies the artifact configuration to the current environment if isLoadFromArtifact() is true
      */
     public abstract void applyConfigurationFromArtifact(JIPipeLocalArtifact artifact, JIPipeProgressInfo progressInfo);
+
+    public JIPipeLocalArtifact getLastConfiguredArtifact() {
+        return lastConfiguredArtifact;
+    }
+
+    public void setLastConfiguredArtifact(JIPipeLocalArtifact lastConfiguredArtifact) {
+        this.lastConfiguredArtifact = lastConfiguredArtifact;
+    }
 }

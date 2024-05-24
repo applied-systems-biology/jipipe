@@ -159,8 +159,8 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerApplicationSettingsSheet(new CellposePluginApplicationSettings());
         registerProjectSettingsSheet(CellposePluginProjectSettings.class);
 
-        registerEnumParameterType("cellpose-model", CellposeModel.class, "Cellpose model", "A Cellpose model");
-        registerEnumParameterType("cellpose-pretrained-model", CellposePretrainedModel.class, "Cellpose pre-trained model", "A pretrained model for Cellpose");
+        registerEnumParameterType("cellpose-model", Cellpose2InferenceModel.class, "Cellpose model", "A Cellpose model");
+        registerEnumParameterType("cellpose-pretrained-model", Cellpose2TrainingModel.class, "Cellpose pre-trained model", "A pretrained model for Cellpose");
 
         registerDatatype("cellpose-model", CellposeModelData.class, UIUtils.getIconURLFromResources("data-types/cellpose-model.png"));
         registerImageJDataImporter("cellpose-model-from-file", new CellposeModelImageJImporter(), FileImageJDataImporterUI.class);
