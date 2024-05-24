@@ -403,7 +403,9 @@ public class PythonUtils {
             environmentVariables.put(environmentVariable.getValue(), value);
         }
         installLibraryPaths(environmentVariables, libraryPaths);
-        existingEnvironmentVariables.putAll(additionalEnvironmentVariables);
+        environmentVariables.putAll(additionalEnvironmentVariables);
+
+
         for (Map.Entry<String, String> entry : environmentVariables.entrySet()) {
             progressInfo.log("Setting environment variable " + entry.getKey() + "=" + entry.getValue());
         }
