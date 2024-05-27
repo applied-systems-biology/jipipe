@@ -68,7 +68,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
-@SetJIPipeDocumentation(name = "Omnipose", description = "Runs Omnipose on the input image. This node supports both segmentation in 3D and executing " +
+@SetJIPipeDocumentation(name = "Omnipose prediction (0.x)", description = "Runs Omnipose on the input image. This node supports both segmentation in 3D and executing " +
         "Omnipose for each 2D image plane. " +
         "This node can generate a multitude of outputs, although only ROI is activated by default. " +
         "Go to the 'Outputs' parameter section to enable the other outputs." +
@@ -89,7 +89,7 @@ import java.util.*;
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Probabilities")
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
-public class OmniposeInferenceAlgorithm extends JIPipeSingleIterationAlgorithm implements OmniposeEnvironmentAccessNode {
+public class Omnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgorithm implements OmniposeEnvironmentAccessNode {
 
     public static final JIPipeDataSlotInfo INPUT_PRETRAINED_MODEL = new JIPipeDataSlotInfo(CellposeModelData.class, JIPipeSlotType.Input, "Pretrained Model", "A custom pretrained model");
     //    public static final JIPipeDataSlotInfo INPUT_SIZE_MODEL = new JIPipeDataSlotInfo(CellposeSizeModelData.class, JIPipeSlotType.Input, "Size Model", "A custom size model", null, true);
@@ -114,7 +114,7 @@ public class OmniposeInferenceAlgorithm extends JIPipeSingleIterationAlgorithm i
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private boolean suppressLogs = false;
 
-    public OmniposeInferenceAlgorithm(JIPipeNodeInfo info) {
+    public Omnipose0InferenceAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.segmentationTweaksSettings = new OmniposeSegmentationTweaksSettings();
         this.gpuSettings = new CellposeGPUSettings();
@@ -132,7 +132,7 @@ public class OmniposeInferenceAlgorithm extends JIPipeSingleIterationAlgorithm i
         registerSubParameter(channelSettings);
     }
 
-    public OmniposeInferenceAlgorithm(OmniposeInferenceAlgorithm other) {
+    public Omnipose0InferenceAlgorithm(Omnipose0InferenceAlgorithm other) {
         super(other);
         this.gpuSettings = new CellposeGPUSettings(other.gpuSettings);
         this.segmentationTweaksSettings = new OmniposeSegmentationTweaksSettings(other.segmentationTweaksSettings);
@@ -532,10 +532,8 @@ public class OmniposeInferenceAlgorithm extends JIPipeSingleIterationAlgorithm i
         arguments.add(ioPath.toString());
 
         // Run the module
-        PythonUtils.runPython(arguments.toArray(new String[0]),
-                getConfiguredOmniposeEnvironment(),
-                Collections.emptyList(),
-                envVars,
+        CellposeUtils.runCellpose(getConfiguredOmniposeEnvironment(),
+                arguments,
                 suppressLogs,
                 progressInfo);
     }

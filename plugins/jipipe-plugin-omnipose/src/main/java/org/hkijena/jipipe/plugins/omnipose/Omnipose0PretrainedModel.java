@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.omnipose;
 import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
 
 @AddJIPipeDocumentationDescription(description = "See https://github.com/kevinjohncutler/omnipose for a description of all models")
-public enum OmniposePretrainedModel {
+public enum Omnipose0PretrainedModel {
     BactOmni("bact_omni"),
     Bact("bact"),
     Cyto2Omni("cyto2_omni"),
@@ -28,7 +28,7 @@ public enum OmniposePretrainedModel {
 
     private final String id;
 
-    OmniposePretrainedModel(String id) {
+    Omnipose0PretrainedModel(String id) {
         this.id = id;
     }
 

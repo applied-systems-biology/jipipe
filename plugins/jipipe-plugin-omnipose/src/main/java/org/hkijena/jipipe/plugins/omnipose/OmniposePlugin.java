@@ -22,11 +22,12 @@ import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
+import org.hkijena.jipipe.plugins.cellpose.CellposePlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.imagejalgorithms.ImageJAlgorithmsPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
-import org.hkijena.jipipe.plugins.omnipose.algorithms.OmniposeInferenceAlgorithm;
-import org.hkijena.jipipe.plugins.omnipose.algorithms.OmniposeTrainingAlgorithm;
+import org.hkijena.jipipe.plugins.omnipose.algorithms.Omnipose0InferenceAlgorithm;
+import org.hkijena.jipipe.plugins.omnipose.algorithms.Omnipose0TrainingAlgorithm;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -75,7 +76,11 @@ public class OmniposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public Set<JIPipeDependency> getDependencies() {
-        return Sets.newHashSet(CorePlugin.AS_DEPENDENCY, ImageJDataTypesPlugin.AS_DEPENDENCY, PythonPlugin.AS_DEPENDENCY, ImageJAlgorithmsPlugin.AS_DEPENDENCY);
+        return Sets.newHashSet(CorePlugin.AS_DEPENDENCY,
+                ImageJDataTypesPlugin.AS_DEPENDENCY,
+                PythonPlugin.AS_DEPENDENCY,
+                ImageJAlgorithmsPlugin.AS_DEPENDENCY,
+                CellposePlugin.AS_DEPENDENCY);
     }
 
     @Override
@@ -154,10 +159,10 @@ public class OmniposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerProjectSettingsSheet(OmniposePluginProjectSettings.class);
 
         registerEnumParameterType("omnipose-model", OmniposeModel.class, "Omnipose model", "An Omnipose model");
-        registerEnumParameterType("omnipose-pretrained-model", OmniposePretrainedModel.class, "Omnipose pre-trained model", "A pretrained model for Omnipose");
+        registerEnumParameterType("omnipose-pretrained-model", Omnipose0PretrainedModel.class, "Omnipose pre-trained model", "A pretrained model for Omnipose");
 
-        registerNodeType("omnipose", OmniposeInferenceAlgorithm.class, RESOURCES.getIcon16URLFromResources("omnipose.png"));
-        registerNodeType("omnipose-training", OmniposeTrainingAlgorithm.class, RESOURCES.getIcon16URLFromResources("omnipose.png"));
+        registerNodeType("omnipose", Omnipose0InferenceAlgorithm.class, RESOURCES.getIcon16URLFromResources("omnipose.png"));
+        registerNodeType("omnipose-training", Omnipose0TrainingAlgorithm.class, RESOURCES.getIcon16URLFromResources("omnipose.png"));
 
     }
 
