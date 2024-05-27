@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.omnipose.algorithms;
+package org.hkijena.jipipe.plugins.omnipose.legacy.algorithms;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import ij.IJ;
@@ -21,6 +21,7 @@ import ij.gui.Roi;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -52,7 +53,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.omnipose.OmniposeEnvironmentAccessNode;
-import org.hkijena.jipipe.plugins.omnipose.OmniposeModel;
+import org.hkijena.jipipe.plugins.omnipose.legacy.parameters.LegacyOmnipose0Model;
 import org.hkijena.jipipe.plugins.omnipose.OmniposePlugin;
 import org.hkijena.jipipe.plugins.omnipose.parameters.OmniposeSegmentationThresholdSettings;
 import org.hkijena.jipipe.plugins.omnipose.parameters.OmniposeSegmentationTweaksSettings;
@@ -89,7 +90,9 @@ import java.util.*;
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Probabilities")
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
-public class Omnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgorithm implements OmniposeEnvironmentAccessNode {
+@Deprecated
+@LabelAsJIPipeHidden
+public class LegacyOmnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgorithm implements OmniposeEnvironmentAccessNode {
 
     public static final JIPipeDataSlotInfo INPUT_PRETRAINED_MODEL = new JIPipeDataSlotInfo(LegacyCellposeModelData.class, JIPipeSlotType.Input, "Pretrained Model", "A custom pretrained model");
     //    public static final JIPipeDataSlotInfo INPUT_SIZE_MODEL = new JIPipeDataSlotInfo(CellposeSizeModelData.class, JIPipeSlotType.Input, "Size Model", "A custom size model", null, true);
@@ -106,7 +109,7 @@ public class Omnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
     private final CellposeSegmentationOutputSettings segmentationOutputSettings;
     private final CellposeChannelSettings channelSettings;
 
-    private OmniposeModel model = OmniposeModel.BactOmni;
+    private LegacyOmnipose0Model model = LegacyOmnipose0Model.BactOmni;
     private OptionalDoubleParameter diameter = new OptionalDoubleParameter(30.0, true);
     private boolean enable3DSegmentation = true;
     private OptionalTextAnnotationNameParameter diameterAnnotation = new OptionalTextAnnotationNameParameter("Diameter", true);
@@ -114,7 +117,7 @@ public class Omnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private boolean suppressLogs = false;
 
-    public Omnipose0InferenceAlgorithm(JIPipeNodeInfo info) {
+    public LegacyOmnipose0InferenceAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.segmentationTweaksSettings = new OmniposeSegmentationTweaksSettings();
         this.gpuSettings = new CellposeGPUSettings();
@@ -132,7 +135,7 @@ public class Omnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
         registerSubParameter(channelSettings);
     }
 
-    public Omnipose0InferenceAlgorithm(Omnipose0InferenceAlgorithm other) {
+    public LegacyOmnipose0InferenceAlgorithm(LegacyOmnipose0InferenceAlgorithm other) {
         super(other);
         this.gpuSettings = new CellposeGPUSettings(other.gpuSettings);
         this.segmentationTweaksSettings = new OmniposeSegmentationTweaksSettings(other.segmentationTweaksSettings);
@@ -211,7 +214,7 @@ public class Omnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
     }
 
     private void updateInputSlots() {
-        toggleSlot(INPUT_PRETRAINED_MODEL, getModel() == OmniposeModel.Custom);
+        toggleSlot(INPUT_PRETRAINED_MODEL, getModel() == LegacyOmnipose0Model.Custom);
 //        toggleSlot(INPUT_SIZE_MODEL, segmentationModelSettings.getModel() == OmniposeModel.Custom);
     }
 
@@ -231,7 +234,7 @@ public class Omnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
         // Save models if needed
         List<Path> customModelPaths = new ArrayList<>();
 //        Path customSizeModelPath = null;
-        if (getModel() == OmniposeModel.Custom) {
+        if (getModel() == LegacyOmnipose0Model.Custom) {
             List<LegacyCellposeModelData> models = iterationStep.getInputData(INPUT_PRETRAINED_MODEL.getName(), LegacyCellposeModelData.class, progressInfo);
             for (int i = 0; i < models.size(); i++) {
                 LegacyCellposeModelData modelData = models.get(i);
@@ -477,7 +480,7 @@ public class Omnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
         }
 
         // Model
-        if (getModel() == OmniposeModel.Custom) {
+        if (getModel() == LegacyOmnipose0Model.Custom) {
             arguments.add("--pretrained_model");
             arguments.add(customModelPath.toString());
         } else {
@@ -668,12 +671,12 @@ public class Omnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
 
     @SetJIPipeDocumentation(name = "Model", description = "The model type that should be used.")
     @JIPipeParameter("model")
-    public OmniposeModel getModel() {
+    public LegacyOmnipose0Model getModel() {
         return model;
     }
 
     @JIPipeParameter("model")
-    public void setModel(OmniposeModel model) {
+    public void setModel(LegacyOmnipose0Model model) {
         this.model = model;
     }
 

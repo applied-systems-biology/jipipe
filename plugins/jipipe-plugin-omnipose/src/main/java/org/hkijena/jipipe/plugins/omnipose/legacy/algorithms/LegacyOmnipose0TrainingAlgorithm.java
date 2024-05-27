@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.omnipose.algorithms;
+package org.hkijena.jipipe.plugins.omnipose.legacy.algorithms;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -19,6 +19,7 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
@@ -51,7 +52,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.omnipose.OmniposeEnvironmentAccessNode;
 import org.hkijena.jipipe.plugins.omnipose.OmniposePlugin;
-import org.hkijena.jipipe.plugins.omnipose.Omnipose0PretrainedModel;
+import org.hkijena.jipipe.plugins.omnipose.legacy.parameters.LegacyOmnipose0PretrainedModel;
 import org.hkijena.jipipe.plugins.omnipose.parameters.OmniposeTrainingTweaksSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataInfoRef;
@@ -73,7 +74,9 @@ import java.util.stream.Collectors;
 @AddJIPipeInputSlot(value = LegacyCellposeModelData.class)
 @AddJIPipeOutputSlot(value = LegacyCellposeModelData.class, slotName = "Model", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
-public class Omnipose0TrainingAlgorithm extends JIPipeSingleIterationAlgorithm implements OmniposeEnvironmentAccessNode {
+@Deprecated
+@LabelAsJIPipeHidden
+public class LegacyOmnipose0TrainingAlgorithm extends JIPipeSingleIterationAlgorithm implements OmniposeEnvironmentAccessNode {
 
     public static final JIPipeDataSlotInfo INPUT_PRETRAINED_MODEL = new JIPipeDataSlotInfo(LegacyCellposeModelData.class, JIPipeSlotType.Input, "Pretrained Model", "A custom pretrained model");
 
@@ -81,7 +84,7 @@ public class Omnipose0TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
     private final CellposeGPUSettings gpuSettings;
     private final OmniposeTrainingTweaksSettings tweaksSettings;
     private final CellposeChannelSettings channelSettings;
-    private Omnipose0PretrainedModel pretrainedModel = Omnipose0PretrainedModel.BactOmni;
+    private LegacyOmnipose0PretrainedModel pretrainedModel = LegacyOmnipose0PretrainedModel.BactOmni;
     private int numEpochs = 500;
     private boolean enable3DSegmentation = true;
     private boolean cleanUpAfterwards = true;
@@ -91,7 +94,7 @@ public class Omnipose0TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
     private DataAnnotationQueryExpression labelDataAnnotation = new DataAnnotationQueryExpression("\"Label\"");
     private boolean suppressLogs = false;
 
-    public Omnipose0TrainingAlgorithm(JIPipeNodeInfo info) {
+    public LegacyOmnipose0TrainingAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.gpuSettings = new CellposeGPUSettings();
         this.tweaksSettings = new OmniposeTrainingTweaksSettings();
@@ -103,7 +106,7 @@ public class Omnipose0TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
         registerSubParameter(channelSettings);
     }
 
-    public Omnipose0TrainingAlgorithm(Omnipose0TrainingAlgorithm other) {
+    public LegacyOmnipose0TrainingAlgorithm(LegacyOmnipose0TrainingAlgorithm other) {
         super(other);
 
         this.gpuSettings = new CellposeGPUSettings(other.gpuSettings);
@@ -128,7 +131,7 @@ public class Omnipose0TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
     }
 
     private void updateSlots() {
-        toggleSlot(INPUT_PRETRAINED_MODEL, pretrainedModel == Omnipose0PretrainedModel.Custom);
+        toggleSlot(INPUT_PRETRAINED_MODEL, pretrainedModel == LegacyOmnipose0PretrainedModel.Custom);
         toggleSlot(OUTPUT_SIZE_MODEL, trainSizeModel);
     }
 
@@ -254,12 +257,12 @@ public class Omnipose0TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
             "<li><b>None</b>: This will train from scratch. You can freely set the diameter. You also can set the diameter to 0 to disable scaling.</li>" +
             "</ul>")
     @JIPipeParameter("pretrained-model")
-    public Omnipose0PretrainedModel getPretrainedModel() {
+    public LegacyOmnipose0PretrainedModel getPretrainedModel() {
         return pretrainedModel;
     }
 
     @JIPipeParameter("pretrained-model")
-    public void setPretrainedModel(Omnipose0PretrainedModel pretrainedModel) {
+    public void setPretrainedModel(LegacyOmnipose0PretrainedModel pretrainedModel) {
         this.pretrainedModel = pretrainedModel;
         updateSlots();
     }
@@ -312,7 +315,7 @@ public class Omnipose0TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
 
         // Extract model if custom
         Path customModelPath = null;
-        if (pretrainedModel == Omnipose0PretrainedModel.Custom) {
+        if (pretrainedModel == LegacyOmnipose0PretrainedModel.Custom) {
             Set<Integer> pretrainedModelRows = iterationStep.getInputRows(INPUT_PRETRAINED_MODEL.getName());
             if (pretrainedModelRows.size() != 1) {
                 throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,

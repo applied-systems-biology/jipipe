@@ -23,11 +23,19 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.cellpose.CellposePlugin;
+import org.hkijena.jipipe.plugins.cellpose.algorithms.ImportPretrainedCellpose2ModelAlgorithm;
+import org.hkijena.jipipe.plugins.cellpose.parameters.PretrainedCellpose2Model;
+import org.hkijena.jipipe.plugins.cellpose.parameters.PretrainedCellpose2ModelList;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.imagejalgorithms.ImageJAlgorithmsPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
-import org.hkijena.jipipe.plugins.omnipose.algorithms.Omnipose0InferenceAlgorithm;
-import org.hkijena.jipipe.plugins.omnipose.algorithms.Omnipose0TrainingAlgorithm;
+import org.hkijena.jipipe.plugins.omnipose.algorithms.ImportPretrainedOmnipose0ModelAlgorithm;
+import org.hkijena.jipipe.plugins.omnipose.legacy.algorithms.LegacyOmnipose0InferenceAlgorithm;
+import org.hkijena.jipipe.plugins.omnipose.legacy.algorithms.LegacyOmnipose0TrainingAlgorithm;
+import org.hkijena.jipipe.plugins.omnipose.legacy.parameters.LegacyOmnipose0PretrainedModel;
+import org.hkijena.jipipe.plugins.omnipose.legacy.parameters.LegacyOmnipose0Model;
+import org.hkijena.jipipe.plugins.omnipose.parameters.PretrainedOmnipose0Model;
+import org.hkijena.jipipe.plugins.omnipose.parameters.PretrainedOmnipose0ModelList;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -158,11 +166,18 @@ public class OmniposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerApplicationSettingsSheet(new OmniposePluginApplicationSettings());
         registerProjectSettingsSheet(OmniposePluginProjectSettings.class);
 
-        registerEnumParameterType("omnipose-model", OmniposeModel.class, "Omnipose model", "An Omnipose model");
-        registerEnumParameterType("omnipose-pretrained-model", Omnipose0PretrainedModel.class, "Omnipose pre-trained model", "A pretrained model for Omnipose");
+        // Modern data types and algorithms
+        registerEnumParameterType("omnipose-0.x-pretrained-model", PretrainedOmnipose0Model.class, "Omnipose 2.x pretrained model", "A pretrained model provided with Omnipose 0.x");
+        registerParameterType("omnipose-0.x-pretrained-model-list", PretrainedOmnipose0ModelList.class, "Omnipose 2.x pretrained model list", "A list of pretrained Omnipose 0.x models");
 
-        registerNodeType("omnipose", Omnipose0InferenceAlgorithm.class, RESOURCES.getIcon16URLFromResources("omnipose.png"));
-        registerNodeType("omnipose-training", Omnipose0TrainingAlgorithm.class, RESOURCES.getIcon16URLFromResources("omnipose.png"));
+        registerNodeType("import-omnipose-0.x-pretrained-model", ImportPretrainedOmnipose0ModelAlgorithm.class);
+
+        // Legacy data types and algorithms
+        registerEnumParameterType("omnipose-model", LegacyOmnipose0Model.class, "Omnipose model", "An Omnipose model");
+        registerEnumParameterType("omnipose-pretrained-model", LegacyOmnipose0PretrainedModel.class, "Omnipose pre-trained model", "A pretrained model for Omnipose");
+
+        registerNodeType("omnipose", LegacyOmnipose0InferenceAlgorithm.class, RESOURCES.getIcon16URLFromResources("omnipose.png"));
+        registerNodeType("omnipose-training", LegacyOmnipose0TrainingAlgorithm.class, RESOURCES.getIcon16URLFromResources("omnipose.png"));
 
     }
 

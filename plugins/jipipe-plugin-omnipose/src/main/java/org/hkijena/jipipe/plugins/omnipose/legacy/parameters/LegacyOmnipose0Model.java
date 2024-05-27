@@ -11,24 +11,24 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.omnipose;
+package org.hkijena.jipipe.plugins.omnipose.legacy.parameters;
 
 import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
 
 @AddJIPipeDocumentationDescription(description = "See https://github.com/kevinjohncutler/omnipose for a description of all models")
-public enum Omnipose0PretrainedModel {
+@Deprecated
+public enum LegacyOmnipose0Model {
     BactOmni("bact_omni"),
     Bact("bact"),
     Cyto2Omni("cyto2_omni"),
     Cytoplasm("cyto"),
     Cytoplasm2("cyto2"),
     Nucleus("nuclei"),
-    Custom(""),
-    None("");
+    Custom("");
 
     private final String id;
 
-    Omnipose0PretrainedModel(String id) {
+    LegacyOmnipose0Model(String id) {
         this.id = id;
     }
 
