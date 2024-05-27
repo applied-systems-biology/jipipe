@@ -30,6 +30,8 @@ import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.imagejalgorithms.ImageJAlgorithmsPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.omnipose.algorithms.ImportPretrainedOmnipose0ModelAlgorithm;
+import org.hkijena.jipipe.plugins.omnipose.algorithms.Omnipose0InferenceAlgorithm;
+import org.hkijena.jipipe.plugins.omnipose.algorithms.Omnipose0TrainingAlgorithm;
 import org.hkijena.jipipe.plugins.omnipose.legacy.algorithms.LegacyOmnipose0InferenceAlgorithm;
 import org.hkijena.jipipe.plugins.omnipose.legacy.algorithms.LegacyOmnipose0TrainingAlgorithm;
 import org.hkijena.jipipe.plugins.omnipose.legacy.parameters.LegacyOmnipose0PretrainedModel;
@@ -171,6 +173,8 @@ public class OmniposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerParameterType("omnipose-0.x-pretrained-model-list", PretrainedOmnipose0ModelList.class, "Omnipose 2.x pretrained model list", "A list of pretrained Omnipose 0.x models");
 
         registerNodeType("import-omnipose-0.x-pretrained-model", ImportPretrainedOmnipose0ModelAlgorithm.class);
+        registerNodeType("omnipose-inference-0.x", Omnipose0InferenceAlgorithm.class, RESOURCES.getIcon16URLFromResources("omnipose.png"));
+        registerNodeType("omnipose-training-0.x", Omnipose0TrainingAlgorithm.class, RESOURCES.getIcon16URLFromResources("omnipose.png"));
 
         // Legacy data types and algorithms
         registerEnumParameterType("omnipose-model", LegacyOmnipose0Model.class, "Omnipose model", "An Omnipose model");

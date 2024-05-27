@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
@@ -257,7 +258,7 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
 
         progressInfo.log("Collecting models ...");
         List<CellposeModelInfo> modelInfos = new ArrayList<>();
-        JIPipeInputDataSlot modelSlot = getInputSlot("Model");
+        JIPipeInputDataSlot modelSlot = getInputSlot("Pretrained model");
         for (int modelRow : iterationStep.getInputRows(modelSlot)) {
             JIPipeProgressInfo modelProgress = progressInfo.resolve("Model row " + modelRow);
             CellposeModelData modelData = modelSlot.getData(modelRow, CellposeModelData.class, modelProgress);
@@ -272,15 +273,16 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
             // Save the model out
             CellposeModelInfo modelInfo = new CellposeModelInfo();
             modelInfo.annotationList = modelSlot.getTextAnnotations(modelRow);
-            if(modelData.isPretrained()) {
-                modelInfo.modelPretrained = true;
-                modelInfo.modelNameOrPath = modelData.getPretrainedModelName();
-            }
-            else {
-                Path tempDirectory = PathUtils.createTempDirectory(workDirectory.resolve("models"), "model");
-                modelData.exportData(new JIPipeFileSystemWriteDataStorage(modelProgress, tempDirectory), null, false, modelProgress);
-                modelInfo.modelPretrained = false;
-                modelInfo.modelNameOrPath = tempDirectory.resolve(modelData.getMetadata().getName()).toString();
+            if(modelData != null) {
+                if (modelData.isPretrained()) {
+                    modelInfo.modelPretrained = true;
+                    modelInfo.modelNameOrPath = modelData.getPretrainedModelName();
+                } else {
+                    Path tempDirectory = PathUtils.createTempDirectory(workDirectory.resolve("models"), "model");
+                    modelData.exportData(new JIPipeFileSystemWriteDataStorage(modelProgress, tempDirectory), null, false, modelProgress);
+                    modelInfo.modelPretrained = false;
+                    modelInfo.modelNameOrPath = tempDirectory.resolve(modelData.getMetadata().getName()).toString();
+                }
             }
 //            if(sizeModelData != null) {
 //                Path tempDirectory = PathUtils.createTempDirectory(workDirectory.resolve("models"), "size-model");
@@ -444,17 +446,20 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
                 suppressLogs,
                 progressInfo);
 
+        // Collect annotations
+        List<JIPipeTextAnnotation> annotationList = new ArrayList<>(modelInfo.annotationList);
+
         // Extract the model
         Path modelsPath = trainingDir.resolve("models");
         Path generatedModelFile = findModelFile(modelsPath);
         CellposeModelData modelData = new CellposeModelData(generatedModelFile);
-        iterationStep.addOutputData("Model", modelData, progressInfo);
+        iterationStep.addOutputData("Model", modelData, annotationList, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
 
         // Extract size model
         if (trainSizeModel) {
             Path generatedSizeModelFile = findSizeModelFile(modelsPath);
             CellposeSizeModelData sizeModelData = new CellposeSizeModelData(generatedSizeModelFile);
-            iterationStep.addOutputData(OUTPUT_SIZE_MODEL.getName(), sizeModelData, progressInfo);
+            iterationStep.addOutputData(OUTPUT_SIZE_MODEL.getName(), sizeModelData, annotationList, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         }
     }
 
@@ -551,6 +556,6 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
         private String modelNameOrPath;
         private String sizeModelNameOrPath;
         private boolean modelPretrained;
-        private List<JIPipeTextAnnotation> annotationList;
+        private List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
     }
 }
