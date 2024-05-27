@@ -462,4 +462,14 @@ public class PathUtils {
             }
         }
     }
+
+    public static Path createTempDirectory(Path root, String prefix) {
+        try {
+            Files.createDirectories(root);
+            return Files.createTempDirectory(root, prefix);
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

@@ -11,15 +11,15 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.cellpose.parameters.deprecated;
+package org.hkijena.jipipe.plugins.cellpose.legacy.parameters;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.cellpose.algorithms.deprecated.CellposeAlgorithm_Old;
+import org.hkijena.jipipe.plugins.cellpose.legacy.algorithms.Cellpose1InferenceAlgorithm;
 
 /**
- * @deprecated Used by the old {@link CellposeAlgorithm_Old}
+ * @deprecated Used by the old {@link Cellpose1InferenceAlgorithm}
  */
 @Deprecated
 public class CellposeSegmentationOutputSettings_Old extends AbstractJIPipeParameterCollection {

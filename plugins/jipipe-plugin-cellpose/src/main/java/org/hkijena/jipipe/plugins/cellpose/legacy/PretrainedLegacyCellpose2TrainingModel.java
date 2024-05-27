@@ -11,12 +11,15 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.cellpose;
+package org.hkijena.jipipe.plugins.cellpose.legacy;
 
 import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
+import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 
 @AddJIPipeDocumentationDescription(description = "See https://cellpose.readthedocs.io/en/latest/models.html for a description of all models")
-public enum Cellpose2InferenceModel {
+@Deprecated
+@LabelAsJIPipeHidden
+public enum PretrainedLegacyCellpose2TrainingModel {
     Cytoplasm("cyto"),
     Cytoplasm2("cyto2"),
     Nucleus("nuclei"),
@@ -32,11 +35,12 @@ public enum Cellpose2InferenceModel {
     General("general"),
     CP("CP"),
     CPx("CPx"),
-    Custom("");
+    Custom(""),
+    None("");
 
     private final String id;
 
-    Cellpose2InferenceModel(String id) {
+    PretrainedLegacyCellpose2TrainingModel(String id) {
         this.id = id;
     }
 

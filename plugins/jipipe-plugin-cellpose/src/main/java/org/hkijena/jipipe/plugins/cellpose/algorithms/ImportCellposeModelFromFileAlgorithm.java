@@ -15,6 +15,7 @@ package org.hkijena.jipipe.plugins.cellpose.algorithms;
 
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
@@ -25,18 +26,20 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
+import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeSizeModelData;
+import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeModelData;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 
-@SetJIPipeDocumentation(name = "Import Cellpose model", description = "Imports a Cellpose model from a file")
+@SetJIPipeDocumentation(name = "Import Cellpose model from file", description = "Imports a Cellpose model from a file")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = FileData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = CellposeModelData.class, slotName = "Output", create = true)
-public class ImportCellposeModelAlgorithm extends JIPipeSimpleIteratingAlgorithm {
-    public ImportCellposeModelAlgorithm(JIPipeNodeInfo info) {
+public class ImportCellposeModelFromFileAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+    public ImportCellposeModelFromFileAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public ImportCellposeModelAlgorithm(ImportCellposeModelAlgorithm other) {
+    public ImportCellposeModelFromFileAlgorithm(ImportCellposeModelFromFileAlgorithm other) {
         super(other);
     }
 

@@ -20,11 +20,14 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
+import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSingleIterationAlgorithm;
@@ -33,9 +36,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.*;
-import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.cellpose.CellposeEnvironmentAccessNode;
-import org.hkijena.jipipe.plugins.cellpose.Cellpose2TrainingModel;
 import org.hkijena.jipipe.plugins.cellpose.CellposeUtils;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeSizeModelData;
@@ -55,34 +56,33 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
-import org.hkijena.jipipe.plugins.python.PythonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-@SetJIPipeDocumentation(name = "Cellpose training (2.x)", description = "Trains a model with Cellpose. You start from an existing model or train from scratch. " +
+@SetJIPipeDocumentation(name = "Cellpose training (2.x)", description =
+        "Trains a model with Cellpose. You start from an existing model or train from scratch. " +
         "Incoming images are automatically converted to greyscale. Only 2D or 3D images are supported. For this node to work, you need to annotate a greyscale 16-bit or 8-bit label image column to each raw data input. " +
         "To do this, you can use the node 'Annotate with data'. By default, JIPipe will ensure that all connected components of this image are assigned a unique component. You can disable this feature via the parameters.")
 @AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Training data", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Test data", create = true, optional = true)
-@AddJIPipeInputSlot(value = CellposeModelData.class)
-@AddJIPipeOutputSlot(value = CellposeModelData.class, slotName = "Model", create = true)
+@AddJIPipeInputSlot(value = CellposeModelData.class, slotName = "Pretrained model", create = true, optional = true, description = "Optional pretrained models. All workloads are repeated per model.", role = JIPipeDataSlotRole.ParametersLooping)
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm implements CellposeEnvironmentAccessNode {
 
-    public static final JIPipeDataSlotInfo INPUT_PRETRAINED_MODEL = new JIPipeDataSlotInfo(CellposeModelData.class, JIPipeSlotType.Input, "Pretrained Model", "A custom pretrained model");
-
     public static final JIPipeDataSlotInfo OUTPUT_SIZE_MODEL = new JIPipeDataSlotInfo(CellposeSizeModelData.class, JIPipeSlotType.Output, "Size Model", "Generated size model", true);
+
     private final CellposeGPUSettings gpuSettings;
     private final CellposeTrainingTweaksSettings tweaksSettings;
     private final CellposeChannelSettings channelSettings;
-    private Cellpose2TrainingModel pretrainedModel = Cellpose2TrainingModel.Cytoplasm;
     private int numEpochs = 500;
     private boolean enable3DSegmentation = true;
     private boolean cleanUpAfterwards = true;
@@ -112,7 +112,6 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
         this.channelSettings = new CellposeChannelSettings(other.channelSettings);
         this.suppressLogs = other.suppressLogs;
 
-        this.pretrainedModel = other.pretrainedModel;
         this.numEpochs = other.numEpochs;
         this.enable3DSegmentation = other.enable3DSegmentation;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
@@ -147,7 +146,6 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
     }
 
     private void updateSlots() {
-        toggleSlot(INPUT_PRETRAINED_MODEL, pretrainedModel == Cellpose2TrainingModel.Custom);
         toggleSlot(OUTPUT_SIZE_MODEL, trainSizeModel);
     }
 
@@ -246,30 +244,62 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
         return channelSettings;
     }
 
-    @SetJIPipeDocumentation(name = "Model", description = "The pretrained model that should be used. You can either choose one of the models " +
-            "provided by Cellpose, a custom model, or train from scratch. The pre-trained model has influence on the diameter and how the input images should be prepared:" +
-            "<ul>" +
-            "<li><b>Cytoplasm</b>: You need to rescale all your images that structures have a diameter of about 30 pixels.</li>" +
-            "<li><b>Nuclei</b>: You need to rescale all your images that structures have a diameter of about 17 pixels.</li>" +
-            "<li><b>Custom</b>: You need to rescale all your images that structures have a diameter appropriate for the model. Don't forget to set the diameter value.</li>" +
-            "<li><b>None</b>: This will train from scratch. You can freely set the diameter. You also can set the diameter to 0 to disable scaling.</li>" +
-            "</ul>")
-    @JIPipeParameter("pretrained-model")
-    public Cellpose2TrainingModel getPretrainedModel() {
-        return pretrainedModel;
-    }
-
-    @JIPipeParameter("pretrained-model")
-    public void setPretrainedModel(Cellpose2TrainingModel pretrainedModel) {
-        this.pretrainedModel = pretrainedModel;
-        updateSlots();
-    }
-
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
         // Prepare folders
         Path workDirectory = getNewScratch();
+        progressInfo.log("Work directory is " + workDirectory);
+
+        progressInfo.log("Collecting models ...");
+        List<CellposeModelInfo> modelInfos = new ArrayList<>();
+        JIPipeInputDataSlot modelSlot = getInputSlot("Model");
+        for (int modelRow : iterationStep.getInputRows(modelSlot)) {
+            JIPipeProgressInfo modelProgress = progressInfo.resolve("Model row " + modelRow);
+            CellposeModelData modelData = modelSlot.getData(modelRow, CellposeModelData.class, modelProgress);
+            CellposeSizeModelData sizeModelData = null;
+//            if(sizeModelAnnotationName.isEnabled() && !StringUtils.isNullOrEmpty(sizeModelAnnotationName.getContent())) {
+//                JIPipeDataAnnotation dataAnnotation = getInputSlot("Model").getDataAnnotation(modelRow, sizeModelAnnotationName.getContent());
+//                if(dataAnnotation != null) {
+//                    sizeModelData = dataAnnotation.getData(CellposeSizeModelData.class, modelProgress);
+//                }
+//            }
+
+            // Save the model out
+            CellposeModelInfo modelInfo = new CellposeModelInfo();
+            modelInfo.annotationList = modelSlot.getTextAnnotations(modelRow);
+            if(modelData.isPretrained()) {
+                modelInfo.modelPretrained = true;
+                modelInfo.modelNameOrPath = modelData.getPretrainedModelName();
+            }
+            else {
+                Path tempDirectory = PathUtils.createTempDirectory(workDirectory.resolve("models"), "model");
+                modelData.exportData(new JIPipeFileSystemWriteDataStorage(modelProgress, tempDirectory), null, false, modelProgress);
+                modelInfo.modelPretrained = false;
+                modelInfo.modelNameOrPath = tempDirectory.resolve(modelData.getMetadata().getName()).toString();
+            }
+//            if(sizeModelData != null) {
+//                Path tempDirectory = PathUtils.createTempDirectory(workDirectory.resolve("models"), "size-model");
+//                sizeModelData.exportData(new JIPipeFileSystemWriteDataStorage(modelProgress, tempDirectory), null, false, modelProgress);
+//                modelInfo.sizeModelNameOrPath = tempDirectory.resolve(sizeModelData.getMetadata().getName()).toString();
+//            }
+
+            modelInfos.add(modelInfo);
+        }
+
+        for (int i = 0; i < modelInfos.size(); i++) {
+            CellposeModelInfo modelInfo = modelInfos.get(i);
+            JIPipeProgressInfo modelProgress = progressInfo.resolve("Model", i, modelInfos.size());
+            processModel(PathUtils.createTempDirectory(workDirectory, "run"), modelInfo, iterationStep, iterationContext, runContext, modelProgress);
+        }
+
+
+        if (cleanUpAfterwards) {
+            PathUtils.deleteDirectoryRecursively(workDirectory, progressInfo.resolve("Cleanup"));
+        }
+    }
+
+    private void processModel(Path workDirectory, CellposeModelInfo modelInfo, JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Path trainingDir = workDirectory.resolve("training");
         Path testDir = workDirectory.resolve("test");
         try {
@@ -278,8 +308,6 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-        progressInfo.log("Work directory is " + workDirectory);
 
         // Extract images
         JIPipeProgressInfo extractProgress = progressInfo.resolveAndLog("Extract input images");
@@ -309,26 +337,6 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
             mask = ImageJUtils.ensureEqualSize(mask, raw, true);
 
             saveImagesToPath(testDir, imageCounter, rowProgress, raw, mask);
-        }
-
-        // Extract model if custom
-        Path customModelPath = null;
-        if (pretrainedModel == Cellpose2TrainingModel.Custom) {
-            Set<Integer> pretrainedModelRows = iterationStep.getInputRows(INPUT_PRETRAINED_MODEL.getName());
-            if (pretrainedModelRows.size() != 1) {
-                throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                        new GraphNodeValidationReportContext(this),
-                        "Only one pretrained model is allowed",
-                        "You can only provide one pretrained model per data batch for training.",
-                        "Ensure that only one pretrained model is in a data batch."));
-            }
-            CellposeModelData modelData = iterationStep.getInputData(INPUT_PRETRAINED_MODEL.getName(), CellposeModelData.class, progressInfo).get(0);
-            customModelPath = workDirectory.resolve(modelData.getName());
-            try {
-                Files.write(customModelPath, modelData.getData());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
         }
 
         // Setup arguments
@@ -389,23 +397,18 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
             arguments.add(diameter.getContent() + "");
         }
 
-        switch (pretrainedModel) {
-            case Custom:
-                arguments.add("--pretrained_model");
-                arguments.add(customModelPath.toAbsolutePath().toString());
-                break;
-            case None:
-                arguments.add("--pretrained_model");
-                arguments.add("None");
-                break;
-            default:
-                arguments.add("--pretrained_model");
-                arguments.add(pretrainedModel.getId());
-                break;
+        if(modelInfo.modelNameOrPath != null) {
+            arguments.add("--pretrained_model");
+            arguments.add(modelInfo.modelNameOrPath);
+        }
+        else {
+            arguments.add("--pretrained_model");
+            arguments.add("None");
         }
 
-        if (trainSizeModel)
+        if (trainSizeModel) {
             arguments.add("--train_size");
+        }
 
         arguments.add("--learning_rate");
         arguments.add(tweaksSettings.getLearningRate() + "");
@@ -448,10 +451,6 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
             Path generatedSizeModelFile = findSizeModelFile(modelsPath);
             CellposeSizeModelData sizeModelData = new CellposeSizeModelData(generatedSizeModelFile);
             iterationStep.addOutputData(OUTPUT_SIZE_MODEL.getName(), sizeModelData, progressInfo);
-        }
-
-        if (cleanUpAfterwards) {
-            PathUtils.deleteDirectoryRecursively(workDirectory, progressInfo.resolve("Cleanup"));
         }
     }
 
@@ -542,5 +541,12 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
         if (!isPassThrough()) {
             reportConfiguredCellposeEnvironmentValidity(reportContext, report);
         }
+    }
+
+    private static class CellposeModelInfo {
+        private String modelNameOrPath;
+        private String sizeModelNameOrPath;
+        private boolean modelPretrained;
+        private List<JIPipeTextAnnotation> annotationList;
     }
 }

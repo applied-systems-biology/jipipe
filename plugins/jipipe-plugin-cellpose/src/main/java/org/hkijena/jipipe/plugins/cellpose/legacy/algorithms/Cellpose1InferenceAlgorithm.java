@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.cellpose.algorithms.deprecated;
+package org.hkijena.jipipe.plugins.cellpose.legacy.algorithms;
 
 import com.google.common.collect.ImmutableList;
 import ij.IJ;
@@ -38,12 +38,12 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.plugins.cellpose.Cellpose2InferenceModel;
 import org.hkijena.jipipe.plugins.cellpose.CellposePluginApplicationSettings;
 import org.hkijena.jipipe.plugins.cellpose.CellposeUtils;
-import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
-import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeSizeModelData;
-import org.hkijena.jipipe.plugins.cellpose.parameters.deprecated.*;
+import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeModelData;
+import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeSizeModelData;
+import org.hkijena.jipipe.plugins.cellpose.legacy.PretrainedLegacyCellpose2InferenceModel;
+import org.hkijena.jipipe.plugins.cellpose.legacy.parameters.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscale32FData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorRGBData;
@@ -86,10 +86,10 @@ import java.util.stream.Collectors;
 @AddJIPipeOutputSlot(value = ImagePlus3DGreyscale32FData.class, slotName = "Probabilities")
 @AddJIPipeOutputSlot(value = ImagePlus2DGreyscale32FData.class, slotName = "Styles")
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI")
-@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning\nDeprecated")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 @Deprecated
 @LabelAsJIPipeHidden
-public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
+public class Cellpose1InferenceAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     private CellposeSegmentationModelSettings_Old segmentationModelSettings = new CellposeSegmentationModelSettings_Old();
     private CellposeSegmentationPerformanceSettings_Old SegmentationPerformanceSettings_Old = new CellposeSegmentationPerformanceSettings_Old();
@@ -102,7 +102,7 @@ public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
     private boolean cleanUpAfterwards = true;
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
 
-    public CellposeAlgorithm_Old(JIPipeNodeInfo info) {
+    public Cellpose1InferenceAlgorithm(JIPipeNodeInfo info) {
         super(info);
         updateOutputSlots();
         updateInputSlots();
@@ -113,7 +113,7 @@ public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
         registerSubParameter(outputParameters);
     }
 
-    public CellposeAlgorithm_Old(CellposeAlgorithm_Old other) {
+    public Cellpose1InferenceAlgorithm(Cellpose1InferenceAlgorithm other) {
         super(other);
         this.diameter = new OptionalDoubleParameter(other.diameter);
         this.diameterAnnotation = new OptionalTextAnnotationNameParameter(other.diameterAnnotation);
@@ -169,7 +169,7 @@ public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
     }
 
     private void updateInputSlots() {
-        if (segmentationModelSettings.getModel() != Cellpose2InferenceModel.Custom) {
+        if (segmentationModelSettings.getModel() != PretrainedLegacyCellpose2InferenceModel.Custom) {
             JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
             if (getInputSlotMap().containsKey("Pretrained model")) {
                 slotConfiguration.removeInputSlot("Pretrained model", false);
@@ -180,10 +180,10 @@ public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
         } else {
             JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
             if (!getInputSlotMap().containsKey("Pretrained model")) {
-                slotConfiguration.addSlot("Pretrained model", new JIPipeDataSlotInfo(CellposeModelData.class, JIPipeSlotType.Input, null, "", null), false);
+                slotConfiguration.addSlot("Pretrained model", new JIPipeDataSlotInfo(LegacyCellposeModelData.class, JIPipeSlotType.Input, null, "", null), false);
             }
             if (!getInputSlotMap().containsKey("Size model")) {
-                JIPipeDataSlotInfo slotInfo = new JIPipeDataSlotInfo(CellposeSizeModelData.class, JIPipeSlotType.Input, null, "", null);
+                JIPipeDataSlotInfo slotInfo = new JIPipeDataSlotInfo(LegacyCellposeSizeModelData.class, JIPipeSlotType.Input, null, "", null);
                 slotInfo.setOptional(true);
                 slotConfiguration.addSlot("Size model", slotInfo, false);
             }
@@ -221,10 +221,10 @@ public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
         // Save models if needed
         List<Path> customModelPaths = new ArrayList<>();
         Path customSizeModelPath = null;
-        if (segmentationModelSettings.getModel() == Cellpose2InferenceModel.Custom) {
-            List<CellposeModelData> models = iterationStep.getInputData("Pretrained model", CellposeModelData.class, progressInfo);
+        if (segmentationModelSettings.getModel() == PretrainedLegacyCellpose2InferenceModel.Custom) {
+            List<LegacyCellposeModelData> models = iterationStep.getInputData("Pretrained model", LegacyCellposeModelData.class, progressInfo);
             for (int i = 0; i < models.size(); i++) {
-                CellposeModelData modelData = models.get(i);
+                LegacyCellposeModelData modelData = models.get(i);
                 Path customModelPath = workDirectory.resolve(i + "_" + modelData.getName());
                 try {
                     Files.write(customModelPath, modelData.getData());
@@ -234,7 +234,7 @@ public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
                 customModelPaths.add(customModelPath);
             }
 
-            List<CellposeSizeModelData> sizeModels = iterationStep.getInputData("Size model", CellposeSizeModelData.class, progressInfo);
+            List<LegacyCellposeSizeModelData> sizeModels = iterationStep.getInputData("Size model", LegacyCellposeSizeModelData.class, progressInfo);
             if (sizeModels.size() > 1) {
                 throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                         new GraphNodeValidationReportContext(this),
@@ -243,7 +243,7 @@ public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
                         "Remove or modify inputs so that there is only one size model."));
             }
             if (!sizeModels.isEmpty()) {
-                CellposeSizeModelData sizeModelData = sizeModels.get(0);
+                LegacyCellposeSizeModelData sizeModelData = sizeModels.get(0);
                 Path customModelPath = workDirectory.resolve("sz" + sizeModelData.getName() + ".npy");
                 try {
                     Files.write(customModelPath, sizeModelData.getData());
@@ -321,7 +321,7 @@ public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
 
 
         // I we provide a custom model, we need to inject custom code (Why?)
-        if (segmentationModelSettings.getModel() == Cellpose2InferenceModel.Custom) {
+        if (segmentationModelSettings.getModel() == PretrainedLegacyCellpose2InferenceModel.Custom) {
             injectCustomCellposeClass(code);
             setupCustomCellposeModel(code, customModelPaths, customSizeModelPath);
         } else {

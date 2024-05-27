@@ -21,7 +21,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.google.common.collect.ImmutableList;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeCustomTextDescriptionParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -64,6 +66,12 @@ public abstract class ListParameter<T> extends ArrayList<T> implements JIPipeVal
             T instance = customInstanceGenerator.get();
             add(instance);
             return instance;
+        }
+        JIPipeParameterTypeInfo parameterTypeInfo = JIPipe.getParameterTypes().getInfoByFieldClass(getContentClass());
+        if(parameterTypeInfo != null) {
+            Object instance = parameterTypeInfo.newInstance();
+            add((T) instance);
+            return (T) instance;
         }
         try {
             T instance = getContentClass().newInstance();

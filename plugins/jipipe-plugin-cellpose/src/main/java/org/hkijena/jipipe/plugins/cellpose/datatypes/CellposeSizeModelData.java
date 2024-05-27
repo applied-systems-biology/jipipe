@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.plugins.cellpose.datatypes;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -22,6 +24,8 @@ import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -32,15 +36,21 @@ import java.nio.file.Path;
  * Wrapper around Cellpose models
  */
 @SetJIPipeDocumentation(name = "Cellpose size model", description = "A Cellpose size model")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "A single .npy file that contains the Cellpose size model",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/cellpose-size-model-data.schema.json")
+@JIPipeDataStorageDocumentation(humanReadableDescription = "A single file without extension that contains the Cellpose model",
+        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/cellpose-model-data.schema.json")
 public class CellposeSizeModelData implements JIPipeData {
 
-    final byte[] data;
-    final String name;
+    private byte[] data;
+    private Metadata metadata = new Metadata();
+
+    public CellposeSizeModelData(String pretrainedModelName) {
+        metadata.setName(pretrainedModelName);
+        metadata.setPretrained(true);
+    }
 
     public CellposeSizeModelData(Path file) {
-        this.name = extractFileName(file);
+        this.metadata.name = file.getFileName().toString();
+        this.metadata.pretrained = false;
         try {
             data = Files.readAllBytes(file);
         } catch (IOException e) {
@@ -50,39 +60,56 @@ public class CellposeSizeModelData implements JIPipeData {
 
     public CellposeSizeModelData(byte[] data, String name) {
         this.data = data;
-        this.name = name;
+        this.metadata.name = name;
+        this.metadata.pretrained = false;
     }
 
     public CellposeSizeModelData(CellposeSizeModelData other) {
         this.data = other.data;
-        this.name = other.name;
+        this.metadata = new Metadata(other.metadata);
     }
 
     public static CellposeSizeModelData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        return new CellposeSizeModelData(PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".npy"));
-    }
+        Path metadataFile = PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".json");
+        Metadata metadata = JsonUtils.readFromFile(metadataFile, Metadata.class);
 
-    private String extractFileName(Path file) {
-        String name = file.getFileName().toString();
-        if (name.endsWith(".npy"))
-            return name.substring(0, name.length() - 4);
-        return name;
+        if(metadata.isPretrained()) {
+            return new CellposeSizeModelData(metadata.getName());
+        }
+        else {
+            return new CellposeSizeModelData(storage.getFileSystemPath().resolve(metadata.getName()));
+        }
     }
 
     public byte[] getData() {
         return data;
     }
 
-    public String getName() {
-        return name;
+    public Metadata getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Metadata metadata) {
+        this.metadata = metadata;
+    }
+
+    public void setData(byte[] data) {
+        this.data = data;
+    }
+
+    public boolean isPretrained() {
+        return metadata.isPretrained();
     }
 
     @Override
     public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
-        if (!forceName)
-            name = this.name;
         try {
-            Files.write(storage.getFileSystemPath().resolve(name + ".npy"), data);
+            String modelName = forceName ? StringUtils.orElse(name, metadata.name) : metadata.name;
+            String metadataName = forceName ? StringUtils.orElse(name, "metadata") : "metadata";
+            if(data != null) {
+                Files.write(storage.getFileSystemPath().resolve(modelName), data);
+            }
+            JsonUtils.saveToFile(metadata, PathUtils.ensureExtension(storage.getFileSystemPath().resolve(metadataName), ".json"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -96,11 +123,44 @@ public class CellposeSizeModelData implements JIPipeData {
     @Override
     public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
         JOptionPane.showMessageDialog(desktopWorkbench.getWindow(), "Visualizing the model is currently not supported.",
-                "Show Cellpose size model", JOptionPane.ERROR_MESSAGE);
+                "Show Cellpose model", JOptionPane.ERROR_MESSAGE);
     }
 
     @Override
     public String toString() {
-        return "Cellpose size model: " + name + " (" + (data.length / 1024 / 1024) + " MB)";
+        return (metadata.isPretrained() ? "Pretrained " : "") + "Cellpose size model '" + metadata.getName() + "' (" + (data.length / 1024 / 1024) + " MB)";
+    }
+
+    public static class Metadata {
+        private String name;
+        private boolean pretrained;
+
+        public Metadata() {
+        }
+
+        public Metadata(Metadata other) {
+            this.name = other.name;
+            this.pretrained = other.pretrained;
+        }
+
+        @JsonGetter("name")
+        public String getName() {
+            return name;
+        }
+
+        @JsonSetter("name")
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        @JsonGetter("is-pretrained")
+        public boolean isPretrained() {
+            return pretrained;
+        }
+
+        @JsonSetter("is-pretrained")
+        public void setPretrained(boolean pretrained) {
+            this.pretrained = pretrained;
+        }
     }
 }

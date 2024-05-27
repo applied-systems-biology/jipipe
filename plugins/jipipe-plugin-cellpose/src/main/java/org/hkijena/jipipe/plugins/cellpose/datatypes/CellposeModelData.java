@@ -13,7 +13,10 @@
 
 package org.hkijena.jipipe.plugins.cellpose.datatypes;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
@@ -22,6 +25,8 @@ import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -37,11 +42,17 @@ import java.util.List;
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/cellpose-model-data.schema.json")
 public class CellposeModelData implements JIPipeData {
 
-    private final byte[] data;
-    private final String name;
+    private byte[] data;
+    private Metadata metadata = new Metadata();
+
+    public CellposeModelData(String pretrainedModelName) {
+        metadata.setName(pretrainedModelName);
+        metadata.setPretrained(true);
+    }
 
     public CellposeModelData(Path file) {
-        this.name = file.getFileName().toString();
+        this.metadata.name = file.getFileName().toString();
+        this.metadata.pretrained = false;
         try {
             data = Files.readAllBytes(file);
         } catch (IOException e) {
@@ -51,47 +62,56 @@ public class CellposeModelData implements JIPipeData {
 
     public CellposeModelData(byte[] data, String name) {
         this.data = data;
-        this.name = name;
+        this.metadata.name = name;
+        this.metadata.pretrained = false;
     }
 
     public CellposeModelData(CellposeModelData other) {
         this.data = other.data;
-        this.name = other.name;
+        this.metadata = new Metadata(other.metadata);
     }
 
     public static CellposeModelData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        List<Path> files = PathUtils.findFilesByExtensionIn(storage.getFileSystemPath());
-        Path file = null;
+        Path metadataFile = PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".json");
+        Metadata metadata = JsonUtils.readFromFile(metadataFile, Metadata.class);
 
-        for (Path path : files) {
-            String name = path.getFileName().toString();
-            // Skip dot files
-            if (name.startsWith("."))
-                continue;
-            if (name.contains("cellpose")) {
-                file = path;
-                break;
-            }
+        if(metadata.isPretrained()) {
+            return new CellposeModelData(metadata.getName());
         }
-        if (file == null)
-            file = files.get(0);
-        return new CellposeModelData(file);
+        else {
+            return new CellposeModelData(storage.getFileSystemPath().resolve(metadata.getName()));
+        }
     }
 
     public byte[] getData() {
         return data;
     }
 
-    public String getName() {
-        return name;
+    public Metadata getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Metadata metadata) {
+        this.metadata = metadata;
+    }
+
+    public void setData(byte[] data) {
+        this.data = data;
+    }
+
+    public boolean isPretrained() {
+        return metadata.isPretrained();
     }
 
     @Override
     public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
-        if (!forceName)
-            name = this.name;
         try {
-            Files.write(storage.getFileSystemPath().resolve(name), data);
+            String modelName = forceName ? StringUtils.orElse(name, metadata.name) : metadata.name;
+            String metadataName = forceName ? StringUtils.orElse(name, "metadata") : "metadata";
+            if(data != null) {
+                Files.write(storage.getFileSystemPath().resolve(modelName), data);
+            }
+            JsonUtils.saveToFile(metadata, PathUtils.ensureExtension(storage.getFileSystemPath().resolve(metadataName), ".json"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -110,6 +130,49 @@ public class CellposeModelData implements JIPipeData {
 
     @Override
     public String toString() {
-        return "Cellpose model: " + name + " (" + (data.length / 1024 / 1024) + " MB)";
+        if(metadata.isPretrained()) {
+            return "Pretrained Cellpose model '" + metadata.getName() + "'";
+        }
+        else {
+            return "Cellpose model '" + metadata.getName() + "' (" + (data.length / 1024 / 1024) + " MB)";
+        }
+
+    }
+
+    public String getPretrainedModelName() {
+        return metadata.getName();
+    }
+
+    public static class Metadata {
+        private String name;
+        private boolean pretrained;
+
+        public Metadata() {
+        }
+
+        public Metadata(Metadata other) {
+            this.name = other.name;
+            this.pretrained = other.pretrained;
+        }
+
+        @JsonGetter("name")
+        public String getName() {
+            return name;
+        }
+
+        @JsonSetter("name")
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        @JsonGetter("is-pretrained")
+        public boolean isPretrained() {
+            return pretrained;
+        }
+
+        @JsonSetter("is-pretrained")
+        public void setPretrained(boolean pretrained) {
+            this.pretrained = pretrained;
+        }
     }
 }

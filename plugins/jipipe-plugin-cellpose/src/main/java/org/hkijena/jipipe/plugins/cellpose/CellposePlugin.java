@@ -24,18 +24,25 @@ import org.hkijena.jipipe.api.compat.ui.FileImageJDataImporterUI;
 import org.hkijena.jipipe.api.compat.ui.FolderImageJDataExporterUI;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
-import org.hkijena.jipipe.plugins.cellpose.algorithms.Cellpose2InferenceAlgorithm;
-import org.hkijena.jipipe.plugins.cellpose.algorithms.Cellpose2TrainingAlgorithm;
-import org.hkijena.jipipe.plugins.cellpose.algorithms.ImportCellposeModelAlgorithm;
-import org.hkijena.jipipe.plugins.cellpose.algorithms.ImportCellposeSizeModelAlgorithm;
-import org.hkijena.jipipe.plugins.cellpose.algorithms.deprecated.CellposeAlgorithm_Old;
-import org.hkijena.jipipe.plugins.cellpose.algorithms.deprecated.CellposeTrainingAlgorithm_Old;
-import org.hkijena.jipipe.plugins.cellpose.compat.CellposeModelImageJExporter;
-import org.hkijena.jipipe.plugins.cellpose.compat.CellposeModelImageJImporter;
-import org.hkijena.jipipe.plugins.cellpose.compat.CellposeSizeModelImageJExporter;
-import org.hkijena.jipipe.plugins.cellpose.compat.CellposeSizeModelImageJImporter;
+import org.hkijena.jipipe.plugins.cellpose.algorithms.*;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeSizeModelData;
+import org.hkijena.jipipe.plugins.cellpose.legacy.algorithms.LegacyCellpose2InferenceAlgorithm;
+import org.hkijena.jipipe.plugins.cellpose.legacy.algorithms.LegacyCellpose2TrainingAlgorithm;
+import org.hkijena.jipipe.plugins.cellpose.legacy.algorithms.ImportLegacyCellposeModelAlgorithm;
+import org.hkijena.jipipe.plugins.cellpose.legacy.algorithms.ImportLegacyCellposeSizeModelAlgorithm;
+import org.hkijena.jipipe.plugins.cellpose.legacy.algorithms.Cellpose1InferenceAlgorithm;
+import org.hkijena.jipipe.plugins.cellpose.legacy.algorithms.Cellpose1TrainingAlgorithm;
+import org.hkijena.jipipe.plugins.cellpose.legacy.compat.LegacyCellposeModelImageJExporter;
+import org.hkijena.jipipe.plugins.cellpose.legacy.compat.LegacyCellposeModelImageJImporter;
+import org.hkijena.jipipe.plugins.cellpose.legacy.compat.LegacyCellposeSizeModelImageJExporter;
+import org.hkijena.jipipe.plugins.cellpose.legacy.compat.LegacyCellposeSizeModelImageJImporter;
+import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeModelData;
+import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeSizeModelData;
+import org.hkijena.jipipe.plugins.cellpose.legacy.PretrainedLegacyCellpose2InferenceModel;
+import org.hkijena.jipipe.plugins.cellpose.legacy.PretrainedLegacyCellpose2TrainingModel;
+import org.hkijena.jipipe.plugins.cellpose.parameters.PretrainedCellpose2Model;
+import org.hkijena.jipipe.plugins.cellpose.parameters.PretrainedCellpose2ModelList;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.imagejalgorithms.ImageJAlgorithmsPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
@@ -159,22 +166,37 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerApplicationSettingsSheet(new CellposePluginApplicationSettings());
         registerProjectSettingsSheet(CellposePluginProjectSettings.class);
 
-        registerEnumParameterType("cellpose-model", Cellpose2InferenceModel.class, "Cellpose model", "A Cellpose model");
-        registerEnumParameterType("cellpose-pretrained-model", Cellpose2TrainingModel.class, "Cellpose pre-trained model", "A pretrained model for Cellpose");
+        // Modern nodes and data types
+        registerDatatype("cellpose-model-v2", CellposeModelData.class, UIUtils.getIconURLFromResources("data-types/cellpose-model.png"));
+        registerDatatype("cellpose-size-model-v2", CellposeSizeModelData.class, UIUtils.getIconURLFromResources("data-types/cellpose-size-model.png"));
 
-        registerDatatype("cellpose-model", CellposeModelData.class, UIUtils.getIconURLFromResources("data-types/cellpose-model.png"));
-        registerImageJDataImporter("cellpose-model-from-file", new CellposeModelImageJImporter(), FileImageJDataImporterUI.class);
-        registerImageJDataExporter("cellpose-model-to-directory", new CellposeModelImageJExporter(), FolderImageJDataExporterUI.class);
-        registerDatatype("cellpose-size-model", CellposeSizeModelData.class, UIUtils.getIconURLFromResources("data-types/cellpose-size-model.png"));
-        registerImageJDataImporter("cellpose-size-model-from-file", new CellposeSizeModelImageJImporter(), FileImageJDataImporterUI.class);
-        registerImageJDataExporter("cellpose-size-model-to-directory", new CellposeSizeModelImageJExporter(), FolderImageJDataExporterUI.class);
+        registerEnumParameterType("cellpose-2.x-pretrained-model", PretrainedCellpose2Model.class, "Cellpose 2.x pretrained model", "A pretrained model provided with Cellpose 2.x");
+        registerParameterType("cellpose-2.x-pretrained-model-list", PretrainedCellpose2ModelList.class, "Cellpose 2.x pretrained model list", "A list of pretrained Cellpose 2.x models");
 
-        registerNodeType("cellpose", CellposeAlgorithm_Old.class, UIUtils.getIconURLFromResources("emblems/vcs-conflicting.png"));
-        registerNodeType("cellpose-2", Cellpose2InferenceAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
-        registerNodeType("cellpose-training", CellposeTrainingAlgorithm_Old.class, UIUtils.getIconURLFromResources("emblems/vcs-conflicting.png"));
-        registerNodeType("cellpose-training-2", Cellpose2TrainingAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
-        registerNodeType("import-cellpose-model", ImportCellposeModelAlgorithm.class);
-        registerNodeType("import-cellpose-size-model", ImportCellposeSizeModelAlgorithm.class);
+        registerNodeType("import-cellpose-model-v2", ImportCellposeModelFromFileAlgorithm.class);
+        registerNodeType("import-cellpose-size-model-v2", ImportCellposeSizeModelFromFileAlgorithm.class);
+        registerNodeType("import-cellpose-2.x-pretrained-model", ImportPretrainedCellpose2ModelAlgorithm.class);
+
+        registerNodeType("cellpose-inference-2.x", Cellpose2InferenceAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
+        registerNodeType("cellpose-training-2.x", Cellpose2TrainingAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
+
+        // Legacy nodes and data types
+        registerEnumParameterType("cellpose-model", PretrainedLegacyCellpose2InferenceModel.class, "Cellpose model (deprecated)", "A Cellpose model");
+        registerEnumParameterType("cellpose-pretrained-model", PretrainedLegacyCellpose2TrainingModel.class, "Cellpose pre-trained model (deprecated)", "A pretrained model for Cellpose");
+
+        registerDatatype("cellpose-model", LegacyCellposeModelData.class, UIUtils.getIconURLFromResources("data-types/cellpose-model.png"));
+        registerImageJDataImporter("cellpose-model-from-file", new LegacyCellposeModelImageJImporter(), FileImageJDataImporterUI.class);
+        registerImageJDataExporter("cellpose-model-to-directory", new LegacyCellposeModelImageJExporter(), FolderImageJDataExporterUI.class);
+        registerDatatype("cellpose-size-model", LegacyCellposeSizeModelData.class, UIUtils.getIconURLFromResources("data-types/cellpose-size-model.png"));
+        registerImageJDataImporter("cellpose-size-model-from-file", new LegacyCellposeSizeModelImageJImporter(), FileImageJDataImporterUI.class);
+        registerImageJDataExporter("cellpose-size-model-to-directory", new LegacyCellposeSizeModelImageJExporter(), FolderImageJDataExporterUI.class);
+
+        registerNodeType("cellpose", Cellpose1InferenceAlgorithm.class, UIUtils.getIconURLFromResources("emblems/vcs-conflicting.png"));
+        registerNodeType("cellpose-2", LegacyCellpose2InferenceAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
+        registerNodeType("cellpose-training", Cellpose1TrainingAlgorithm.class, UIUtils.getIconURLFromResources("emblems/vcs-conflicting.png"));
+        registerNodeType("cellpose-training-2", LegacyCellpose2TrainingAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
+        registerNodeType("import-cellpose-model", ImportLegacyCellposeModelAlgorithm.class);
+        registerNodeType("import-cellpose-size-model", ImportLegacyCellposeSizeModelAlgorithm.class);
 
         registerProjectTemplatesFromResources(RESOURCES, "templates");
     }

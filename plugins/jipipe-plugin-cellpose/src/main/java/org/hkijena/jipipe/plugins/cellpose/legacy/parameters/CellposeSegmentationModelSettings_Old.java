@@ -11,18 +11,18 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.cellpose.parameters.deprecated;
+package org.hkijena.jipipe.plugins.cellpose.legacy.parameters;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.plugins.cellpose.Cellpose2InferenceModel;
+import org.hkijena.jipipe.plugins.cellpose.legacy.PretrainedLegacyCellpose2InferenceModel;
 
 @Deprecated
 public class CellposeSegmentationModelSettings_Old extends AbstractJIPipeParameterCollection {
-    private Cellpose2InferenceModel model = Cellpose2InferenceModel.Cytoplasm;
+    private PretrainedLegacyCellpose2InferenceModel model = PretrainedLegacyCellpose2InferenceModel.Cytoplasm;
     private double meanDiameter = 30;
 
     private boolean enableGPU = true;
@@ -38,12 +38,12 @@ public class CellposeSegmentationModelSettings_Old extends AbstractJIPipeParamet
 
     @SetJIPipeDocumentation(name = "Model", description = "The model type that should be used.")
     @JIPipeParameter("model")
-    public Cellpose2InferenceModel getModel() {
+    public PretrainedLegacyCellpose2InferenceModel getModel() {
         return model;
     }
 
     @JIPipeParameter("model")
-    public void setModel(Cellpose2InferenceModel model) {
+    public void setModel(PretrainedLegacyCellpose2InferenceModel model) {
         this.model = model;
         emitParameterUIChangedEvent();
     }
@@ -51,7 +51,7 @@ public class CellposeSegmentationModelSettings_Old extends AbstractJIPipeParamet
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
         if (access.getSource() == this && "mean-diameter".equals(access.getKey())) {
-            return model == Cellpose2InferenceModel.Custom;
+            return model == PretrainedLegacyCellpose2InferenceModel.Custom;
         }
         return super.isParameterUIVisible(tree, access);
     }

@@ -913,7 +913,8 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             int slotWidth = (int) Math.round(slotState.getNativeWidth() * zoom);
 
             // Draw parameter slots differently
-            if (slotState.getSlot().getInfo().getRole() == JIPipeDataSlotRole.Parameters) {
+            JIPipeDataSlotRole slotRole = slotState.getSlot().getInfo().getRole();
+            if (slotRole == JIPipeDataSlotRole.Parameters || slotRole == JIPipeDataSlotRole.ParametersLooping) {
                 g2.setPaint(slotParametersFillColor);
                 g2.fillRect(startX, 0, slotWidth, realSlotHeight);
             }
@@ -1983,6 +1984,11 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         // Role information item
         if (slot.getInfo().getRole() == JIPipeDataSlotRole.Parameters) {
             ViewOnlyMenuItem roleInfoItem = new ViewOnlyMenuItem("<html>Parameter-like data<br><small>This slot contains parametric data that is not considered for iteration step generation.</small></html>", UIUtils.getIconFromResources("actions/wrench.png"));
+            menu.add(roleInfoItem);
+        }
+        else if(slot.getInfo().getRole() == JIPipeDataSlotRole.ParametersLooping) {
+            ViewOnlyMenuItem roleInfoItem = new ViewOnlyMenuItem("<html>Parameter-like data<br><small>This slot contains parametric data that is not considered for iteration step generation. Workloads may be repeated per input of this slot.</small></html>",
+                    UIUtils.getIconFromResources("actions/wrench.png"));
             menu.add(roleInfoItem);
         }
 
