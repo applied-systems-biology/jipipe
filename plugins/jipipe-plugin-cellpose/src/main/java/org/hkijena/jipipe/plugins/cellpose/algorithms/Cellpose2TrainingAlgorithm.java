@@ -28,6 +28,7 @@ import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSingleIterationAlgorithm;
@@ -40,6 +41,7 @@ import org.hkijena.jipipe.plugins.cellpose.CellposeEnvironmentAccessNode;
 import org.hkijena.jipipe.plugins.cellpose.CellposeUtils;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeSizeModelData;
+import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.parameters.CellposeChannelSettings;
 import org.hkijena.jipipe.plugins.cellpose.parameters.CellposeGPUSettings;
 import org.hkijena.jipipe.plugins.cellpose.parameters.CellposeTrainingTweaksSettings;
@@ -76,6 +78,8 @@ import java.util.stream.Collectors;
 @AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Test data", create = true, optional = true)
 @AddJIPipeInputSlot(value = CellposeModelData.class, slotName = "Pretrained model", create = true, optional = true, description = "Optional pretrained models. All workloads are repeated per model.", role = JIPipeDataSlotRole.ParametersLooping)
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
+@AddJIPipeOutputSlot(value = CellposeModelData.class, slotName = "Model", create = true, description = "The trained model")
+@AddJIPipeOutputSlot(value = CellposeSizeModelData.class)
 public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm implements CellposeEnvironmentAccessNode {
 
     public static final JIPipeDataSlotInfo OUTPUT_SIZE_MODEL = new JIPipeDataSlotInfo(CellposeSizeModelData.class, JIPipeSlotType.Output, "Size Model", "Generated size model", true);
