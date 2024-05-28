@@ -1200,7 +1200,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
                     slotState.setSlotLabel(inputSlot.getInfo().getCustomName());
                     slotState.setSlotLabelIsCustom(true);
                 }
-                if (slotState.getSlot().getInfo().getRole() == JIPipeDataSlotRole.Parameters && slotState.getSlotName().equals(JIPipeParameterSlotAlgorithm.SLOT_PARAMETERS)) {
+                if (slotState.getSlotName().equals(JIPipeParameterSlotAlgorithm.SLOT_PARAMETERS)) {
                     slotState.setSlotLabel("Parameters");
                 }
                 if (graph != null && graph.containsNode(inputSlot)) {
