@@ -17,9 +17,15 @@ import ij.IJ;
 import net.imagej.ImageJ;
 import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.compat.SingleImageJAlgorithmRunConfiguration;
+import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.run.JIPipeGraphRun;
+import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
@@ -27,6 +33,8 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
 import org.hkijena.jipipe.desktop.app.compat.JIPipeDesktopRunSingleAlgorithmWindow;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopSplashScreen;
 import org.hkijena.jipipe.plugins.settings.JIPipeExtensionApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Initializable;
@@ -41,7 +49,7 @@ import java.awt.*;
 /**
  * Runs a JIPipe algorithm on a single data set.
  */
-@Plugin(type = Command.class, menuPath = "Plugins>JIPipe>Run JIPipe algorithm", headless = true)
+@Plugin(type = Command.class, menuPath = "Plugins>JIPipe>Run JIPipe node", headless = true)
 public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initializable {
 
     @Parameter(persist = false)
@@ -116,7 +124,7 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
             UIUtils.loadLookAndFeelFromSettings();
             initializeRegistry(true);
             JIPipeDesktopRunSingleAlgorithmWindow dialog = new JIPipeDesktopRunSingleAlgorithmWindow(getContext());
-            dialog.setTitle("Run JIPipe algorithm");
+            dialog.setTitle("Run JIPipe node");
             dialog.setIconImage(UIUtils.getJIPipeIcon128());
             dialog.pack();
             dialog.setSize(new Dimension(1024, 768));
@@ -131,7 +139,7 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
             settings.reportValidity(new UnspecifiedValidationReportContext(), report);
             if (!report.isValid()) {
                 StringBuilder message = new StringBuilder();
-                message.append("The provided algorithm options are invalid:\n\n");
+                message.append("The provided node options are invalid:\n\n");
                 for (JIPipeValidationReportEntry entry : report) {
                     message.append(entry.toString()).append(", ");
                 }
@@ -143,21 +151,45 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
         progressInfo.getStatusUpdatedEventEmitter().subscribeLambda((emitter, event) -> {
             IJ.showStatus("[" + event.getProgress() + "/" + event.getMaxProgress() + "] " + event.getMessage());
         });
-        IJ.showStatus("Running JIPipe algorithm ...");
+        IJ.showStatus("Running JIPipe node ...");
         IJ.showProgress(1, 3);
-        settings.importInputsFromImageJ(progressInfo);
+
+        JIPipeProject project = new JIPipeProject();
+        JIPipeProjectCompartment projectCompartment = project.addCompartment("Default");
+        project.getGraph().insertNode(algorithm, projectCompartment.getProjectCompartmentUUID());
+        JIPipeGraphRunConfiguration runConfiguration = new JIPipeGraphRunConfiguration();
+        runConfiguration.setOutputPath(JIPipeRuntimeApplicationSettings.generateTempDirectory("JIPipe-Run"));
+        runConfiguration.setNumThreads(threads);
+        runConfiguration.setLoadFromCache(false);
+        runConfiguration.setStoreToCache(true);
+        runConfiguration.setStoreToDisk(false);
+
+        JIPipeGraphRun run = new JIPipeGraphRun(project, runConfiguration);
+        JIPipeGraphNode runAlgorithm = run.getGraph().getNodeByUUID(algorithm.getUUIDInParentGraph());
+        for (JIPipeInputDataSlot inputSlot : runAlgorithm.getInputSlots()) {
+            inputSlot.setSkipDataGathering(true);
+        }
+        for (JIPipeOutputDataSlot outputSlot : runAlgorithm.getOutputSlots()) {
+            outputSlot.setSkipGC(true);
+        }
+        settings.importInputsFromImageJ(runAlgorithm, progressInfo);
         IJ.showProgress(2, 3);
-        JIPipeFixedThreadPool threadPool = new JIPipeFixedThreadPool(threads);
-        JIPipeGraphNodeRunContext runContext = new JIPipeGraphNodeRunContext();
-        runContext.setThreadPool(threadPool);
+
+        run.getProgressInfo().setLogToStdOut(true);
+
         try {
-            algorithm.run(runContext, progressInfo);
+            run.run();
+
+            IJ.showProgress(3, 3);
+            settings.exportOutputToImageJ(runAlgorithm, progressInfo);
         } catch (Exception e) {
             throw new RuntimeException(e);
-        } finally {
-            threadPool.shutdown();
         }
-        IJ.showProgress(3, 3);
-        settings.exportOutputToImageJ(progressInfo);
+        finally {
+            project.getCache().clearAll( run.getProgressInfo());
+            algorithm.clearSlotData();
+            runAlgorithm.clearSlotData();
+            PathUtils.deleteDirectoryRecursively(runConfiguration.getOutputPath(),  run.getProgressInfo());
+        }
     }
 }
