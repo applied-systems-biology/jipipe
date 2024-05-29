@@ -388,8 +388,9 @@ public class ExtractROIProfileAlgorithm extends JIPipeIteratingAlgorithm {
             return null;
         int width = ip2.getWidth();
         int height = ip2.getHeight();
-        if (ip2 instanceof FloatProcessor)
-            return getColumnAverageProfile(new Rectangle(0, 0, width, height), ip2);
+        if (ip2 instanceof FloatProcessor) {
+            return getColumnAverageProfile(new Rectangle(0, 0, width, height), cal, ip2);
+        }
         double[] values = new double[width];
         double[] aLine;
         ip2.setInterpolate(false);
