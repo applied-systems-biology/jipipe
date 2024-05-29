@@ -84,15 +84,15 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
         UIUtils.addReloadablePopupMenuToButton(configureButton, configureMenu, this::reloadInstallMenu);
         buttonPanel.add(configureButton);
 
-        addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (!e.isConsumed()) {
-                    e.consume();
-                    editEnvironment();
-                }
-            }
-        });
+//        addMouseListener(new MouseAdapter() {
+//            @Override
+//            public void mouseClicked(MouseEvent e) {
+//                if (!e.isConsumed()) {
+//                    e.consume();
+//                    editEnvironment();
+//                }
+//            }
+//        });
     }
 
     private void reloadInstallMenu() {
@@ -129,7 +129,7 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
         if (settings != null && settings.allowArtifact() && JIPipeArtifactEnvironment.class.isAssignableFrom(getParameterAccess().getFieldClass())) {
             for (JIPipeArtifact artifact : JIPipe.getArtifacts().queryCachedArtifacts(settings.artifactFilters())) {
                 if (artifact.isCompatible()) {
-                    configureMenu.add(UIUtils.createMenuItem("Artifact " + artifact.getFullId(), "Uses the predefined artifact " + artifact.getFullId(),
+                    menuItems.add(UIUtils.createMenuItem("Artifact " + artifact.getFullId(), "Uses the predefined artifact " + artifact.getFullId(),
                             UIUtils.getIconFromResources("actions/run-install.png"), () -> {
                                 loadArtifact(artifact);
                             }));
