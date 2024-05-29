@@ -127,6 +127,53 @@ public class UIUtils {
 
     private static Border CONTROL_BORDER;
     private static Border CONTROL_ERROR_BORDER;
+    public static final JMenuItem MENU_ITEM_SEPARATOR = null;
+
+    public static void rebuildMenu(JPopupMenu menu, List<Component> items) {
+        menu.removeAll();
+        if(items.isEmpty()) {
+            return;
+        }
+        items = new ArrayList<>(items);
+        while(items.get(items.size() -1) == null) {
+           items.remove(items.size() - 1);
+        }
+        boolean canAddSeparator = false;
+        for (Component item : items) {
+            if (item == null) {
+                if (canAddSeparator) {
+                    menu.addSeparator();
+                    canAddSeparator = false;
+                }
+            } else {
+                menu.add(item);
+                canAddSeparator = true;
+            }
+        }
+    }
+
+    public static void rebuildMenu(JMenu menu, List<Component> items) {
+        menu.removeAll();
+        if(items.isEmpty()) {
+            return;
+        }
+        items = new ArrayList<>(items);
+        while(items.get(items.size() -1) == null) {
+            items.remove(items.size() - 1);
+        }
+        boolean canAddSeparator = false;
+        for (Component item : items) {
+            if (item == null) {
+                if (canAddSeparator) {
+                    menu.addSeparator();
+                    canAddSeparator = false;
+                }
+            } else {
+                menu.add(item);
+                canAddSeparator = true;
+            }
+        }
+    }
 
     public static JLabel createInfoLabel(String text, String subtext) {
         JLabel label = new JLabel("<html><strong>" + text + "</strong><br/>" + subtext + "</html>",

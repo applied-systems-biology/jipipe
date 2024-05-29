@@ -36,6 +36,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -96,12 +97,13 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
 
     private void reloadInstallMenu() {
         Class<?> fieldClass = getParameterAccess().getFieldClass();
-        configureMenu.removeAll();
+        List<Component> menuItems = new ArrayList<>();
+
 
         ExternalEnvironmentParameterSettings settings = getParameterAccess().getAnnotationOfType(ExternalEnvironmentParameterSettings.class);
 
         JMenuItem editMenuItem = UIUtils.createMenuItem("Edit", "Edits the current environment", UIUtils.getIconFromResources("actions/edit.png"), this::editEnvironment);
-        configureMenu.add(editMenuItem);
+        menuItems.add(editMenuItem);
 
         if (settings == null || settings.allowManagePreset()) {
             JMenu presetMenu = new JMenu("Load preset");
@@ -113,36 +115,29 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
                 presetMenu.add(presetItem);
             }
 
-            configureMenu.addSeparator();
+            menuItems.add(UIUtils.MENU_ITEM_SEPARATOR);
 
             if (!presets.isEmpty()) {
-                configureMenu.add(presetMenu);
+                menuItems.add(presetMenu);
             }
 
             JMenuItem savePresetItem = new JMenuItem("Save as preset ...", UIUtils.getIconFromResources("actions/save.png"));
             savePresetItem.addActionListener(e -> saveAsPreset());
-            configureMenu.add(savePresetItem);
+            menuItems.add(savePresetItem);
         }
-        if (configureMenu.getComponentCount() > 0) {
-            configureMenu.addSeparator();
-        }
+        menuItems.add(UIUtils.MENU_ITEM_SEPARATOR);
         if (settings != null && settings.allowArtifact() && JIPipeArtifactEnvironment.class.isAssignableFrom(getParameterAccess().getFieldClass())) {
-            boolean addedArtifact = false;
             for (JIPipeArtifact artifact : JIPipe.getArtifacts().queryCachedArtifacts(settings.artifactFilters())) {
                 if (artifact.isCompatible()) {
                     configureMenu.add(UIUtils.createMenuItem("Artifact " + artifact.getFullId(), "Uses the predefined artifact " + artifact.getFullId(),
                             UIUtils.getIconFromResources("actions/run-install.png"), () -> {
                                 loadArtifact(artifact);
                             }));
-                    addedArtifact = true;
                 }
             }
-            if (addedArtifact) {
-                configureMenu.addSeparator();
-            }
         }
+        menuItems.add(UIUtils.MENU_ITEM_SEPARATOR);
         if (settings == null || settings.allowInstall()) {
-
             String menuCategory = settings != null ? settings.showCategory() : "";
             boolean foundAdditionalEnvironments = false;
             for (JIPipeExternalEnvironmentRegistry.InstallerEntry installer : JIPipe.getInstance()
@@ -165,7 +160,7 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
                 item.setToolTipText(installer.getDescription());
                 item.addActionListener(e -> JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), getDesktopWorkbench().getWindow(),
                         (JIPipeRunnable) ReflectionUtils.newInstance(installer.getInstallerClass(), getDesktopWorkbench(), getParameterAccess())));
-                configureMenu.add(item);
+                menuItems.add(item);
             }
             if (foundAdditionalEnvironments) {
                 JMenu additionalEnvironmentsMenu = new JMenu("Additional compatible installers");
@@ -189,9 +184,11 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
                             (JIPipeRunnable) ReflectionUtils.newInstance(installer.getInstallerClass(), getDesktopWorkbench(), getParameterAccess())));
                     additionalEnvironmentsMenu.add(item);
                 }
-                configureMenu.add(additionalEnvironmentsMenu);
+                menuItems.add(additionalEnvironmentsMenu);
             }
         }
+
+        UIUtils.rebuildMenu(configureMenu, menuItems);
     }
 
     private void loadArtifact(JIPipeArtifact artifact) {
