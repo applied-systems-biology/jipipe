@@ -38,6 +38,7 @@ target
 /db.xml.gz
 /dist/*.zip
 **/__pycache__/
+/jipipe-core/jipipe
 
 /tree.txt
 /test.png

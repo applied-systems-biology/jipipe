@@ -91,10 +91,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.annotations.RoiProp
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.assemble.AssembleExtractedROIAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.assemble.ExtractFromROIAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.convert.*;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.draw.DrawOvalRoiAlgorithm;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.draw.DrawRectangleRoiAlgorithm;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.draw.DrawScaleBarRoiAlgorithm;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.draw.DrawTextRoiAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.draw.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.filter.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.generate.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.CountROIAlgorithm;
@@ -889,6 +886,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-roi-filter-and-merge-statistics-script", FilterAndMergeRoiByStatisticsScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
         registerNodeType("ij1-roi-from-table-rectangular", TableToRectangularROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-rectangle.png"));
         registerNodeType("ij1-roi-from-table-circle", TableToCircularROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-circle.png"));
+        registerNodeType("ij1-roi-from-table-line", TableToLineROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-line.png"));
         registerNodeType("ij1-roi-from-table-text", TableToTextROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit-select-text.png"));
         registerNodeType("ij1-roi-set-image", SetRoiImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/viewimage.png"));
         registerNodeType("ij1-roi-get-image", GetRoiImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/viewimage.png"));
@@ -917,6 +915,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-roi-draw-rectangle", DrawRectangleRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-rectangle.png"));
         registerNodeType("ij1-roi-draw-oval", DrawOvalRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-ellipse.png"));
         registerNodeType("ij1-roi-draw-text", DrawTextRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-text.png"));
+        registerNodeType("ij1-roi-draw-line", DrawLineRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-line.png"));
         registerNodeType("ij1-roi-draw-scalebar", DrawScaleBarRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));
 
 //        registerNodeType("ij1-roi-register-max-brightness", RegisterRoiToImageByBrightnessAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_search.png"));

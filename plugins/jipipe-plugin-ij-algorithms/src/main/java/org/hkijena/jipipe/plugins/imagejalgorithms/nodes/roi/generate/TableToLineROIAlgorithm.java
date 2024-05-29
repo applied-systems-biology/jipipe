@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.generate;
 
+import ij.gui.Line;
 import ij.gui.OvalRoi;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
@@ -41,19 +42,17 @@ import java.awt.*;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@SetJIPipeDocumentation(name = "Table to rectangular/oval ROIs", description = "Converts data from a table to rectangular or oval ROIs. This node provides more options than the 'Table to circular ROIs' node.")
+@SetJIPipeDocumentation(name = "Table to line ROIs", description = "Converts data from a table to line ROIs.")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Convert")
-@AddJIPipeNodeAlias(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Draw", aliasName = "Draw rectangular ROIs from table")
+@AddJIPipeNodeAlias(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Draw", aliasName = "Draw line ROIs from table")
 @AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
-public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class TableToLineROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private TableColumnSourceExpressionParameter columnX1 = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"X1\"");
     private TableColumnSourceExpressionParameter columnY1 = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"Y1\"");
     private TableColumnSourceExpressionParameter columnX2 = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"X2\"");
     private TableColumnSourceExpressionParameter columnY2 = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"Y2\"");
-    private TableColumnSourceExpressionParameter columnWidth = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"Width\"");
-    private TableColumnSourceExpressionParameter columnHeight = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"Height\"");
 
     private TableColumnSourceExpressionParameter columnZ = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.Generate, "0");
 
@@ -62,8 +61,6 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
     private TableColumnSourceExpressionParameter columnT = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.Generate, "0");
 
     private boolean oneBasedPositions = true;
-    private Anchor anchor = Anchor.TopLeft;
-    private Mode mode = Mode.Rectangle;
 
     private final VisualROIProperties roiProperties;
 
@@ -72,7 +69,7 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
      *
      * @param info the info
      */
-    public TableToRectangularROIAlgorithm(JIPipeNodeInfo info) {
+    public TableToLineROIAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.roiProperties = new VisualROIProperties();
         registerSubParameter(roiProperties);
@@ -83,18 +80,14 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
      *
      * @param other the original
      */
-    public TableToRectangularROIAlgorithm(TableToRectangularROIAlgorithm other) {
+    public TableToLineROIAlgorithm(TableToLineROIAlgorithm other) {
         super(other);
         this.roiProperties = new VisualROIProperties(other.roiProperties);
         registerSubParameter(roiProperties);
-        this.anchor = other.anchor;
-        this.mode = other.mode;
         this.columnX1 = new TableColumnSourceExpressionParameter(other.columnX1);
         this.columnY1 = new TableColumnSourceExpressionParameter(other.columnY1);
         this.columnX2 = new TableColumnSourceExpressionParameter(other.columnX2);
         this.columnY2 = new TableColumnSourceExpressionParameter(other.columnY2);
-        this.columnWidth = new TableColumnSourceExpressionParameter(other.columnWidth);
-        this.columnHeight = new TableColumnSourceExpressionParameter(other.columnHeight);
         this.columnC = new TableColumnSourceExpressionParameter(other.columnC);
         this.columnZ = new TableColumnSourceExpressionParameter(other.columnZ);
         this.columnT = new TableColumnSourceExpressionParameter(other.columnT);
@@ -106,15 +99,8 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
         super.reportValidity(reportContext, report);
         report.report(new ParameterValidationReportContext(reportContext, this, "Column 'X1'", "column-x1"), columnX1);
         report.report(new ParameterValidationReportContext(reportContext, this, "Column 'Y1'", "column-y1"), columnY1);
-
-        if (anchor == Anchor.TopLeft || anchor == Anchor.Center) {
-            report.report(new ParameterValidationReportContext(reportContext, this, "Column 'Width'", "column-width"), columnWidth);
-            report.report(new ParameterValidationReportContext(reportContext, this, "Column 'Height'", "column-height"), columnHeight);
-        }
-        if (anchor == Anchor.TwoPoints) {
-            report.report(new ParameterValidationReportContext(reportContext, this, "Column 'X2'", "column-x2"), columnX2);
-            report.report(new ParameterValidationReportContext(reportContext, this, "Column 'Y2'", "column-y2"), columnY2);
-        }
+        report.report(new ParameterValidationReportContext(reportContext, this, "Column 'X2'", "column-x2"), columnX2);
+        report.report(new ParameterValidationReportContext(reportContext, this, "Column 'Y2'", "column-y2"), columnY2);
     }
 
     @Override
@@ -137,85 +123,28 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
         ensureColumnExists(colC, table, "C");
         ensureColumnExists(colT, table, "T");
 
-        if (anchor == Anchor.TopLeft || anchor == Anchor.Center) {
+        TableColumn colX2 = columnX2.pickOrGenerateColumn(table, variables);
+        TableColumn colY2 = columnY2.pickOrGenerateColumn(table, variables);
 
-            TableColumn colWidth = columnWidth.pickOrGenerateColumn(table, variables);
-            TableColumn colHeight = columnHeight.pickOrGenerateColumn(table, variables);
+        ensureColumnExists(colX2, table, "X2");
+        ensureColumnExists(colY2, table, "Y2");
 
-            ensureColumnExists(colWidth, table, "Width");
-            ensureColumnExists(colHeight, table, "Height");
-
-            for (int row = 0; row < table.getRowCount(); row++) {
-                int x1 = (int) colX1.getRowAsDouble(row);
-                int y1 = (int) colY1.getRowAsDouble(row);
-                int w = (int) colWidth.getRowAsDouble(row);
-                int h = (int) colHeight.getRowAsDouble(row);
-                int x;
-                int y;
-                if (anchor == Anchor.TopLeft) {
-                    x = x1;
-                    y = y1;
-                } else {
-                    x = x1 - w / 2;
-                    y = y1 - h / 2;
-                }
-                int z = (int) colZ.getRowAsDouble(row) + (oneBasedPositions ? 0 : 1);
-                int c = (int) colC.getRowAsDouble(row) + (oneBasedPositions ? 0 : 1);
-                int t = (int) colT.getRowAsDouble(row) + (oneBasedPositions ? 0 : 1);
-                createROI(rois, w, h, x, y, z, c, t, variables);
-            }
-        } else {
-            TableColumn colX2 = columnX2.pickOrGenerateColumn(table, variables);
-            TableColumn colY2 = columnY2.pickOrGenerateColumn(table, variables);
-
-            ensureColumnExists(colX2, table, "X2");
-            ensureColumnExists(colY2, table, "Y2");
-
-            for (int row = 0; row < table.getRowCount(); row++) {
-                int x1 = (int) colX1.getRowAsDouble(row);
-                int y1 = (int) colY1.getRowAsDouble(row);
-                int x2 = (int) colX2.getRowAsDouble(row);
-                int y2 = (int) colY2.getRowAsDouble(row);
-                int w = Math.abs(x1 - x2);
-                int h = Math.abs(y1 - y2);
-                int x = Math.min(x1, x2);
-                int y = Math.min(y1, y2);
-                int z = (int) colZ.getRowAsDouble(row) + (oneBasedPositions ? 0 : 1);
-                int c = (int) colC.getRowAsDouble(row) + (oneBasedPositions ? 0 : 1);
-                int t = (int) colT.getRowAsDouble(row) + (oneBasedPositions ? 0 : 1);
-                createROI(rois, w, h, x, y, z, c, t, variables);
-            }
+        for (int row = 0; row < table.getRowCount(); row++) {
+            double x1 = (int) colX1.getRowAsDouble(row);
+            double y1 = (int) colY1.getRowAsDouble(row);
+            double x2 = (int) colX2.getRowAsDouble(row);
+            double y2 = (int) colY2.getRowAsDouble(row);
+            int z = (int) colZ.getRowAsDouble(row) + (oneBasedPositions ? 0 : 1);
+            int c = (int) colC.getRowAsDouble(row) + (oneBasedPositions ? 0 : 1);
+            int t = (int) colT.getRowAsDouble(row) + (oneBasedPositions ? 0 : 1);
+            createROI(rois, x1, y1, x2, y2, z, c, t, variables);
         }
 
         iterationStep.addOutputData(getFirstOutputSlot(), rois, progressInfo);
     }
 
-    private void createROI(ROIListData rois, int w, int h, int x, int y, int z, int c, int t, JIPipeExpressionVariablesMap variables) {
-        Roi roi;
-        switch (mode) {
-            case Rectangle:
-                roi = new ShapeRoi(new Rectangle(x, y, w, h));
-                break;
-            case Oval:
-                roi = new OvalRoi(x, y, w, h);
-                break;
-            case MinCircle: {
-                int d = Math.min(w, h);
-                int cx = x + w / 2 - d / 2;
-                int cy = y + h / 2 - d / 2;
-                roi = new OvalRoi(cx, cy, d, d);
-            }
-            break;
-            case MaxCircle: {
-                int d = Math.max(w, h);
-                int cx = x + w / 2 - d / 2;
-                int cy = y + h / 2 - d / 2;
-                roi = new OvalRoi(cx, cy, d, d);
-            }
-            break;
-            default:
-                throw new UnsupportedOperationException();
-        }
+    private void createROI(ROIListData rois, double x1, double y1, double x2, double y2, int z, int c, int t, JIPipeExpressionVariablesMap variables) {
+        Roi roi = new Line(x1, y1, x2, y2);
         roi.setPosition(c, z, t);
         roiProperties.applyTo(roi, variables);
         rois.add(roi);
@@ -283,58 +212,6 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.columnY2 = columnY2;
     }
 
-    @SetJIPipeDocumentation(name = "Column 'Width'", description = "The table column that is used for the width. " +
-            "The usage of this column depends on the current 'Anchor' setting.")
-    @JIPipeParameter(value = "column-width", uiOrder = -60)
-    public TableColumnSourceExpressionParameter getColumnWidth() {
-        return columnWidth;
-    }
-
-    @JIPipeParameter(value = "column-width")
-    public void setColumnWidth(TableColumnSourceExpressionParameter columnWidth) {
-        this.columnWidth = columnWidth;
-    }
-
-    @SetJIPipeDocumentation(name = "Column 'Height'", description = "The table column that is used for the height. " +
-            "The usage of this column depends on the current 'Anchor' setting.")
-    @JIPipeParameter(value = "column-height", uiOrder = -50)
-    public TableColumnSourceExpressionParameter getColumnHeight() {
-        return columnHeight;
-    }
-
-    @JIPipeParameter(value = "column-height")
-    public void setColumnHeight(TableColumnSourceExpressionParameter columnHeight) {
-        this.columnHeight = columnHeight;
-    }
-
-    @JIPipeParameter(value = "anchor")
-    public Anchor getAnchor() {
-        return anchor;
-    }
-
-    @SetJIPipeDocumentation(name = "Anchor", description = "Determines how the ROI are generated.\n" +
-            "'Top left' creates the ROI at the top left X1 and Y1 coordinates with provided width and height. " +
-            "'Center' creates centers the ROI at the X1 and Y1 coordinates and also requires that width and height are set. " +
-            "'Two points' defines the ROI, so it fits into the rectangle defined by the points (X1, Y1) and (X2, Y2).")
-    @JIPipeParameter(value = "anchor")
-    public void setAnchor(Anchor anchor) {
-        this.anchor = anchor;
-    }
-
-    @SetJIPipeDocumentation(name = "Created ROI type", description = "Determines which ROI to create. \n" +
-            "'Rectangle' creates rectangles. 'Oval' creates ovals that fit into the space defined by the rectangle. " +
-            "'MinCircle' and 'MaxCircle' creates circles that either fit into the space or encompass it. " +
-            "Circles are centered within the rectangle area.")
-    @JIPipeParameter("mode")
-    public Mode getMode() {
-        return mode;
-    }
-
-    @JIPipeParameter("mode")
-    public void setMode(Mode mode) {
-        this.mode = mode;
-    }
-
     @SetJIPipeDocumentation(name = "Column 'Z'", description = "Table column that determines the Z location. For one-based positions, 0 indicates that the ROI is present in all Z-slices. For zero-based positions the value is -1 or lower.")
     @JIPipeParameter(value = "column-z", uiOrder = -40)
     public TableColumnSourceExpressionParameter getColumnZ() {
@@ -377,36 +254,5 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
     @JIPipeParameter("one-based-positions")
     public void setOneBasedPositions(boolean oneBasedPositions) {
         this.oneBasedPositions = oneBasedPositions;
-    }
-
-    /**
-     * Available anchors
-     */
-    public enum Anchor {
-        TopLeft,
-        TwoPoints,
-        Center;
-
-
-        @Override
-        public String toString() {
-            switch (this) {
-                case Center:
-                    return "Center at X1, Y1";
-                case TopLeft:
-                    return "Top left at X1, Y1";
-                case TwoPoints:
-                    return "Two points (X1, X2), (Y1, Y2)";
-                default:
-                    return super.toString();
-            }
-        }
-    }
-
-    public enum Mode {
-        Rectangle,
-        Oval,
-        MinCircle,
-        MaxCircle
     }
 }
