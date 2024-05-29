@@ -95,6 +95,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.draw.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.filter.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.generate.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.CountROIAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractROIProfileAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractRoi2DRelationStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.RoiStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.merge.AddRoiListsAlgorithm;
@@ -919,6 +920,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-roi-draw-scalebar", DrawScaleBarRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));
 
 //        registerNodeType("ij1-roi-register-max-brightness", RegisterRoiToImageByBrightnessAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_search.png"));
+        registerNodeType("ij1-roi-extract-profile", ExtractROIProfileAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-line.png"));
 
         registerEnumParameterType("ij1-roi-flood-fill:mode",
                 RoiFloodFillAlgorithm.Mode.class,
@@ -940,6 +942,10 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 RoiLabel.class,
                 "ROI label",
                 "Determines how ROI labels are drawn");
+        registerEnumParameterType("ij1-roi-extract-profile:rectangle-mode",
+                ExtractROIProfileAlgorithm.RectangleMode.class,
+                "Rectangle mode",
+                "Determines the behavior for profile extraction from rectangle bounds");
     }
 
     private void registerConvolutionAlgorithms() {
