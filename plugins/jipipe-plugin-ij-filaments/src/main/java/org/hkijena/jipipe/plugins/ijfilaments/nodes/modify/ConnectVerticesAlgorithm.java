@@ -70,6 +70,7 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
     private JIPipeExpressionParameter scoringFunction = new JIPipeExpressionParameter("0");
     private OptionalIntegerParameter limitConnections = new OptionalIntegerParameter(false, 1);
     private boolean enforceEdgesWithinMask = true;
+    private boolean findPath = true;
 
     public ConnectVerticesAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -83,6 +84,7 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
         this.connectAcrossT = other.connectAcrossT;
         this.enable3D = other.enable3D;
         this.requireDirection = other.requireDirection;
+        this.findPath = other.findPath;
         this.filterFunction = new JIPipeExpressionParameter(other.filterFunction);
         this.newEdgeColor = new OptionalColorParameter(other.newEdgeColor);
         this.enforceEdgesWithinMask = other.enforceEdgesWithinMask;
@@ -127,6 +129,17 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
     public void setLimitConnections(OptionalIntegerParameter limitConnections) {
         this.limitConnections = limitConnections;
         emitParameterUIChangedEvent();
+    }
+
+    @SetJIPipeDocumentation(name = "Find path between candidate vertices", description = "If enabled, find the path between the candidate vertices. Impacts the performance.")
+    @JIPipeParameter("find-path")
+    public boolean isFindPath() {
+        return findPath;
+    }
+
+    @JIPipeParameter("find-path")
+    public void setFindPath(boolean findPath) {
+        this.findPath = findPath;
     }
 
     @Override
@@ -261,7 +274,7 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
 
 
         HashSet<EdgeCandidate> candidates = new HashSet<>();
-        DijkstraShortestPath<FilamentVertex, FilamentEdge> outputDataInspector = new DijkstraShortestPath<>(outputData);
+        DijkstraShortestPath<FilamentVertex, FilamentEdge> outputDataInspector = findPath ? new DijkstraShortestPath<>(outputData) : null;
         for (FilamentVertex current : outputData.vertexSet()) {
 
             Vector3d currentV1 = current.getSpatialLocation().toSciJavaVector3d();
@@ -377,11 +390,18 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
 
                     // Write variables
                     FilamentUnconnectedEdgeVariablesInfo.writeToVariables(outputData, current, other, variables, "");
-                    GraphPath<FilamentVertex, FilamentEdge> path = outputDataInspector.getPath(current, other);
-                    if (hasDirection) {
-                        variables.set("angle", Math.toDegrees(currentDirection.angle(otherDirection)));
-                        variables.set("dot_product", currentDirection.dot(otherDirection));
-                    } else {
+                    GraphPath<FilamentVertex, FilamentEdge> path = null;
+                    if(findPath && outputDataInspector != null) {
+                        path = outputDataInspector.getPath(current, other);
+                        if (hasDirection) {
+                            variables.set("angle", Math.toDegrees(currentDirection.angle(otherDirection)));
+                            variables.set("dot_product", currentDirection.dot(otherDirection));
+                        } else {
+                            variables.set("angle", Double.NaN);
+                            variables.set("dot_product", Double.NaN);
+                        }
+                    }
+                    else {
                         variables.set("angle", Double.NaN);
                         variables.set("dot_product", Double.NaN);
                     }
