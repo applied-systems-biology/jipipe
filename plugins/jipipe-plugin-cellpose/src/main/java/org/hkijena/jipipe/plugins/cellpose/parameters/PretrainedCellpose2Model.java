@@ -33,7 +33,8 @@ public enum PretrainedCellpose2Model {
     LC4("LC4", "LiveCell4"),
     general("general", "General"),
     CP("CP", "CP"),
-    CPx("CPx", "CPx");
+    CPx("CPx", "CPx"),
+    None(null, "None (only training)");
 
     private final String id;
     private final String name;
@@ -54,6 +55,11 @@ public enum PretrainedCellpose2Model {
 
     @Override
     public String toString() {
-        return name + " [" + id + "]";
+        if(id != null) {
+            return name + " [" + id + "]";
+        }
+        else {
+            return "No model";
+        }
     }
 }

@@ -131,7 +131,12 @@ public class CellposeModelData implements JIPipeData {
     @Override
     public String toString() {
         if(metadata.isPretrained()) {
-            return "Pretrained Cellpose model '" + metadata.getName() + "'";
+            if(getPretrainedModelName() != null) {
+                return "Pretrained Cellpose model '" + metadata.getName() + "'";
+            }
+            else {
+                return "No model";
+            }
         }
         else {
             return "Cellpose model '" + metadata.getName() + "' (" + (data.length / 1024 / 1024) + " MB)";

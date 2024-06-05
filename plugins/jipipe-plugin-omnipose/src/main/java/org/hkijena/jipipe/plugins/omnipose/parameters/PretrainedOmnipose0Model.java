@@ -21,7 +21,8 @@ import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
 public enum PretrainedOmnipose0Model {
     bact_omni("bact_omni", "Omnipose BactOmni"),
     bact("bact", "Omnipose Bact"),
-    cyto2_omni("cyto2_omni", "Omnipose Cyto2Omni");
+    cyto2_omni("cyto2_omni", "Omnipose Cyto2Omni"),
+    None(null, "None (only training)");
 
     private final String id;
     private final String name;
@@ -42,6 +43,11 @@ public enum PretrainedOmnipose0Model {
 
     @Override
     public String toString() {
-        return name + " [" + id + "]";
+        if(id != null) {
+            return name + " [" + id + "]";
+        }
+        else {
+            return "No model";
+        }
     }
 }
