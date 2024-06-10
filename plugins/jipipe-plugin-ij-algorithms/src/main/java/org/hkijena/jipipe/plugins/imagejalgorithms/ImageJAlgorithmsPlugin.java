@@ -1227,6 +1227,9 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-feature-difference-of-gaussian", DifferenceOfGaussian2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-feature-laplacian-of-gaussian", LaplacianOfGaussian2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-feature-directional-filter-2d", DirectionalFilter2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-rotate.png"));
+        registerNodeType("ij1-feature-mtc-2d", MorphologicalTextureContrast2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-feature-amf-2d", AlternatingMorphologicalFilters2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-feature-mfc-2d", MorphologicalFeatureContrast2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
 
         registerEnumParameterType("ij1-feature-vesselness-frangi:slicing-mode", FrangiVesselnessFeatures.SlicingMode.class,
                 "Slicing mode", "Available slicing modes");
@@ -1236,6 +1239,8 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Directional filter operation", "Available operations");
         registerEnumParameterType("ij1-feature-directional-filter:type", DirectionalFilter.Type.class,
                 "Directional filter types", "Available types");
+        registerEnumParameterType("ij1-feature-mfc-2d:mode", MorphologicalFeatureContrast2DAlgorithm.Mode.class,
+                "MFC mode", "Available modes");
     }
 
     private void registerContrastAlgorithms() {
