@@ -77,6 +77,7 @@ public class MultiParameterAlgorithmsPlugin extends JIPipePrepackagedDefaultJava
         registerNodeType("annotations-to-parameters", AnnotationsToParametersAlgorithm.class, UIUtils.getIconURLFromResources("data-types/parameters.png"));
         registerNodeType("table-to-parameters", DefineParametersFromTableAlgorithm.class, UIUtils.getIconURLFromResources("data-types/parameters.png"));
         registerNodeType("parameters-merge", MergeParametersAlgorithm.class, UIUtils.getIconURLFromResources("actions/rabbitvcs-merge.png"));
+        registerNodeType("parameters-multiply", MultiplyParametersAlgorithm.class, UIUtils.getIconURLFromResources("actions/asterisk.png"));
     }
 
     @Override

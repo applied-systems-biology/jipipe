@@ -117,33 +117,49 @@ public class ParameterTableEditorWindow extends JFrame {
     }
 
     private void initializeRibbon(JIPipeDesktopRibbon ribbon) {
-        JIPipeDesktopRibbon.Task tableTask = ribbon.addTask("Table");
-        JIPipeDesktopRibbon.Band selectBand = tableTask.addBand("Select");
-        JIPipeDesktopRibbon.Band columnBand = tableTask.addBand("Parameter types (columns)");
-        JIPipeDesktopRibbon.Band rowBand = tableTask.addBand("Parameter sets (rows)");
+        JIPipeDesktopRibbon.Task columnTask = ribbon.addTask("Targeted parameters (columns)");
+        JIPipeDesktopRibbon.Task rowTask = ribbon.addTask("Parameter sets (rows)");
+
+        JIPipeDesktopRibbon.Band addColumnBand = columnTask.addBand("Add");
+        JIPipeDesktopRibbon.Band editColumnBand = columnTask.addBand("Edit");
+        JIPipeDesktopRibbon.Band addRowBand = rowTask.addBand("Add");
+        JIPipeDesktopRibbon.Band editRowBand = rowTask.addBand("Edit");
+        JIPipeDesktopRibbon.Band columnSelectBand = columnTask.addBand("Select");
+        JIPipeDesktopRibbon.Band rowSelectBand = rowTask.addBand("Select");
+
 
         // Select
-        selectBand.add(new JIPipeDesktopLargeButtonRibbonAction("Whole column", "Selects the whole column", UIUtils.getIcon32FromResources("actions/stock_select-column.png"), this::selectWholeColumn));
-        selectBand.add(new JIPipeDesktopLargeButtonRibbonAction("Whole row", "Selects the whole row", UIUtils.getIcon32FromResources("actions/stock_select-row.png"), this::selectWholeRow));
+        rowSelectBand.add(new JIPipeDesktopLargeButtonRibbonAction("Whole column", "Selects the whole column", UIUtils.getIcon32FromResources("actions/stock_select-column.png"), this::selectWholeColumn));
+        columnSelectBand.add(new JIPipeDesktopLargeButtonRibbonAction("Whole row", "Selects the whole row", UIUtils.getIcon32FromResources("actions/stock_select-row.png"), this::selectWholeRow));
 
         // Columns
-        columnBand.add(new JIPipeDesktopLargeButtonRibbonAction("Import from node", "Imports a parameter setting from an existing node", UIUtils.getIcon32FromResources("actions/gtk-color-picker.png"), this::importColumnFromAlgorithm));
-        columnBand.add(new JIPipeDesktopSmallButtonRibbonAction("Define ...", "Defines a parameter type from scratch", UIUtils.getIconFromResources("actions/add.png"), this::addCustomColumn));
-        columnBand.add(new JIPipeDesktopSmallButtonRibbonAction("Delete", "Deletes the selected columns", UIUtils.getIconFromResources("actions/delete.png"), this::removeSelectedColumns));
+        JIPipeDesktopLargeButtonRibbonAction addFromNodeAction = new JIPipeDesktopLargeButtonRibbonAction("Add from node",
+                "Imports a parameter setting from an existing node",
+                UIUtils.getIcon32FromResources("actions/edit-table-insert-column-right.png"),
+                this::importColumnFromAlgorithm);
+        UIUtils.makeButtonHighlightedSuccess(addFromNodeAction.getButton());
+        addColumnBand.add(addFromNodeAction);
+        addColumnBand.add(new JIPipeDesktopLargeButtonRibbonAction("Define custom", "Defines a parameter type from scratch", UIUtils.getIcon32FromResources("actions/node-add.png"), this::addCustomColumn));
+        editColumnBand.add(new JIPipeDesktopSmallButtonRibbonAction("Delete selected column(s)", "Deletes the selected columns", UIUtils.getIcon32FromResources("actions/delete.png"), this::removeSelectedColumns));
 
         // Rows
-        rowBand.add(new JIPipeDesktopLargeButtonRibbonAction("Add", "Adds a new parameter set/row into the table", UIUtils.getIcon32FromResources("actions/add.png"), this::addRow));
+        JIPipeDesktopLargeButtonRibbonAction addRowButton = new JIPipeDesktopLargeButtonRibbonAction("Add parameter set",
+                "Adds a new parameter set/row into the table",
+                UIUtils.getIcon32FromResources("actions/edit-table-insert-row-below.png"),
+                this::addRow);
+        UIUtils.makeButtonHighlightedSuccess(addRowButton.getButton());
+        addRowBand.add(addRowButton);
         {
-            JIPipeDesktopLargeButtonRibbonAction action = new JIPipeDesktopLargeButtonRibbonAction("Generate", "Generates new rows", UIUtils.getIcon32FromResources("actions/insert-math-expression.png"));
+            JIPipeDesktopLargeButtonRibbonAction action = new JIPipeDesktopLargeButtonRibbonAction("Generate rows", "Generates new rows", UIUtils.getIcon32FromResources("actions/insert-math-expression.png"));
             JPopupMenu menu = new JPopupMenu();
             UIUtils.addReloadablePopupMenuToButton(action.getButton(), menu, () -> {
                 int[] selectedColumns = getSelectedColumns(true);
                 createGenerateMenuFor(selectedColumns, menu);
             });
-            rowBand.add(action);
+            addRowBand.add(action);
         }
         {
-            JIPipeDesktopSmallButtonRibbonAction action = new JIPipeDesktopSmallButtonRibbonAction("Replace", "Replaces the selected values by generated values", UIUtils.getIconFromResources("actions/edit.png"));
+            JIPipeDesktopLargeButtonRibbonAction action = new JIPipeDesktopLargeButtonRibbonAction("Replace selected row(s)", "Replaces the selected values by generated values", UIUtils.getIcon32FromResources("actions/edit.png"));
             JPopupMenu menu = new JPopupMenu();
             UIUtils.addReloadablePopupMenuToButton(action.getButton(), menu, () -> {
                 menu.removeAll();
@@ -152,9 +168,9 @@ public class ParameterTableEditorWindow extends JFrame {
                     createReplaceMenuFor(selectedColumns[0], menu);
                 }
             });
-            rowBand.add(action);
+            editRowBand.add(action);
         }
-        rowBand.add(new JIPipeDesktopSmallButtonRibbonAction("Delete", "Deletes the selected rows", UIUtils.getIconFromResources("actions/delete.png"), this::removeSelectedRows));
+        editRowBand.add(new JIPipeDesktopLargeButtonRibbonAction("Delete selected row(s)", "Deletes the selected rows", UIUtils.getIcon32FromResources("actions/delete.png"), this::removeSelectedRows));
 
         ribbon.rebuildRibbon();
     }
@@ -333,7 +349,7 @@ public class ParameterTableEditorWindow extends JFrame {
 
     private void importColumnFromAlgorithm() {
         if (getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
-            JIPipeGraph graph = ((JIPipeDesktopProjectWorkbench) getDesktopWorkbench()).getProject().getGraph();
+            JIPipeGraph graph = getDesktopWorkbench().getProject().getGraph();
             JIPipeParameterTree globalTree = graph.getParameterTree(false, null);
 
             List<Object> importedParameters = JIPipeDesktopParameterTreeUI.showPickerDialog(getDesktopWorkbench().getWindow(), globalTree, "Import parameter");
@@ -351,6 +367,14 @@ public class ParameterTableEditorWindow extends JFrame {
                     }
                 }
             }
+
+            if(!importedParameters.isEmpty()) {
+                // Ensure that there is at least 1 row
+                if(parameterTable.getRowCount() == 0) {
+                    addRow();
+                }
+            }
+
         } else {
             JOptionPane.showMessageDialog(this, "There is no graph editor open.", "Error", JOptionPane.ERROR_MESSAGE);
         }
