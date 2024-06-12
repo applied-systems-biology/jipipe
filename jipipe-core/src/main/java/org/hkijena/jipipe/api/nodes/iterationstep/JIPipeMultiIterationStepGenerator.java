@@ -260,7 +260,7 @@ public class JIPipeMultiIterationStepGenerator {
             }
         } else {
             // Split apart into single batches
-            progressInfo.log("Splitting batches");
+            progressInfo.log("Splitting batches (" + allKeys.size() + " keys)");
             for (String key : allKeys) {
                 List<JIPipeMultiIterationStep> keyBatches = new ArrayList<>();
                 List<JIPipeMultiIterationStep> tempKeyBatches = new ArrayList<>();

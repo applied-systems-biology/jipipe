@@ -48,6 +48,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactApplicationSettings;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -179,6 +180,8 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
 
         progressInfo.log("Erasing skipped/disabled algorithms (except direct predecessors) ...");
         cleanGraph(graph, progressInfo.resolve("Preprocessing/Cleanup"));
+        progressInfo.log("Repairing partition assignments ...");
+        fixPartitions(graph, progressInfo.resolve("Fix partitions"));
 
         long startTime = System.currentTimeMillis();
         if (parent == null) {
@@ -305,6 +308,8 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
 
         }
 
+        boolean runFailed = false;
+
         try (JIPipeFixedThreadPool threadPool = new JIPipeFixedThreadPool(configuration.getNumThreads())) {
 
             // Setup context
@@ -316,6 +321,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
             progressInfo.log("--> Starting first iteration ...");
             runGraph(graph, progressInfo);
         } catch (Exception e) {
+            runFailed = true;
             throw new RuntimeException(e);
         } finally {
             runContext = null;
@@ -356,8 +362,9 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                 progressInfo.log("\n--> Required " + StringUtils.formatDuration(System.currentTimeMillis() - startTime) + " to execute.\n");
 
                 try {
-                    if (configuration.getOutputPath() != null)
+                    if (configuration.getOutputPath() != null) {
                         Files.write(configuration.getOutputPath().resolve("log.txt"), progressInfo.getLog().toString().getBytes(Charsets.UTF_8));
+                    }
                 } catch (IOException e) {
                     throw new JIPipeValidationRuntimeException(e,
                             "Could not write log '" + configuration.getOutputPath().resolve("log.txt") + "'!",
@@ -373,11 +380,32 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                     }
                 }
 
+                if((runFailed && configuration.isCleanupOutputsAfterFailure()) || (!runFailed && configuration.isCleanupOutputsAfterSuccess())) {
+                    if(configuration.getOutputPath() != null) {
+                        progressInfo.log("Removing output directory as requested: " + configuration.getOutputPath());
+                        PathUtils.deleteDirectoryRecursively(configuration.getOutputPath(), progressInfo.resolve("Cleanup"));
+                    }
+                }
+
                 progressInfo.log("\n------------------------\n\n");
             }
         }
 
 
+    }
+
+    private void fixPartitions(JIPipeGraph graph, JIPipeProgressInfo progressInfo) {
+        for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
+            if(graphNode instanceof JIPipeAlgorithm) {
+                JIPipeAlgorithm algorithm = (JIPipeAlgorithm) graphNode;
+                int requestedIndex = algorithm.getRuntimePartition().getIndex();
+                int mappedIndex = getValidRuntimePartitionIndex(requestedIndex);
+                if(requestedIndex != mappedIndex) {
+                    progressInfo.log(graphNode.getDisplayName() + " [" + graphNode.getUUIDInParentGraph() + "] mapping partition from " + requestedIndex + " to " + mappedIndex );
+                    algorithm.setRuntimePartition(new RuntimePartitionReferenceParameter(mappedIndex));
+                }
+            }
+        }
     }
 
     public void cleanGraph(JIPipeGraph graph, JIPipeProgressInfo progressInfo) {
@@ -1142,7 +1170,12 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
     }
 
     public int getValidRuntimePartitionIndex(int index) {
-        return Math.max(0, Math.min(runtimePartitions.size() - 1, index));
+        if(index < 0 || index >= runtimePartitions.size()) {
+            return 0;
+        }
+        else {
+            return index;
+        }
     }
 
     public JIPipeRuntimePartition getRuntimePartition(RuntimePartitionReferenceParameter reference) {

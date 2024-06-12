@@ -508,8 +508,13 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         if(isDisplayedInForeignCompartment()) {
             JIPipeProject project = getGraphCanvasUI().getWorkbench().getProject();
             JIPipeProjectCompartment projectCompartment = project.getCompartments().get(node.getCompartmentUUIDInParentGraph());
-            nameWidth = Math.max(tertiaryFontMetrics.stringWidth(node.getName()),
-                    tertiaryFontMetrics.stringWidth("⮤ " + projectCompartment.getName()));
+            if(projectCompartment != null) {
+                nameWidth = Math.max(tertiaryFontMetrics.stringWidth(node.getName()),
+                        tertiaryFontMetrics.stringWidth("⮤ " + projectCompartment.getName()));
+            }
+            else {
+                nameWidth = mainFontMetrics.stringWidth(node.getName());
+            }
         }
         else {
             nameWidth = mainFontMetrics.stringWidth(node.getName());
@@ -1066,8 +1071,13 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             if(isDisplayedInForeignCompartment()) {
                 JIPipeProject project = getGraphCanvasUI().getWorkbench().getProject();
                 JIPipeProjectCompartment projectCompartment = project.getCompartments().get(node.getCompartmentUUIDInParentGraph());
-                nameWidth = Math.max(fontMetrics.stringWidth(nameLabel),
-                        fontMetrics.stringWidth("⮤ " + projectCompartment.getName()));
+                if(projectCompartment != null) {
+                    nameWidth = Math.max(fontMetrics.stringWidth(nameLabel),
+                            fontMetrics.stringWidth("⮤ " + projectCompartment.getName()));
+                }
+                else {
+                    nameWidth = fontMetrics.stringWidth(nameLabel);
+                }
             }
             else {
                 nameWidth = fontMetrics.stringWidth(nameLabel);
@@ -1112,7 +1122,12 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
                 UIUtils.drawStringVerticallyCentered(g2, nameLabel, (int) Math.round(startX + 3 * zoom), centerY - (fontMetrics.getAscent() + fontMetrics.getLeading()) / 2, fontMetrics);
                 JIPipeProject project = getGraphCanvasUI().getWorkbench().getProject();
                 JIPipeProjectCompartment projectCompartment = project.getCompartments().get(node.getCompartmentUUIDInParentGraph());
-                UIUtils.drawStringVerticallyCentered(g2, "⮤ " + projectCompartment.getName(), (int) Math.round(startX + 3 * zoom), centerY + (fontMetrics.getAscent() + fontMetrics.getLeading()) / 2, fontMetrics);
+                if(projectCompartment != null) {
+                    UIUtils.drawStringVerticallyCentered(g2, "⮤ " + projectCompartment.getName(), (int) Math.round(startX + 3 * zoom), centerY + (fontMetrics.getAscent() + fontMetrics.getLeading()) / 2, fontMetrics);
+                }
+                else {
+                    UIUtils.drawStringVerticallyCentered(g2, nameLabel, (int) Math.round(startX + 3 * zoom), centerY, fontMetrics);
+                }
             }
             else {
                 UIUtils.drawStringVerticallyCentered(g2, nameLabel, (int) Math.round(startX + 3 * zoom), centerY, fontMetrics);

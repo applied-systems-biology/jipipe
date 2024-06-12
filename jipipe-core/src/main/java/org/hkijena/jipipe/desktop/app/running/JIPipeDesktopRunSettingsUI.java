@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
@@ -144,7 +145,27 @@ public class JIPipeDesktopRunSettingsUI extends JIPipeDesktopProjectWorkbenchPan
         JButton runButton = new JButton("Run now", UIUtils.getIconFromResources("actions/run-build.png"));
         runButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
         runButton.addActionListener(e -> runNow());
+
         messagePanel.addMessage(JIPipeDesktopMessagePanel.MessageType.Success, "Please review the settings on the left-hand side. Then proceed to click the following button.", false, false, runButton);
+
+        boolean containsExporterNodes = getDesktopProjectWorkbench().getProject().getGraph().getGraphNodes().stream().anyMatch(node -> node.getInfo().getCategory() instanceof ExportNodeTypeCategory);
+        if (containsExporterNodes) {
+            JButton configureButton = new JButton("Only node-based export");
+            configureButton.addActionListener(e -> {
+                run.getConfiguration().setStoreToDisk(false);
+                run.getConfiguration().setCleanupOutputsAfterFailure(true);
+                run.getConfiguration().setCleanupOutputsAfterSuccess(true);
+                run.getConfiguration().emitParameterChangedEvent("store-to-disk");
+                run.getConfiguration().emitParameterChangedEvent("cleanup-outputs-after-success");
+                run.getConfiguration().emitParameterChangedEvent("cleanup-outputs-after-failure");
+                messagePanel.removeLastRow();
+                messagePanel.addMessage(JIPipeDesktopMessagePanel.MessageType.Gray, "Node-based export was configured.", true, false);
+                messagePanel.addVerticalGlue();
+            });
+            messagePanel.addMessage(JIPipeDesktopMessagePanel.MessageType.InfoLight, "Your workflow contains exporter nodes. Click the following button to turn off JIPipe's automated result export.", true, true, configureButton);
+
+        }
+
         messagePanel.addMessage(JIPipeDesktopMessagePanel.MessageType.Gray, "Please note that a copy of the project was created. Feel free to schedule multiple runs with different pipeline configurations.", true, false);
 
 

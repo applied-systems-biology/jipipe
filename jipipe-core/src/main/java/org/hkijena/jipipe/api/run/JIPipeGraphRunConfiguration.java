@@ -37,6 +37,8 @@ public class JIPipeGraphRunConfiguration extends AbstractJIPipeParameterCollecti
     private int numThreads = JIPipeRuntimeApplicationSettings.getInstance().getDefaultRunThreads();
     private boolean silent = false;
     private boolean ignoreDeactivatedInputs = false;
+    private boolean cleanupOutputsAfterSuccess = false;
+    private boolean cleanupOutputsAfterFailure = false;
     private Set<UUID> disableStoreToCacheNodes = new HashSet<>();
     private Set<UUID> disableStoreToDiskNodes = new HashSet<>();
 
@@ -59,6 +61,8 @@ public class JIPipeGraphRunConfiguration extends AbstractJIPipeParameterCollecti
         this.disableStoreToDiskNodes = new HashSet<>(other.disableStoreToDiskNodes);
         this.continueOnFailureExportFailedInputs = other.continueOnFailureExportFailedInputs;
         this.continueOnFailure = other.continueOnFailure;
+        this.cleanupOutputsAfterSuccess = other.cleanupOutputsAfterSuccess;
+        this.cleanupOutputsAfterFailure = other.cleanupOutputsAfterFailure;
     }
 
     @JIPipeParameter(value = "output-path", uiOrder = -999)
@@ -90,7 +94,7 @@ public class JIPipeGraphRunConfiguration extends AbstractJIPipeParameterCollecti
         this.loadFromCache = loadFromCache;
     }
 
-    @SetJIPipeDocumentation(name = "Save to cache", description = "If enabled, the results and intermediate results are stored into a cache. " +
+    @SetJIPipeDocumentation(name = "Save results to cache", description = "If enabled, the results and intermediate results are stored into a cache. " +
             "This cache is limited by the RAM. Will be ignored if the global JIPipe cache settings are disabled.")
     @JIPipeParameter("store-to-cache")
     public boolean isStoreToCache() {
@@ -114,12 +118,38 @@ public class JIPipeGraphRunConfiguration extends AbstractJIPipeParameterCollecti
         this.numThreads = numThreads;
     }
 
+    @SetJIPipeDocumentation(name = "Save results to disk in JIPipe format", description = "If enabled, JIPipe will save results into the selected output directory in a JIPipe-specific format. " +
+            "You can control which data is exported via the 'Exported' and 'Performance' tabs.")
+    @JIPipeParameter("store-to-disk")
     public boolean isStoreToDisk() {
         return storeToDisk;
     }
 
+    @JIPipeParameter("store-to-disk")
     public void setStoreToDisk(boolean storeToDisk) {
         this.storeToDisk = storeToDisk;
+    }
+
+    @SetJIPipeDocumentation(name = "Cleanup outputs on success", description = "If enabled, the output directory is removed if the run is successful")
+    @JIPipeParameter("cleanup-outputs-after-success")
+    public boolean isCleanupOutputsAfterSuccess() {
+        return cleanupOutputsAfterSuccess;
+    }
+
+    @JIPipeParameter("cleanup-outputs-after-success")
+    public void setCleanupOutputsAfterSuccess(boolean cleanupOutputsAfterSuccess) {
+        this.cleanupOutputsAfterSuccess = cleanupOutputsAfterSuccess;
+    }
+
+    @SetJIPipeDocumentation(name = "Cleanup outputs on success", description = "If enabled, the output directory is removed if the run has failed")
+    @JIPipeParameter("cleanup-outputs-after-failure")
+    public boolean isCleanupOutputsAfterFailure() {
+        return cleanupOutputsAfterFailure;
+    }
+
+    @JIPipeParameter("cleanup-outputs-after-failure")
+    public void setCleanupOutputsAfterFailure(boolean cleanupOutputsAfterFailure) {
+        this.cleanupOutputsAfterFailure = cleanupOutputsAfterFailure;
     }
 
     /**
