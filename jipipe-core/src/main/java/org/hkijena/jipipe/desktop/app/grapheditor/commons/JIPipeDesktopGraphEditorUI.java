@@ -572,10 +572,10 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
 
         layoutMenu.add(layoutOnConnectItem);
 
-        JCheckBoxMenuItem layoutOnAlgorithmFinderItem = new JCheckBoxMenuItem("Layout nodes on 'Find matching algorithm'",
+        JCheckBoxMenuItem layoutOnAlgorithmFinderItem = new JCheckBoxMenuItem("Layout nodes on 'Find matching node'",
                 UIUtils.getIconFromResources("actions/connector-avoid.png"),
                 JIPipeGraphEditorUIApplicationSettings.getInstance().isLayoutAfterAlgorithmFinder());
-        layoutOnAlgorithmFinderItem.setToolTipText("Auto-layout layout on utilizing the 'Find matching algorithm' feature");
+        layoutOnAlgorithmFinderItem.setToolTipText("Auto-layout layout on utilizing the 'Find matching node' feature");
         layoutOnAlgorithmFinderItem.addActionListener(e -> {
             JIPipeGraphEditorUIApplicationSettings.getInstance().setLayoutAfterAlgorithmFinder(layoutOnAlgorithmFinderItem.isSelected());
         });

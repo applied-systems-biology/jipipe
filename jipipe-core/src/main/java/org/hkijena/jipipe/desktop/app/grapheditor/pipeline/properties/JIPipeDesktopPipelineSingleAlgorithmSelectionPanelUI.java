@@ -203,7 +203,7 @@ public class JIPipeDesktopPipelineSingleAlgorithmSelectionPanelUI extends JIPipe
                     UIUtils.getIconFromResources("emblems/checkbox-unchecked.png"));
             JPopupMenu popupMenu = UIUtils.addPopupMenuToButton(menuButton);
 
-            JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Enable");
+            JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Enable external parameters");
             toggle.setToolTipText("If enabled, the node will include an additional input 'Parameters' that receives parameter sets from an external source. " +
                     "If the parameter data contains multiple items, the node's workload will be repeated for each parameter set.");
             toggle.setSelected(((JIPipeParameterSlotAlgorithm) node).getParameterSlotAlgorithmSettings().isHasParameterSlot());
@@ -243,7 +243,7 @@ public class JIPipeDesktopPipelineSingleAlgorithmSelectionPanelUI extends JIPipe
                     UIUtils.getIconFromResources("emblems/checkbox-unchecked.png"));
             JPopupMenu popupMenu = UIUtils.addPopupMenuToButton(menuButton);
 
-            JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Enable");
+            JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Enable adaptive parameters");
             toggle.setToolTipText("If enabled, the node will support parameters that are calculated by expressions.");
             toggle.setSelected(((JIPipeAdaptiveParametersAlgorithm) node).getAdaptiveParameterSettings().isEnabled());
             toggle.addActionListener(e -> {

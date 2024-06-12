@@ -37,6 +37,7 @@ import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
+import org.hkijena.jipipe.desktop.app.grapheditor.CreateParameterSetsNodeDialog;
 import org.hkijena.jipipe.desktop.app.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
@@ -1447,7 +1448,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         Set<JIPipeDataSlot> availableTargets = getGraphCanvasUI().getGraph().getAvailableTargets(slot, true, true);
         availableTargets.removeIf(s -> !s.getNode().isVisibleIn(compartment));
 
-        JMenuItem findAlgorithmButton = new JMenuItem("Find matching algorithm ...", UIUtils.getIconFromResources("actions/find.png"));
+        JMenuItem findAlgorithmButton = new JMenuItem("Find matching node ...", UIUtils.getIconFromResources("actions/find.png"));
         findAlgorithmButton.setToolTipText("Opens a tool to find a matching algorithm based on the data");
         findAlgorithmButton.addActionListener(e -> openOutputAlgorithmFinder(slot));
         menu.add(findAlgorithmButton);
@@ -1676,10 +1677,16 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
         UIUtils.addSeparatorIfNeeded(menu);
 
-        JMenuItem findAlgorithmButton = new JMenuItem("Find matching algorithm ...", UIUtils.getIconFromResources("actions/find.png"));
+        JMenuItem findAlgorithmButton = new JMenuItem("Find matching node ...", UIUtils.getIconFromResources("actions/find.png"));
         findAlgorithmButton.setToolTipText("Opens a tool to find a matching algorithm based on the data");
         findAlgorithmButton.addActionListener(e -> openInputAlgorithmFinder(slot));
         menu.add(findAlgorithmButton);
+
+        // Special case for parameter slots
+        if(slot.getName().equals(JIPipeParameterSlotAlgorithm.SLOT_PARAMETERS)) {
+            menu.add(UIUtils.createMenuItem("Create parameter sets ...", "Creates a nodes that supplies a selection of parameter data for the external parameters",
+                    UIUtils.getIconFromResources("data-types/parameters.png"), this::createParameterSetsNode));
+        }
 
         Set<JIPipeDataSlot> availableSources = getGraphCanvasUI().getGraph().getAvailableSources(slot, true, false);
         if (!availableSources.isEmpty()) {
@@ -1734,6 +1741,14 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         UIUtils.addSeparatorIfNeeded(menu);
 
         openSlotMenuAddInputSlotEditItems(slot, sourceSlots, menu);
+    }
+
+    private void createParameterSetsNode() {
+        CreateParameterSetsNodeDialog dialog = new CreateParameterSetsNodeDialog(getDesktopWorkbench().getWindow(), this);
+        dialog.pack();
+        dialog.setSize(1024,768);
+        dialog.setLocationRelativeTo(getDesktopWorkbench().getWindow());
+        dialog.setVisible(true);
     }
 
     private void openSlotMenuAddOutputConnectTargetSlotItems(JIPipeDataSlot slot, Set<JIPipeDataSlot> availableTargets, JMenu menu) {
