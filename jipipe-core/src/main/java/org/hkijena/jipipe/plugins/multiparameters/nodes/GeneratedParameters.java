@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterTreeUI;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterAccessTreeUI;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.List;
@@ -48,7 +48,7 @@ public class GeneratedParameters extends JIPipeDynamicParameterCollection {
 
         JIPipeParameterTree globalTree = parent.getParentGraph().getParameterTree(false, null);
 
-        List<Object> importedParameters = JIPipeDesktopParameterTreeUI.showPickerDialog(((JIPipeDesktopWorkbench) workbench).getWindow(), globalTree, "Import parameter");
+        List<Object> importedParameters = JIPipeDesktopParameterAccessTreeUI.showPickerDialog(((JIPipeDesktopWorkbench) workbench).getWindow(), globalTree, "Import parameter");
         for (Object importedParameter : importedParameters) {
             if (importedParameter instanceof JIPipeParameterAccess) {
                 JIPipeParameterTree.Node node = globalTree.getSourceNode(((JIPipeParameterAccess) importedParameter).getSource());

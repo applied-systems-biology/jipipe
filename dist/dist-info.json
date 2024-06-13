@@ -60,7 +60,6 @@
     "jipipe-desktop",
     "jipipe-cli",
     "jipipe-plugin-clij",
-    "jipipe-plugin-multiparameters",
     "jipipe-plugin-filesystem",
     "jipipe-plugin-ij",
     "jipipe-plugin-ij2",

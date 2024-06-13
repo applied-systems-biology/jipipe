@@ -38,7 +38,7 @@ import java.util.*;
  * Contains {@link javax.swing.tree.DefaultMutableTreeNode} that either reference the {@link org.hkijena.jipipe.api.parameters.JIPipeParameterAccess}
  * or {@link JIPipeParameterTree.Node}
  */
-public class JIPipeDesktopParameterTreeUI extends JPanel {
+public class JIPipeDesktopParameterAccessTreeUI extends JPanel {
     private JTree treeComponent;
     private JIPipeDesktopSearchTextField searchTextField;
     private JIPipeParameterTree tree;
@@ -46,7 +46,7 @@ public class JIPipeDesktopParameterTreeUI extends JPanel {
     /**
      * Creates a new empty instance
      */
-    public JIPipeDesktopParameterTreeUI() {
+    public JIPipeDesktopParameterAccessTreeUI() {
         initialize();
     }
 
@@ -55,7 +55,7 @@ public class JIPipeDesktopParameterTreeUI extends JPanel {
      *
      * @param tree the tree
      */
-    public JIPipeDesktopParameterTreeUI(JIPipeParameterTree tree) {
+    public JIPipeDesktopParameterAccessTreeUI(JIPipeParameterTree tree) {
         this.tree = tree;
         initialize();
         rebuildModel();
@@ -70,7 +70,7 @@ public class JIPipeDesktopParameterTreeUI extends JPanel {
      * @return list of selected objects. Either {@link JIPipeParameterAccess} or {@link JIPipeParameterTree.Node}
      */
     public static List<Object> showPickerDialog(Component parent, JIPipeParameterTree tree, String title) {
-        JIPipeDesktopParameterTreeUI ui = new JIPipeDesktopParameterTreeUI(tree);
+        JIPipeDesktopParameterAccessTreeUI ui = new JIPipeDesktopParameterAccessTreeUI(tree);
         JPanel contentPanel = new JPanel(new BorderLayout());
 
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));

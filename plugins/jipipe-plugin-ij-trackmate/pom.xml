@@ -96,10 +96,6 @@
             <artifactId>jipipe-plugin-ij-algorithms</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-plugin-multiparameters</artifactId>
-        </dependency>
-        <dependency>
             <groupId>sc.fiji</groupId>
             <artifactId>TrackMate</artifactId>
         </dependency>

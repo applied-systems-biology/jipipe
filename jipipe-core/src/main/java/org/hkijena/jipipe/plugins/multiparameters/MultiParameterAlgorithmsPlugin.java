@@ -85,5 +85,8 @@ public class MultiParameterAlgorithmsPlugin extends JIPipePrepackagedDefaultJava
         return "org.hkijena.jipipe:multi-parameters-algorithms";
     }
 
-
+    @Override
+    public boolean isCorePlugin() {
+        return true;
+    }
 }

@@ -294,6 +294,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeDesktopGraphEditorUI {
 
         List<NodeUIContextAction> actions = new ArrayList<>(Arrays.asList(
                 new AddNewNodeUIContextAction(),
+                new AddNewParameterSetNodeUIContextAction(),
                 NodeUIContextAction.SEPARATOR,
                 new SelectAllNodeUIContextAction(),
                 new InvertSelectionNodeUIContextAction(),

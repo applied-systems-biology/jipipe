@@ -75,10 +75,12 @@ public class DesktopParameterTableEditorUI extends JIPipeDesktopParameterEditorU
     }
 
     private void openEditor() {
+
         ParameterTableEditorWindow window = ParameterTableEditorWindow.getInstance(getDesktopWorkbench(),
                 getDesktopWorkbench().getWindow(),
                 getParameterAccess(),
-                getParameter(ParameterTable.class));
+                getParameter(ParameterTable.class),
+                getCanvasUI());
         if (getParameterAccess().getSource() instanceof JIPipeGraphNode) {
             window.setTitle(((JIPipeGraphNode) getParameterAccess().getSource()).getName() + ": " + getParameterAccess().getName());
         }

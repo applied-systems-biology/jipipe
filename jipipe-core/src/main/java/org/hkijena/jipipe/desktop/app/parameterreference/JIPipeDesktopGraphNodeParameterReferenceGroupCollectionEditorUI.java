@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterTreeUI;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterAccessTreeUI;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopPickNodeDialog;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
@@ -180,7 +180,7 @@ public class JIPipeDesktopGraphNodeParameterReferenceGroupCollectionEditorUI ext
     }
 
     private void addParameterReference(GraphNodeParameterReferenceGroup group) {
-        List<Object> selected = JIPipeDesktopParameterTreeUI.showPickerDialog(this, parameterTree, "Add parameter");
+        List<Object> selected = JIPipeDesktopParameterAccessTreeUI.showPickerDialog(this, parameterTree, "Add parameter");
         List<GraphNodeParameterReference> referenceList = new ArrayList<>();
         for (Object parameter : selected) {
             if (parameter != null) {

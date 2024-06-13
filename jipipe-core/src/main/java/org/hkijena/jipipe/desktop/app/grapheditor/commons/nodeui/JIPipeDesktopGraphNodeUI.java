@@ -37,7 +37,6 @@ import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
-import org.hkijena.jipipe.desktop.app.grapheditor.CreateParameterSetsNodeDialog;
 import org.hkijena.jipipe.desktop.app.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
@@ -47,6 +46,9 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.triggers.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.nodefinder.JIPipeDesktopNodeFinderDialogUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopAddAlgorithmSlotPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopEditAlgorithmSlotPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterKeyPickerUI;
+import org.hkijena.jipipe.plugins.multiparameters.nodes.DefineParametersTableAlgorithm;
+import org.hkijena.jipipe.plugins.parameters.library.table.ParameterTable;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 
@@ -1685,7 +1687,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         // Special case for parameter slots
         if(slot.getName().equals(JIPipeParameterSlotAlgorithm.SLOT_PARAMETERS)) {
             menu.add(UIUtils.createMenuItem("Create parameter sets ...", "Creates a nodes that supplies a selection of parameter data for the external parameters",
-                    UIUtils.getIconFromResources("data-types/parameters.png"), this::createParameterSetsNode));
+                    UIUtils.getIconFromResources("data-types/parameters.png"), () -> createParameterSetsNode(slot)));
         }
 
         Set<JIPipeDataSlot> availableSources = getGraphCanvasUI().getGraph().getAvailableSources(slot, true, false);
@@ -1743,12 +1745,28 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         openSlotMenuAddInputSlotEditItems(slot, sourceSlots, menu);
     }
 
-    private void createParameterSetsNode() {
-        CreateParameterSetsNodeDialog dialog = new CreateParameterSetsNodeDialog(getDesktopWorkbench().getWindow(), this);
-        dialog.pack();
-        dialog.setSize(1024,768);
-        dialog.setLocationRelativeTo(getDesktopWorkbench().getWindow());
-        dialog.setVisible(true);
+    private void createParameterSetsNode(JIPipeDataSlot slot) {
+
+        placeCursorAboveInput(slot);
+
+        List<JIPipeDesktopParameterKeyPickerUI.ParameterEntry> result = JIPipeDesktopParameterKeyPickerUI.showPickerDialog(getGraphCanvasUI().getGraphEditorUI(),
+                "Select parameters",
+                graphCanvasUI.getVisibleNodes(),
+                node);
+
+        if(!result.isEmpty()) {
+            ParameterTable table = new ParameterTable();
+            for (JIPipeDesktopParameterKeyPickerUI.ParameterEntry entry : result) {
+                ParameterTable.ParameterColumn column = new ParameterTable.ParameterColumn(entry.getName(), entry.getKey(), entry.getFieldClass());
+                table.addColumn(column, entry.getInitialValue());
+            }
+            table.addRow();
+
+            DefineParametersTableAlgorithm node = JIPipe.createNode(DefineParametersTableAlgorithm.class);
+            node.setParameterTable(table);
+            graphCanvasUI.getGraph().insertNode(node, graphCanvasUI.getCompartmentUUID());
+        }
+
     }
 
     private void openSlotMenuAddOutputConnectTargetSlotItems(JIPipeDataSlot slot, Set<JIPipeDataSlot> availableTargets, JMenu menu) {
@@ -2118,17 +2136,21 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 //
         boolean layoutHelperEnabled = getGraphCanvasUI().getSettings() != null && getGraphCanvasUI().getSettings().isLayoutAfterAlgorithmFinder();
         if (layoutHelperEnabled) {
-            Point cursorLocation = new Point();
-            Point slotLocation = getSlotLocation(slot).min;
-            cursorLocation.x = getX() + slotLocation.x;
-            cursorLocation.y = getBottomY() + getGraphCanvasUI().getViewMode().getGridHeight();
-            getGraphCanvasUI().setGraphEditCursor(cursorLocation);
-            invalidateAndRepaint(false, true);
+            placeCursorBelowOutput(slot);
         }
 //
 //        dialog.setVisible(true);
         JIPipeDesktopNodeFinderDialogUI dialogUI = new JIPipeDesktopNodeFinderDialogUI(getGraphCanvasUI(), slot);
         dialogUI.setVisible(true);
+    }
+
+    private void placeCursorBelowOutput(JIPipeDataSlot slot) {
+        Point cursorLocation = new Point();
+        Point slotLocation = getSlotLocation(slot).min;
+        cursorLocation.x = getX() + slotLocation.x;
+        cursorLocation.y = getBottomY() + getGraphCanvasUI().getViewMode().getGridHeight();
+        getGraphCanvasUI().setGraphEditCursor(cursorLocation);
+        invalidateAndRepaint(false, true);
     }
 
     private void openInputAlgorithmFinder(JIPipeDataSlot slot) {
@@ -2146,17 +2168,21 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 //
         boolean layoutHelperEnabled = getGraphCanvasUI().getSettings() != null && getGraphCanvasUI().getSettings().isLayoutAfterAlgorithmFinder();
         if (layoutHelperEnabled) {
-            Point cursorLocation = new Point();
-            Point slotLocation = getSlotLocation(slot).min;
-            cursorLocation.x = getX() + slotLocation.x;
-            cursorLocation.y = getY() - getGraphCanvasUI().getViewMode().getGridHeight() * 4;
-            getGraphCanvasUI().setGraphEditCursor(cursorLocation);
-            invalidateAndRepaint(false, true);
+            placeCursorAboveInput(slot);
         }
 //
 //        dialog.setVisible(true);
         JIPipeDesktopNodeFinderDialogUI dialogUI = new JIPipeDesktopNodeFinderDialogUI(getGraphCanvasUI(), slot);
         dialogUI.setVisible(true);
+    }
+
+    private void placeCursorAboveInput(JIPipeDataSlot slot) {
+        Point cursorLocation = new Point();
+        Point slotLocation = getSlotLocation(slot).min;
+        cursorLocation.x = getX() + slotLocation.x;
+        cursorLocation.y = getY() - getGraphCanvasUI().getViewMode().getGridHeight() * 4;
+        getGraphCanvasUI().setGraphEditCursor(cursorLocation);
+        invalidateAndRepaint(false, true);
     }
 
     private void openAddSlotDialog(JIPipeSlotType slotType) {

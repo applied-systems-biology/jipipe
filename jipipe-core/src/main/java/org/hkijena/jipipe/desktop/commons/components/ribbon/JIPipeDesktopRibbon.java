@@ -244,6 +244,10 @@ public class JIPipeDesktopRibbon extends JPanel {
         }
     }
 
+    public JIPipeDesktopTabPane getTabPane() {
+        return tabPane;
+    }
+
     /**
      * Reorders the tasks according to the list of IDs.
      * If there are tasks outside the ID list, their order will be preserved

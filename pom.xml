@@ -224,11 +224,6 @@ See the LICENSE file provided with this code for the full license.
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-plugin-multiparameters</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-plugin-plots</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -375,7 +370,6 @@ See the LICENSE file provided with this code for the full license.
         <module>plugins/jipipe-plugin-annotations</module>
         <module>plugins/jipipe-plugin-filesystem</module>
         <module>plugins/jipipe-plugin-tables</module>
-        <module>plugins/jipipe-plugin-multiparameters</module>
         <module>plugins/jipipe-plugin-clij</module>
         <module>plugins/jipipe-plugin-strings</module>
         <module>plugins/jipipe-plugin-utils</module>

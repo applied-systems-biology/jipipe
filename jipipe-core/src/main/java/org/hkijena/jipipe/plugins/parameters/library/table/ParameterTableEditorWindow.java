@@ -15,10 +15,13 @@ package org.hkijena.jipipe.plugins.parameters.library.table;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.*;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
@@ -42,6 +45,7 @@ public class ParameterTableEditorWindow extends JFrame {
     private final JIPipeDesktopWorkbench desktopWorkbench;
     private final JIPipeParameterAccess parameterAccess;
     private final ParameterTable parameterTable;
+    private final JIPipeDesktopGraphCanvasUI canvasUI;
     private final JLabel emptyColumnsLabel = new JLabel("<html><strong>This table has no columns</strong><br/>Import a parameter type from an existing node or define a new column.</html>",
             UIUtils.getIcon32FromResources("info.png"), JLabel.LEFT);
     private final JLabel emptyRowsLabel = new JLabel("<html><strong>This table has no rows</strong><br/>Click the 'Add' button insert rows.</html>",
@@ -49,10 +53,11 @@ public class ParameterTableEditorWindow extends JFrame {
     private JXTable table;
     private JIPipeDesktopFormPanel palettePanel;
 
-    private ParameterTableEditorWindow(JIPipeDesktopWorkbench desktopWorkbench, JIPipeParameterAccess parameterAccess, ParameterTable parameterTable) {
+    private ParameterTableEditorWindow(JIPipeDesktopWorkbench desktopWorkbench, JIPipeParameterAccess parameterAccess, ParameterTable parameterTable, JIPipeDesktopGraphCanvasUI canvasUI) {
         this.desktopWorkbench = desktopWorkbench;
         this.parameterAccess = parameterAccess;
         this.parameterTable = parameterTable;
+        this.canvasUI = canvasUI;
         setIconImage(UIUtils.getJIPipeIcon128());
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
@@ -65,10 +70,10 @@ public class ParameterTableEditorWindow extends JFrame {
         reload();
     }
 
-    public static ParameterTableEditorWindow getInstance(JIPipeDesktopWorkbench workbench, Component parent, JIPipeParameterAccess parameterAccess, ParameterTable parameterTable) {
+    public static ParameterTableEditorWindow getInstance(JIPipeDesktopWorkbench workbench, Component parent, JIPipeParameterAccess parameterAccess, ParameterTable parameterTable, JIPipeDesktopGraphCanvasUI canvasUI) {
         ParameterTableEditorWindow window = OPEN_WINDOWS.getOrDefault(parameterTable, null);
         if (window == null) {
-            window = new ParameterTableEditorWindow(workbench, parameterAccess, parameterTable);
+            window = new ParameterTableEditorWindow(workbench, parameterAccess, parameterTable, canvasUI);
             window.pack();
             window.setSize(1024, 768);
             window.setLocationRelativeTo(parent);
@@ -173,6 +178,10 @@ public class ParameterTableEditorWindow extends JFrame {
         editRowBand.add(new JIPipeDesktopLargeButtonRibbonAction("Delete selected row(s)", "Deletes the selected rows", UIUtils.getIcon32FromResources("actions/delete.png"), this::removeSelectedRows));
 
         ribbon.rebuildRibbon();
+
+        if(parameterTable.getColumnCount() > 0) {
+            ribbon.getTabPane().getTabbedPane().setSelectedIndex(1);
+        }
     }
 
     private void reload() {
@@ -348,36 +357,49 @@ public class ParameterTableEditorWindow extends JFrame {
     }
 
     private void importColumnFromAlgorithm() {
-        if (getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
-            JIPipeGraph graph = getDesktopWorkbench().getProject().getGraph();
-            JIPipeParameterTree globalTree = graph.getParameterTree(false, null);
 
-            List<Object> importedParameters = JIPipeDesktopParameterTreeUI.showPickerDialog(getDesktopWorkbench().getWindow(), globalTree, "Import parameter");
-            for (Object importedParameter : importedParameters) {
-                if (importedParameter instanceof JIPipeParameterAccess) {
-                    JIPipeParameterTree.Node node = globalTree.getSourceNode(((JIPipeParameterAccess) importedParameter).getSource());
-                    importParameterColumn(node, (JIPipeParameterAccess) importedParameter);
-                } else if (importedParameter instanceof JIPipeParameterTree.Node) {
-                    JIPipeParameterTree.Node node = (JIPipeParameterTree.Node) importedParameter;
-                    for (JIPipeParameterAccess access : node.getParameters().values()) {
-                        if (!access.isHidden()) {
-                            JIPipeParameterTree.Node sourceNode = globalTree.getSourceNode(access.getSource());
-                            importParameterColumn(sourceNode, access);
-                        }
-                    }
-                }
-            }
+        Set<JIPipeGraphNode> existingNodes;
 
-            if(!importedParameters.isEmpty()) {
-                // Ensure that there is at least 1 row
-                if(parameterTable.getRowCount() == 0) {
-                    addRow();
-                }
-            }
-
-        } else {
-            JOptionPane.showMessageDialog(this, "There is no graph editor open.", "Error", JOptionPane.ERROR_MESSAGE);
+        if(canvasUI != null) {
+            existingNodes = canvasUI.getVisibleNodes();
         }
+        else {
+            existingNodes = Collections.emptySet();
+        }
+
+        List<JIPipeDesktopParameterKeyPickerUI.ParameterEntry> result = JIPipeDesktopParameterKeyPickerUI.showPickerDialog(this,
+                "Add columns",
+                existingNodes,
+                null);
+
+        if(!result.isEmpty()) {
+            for (JIPipeDesktopParameterKeyPickerUI.ParameterEntry parameterEntry : result) {
+                importParameterColumn(parameterEntry.getName(),
+                        parameterEntry.getDescription(),
+                        parameterEntry.getKey(),
+                        parameterEntry.getFieldClass(),
+                        parameterEntry.getValue());
+            }
+
+            // Ensure that there is at least 1 row
+            if(parameterTable.getRowCount() == 0) {
+                addRow();
+            }
+        }
+    }
+
+    private void importParameterColumn(String name, String description, String key, Class<?> fieldClass, Object defaultValue) {
+        if (parameterTable.containsColumn(key))
+            return;
+        ParameterTable.ParameterColumn column = new ParameterTable.ParameterColumn();
+        column.setFieldClass(fieldClass);
+        column.setKey(key);
+        column.setName(name);
+        column.setDescription(description);
+        JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(column.getFieldClass());
+        parameterTable.addColumn(column, defaultValue != null ? info.duplicate(defaultValue) : info.newInstance());
+
+        reload();
     }
 
     private void importParameterColumn(JIPipeParameterTree.Node node, JIPipeParameterAccess importedParameter) {

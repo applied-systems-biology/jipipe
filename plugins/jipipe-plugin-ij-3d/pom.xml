@@ -92,11 +92,6 @@
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-plugin-multiparameters</artifactId>
-                <version>4.0.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-plugin-ij</artifactId>
                 <version>4.0.0-SNAPSHOT</version>
             </dependency>
@@ -143,10 +138,6 @@
         <dependency>
             <groupId>org.hkijena</groupId>
             <artifactId>jipipe-plugin-scene-3d</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-plugin-multiparameters</artifactId>
         </dependency>
         <dependency>
             <groupId>org.framagit.mcib3d</groupId>

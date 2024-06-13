@@ -3522,6 +3522,21 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         return desktopWorkbench;
     }
 
+    public Set<JIPipeGraphNode> getVisibleNodes() {
+        Set<JIPipeGraphNode> visibleNodes = new HashSet<>();
+        for (JIPipeGraphNode graphNode : getGraph().getGraphNodes()) {
+            if(getCompartmentUUID() != null) {
+                if(graphNode.isVisibleIn(getCompartmentUUID())) {
+                    visibleNodes.add(graphNode);
+                }
+            }
+            else {
+                visibleNodes.add(graphNode);
+            }
+        }
+        return visibleNodes;
+    }
+
     public enum EdgeMuteMode {
         ForceMuted,
         ForceVisible,

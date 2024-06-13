@@ -87,10 +87,6 @@
             <groupId>org.hkijena</groupId>
             <artifactId>jipipe-plugin-filesystem</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-plugin-multiparameters</artifactId>
-        </dependency>
     </dependencies>
 
     <build>
