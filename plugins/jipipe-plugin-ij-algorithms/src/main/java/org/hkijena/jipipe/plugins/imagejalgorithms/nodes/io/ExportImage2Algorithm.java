@@ -27,13 +27,17 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.desktop.api.nodes.AddJIPipeDesktopNodeQuickAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.plugins.expressions.DataExportExpressionParameter;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -229,5 +233,50 @@ public class ExportImage2Algorithm extends JIPipeIteratingAlgorithm {
             }
         }
         return super.isParameterUIVisible(tree, access);
+    }
+
+    @AddJIPipeDesktopNodeQuickAction(name = "Configure exported path", description = "Selects where the data should be exported", icon = "actions/document-export.png", buttonIcon = "actions/color-select.png", buttonText = "Select")
+    public void selectFilePathDesktopQuickAction(JIPipeDesktopGraphCanvasUI canvasUI) {
+        DataExportExpressionParameter result = DataExportExpressionParameter.showPathChooser(canvasUI.getDesktopWorkbench().getWindow(),
+                canvasUI.getWorkbench(),
+                "Select output file",
+                PathType.FilesOnly,
+                UIUtils.EXTENSION_FILTER_PNG,
+                UIUtils.EXTENSION_FILTER_BMP,
+                UIUtils.EXTENSION_FILTER_TIFF,
+                UIUtils.EXTENSION_FILTER_AVI,
+                UIUtils.EXTENSION_FILTER_JPEG);
+        if(result != null) {
+            setFilePath(result);
+            emitParameterChangedEvent("file-path");
+
+            // Also set the file format automatically
+            String expression = result.getExpression();
+            if(expression.contains(".png")) {
+                setFileFormat(ExportImageAlgorithm.FileFormat.PNG);
+                emitParameterChangedEvent("file-format");
+                emitParameterUIChangedEvent();
+            }
+            else if(expression.contains(".bmp")) {
+                setFileFormat(ExportImageAlgorithm.FileFormat.BMP);
+                emitParameterChangedEvent("file-format");
+                emitParameterUIChangedEvent();
+            }
+            else if(expression.contains(".jpg") || expression.contains(".jpeg")) {
+                setFileFormat(ExportImageAlgorithm.FileFormat.JPEG);
+                emitParameterChangedEvent("file-format");
+                emitParameterUIChangedEvent();
+            }
+            else if(expression.contains(".tif") || expression.contains(".tiff")) {
+                setFileFormat(ExportImageAlgorithm.FileFormat.TIFF);
+                emitParameterChangedEvent("file-format");
+                emitParameterUIChangedEvent();
+            }
+            else if(expression.contains(".avi")) {
+                setFileFormat(ExportImageAlgorithm.FileFormat.AVI);
+                emitParameterChangedEvent("file-format");
+                emitParameterUIChangedEvent();
+            }
+        }
     }
 }

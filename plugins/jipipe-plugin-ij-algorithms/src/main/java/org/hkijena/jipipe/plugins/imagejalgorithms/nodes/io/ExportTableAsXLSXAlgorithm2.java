@@ -28,6 +28,8 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.desktop.api.nodes.AddJIPipeDesktopNodeQuickAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.plugins.expressions.DataExportExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
@@ -35,9 +37,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.utils.NaturalOrderComparator;
-import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -178,5 +178,18 @@ public class ExportTableAsXLSXAlgorithm2 extends JIPipeMergingAlgorithm {
     @JIPipeParameter("sheet-name-expression")
     public void setSheetNameExpression(JIPipeExpressionParameter sheetNameExpression) {
         this.sheetNameExpression = sheetNameExpression;
+    }
+
+    @AddJIPipeDesktopNodeQuickAction(name = "Configure exported path", description = "Selects where the data should be exported", icon = "actions/document-export.png", buttonIcon = "actions/color-select.png", buttonText = "Select")
+    public void selectFilePathDesktopQuickAction(JIPipeDesktopGraphCanvasUI canvasUI) {
+        DataExportExpressionParameter result = DataExportExpressionParameter.showPathChooser(canvasUI.getDesktopWorkbench().getWindow(),
+                canvasUI.getWorkbench(),
+                "Select output file",
+                PathType.FilesOnly,
+                UIUtils.EXTENSION_FILTER_XLSX);
+        if(result != null) {
+            setFilePath(result);
+            emitParameterChangedEvent("file-path");
+        }
     }
 }

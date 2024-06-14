@@ -104,5 +104,6 @@ public class DefineParametersTableAlgorithm extends JIPipeAlgorithm {
                 parameterTable.addRow();
             }
         }
+        emitParameterChangedEvent("parameter-table");
     }
 }

@@ -23,10 +23,14 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.desktop.api.nodes.AddJIPipeDesktopNodeQuickAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.plugins.expressions.DataExportExpressionParameter;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -110,6 +114,33 @@ public class ExportTableAlgorithm2 extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("file-format")
     public void setFileFormat(ExportTableAlgorithm.FileFormat fileFormat) {
         this.fileFormat = fileFormat;
+    }
+
+    @AddJIPipeDesktopNodeQuickAction(name = "Configure exported path", description = "Selects where the data should be exported", icon = "actions/document-export.png", buttonIcon = "actions/color-select.png", buttonText = "Select")
+    public void selectFilePathDesktopQuickAction(JIPipeDesktopGraphCanvasUI canvasUI) {
+        DataExportExpressionParameter result = DataExportExpressionParameter.showPathChooser(canvasUI.getDesktopWorkbench().getWindow(),
+                canvasUI.getWorkbench(),
+                "Select output file",
+                PathType.FilesOnly,
+                UIUtils.EXTENSION_FILTER_CSV,
+                UIUtils.EXTENSION_FILTER_XLSX);
+        if(result != null) {
+            setFilePath(result);
+            emitParameterChangedEvent("file-path");
+
+            // Also set the file format automatically
+            String expression = result.getExpression();
+            if(expression.contains(".csv")) {
+                setFileFormat(ExportTableAlgorithm.FileFormat.CSV);
+                emitParameterChangedEvent("file-format");
+                emitParameterUIChangedEvent();
+            }
+            else if(expression.contains(".xlsx")) {
+                setFileFormat(ExportTableAlgorithm.FileFormat.XLSX);
+                emitParameterChangedEvent("file-format");
+                emitParameterUIChangedEvent();
+            }
+        }
     }
 
 }

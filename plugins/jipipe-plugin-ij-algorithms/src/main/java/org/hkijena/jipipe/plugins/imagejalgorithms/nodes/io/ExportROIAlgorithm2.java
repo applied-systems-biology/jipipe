@@ -24,12 +24,17 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.desktop.api.nodes.AddJIPipeDesktopNodeQuickAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.plugins.expressions.DataExportExpressionParameter;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.nio.file.Path;
 import java.util.*;
 
@@ -110,6 +115,19 @@ public class ExportROIAlgorithm2 extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("export-as-roi-file")
     public void setExportAsROIFile(boolean exportAsROIFile) {
         this.exportAsROIFile = exportAsROIFile;
+    }
+
+    @AddJIPipeDesktopNodeQuickAction(name = "Configure exported path", description = "Selects where the data should be exported", icon = "actions/document-export.png", buttonIcon = "actions/color-select.png", buttonText = "Select")
+    public void selectFilePathDesktopQuickAction(JIPipeDesktopGraphCanvasUI canvasUI) {
+        DataExportExpressionParameter result = DataExportExpressionParameter.showPathChooser(canvasUI.getDesktopWorkbench().getWindow(),
+                canvasUI.getWorkbench(),
+                "Select output file",
+                PathType.FilesOnly,
+                UIUtils.EXTENSION_FILTER_ROIS);
+        if(result != null) {
+            setFilePath(result);
+            emitParameterChangedEvent("file-path");
+        }
     }
 
 }

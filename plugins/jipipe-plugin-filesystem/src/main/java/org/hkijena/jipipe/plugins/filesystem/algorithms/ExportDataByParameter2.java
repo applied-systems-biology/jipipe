@@ -27,8 +27,11 @@ import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.desktop.api.nodes.AddJIPipeDesktopNodeQuickAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.plugins.expressions.DataExportExpressionParameter;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FolderData;
+import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import java.nio.file.Path;
@@ -104,5 +107,14 @@ public class ExportDataByParameter2 extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("file-path")
     public void setFilePath(DataExportExpressionParameter filePath) {
         this.filePath = filePath;
+    }
+
+    @AddJIPipeDesktopNodeQuickAction(name = "Configure exported path", description = "Selects where the data should be exported", icon = "actions/document-export.png", buttonIcon = "actions/color-select.png", buttonText = "Select")
+    public void selectFilePathDesktopQuickAction(JIPipeDesktopGraphCanvasUI canvasUI) {
+        DataExportExpressionParameter result = DataExportExpressionParameter.showPathChooser(canvasUI.getDesktopWorkbench().getWindow(), canvasUI.getWorkbench(), "Select output directory", PathType.DirectoriesOnly);
+        if(result != null) {
+            setFilePath(result);
+        }
+        emitParameterChangedEvent("file-path");
     }
 }

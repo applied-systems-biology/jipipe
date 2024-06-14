@@ -28,6 +28,8 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.desktop.api.nodes.AddJIPipeDesktopNodeQuickAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.plugins.expressions.DataExportExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
@@ -38,7 +40,9 @@ import org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils;
 import org.hkijena.jipipe.plugins.ilastik.utils.hdf5.Hdf5;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
+import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -126,5 +130,18 @@ public class ExportIlastikHDF5ImageAlgorithm extends JIPipeSimpleIteratingAlgori
     @JIPipeParameter("axes")
     public void setAxes(String axes) {
         this.axes = axes;
+    }
+
+    @AddJIPipeDesktopNodeQuickAction(name = "Configure exported path", description = "Selects where the data should be exported", icon = "actions/document-export.png", buttonIcon = "actions/color-select.png", buttonText = "Select")
+    public void selectFilePathDesktopQuickAction(JIPipeDesktopGraphCanvasUI canvasUI) {
+        DataExportExpressionParameter result = DataExportExpressionParameter.showPathChooser(canvasUI.getDesktopWorkbench().getWindow(),
+                canvasUI.getWorkbench(),
+                "Select output file",
+                PathType.FilesOnly,
+                UIUtils.EXTENSION_FILTER_HDF5);
+        if(result != null) {
+            setHdf5Path(result);
+            emitParameterChangedEvent("hdf5-path");
+        }
     }
 }

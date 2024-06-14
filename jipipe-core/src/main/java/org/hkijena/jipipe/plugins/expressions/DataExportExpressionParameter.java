@@ -14,11 +14,19 @@
 package org.hkijena.jipipe.plugins.expressions;
 
 import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.StringUtils;
 
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
@@ -59,6 +67,67 @@ public class DataExportExpressionParameter extends JIPipeExpressionParameter {
 
     public DataExportExpressionParameter(AbstractExpressionParameter other) {
         super(other);
+    }
+
+    public static DataExportExpressionParameter showPathChooser(Component parent, JIPipeWorkbench workbench, String title, PathType pathType, FileNameExtensionFilter... extensions) {
+        Path path;
+        switch (pathType) {
+            case DirectoriesOnly:
+                path = JIPipeFileChooserApplicationSettings.saveDirectory(parent, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, title);
+                break;
+            case FilesOnly:
+                path = JIPipeFileChooserApplicationSettings.saveFile(parent, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, title, extensions);
+                break;
+            case FilesAndDirectories:
+                path = JIPipeFileChooserApplicationSettings.savePath(parent, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, title);
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported path type: " + pathType);
+        }
+
+        if(path != null) {
+            if(workbench instanceof JIPipeDesktopProjectWorkbench) {
+
+                JIPipeProject project = workbench.getProject();
+                path = path.toAbsolutePath();
+
+                // Auto-replace project path
+                Path projectPath = project.getWorkDirectory();
+                if(projectPath != null) {
+                    if(path.startsWith(projectPath)) {
+                        if(JOptionPane.showConfirmDialog(parent, "The selected path '" + path + "' is located next to the project file.\n" +
+                                "Do you want to make the selected path portable for easier reproducibility?",
+                                "Relative path detected",
+                                JOptionPane.YES_NO_OPTION,
+                                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                            return new DataExportExpressionParameter("PATH_COMBINE(project_dir, \"" + JIPipeExpressionEvaluator.escapeString(projectPath.relativize(path).toString().replace('\\', '/')) + "\")");
+                        }
+                    }
+                }
+
+                // Auto-replace data directory
+                if(projectPath != null) {
+                    for (Map.Entry<String, Path> entry : project.getMetadata().getDirectories().getDirectoryMap(projectPath).entrySet()) {
+                        Path userPath = entry.getValue();
+                        if(path.startsWith(userPath)) {
+                            if(JOptionPane.showConfirmDialog(parent, "The selected path '" + path + "' is located in the user-defined directory '" + entry.getKey() + "'=" + entry.getValue() +".\n" +
+                                            "Do you want to make the selected path portable for easier reproducibility?",
+                                    "Relative path detected",
+                                    JOptionPane.YES_NO_OPTION,
+                                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                                return new DataExportExpressionParameter("PATH_COMBINE(project_data_dirs @ \"" + JIPipeExpressionEvaluator.escapeString(entry.getKey()) +
+                                        "\", \"" + JIPipeExpressionEvaluator.escapeString(userPath.relativize(path).toString().replace('\\', '/')) + "\")");
+                            }
+                        }
+                    }
+                }
+            }
+
+            return new DataExportExpressionParameter("\"" + JIPipeExpressionEvaluator.escapeString(path.toAbsolutePath().toString().replace('\\', '/')) + "\"");
+        }
+        else {
+            return null;
+        }
     }
 
     public Path generatePath(Path dataDir, Path projectDir, Map<String, Path> projectDataDirs, String dataString, int dataRow, java.util.List<JIPipeTextAnnotation> annotationList) {
