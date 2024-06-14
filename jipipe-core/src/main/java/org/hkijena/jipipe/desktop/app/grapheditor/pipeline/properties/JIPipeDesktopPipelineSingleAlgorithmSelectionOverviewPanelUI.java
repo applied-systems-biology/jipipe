@@ -25,6 +25,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.desktop.api.nodes.AddJIPipeDesktopNodeQuickAction;
+import org.hkijena.jipipe.desktop.api.nodes.JIPipeDesktopNodeQuickAction;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopAlgorithmCompendiumUI;
@@ -47,6 +49,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.*;
 
@@ -93,6 +97,7 @@ public class JIPipeDesktopPipelineSingleAlgorithmSelectionOverviewPanelUI extend
         ribbon.selectTask(currentTask);
 
         formPanel.clear();
+        initializeQuickActions(formPanel);
         initializeDocumentation(formPanel);
         if (node instanceof JIPipeNodeGroup) {
             initializeNodeGroup(formPanel);
@@ -108,6 +113,15 @@ public class JIPipeDesktopPipelineSingleAlgorithmSelectionOverviewPanelUI extend
 
         revalidate();
         repaint();
+    }
+
+    private void initializeQuickActions(JIPipeDesktopFormPanel formPanel) {
+        for (JIPipeDesktopNodeQuickAction quickAction : JIPipeDesktopNodeQuickAction.getQuickActions(node)) {
+            JIPipeDesktopFormPanel.GroupHeaderPanel groupHeaderPanel = formPanel.addGroupHeader(quickAction.getName(), quickAction.getDescription(), UIUtils.getIconFromResources(quickAction.getIcon()));
+            groupHeaderPanel.addColumn(UIUtils.createButton(quickAction.getButtonText(), UIUtils.getIconFromResources(quickAction.getButtonIcon()), () -> {
+               quickAction.run(node, canvasUI);
+            }));
+        }
     }
 
     private void initializeParameters(JIPipeDesktopFormPanel formPanel) {

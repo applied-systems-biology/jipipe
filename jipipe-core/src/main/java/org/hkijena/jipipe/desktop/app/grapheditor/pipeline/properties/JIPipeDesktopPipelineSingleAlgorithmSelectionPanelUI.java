@@ -21,6 +21,8 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.desktop.api.nodes.AddJIPipeDesktopNodeQuickAction;
+import org.hkijena.jipipe.desktop.api.nodes.JIPipeDesktopNodeQuickAction;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.batchassistant.JIPipeDesktopDataBatchAssistantUI;
@@ -32,6 +34,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDeskt
 import org.hkijena.jipipe.desktop.app.history.JIPipeDesktopHistoryJournalUI;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRunSettings;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueuePanelUI;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
@@ -44,7 +47,10 @@ import org.scijava.Disposable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * UI for a single {@link JIPipeGraphNode}
@@ -274,6 +280,23 @@ public class JIPipeDesktopPipelineSingleAlgorithmSelectionPanelUI extends JIPipe
 
 //            toolBar.add(menuButton);
             parametersUI.getToolBar().add(menuButton);
+        }
+
+        // Create quick action menu
+        List<JIPipeDesktopNodeQuickAction> quickActions = JIPipeDesktopNodeQuickAction.getQuickActions(node);
+        if(!quickActions.isEmpty()) {
+            JPopupMenu quickActionsMenu = new JPopupMenu();
+            for (JIPipeDesktopNodeQuickAction quickAction : quickActions) {
+                quickActionsMenu.add(UIUtils.createMenuItem(quickAction.getName(),
+                        quickAction.getDescription(),
+                        UIUtils.getIconFromResources(quickAction.getIcon()),
+                        () -> quickAction.run(node, canvas)));
+            }
+            JButton button = UIUtils.createButton("Tools", UIUtils.getIconFromResources("actions/quickopen.png"), null);
+            UIUtils.makeButtonHighlightedSuccess(button);
+            UIUtils.addPopupMenuToButton(button, quickActionsMenu);
+
+            parametersUI.getToolBar().add(button);
         }
 
         return panel;

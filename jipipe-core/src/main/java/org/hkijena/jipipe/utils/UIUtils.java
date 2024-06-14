@@ -2142,13 +2142,17 @@ public class UIUtils {
     public static JButton createFlatButton(String text, Icon icon, Runnable function) {
         JButton button = new JButton(text, icon);
         UIUtils.setStandardButtonBorder(button);
-        button.addActionListener(e -> function.run());
+        if(function != null) {
+            button.addActionListener(e -> function.run());
+        }
         return button;
     }
 
     public static JButton createButton(String text, Icon icon, Runnable function) {
         JButton button = new JButton(text, icon);
-        button.addActionListener(e -> function.run());
+        if(function != null) {
+            button.addActionListener(e -> function.run());
+        }
         return button;
     }
 

@@ -24,8 +24,14 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.desktop.api.nodes.AddJIPipeDesktopNodeQuickAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterKeyPickerUI;
 import org.hkijena.jipipe.plugins.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.plugins.parameters.library.table.ParameterTable;
+
+import javax.swing.*;
+import java.util.List;
 
 /**
  * Generates {@link org.hkijena.jipipe.plugins.multiparameters.datatypes.ParametersData} objects
@@ -78,5 +84,25 @@ public class DefineParametersTableAlgorithm extends JIPipeAlgorithm {
     @JIPipeParameter("parameter-table")
     public void setParameterTable(ParameterTable parameterTable) {
         this.parameterTable = parameterTable;
+    }
+
+    @AddJIPipeDesktopNodeQuickAction(name = "Select parameters",
+            description = "Auto-configure the node with parameters from nodes",
+            icon = "data-types/parameters.png",
+            buttonIcon = "actions/color-select.png",
+            buttonText = "Select parameters")
+    public void autoConfigureDesktopQuickAction(JIPipeDesktopGraphCanvasUI canvasUI) {
+        List<JIPipeDesktopParameterKeyPickerUI.ParameterEntry> selectedParameters = JIPipeDesktopParameterKeyPickerUI.showPickerDialog(canvasUI.getDesktopWorkbench().getWindow(),
+                "Select parameters",
+                canvasUI.getVisibleNodes(),
+                null);
+        for (JIPipeDesktopParameterKeyPickerUI.ParameterEntry selectedParameter : selectedParameters) {
+            if(!parameterTable.containsColumn(selectedParameter.getKey())) {
+                parameterTable.addColumn(new ParameterTable.ParameterColumn(selectedParameter.getName(), selectedParameter.getKey(), selectedParameter.getFieldClass()), selectedParameter.getValue());
+            }
+            if(parameterTable.getRowCount() <= 0) {
+                parameterTable.addRow();
+            }
+        }
     }
 }
