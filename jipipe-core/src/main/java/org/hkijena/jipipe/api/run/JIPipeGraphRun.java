@@ -666,6 +666,10 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                                 continue;
                             }
                         }
+                        if(!isCaching && !isExporting) {
+                            progressInfo.log("--> NOT detecting endpoint output " + outputSlot.getDisplayName() + " (registered as " + uuid + ") [neither exporting, nor caching]");
+                            continue;
+                        }
 
                         progressInfo.log("--> Detecting endpoint output " + outputSlot.getDisplayName() + " (registered as " + uuid + ")");
                         outputMap.put(outputSlot, uuid);
