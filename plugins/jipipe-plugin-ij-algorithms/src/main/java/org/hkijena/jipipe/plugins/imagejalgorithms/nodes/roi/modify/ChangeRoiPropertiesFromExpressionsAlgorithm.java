@@ -126,14 +126,14 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
         variables.putCustomVariables(getDefaultCustomExpressionVariables());
 
         // Obtain statistics
-        roiStatisticsAlgorithm.clearSlotData();
+        roiStatisticsAlgorithm.clearSlotData(false, progressInfo);
         roiStatisticsAlgorithm.getInputSlot("ROI").addData(inputRois, progressInfo);
         if (inputReference != null) {
             roiStatisticsAlgorithm.getInputSlot("Reference").addData(inputReference, progressInfo);
         }
         roiStatisticsAlgorithm.run(runContext, progressInfo);
         ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
-        roiStatisticsAlgorithm.clearSlotData();
+        roiStatisticsAlgorithm.clearSlotData(false, progressInfo);
 
         for (int i = 0; i < inputRois.size(); i++) {
             Roi roi = inputRois.get(i);

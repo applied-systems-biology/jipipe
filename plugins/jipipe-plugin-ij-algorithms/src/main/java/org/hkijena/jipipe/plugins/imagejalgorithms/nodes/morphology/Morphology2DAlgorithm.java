@@ -114,11 +114,11 @@ public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 //            int bottom = (int) (addBorder2DAlgorithm.getMarginBottom().evaluateToNumber(variables));
 
             crop = new Rectangle(left, top, originalImg.getWidth(), originalImg.getHeight());
-            addBorder2DAlgorithm.clearSlotData();
+            addBorder2DAlgorithm.clearSlotData(false, progressInfo);
             addBorder2DAlgorithm.getFirstInputSlot().addData(inputData, new ArrayList<>(iterationStep.getMergedTextAnnotations().values()), JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
             addBorder2DAlgorithm.run(runContext, progressInfo.resolve("Add border"));
             img = addBorder2DAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
-            addBorder2DAlgorithm.clearSlotData();
+            addBorder2DAlgorithm.clearSlotData(false, progressInfo);
         }
         Strel strel = element.fromRadius(radius);
         ImageStack outputStack = new ImageStack(originalImg.getWidth(), originalImg.getHeight(), originalImg.getProcessor().getColorModel());

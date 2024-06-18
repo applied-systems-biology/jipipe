@@ -121,7 +121,7 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends JIPipeIteratin
         ImagePlusData inputReference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
         // Obtain statistics
-        roiStatisticsAlgorithm.clearSlotData();
+        roiStatisticsAlgorithm.clearSlotData(false, progressInfo);
         roiStatisticsAlgorithm.getInputSlot("ROI").addData(inputRois, progressInfo);
         if (inputReference != null) {
             roiStatisticsAlgorithm.getInputSlot("Reference").addData(inputReference, progressInfo);

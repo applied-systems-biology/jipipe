@@ -159,7 +159,7 @@ public class HessianSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorit
                 applyInternalGradient(processedSlice);
 
             // Convert to mask
-            autoThresholdingCopy.clearSlotData();
+            autoThresholdingCopy.clearSlotData(false, progressInfo);
             autoThresholdingCopy.getFirstInputSlot().addData(new ImagePlus2DGreyscaleData(processedSlice), progressInfo);
             autoThresholdingCopy.run(runContext, progressInfo);
             processedSlice = autoThresholdingCopy.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();

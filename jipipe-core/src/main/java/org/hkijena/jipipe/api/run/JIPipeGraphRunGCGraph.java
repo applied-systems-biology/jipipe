@@ -138,14 +138,14 @@ public class JIPipeGraphRunGCGraph extends DefaultDirectedGraph<Object, DefaultE
                 removeVertex(vertex);
             } else if (vertex instanceof JIPipeInputDataSlot) {
                 progressInfo.log("-I Clearing " + ((JIPipeInputDataSlot) vertex).getDisplayName());
-                ((JIPipeInputDataSlot) vertex).clear();
+                ((JIPipeInputDataSlot) vertex).clear(false, progressInfo);
                 removeVertex(vertex);
             } else if (vertex instanceof JIPipeOutputDataSlot) {
                 progressInfo.log("-O Clearing " + ((JIPipeOutputDataSlot) vertex).getDisplayName());
                 removeVertex(vertex);
                 gcEventEmitter.emit(new GCEvent(this, (JIPipeOutputDataSlot) vertex));
                 if (!((JIPipeOutputDataSlot) vertex).isSkipGC()) {
-                    ((JIPipeOutputDataSlot) vertex).clear();
+                    ((JIPipeOutputDataSlot) vertex).clear(false, progressInfo);
                 } else {
                     progressInfo.log("--> Clearing was prevented [skip GC]");
                 }

@@ -15,14 +15,12 @@ package org.hkijena.jipipe;
 
 import ij.IJ;
 import net.imagej.ImageJ;
-import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.compat.SingleImageJAlgorithmRunConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
@@ -187,8 +185,8 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
         }
         finally {
             project.getCache().clearAll( run.getProgressInfo());
-            algorithm.clearSlotData();
-            runAlgorithm.clearSlotData();
+            algorithm.clearSlotData(true, progressInfo);
+            runAlgorithm.clearSlotData(true, progressInfo);
             PathUtils.deleteDirectoryRecursively(runConfiguration.getOutputPath(),  run.getProgressInfo());
         }
     }

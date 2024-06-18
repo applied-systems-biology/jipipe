@@ -112,7 +112,7 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
 
         if (sx != img.getWidth() || sy != img.getHeight()) {
-            scale2DAlgorithm.clearSlotData();
+            scale2DAlgorithm.clearSlotData(false, progressInfo);
             scale2DAlgorithm.setxAxis(xAxis);
             scale2DAlgorithm.setyAxis(yAxis);
             scale2DAlgorithm.getFirstInputSlot().addData(new ImagePlusData(img), progressInfo);

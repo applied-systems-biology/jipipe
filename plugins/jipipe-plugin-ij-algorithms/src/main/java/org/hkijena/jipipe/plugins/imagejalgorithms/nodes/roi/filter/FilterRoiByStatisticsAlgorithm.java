@@ -109,14 +109,14 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         variableSet.putCustomVariables(getDefaultCustomExpressionVariables());
 
         // Obtain statistics
-        roiStatisticsAlgorithm.clearSlotData();
+        roiStatisticsAlgorithm.clearSlotData(false, progressInfo);
         roiStatisticsAlgorithm.getInputSlot("ROI").addData(inputRois, progressInfo);
         if (inputReference != null) {
             roiStatisticsAlgorithm.getInputSlot("Reference").addData(inputReference, progressInfo);
         }
         roiStatisticsAlgorithm.run(runContext, progressInfo);
         ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
-        roiStatisticsAlgorithm.clearSlotData();
+        roiStatisticsAlgorithm.clearSlotData(false, progressInfo);
 
         // Write statistics into variables
         for (int col = 0; col < statistics.getColumnCount(); col++) {

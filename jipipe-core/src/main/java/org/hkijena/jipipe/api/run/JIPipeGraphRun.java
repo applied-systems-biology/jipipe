@@ -332,14 +332,14 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                     if (inputSlot.getRowCount() > 0) {
                         progressInfo.log("[!] Slot " + inputSlot.getDisplayName() + " still contains " + inputSlot.getRowCount() + " items! Clearing in post-processing!");
                     }
-                    inputSlot.clear();
+                    inputSlot.clear(false, progressInfo);
                 }
                 for (JIPipeOutputDataSlot outputSlot : node.getOutputSlots()) {
                     if (!outputSlot.isSkipGC()) {
                         if (outputSlot.getRowCount() > 0) {
                             progressInfo.log("[!] Slot " + outputSlot.getDisplayName() + " still contains " + outputSlot.getRowCount() + " items! Clearing in post-processing!");
                         }
-                        outputSlot.clear();
+                        outputSlot.clear(false, progressInfo);
                     }
                 }
             }
@@ -771,7 +771,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
             targetInputSlot.addDataFromTable(originalInputSlot, progressInfo.resolve("I -> W-I"));
 
             // GC the original
-            originalInputSlot.clear();
+            originalInputSlot.clear(false, progressInfo);
 
 //            System.out.println("GWI: " + targetInputSlot);
         }
@@ -792,7 +792,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                         "------------------------\n\n");
 
                 // Clean to prevent moving corrupted data out
-                graphWrapperAlgorithm.clearSlotData();
+                graphWrapperAlgorithm.clearSlotData(false, progressInfo);
 
                 progressInfo.getNotifications().push(new JIPipeNotification(UUID.randomUUID().toString(), "Part of the pipeline failed",
                         "Iteration step for partition " + project.getRuntimePartitions().getFullName(runtimePartition) + " failed. " +
@@ -810,11 +810,11 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
             targetOutputSlot.addDataFromTable(sourceOutputSlot, progressInfo.resolve("W-O -> O [" + sourceOutputSlot.getDisplayName() + " >>> " + targetOutputSlot.getDisplayName() + "]"));
 
             // GC the wrapped
-            sourceOutputSlot.clear();
+            sourceOutputSlot.clear(false, progressInfo);
         }
 
         // Cleanup to be sure
-        graphWrapperAlgorithm.clearSlotData();
+        graphWrapperAlgorithm.clearSlotData(false, progressInfo);
 
         // Trigger GC
         if (gcGraph != null) {
@@ -994,7 +994,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
             // Cleanup backup tables
             for (Map.Entry<UUID, Map<String, JIPipeDataTable>> nodeEntry : continueOnErrorBackup.entrySet()) {
                 for (JIPipeDataTable dataTable : nodeEntry.getValue().values()) {
-                    dataTable.clear();
+                    dataTable.clear(false, progressInfo);
                 }
             }
 
@@ -1143,7 +1143,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                     progressInfo.log(String.format("Cache for slot %s is empty!", outputSlot.getName()));
                     return false;
                 }
-                outputSlot.clearData();
+                outputSlot.clearData(false, progressInfo);
                 outputSlot.addDataFromTable(cachedData.get(outputSlot.getName()), progressInfo);
             }
             progressInfo.log("Cache data access successful.");
@@ -1224,8 +1224,8 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
             try {
                 filtered.exportData(new JIPipeFileSystemWriteDataStorage(saveProgress, outputDataSlot.getSlotStoragePath()), saveProgress);
             } finally {
-                filtered.clear();
-                outputDataSlot.clear();
+                filtered.clear(false, getProgressInfo());
+                outputDataSlot.clear(false, getProgressInfo());
             }
         }
     }

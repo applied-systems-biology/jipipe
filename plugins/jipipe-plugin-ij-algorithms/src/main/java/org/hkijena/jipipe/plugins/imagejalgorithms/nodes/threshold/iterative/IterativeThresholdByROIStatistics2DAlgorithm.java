@@ -102,11 +102,11 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
     public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
         // Set parameters of find particles
-        findParticles2DAlgorithm.clearSlotData();
+        findParticles2DAlgorithm.clearSlotData(false, progressInfo);
         findParticles2DAlgorithm.setExcludeEdges(excludeEdgeROIs);
 
         // Set parameters of ROI statistics algorithm
-        roiStatisticsAlgorithm.clearSlotData();
+        roiStatisticsAlgorithm.clearSlotData(false, progressInfo);
         roiStatisticsAlgorithm.setMeasurements(measurements);
         roiStatisticsAlgorithm.setMeasureInPhysicalUnits(measureInPhysicalUnits);
 
@@ -223,18 +223,18 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         // Detect ROI
         ROIListData rois;
         {
-            findParticles2DAlgorithm.clearSlotData();
+            findParticles2DAlgorithm.clearSlotData(false, progressInfo);
             findParticles2DAlgorithm.getInputSlot("Mask").addData(new ImagePlusGreyscaleMaskData(maskImage), progressInfo);
             findParticles2DAlgorithm.run(runContext, progressInfo);
             rois = findParticles2DAlgorithm.getFirstOutputSlot().getData(0, ROIListData.class, progressInfo);
-            findParticles2DAlgorithm.clearSlotData();
+            findParticles2DAlgorithm.clearSlotData(false, progressInfo);
         }
 
         // Filter ROI
         ROIListData filteredRois = new ROIListData();
         List<Double> scores = new ArrayList<>();
         if (!rois.isEmpty()) {
-            roiStatisticsAlgorithm.clearSlotData();
+            roiStatisticsAlgorithm.clearSlotData(false, progressInfo);
             roiStatisticsAlgorithm.getInputSlot("ROI").addData(rois, progressInfo);
             roiStatisticsAlgorithm.getInputSlot("Reference").addData(new ImagePlusGreyscaleData(inputReference), progressInfo);
             roiStatisticsAlgorithm.run(runContext, progressInfo);

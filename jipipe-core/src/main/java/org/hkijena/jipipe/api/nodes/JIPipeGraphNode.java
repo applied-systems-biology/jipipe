@@ -996,13 +996,16 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
 
     /**
      * Clears all data slots
+     *
+     * @param force        if true, close all data stores
+     * @param progressInfo the progress info
      */
-    public void clearSlotData() {
+    public void clearSlotData(boolean force, JIPipeProgressInfo progressInfo) {
         for (JIPipeDataSlot slot : inputSlots) {
-            slot.clearData();
+            slot.clearData(force, progressInfo);
         }
         for (JIPipeDataSlot slot : outputSlots) {
-            slot.clearData();
+            slot.clearData(force, progressInfo);
         }
     }
 

@@ -377,7 +377,7 @@ public class JIPipeDesktopDataBatchAssistantUI extends JIPipeDesktopProjectWorkb
     private void clearCaches() {
         currentCache.clear();
         if (batchesNodeCopy != null) {
-            batchesNodeCopy.clearSlotData();
+            batchesNodeCopy.clearSlotData(false, new JIPipeProgressInfo());
         }
         batchPanel.setDataTable(new JIPipeDataTable(JIPipeData.class));
     }

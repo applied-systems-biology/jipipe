@@ -122,7 +122,7 @@ public class BrightSpotsSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlg
                     true);
 
             // Apply auto threshold
-            autoThresholdingCopy.clearSlotData();
+            autoThresholdingCopy.clearSlotData(false, progressInfo);
             autoThresholdingCopy.getFirstOutputSlot().addData(new ImagePlus2DGreyscaleData(processedSlice), progressInfo);
             autoThresholdingCopy.run(runContext, progressInfo);
             processedSlice = autoThresholdingCopy.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
@@ -148,7 +148,7 @@ public class BrightSpotsSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlg
                 GaussianBlur gaussianBlur = new GaussianBlur();
                 gaussianBlur.blurGaussian(processedSlice.getProcessor(), gaussianSigma);
 
-                autoThresholdingCopy.clearSlotData();
+                autoThresholdingCopy.clearSlotData(false, progressInfo);
                 autoThresholdingCopy.getFirstInputSlot().addData(new ImagePlusGreyscaleData(processedSlice), progressInfo);
                 autoThresholdingCopy.run(runContext, progressInfo);
                 processedSlice = autoThresholdingCopy.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();

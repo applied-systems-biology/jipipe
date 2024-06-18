@@ -23,7 +23,6 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.context.JIPipeMutableDataContext;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.APIErrorValidationReportContext;
@@ -209,7 +208,7 @@ public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable,
     public void importInputsFromImageJ(JIPipeGraphNode algorithm, JIPipeProgressInfo progressInfo) {
         for (Map.Entry<String, ImageJDataImportOperation> entry : inputSlotImporters.entrySet()) {
             JIPipeDataSlot slot = algorithm.getInputSlot(entry.getKey());
-            slot.clearData();
+            slot.clearData(false, progressInfo);
             JIPipeDataTable dataTable = entry.getValue().apply(null, progressInfo.resolve(entry.getKey()));
             for (int row = 0; row < dataTable.getRowCount(); row++) {
                 slot.addData(dataTable.getDataItemStore(row).duplicate(progressInfo),

@@ -107,7 +107,7 @@ public class WekaClassification2DAlgorithm extends JIPipeIteratingAlgorithm {
                         progressInfo.log("Generating tiles for " + wholeSlice);
 
                         // Generate tiles
-                        tileImage2DAlgorithm.clearSlotData();
+                        tileImage2DAlgorithm.clearSlotData(false, progressInfo);
                         tileImage2DAlgorithm.getFirstInputSlot().addData(new ImagePlusData(wholeSlice), progressInfo);
                         tileImage2DAlgorithm.run(runContext, progressInfo.resolve("Generate tiles"));
 
@@ -121,15 +121,15 @@ public class WekaClassification2DAlgorithm extends JIPipeIteratingAlgorithm {
                         }
 
                         // Merge tiles
-                        unTileImage2DAlgorithm.clearSlotData();
+                        unTileImage2DAlgorithm.clearSlotData(false, progressInfo);
                         unTileImage2DAlgorithm.getFirstInputSlot().addDataFromTable(tileTable, progressInfo);
                         unTileImage2DAlgorithm.run(runContext, progressInfo.resolve("Merge tiles"));
 
                         classified = unTileImage2DAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
 
                         // Cleanup
-                        tileImage2DAlgorithm.clearSlotData();
-                        unTileImage2DAlgorithm.clearSlotData();
+                        tileImage2DAlgorithm.clearSlotData(false, progressInfo);
+                        unTileImage2DAlgorithm.clearSlotData(false, progressInfo);
                     }
                 } else {
                     progressInfo.log("Classifying whole image " + wholeSlice);

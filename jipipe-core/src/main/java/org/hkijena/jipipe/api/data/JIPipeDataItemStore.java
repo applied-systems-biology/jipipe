@@ -20,6 +20,7 @@ import org.hkijena.jipipe.utils.data.Store;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.locks.StampedLock;
 

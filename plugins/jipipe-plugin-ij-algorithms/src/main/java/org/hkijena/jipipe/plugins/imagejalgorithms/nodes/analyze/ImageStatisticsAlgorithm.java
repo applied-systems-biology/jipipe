@@ -97,12 +97,12 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         roiStatisticsAlgorithm.setApplyPerSlice(applyPerSlice);
         roiStatisticsAlgorithm.setMeasureInPhysicalUnits(measureInPhysicalUnits);
 
-        roiStatisticsAlgorithm.clearSlotData();
+        roiStatisticsAlgorithm.clearSlotData(false, progressInfo);
         roiStatisticsAlgorithm.getInputSlot("ROI").addData(inputRois, progressInfo);
         roiStatisticsAlgorithm.getInputSlot("Reference").addData(inputImage, progressInfo);
         roiStatisticsAlgorithm.run(runContext, progressInfo.resolve("Calculate statistics"));
         ResultsTableData outputResults = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
-        roiStatisticsAlgorithm.clearSlotData();
+        roiStatisticsAlgorithm.clearSlotData(false, progressInfo);
 
         iterationStep.addOutputData(getFirstOutputSlot(), outputResults, progressInfo);
     }

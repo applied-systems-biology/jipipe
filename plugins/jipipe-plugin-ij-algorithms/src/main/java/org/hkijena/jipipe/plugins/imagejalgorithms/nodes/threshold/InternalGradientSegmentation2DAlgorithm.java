@@ -132,7 +132,7 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
 
             // Apply CLAHE enhancer
             if (applyFirstCLAHE) {
-                contrastEnhancerCopy.clearSlotData();
+                contrastEnhancerCopy.clearSlotData(false, progressInfo);
                 contrastEnhancerCopy.getFirstInputSlot().addData(new ImagePlusGreyscaleData(processedSlice), progressInfo);
                 contrastEnhancerCopy.run(runContext, progressInfo);
                 processedSlice = contrastEnhancerCopy.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
@@ -145,14 +145,14 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
             }
 
             if (applySecondCLAHE) {
-                contrastEnhancerCopy.clearSlotData();
+                contrastEnhancerCopy.clearSlotData(false, progressInfo);
                 contrastEnhancerCopy.getFirstInputSlot().addData(new ImagePlusGreyscaleData(processedSlice), progressInfo);
                 contrastEnhancerCopy.run(runContext, progressInfo);
                 processedSlice = contrastEnhancerCopy.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
             }
 
             // Convert image to mask and threshold with given auto threshold method
-            autoThresholdingCopy.clearSlotData();
+            autoThresholdingCopy.clearSlotData(false, progressInfo);
             autoThresholdingCopy.getFirstInputSlot().addData(new ImagePlusGreyscaleData(processedSlice), progressInfo);
             autoThresholdingCopy.run(runContext, progressInfo);
             processedSlice = autoThresholdingCopy.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();

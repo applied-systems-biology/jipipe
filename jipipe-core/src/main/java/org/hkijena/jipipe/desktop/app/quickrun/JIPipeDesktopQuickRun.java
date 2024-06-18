@@ -23,7 +23,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
-import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -189,10 +188,10 @@ public class JIPipeDesktopQuickRun extends AbstractJIPipeRunnable implements JIP
         // Clear all data
         for (JIPipeGraphNode node : run.getGraph().getGraphNodes()) {
             for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
-                inputSlot.clearData();
+                inputSlot.clearData(false, getProgressInfo());
             }
             for (JIPipeDataSlot outputSlot : node.getOutputSlots()) {
-                outputSlot.clearData();
+                outputSlot.clearData(false, getProgressInfo());
             }
         }
     }

@@ -302,16 +302,21 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
 
     /**
      * Removes all rows from this table
+     *
+     * @param force        if true, close all data stores
+     * @param progressInfo the progress info
      */
-    public void clearData() {
+    public void clearData(boolean force, JIPipeProgressInfo progressInfo) {
         long stamp = stampedLock.writeLock();
         try {
-            for (JIPipeDataItemStore item : dataArray) {
+            for (int i = 0; i < dataArray.size(); i++) {
+                JIPipeDataItemStore item = dataArray.get(i);
                 if (item == null)
                     continue;
                 item.removeUser(this);
-                if (item.canClose()) {
+                if (force || item.canClose()) {
                     try {
+                        progressInfo.log("Closing data item store row=" + i + " in " + hashCode() + " (force=" + force + ")");
                         item.close();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
@@ -319,12 +324,15 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
                 }
             }
             for (Map.Entry<String, ArrayList<JIPipeDataItemStore>> entry : dataAnnotationsArrays.entrySet()) {
-                for (JIPipeDataItemStore item : entry.getValue()) {
+                ArrayList<JIPipeDataItemStore> value = entry.getValue();
+                for (int i = 0; i < value.size(); i++) {
+                    JIPipeDataItemStore item = value.get(i);
                     if (item == null)
                         continue;
                     item.removeUser(this);
-                    if (item.canClose()) {
+                    if (force || item.canClose()) {
                         try {
+                            progressInfo.log("Closing data item store index=" + i + " of data annotation " + entry.getKey() + " in " + hashCode() + " (force=" + force + ")");
                             item.close();
                         } catch (IOException e) {
                             throw new RuntimeException(e);
@@ -345,9 +353,12 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
 
     /**
      * Removes all rows from this table
+     *
+     * @param force        if true, force closing the data storage
+     * @param progressInfo the progress info
      */
-    public void clear() {
-        clearData();
+    public void clear(boolean force, JIPipeProgressInfo progressInfo) {
+        clearData(force, progressInfo);
     }
 
     /**

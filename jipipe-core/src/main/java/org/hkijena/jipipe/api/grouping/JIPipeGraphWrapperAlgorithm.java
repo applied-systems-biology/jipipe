@@ -294,7 +294,7 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
 
                 // Clear
                 for (JIPipeDataSlot dataSlot : run.getGraph().getGraph().vertexSet()) {
-                    dataSlot.clear();
+                    dataSlot.clear(dataSlot.getNode() != copyGroupInput && dataSlot.getNode() != copyGroupOutput, progressInfo);
                 }
             }
         } catch (Throwable e) {
@@ -385,7 +385,7 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
 
         // Clear
         for (JIPipeDataSlot dataSlot : run.getGraph().getGraph().vertexSet()) {
-            dataSlot.clear();
+            dataSlot.clear(false, progressInfo);
         }
 
     }

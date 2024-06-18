@@ -109,7 +109,7 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends JIPipeIteratingAlgor
 
         ROIListData data = inputRois;
         // Obtain statistics
-        roiStatisticsAlgorithm.clearSlotData();
+        roiStatisticsAlgorithm.clearSlotData(false, progressInfo);
         roiStatisticsAlgorithm.getInputSlot("ROI").addData(data, progressInfo);
         if (inputReference != null) {
             roiStatisticsAlgorithm.getInputSlot("Reference").addData(inputReference, progressInfo);
