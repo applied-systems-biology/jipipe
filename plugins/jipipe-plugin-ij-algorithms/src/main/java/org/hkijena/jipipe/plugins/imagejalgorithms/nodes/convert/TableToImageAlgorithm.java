@@ -77,7 +77,7 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.customSizeC = new OptionalIntegerParameter(other.customSizeC);
         this.customSizeZ = new OptionalIntegerParameter(other.customSizeZ);
         this.customSizeT = new OptionalIntegerParameter(other.customSizeT);
-        updateColumnAssignment();
+//        updateColumnAssignment();
     }
 
     @Override

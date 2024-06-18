@@ -230,7 +230,7 @@ public abstract class JIPipeDataSlot extends JIPipeDataTable {
 
     @Override
     public String toString() {
-        return String.format("%s: %s (%d rows, %d annotation columns, %d data annotation columns)", getSlotType(), getName(), getRowCount(), getTextAnnotationColumnNames().size(), getDataAnnotationColumnNames().size());
+        return String.format("%s: %s (%d rows of %s, %d annotation columns, %d data annotation columns)", getSlotType(), getName(), getRowCount(), JIPipeData.getNameOf(getAcceptedDataType()), getTextAnnotationColumnNames().size(), getDataAnnotationColumnNames().size());
     }
 
     public String getDescription() {
