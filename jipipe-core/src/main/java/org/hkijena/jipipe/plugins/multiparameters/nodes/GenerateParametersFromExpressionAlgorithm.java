@@ -47,7 +47,7 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import java.util.*;
 
 @SetJIPipeDocumentation(name = "Generate parameters from expression", description = "Generates a table of parameters from expressions defined in the 'Generated parameter columns' parameter.")
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Annotations", description = "Optional data that act as source for annotations.", create = true, optional = true)
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Annotations", description = "Optional data that act as source for annotations.", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ParametersData.class, slotName = "Parameters", description = "Generated parameters", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {

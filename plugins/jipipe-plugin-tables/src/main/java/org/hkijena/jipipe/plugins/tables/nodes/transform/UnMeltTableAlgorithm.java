@@ -41,7 +41,7 @@ import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Pivot table", description = "Moves values located in a value column into separate columns according to a set of categorization columns. Also known as dcast in R.")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Transform")
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class UnMeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

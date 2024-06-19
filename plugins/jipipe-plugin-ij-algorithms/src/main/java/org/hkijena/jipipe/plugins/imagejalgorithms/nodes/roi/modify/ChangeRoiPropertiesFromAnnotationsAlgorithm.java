@@ -38,7 +38,7 @@ import org.hkijena.jipipe.utils.ColorUtils;
  */
 @SetJIPipeDocumentation(name = "Change ROI properties from annotations", description = "Sets properties of all Roi to values extracted from annotations.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = ROIListData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ROIListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class ChangeRoiPropertiesFromAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

@@ -52,8 +52,8 @@ import java.util.Set;
  */
 @SetJIPipeDocumentation(name = "Change ROI properties from expressions", description = "Sets properties of all ROI to values extracted from expressions.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = ROIListData.class, slotName = "Input", create = true)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true, optional = true)
+@AddJIPipeInputSlot(value = ROIListData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIteratingAlgorithm {
 

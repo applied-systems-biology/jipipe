@@ -37,7 +37,7 @@ import static ij.measure.Measurements.MIN_MAX;
  * This class is not very portable, so I adapted the code here
  */
 @SetJIPipeDocumentation(name = "Histogram-based contrast enhancer", description = "Implementation of the ImageJ contrast enhancer feature that uses histograms and normalization methods.")
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Contrast")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process", aliasName = "Enhance Contrast...")

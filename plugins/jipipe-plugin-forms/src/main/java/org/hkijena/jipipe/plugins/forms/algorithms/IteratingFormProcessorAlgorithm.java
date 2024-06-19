@@ -62,8 +62,8 @@ import java.util.stream.Collectors;
         "These forms are provided via the 'Forms' slot, where all contained form elements are shown in the user interface." +
         "After the user input, the form data objects are stored in an output slot (one set of copies per data batch).")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Forms")
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Data")
-@AddJIPipeInputSlot(value = FormData.class, slotName = "Forms", role = JIPipeDataSlotRole.Parameters)
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Data")
+@AddJIPipeInputSlot(value = FormData.class, name = "Forms", role = JIPipeDataSlotRole.Parameters)
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Data")
 @AddJIPipeOutputSlot(value = FormData.class, slotName = "Forms", role = JIPipeDataSlotRole.Parameters)
 public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements JIPipeIterationStepAlgorithm {

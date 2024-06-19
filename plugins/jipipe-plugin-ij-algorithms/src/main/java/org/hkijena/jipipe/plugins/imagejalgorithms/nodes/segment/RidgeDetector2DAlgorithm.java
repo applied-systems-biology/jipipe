@@ -46,7 +46,7 @@ import java.awt.*;
 @AddJIPipeCitation("https://github.com/thorstenwagner/ij-ridgedetection")
 @AddJIPipeCitation("https://imagej.net/plugins/ridge-detection")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Segment")
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Lines", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Junctions", create = true)

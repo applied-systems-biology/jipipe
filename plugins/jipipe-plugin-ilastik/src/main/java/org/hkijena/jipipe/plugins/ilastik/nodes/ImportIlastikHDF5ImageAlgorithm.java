@@ -46,7 +46,7 @@ import static org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils.DEFAULT_AXES;
 
 @SetJIPipeDocumentation(name = "Import Ilastik HDF5 image", description = "Imports an HDF5 image that was generated with Ilastik")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = FileData.class, slotName = "HDF5 File", create = true)
+@AddJIPipeInputSlot(value = FileData.class, name = "HDF5 File", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
 public class ImportIlastikHDF5ImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private final CalibrationParameters calibrationParameters;

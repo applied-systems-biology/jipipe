@@ -39,8 +39,8 @@ import java.awt.*;
  */
 @SetJIPipeDocumentation(name = "Flood fill", description = "Starts a flood fill (magic wand) operation starting at the location of the ROI. Multiple operations are applied for each point within the ROI. Returns the generated outlines.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
+@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", create = true)
 public class RoiFloodFillAlgorithm extends JIPipeIteratingAlgorithm {
 

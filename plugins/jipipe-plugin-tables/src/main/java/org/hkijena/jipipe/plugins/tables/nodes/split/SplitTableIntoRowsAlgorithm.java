@@ -37,7 +37,7 @@ import java.util.List;
  */
 @SetJIPipeDocumentation(name = "Split table into rows", description = "Splits a table into individual rows")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Split")
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class SplitTableIntoRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

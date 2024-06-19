@@ -39,7 +39,7 @@ import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Remove/Filter image metadata", description = "Allows to filter/remove specific image metadata entries")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Metadata")
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 public class RemoveImageMetadataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

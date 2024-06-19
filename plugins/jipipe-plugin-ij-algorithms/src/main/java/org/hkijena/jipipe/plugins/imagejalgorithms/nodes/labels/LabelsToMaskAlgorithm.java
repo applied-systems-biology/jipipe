@@ -32,7 +32,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 @SetJIPipeDocumentation(name = "Convert labels to mask", description = "Converts a label image to a mask")
 @ConfigureJIPipeNode(menuPath = "Labels\nConvert", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Labels", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", create = true)
 @AddJIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
         "Bioinformatics (Oxford Univ Press) 32(22): 3532-3534, PMID 27412086, doi:10.1093/bioinformatics/btw413")

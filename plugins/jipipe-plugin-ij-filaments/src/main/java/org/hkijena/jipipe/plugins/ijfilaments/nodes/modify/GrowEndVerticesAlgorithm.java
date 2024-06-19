@@ -44,7 +44,7 @@ import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Grow end vertices (direction)", description = "Iteratively adds vertices to end points (degree 1) and grows them in the direction determined by the neighbor")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = Filaments3DData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
 public class GrowEndVerticesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

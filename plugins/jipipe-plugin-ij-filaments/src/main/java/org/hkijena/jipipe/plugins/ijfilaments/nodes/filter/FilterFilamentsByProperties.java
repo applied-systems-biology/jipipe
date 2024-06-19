@@ -44,7 +44,7 @@ import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Filter filaments", description = "Filters filament connected components by various properties")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Filter")
-@AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = Filaments3DData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
 public class FilterFilamentsByProperties extends JIPipeSimpleIteratingAlgorithm {
 

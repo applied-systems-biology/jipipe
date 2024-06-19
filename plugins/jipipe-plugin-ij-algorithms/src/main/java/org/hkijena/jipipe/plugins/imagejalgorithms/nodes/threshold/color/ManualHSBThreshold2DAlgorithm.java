@@ -44,7 +44,7 @@ import java.util.List;
 
 @SetJIPipeDocumentation(name = "Manual color threshold (HSB)", description = "Thresholds HSB images.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Threshold\nColor")
-@AddJIPipeInputSlot(value = ImagePlusColorHSBData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusColorHSBData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust")
 public class ManualHSBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

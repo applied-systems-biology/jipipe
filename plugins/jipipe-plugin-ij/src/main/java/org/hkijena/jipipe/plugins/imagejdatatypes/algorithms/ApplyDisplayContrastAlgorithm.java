@@ -33,7 +33,7 @@ import java.awt.*;
 @SetJIPipeDocumentation(name = "Apply displayed contrast", description = "Applies the displayed contrast settings of the image and writes them into the pixel values. Does nothing if the image is a 32-bit floating point image. " +
         "The operation is applied to all slices.")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust", aliasName = "Brightness/Contrast... (Apply)")
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 public class ApplyDisplayContrastAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public ApplyDisplayContrastAlgorithm(JIPipeNodeInfo info) {

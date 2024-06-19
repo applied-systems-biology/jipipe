@@ -58,7 +58,7 @@ import java.util.Set;
 @SetJIPipeDocumentation(name = "Custom auto threshold 2D (32-bit)", description = "Allows to implement a custom thresholding method via expressions. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ConfigureJIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust", aliasName = "Auto threshold (custom, 32-bit)")
 public class CustomAutoThreshold2D32FAlgorithm extends JIPipeIteratingAlgorithm {

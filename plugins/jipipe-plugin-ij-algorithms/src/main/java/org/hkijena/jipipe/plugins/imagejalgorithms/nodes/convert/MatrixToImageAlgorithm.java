@@ -48,7 +48,7 @@ import java.awt.*;
 
 @SetJIPipeDocumentation(name = "Convert matrix to image", description = "Converts a table that represents a matrix into an image. The matrix can contain color values (HEX colors) if a color image is requested.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Convert")
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlus2DData.class, slotName = "Output", create = true)
 public class MatrixToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private JIPipeDataInfoRef outputImageType = new JIPipeDataInfoRef(ImagePlusGreyscale32FData.class);

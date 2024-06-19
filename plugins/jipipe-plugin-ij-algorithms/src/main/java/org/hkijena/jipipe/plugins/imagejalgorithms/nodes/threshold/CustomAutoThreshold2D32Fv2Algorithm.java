@@ -60,7 +60,7 @@ import java.util.Set;
         "This node supports the calculation of both the minimum and maximum thresholds." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ConfigureJIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust", aliasName = "Auto threshold (custom, min+max, 32-bit)")
 public class CustomAutoThreshold2D32Fv2Algorithm extends JIPipeIteratingAlgorithm {

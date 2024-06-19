@@ -33,7 +33,7 @@ import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DOutline;
  */
 @SetJIPipeDocumentation(name = "Outline 3D ROI", description = "Converts the ROI into bounding boxes, convex hulls, etc.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ROI3DListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", create = true)
 public class OutlineRoi3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

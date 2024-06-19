@@ -37,7 +37,7 @@ import java.util.HashSet;
 @SetJIPipeDocumentation(name = "Data batch slicer", description = "Merges the incoming data into merging data batches. Only outputs " +
         "the items according to the index range. You can use this to remove duplicates. Annotations are not modified (merged annotations are not copied into " +
         "the output).")
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Filter")
 public class IterationStepSlicer extends JIPipeMergingAlgorithm {

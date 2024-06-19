@@ -46,7 +46,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Convert tables to parameters", description = "Converts a table into a parameter table. Please note that you have to define how each individual column is converted into a parameter. " +
         "To do this, add an entry into the 'Table columns' list and provide the parameter key, parameter type, and from which table column the value is sourced.")
 @ConfigureJIPipeNode(menuPath = "Convert", nodeTypeCategory = TableNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ParametersData.class, slotName = "Output", create = true)
 public class DefineParametersFromTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

@@ -41,8 +41,8 @@ import java.awt.*;
 @SetJIPipeDocumentation(name = "Append rectangular ROI (referenced)", description = "Appends manually defines rectangular ROI to all input ROI lists. " +
         "Ths algorithm allows to add rectangles as margins to the reference image bounds.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Merge")
-@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true)
+@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 @Deprecated
 @LabelAsJIPipeHidden

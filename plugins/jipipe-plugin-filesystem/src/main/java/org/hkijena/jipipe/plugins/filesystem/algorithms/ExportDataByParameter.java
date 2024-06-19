@@ -35,7 +35,7 @@ import java.nio.file.Paths;
         "The output files are named according to the metadata columns and can be easily processed by humans or third-party scripts. " +
         "The output of this algorithm is the selected output directory. " +
         "Please note that you do not need to explicitly export data, as JIPipe automatically saves all output data.")
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Data", create = true)
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Data", create = true)
 @AddJIPipeOutputSlot(value = FolderData.class, slotName = "Output path", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class)
 public class ExportDataByParameter extends JIPipeAlgorithm {

@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Export 3D scene", description = "Exports a 3D scene to Collada 1.4.1 (DAE)")
-@AddJIPipeInputSlot(value = Scene3DData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = Scene3DData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = FileData.class, slotName = "Exported file", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "3D scenes")
 @Deprecated

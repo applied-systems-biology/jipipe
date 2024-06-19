@@ -49,8 +49,8 @@ import java.util.stream.Collectors;
 @ConfigureJIPipeNode(nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
 
-@AddJIPipeInputSlot(value = PathData.class, slotName = "Source", create = true)
-@AddJIPipeInputSlot(value = PathData.class, slotName = "Destination", create = true)
+@AddJIPipeInputSlot(value = PathData.class, name = "Source", create = true)
+@AddJIPipeInputSlot(value = PathData.class, name = "Destination", create = true)
 @AddJIPipeOutputSlot(value = PathData.class, slotName = "Copied path", create = true)
 
 

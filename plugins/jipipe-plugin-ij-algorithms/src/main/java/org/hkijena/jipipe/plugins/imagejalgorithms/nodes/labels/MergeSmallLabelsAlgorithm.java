@@ -43,7 +43,7 @@ import java.util.Arrays;
 
 @SetJIPipeDocumentation(name = "Merge small labels", description = "Merges labels with a low number of pixels to its neighboring label set (larger or smaller).")
 @ConfigureJIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
 public class MergeSmallLabelsAlgorithm extends JIPipeIteratingAlgorithm {
 

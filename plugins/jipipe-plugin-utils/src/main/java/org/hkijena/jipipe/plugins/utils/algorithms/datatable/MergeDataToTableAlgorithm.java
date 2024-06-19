@@ -32,7 +32,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 @SetJIPipeDocumentation(name = "Merge into data tables", description = "Creates data batches from the incoming data and merges them into data table data. " +
         "Such tables might be needed for some nodes that process lists of data.")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Data tables")
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Data", create = true)
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Data", create = true)
 @AddJIPipeOutputSlot(value = JIPipeDataTable.class, slotName = "Tables", create = true)
 public class MergeDataToTableAlgorithm extends JIPipeMergingAlgorithm {
     public MergeDataToTableAlgorithm(JIPipeNodeInfo info) {

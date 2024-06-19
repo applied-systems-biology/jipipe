@@ -33,8 +33,8 @@ import java.awt.image.BufferedImage;
 
 @SetJIPipeDocumentation(name = "Set alpha channel from mask", description = "Sets the alpha channel of an IMP image from a mask")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "IMP")
-@AddJIPipeInputSlot(value = ImpImageData.class, slotName = "Image", create = true)
-@AddJIPipeInputSlot(value = ImpImageData.class, slotName = "Alpha", create = true)
+@AddJIPipeInputSlot(value = ImpImageData.class, name = "Image", create = true)
+@AddJIPipeInputSlot(value = ImpImageData.class, name = "Alpha", create = true)
 @AddJIPipeOutputSlot(value = ImpImageData.class, slotName = "Output", create = true)
 public class SetImpAlphaChannelAlgorithm extends JIPipeIteratingAlgorithm {
     public SetImpAlphaChannelAlgorithm(JIPipeNodeInfo info) {

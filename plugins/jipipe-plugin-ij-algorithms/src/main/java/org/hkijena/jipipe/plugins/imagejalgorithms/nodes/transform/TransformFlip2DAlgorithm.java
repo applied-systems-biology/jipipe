@@ -37,7 +37,7 @@ import java.awt.*;
 @SetJIPipeDocumentation(name = "Flip 2D image", description = "Flips the image vertical or horizontal. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ConfigureJIPipeNode(menuPath = "Transform", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nTransform", aliasName = "Flip")
 public class TransformFlip2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

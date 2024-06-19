@@ -52,8 +52,8 @@ import java.util.stream.Collectors;
 @SetJIPipeDocumentation(name = "Fix overlapping filaments (non-branching)", description = "Algorithm that attempts to fix filaments that are merged together by junctions. " +
         "Please note that this operation assumes that all filaments are non-branching.")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Process")
-@AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", create = true)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", optional = true, create = true)
+@AddJIPipeInputSlot(value = Filaments3DData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Mask", optional = true, create = true)
 @AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
 public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
 

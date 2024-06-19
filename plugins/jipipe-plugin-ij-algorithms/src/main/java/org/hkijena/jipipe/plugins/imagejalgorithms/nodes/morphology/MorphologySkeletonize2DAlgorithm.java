@@ -35,7 +35,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 @SetJIPipeDocumentation(name = "Morphological skeletonize 2D", description = "Applies a morphological skeletonization operation to binary images." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ConfigureJIPipeNode(menuPath = "Morphology", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nBinary", aliasName = "Skeletonize")
 public class MorphologySkeletonize2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

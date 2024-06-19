@@ -43,8 +43,8 @@ import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Overlay with extracted ROI", description = "Assembles/overlays extracted ROI onto the target images.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "ROI")
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Target", create = true)
-@AddJIPipeInputSlot(value = ImagePlus2DData.class, slotName = "ROI", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Target", create = true)
+@AddJIPipeInputSlot(value = ImagePlus2DData.class, name = "ROI", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 public class AssembleExtractedROIAlgorithm extends JIPipeMergingAlgorithm {
 

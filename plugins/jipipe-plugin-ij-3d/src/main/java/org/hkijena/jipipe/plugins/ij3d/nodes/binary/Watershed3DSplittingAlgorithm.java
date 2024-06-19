@@ -51,8 +51,8 @@ import java.util.Map;
         "The seeds are then the local maxima of the distance map, the farthest points from the boundaries, hence corresponding to the centres of the objects. " +
         "The bigger the object, the higher the values of the distance map at the centre, then the faster the growing of the seeds and the larger the resulting object.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Binary")
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input", create = true)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Seeds", create = true, optional = true, description = "Optional seeds")
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Seeds", create = true, optional = true, description = "Optional seeds")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Distance transform", create = true)
 public class Watershed3DSplittingAlgorithm extends JIPipeIteratingAlgorithm {

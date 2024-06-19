@@ -39,7 +39,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 @SetJIPipeDocumentation(name = "Morphological operation (binary) 2D", description = "Applies a morphological operation to binary images." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ConfigureJIPipeNode(menuPath = "Morphology", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", create = true)
 @LabelAsJIPipeHidden
 public class MorphologyBinary2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

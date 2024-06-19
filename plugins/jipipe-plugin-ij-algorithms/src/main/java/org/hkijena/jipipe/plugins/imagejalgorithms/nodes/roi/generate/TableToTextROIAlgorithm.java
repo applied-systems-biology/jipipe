@@ -36,7 +36,6 @@ import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParamet
 import org.hkijena.jipipe.plugins.parameters.library.primitives.FontFamilyParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.FontStyleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.roi.InnerMargin;
-import org.hkijena.jipipe.plugins.parameters.library.roi.Margin;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
 
@@ -49,7 +48,7 @@ import java.awt.geom.Rectangle2D;
 @SetJIPipeDocumentation(name = "Table to text ROIs", description = "Converts data from a table to text ROIs.")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Convert")
 @AddJIPipeNodeAlias(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Draw", aliasName = "Draw text ROIs from table")
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class TableToTextROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

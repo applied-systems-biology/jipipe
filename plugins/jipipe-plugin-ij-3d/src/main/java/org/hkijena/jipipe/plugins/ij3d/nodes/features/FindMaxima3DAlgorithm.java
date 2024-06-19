@@ -39,7 +39,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
         "The next local maximum is processed, this step is repeated until there are no more local maxima to process. " +
         "The final image is created with local maxima, with their original intensity value.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Features")
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
 public class FindMaxima3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

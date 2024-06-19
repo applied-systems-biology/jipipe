@@ -11,20 +11,20 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.ilastik;
+package org.hkijena.jipipe.plugins.ijfilaments.environments;
 
 import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
 
-public class OptionalIlastikEnvironment extends OptionalParameter<IlastikEnvironment> {
-    public OptionalIlastikEnvironment() {
-        super(IlastikEnvironment.class);
+public class OptionalTSOAXEnvironment extends OptionalParameter<TSOAXEnvironment> {
+    public OptionalTSOAXEnvironment() {
+        super(TSOAXEnvironment.class);
     }
 
-    public OptionalIlastikEnvironment(OptionalIlastikEnvironment other) {
-        super(IlastikEnvironment.class);
+    public OptionalTSOAXEnvironment(OptionalTSOAXEnvironment other) {
+        super(TSOAXEnvironment.class);
         setEnabled(other.isEnabled());
         if (other.getContent() != null) {
-            setContent(new IlastikEnvironment(other.getContent()));
+            setContent(new TSOAXEnvironment(other.getContent()));
         }
     }
 }

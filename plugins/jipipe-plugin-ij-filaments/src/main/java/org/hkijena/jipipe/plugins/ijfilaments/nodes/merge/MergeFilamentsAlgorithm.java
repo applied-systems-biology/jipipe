@@ -28,7 +28,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
 
 @SetJIPipeDocumentation(name = "Merge filaments", description = "Merges multiple filament graphs into one")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Split")
-@AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = Filaments3DData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
 public class MergeFilamentsAlgorithm extends JIPipeMergingAlgorithm {
 

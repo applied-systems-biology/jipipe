@@ -40,7 +40,7 @@ import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Filter filament edges", description = "Filters filament edges by various properties")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Filter")
-@AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = Filaments3DData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
 public class FilterFilamentEdgesByProperties extends JIPipeSimpleIteratingAlgorithm {
 

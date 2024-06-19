@@ -18,24 +18,17 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSingleIterationAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
-import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.plugins.multiparameters.datatypes.ParametersData;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @SetJIPipeDocumentation(name = "Multiply parameters", description = "Provide multiple parameter sets via the inputs to calculate all parameter combinations.")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Parameters")
-@AddJIPipeInputSlot(value = ParametersData.class, slotName = "Input 1", create = true)
-@AddJIPipeInputSlot(value = ParametersData.class, slotName = "Input 2", create = true)
+@AddJIPipeInputSlot(value = ParametersData.class, name = "Input 1", create = true)
+@AddJIPipeInputSlot(value = ParametersData.class, name = "Input 2", create = true)
 @AddJIPipeOutputSlot(value = ParametersData.class, slotName = "Output", create = true)
 public class MultiplyParametersAlgorithm extends JIPipeAlgorithm {
     public MultiplyParametersAlgorithm(JIPipeNodeInfo info) {

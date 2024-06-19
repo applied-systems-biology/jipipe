@@ -34,7 +34,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.Optiona
 import java.util.*;
 
 @SetJIPipeDocumentation(name = "Extract parameters from node", description = "Extracts parameters from the incoming node(s)")
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Node", create = true)
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Node", create = true)
 @AddJIPipeOutputSlot(value = ParametersData.class, slotName = "Parameters", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class ExtractParametersAlgorithm extends JIPipeAlgorithm {

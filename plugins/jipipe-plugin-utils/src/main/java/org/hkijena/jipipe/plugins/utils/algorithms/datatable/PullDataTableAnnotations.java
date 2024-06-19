@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SetJIPipeDocumentation(name = "Pull annotations from data tables", description = "Annotates the incoming data tables with text and data annotations from inside the data table")
-@AddJIPipeInputSlot(value = JIPipeDataTable.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = JIPipeDataTable.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeDataTable.class, slotName = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For data tables")
 public class PullDataTableAnnotations extends JIPipeSimpleIteratingAlgorithm {

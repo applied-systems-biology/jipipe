@@ -48,7 +48,7 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 import javax.swing.*;
 
 @SetJIPipeDocumentation(name = "Export to ImageJ", description = "Runs an ImageJ exporter. You can select the utilized exporter type in the parameters.")
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nExport")
 public class RunImageJExporterAlgorithm extends JIPipeMergingAlgorithm {

@@ -45,8 +45,8 @@ import org.hkijena.jipipe.utils.ImageJCalibrationMode;
         "in a data batch according to the mathematical operation." +
         " Applies a mathematical operation to each pixel. The value is written into the image. ")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true, optional = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
 public class GenerateMissingImageFromMathExpression2D extends JIPipeMissingDataGeneratorAlgorithm {
 

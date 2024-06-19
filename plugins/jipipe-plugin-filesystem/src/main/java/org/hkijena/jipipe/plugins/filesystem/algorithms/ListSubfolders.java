@@ -48,7 +48,7 @@ import java.util.stream.Stream;
 @ConfigureJIPipeNode(menuPath = "List", nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
 
-@AddJIPipeInputSlot(value = FolderData.class, slotName = "Folders", create = true)
+@AddJIPipeInputSlot(value = FolderData.class, name = "Folders", create = true)
 @AddJIPipeOutputSlot(value = FolderData.class, slotName = "Subfolders", create = true)
 
 

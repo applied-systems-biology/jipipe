@@ -34,7 +34,7 @@ import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Remove LUT", description = "Removes LUT information from the input image.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "LUT")
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nLookup Tables", aliasName = "Remove LUT")
 public class RemoveLUTAlgorithm extends JIPipeSimpleIteratingAlgorithm {

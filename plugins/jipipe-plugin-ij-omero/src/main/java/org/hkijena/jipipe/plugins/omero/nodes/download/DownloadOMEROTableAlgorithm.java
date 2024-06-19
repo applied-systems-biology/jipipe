@@ -55,7 +55,7 @@ import java.util.List;
         "Please note that OMERO tables have a wider range of allowed data types, while ImageJ only supports numeric and string columns. " +
         "Any unsupported table object is converted into a string.")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = OMEROImageReferenceData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = OMEROImageReferenceData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class DownloadOMEROTableAlgorithm extends JIPipeSimpleIteratingAlgorithm implements OMEROCredentialAccessNode {
 

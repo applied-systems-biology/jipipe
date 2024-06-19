@@ -33,8 +33,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 @SetJIPipeDocumentation(name = "Set filament vertex intensity from image", description = "Sets the intensity of each vertex from the given input image. Please note that if the C/T coordinates are set to zero, the value is extracted from the 0/0 slice.")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Filaments", create = true)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Intensity", description = "The intensity is sourced from the pixels in this image", create = true)
+@AddJIPipeInputSlot(value = Filaments3DData.class, name = "Filaments", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Intensity", description = "The intensity is sourced from the pixels in this image", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
 public class SetVertexIntensityFromImageAlgorithm extends JIPipeIteratingAlgorithm {
     public SetVertexIntensityFromImageAlgorithm(JIPipeNodeInfo info) {

@@ -24,7 +24,7 @@ import org.hkijena.jipipe.plugins.forms.datatypes.BooleanFormData;
 import org.hkijena.jipipe.plugins.forms.datatypes.FormData;
 
 @SetJIPipeDocumentation(name = "Boolean input form", description = "Creates a boolean input form (a checkbox). ")
-@AddJIPipeInputSlot(value = FormData.class, slotName = "Existing")
+@AddJIPipeInputSlot(value = FormData.class, name = "Existing")
 @AddJIPipeOutputSlot(value = FormData.class, slotName = "Combined")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class BooleanFormGeneratorAlgorithm extends SimpleFormGeneratorAlgorithm {

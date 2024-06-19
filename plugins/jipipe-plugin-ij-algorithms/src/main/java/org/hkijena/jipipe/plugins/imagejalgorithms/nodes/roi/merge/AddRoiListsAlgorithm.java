@@ -31,8 +31,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
  */
 @SetJIPipeDocumentation(name = "Combine ROI lists", description = "Merges multiple ROI lists. The ROI from 'Source' are added to the end of the 'Target' list. Compared to 'Merge ROI lists', this node allows to control the order of the operation.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Merge")
-@AddJIPipeInputSlot(value = ROIListData.class, slotName = "Target", create = true, description = "Where the ROI are added")
-@AddJIPipeInputSlot(value = ROIListData.class, slotName = "Source", create = true, description = "The ROI to be added")
+@AddJIPipeInputSlot(value = ROIListData.class, name = "Target", create = true, description = "Where the ROI are added")
+@AddJIPipeInputSlot(value = ROIListData.class, name = "Source", create = true, description = "The ROI to be added")
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class AddRoiListsAlgorithm extends JIPipeMergingAlgorithm {
 

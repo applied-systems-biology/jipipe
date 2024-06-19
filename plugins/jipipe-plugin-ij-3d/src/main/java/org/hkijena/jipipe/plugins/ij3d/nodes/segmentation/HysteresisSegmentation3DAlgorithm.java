@@ -37,7 +37,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
         "the high threshold the objects cores (for values above) and an intermediate level for values between low and high threshold. ")
 @AddJIPipeCitation("https://mcib3d.frama.io/3d-suite-imagej/plugins/Segmentation/3D-Hysteresis-Segmentation/")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Threshold")
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
 public class HysteresisSegmentation3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

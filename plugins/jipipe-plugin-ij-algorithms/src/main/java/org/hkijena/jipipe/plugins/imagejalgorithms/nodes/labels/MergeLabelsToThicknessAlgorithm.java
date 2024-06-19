@@ -55,7 +55,7 @@ import org.hkijena.jipipe.plugins.parameters.library.util.SortOrder;
 
 @SetJIPipeDocumentation(name = "Merge labels (min thickness) 2D", description = "Merges labels until the thickness of the label reaches a minimum threshold. If the image has multiple slices, the algorithm is applied per slice.")
 @ConfigureJIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
 public class MergeLabelsToThicknessAlgorithm extends JIPipeIteratingAlgorithm {
 

@@ -39,7 +39,7 @@ import org.hkijena.jipipe.plugins.opencv.utils.OpenCvImageUtils;
         "\n" +
         "Filter size: Large filters (d > 5) are very slow, so it is recommended to use d=5 for real-time applications, and perhaps d=9 for offline applications that need heavy noise filtering.")
 @ConfigureJIPipeNode(menuPath = "Blur", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = OpenCvImageData.class, slotName = "Input", create = true, description = "Source 8-bit or floating-point, 1-channel or 3-channel image.")
+@AddJIPipeInputSlot(value = OpenCvImageData.class, name = "Input", create = true, description = "Source 8-bit or floating-point, 1-channel or 3-channel image.")
 @AddJIPipeOutputSlot(value = OpenCvImageData.class, slotName = "Output", create = true)
 public class BilateralFilterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

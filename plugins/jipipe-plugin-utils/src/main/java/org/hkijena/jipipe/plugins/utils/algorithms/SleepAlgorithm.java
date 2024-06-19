@@ -30,7 +30,7 @@ import java.util.List;
 
 @SetJIPipeDocumentation(name = "Wait", description = "Waits/sleeps the specified time and proceeds to pass the input to the output unchanged")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true, optional = true)
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true, optional = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
 public class SleepAlgorithm extends JIPipeParameterSlotAlgorithm {
 

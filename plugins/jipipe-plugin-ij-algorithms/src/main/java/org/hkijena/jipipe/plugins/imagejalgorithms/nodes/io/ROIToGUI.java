@@ -31,7 +31,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
  * Imports {@link ImagePlusData} from the GUI
  */
 @SetJIPipeDocumentation(name = "ROI to ImageJ", description = "Adds all incoming ROI into the ImageJ ROI manager")
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nExport")

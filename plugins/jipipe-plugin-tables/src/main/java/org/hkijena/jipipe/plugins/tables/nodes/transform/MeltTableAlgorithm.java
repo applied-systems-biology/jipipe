@@ -37,7 +37,7 @@ import java.util.Set;
         "while the other columns are copied (category columns). Also known as unpivot operation.")
 @AddJIPipeNodeAlias(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Transform", aliasName = "Unpivot table")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Transform")
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class MeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

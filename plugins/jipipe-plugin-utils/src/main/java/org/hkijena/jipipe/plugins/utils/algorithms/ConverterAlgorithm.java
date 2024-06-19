@@ -33,7 +33,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 @SetJIPipeDocumentation(name = "Convert", description = "Converts the input data to the output data. This node is " +
         "only required for special occasions, as JIPipe applies an automated conversion (blue edges).")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input")
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Input")
 public class ConverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public ConverterAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()

@@ -38,7 +38,7 @@ import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Annotations to parameters", description = "Converts annotations into parameter data.")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Parameters")
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ParametersData.class, slotName = "Output", create = true)
 public class AnnotationsToParametersAlgorithm extends JIPipeParameterlessSimpleIteratingAlgorithm {
 

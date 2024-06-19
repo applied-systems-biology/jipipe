@@ -30,8 +30,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
 @SetJIPipeDocumentation(name = "Generate missing ROI lists", description = "Generates empty ROI lists for data that are not paired " +
         "with a matching ROI in the same data batch. ")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Data", create = true)
-@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true, optional = true)
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Data", create = true)
+@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", create = true)
 public class GenerateMissingRoiListsAlgorithm extends JIPipeMissingDataGeneratorAlgorithm {
     public GenerateMissingRoiListsAlgorithm(JIPipeNodeInfo info) {

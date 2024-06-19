@@ -46,8 +46,8 @@ import java.util.stream.Collectors;
         "Can only train on a single image. " +
         "Use the multi-image node if you want to train from multiple images.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
-@AddJIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Image", description = "Image on which the training should be applied", create = true)
-@AddJIPipeInputSlot(value = ImagePlus2DGreyscaleData.class, slotName = "Labels", description = "A labels image", create = true)
+@AddJIPipeInputSlot(value = ImagePlus2DData.class, name = "Image", description = "Image on which the training should be applied", create = true)
+@AddJIPipeInputSlot(value = ImagePlus2DGreyscaleData.class, name = "Labels", description = "A labels image", create = true)
 @AddJIPipeOutputSlot(value = WekaModelData.class, slotName = "Trained model", description = "The model", create = true)
 public class WekaTrainingLabels2DAlgorithm extends JIPipeIteratingAlgorithm {
 

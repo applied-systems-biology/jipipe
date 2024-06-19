@@ -38,7 +38,7 @@ import org.hkijena.jipipe.utils.StringUtils;
  */
 @SetJIPipeDocumentation(name = "Files to annotations", description = "Creates an annotation for each file based on its file name")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For paths")
-@AddJIPipeInputSlot(value = FileData.class, slotName = "Files", create = true)
+@AddJIPipeInputSlot(value = FileData.class, name = "Files", create = true)
 @AddJIPipeOutputSlot(value = FileData.class, slotName = "Annotated files", create = true)
 @LabelAsJIPipeHidden
 public class SimpleFileAnnotationGenerator extends JIPipeSimpleIteratingAlgorithm {

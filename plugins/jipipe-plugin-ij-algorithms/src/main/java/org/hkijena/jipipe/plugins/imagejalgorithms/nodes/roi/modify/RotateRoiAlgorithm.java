@@ -40,8 +40,8 @@ import java.awt.geom.Point2D;
  */
 @SetJIPipeDocumentation(name = "Rotate ROI 2D", description = "Rotates all ROI in the ROI list.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = ROIListData.class, slotName = "Input", create = true)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true, optional = true)
+@AddJIPipeInputSlot(value = ROIListData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class RotateRoiAlgorithm extends JIPipeIteratingAlgorithm {
 

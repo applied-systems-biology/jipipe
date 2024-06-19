@@ -39,7 +39,7 @@ import java.nio.file.Paths;
 @ConfigureJIPipeNode(menuPath = "Modify", nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
 
-@AddJIPipeInputSlot(value = PathData.class, slotName = "Child", create = true)
+@AddJIPipeInputSlot(value = PathData.class, name = "Child", create = true)
 @AddJIPipeOutputSlot(value = PathData.class, slotName = "Output", create = true)
 
 

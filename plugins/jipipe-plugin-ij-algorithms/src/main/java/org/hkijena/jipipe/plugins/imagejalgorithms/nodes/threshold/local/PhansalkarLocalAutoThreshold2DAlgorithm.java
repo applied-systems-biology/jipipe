@@ -45,7 +45,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
         "The threshold is calculated as <code>t = mean * (1 + p * exp(-q * mean) + k * ((stdev / r) - 1))</code>.\n\n" +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ConfigureJIPipeNode(menuPath = "Threshold\nLocal", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", create = true)
 @AddJIPipeCitation("Phansalskar N. et al. Adaptive local thresholding for detection of nuclei in diversity stained cytology images. " +
         "International Conference on Communications and Signal Processing (ICCSP), 2011, 218 - 220.")

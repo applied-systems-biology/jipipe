@@ -32,8 +32,8 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 @SetJIPipeDocumentation(name = "Extract ROI 3D statistics", description = "Generates a results table containing 3D ROI statistics. If a reference image is provided, the statistics are calculated for the reference image. Otherwise, " +
         "NaN is returned.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")
-@AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "ROI", create = true)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true, optional = true, description = "Optional image that is the basis for the measurements. If not set, all affected measurements are set to NaN.")
+@AddJIPipeInputSlot(value = ROI3DListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true, description = "Optional image that is the basis for the measurements. If not set, all affected measurements are set to NaN.")
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Measure (ROI 3D)")
 public class ExtractRoi3DStatisticsAlgorithm extends JIPipeIteratingAlgorithm {

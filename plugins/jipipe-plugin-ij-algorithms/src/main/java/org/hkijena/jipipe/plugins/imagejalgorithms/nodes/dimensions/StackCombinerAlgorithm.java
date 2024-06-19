@@ -37,8 +37,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
         "For example, this allows to combine two one-channel stacks with the same number of slices into one with two channels. " +
         "This node has similar functionality to the 'Merge stacks into dimension' node.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Target", create = true)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Source", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Target", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Source", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Combined", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks\nTools", aliasName = "Combine...")
 public class StackCombinerAlgorithm extends JIPipeIteratingAlgorithm {

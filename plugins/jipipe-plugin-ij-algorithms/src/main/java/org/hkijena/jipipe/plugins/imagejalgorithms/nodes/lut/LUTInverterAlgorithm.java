@@ -34,7 +34,7 @@ import java.awt.*;
 @SetJIPipeDocumentation(name = "Invert LUT", description = "Inverts the current LUT. If no LUT is set, a white-to-black LUT is generated. " +
         "This does not change the pixel data.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "LUT")
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nLookup Tables", aliasName = "Invert LUT")
 public class LUTInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {

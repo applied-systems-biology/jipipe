@@ -34,7 +34,7 @@ import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataParame
 /**
  * Converts ImageJ data type into each other
  */
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 @SetJIPipeDocumentation(name = "Convert ImageJ image", description = "Converts an ImageJ image into another ImageJ image data type")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)

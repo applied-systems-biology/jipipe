@@ -28,8 +28,8 @@ import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 
 @SetJIPipeDocumentation(name = "Set 3D overlay", description = "Set overlay ROIs. Please note that 3D overlays are not natively supported by ImageJ and cann")
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
-@AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "ROI", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = ROI3DListData.class, name = "ROI", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "ROI")
 public class SetOverlay3DAlgorithm extends JIPipeIteratingAlgorithm {

@@ -43,7 +43,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Add missing rows (series)", description = "Adds missing rows in a table that contains a numeric series of rows (e.g., a time series)")
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Append")
 public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgorithm {

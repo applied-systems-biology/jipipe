@@ -37,7 +37,7 @@ import java.nio.file.Path;
 @ConfigureJIPipeNode(menuPath = "Extract", nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
 
-@AddJIPipeInputSlot(value = PathData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = PathData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = FolderData.class, slotName = "Parent", create = true)
 
 

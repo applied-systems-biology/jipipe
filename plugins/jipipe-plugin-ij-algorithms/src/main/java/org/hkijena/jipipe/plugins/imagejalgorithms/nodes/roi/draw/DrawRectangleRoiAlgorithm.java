@@ -37,8 +37,8 @@ import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 
 @SetJIPipeDocumentation(name = "Draw rectangular ROI", description = "Draws one or multiple rectangular ROI. Also supports the drawing of rounded rectangles.")
-@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", description = "Optional existing list of ROI. The new ROI will be appended to it.", optional = true, create = true)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", description = "Reference image for the positioning. If not set, the area covered by the existing ROI are used (or width=0, height=0)", optional = true, create = true)
+@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", description = "Optional existing list of ROI. The new ROI will be appended to it.", optional = true, create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", description = "Reference image for the positioning. If not set, the area covered by the existing ROI are used (or width=0, height=0)", optional = true, create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Draw")
 public class DrawRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm {

@@ -36,7 +36,7 @@ import java.util.Set;
 @SetJIPipeDocumentation(name = "Set LUT (color map)", description = "Sets the LUT of the image from a predefined color map. " +
         "This does not change the pixel data.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "LUT")
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nLookup Tables")
 public class SetLUTFromColorMapAlgorithm extends JIPipeSimpleIteratingAlgorithm {

@@ -24,7 +24,7 @@ import org.hkijena.jipipe.plugins.forms.datatypes.EnumFormData;
 import org.hkijena.jipipe.plugins.forms.datatypes.FormData;
 
 @SetJIPipeDocumentation(name = "Selection input form", description = "Creates a selection input form (combo box). ")
-@AddJIPipeInputSlot(value = FormData.class, slotName = "Existing")
+@AddJIPipeInputSlot(value = FormData.class, name = "Existing")
 @AddJIPipeOutputSlot(value = FormData.class, slotName = "Combined")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class EnumFormGeneratorAlgorithm extends SimpleFormGeneratorAlgorithm {

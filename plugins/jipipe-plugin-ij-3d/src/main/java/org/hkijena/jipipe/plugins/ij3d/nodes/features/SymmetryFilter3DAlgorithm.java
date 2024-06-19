@@ -42,7 +42,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "3D symmetry filter", description = "Compute the gradients of the image based on the Canny edge detector. " +
         "Then the symmetry filter will vote for the voxels inside the object based on the gradient vector direction.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Features")
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Symmetry", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Symmetry smoothed", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Edges", create = true)

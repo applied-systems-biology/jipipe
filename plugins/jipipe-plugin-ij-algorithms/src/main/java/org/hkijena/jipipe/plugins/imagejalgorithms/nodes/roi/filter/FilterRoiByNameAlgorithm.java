@@ -40,7 +40,7 @@ import java.util.Set;
  */
 @SetJIPipeDocumentation(name = "Filter ROI by properties (expression)", description = "Filters the ROI list elements by the name and other basic properties.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
-@AddJIPipeInputSlot(value = ROIListData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ROIListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class FilterRoiByNameAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

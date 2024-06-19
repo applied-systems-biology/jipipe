@@ -33,7 +33,7 @@ import org.hkijena.jipipe.plugins.filesystem.dataypes.FolderData;
  */
 @SetJIPipeDocumentation(name = "Get output path", description = "Obtains the output path of the current run where the receiving data is stored.")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Convert")
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Data", create = true)
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Data", create = true)
 @AddJIPipeOutputSlot(value = FolderData.class, slotName = "Output path", create = true)
 public class ConvertDataToOutputPath extends JIPipeSimpleIteratingAlgorithm {
 

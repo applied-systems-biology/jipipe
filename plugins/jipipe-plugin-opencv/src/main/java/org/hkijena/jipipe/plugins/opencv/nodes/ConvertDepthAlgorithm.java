@@ -32,7 +32,7 @@ import org.hkijena.jipipe.plugins.opencv.utils.OpenCvImageUtils;
 
 @SetJIPipeDocumentation(name = "OpenCV Convert Depth", description = "Converts an OpenCV image to another depth. Applied per channel.")
 @ConfigureJIPipeNode(menuPath = "Convert", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = OpenCvImageData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = OpenCvImageData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = OpenCvImageData.class, slotName = "Output", create = true)
 public class ConvertDepthAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

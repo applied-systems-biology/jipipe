@@ -62,8 +62,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
         "These forms are provided via the 'Forms' slot, where all contained form elements are shown in the user interface. " +
         "After the user input, the form data objects are stored in an output slot (one set of copies per data batch).")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Forms")
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Data", create = true)
-@AddJIPipeInputSlot(value = FormData.class, slotName = "Forms", create = true, role = JIPipeDataSlotRole.Parameters)
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Data", create = true)
+@AddJIPipeInputSlot(value = FormData.class, name = "Forms", create = true, role = JIPipeDataSlotRole.Parameters)
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", create = true)
 @AddJIPipeOutputSlot(value = FormData.class, slotName = "Forms", create = true, role = JIPipeDataSlotRole.Parameters)
 public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements JIPipeIterationStepAlgorithm {

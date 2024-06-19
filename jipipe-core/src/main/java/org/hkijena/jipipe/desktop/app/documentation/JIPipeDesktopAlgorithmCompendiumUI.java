@@ -89,7 +89,7 @@ public class JIPipeDesktopAlgorithmCompendiumUI extends JIPipeDesktopCompendiumU
             builder.append("<tr>");
             builder.append("<td><p style=\"background-color:#27ae60; color:white;border:3px solid #27ae60;border-radius:5px;text-align:center;\">Input</p></td>");
             builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.value())).append("\"/></td>");
-            builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(StringUtils.orElse(slot.slotName(), "-"))).append("</td>");
+            builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(StringUtils.orElse(slot.name(), "-"))).append("</td>");
             builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(dataInfo.getName() + ": " + dataInfo.getDescription())).append(")</i>");
             if (!StringUtils.isNullOrEmpty(slot.description())) {
                 builder.append(" ").append(HtmlEscapers.htmlEscaper().escape(slot.description()));

@@ -29,8 +29,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.parameters.OMEExporterSettings;
 
 @SetJIPipeDocumentation(name = "Image to OME Image", description = "Converts an image into an OME image. Optionally allows the attachment of ROI that are then stored within the OME image")
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
-@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true, optional = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
+@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true, optional = true)
 @AddJIPipeOutputSlot(value = OMEImageData.class, slotName = "OME Image", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nBio-Formats", aliasName = "Bio-Formats Exporter (automated export)")

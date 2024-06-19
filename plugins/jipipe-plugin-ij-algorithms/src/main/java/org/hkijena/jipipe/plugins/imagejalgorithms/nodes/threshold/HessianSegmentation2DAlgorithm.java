@@ -62,7 +62,7 @@ import java.util.Vector;
         "<li>Despeckle</li>" +
         "</ol>")
 @ConfigureJIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", create = true)
 public class HessianSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

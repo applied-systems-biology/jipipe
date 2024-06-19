@@ -44,7 +44,7 @@ import org.hkijena.jipipe.plugins.tables.parameters.processors.ExpressionTableCo
         "Can be optionally configured to replace existing columns.")
 @AddJIPipeNodeAlias(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Append", aliasName = "Add missing columns")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

@@ -32,8 +32,8 @@ import trainableSegmentation.WekaSegmentation;
 
 @SetJIPipeDocumentation(name = "Import Weka model", description = "Imports a Trainable Weka Segmentation model from a *.model/*.arff file")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = FileData.class, slotName = "Model file", description = "The model file in *.model format", create = true)
-@AddJIPipeInputSlot(value = FileData.class, slotName = "Data file", description = "The data file in *.arff format", create = true, optional = true)
+@AddJIPipeInputSlot(value = FileData.class, name = "Model file", description = "The model file in *.model format", create = true)
+@AddJIPipeInputSlot(value = FileData.class, name = "Data file", description = "The data file in *.arff format", create = true, optional = true)
 @AddJIPipeOutputSlot(value = WekaModelData.class, slotName = "Output", description = "The model", create = true)
 public class ImportWekaModelFromFileAlgorithm extends JIPipeIteratingAlgorithm {
 

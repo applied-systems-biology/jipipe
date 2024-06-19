@@ -42,7 +42,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
         "<li>min/max/avg radius/value</li>" +
         "</ul>")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Measure")
-@AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = Filaments3DData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class MeasureFilamentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public MeasureFilamentsAlgorithm(JIPipeNodeInfo info) {

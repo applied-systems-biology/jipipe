@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 
 @SetJIPipeDocumentation(name = "Duplicate data", description = "Creates a duplicate of the input data. Useful for debugging purposes.")
-@AddJIPipeInputSlot(slotName = "Input", value = JIPipeData.class, create = true)
+@AddJIPipeInputSlot(name = "Input", value = JIPipeData.class, create = true)
 @AddJIPipeOutputSlot(slotName = "Output", value = JIPipeData.class, create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 public class DuplicateDataAlgorithm extends JIPipeSimpleIteratingAlgorithm {

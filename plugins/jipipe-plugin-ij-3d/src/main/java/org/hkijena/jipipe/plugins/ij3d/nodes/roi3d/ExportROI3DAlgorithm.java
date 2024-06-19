@@ -44,7 +44,7 @@ import java.util.List;
 import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Export 3D ROI", description = "Deprecated. Please use the new node. Exports a 3D ROI list into one or multiple ROI files")
-@AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ROI3DListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = FileData.class, slotName = "Exported file", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "ROI")
 @Deprecated

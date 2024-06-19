@@ -53,8 +53,8 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Key/Value statistics 5D (fast averages)", description = "This node consumes two images with the same dimensions that respectively contain the keys and value components of each pixel position. " +
         "Buckets the pixels of the 'Value' image based on the pixel in the 'Key' and calculates the number of values, their sum, and the average value.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Key", create = true)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Value", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Key", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Value", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class KeyValueAveragesGenerator extends JIPipeIteratingAlgorithm {
     private ImageROITargetArea sourceArea = ImageROITargetArea.WholeImage;

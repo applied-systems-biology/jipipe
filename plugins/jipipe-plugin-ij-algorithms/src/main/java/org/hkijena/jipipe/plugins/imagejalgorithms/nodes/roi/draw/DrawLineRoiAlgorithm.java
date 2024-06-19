@@ -13,10 +13,8 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.draw;
 
-import ij.gui.Arrow;
 import ij.gui.Line;
 import ij.gui.Roi;
-import ij.gui.ShapeRoi;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -38,14 +36,10 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.Image5DExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
-import org.hkijena.jipipe.plugins.parameters.library.roi.Margin;
-
-import java.awt.*;
-import java.awt.geom.RoundRectangle2D;
 
 @SetJIPipeDocumentation(name = "Draw line ROI", description = "Draws one or multiple line ROI.")
-@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", description = "Optional existing list of ROI. The new ROI will be appended to it.", optional = true, create = true)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", description = "Reference image for the positioning. If not set, all image-related variables will be set to 0", optional = true, create = true)
+@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", description = "Optional existing list of ROI. The new ROI will be appended to it.", optional = true, create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", description = "Reference image for the positioning. If not set, all image-related variables will be set to 0", optional = true, create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Draw")
 public class DrawLineRoiAlgorithm extends JIPipeIteratingAlgorithm {

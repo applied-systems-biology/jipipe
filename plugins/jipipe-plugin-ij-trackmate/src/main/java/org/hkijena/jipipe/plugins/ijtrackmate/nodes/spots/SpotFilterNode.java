@@ -43,7 +43,7 @@ import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Filter spots", description = "Filter TrackMate spots via expressions")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nFilter")
-@AddJIPipeInputSlot(value = SpotsCollectionData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = SpotsCollectionData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = SpotsCollectionData.class, slotName = "Output", create = true)
 public class SpotFilterNode extends JIPipeSimpleIteratingAlgorithm {
 

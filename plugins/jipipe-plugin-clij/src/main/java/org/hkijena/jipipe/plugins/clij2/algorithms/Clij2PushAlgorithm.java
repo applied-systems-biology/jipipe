@@ -29,7 +29,7 @@ import org.hkijena.jipipe.plugins.clij2.datatypes.CLIJImageData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 
 @SetJIPipeDocumentation(name = "CLIJ2 Push to GPU", description = "Converts an image into a GPU image managed by CLIJ")
-@AddJIPipeInputSlot(slotName = "Input", value = ImagePlusData.class, create = true)
+@AddJIPipeInputSlot(name = "Input", value = ImagePlusData.class, create = true)
 @AddJIPipeOutputSlot(slotName = "Output", value = CLIJImageData.class, create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "CLIJ")
 public class Clij2PushAlgorithm extends JIPipeSimpleIteratingAlgorithm {

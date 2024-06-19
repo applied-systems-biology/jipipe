@@ -43,7 +43,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.\n\n" +
         "Bernsen recommends a radius of 15 and a contrast threshold of 15.")
 @ConfigureJIPipeNode(menuPath = "Threshold\nLocal", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", create = true)
 @AddJIPipeCitation("Bernsen J. (1986) \"Dynamic Thresholding of Grey-Level Images\" Proc. of the 8th Int. Conf. on Pattern Recognition, pp. 1251-1255")
 @AddJIPipeCitation("Sezgin M. and Sankur B. (2004) \"Survey over Image Thresholding Techniques and Quantitative Performance Evaluation\" Journal of Electronic Imaging, 13(1): 146-165")

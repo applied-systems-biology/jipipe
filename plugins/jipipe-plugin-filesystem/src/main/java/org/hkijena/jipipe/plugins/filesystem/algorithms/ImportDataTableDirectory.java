@@ -46,7 +46,7 @@ import java.util.List;
 
 @SetJIPipeDocumentation(name = "Import data table (directory)", description = "Imports a data table directory. The folder contains a data-table.json file and multiple folders with numeric names.")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = FolderData.class, slotName = "Data table folder", create = true)
+@AddJIPipeInputSlot(value = FolderData.class, name = "Data table folder", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", create = true)
 public class ImportDataTableDirectory extends JIPipeSimpleIteratingAlgorithm {
 

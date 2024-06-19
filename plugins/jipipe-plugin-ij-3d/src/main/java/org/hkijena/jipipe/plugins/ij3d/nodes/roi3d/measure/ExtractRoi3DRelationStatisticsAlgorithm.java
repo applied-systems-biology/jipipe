@@ -34,9 +34,9 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
 @SetJIPipeDocumentation(name = "Extract pairwise 3D ROI statistics", description = "Extracts all pairwise statistics between the 3D ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")
-@AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "ROI 1", create = true)
-@AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "ROI 2", create = true)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true, optional = true)
+@AddJIPipeInputSlot(value = ROI3DListData.class, name = "ROI 1", create = true)
+@AddJIPipeInputSlot(value = ROI3DListData.class, name = "ROI 2", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", create = true)
 public class ExtractRoi3DRelationStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 

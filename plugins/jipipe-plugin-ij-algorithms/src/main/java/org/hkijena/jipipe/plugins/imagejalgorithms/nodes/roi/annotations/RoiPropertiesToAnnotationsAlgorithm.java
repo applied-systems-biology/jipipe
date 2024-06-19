@@ -40,7 +40,7 @@ import java.util.List;
         "This will create a list of annotation values if there are multiple ROI per list, unless you choose the option to only return the first entry. " +
         "By default, one value per ROI is generated. Enable de-duplication to disable this behavior.")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For ROI")
-@AddJIPipeInputSlot(value = ROIListData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ROIListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class RoiPropertiesToAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

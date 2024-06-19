@@ -47,7 +47,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 @SetJIPipeDocumentation(name = "Export table as XLSX", description = "Deprecated. Please use the new node. Exports a results table to XLSX. Merge multiple tables into the same batch to create a multi-sheet table.")
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = FileData.class, slotName = "Exported file", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Tables")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nSave")

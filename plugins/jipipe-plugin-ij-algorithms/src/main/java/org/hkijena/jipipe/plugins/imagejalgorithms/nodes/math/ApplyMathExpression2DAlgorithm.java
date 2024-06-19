@@ -40,7 +40,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
  */
 @SetJIPipeDocumentation(name = "Math expression", description = "Applies a mathematical operation to each pixel.")
 @ConfigureJIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nMath", aliasName = "Macro... (per pixel, greyscale)")
 public class ApplyMathExpression2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

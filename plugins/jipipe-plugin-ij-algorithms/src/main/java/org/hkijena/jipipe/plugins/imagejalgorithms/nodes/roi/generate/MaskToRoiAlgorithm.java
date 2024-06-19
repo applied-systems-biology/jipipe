@@ -35,7 +35,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 @SetJIPipeDocumentation(name = "Mask to ROI", description = "Converts pixel values equal or higher than the given threshold to a ROI. This will create a single ROI that contains holes. If a higher-dimensional image is provided, the operation is applied for each slice.")
 @ConfigureJIPipeNode(menuPath = "ROI", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class MaskToRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

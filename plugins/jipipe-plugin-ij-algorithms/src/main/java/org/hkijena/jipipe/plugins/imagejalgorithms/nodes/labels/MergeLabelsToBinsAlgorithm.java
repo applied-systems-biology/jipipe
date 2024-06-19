@@ -45,7 +45,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Merge labels (bin) 2D", description = "Merges labels into a specified number of of bins. The values are distributed so uniformly unless 'Equalize frequencies' is enabled. The resulting labels are determined by the bin index. " +
         " If the image has multiple slices, the algorithm is applied per slice.")
 @ConfigureJIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
 public class MergeLabelsToBinsAlgorithm extends JIPipeIteratingAlgorithm {
 

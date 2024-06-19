@@ -56,7 +56,7 @@ import java.util.stream.Collectors;
  */
 @SetJIPipeDocumentation(name = "Annotate by image statistics (Expression)", description = "Annotates the incoming images by their statistics. The statistics are created via annotations.")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For images")
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Image", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Image", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Image", create = true)
 public class AnnotateByImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm {
 

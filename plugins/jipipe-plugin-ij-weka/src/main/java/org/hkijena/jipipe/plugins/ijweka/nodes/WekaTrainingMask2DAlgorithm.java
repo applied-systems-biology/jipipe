@@ -45,8 +45,8 @@ import java.util.stream.Collectors;
         "Can only train on a single image. " +
         "Use the multi-image node if you want to train from multiple images.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
-@AddJIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Image", description = "Image on which the training should be applied", create = true)
-@AddJIPipeInputSlot(value = ImagePlus2DGreyscaleMaskData.class, slotName = "Mask", description = "Mask that marks foreground objects via white pixels (255) and the background with black pixels (0)", create = true)
+@AddJIPipeInputSlot(value = ImagePlus2DData.class, name = "Image", description = "Image on which the training should be applied", create = true)
+@AddJIPipeInputSlot(value = ImagePlus2DGreyscaleMaskData.class, name = "Mask", description = "Mask that marks foreground objects via white pixels (255) and the background with black pixels (0)", create = true)
 @AddJIPipeOutputSlot(value = WekaModelData.class, slotName = "Trained model", description = "The model", create = true)
 public class WekaTrainingMask2DAlgorithm extends JIPipeIteratingAlgorithm {
 

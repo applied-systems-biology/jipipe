@@ -791,7 +791,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
          * @return The builder
          */
         public Builder addInputSlot(AddJIPipeInputSlot annotation) {
-            JIPipeDataSlotInfo slot = object.addSlot(annotation.slotName(), new JIPipeDataSlotInfo(annotation), false);
+            JIPipeDataSlotInfo slot = object.addSlot(annotation.name(), new JIPipeDataSlotInfo(annotation), false);
             return this;
         }
 
@@ -1050,7 +1050,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
          */
         public Builder addFromAnnotations(Class<? extends JIPipeGraphNode> klass) {
             for (AddJIPipeInputSlot slot : klass.getAnnotationsByType(AddJIPipeInputSlot.class)) {
-                if (slot.create() && !object.inputSlots.containsKey(slot.slotName())) {
+                if (slot.create() && !object.inputSlots.containsKey(slot.name())) {
                     object.addSlot(slot, false);
                 }
             }

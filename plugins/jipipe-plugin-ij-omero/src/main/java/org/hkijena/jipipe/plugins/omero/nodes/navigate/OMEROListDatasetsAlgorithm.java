@@ -49,7 +49,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SetJIPipeDocumentation(name = "List OMERO datasets", description = "Returns the ID(s) of dataset(s) according to search criteria. Requires project IDs as input.")
-@AddJIPipeInputSlot(value = OMEROProjectReferenceData.class, slotName = "Projects", create = true)
+@AddJIPipeInputSlot(value = OMEROProjectReferenceData.class, name = "Projects", create = true)
 @AddJIPipeOutputSlot(value = OMERODatasetReferenceData.class, slotName = "Datasets", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = FileSystemNodeTypeCategory.class, menuPath = "OMERO")
 public class OMEROListDatasetsAlgorithm extends JIPipeSingleIterationAlgorithm implements OMEROCredentialAccessNode {

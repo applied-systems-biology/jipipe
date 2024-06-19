@@ -44,7 +44,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
 @SetJIPipeDocumentation(name = "Table to circular ROIs", description = "Converts data from a table to circular ROIs. The ROIs are created to be centered at the provided locations. If you require more options, utilize 'Table to rectangular/oval ROIs' instead.")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Convert")
 @AddJIPipeNodeAlias(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Draw", aliasName = "Draw circular ROIs from table")
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

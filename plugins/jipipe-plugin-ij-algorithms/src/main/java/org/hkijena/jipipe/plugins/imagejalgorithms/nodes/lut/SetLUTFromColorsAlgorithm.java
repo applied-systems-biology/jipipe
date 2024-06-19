@@ -38,7 +38,7 @@ import java.util.Set;
 @SetJIPipeDocumentation(name = "Set LUT (two colors)", description = "Generates a LUT from the first to the second color. " +
         "This does not change the pixel data.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "LUT")
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nLookup Tables")
 public class SetLUTFromColorsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

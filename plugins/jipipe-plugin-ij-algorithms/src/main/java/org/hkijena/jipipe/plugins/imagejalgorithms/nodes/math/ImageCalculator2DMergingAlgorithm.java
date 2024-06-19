@@ -44,7 +44,7 @@ import java.util.List;
         "The order is determined by how JIPipe calculates the merging and currently cannot be controlled." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ConfigureJIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true, description = "The input images")
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true, description = "The input images")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true, description = "The calculation result")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process", aliasName = "Image Calculator... (multiple into one)")
 public class ImageCalculator2DMergingAlgorithm extends JIPipeMergingAlgorithm {

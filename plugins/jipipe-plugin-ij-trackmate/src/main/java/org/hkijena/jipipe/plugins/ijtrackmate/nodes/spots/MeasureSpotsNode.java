@@ -33,7 +33,7 @@ import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Measure spots", description = "Measures the spots and outputs the results into a table. If tracked spots are provided, the track ID will also be added.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nMeasure")
-@AddJIPipeInputSlot(value = SpotsCollectionData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = SpotsCollectionData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class MeasureSpotsNode extends JIPipeSimpleIteratingAlgorithm {
 

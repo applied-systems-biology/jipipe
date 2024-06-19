@@ -38,7 +38,7 @@ import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Remove/Filter 3D ROI metadata", description = "Allows to filter/remove specific ROI metadata entries")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Metadata")
-@AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ROI3DListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", create = true)
 public class RemoveROI3DMetadataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

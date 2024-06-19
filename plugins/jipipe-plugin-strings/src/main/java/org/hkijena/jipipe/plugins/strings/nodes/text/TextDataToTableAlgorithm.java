@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
 
 @SetJIPipeDocumentation(name = "Text to table", description = "Extracts a values from the input text data (via an expression) and writes the results into a table.")
 @ConfigureJIPipeNode(menuPath = "Text", nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = StringData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = StringData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class TextDataToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private ParameterCollectionList entries = ParameterCollectionList.containingCollection(Entry.class);

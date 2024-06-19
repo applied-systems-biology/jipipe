@@ -33,7 +33,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
  */
 @SetJIPipeDocumentation(name = "Apply transformation", description = "Applies a mathematical function to each pixel. Supported operations are: ABS, INVERT, SQUARE, LOGARITHM, SQRT, and EXP")
 @ConfigureJIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nMath", aliasName = "Math operation (pixel transformation)")
 public class ApplyTransform2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

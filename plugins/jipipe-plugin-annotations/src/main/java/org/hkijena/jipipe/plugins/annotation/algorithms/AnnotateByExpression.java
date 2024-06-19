@@ -43,7 +43,7 @@ import java.util.Set;
 @AddJIPipeNodeAlias(aliasName = "Set annotations")
 @AddJIPipeNodeAlias(aliasName = "Modify annotations")
 @AddJIPipeNodeAlias(aliasName = "Edit annotations")
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
 public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
     private NamedTextAnnotationGeneratorExpression.List annotations = new NamedTextAnnotationGeneratorExpression.List();

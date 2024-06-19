@@ -43,7 +43,7 @@ import java.awt.*;
 
 @SetJIPipeDocumentation(name = "Draw scale bar", description = "Draws a scale bar onto the image (via an overlay ROI)")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Calibration")
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze\nTools", aliasName = "Scale Bar...")
 public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {

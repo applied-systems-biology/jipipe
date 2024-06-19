@@ -48,8 +48,8 @@ import java.util.ArrayList;
 @AddJIPipeCitation("https://mcib3d.frama.io/3d-suite-imagej/plugins/Segmentation/3D-Iterative-Segmentation/")
 @AddJIPipeCitation("Gul-Mohammed, J., Arganda-Carreras, I., Andrey, P., Galy, V., & Boudier, T. (2014). A generic classification-based method for segmentation of nuclei in 3D images of early embryos. BMC bioinformatics, 15(1), 1-12.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Threshold")
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Markers", optional = true, description = "Optional seeds for the objects", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Markers", optional = true, description = "Optional seeds for the objects", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
 public class IterativeThreshold3DAlgorithm extends JIPipeIteratingAlgorithm {
 

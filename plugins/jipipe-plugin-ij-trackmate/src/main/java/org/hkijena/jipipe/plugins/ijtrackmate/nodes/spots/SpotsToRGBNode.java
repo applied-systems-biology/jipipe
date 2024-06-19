@@ -42,8 +42,8 @@ import java.util.Collections;
 
 @SetJIPipeDocumentation(name = "Convert spots to RGB", description = "Visualizes spots")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nVisualize")
-@AddJIPipeInputSlot(value = SpotsCollectionData.class, slotName = "Spots", create = true)
-@AddJIPipeInputSlot(value = ImagePlusColorRGBData.class, slotName = "Image", create = true, optional = true, description = "")
+@AddJIPipeInputSlot(value = SpotsCollectionData.class, name = "Spots", create = true)
+@AddJIPipeInputSlot(value = ImagePlusColorRGBData.class, name = "Image", create = true, optional = true, description = "")
 @AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output", create = true)
 public class SpotsToRGBNode extends JIPipeIteratingAlgorithm {
     private SpotDrawer spotDrawer = new SpotDrawer();

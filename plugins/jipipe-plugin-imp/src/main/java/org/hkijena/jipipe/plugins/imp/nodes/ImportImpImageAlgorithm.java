@@ -34,7 +34,7 @@ import java.nio.file.Path;
 
 @SetJIPipeDocumentation(name = "Import IMP image", description = "Imports an image via the Image Manipulation Pipeline.")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = FileData.class, slotName = "File", create = true, description = "The file to be imported")
+@AddJIPipeInputSlot(value = FileData.class, name = "File", create = true, description = "The file to be imported")
 @AddJIPipeOutputSlot(value = ImpImageData.class, slotName = "Image", create = true, description = "The image")
 public class ImportImpImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

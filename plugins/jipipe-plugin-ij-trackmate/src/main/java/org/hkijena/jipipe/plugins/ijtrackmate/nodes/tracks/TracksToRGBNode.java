@@ -42,8 +42,8 @@ import java.util.Collections;
 
 @SetJIPipeDocumentation(name = "Convert tracks to RGB", description = "Visualizes tracks")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nVisualize")
-@AddJIPipeInputSlot(value = TrackCollectionData.class, slotName = "Tracks", create = true)
-@AddJIPipeInputSlot(value = ImagePlusColorRGBData.class, slotName = "Image", create = true, optional = true, description = "")
+@AddJIPipeInputSlot(value = TrackCollectionData.class, name = "Tracks", create = true)
+@AddJIPipeInputSlot(value = ImagePlusColorRGBData.class, name = "Image", create = true, optional = true, description = "")
 @AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output", create = true)
 public class TracksToRGBNode extends JIPipeIteratingAlgorithm {
     private TrackDrawer trackDrawer = new TrackDrawer();

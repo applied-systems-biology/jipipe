@@ -40,7 +40,7 @@ import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataParame
 @SetJIPipeDocumentation(name = "Connected components labeling 3D", description = "Applies a connected components labeling on a mask. Each connected component is assigned a unique value in the output label image. " +
         "If the image is non-binary, the connected components are generated per-input value. If 3D data is supplied, the connected components are extracted in 3D.")
 @ConfigureJIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlus3DGreyscaleMaskData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlus3DGreyscaleMaskData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
 @AddJIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
         "Bioinformatics (Oxford Univ Press) 32(22): 3532-3534, PMID 27412086, doi:10.1093/bioinformatics/btw413")

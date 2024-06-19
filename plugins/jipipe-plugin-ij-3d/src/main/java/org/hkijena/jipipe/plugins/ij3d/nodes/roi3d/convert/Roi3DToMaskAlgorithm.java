@@ -31,8 +31,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 
 @SetJIPipeDocumentation(name = "3D ROI to mask", description = "Converts 3D ROI lists to a mask")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
-@AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "ROI", create = true)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true, optional = true, description = "Optional reference image that determines the size of the output")
+@AddJIPipeInputSlot(value = ROI3DListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true, description = "Optional reference image that determines the size of the output")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", create = true)
 public class Roi3DToMaskAlgorithm extends JIPipeIteratingAlgorithm {
     public Roi3DToMaskAlgorithm(JIPipeNodeInfo info) {

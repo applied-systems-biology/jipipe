@@ -42,7 +42,7 @@ import static org.hkijena.jipipe.utils.UIUtils.UI_PADDING;
 /**
  * Organizes UI in a form layout with integrated help functionality, and grouping with conditional visibility
  */
-public class JIPipeDesktopFormPanel extends JXPanel {
+public class JIPipeDesktopFormPanel extends JPanel {
 
     /**
      * Flag that indicates no modifications, meaning (1) No documentation, and (2) no scrolling
@@ -145,10 +145,10 @@ public class JIPipeDesktopFormPanel extends JXPanel {
         helpPanel.add(helpToolbar, BorderLayout.SOUTH);
 
         boolean opaque = (flags & TRANSPARENT_BACKGROUND) != TRANSPARENT_BACKGROUND;
-        setScrollableWidthHint(ScrollableSizeHint.FIT);
-        setScrollableHeightHint(ScrollableSizeHint.VERTICAL_STRETCH);
+//        setScrollableWidthHint(ScrollableSizeHint.FIT);
+//        setScrollableHeightHint(ScrollableSizeHint.VERTICAL_STRETCH);
         contentPanel.setScrollableWidthHint(ScrollableSizeHint.FIT);
-        contentPanel.setScrollableHeightHint(ScrollableSizeHint.VERTICAL_STRETCH);
+        contentPanel.setScrollableHeightHint(ScrollableSizeHint.NONE);
         contentPanel.setOpaque(opaque);
         setOpaque(opaque);
 

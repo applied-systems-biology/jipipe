@@ -31,8 +31,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 
 @SetJIPipeDocumentation(name = "3D ROI to labels", description = "Converts 3D ROI lists to a label image. Depending on the number of objects, an 8-bit, 16-bit, or 32-bit label image is generated.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
-@AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "ROI", create = true)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true, optional = true, description = "Optional reference image that determines the size of the output")
+@AddJIPipeInputSlot(value = ROI3DListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true, description = "Optional reference image that determines the size of the output")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
 public class Roi3DToLabelsAlgorithm extends JIPipeIteratingAlgorithm {
 

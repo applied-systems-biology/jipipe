@@ -112,7 +112,7 @@ public class JIPipeDataSlotInfo extends AbstractJIPipeParameterCollection {
      * @param slot Imported annotation
      */
     public JIPipeDataSlotInfo(AddJIPipeInputSlot slot) {
-        this(slot.value(), JIPipeSlotType.Input, slot.slotName(), slot.description(), null);
+        this(slot.value(), JIPipeSlotType.Input, slot.name(), slot.description(), null);
         this.role = slot.role();
         this.optional = slot.optional();
     }

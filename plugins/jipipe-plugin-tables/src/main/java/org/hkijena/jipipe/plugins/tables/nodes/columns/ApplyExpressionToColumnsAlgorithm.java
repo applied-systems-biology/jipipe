@@ -50,7 +50,7 @@ import java.util.*;
 @SetJIPipeDocumentation(name = "Apply expression to columns", description = "Applies an expression function to all column values. " +
         "The result of the operation is stored in the same or a new column.")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class ApplyExpressionToColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

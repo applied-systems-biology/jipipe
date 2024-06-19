@@ -43,7 +43,7 @@ import java.util.List;
  */
 @SetJIPipeDocumentation(name = "Rename annotation", description = "Renames one or multiple annotations.")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
 public class RenameAnnotation extends JIPipeSimpleIteratingAlgorithm {
 

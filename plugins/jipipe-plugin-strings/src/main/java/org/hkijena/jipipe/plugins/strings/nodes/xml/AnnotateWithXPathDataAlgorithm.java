@@ -51,7 +51,7 @@ import java.util.Map;
         "Please visit https://www.w3schools.com/xml/xpath_intro.asp to learn about XPath.")
 @AddJIPipeCitation("XPath: https://www.w3schools.com/xml/xpath_intro.asp")
 @ConfigureJIPipeNode(menuPath = "For XML", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = XMLData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = XMLData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = XMLData.class, slotName = "Output", create = true)
 public class AnnotateWithXPathDataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private ParameterCollectionList entries = ParameterCollectionList.containingCollection(Entry.class);

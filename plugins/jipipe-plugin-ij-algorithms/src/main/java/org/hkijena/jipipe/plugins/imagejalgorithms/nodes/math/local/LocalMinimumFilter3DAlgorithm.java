@@ -37,7 +37,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
         "If a multi-channel image is provided, the operation is applied to each channel. " +
         "If higher-dimensional data is provided, the filter is applied to each 3D slice.")
 @ConfigureJIPipeNode(menuPath = "Math\nLocal", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nFilters", aliasName = "Minimum 3D...")
 public class LocalMinimumFilter3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

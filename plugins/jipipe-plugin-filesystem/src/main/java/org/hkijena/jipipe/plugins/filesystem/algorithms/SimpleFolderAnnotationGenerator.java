@@ -39,7 +39,7 @@ import org.hkijena.jipipe.utils.StringUtils;
  */
 @SetJIPipeDocumentation(name = "Folders to annotations", description = "Creates an annotation for each path based on its name")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For paths")
-@AddJIPipeInputSlot(value = PathData.class, slotName = "Folders", create = true)
+@AddJIPipeInputSlot(value = PathData.class, name = "Folders", create = true)
 @AddJIPipeOutputSlot(value = PathData.class, slotName = "Annotated folders", create = true)
 @LabelAsJIPipeHidden
 public class SimpleFolderAnnotationGenerator extends JIPipeSimpleIteratingAlgorithm {

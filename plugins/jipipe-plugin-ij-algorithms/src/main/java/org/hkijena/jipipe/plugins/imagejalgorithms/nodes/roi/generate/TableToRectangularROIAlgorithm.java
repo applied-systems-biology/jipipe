@@ -44,7 +44,7 @@ import java.awt.*;
 @SetJIPipeDocumentation(name = "Table to rectangular/oval ROIs", description = "Converts data from a table to rectangular or oval ROIs. This node provides more options than the 'Table to circular ROIs' node.")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Convert")
 @AddJIPipeNodeAlias(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Draw", aliasName = "Draw rectangular ROIs from table")
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

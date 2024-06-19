@@ -45,8 +45,8 @@ import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Change ROI name from measurements (expression)", description = "Utilizes an expression to generate a ROI name for each individual ROI in the supplied ROI lists." +
         "The expression has access to annotations and statistics.")
-@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true, optional = true)
+@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
 public class ChangeRoiNameFromExpressionsAndMeasurementsAlgorithm extends JIPipeIteratingAlgorithm {

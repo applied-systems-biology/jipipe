@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  * Imports {@link ImagePlusData} from the GUI
  */
 @SetJIPipeDocumentation(name = "Table to ImageJ", description = "Opens all incoming tables in ImageJ")
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nExport")

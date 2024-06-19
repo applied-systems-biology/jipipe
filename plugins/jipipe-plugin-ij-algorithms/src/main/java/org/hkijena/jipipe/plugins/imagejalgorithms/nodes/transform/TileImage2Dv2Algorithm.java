@@ -47,7 +47,7 @@ import java.util.List;
 
 @SetJIPipeDocumentation(name = "Tile image 2D", description = "Splits the image into tiles of a predefined size. If the image is not perfectly tileable, it is resized.")
 @ConfigureJIPipeNode(menuPath = "Transform", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 public class TileImage2Dv2Algorithm extends JIPipeSimpleIteratingAlgorithm {
 

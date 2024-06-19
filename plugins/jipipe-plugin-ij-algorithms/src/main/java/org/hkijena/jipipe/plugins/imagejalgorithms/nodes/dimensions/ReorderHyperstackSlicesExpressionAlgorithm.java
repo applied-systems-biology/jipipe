@@ -47,7 +47,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Reorder hyperstack slices (Expression)", description = "Uses an expression that iterates through all hyperstack slices to assign a new location within the output hyperstack. " +
         "Can also filter slices based on the location.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 public class ReorderHyperstackSlicesExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

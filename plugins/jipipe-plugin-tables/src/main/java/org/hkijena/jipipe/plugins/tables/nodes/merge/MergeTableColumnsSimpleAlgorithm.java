@@ -43,7 +43,7 @@ import java.util.Set;
         "The generated table is sized according to the table with the most rows. In missing columns, the values are filled in. " +
         "The algorithm behind this is not 'smart' and is not capable of supplementing a table with data from another table. ")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Merge")
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class MergeTableColumnsSimpleAlgorithm extends JIPipeMergingAlgorithm {
 

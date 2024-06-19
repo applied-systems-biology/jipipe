@@ -24,7 +24,7 @@ import org.hkijena.jipipe.plugins.forms.datatypes.FormData;
 import org.hkijena.jipipe.plugins.forms.datatypes.StringFormData;
 
 @SetJIPipeDocumentation(name = "Text input form", description = "Creates a text input form. ")
-@AddJIPipeInputSlot(value = FormData.class, slotName = "Existing")
+@AddJIPipeInputSlot(value = FormData.class, name = "Existing")
 @AddJIPipeOutputSlot(value = FormData.class, slotName = "Combined")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class StringFormGeneratorAlgorithm extends SimpleFormGeneratorAlgorithm {

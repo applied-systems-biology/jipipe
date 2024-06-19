@@ -35,7 +35,7 @@ import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Rename & modify columns (expression)", description = "Uses an expression to modify/rename table column names. If a renaming yields an existing column, " +
         "it will be automatically renamed to be unique.")
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
 public class ModifyTableColumnNamesAlgorithm extends JIPipeSimpleIteratingAlgorithm {

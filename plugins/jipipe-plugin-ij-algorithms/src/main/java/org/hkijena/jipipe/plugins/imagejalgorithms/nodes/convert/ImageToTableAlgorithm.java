@@ -46,7 +46,7 @@ import java.util.Collections;
         "The table always includes columns <code>x</code>, <code>y</code>, <code>z</code>, <code>c</code>, and <code>t</code>. For greyscale images, the value is stored into a column <code>value</code>. " +
         "For color images, column names depend on the color space.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Convert")
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class ImageToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

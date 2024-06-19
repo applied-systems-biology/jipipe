@@ -46,8 +46,8 @@ import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Visualize tracked spots", description = "For each track, generates an image that follows the spot over time")
 @ConfigureJIPipeNode(menuPath = "Tracking\nVisualize", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
-@AddJIPipeInputSlot(value = TrackCollectionData.class, slotName = "Tracks", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
+@AddJIPipeInputSlot(value = TrackCollectionData.class, name = "Tracks", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 public class FollowSpotsPerTrackNode extends JIPipeIteratingAlgorithm {
 

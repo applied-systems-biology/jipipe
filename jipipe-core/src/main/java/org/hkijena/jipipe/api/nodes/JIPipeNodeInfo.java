@@ -165,7 +165,7 @@ public interface JIPipeNodeInfo {
      * @return if there is an input slot with the name
      */
     default boolean hasInputSlot(String slotName) {
-        return getInputSlots().stream().anyMatch(slot -> Objects.equals(slotName, slot.slotName()));
+        return getInputSlots().stream().anyMatch(slot -> Objects.equals(slotName, slot.name()));
     }
 
     /**

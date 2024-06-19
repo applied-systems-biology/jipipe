@@ -40,7 +40,7 @@ import java.util.List;
  */
 @SetJIPipeDocumentation(name = "Annotate with image properties", description = "Adds data annotations that contain the image properties.")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For images")
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Annotated image", create = true)
 public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

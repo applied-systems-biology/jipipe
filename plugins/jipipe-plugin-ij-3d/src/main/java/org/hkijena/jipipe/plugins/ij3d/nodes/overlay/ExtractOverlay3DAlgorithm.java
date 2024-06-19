@@ -26,7 +26,7 @@ import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 
 @SetJIPipeDocumentation(name = "Extract 3D overlay", description = "Extract overlay 3D ROIs")
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "ROI")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nOverlay")

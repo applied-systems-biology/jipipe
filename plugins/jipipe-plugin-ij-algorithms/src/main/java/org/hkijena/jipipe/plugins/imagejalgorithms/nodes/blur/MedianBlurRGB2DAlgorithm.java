@@ -35,7 +35,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 @SetJIPipeDocumentation(name = "Median filter 2D (RGB color)", description = "Applies a 3x3 median filter to RGB color images. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ConfigureJIPipeNode(menuPath = "Filter", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusColorRGBData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusColorRGBData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nNoise", aliasName = "Despeckle (RGB)")
 public class MedianBlurRGB2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

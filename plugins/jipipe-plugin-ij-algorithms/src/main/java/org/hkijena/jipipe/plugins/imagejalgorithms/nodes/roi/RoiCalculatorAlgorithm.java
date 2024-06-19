@@ -40,7 +40,7 @@ import java.util.Map;
         "the whole list, meaning that an AND operation will create the union of all ROI in the list. If you want to apply the operation only to a sub-set of ROI," +
         " preprocess using a ROI splitter algorithm.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ROIListData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ROIListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class RoiCalculatorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

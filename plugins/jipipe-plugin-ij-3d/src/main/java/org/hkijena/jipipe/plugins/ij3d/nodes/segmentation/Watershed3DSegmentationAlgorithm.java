@@ -44,8 +44,8 @@ import java.util.Map;
         "A first threshold1 is used for seeds (only seeds with value > threshold1 will be used). " +
         "A second threshold is used to cluster voxels with values > threshold2. In this implementation voxels are clustered to seeds in descending order of voxel values.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Segment")
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Seeds", create = true, optional = true, description = "Optional seeds")
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Seeds", create = true, optional = true, description = "Optional seeds")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Dams", create = true)
 public class Watershed3DSegmentationAlgorithm extends JIPipeIteratingAlgorithm {

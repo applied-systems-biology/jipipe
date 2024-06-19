@@ -40,8 +40,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 
 @SetJIPipeDocumentation(name = "Insert image (masked)", description = "Overlays the target image with the source image according to a mask or ROI.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Target", create = true)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Source", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Target", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Source", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 public class MergeImagesAlgorithm extends JIPipeIteratingAlgorithm {
 

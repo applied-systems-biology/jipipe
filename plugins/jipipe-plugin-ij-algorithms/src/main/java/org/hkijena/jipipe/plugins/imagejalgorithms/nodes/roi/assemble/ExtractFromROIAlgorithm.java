@@ -44,8 +44,8 @@ import java.util.List;
 
 @SetJIPipeDocumentation(name = "Extract from ROI", description = "Extracts parts of the incoming image within the given ROI by extracting the bounding area.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "ROI")
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
-@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
+@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
 @AddJIPipeOutputSlot(value = ImagePlus2DData.class, slotName = "Extracted", create = true)
 public class ExtractFromROIAlgorithm extends JIPipeIteratingAlgorithm {
 

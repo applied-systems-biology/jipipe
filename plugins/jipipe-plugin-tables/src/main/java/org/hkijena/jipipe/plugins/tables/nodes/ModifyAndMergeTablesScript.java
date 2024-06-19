@@ -49,7 +49,7 @@ import java.util.List;
         "'nrow' is an integer that contains the number of rows. " +
         "'annotations' is a dictionary from string to string containing all annotations.")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class ModifyAndMergeTablesScript extends JIPipeAlgorithm {
 

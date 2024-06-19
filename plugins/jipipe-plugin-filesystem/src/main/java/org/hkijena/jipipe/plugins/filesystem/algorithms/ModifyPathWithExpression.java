@@ -38,7 +38,7 @@ import java.nio.file.Paths;
 
 @SetJIPipeDocumentation(name = "Modify path (expression)", description = "Processes each incoming path with an expression")
 @ConfigureJIPipeNode(nodeTypeCategory = FileSystemNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = PathData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = PathData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = PathData.class, slotName = "Output", create = true)
 public class ModifyPathWithExpression extends JIPipeSimpleIteratingAlgorithm {
 

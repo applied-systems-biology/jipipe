@@ -32,7 +32,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
 
 @SetJIPipeDocumentation(name = "Smooth filaments", description = "Applies a smoothing operation that is based around downscaling the locations and applying the 'Remove duplicate vertices' operation. The positions are then restored.")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Process")
-@AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = Filaments3DData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
 public class SmoothFilamentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

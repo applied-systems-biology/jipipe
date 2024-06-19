@@ -14,9 +14,7 @@
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.generate;
 
 import ij.gui.Line;
-import ij.gui.OvalRoi;
 import ij.gui.Roi;
-import ij.gui.ShapeRoi;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -37,15 +35,13 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
 
-import java.awt.*;
-
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
 @SetJIPipeDocumentation(name = "Table to line ROIs", description = "Converts data from a table to line ROIs.")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Convert")
 @AddJIPipeNodeAlias(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Draw", aliasName = "Draw line ROIs from table")
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class TableToLineROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

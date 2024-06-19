@@ -57,8 +57,8 @@ import java.util.List;
 
 @SetJIPipeDocumentation(name = "Key/Value Histogram 5D", description = "This node consumes two images with the same dimensions that respectively contain the keys and value components of each pixel position. The values assigned to each key are collected and integrated, thus allowing to generate histograms. Allows the generation of normalized and cumulative histograms.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Key", create = true)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Value", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Key", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Value", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Histogram", create = true)
 public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
     private String outputKeyColumn = "key";

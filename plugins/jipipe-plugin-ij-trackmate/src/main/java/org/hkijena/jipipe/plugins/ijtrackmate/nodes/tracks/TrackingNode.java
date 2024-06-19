@@ -32,8 +32,8 @@ import org.hkijena.jipipe.plugins.ijtrackmate.utils.JIPipeLogger;
 
 @SetJIPipeDocumentation(name = "Track spots", description = "Track spots using TrackMate")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking")
-@AddJIPipeInputSlot(value = SpotsCollectionData.class, slotName = "Spots", description = "The detected spots", create = true)
-@AddJIPipeInputSlot(value = SpotTrackerData.class, slotName = "Spot tracker", description = "The algorithm that tracks the spots", create = true)
+@AddJIPipeInputSlot(value = SpotsCollectionData.class, name = "Spots", description = "The detected spots", create = true)
+@AddJIPipeInputSlot(value = SpotTrackerData.class, name = "Spot tracker", description = "The algorithm that tracks the spots", create = true)
 @AddJIPipeOutputSlot(value = TrackCollectionData.class, slotName = "Tracks", description = "The detected tracks", create = true)
 public class TrackingNode extends JIPipeIteratingAlgorithm {
 

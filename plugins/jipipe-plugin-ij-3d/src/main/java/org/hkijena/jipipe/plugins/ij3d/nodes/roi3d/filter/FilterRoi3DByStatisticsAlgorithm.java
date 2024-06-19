@@ -51,8 +51,8 @@ import java.util.Map;
  */
 @SetJIPipeDocumentation(name = "Filter 3D ROI by statistics", description = "Filters the 3D ROI list elements via statistics.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
-@AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "ROI", create = true)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true, optional = true)
+@AddJIPipeInputSlot(value = ROI3DListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", create = true)
 public class FilterRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     private JIPipeExpressionParameter filters = new JIPipeExpressionParameter();

@@ -42,7 +42,7 @@ import java.io.IOException;
         "This node is equivalent to <code>Tools &gt; Project &gt; Export whole pipeline as *.png</code>. Please note that the pipelines should be arranged " +
         "in a space-efficient way to reduce the file sizes.")
 @ConfigureJIPipeNode(menuPath = "Meta run", nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = FileData.class, slotName = "Project file", create = true)
+@AddJIPipeInputSlot(value = FileData.class, name = "Project file", create = true)
 @AddJIPipeOutputSlot(value = ImagePlus2DColorRGBData.class, slotName = "Render", create = true)
 public class RenderJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

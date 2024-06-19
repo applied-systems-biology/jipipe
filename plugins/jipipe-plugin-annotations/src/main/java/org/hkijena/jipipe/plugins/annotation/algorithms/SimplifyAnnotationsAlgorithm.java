@@ -44,7 +44,7 @@ import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Simplify annotations", description = "Merges multiple annotations that are used for iteration step generation into a single annotation. Deletes or downgrades annotations that were involved in the merge.")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
 public class SimplifyAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

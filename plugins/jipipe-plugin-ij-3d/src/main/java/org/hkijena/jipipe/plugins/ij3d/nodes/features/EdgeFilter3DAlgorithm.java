@@ -41,7 +41,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "3D edge filter", description = "3D Canny-Deriche edge detection filter. " +
         "Will compute the gradients of the image based on the Canny edge detector. ")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Features")
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Edges", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Edges X", create = true, description = "Edges in the X direction")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Edges Y", create = true, description = "Edges in the Y direction")

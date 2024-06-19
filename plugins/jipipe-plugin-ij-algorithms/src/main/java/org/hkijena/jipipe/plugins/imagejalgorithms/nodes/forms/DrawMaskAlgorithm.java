@@ -54,8 +54,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
         " You can supply existing masks via the 'Masks' input. If a data batch has no existing mask, a new one is generated according to the " +
         "node parameters.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Forms")
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", create = true, optional = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Mask", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", create = true)
 public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgorithm {
 

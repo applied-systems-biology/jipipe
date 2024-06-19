@@ -34,7 +34,7 @@ import java.util.*;
 @SetJIPipeDocumentation(name = "Split data randomly (percentage)", description = "Distributes data across the output slots, so a certain percentage of data is in the specified slot." +
         " Please note that negative weights will be replaced by zero. The output data is unique, meaning that there will be no overlaps between different slots.")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Split")
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class)
 public class DistributeDataRandomlyByPercentageAlgorithm extends JIPipeMergingAlgorithm {
     private final OutputSlotMapParameterCollection weights;

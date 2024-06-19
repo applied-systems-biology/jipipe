@@ -34,7 +34,7 @@ import java.util.HashSet;
 import java.util.List;
 
 @SetJIPipeDocumentation(name = "Limit data", description = "Slices the incoming data table into a smaller table with a limited row set according to the selected row.")
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Filter")
 public class DataSlicer extends JIPipeParameterSlotAlgorithm {

@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 @SetJIPipeDocumentation(name = "Split table by columns", description = "Splits a table into multiple tables according to list of selected columns. " +
         "Sub-tables that have the same values in the selected columns are put into the same output table.")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Split")
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class SplitTableByColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

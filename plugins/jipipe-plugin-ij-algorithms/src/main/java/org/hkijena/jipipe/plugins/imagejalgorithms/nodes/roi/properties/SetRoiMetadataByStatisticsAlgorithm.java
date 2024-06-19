@@ -55,8 +55,8 @@ import java.util.Map;
  */
 @SetJIPipeDocumentation(name = "Set ROI metadata by statistics (expression)", description = "Sets ROI metadata by statistics.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Metadata")
-@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true, optional = true)
+@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 

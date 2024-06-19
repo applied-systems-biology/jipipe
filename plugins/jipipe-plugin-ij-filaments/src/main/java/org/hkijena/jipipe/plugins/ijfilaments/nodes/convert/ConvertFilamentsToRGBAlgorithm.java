@@ -37,8 +37,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 @SetJIPipeDocumentation(name = "Convert filaments to RGB", description = "Visualizes filaments by rendering them onto an RGB image")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Convert")
-@AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", create = true)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true, optional = true)
+@AddJIPipeInputSlot(value = Filaments3DData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output", create = true)
 public class ConvertFilamentsToRGBAlgorithm extends JIPipeIteratingAlgorithm {
 

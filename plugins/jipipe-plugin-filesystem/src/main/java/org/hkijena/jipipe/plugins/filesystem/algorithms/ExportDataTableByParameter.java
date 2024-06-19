@@ -39,7 +39,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @SetJIPipeDocumentation(name = "Export data table", description = "Exports all incoming data as data table directory.")
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Data", create = true)
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Data", create = true)
 @AddJIPipeOutputSlot(value = PathData.class, slotName = "Path", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class)
 public class ExportDataTableByParameter extends JIPipeMergingAlgorithm {

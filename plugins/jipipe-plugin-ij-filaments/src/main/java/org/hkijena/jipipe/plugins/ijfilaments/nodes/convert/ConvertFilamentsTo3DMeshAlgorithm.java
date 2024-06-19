@@ -37,7 +37,7 @@ import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Convert filaments to 3D scene", description = "Converts 3D filaments into a 3D scene.")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Convert")
-@AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = Filaments3DData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Scene3DData.class, slotName = "Output", create = true)
 public class ConvertFilamentsTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

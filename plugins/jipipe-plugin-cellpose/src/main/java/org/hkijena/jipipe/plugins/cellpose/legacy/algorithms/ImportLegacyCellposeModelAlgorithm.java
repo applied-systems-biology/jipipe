@@ -30,7 +30,7 @@ import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 
 @SetJIPipeDocumentation(name = "Import Cellpose model", description = "Imports a Cellpose model from a file")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = FileData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = FileData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = LegacyCellposeModelData.class, slotName = "Output", create = true)
 @Deprecated
 @LabelAsJIPipeHidden

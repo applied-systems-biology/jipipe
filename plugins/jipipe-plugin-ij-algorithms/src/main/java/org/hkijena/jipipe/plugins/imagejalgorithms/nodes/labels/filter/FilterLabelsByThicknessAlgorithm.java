@@ -50,7 +50,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 @SetJIPipeDocumentation(name = "Filter labels by thickness 2D", description = "Filter labels by their thickness as estimated by a EDT per label")
 @ConfigureJIPipeNode(menuPath = "Labels\nFilter", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
 public class FilterLabelsByThicknessAlgorithm extends JIPipeIteratingAlgorithm {
 

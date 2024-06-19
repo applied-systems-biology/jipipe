@@ -52,7 +52,7 @@ import java.util.Map;
  */
 @SetJIPipeDocumentation(name = "Split into individual ROI lists", description = "Splits the ROI in a ROI list into individual ROI lists.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Split")
-@AddJIPipeInputSlot(value = ROIListData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ROIListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class ExplodeRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

@@ -56,7 +56,7 @@ import java.util.stream.Collectors;
 @SetJIPipeDocumentation(name = "Train Weka model from ROI (2D)", description = "Trains a Weka model on 2D image data. The inputs are ROI that are assigned to the classes and trained on the input image. " +
         "Can only train on a single image. Please convert ROI to labels/masks and use the appropriate nodes if you want to train on multiple images.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
-@AddJIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Image", description = "Image on which the training should be applied", create = true)
+@AddJIPipeInputSlot(value = ImagePlus2DData.class, name = "Image", description = "Image on which the training should be applied", create = true)
 @AddJIPipeInputSlot(value = ROIListData.class)
 @AddJIPipeOutputSlot(value = WekaModelData.class, slotName = "Trained model", description = "The model", create = true)
 public class WekaTrainingROI2DAlgorithm extends JIPipeIteratingAlgorithm {

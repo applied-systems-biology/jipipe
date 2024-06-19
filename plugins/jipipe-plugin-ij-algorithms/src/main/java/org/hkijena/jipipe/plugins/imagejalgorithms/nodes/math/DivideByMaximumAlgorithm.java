@@ -34,7 +34,7 @@ import org.hkijena.jipipe.utils.ImageJCalibrationMode;
  */
 @SetJIPipeDocumentation(name = "Divide by maximum", description = "Divides greyscale pixel values by the global maximum across all slices.")
 @ConfigureJIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nMath")
 public class DivideByMaximumAlgorithm extends JIPipeSimpleIteratingAlgorithm {

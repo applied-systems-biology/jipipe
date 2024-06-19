@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
  */
 @SetJIPipeDocumentation(name = "Extract image statistics (Expression)", description = "Extracts statistics of the whole image or a masked part. The table columns are created via expressions.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Analyze")
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Image", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Image", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Measure (custom)")
 public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm {

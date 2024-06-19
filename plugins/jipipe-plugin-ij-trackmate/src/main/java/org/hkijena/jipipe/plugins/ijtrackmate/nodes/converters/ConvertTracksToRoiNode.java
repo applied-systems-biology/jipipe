@@ -44,7 +44,7 @@ import java.util.*;
 
 @SetJIPipeDocumentation(name = "Convert tracks to ROI", description = "Converts TrackMate tracks into ROI lists. Each lists contains the spot ROI of one track.")
 @ConfigureJIPipeNode(menuPath = "Tracking\nConvert", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = TrackCollectionData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = TrackCollectionData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class ConvertTracksToRoiNode extends JIPipeSimpleIteratingAlgorithm {
 

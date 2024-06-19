@@ -42,8 +42,8 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
  */
 @SetJIPipeDocumentation(name = "Color 3D ROI by statistics", description = "Sets the 3D ROI item colors by measurements.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "ROI", create = true)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true, optional = true)
+@AddJIPipeInputSlot(value = ROI3DListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", create = true)
 public class ColorRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     private ROI3DMeasurementColumn fillMeasurement = ROI3DMeasurementColumn.Index;

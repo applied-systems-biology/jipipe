@@ -33,7 +33,7 @@ import java.awt.*;
 
 @SetJIPipeDocumentation(name = "Set to value (grayscale)", description = "Sets all pixels of the input image to the specified grayscale value. If the image is RGB, the value is converted into an integer that is parsed as RGB.")
 @ConfigureJIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Edit", aliasName = "Fill (whole image, greyscale)")
 public class SetToValueAlgorithm extends SimpleImageAndRoiIteratingAlgorithm {

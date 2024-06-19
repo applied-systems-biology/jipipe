@@ -29,7 +29,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
 
 @SetJIPipeDocumentation(name = "Convert 3D ROI to 2D ROI", description = "Converts a 3D ROI list into a 2D ROI list.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
-@AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ROI3DListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class Roi3DToRoi2DConverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public Roi3DToRoi2DConverterAlgorithm(JIPipeNodeInfo info) {

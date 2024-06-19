@@ -35,7 +35,7 @@ import java.util.Comparator;
 @SetJIPipeDocumentation(name = "Sort table columns", description = "Sorts the table columns. Also allows to provide a manual sorting.")
 @AddJIPipeNodeAlias(aliasName = "Reorder table columns")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class SortTableColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

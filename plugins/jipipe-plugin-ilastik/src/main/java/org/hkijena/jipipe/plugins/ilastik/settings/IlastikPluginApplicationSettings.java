@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.ilastik;
+package org.hkijena.jipipe.plugins.ilastik.settings;
 
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
@@ -22,12 +22,9 @@ import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
-import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
+import org.hkijena.jipipe.plugins.ilastik.environments.IlastikEnvironment;
+import org.hkijena.jipipe.plugins.ilastik.IlastikPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 
 import javax.swing.*;

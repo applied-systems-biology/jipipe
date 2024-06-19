@@ -36,7 +36,7 @@ import java.util.*;
  * Its node functionality is structural.
  */
 @SetJIPipeDocumentation(name = "Graph compartment", description = "A compartment in the analysis graph")
-@AddJIPipeInputSlot(value = JIPipeCompartmentOutputData.class, slotName = "Input", create = true, optional = true)
+@AddJIPipeInputSlot(value = JIPipeCompartmentOutputData.class, name = "Input", create = true, optional = true)
 @AddJIPipeOutputSlot(value = JIPipeCompartmentOutputData.class)
 public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeCustomParameterCollection {
 

@@ -32,8 +32,8 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.BooleanParameter
 @SetJIPipeDocumentation(name = "Equalize hyperstack dimensions", description = "Makes the input image have the same dimensions as the reference image. You can choose to make them equal in width/height, and " +
         "hyperstack dimensions (Z, C, T)")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Transform")
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust", aliasName = "Canvas Size... (multiple images hyperstack)")
 public class TransformEqualizeDimensionsAlgorithm extends JIPipeIteratingAlgorithm {

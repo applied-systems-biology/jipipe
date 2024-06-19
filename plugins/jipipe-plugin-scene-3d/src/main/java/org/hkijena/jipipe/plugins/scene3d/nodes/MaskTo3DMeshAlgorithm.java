@@ -37,7 +37,7 @@ import java.awt.*;
 
 @SetJIPipeDocumentation(name = "Mask to 3D scene", description = "Applies the 'Marching cubes' algorithm to convert a 3D mask into a 3D mesh.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Binary")
-@AddJIPipeInputSlot(value = ImagePlus3DGreyscaleMaskData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlus3DGreyscaleMaskData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Scene3DData.class, slotName = "Output", create = true)
 public class MaskTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

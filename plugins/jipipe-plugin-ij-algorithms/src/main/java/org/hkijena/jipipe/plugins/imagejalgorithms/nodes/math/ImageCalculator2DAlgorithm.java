@@ -45,8 +45,8 @@ import java.util.Set;
 @SetJIPipeDocumentation(name = "Image calculator 2D", description = "Applies a mathematical operation between two images. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ConfigureJIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input 1", create = true, description = "The first operand")
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input 2", create = true, description = "The second operand")
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input 1", create = true, description = "The first operand")
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input 2", create = true, description = "The second operand")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true, description = "The calculation result")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process", aliasName = "Image Calculator...")
 public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {

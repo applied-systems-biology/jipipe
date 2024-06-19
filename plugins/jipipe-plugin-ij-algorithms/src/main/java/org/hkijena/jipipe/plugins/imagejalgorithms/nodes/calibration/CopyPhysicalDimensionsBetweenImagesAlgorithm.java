@@ -30,8 +30,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 
 @SetJIPipeDocumentation(name = "Copy physical dimensions", description = "Copies the phyiscal pixel sizes from the source to the target")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Calibration")
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Source", create = true)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Target", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Source", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Target", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 public class CopyPhysicalDimensionsBetweenImagesAlgorithm extends JIPipeIteratingAlgorithm {
 

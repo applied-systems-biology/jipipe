@@ -39,7 +39,7 @@ import java.nio.file.Paths;
 @SetJIPipeDocumentation(name = "Annotation to path", description = "Converts an annotation of to a path. " +
         "If the specified annotation is not present, an empty path is generated.")
 @ConfigureJIPipeNode(menuPath = "Convert", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = PathData.class, slotName = "Output", create = true)
 public class AnnotationToPath extends JIPipeSimpleIteratingAlgorithm {
 

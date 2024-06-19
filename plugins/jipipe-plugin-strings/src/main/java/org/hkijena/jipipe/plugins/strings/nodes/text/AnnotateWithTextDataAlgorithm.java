@@ -41,7 +41,7 @@ import java.util.List;
 
 @SetJIPipeDocumentation(name = "Annotate with text values", description = "Extracts a value from the input text data (via an expression) and annotates the data with the result.")
 @ConfigureJIPipeNode(menuPath = "For text", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = StringData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = StringData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = StringData.class, slotName = "Output", create = true)
 public class AnnotateWithTextDataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private ParameterCollectionList entries = ParameterCollectionList.containingCollection(Entry.class);

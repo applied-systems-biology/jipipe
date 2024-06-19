@@ -44,7 +44,7 @@ import java.util.Objects;
  */
 @SetJIPipeDocumentation(name = "Rename table column", description = "Renames columns")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class RenameTableColumns2Algorithm extends JIPipeSimpleIteratingAlgorithm {
 

@@ -35,8 +35,8 @@ import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Set image metadata from table", description = "Sets the image metadata (property map) from a table. Only the first row is utilized.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Metadata")
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Metadata", description = "Table of image metadata (one row)", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Metadata", description = "Table of image metadata (one row)", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 public class SetImageMetadataFromTableAlgorithm extends JIPipeIteratingAlgorithm {
 

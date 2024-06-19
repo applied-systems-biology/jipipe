@@ -289,7 +289,7 @@ public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchP
                 {
                     stringBuilder.append("(");
                     stringBuilder.append(info.getInputSlots().stream().map(slot -> "<i>" + JIPipeDataInfo.getInstance(slot.value()).getName() + "</i> " +
-                            StringUtils.orElse(slot.slotName(), "[unnamed]")).collect(Collectors.joining(", ")));
+                            StringUtils.orElse(slot.name(), "[unnamed]")).collect(Collectors.joining(", ")));
                     stringBuilder.append(")");
                 }
                 stringBuilder.append(" -&gt; ");

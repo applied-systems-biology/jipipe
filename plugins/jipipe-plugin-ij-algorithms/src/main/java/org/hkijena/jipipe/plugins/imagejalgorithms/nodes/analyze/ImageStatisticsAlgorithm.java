@@ -43,8 +43,8 @@ import java.awt.*;
         "that this node will not be able to extract the shape of masked areas. All shape-description features (Centroid, Perimeter, ...) are calculated on the " +
         "rectangle formed by the image dimensions.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Analyze")
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Image", create = true)
-@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true, optional = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Image", create = true)
+@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Measure (whole image)")
 public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {

@@ -34,8 +34,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
  */
 @SetJIPipeDocumentation(name = "Set ROI image", description = "Associates an image to the ROI.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
+@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class SetRoiImageAlgorithm extends JIPipeIteratingAlgorithm {
 

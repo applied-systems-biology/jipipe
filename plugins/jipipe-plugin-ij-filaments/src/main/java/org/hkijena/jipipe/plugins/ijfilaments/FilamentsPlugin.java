@@ -25,15 +25,14 @@ import org.hkijena.jipipe.plugins.ij3d.IJ3DPlugin;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.FilamentsToRoi3dDataTypeConverter;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.FilamentsToRoiDataTypeConverter;
+import org.hkijena.jipipe.plugins.ijfilaments.environments.OptionalTSOAXEnvironment;
+import org.hkijena.jipipe.plugins.ijfilaments.environments.TSOAXEnvironment;
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.convert.*;
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.filter.FilterFilamentEdgesByProperties;
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.filter.FilterFilamentVerticesByProperties;
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.filter.FilterFilamentsByProperties;
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.filter.RemoveBorderFilaments;
-import org.hkijena.jipipe.plugins.ijfilaments.nodes.generate.ImportFilamentsFromJsonAlgorithm;
-import org.hkijena.jipipe.plugins.ijfilaments.nodes.generate.SkeletonToFilaments2DAlgorithm;
-import org.hkijena.jipipe.plugins.ijfilaments.nodes.generate.SkeletonToFilaments3DAlgorithm;
-import org.hkijena.jipipe.plugins.ijfilaments.nodes.generate.SkeletonToSimplifiedFilamentsFijiAlgorithm;
+import org.hkijena.jipipe.plugins.ijfilaments.nodes.generate.*;
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.measure.MeasureEdgesAlgorithm;
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.measure.MeasureFilamentsAlgorithm;
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.measure.MeasureVerticesAlgorithm;
@@ -44,7 +43,9 @@ import org.hkijena.jipipe.plugins.ijfilaments.nodes.process.RemoveDuplicateVerti
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.process.SimplifyFilamentsAlgorithm;
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.process.SmoothFilamentsAlgorithm;
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.split.SplitFilamentsIntoConnectedComponentsAlgorithm;
+import org.hkijena.jipipe.plugins.ijfilaments.settings.FilamentsPluginProjectSettings;
 import org.hkijena.jipipe.plugins.ijfilaments.settings.ImageViewerUIFilamentDisplayApplicationSettings;
+import org.hkijena.jipipe.plugins.ijfilaments.settings.TSOAXApplicationSettings;
 import org.hkijena.jipipe.plugins.imagejalgorithms.ImageJAlgorithmsPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
@@ -126,8 +127,24 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+
+        TSOAXApplicationSettings tsoaxApplicationSettings = new TSOAXApplicationSettings();
+        registerEnvironment(TSOAXEnvironment.class,
+                TSOAXEnvironment.List.class,
+                tsoaxApplicationSettings,
+                "tsoax-environment",
+                "TSOAX Environment",
+                "Installation of TSOAX",
+                RESOURCES.getIconFromResources("tsoax.png"));
+        registerParameterType("optional-tsoax-environment",
+                OptionalTSOAXEnvironment.class,
+                "Optional TSOAX Environment",
+                "Installation of TSOAX");
+
         registerNodeTypeCategory(new FilamentsNodeTypeCategory());
         registerApplicationSettingsSheet(new ImageViewerUIFilamentDisplayApplicationSettings());
+        registerApplicationSettingsSheet(tsoaxApplicationSettings);
+        registerProjectSettingsSheet(FilamentsPluginProjectSettings.class);
 
         registerDatatype("filaments", Filaments3DData.class, RESOURCES.getIcon16URLFromResources("data-type-filaments.png"));
         registerDatatypeConversion(new FilamentsToRoiDataTypeConverter());
@@ -173,6 +190,8 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("filaments-erode-end-vertices", ErodeEndVerticesAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));
         registerNodeType("filaments-grow-end-vertices", GrowEndVerticesAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-arrow.png"));
         registerNodeType("filaments-connect-vertices", ConnectVerticesAlgorithm.class, UIUtils.getIconURLFromResources("actions/lines-connector.png"));
+
+        registerNodeType("filaments-tsoax", TSOAXAlgorithm.class, UIUtils.getIconURLFromResources("actions/labplot-xy-fit-curve.png"));
     }
 
 

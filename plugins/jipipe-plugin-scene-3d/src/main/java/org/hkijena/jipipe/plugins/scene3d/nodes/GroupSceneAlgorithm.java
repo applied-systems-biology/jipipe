@@ -31,7 +31,7 @@ import org.hkijena.jipipe.plugins.scene3d.model.Scene3DGroupNode;
 
 @SetJIPipeDocumentation(name = "Group 3D scene objects", description = "Puts the objects in the incoming 3D scene into a group")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "3D Scenes")
-@AddJIPipeInputSlot(value = Scene3DData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = Scene3DData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Scene3DData.class, slotName = "Output", create = true)
 public class GroupSceneAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

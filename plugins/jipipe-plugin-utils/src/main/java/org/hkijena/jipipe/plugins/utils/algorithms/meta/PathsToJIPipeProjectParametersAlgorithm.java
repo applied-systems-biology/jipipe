@@ -56,7 +56,7 @@ import java.util.List;
 import java.util.*;
 
 @SetJIPipeDocumentation(name = "Paths to JIPipe project parameters", description = "Stores the incoming paths into parameters. This node supports path and string parameters.")
-@AddJIPipeInputSlot(value = PathData.class, slotName = "Input")
+@AddJIPipeInputSlot(value = PathData.class, name = "Input")
 @AddJIPipeOutputSlot(value = ParametersData.class, slotName = "Parameters")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Meta run")
 public class PathsToJIPipeProjectParametersAlgorithm extends JIPipeIteratingAlgorithm {

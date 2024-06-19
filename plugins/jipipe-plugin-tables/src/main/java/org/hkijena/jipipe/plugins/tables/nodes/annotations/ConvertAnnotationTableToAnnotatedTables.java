@@ -39,7 +39,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Annotation table to annotated table", description = "Extracts annotation columns from an annotation table and " +
         "converts them into data annotations. All non-annotation items are stored in the resulting tables.")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = AnnotationTableData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = AnnotationTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class ConvertAnnotationTableToAnnotatedTables extends JIPipeSimpleIteratingAlgorithm {
 

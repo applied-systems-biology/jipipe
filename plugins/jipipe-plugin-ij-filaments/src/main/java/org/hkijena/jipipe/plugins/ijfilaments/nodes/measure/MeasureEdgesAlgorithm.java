@@ -29,7 +29,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
 @SetJIPipeDocumentation(name = "Measure filament edges", description = "Stores all available information about the edges and involved vertices into a table")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Measure")
-@AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = Filaments3DData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class MeasureEdgesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public MeasureEdgesAlgorithm(JIPipeNodeInfo info) {

@@ -43,7 +43,7 @@ import java.util.List;
  */
 @SetJIPipeDocumentation(name = "Filter table rows", description = "Filters tables by iterating through each row and testing a filter expression.")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Filter")
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class FilterTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

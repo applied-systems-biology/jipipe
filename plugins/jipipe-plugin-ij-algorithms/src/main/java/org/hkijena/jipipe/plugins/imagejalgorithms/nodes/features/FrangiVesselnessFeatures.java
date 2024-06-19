@@ -39,7 +39,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
  */
 @SetJIPipeDocumentation(name = "Frangi vesselness", description = "Applies the vesselness filter developed by Frangi et al.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Features")
-@AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nFilters", aliasName = "Frangi Vesselness")
 public class FrangiVesselnessFeatures extends JIPipeSimpleIteratingAlgorithm {

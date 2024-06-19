@@ -47,7 +47,7 @@ import java.util.List;
         "Please visit https://goessner.net/articles/JsonPath/ to learn more about JsonPath")
 @AddJIPipeCitation("JsonPath: https://goessner.net/articles/JsonPath/")
 @ConfigureJIPipeNode(menuPath = "For JSON", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = JsonData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = JsonData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = JsonData.class, slotName = "Output", create = true)
 public class AnnotateWithJsonDataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

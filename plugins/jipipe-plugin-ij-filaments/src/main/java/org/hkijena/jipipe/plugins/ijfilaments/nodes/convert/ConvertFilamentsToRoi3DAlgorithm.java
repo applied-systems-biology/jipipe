@@ -30,7 +30,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
 
 @SetJIPipeDocumentation(name = "Convert filaments to 3D ROI", description = "Converts filaments into a 3D ROI")
-@AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = Filaments3DData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Convert")
 public class ConvertFilamentsToRoi3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

@@ -52,8 +52,8 @@ import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Split 3D ROI into connected components", description = "Splits the input 3D ROI list into multiple ROI lists, one per connected component")
 @ConfigureJIPipeNode(menuPath = "Split", nodeTypeCategory = RoiNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "Input", create = true)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true, optional = true)
+@AddJIPipeInputSlot(value = ROI3DListData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "Components", create = true)
 public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingAlgorithm {
     private OptionalTextAnnotationNameParameter componentNameAnnotation = new OptionalTextAnnotationNameParameter("Component", true);

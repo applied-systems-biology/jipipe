@@ -42,8 +42,8 @@ import trainableSegmentation.WekaSegmentation;
 
 @SetJIPipeDocumentation(name = "Weka classifier 2D", description = "Classifies an image with a Weka model. If higher-dimensional data is provided, the classification is applied per slice. To obtain ROI from the generated labels, utilize the 'Labels to ROI' node.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", description = "Image on which the classification should be applied", create = true)
-@AddJIPipeInputSlot(value = WekaModelData.class, slotName = "Model", description = "The model", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", description = "Image on which the classification should be applied", create = true)
+@AddJIPipeInputSlot(value = WekaModelData.class, name = "Model", description = "The model", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Classified image", description = "The classified image", create = true)
 public class WekaClassification2DAlgorithm extends JIPipeIteratingAlgorithm {
 

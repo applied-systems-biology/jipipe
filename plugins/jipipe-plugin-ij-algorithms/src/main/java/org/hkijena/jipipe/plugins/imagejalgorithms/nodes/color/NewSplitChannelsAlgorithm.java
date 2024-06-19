@@ -48,7 +48,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Split channels", description = "Splits multichannel images into multiple greyscale images. " +
         "This operation is applied for each 2D image slice.")
 @ConfigureJIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nColor", aliasName = "Split Channels")
 public class NewSplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

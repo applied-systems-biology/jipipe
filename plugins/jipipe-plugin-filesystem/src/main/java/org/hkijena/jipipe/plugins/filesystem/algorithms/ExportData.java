@@ -42,8 +42,8 @@ import java.nio.file.Path;
         "that contain the last path component in their name might be created. " +
         "Duplicate files might be silently overwritten, meaning that the paths should be unique." +
         "Please note that you do not need to explicitly export data, as JIPipe automatically saves all output data.")
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Data", description = "The data to be exported", create = true)
-@AddJIPipeInputSlot(value = PathData.class, slotName = "Path", description = "The directory where the data will be stored", create = true)
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Data", description = "The data to be exported", create = true)
+@AddJIPipeInputSlot(value = PathData.class, name = "Path", description = "The directory where the data will be stored", create = true)
 @AddJIPipeOutputSlot(value = PathData.class, slotName = "Path", description = "The directory where the data was stored", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class)
 public class ExportData extends JIPipeIteratingAlgorithm {

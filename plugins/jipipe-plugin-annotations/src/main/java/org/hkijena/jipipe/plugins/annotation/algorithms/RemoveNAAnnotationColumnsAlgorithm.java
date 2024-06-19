@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 
 @SetJIPipeDocumentation(name = "Remove NA annotation columns", description = "Removes annotation columns that have missing values.")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Filter")
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
 public class RemoveNAAnnotationColumnsAlgorithm extends JIPipeParameterSlotAlgorithm {
 

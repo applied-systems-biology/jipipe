@@ -42,7 +42,7 @@ import java.util.Set;
  */
 @SetJIPipeDocumentation(name = "Set annotation (expression)", description = "Sets a single annotation. The name and the value are determined by expressions")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
 public class SetSingleAnnotation extends JIPipeSimpleIteratingAlgorithm {
 

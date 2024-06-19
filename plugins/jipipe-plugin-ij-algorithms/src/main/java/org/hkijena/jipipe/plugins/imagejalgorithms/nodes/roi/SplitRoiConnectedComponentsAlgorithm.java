@@ -54,8 +54,8 @@ import java.util.*;
 
 @SetJIPipeDocumentation(name = "Split into connected components", description = "Algorithm that extracts connected components across one or multiple dimensions. The output consists of multiple ROI lists, one for each connected component.")
 @ConfigureJIPipeNode(menuPath = "Split", nodeTypeCategory = RoiNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ROIListData.class, slotName = "Input", create = true)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true, optional = true)
+@AddJIPipeInputSlot(value = ROIListData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Components", create = true)
 public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorithm {
     private DimensionOperation dimensionZOperation = DimensionOperation.Split;

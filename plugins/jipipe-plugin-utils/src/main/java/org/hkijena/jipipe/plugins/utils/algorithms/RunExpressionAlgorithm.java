@@ -42,7 +42,7 @@ import java.util.Set;
 @SetJIPipeDocumentation(name = "Run expression", description = "Passes data through from the input to the output and runs the expression for each incoming data row. " +
         "The result of the expression may or may not be used as annotation.")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Data", create = true)
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Data", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", create = true)
 public class RunExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

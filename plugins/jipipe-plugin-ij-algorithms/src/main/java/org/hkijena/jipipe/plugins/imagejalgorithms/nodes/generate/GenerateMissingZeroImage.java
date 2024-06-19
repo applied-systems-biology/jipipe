@@ -37,8 +37,8 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.Optiona
  */
 @SetJIPipeDocumentation(name = "Generate missing image", description = "Generates an empty (black) image if it cannot be matched to a reference")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true, optional = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
 public class GenerateMissingZeroImage extends JIPipeMissingDataGeneratorAlgorithm {
 

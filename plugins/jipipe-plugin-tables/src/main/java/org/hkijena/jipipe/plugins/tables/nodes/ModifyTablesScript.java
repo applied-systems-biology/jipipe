@@ -46,7 +46,7 @@ import java.nio.file.Path;
 @SetJIPipeDocumentation(name = "Modify tables (Script)", description = "Executes a Python-script for each table. " +
         "Each table is passed as dictionary 'table' with the column name as key and values being an array of strings or doubles. The number of input rows can be accessed via the 'nrow' variable.")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class ModifyTablesScript extends JIPipeSimpleIteratingAlgorithm {
 

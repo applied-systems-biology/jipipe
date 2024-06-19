@@ -51,7 +51,7 @@ import java.util.Map;
         "<li>AVI: 2D or 3D images only</li>" +
         "<li>TIFF: All images supported</li>" +
         "</ul>")
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = FileData.class, slotName = "Exported file", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nSave")

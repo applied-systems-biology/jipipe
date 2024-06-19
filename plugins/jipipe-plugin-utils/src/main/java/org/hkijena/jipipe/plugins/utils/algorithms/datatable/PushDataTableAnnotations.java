@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SetJIPipeDocumentation(name = "Push annotations into data tables", description = "Copies the annotations of a data table into the table itself")
-@AddJIPipeInputSlot(value = JIPipeDataTable.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = JIPipeDataTable.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeDataTable.class, slotName = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For data tables")
 public class PushDataTableAnnotations extends JIPipeSimpleIteratingAlgorithm {

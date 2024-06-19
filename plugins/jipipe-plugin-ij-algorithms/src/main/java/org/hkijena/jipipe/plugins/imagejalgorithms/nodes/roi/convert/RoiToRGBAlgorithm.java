@@ -52,8 +52,8 @@ import java.util.Collections;
 @SetJIPipeDocumentation(name = "Convert ROI to RGB", description = "Converts ROI lists to masks. The line and fill color is stored within the ROI themselves. " +
         "This algorithm needs a reference image that provides the output sizes. If you do not have a reference image, you can use the unreferenced variant.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
-@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", description = "The ROI", create = true)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", description = "The image where ROI are drawn on", create = true, optional = true)
+@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", description = "The ROI", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", description = "The image where ROI are drawn on", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output", description = "The ROI visualization (RGB image)", create = true)
 public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
 

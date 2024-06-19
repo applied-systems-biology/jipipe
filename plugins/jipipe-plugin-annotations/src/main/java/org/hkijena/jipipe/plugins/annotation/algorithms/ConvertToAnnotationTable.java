@@ -39,7 +39,7 @@ import java.util.Set;
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeNodeAlias(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, aliasName = "Annotations to table")
 @AddJIPipeNodeAlias(nodeTypeCategory = AnnotationsNodeTypeCategory.class, aliasName = "Annotations to table")
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = AnnotationTableData.class, slotName = "Output", create = true)
 public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {
 

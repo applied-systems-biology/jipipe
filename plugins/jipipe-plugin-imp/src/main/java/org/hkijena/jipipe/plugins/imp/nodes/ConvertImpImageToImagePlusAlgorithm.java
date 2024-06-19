@@ -40,7 +40,7 @@ import java.awt.image.BufferedImage;
 @SetJIPipeDocumentation(name = "Convert IMP to ImageJ", description = "Converts an IMP image (which supports transparency) to " +
         "an ImageJ1 image")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "IMP\nConvert")
-@AddJIPipeInputSlot(value = ImpImageData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImpImageData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 public class ConvertImpImageToImagePlusAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private boolean createCheckerboard = true;

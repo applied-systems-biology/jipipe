@@ -34,7 +34,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
         "Use the parameters to control how groups are created. To merge all incoming ROI lists into just one list, set the matching strategy to 'Custom' and leave the list of " +
         "annotation columns empty.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Merge")
-@AddJIPipeInputSlot(value = ROIListData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ROIListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class MergeRoiListsAlgorithm extends JIPipeMergingAlgorithm {
 

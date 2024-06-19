@@ -55,8 +55,8 @@ import java.util.*;
 
 @SetJIPipeDocumentation(name = "Upload image to OMERO", description = "Uploads an image to OMERO.")
 @ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
-@AddJIPipeInputSlot(value = OMEImageData.class, slotName = "Images", create = true, description = "The image(s) to upload")
-@AddJIPipeInputSlot(value = OMERODatasetReferenceData.class, slotName = "Target dataset", create = true, description = "The data set where the image(s) will be stored")
+@AddJIPipeInputSlot(value = OMEImageData.class, name = "Images", create = true, description = "The image(s) to upload")
+@AddJIPipeInputSlot(value = OMERODatasetReferenceData.class, name = "Target dataset", create = true, description = "The data set where the image(s) will be stored")
 @AddJIPipeOutputSlot(value = OMEROImageReferenceData.class, slotName = "Images", create = true, description = "Reference to the uploaded image(s)")
 public class UploadOMEROImageAlgorithm extends JIPipeIteratingAlgorithm implements OMEROCredentialAccessNode {
     private final AnnotationsToOMEROKeyValuePairExporter keyValuePairExporter;

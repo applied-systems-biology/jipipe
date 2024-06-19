@@ -35,8 +35,8 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 @SetJIPipeDocumentation(name = "Extract label statistics 2D", description = "Extracts statistics for all labels in the image. Statistics are extracted over an image (optional). If no image is supplied, the label itself will be used as the image. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ConfigureJIPipeNode(menuPath = "Labels\nMeasure", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels", create = true)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Image", create = true, optional = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Labels", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Image", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Analyze Particles... (labels)")
 public class ExtractLabelStatisticsAlgorithm extends JIPipeIteratingAlgorithm {

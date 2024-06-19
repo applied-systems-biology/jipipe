@@ -48,7 +48,7 @@ import java.nio.file.Path;
         "All annotations are passed as dictionary 'annotations' that can be modified using Python functions. The values are then extracted and " +
         "converted into their respective JIPipe types.")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
 public class ModifyAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
 

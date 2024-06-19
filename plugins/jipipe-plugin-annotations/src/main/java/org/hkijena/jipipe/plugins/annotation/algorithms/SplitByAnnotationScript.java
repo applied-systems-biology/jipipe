@@ -51,7 +51,7 @@ import java.nio.file.Path;
         "converted into their respective JIPipe types. The target slot is extracted from a variable 'output_slot' that should be present within the script." +
         " If the variable is set to null or empty, the data is discarded.")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Filter")
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input")
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Input")
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output")
 public class SplitByAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
 

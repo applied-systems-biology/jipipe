@@ -41,8 +41,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
         " The vector field should either have the " +
         "same dimensions as the input, or consist of only one plane, where it will be applied to all input planes.")
 @ConfigureJIPipeNode(menuPath = "Transform", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
-@AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Vector field", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class, name = "Vector field", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 public class Warp2DAlgorithm extends JIPipeIteratingAlgorithm {
 

@@ -29,8 +29,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
 
 @SetJIPipeDocumentation(name = "Set overlay", description = "Set overlay ROIs")
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
-@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "ROI")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nOverlay", aliasName = "Set Overlay")

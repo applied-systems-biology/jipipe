@@ -45,8 +45,8 @@ import java.util.Set;
         "Each ROI is assigned its own label. Alternatively, the label can be set generated from an expression. If no reference image is provided, " +
         "the dimensions are estimated from the ROI. The background color (where no ROI is located) is zero.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
-@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", description = "Optional reference image used to calculate the size of the output", create = true, optional = true)
+@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", description = "Optional reference image used to calculate the size of the output", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Labels", description = "Output label image", create = true)
 public class ROIToLabelsExpressionAlgorithm extends JIPipeIteratingAlgorithm {
 

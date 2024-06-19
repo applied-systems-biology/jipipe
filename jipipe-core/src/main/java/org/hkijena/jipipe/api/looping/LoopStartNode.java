@@ -44,7 +44,7 @@ import java.util.List;
         "Please be aware that intermediate results of this loop are discarded automatically, meaning that only the end points will contain the generated data. " +
         "You can also explicitly insert loop end nodes to collect results.")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Data")
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Data")
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Data")
 @LabelAsJIPipeHidden
 @Deprecated

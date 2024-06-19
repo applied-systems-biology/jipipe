@@ -51,7 +51,7 @@ import java.util.List;
 
 @SetJIPipeDocumentation(name = "Annotate image with OMERO metadata", description = "Annotates an OMERO image ID with OMERO metadata.")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For OMERO")
-@AddJIPipeInputSlot(value = OMEROImageReferenceData.class, slotName = "Images", create = true)
+@AddJIPipeInputSlot(value = OMEROImageReferenceData.class, name = "Images", create = true)
 @AddJIPipeOutputSlot(value = OMEROImageReferenceData.class, slotName = "Images", create = true)
 public class AnnotateOMEROImageReferenceAlgorithm extends JIPipeSingleIterationAlgorithm implements OMEROCredentialAccessNode {
 

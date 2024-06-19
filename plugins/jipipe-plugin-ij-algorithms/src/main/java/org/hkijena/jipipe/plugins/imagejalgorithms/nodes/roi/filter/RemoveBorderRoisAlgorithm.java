@@ -42,8 +42,8 @@ import java.awt.*;
 @SetJIPipeDocumentation(name = "Remove ROI at borders", description = "Removes all ROI that intersect with image borders. Use the 'Border' parameter " +
         "to define a rectangle inside of the image dimensions. If a ROI is not contained within this region, it is removed.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
-@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", description = "The ROI to be processed", create = true)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", description = "The reference image", create = true)
+@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", description = "The ROI to be processed", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", description = "The reference image", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Cleaned ROI", description = "The cleaned ROI", create = true)
 public class RemoveBorderRoisAlgorithm extends JIPipeIteratingAlgorithm {
 

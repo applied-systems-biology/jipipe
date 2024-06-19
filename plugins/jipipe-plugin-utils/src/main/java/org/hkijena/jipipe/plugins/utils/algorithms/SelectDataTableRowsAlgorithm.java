@@ -36,7 +36,7 @@ import java.util.List;
 
 @SetJIPipeDocumentation(name = "Select data rows", description = "Allows to select the only a specific set of input data table rows. All other rows are not stored in the output.")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Filter")
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
 public class SelectDataTableRowsAlgorithm extends JIPipeParameterSlotAlgorithm {
 

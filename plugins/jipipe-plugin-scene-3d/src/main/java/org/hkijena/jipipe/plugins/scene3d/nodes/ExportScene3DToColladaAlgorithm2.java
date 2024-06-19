@@ -33,7 +33,6 @@ import org.hkijena.jipipe.plugins.scene3d.datatypes.Scene3DData;
 import org.hkijena.jipipe.plugins.scene3d.utils.Scene3DToColladaExporter;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.nio.file.Path;
@@ -42,7 +41,7 @@ import java.util.Collections;
 import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Export 3D scene", description = "Exports a 3D scene to Collada 1.4.1 (DAE)")
-@AddJIPipeInputSlot(value = Scene3DData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = Scene3DData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = FileData.class, slotName = "Exported file", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "3D scenes")
 public class ExportScene3DToColladaAlgorithm2 extends JIPipeIteratingAlgorithm {

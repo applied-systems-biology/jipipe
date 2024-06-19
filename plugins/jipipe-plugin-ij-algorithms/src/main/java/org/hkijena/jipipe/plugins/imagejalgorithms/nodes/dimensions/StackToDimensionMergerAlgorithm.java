@@ -49,7 +49,7 @@ import java.util.Map;
         "The type of the output image is determined by consensus bit depth. " +
         "This node has similar functionality to the 'Combine stacks' node.")
 @ConfigureJIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nHyperstacks")
 public class StackToDimensionMergerAlgorithm extends JIPipeMergingAlgorithm {

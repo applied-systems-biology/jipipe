@@ -40,7 +40,7 @@ import org.hkijena.jipipe.utils.StringUtils;
         "Please visit https://goessner.net/articles/JsonPath/ to learn more about JsonPath")
 @AddJIPipeCitation("JsonPath: https://goessner.net/articles/JsonPath/")
 @ConfigureJIPipeNode(menuPath = "JSON", nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = JsonData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = JsonData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = StringData.class, slotName = "Output", create = true)
 public class ExtractTextFromJsonAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

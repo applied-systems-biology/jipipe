@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 // Algorithm metadata
 @SetJIPipeDocumentation(name = "Split & filter by annotation", description = "Splits the input data by a specified annotation or filters data based on the annotation value.")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Filter")
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input")
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Input")
 public class SplitByAnnotation extends JIPipeAlgorithm {
 
     private final OutputSlotMapParameterCollection targetSlots;

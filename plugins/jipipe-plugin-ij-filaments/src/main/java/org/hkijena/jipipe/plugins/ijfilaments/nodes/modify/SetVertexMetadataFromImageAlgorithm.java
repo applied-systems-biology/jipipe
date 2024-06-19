@@ -34,8 +34,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 @SetJIPipeDocumentation(name = "Set filament vertex metadata from image", description = "Sets the vertex metadata of each vertex from the given input image. Please note that if the Z/C/T coordinates are set to zero, the value is extracted from the 0/0/0 slice.")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Filaments", create = true)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Value", description = "The value is sourced from the pixels in this image", create = true)
+@AddJIPipeInputSlot(value = Filaments3DData.class, name = "Filaments", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Value", description = "The value is sourced from the pixels in this image", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
 public class SetVertexMetadataFromImageAlgorithm extends JIPipeIteratingAlgorithm {
 

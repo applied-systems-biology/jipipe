@@ -38,8 +38,8 @@ import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Set ROI metadata from table", description = "Sets the ROI metadata (property map) from a table. The table either has a column that indicates the ROI index or contains one row per ROI (row index is the ROI index)")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Metadata")
-@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true)
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Metadata", description = "Table of ROI metadata, one row per ROI", create = true)
+@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Metadata", description = "Table of ROI metadata, one row per ROI", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class SetROIMetadataFromTableAlgorithm extends JIPipeIteratingAlgorithm {
 

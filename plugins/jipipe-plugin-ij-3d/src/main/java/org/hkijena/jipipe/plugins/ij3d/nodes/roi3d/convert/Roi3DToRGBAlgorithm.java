@@ -33,8 +33,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColor
 
 @SetJIPipeDocumentation(name = "Convert 3D ROI to RGB", description = "Converts 3D ROI lists to a label image. Depending on the number of objects, an 8-bit, 16-bit, or 32-bit label image is generated.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
-@AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "ROI", create = true)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true, optional = true, description = "Optional image where the objects are drawn on")
+@AddJIPipeInputSlot(value = ROI3DListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true, optional = true, description = "Optional image where the objects are drawn on")
 @AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output", create = true)
 public class Roi3DToRGBAlgorithm extends JIPipeIteratingAlgorithm {
 

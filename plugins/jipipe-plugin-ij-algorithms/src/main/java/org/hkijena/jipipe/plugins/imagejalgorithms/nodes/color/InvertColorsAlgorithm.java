@@ -32,7 +32,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
  */
 @SetJIPipeDocumentation(name = "Invert colors", description = "Inverts the colors of an image")
 @ConfigureJIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Edit", aliasName = "Invert")
 public class InvertColorsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

@@ -36,7 +36,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 @SetJIPipeDocumentation(name = "Set physical dimensions from expressions", description = "Allows to set the physical dimensions of the incoming images. This node allows " +
         "to utilize expressions that have access to annotations and image properties.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Calibration")
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nProperties")
 public class SetPhysicalDimensionsByExpressionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

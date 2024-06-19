@@ -38,8 +38,8 @@ import java.util.Set;
 @SetJIPipeDocumentation(name = "Set LUT (image)", description = "Sets the LUT of the image from another image, which should be a RGB image with a width of 256 and a height of 1. " +
         "This does not change the pixel data.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "LUT")
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
-@AddJIPipeInputSlot(value = ImagePlus2DColorRGBData.class, slotName = "LUT", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlus2DColorRGBData.class, name = "LUT", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nLookup Tables")
 public class SetLUTFromImageAlgorithm extends JIPipeIteratingAlgorithm {

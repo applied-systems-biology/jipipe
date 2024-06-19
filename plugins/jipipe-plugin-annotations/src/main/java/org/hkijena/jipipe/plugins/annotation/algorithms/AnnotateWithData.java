@@ -39,8 +39,8 @@ import java.util.List;
 
 @SetJIPipeDocumentation(name = "Annotate with data", description = "Annotates the incoming data with the other data.")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Annotation", create = true)
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Annotation", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
 public class AnnotateWithData extends JIPipeIteratingAlgorithm {
 

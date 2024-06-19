@@ -31,8 +31,8 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
 @SetJIPipeDocumentation(name = "Image to table column", description = "Copies the first column of an image into a new or existing column of a table. Opposite operation to 'Table column to image'.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Convert")
-@AddJIPipeInputSlot(value = ImagePlus2DGreyscale32FData.class, slotName = "Image", create = true, description = "The image that contains the value")
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Target", optional = true, description = "Optional existing table where the image values are written into.", create = true)
+@AddJIPipeInputSlot(value = ImagePlus2DGreyscale32FData.class, name = "Image", create = true, description = "The image that contains the value")
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Target", optional = true, description = "Optional existing table where the image values are written into.", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class ImageToTableColumnAlgorithm extends JIPipeIteratingAlgorithm {
 

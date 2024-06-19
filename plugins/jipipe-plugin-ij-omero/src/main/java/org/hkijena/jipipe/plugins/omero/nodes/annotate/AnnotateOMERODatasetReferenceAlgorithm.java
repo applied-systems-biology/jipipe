@@ -51,7 +51,7 @@ import java.util.List;
 
 @SetJIPipeDocumentation(name = "Annotate dataset with OMERO metadata", description = "Annotates an OMERO dataset ID with OMERO metadata.")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For OMERO")
-@AddJIPipeInputSlot(value = OMERODatasetReferenceData.class, slotName = "Datasets", create = true)
+@AddJIPipeInputSlot(value = OMERODatasetReferenceData.class, name = "Datasets", create = true)
 @AddJIPipeOutputSlot(value = OMERODatasetReferenceData.class, slotName = "Datasets", create = true)
 public class AnnotateOMERODatasetReferenceAlgorithm extends JIPipeSimpleIteratingAlgorithm implements OMEROCredentialAccessNode {
 

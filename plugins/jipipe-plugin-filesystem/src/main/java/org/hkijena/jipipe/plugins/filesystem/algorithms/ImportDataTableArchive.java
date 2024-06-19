@@ -41,7 +41,7 @@ import java.util.List;
 
 @SetJIPipeDocumentation(name = "Import data table (archive)", description = "Imports a data table from a ZIP archive. The ZIP file should contain a data-table.json file in its root")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = FileData.class, slotName = "Archive", create = true)
+@AddJIPipeInputSlot(value = FileData.class, name = "Archive", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", create = true)
 public class ImportDataTableArchive extends JIPipeSimpleIteratingAlgorithm {
 

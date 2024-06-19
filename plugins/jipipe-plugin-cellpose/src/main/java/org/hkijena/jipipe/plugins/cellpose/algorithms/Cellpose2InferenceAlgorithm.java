@@ -80,8 +80,8 @@ import java.util.*;
                 "<li><b>ROI:</b> ROI of the segmented areas.</li>" +
                 "</ul>" +
                 "Please note that you need to setup a valid Python environment with Cellpose installed. You can find the setting in Project &gt; Application settings &gt; Extensions &gt; Cellpose.")
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true, description = "The input images")
-@AddJIPipeInputSlot(value = CellposeModelData.class, slotName = "Model", create = true, description = "The models (pretrained/custom). All workloads are repeated per model.", role = JIPipeDataSlotRole.ParametersLooping)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true, description = "The input images")
+@AddJIPipeInputSlot(value = CellposeModelData.class, name = "Model", create = true, description = "The models (pretrained/custom). All workloads are repeated per model.", role = JIPipeDataSlotRole.ParametersLooping)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Flows XY")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Flows Z")

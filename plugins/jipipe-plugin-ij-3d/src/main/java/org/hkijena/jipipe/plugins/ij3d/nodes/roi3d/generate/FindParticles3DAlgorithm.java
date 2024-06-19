@@ -40,7 +40,7 @@ import java.util.List;
 
 @SetJIPipeDocumentation(name = "Find particles 3D", description = "Finds 3D particles within a mask image")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Analyze")
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Mask", create = true)
 @AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "ROI", create = true)
 public class FindParticles3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

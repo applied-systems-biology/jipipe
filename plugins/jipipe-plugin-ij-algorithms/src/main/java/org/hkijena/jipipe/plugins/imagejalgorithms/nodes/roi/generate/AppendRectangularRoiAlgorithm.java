@@ -40,7 +40,7 @@ import java.awt.*;
         "Ths algorithm allows to add rectangles as margins. As no reference image is available, the reference area is defined by the " +
         "bounds of the already existing ROI.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Merge")
-@AddJIPipeInputSlot(value = ROIListData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ROIListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 @Deprecated
 @LabelAsJIPipeHidden

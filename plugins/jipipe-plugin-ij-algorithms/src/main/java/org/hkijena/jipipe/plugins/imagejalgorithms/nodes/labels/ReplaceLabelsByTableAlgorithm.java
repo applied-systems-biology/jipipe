@@ -40,8 +40,8 @@ import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
 
 @SetJIPipeDocumentation(name = "Replace label values by table", description = "Replaces label values by a mapping as specified in a table. The table should contain two columns, one for the old label and a second column defining the replacement value.")
 @ConfigureJIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Labels", create = true)
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Mappings", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class, name = "Labels", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Mappings", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Labels", create = true)
 public class ReplaceLabelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
 

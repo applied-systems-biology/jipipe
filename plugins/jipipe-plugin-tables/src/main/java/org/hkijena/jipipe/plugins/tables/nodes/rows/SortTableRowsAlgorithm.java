@@ -43,7 +43,7 @@ import java.util.Comparator;
  */
 @SetJIPipeDocumentation(name = "Sort table rows", description = "Sorts the table rows by columns")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class SortTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

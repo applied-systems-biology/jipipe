@@ -42,7 +42,7 @@ import java.util.Comparator;
 import java.util.List;
 
 @SetJIPipeDocumentation(name = "Sort data rows (Expression)", description = "Sorts the data rows by one or multiple values that are extracted via expressions.")
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Sort")
 public class SortRowsByExpressionAlgorithm extends JIPipeParameterSlotAlgorithm {

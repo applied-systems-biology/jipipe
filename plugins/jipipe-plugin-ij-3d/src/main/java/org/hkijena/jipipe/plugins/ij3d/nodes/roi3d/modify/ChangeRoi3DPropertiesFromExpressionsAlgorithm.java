@@ -53,8 +53,8 @@ import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Change 3D ROI properties from expressions", description = "Sets the properties of all 3D ROI via expressions")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "Input", create = true)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true, optional = true)
+@AddJIPipeInputSlot(value = ROI3DListData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", create = true)
 public class ChangeRoi3DPropertiesFromExpressionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private OptionalJIPipeExpressionParameter roiName = new OptionalJIPipeExpressionParameter(false, "Name");

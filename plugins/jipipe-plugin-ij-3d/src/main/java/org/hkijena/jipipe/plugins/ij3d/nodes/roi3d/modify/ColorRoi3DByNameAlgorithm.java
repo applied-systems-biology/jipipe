@@ -39,7 +39,7 @@ import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Color 3D ROI by name", description = "Sets the 3D ROI item colors by their name.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = ROI3DListData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ROI3DListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", create = true)
 public class ColorRoi3DByNameAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private OptionalColorMapParameter mapFillColor = new OptionalColorMapParameter();

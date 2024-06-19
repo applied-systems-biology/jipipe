@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
         "images into groups. All images in a group are then merged into a 3D stack. The order of the stack slices is determined by the 'Slice index annotation' " +
         "that is ignored while defining the groups.")
 @ConfigureJIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlus2DData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlus3DData.class, slotName = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Images to Stack")
 public class CreateStackAlgorithm extends JIPipeMergingAlgorithm {

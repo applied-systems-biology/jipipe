@@ -45,7 +45,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 @AddJIPipeCitation("More information here: https://imagej.net/plugins/morpholibj#attribute-filtering")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Morphology")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nFiltering\nGray Scale Attribute Filtering 3D")
-@AddJIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Output", create = true)
 public class GrayscaleAttributeFiltering3DAlgorithm extends JIPipeIteratingAlgorithm {
 

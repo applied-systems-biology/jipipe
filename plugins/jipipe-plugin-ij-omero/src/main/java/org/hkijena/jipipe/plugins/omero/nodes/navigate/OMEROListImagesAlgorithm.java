@@ -51,7 +51,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SetJIPipeDocumentation(name = "List OMERO images", description = "Returns the ID(s) of images(s) according to search criteria. Requires project IDs as input.")
-@AddJIPipeInputSlot(value = OMERODatasetReferenceData.class, slotName = "Datasets", create = true)
+@AddJIPipeInputSlot(value = OMERODatasetReferenceData.class, name = "Datasets", create = true)
 @AddJIPipeOutputSlot(value = OMEROImageReferenceData.class, slotName = "Images", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = FileSystemNodeTypeCategory.class, menuPath = "OMERO")
 public class OMEROListImagesAlgorithm extends JIPipeSingleIterationAlgorithm implements OMEROCredentialAccessNode {

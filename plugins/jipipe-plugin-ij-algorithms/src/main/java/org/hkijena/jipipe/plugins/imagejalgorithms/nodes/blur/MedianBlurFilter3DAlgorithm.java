@@ -36,7 +36,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 @SetJIPipeDocumentation(name = "Median filter 3D", description = "Applies convolution with a local median function in 3D space for smoothing. " +
         "If higher-dimensional data is provided, the filter is applied to each 3D slice.")
 @ConfigureJIPipeNode(menuPath = "Filter", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nProcess", aliasName = "Median (3D)")
 public class MedianBlurFilter3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

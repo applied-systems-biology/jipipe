@@ -37,7 +37,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.ImagePlus3DData;
  */
 @SetJIPipeDocumentation(name = "Montage to stack", description = "Slices an image montage into a stack.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Montage")
-@AddJIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlus2DData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlus3DData.class, slotName = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Montage to Stack...")
 public class MontageToStackAlgorithm extends JIPipeIteratingAlgorithm {

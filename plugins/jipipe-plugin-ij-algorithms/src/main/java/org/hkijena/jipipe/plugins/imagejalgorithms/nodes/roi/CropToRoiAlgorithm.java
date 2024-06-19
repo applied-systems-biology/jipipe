@@ -39,8 +39,8 @@ import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Crop to ROI", description = "Crops the incoming images to fit into the boundaries defined by the ROI.")
 @ConfigureJIPipeNode(menuPath = "Transform", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
-@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
+@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Cropped", create = true)
 public class CropToRoiAlgorithm extends JIPipeIteratingAlgorithm {
 

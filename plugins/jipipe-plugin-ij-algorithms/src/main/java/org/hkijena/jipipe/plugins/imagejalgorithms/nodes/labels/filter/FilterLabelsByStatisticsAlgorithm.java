@@ -54,8 +54,8 @@ import java.util.Arrays;
         "If no image is supplied, the label itself will be used as the image. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Labels\nFilter")
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels", create = true)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Image", create = true, optional = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Labels", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Image", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nLabel Images")
 public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {

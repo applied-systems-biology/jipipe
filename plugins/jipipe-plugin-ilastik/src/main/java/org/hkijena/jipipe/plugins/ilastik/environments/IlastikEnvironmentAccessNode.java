@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.ilastik;
+package org.hkijena.jipipe.plugins.ilastik.environments;
 
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.plugins.ilastik.IlastikPlugin;
 
 /**
  * Interface that should be used by nodes that access the OMERO credentials environments

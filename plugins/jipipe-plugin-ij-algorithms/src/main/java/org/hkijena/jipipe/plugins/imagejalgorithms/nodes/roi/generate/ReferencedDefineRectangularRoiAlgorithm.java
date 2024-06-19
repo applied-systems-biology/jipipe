@@ -41,7 +41,7 @@ import java.awt.*;
 @SetJIPipeDocumentation(name = "Define rectangular ROI (referenced)", description = "Manually defines a rectangular ROI. This algorithm requires a reference " +
         "image, but also allows more flexibility in defining the rectangles.")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 @Deprecated
 @LabelAsJIPipeHidden

@@ -45,7 +45,7 @@ import java.util.List;
 
 @SetJIPipeDocumentation(name = "Apply expression per label", description = "Given a table with two numeric columns containing a key and a value, summarize all values assigned to a key into a single value. Allows the generation of normalized and cumulative histograms.")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Transform")
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class ApplyExpressionPerLabelAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

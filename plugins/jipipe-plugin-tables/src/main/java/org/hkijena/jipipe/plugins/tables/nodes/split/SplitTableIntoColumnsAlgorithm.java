@@ -43,7 +43,7 @@ import java.util.List;
  */
 @SetJIPipeDocumentation(name = "Split table into columns", description = "Splits a table into individual columns")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Split")
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = TableColumn.class, slotName = "Output", create = true)
 public class SplitTableIntoColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

@@ -52,8 +52,8 @@ import java.util.Arrays;
 @SetJIPipeDocumentation(name = "Threshold/Value statistics 5D (fast)", description = "This node consumes two images with the same dimensions that respectively contain the keys and value components of each pixel position. The values assigned to each key are collected and then integrated for each threshold in the key image. This variant uses table column integration functions " +
         "that are faster than expression-based operations.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Threshold", create = true)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Value", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Threshold", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Value", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class FastKeyValueThresholdStatisticsGenerator extends JIPipeIteratingAlgorithm {
     private String outputThresholdColumn = "threshold";

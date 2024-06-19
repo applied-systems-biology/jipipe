@@ -45,8 +45,8 @@ import java.util.*;
  */
 @SetJIPipeDocumentation(name = "Annotate by annotation table", description = "Merges matching annotations from an annotation table into the data set. Note: Please use 'Annotate with table values' if you intend to copy information from a table into the annotation set of a data.")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Data", create = true)
-@AddJIPipeInputSlot(value = AnnotationTableData.class, slotName = "Annotations", create = true)
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Data", create = true)
+@AddJIPipeInputSlot(value = AnnotationTableData.class, name = "Annotations", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Annotated data", create = true)
 public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
 

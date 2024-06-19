@@ -50,7 +50,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Generate vector field from math expression", description = "Generates a vector field by utilizing a math expression. " +
         "The expression must return an array of numbers (or scalar if there are only 1 components).")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Annotations", create = true, optional = true, description = "Optional annotations that can be referenced in the expression")
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Annotations", create = true, optional = true, description = "Optional annotations that can be referenced in the expression")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
 public class GenerateVectorFromMathExpression extends JIPipeSimpleIteratingAlgorithm {
 

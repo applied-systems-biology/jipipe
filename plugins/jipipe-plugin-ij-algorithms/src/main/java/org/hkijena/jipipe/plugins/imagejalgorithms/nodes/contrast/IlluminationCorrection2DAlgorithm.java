@@ -40,7 +40,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
         description = "Applies a Gaussian filter to the image and extracts the maximum value. Pixel values are then divided by this value." +
                 "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Contrast")
-@AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", create = true)
 public class IlluminationCorrection2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

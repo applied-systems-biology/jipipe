@@ -32,7 +32,7 @@ import java.nio.file.Files;
 
 @SetJIPipeDocumentation(name = "Import text", description = "Imports a text/string from a file")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = FileData.class, slotName = "File", create = true)
+@AddJIPipeInputSlot(value = FileData.class, name = "File", create = true)
 @AddJIPipeOutputSlot(value = StringData.class, slotName = "Text", create = true)
 public class ImportStringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public ImportStringAlgorithm(JIPipeNodeInfo info) {

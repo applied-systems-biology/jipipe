@@ -37,7 +37,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterS
 @SetJIPipeDocumentation(name = "Extract & replace annotations", description = "Algorithm that allows you to extract parts of an annotation and either " +
         "replace the existing annotation or put the results into a new one. If you require more flexibility, please use 'Set/Edit annotations', which provide customizable mathematical expressions for generating or editing annotations.")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
 public class ExtractAndReplaceAnnotation extends JIPipeSimpleIteratingAlgorithm {
 

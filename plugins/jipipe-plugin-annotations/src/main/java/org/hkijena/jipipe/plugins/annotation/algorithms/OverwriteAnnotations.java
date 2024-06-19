@@ -40,8 +40,8 @@ import java.util.List;
 import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Copy/overwrite annotations", description = "Copies annotations from the source data into the target data.")
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Target", create = true, description = "The target data")
-@AddJIPipeInputSlot(value = JIPipeData.class, slotName = "Source", create = true, description = "The data where the annotations are sourced from")
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Target", create = true, description = "The target data")
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Source", create = true, description = "The data where the annotations are sourced from")
 @AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Target", create = true, description = "Annotated target")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class)
 public class OverwriteAnnotations extends JIPipeIteratingAlgorithm {

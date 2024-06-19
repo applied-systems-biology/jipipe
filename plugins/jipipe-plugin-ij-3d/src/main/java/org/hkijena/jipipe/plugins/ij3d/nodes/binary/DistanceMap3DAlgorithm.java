@@ -34,7 +34,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 @SetJIPipeDocumentation(name = "Euclidean Distance Map 3D", description = "Calculates the Euclidean distance map of a 3D image. " +
         "The calculated distances will be in the calibrated unit.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Math\nDistance map")
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
 public class DistanceMap3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

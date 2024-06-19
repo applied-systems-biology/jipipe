@@ -54,8 +54,8 @@ import java.util.List;
         "The set of value pixels is partitioned into two sets based on whether the key is lower, or equal/higher than the currently processed key. " +
         "This is a fast version of 'Key/Value threshold statistics 5D' that only produces the number of pixels in each partition, the sum of values, as well as the average.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Key", create = true)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Value", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Key", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Value", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class KeyValueThresholdPartitionAveragesGenerator extends JIPipeIteratingAlgorithm {
     private ImageROITargetArea sourceArea = ImageROITargetArea.WholeImage;

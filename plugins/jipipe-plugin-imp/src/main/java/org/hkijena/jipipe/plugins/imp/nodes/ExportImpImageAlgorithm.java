@@ -43,7 +43,7 @@ import java.util.Collections;
 import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Export IMP image", description = "Exports IMP images into a non-JIPipe format (PNG, JPEG, BMP, GIF).")
-@AddJIPipeInputSlot(value = ImpImageData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImpImageData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = FileData.class, slotName = "Exported file", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nSave")

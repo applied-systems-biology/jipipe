@@ -40,8 +40,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
         "The calculated distances will be in the calibrated unit.")
 @AddJIPipeCitation("Read about EVF: https://onlinelibrary.wiley.com/doi/full/10.1002/jcb.21823")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Math\nDistance map")
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input", create = true)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", description = "Mask for the EVF", optional = true, create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Mask", description = "Mask for the EVF", optional = true, create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
 public class ErodedVolumeFraction3DAlgorithm extends JIPipeIteratingAlgorithm {
 

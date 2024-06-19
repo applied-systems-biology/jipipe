@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.ilastik;
+package org.hkijena.jipipe.plugins.ijfilaments.environments;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
@@ -30,6 +30,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.ijfilaments.FilamentsPlugin;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
@@ -44,29 +45,29 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
- * Parameter that describes a Python environment
+ * Parameter that describes a TSOAX environment
  */
-public class IlastikEnvironment extends JIPipeArtifactEnvironment {
+public class TSOAXEnvironment extends JIPipeArtifactEnvironment {
 
     private JIPipeExpressionParameter arguments = new JIPipeExpressionParameter("cli_parameters");
     private Path executablePath = Paths.get("");
     private StringQueryExpressionAndStringPairParameter.List environmentVariables = new StringQueryExpressionAndStringPairParameter.List();
 
-    public IlastikEnvironment() {
+    public TSOAXEnvironment() {
 
     }
 
-    public IlastikEnvironment(IlastikEnvironment other) {
+    public TSOAXEnvironment(TSOAXEnvironment other) {
         super(other);
         this.arguments = new JIPipeExpressionParameter(other.arguments);
         this.executablePath = other.executablePath;
         this.environmentVariables = new StringQueryExpressionAndStringPairParameter.List(other.environmentVariables);
     }
 
-    @SetJIPipeDocumentation(name = "Arguments", description = "Arguments passed to the Ilastik executable.")
+    @SetJIPipeDocumentation(name = "Arguments", description = "Arguments passed to the TSOAX executable.")
     @JIPipeParameter("arguments")
     @JsonGetter("arguments")
-    @JIPipeExpressionParameterVariable(key = "cli_parameters", description = "CLI parameters that should be passed to Ilastik", name = "CLI parameters")
+    @JIPipeExpressionParameterVariable(key = "cli_parameters", description = "CLI parameters that should be passed to TSOAX", name = "CLI parameters")
     public JIPipeExpressionParameter getArguments() {
         return arguments;
     }
@@ -77,7 +78,7 @@ public class IlastikEnvironment extends JIPipeArtifactEnvironment {
         this.arguments = arguments;
     }
 
-    @SetJIPipeDocumentation(name = "Executable path", description = "The Ilastik executable")
+    @SetJIPipeDocumentation(name = "Executable path", description = "The TSOAX executable")
     @JIPipeParameter(value = "executable-path", uiOrder = -90, important = true)
     @JsonGetter("executable-path")
     public Path getExecutablePath() {
@@ -94,7 +95,7 @@ public class IlastikEnvironment extends JIPipeArtifactEnvironment {
         return PathUtils.relativeJIPipeUserDirToAbsolute(getExecutablePath());
     }
 
-    @SetJIPipeDocumentation(name = "Environment variables", description = "These variables are provided to the Ilastik executable. Existing environment " +
+    @SetJIPipeDocumentation(name = "Environment variables", description = "These variables are provided to the TSOAX executable. Existing environment " +
             "variables are available as variables")
     @JIPipeParameter("environment-variables")
     @PairParameterSettings(keyLabel = "Value", valueLabel = "Key")
@@ -115,8 +116,8 @@ public class IlastikEnvironment extends JIPipeArtifactEnvironment {
             if (StringUtils.isNullOrEmpty(getExecutablePath()) || !Files.isRegularFile(getAbsoluteExecutablePath())) {
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext,
                         "Executable does not exist",
-                        "You need to provide a Python executable",
-                        "Provide a Python executable"));
+                        "You need to provide a TSOAX executable",
+                        "Provide a TSOAX executable"));
             }
         }
     }
@@ -157,7 +158,7 @@ public class IlastikEnvironment extends JIPipeArtifactEnvironment {
         if (isLoadFromArtifact()) {
             return UIUtils.getIconFromResources("actions/run-install.png");
         } else {
-            return IlastikPlugin.RESOURCES.getIconFromResources("ilastik.png");
+            return FilamentsPlugin.RESOURCES.getIconFromResources("tsoax.png");
         }
     }
 
@@ -172,7 +173,7 @@ public class IlastikEnvironment extends JIPipeArtifactEnvironment {
 
     @Override
     public String toString() {
-        return "IlastikEnvironment {" +
+        return "TSOAX {" +
                 ", arguments=" + arguments +
                 ", executablePath=" + executablePath +
                 ", environmentVariables=" + environmentVariables +
@@ -181,17 +182,17 @@ public class IlastikEnvironment extends JIPipeArtifactEnvironment {
     }
 
     /**
-     * A list of {@link IlastikEnvironment}
+     * A list of {@link TSOAXEnvironment}
      */
-    public static class List extends ListParameter<IlastikEnvironment> {
+    public static class List extends ListParameter<TSOAXEnvironment> {
         public List() {
-            super(IlastikEnvironment.class);
+            super(TSOAXEnvironment.class);
         }
 
         public List(List other) {
-            super(IlastikEnvironment.class);
-            for (IlastikEnvironment environment : other) {
-                add(new IlastikEnvironment(environment));
+            super(TSOAXEnvironment.class);
+            for (TSOAXEnvironment environment : other) {
+                add(new TSOAXEnvironment(environment));
             }
         }
     }

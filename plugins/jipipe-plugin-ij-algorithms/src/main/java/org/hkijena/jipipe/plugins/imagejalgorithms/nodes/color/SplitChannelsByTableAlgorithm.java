@@ -54,8 +54,8 @@ import java.util.stream.Collectors;
         "This operation is applied for each 2D image slice. This node uses a reference table as secondary input that matches data to a channel assignment configuration.\n" +
         "To configure this node, setup the set of annotation columns and the set of channel columns. The channel columns must be named according to the real (not labelled!) output slot name.")
 @ConfigureJIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true, description = "Contains the image to be split")
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Table", create = true, description = "The table that matches images to channel configurations")
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true, description = "Contains the image to be split")
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Table", create = true, description = "The table that matches images to channel configurations")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nColor", aliasName = "Split Channels (by table)")
 public class SplitChannelsByTableAlgorithm extends JIPipeIteratingAlgorithm {

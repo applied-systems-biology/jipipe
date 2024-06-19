@@ -24,7 +24,7 @@ import org.hkijena.jipipe.plugins.forms.datatypes.FormData;
 import org.hkijena.jipipe.plugins.forms.datatypes.GroupHeaderFormData;
 
 @SetJIPipeDocumentation(name = "Group header form", description = "Creates a group header element to structure the form. ")
-@AddJIPipeInputSlot(value = FormData.class, slotName = "Existing")
+@AddJIPipeInputSlot(value = FormData.class, name = "Existing")
 @AddJIPipeOutputSlot(value = FormData.class, slotName = "Combined")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class GroupHeaderFormGeneratorAlgorithm extends SimpleFormGeneratorAlgorithm {

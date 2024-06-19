@@ -58,8 +58,8 @@ import java.util.List;
         "Returns the mask with the first applicable threshold or an image with zero values. "
         + "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Threshold\nIterative")
-@AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input", description = "The image to be thresholded", create = true)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Reference", description = "An optional reference image for the ROI statistics. If none is provided, the input image is used as reference.", optional = true, create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, name = "Input", description = "The image to be thresholded", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Reference", description = "An optional reference image for the ROI statistics. If none is provided, the input image is used as reference.", optional = true, create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", description = "The generated mask", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", description = "Pre-filtered ROI (according to the criteria)", create = true)
 public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratingAlgorithm {

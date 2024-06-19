@@ -32,7 +32,7 @@ import java.util.List;
 
 @SetJIPipeDocumentation(name = "Merge tracks", description = "Merges track lists. Please ensure that the spots are sourced from the same image.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nSplit/Merge")
-@AddJIPipeInputSlot(value = TrackCollectionData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = TrackCollectionData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = TrackCollectionData.class, slotName = "Output", create = true)
 public class MergeTracksNode extends JIPipeMergingAlgorithm {
 

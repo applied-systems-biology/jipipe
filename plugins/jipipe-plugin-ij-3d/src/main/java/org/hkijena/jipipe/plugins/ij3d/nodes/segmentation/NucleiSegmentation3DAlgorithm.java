@@ -38,7 +38,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.Optiona
         "The segmentation for the 2D projection is based on a global thresholding. The nuclei are then segmented and separated using ImageJ watershed. ")
 @AddJIPipeCitation("https://mcib3d.frama.io/3d-suite-imagej/plugins/Segmentation/Custom/3D-Nuclei-Segmentation/")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Threshold")
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
 public class NucleiSegmentation3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

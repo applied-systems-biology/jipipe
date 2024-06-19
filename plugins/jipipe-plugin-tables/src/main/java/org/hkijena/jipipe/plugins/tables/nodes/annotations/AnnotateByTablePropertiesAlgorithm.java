@@ -36,7 +36,7 @@ import java.util.List;
 
 @SetJIPipeDocumentation(name = "Annotate with table properties", description = "Annotates tables with information about the table")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For tables")
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class AnnotateByTablePropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

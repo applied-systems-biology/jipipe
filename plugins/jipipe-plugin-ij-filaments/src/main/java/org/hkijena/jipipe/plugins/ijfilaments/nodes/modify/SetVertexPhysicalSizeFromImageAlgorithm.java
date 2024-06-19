@@ -35,8 +35,8 @@ import org.hkijena.jipipe.utils.StringUtils;
 @SetJIPipeDocumentation(name = "Set filament vertex physical sizes from image", description = "Sets the physical voxel sizes of all vertices to the data provided in the image. If the image has no calibration data, " +
         "the filament voxel sizes will be reset to 1 pixel.")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Filaments", create = true)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Intensity", description = "The calibration is extracted from this image", create = true)
+@AddJIPipeInputSlot(value = Filaments3DData.class, name = "Filaments", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Intensity", description = "The calibration is extracted from this image", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
 public class SetVertexPhysicalSizeFromImageAlgorithm extends JIPipeIteratingAlgorithm {
     public SetVertexPhysicalSizeFromImageAlgorithm(JIPipeNodeInfo info) {

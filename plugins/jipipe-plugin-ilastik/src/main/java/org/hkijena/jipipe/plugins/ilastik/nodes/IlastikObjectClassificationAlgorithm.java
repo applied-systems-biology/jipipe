@@ -47,10 +47,10 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.plugins.ilastik.IlastikEnvironment;
-import org.hkijena.jipipe.plugins.ilastik.IlastikEnvironmentAccessNode;
+import org.hkijena.jipipe.plugins.ilastik.environments.IlastikEnvironment;
+import org.hkijena.jipipe.plugins.ilastik.environments.IlastikEnvironmentAccessNode;
 import org.hkijena.jipipe.plugins.ilastik.IlastikPlugin;
-import org.hkijena.jipipe.plugins.ilastik.OptionalIlastikEnvironment;
+import org.hkijena.jipipe.plugins.ilastik.environments.OptionalIlastikEnvironment;
 import org.hkijena.jipipe.plugins.ilastik.datatypes.IlastikModelData;
 import org.hkijena.jipipe.plugins.ilastik.parameters.IlastikProjectValidationMode;
 import org.hkijena.jipipe.plugins.ilastik.utils.IlastikUtils;
@@ -76,8 +76,8 @@ import static org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils.*;
         "Supports 'Pixel Classification + Object Classification' projects.")
 @AddJIPipeCitation("Object classification documentation: https://www.ilastik.org/documentation/objects/objects")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Ilastik")
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true, description = "The image(s) to classify.")
-@AddJIPipeInputSlot(value = IlastikModelData.class, slotName = "Project", create = true, description = "The Ilastik project. Must support pixel classification.")
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true, description = "The image(s) to classify.")
+@AddJIPipeInputSlot(value = IlastikModelData.class, name = "Project", create = true, description = "The Ilastik project. Must support pixel classification.")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Object Predictions", description = "A label image of the object class predictions")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Object Probabilities", description = "A multi-channel image volume of object prediction probabilities instead of a label image (one channel for each prediction class)")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Blockwise Object Predictions", description = "A label image of the object class predictions. " +

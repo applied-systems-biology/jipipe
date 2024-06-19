@@ -53,7 +53,7 @@ public class DefaultAddJIPipeInputSlot implements AddJIPipeInputSlot {
     }
 
     @Override
-    public String slotName() {
+    public String name() {
         return slotName;
     }
 

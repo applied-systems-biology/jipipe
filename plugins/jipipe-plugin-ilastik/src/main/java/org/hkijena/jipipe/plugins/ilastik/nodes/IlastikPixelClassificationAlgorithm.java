@@ -46,10 +46,10 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.plugins.ilastik.IlastikEnvironment;
-import org.hkijena.jipipe.plugins.ilastik.IlastikEnvironmentAccessNode;
+import org.hkijena.jipipe.plugins.ilastik.environments.IlastikEnvironment;
+import org.hkijena.jipipe.plugins.ilastik.environments.IlastikEnvironmentAccessNode;
 import org.hkijena.jipipe.plugins.ilastik.IlastikPlugin;
-import org.hkijena.jipipe.plugins.ilastik.OptionalIlastikEnvironment;
+import org.hkijena.jipipe.plugins.ilastik.environments.OptionalIlastikEnvironment;
 import org.hkijena.jipipe.plugins.ilastik.datatypes.IlastikModelData;
 import org.hkijena.jipipe.plugins.ilastik.parameters.IlastikProjectValidationMode;
 import org.hkijena.jipipe.plugins.ilastik.utils.IlastikUtils;
@@ -73,8 +73,8 @@ import static org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils.*;
         "Please note that results will be generated for each image and each project (pairwise).")
 @AddJIPipeCitation("Pixel classification documentation: https://www.ilastik.org/documentation/pixelclassification/pixelclassification")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Ilastik")
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true, description = "The image(s) to classify.")
-@AddJIPipeInputSlot(value = IlastikModelData.class, slotName = "Project", create = true, description = "The Ilastik project. Must support pixel classification.")
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true, description = "The image(s) to classify.")
+@AddJIPipeInputSlot(value = IlastikModelData.class, name = "Project", create = true, description = "The Ilastik project. Must support pixel classification.")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Probabilities", description = "Multi-channel image where pixel values represent the probability that that pixel belongs to the class represented by that channel")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Simple Segmentation", description = "A single-channel image where the (integer) pixel values indicate the class to which a pixel belongs. " +
         "For this image, every pixel with the same value should belong to the same class of pixels")

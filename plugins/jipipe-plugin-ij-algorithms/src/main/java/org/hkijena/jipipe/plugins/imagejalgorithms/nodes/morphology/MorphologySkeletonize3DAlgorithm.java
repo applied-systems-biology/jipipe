@@ -29,7 +29,7 @@ import sc.fiji.skeletonize3D.Skeletonize3D_;
 
 @SetJIPipeDocumentation(name = "Morphological skeletonize 3D", description = "Performs the skeletonization of 2D and 3D binary images (8-bit images)")
 @ConfigureJIPipeNode(menuPath = "Morphology", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlus3DGreyscaleMaskData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlus3DGreyscaleMaskData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlus3DGreyscaleMaskData.class, slotName = "Output", create = true)
 @AddJIPipeCitation("Implementation by Ignacio Arganda-Carreras https://imagej.net/plugins/skeletonize3d")
 @AddJIPipeCitation("Lee et al. “Building skeleton models via 3-D medial surface/axis thinning algorithms. Computer Vision, Graphics, and Image Processing, 56(6):462–478, 1994.”")

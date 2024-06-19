@@ -45,8 +45,8 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
         "</ul>")
 @AddJIPipeCitation("See https://imagej.net/plugins/morpholibj#label-overlap-measures for the formulas")
 @ConfigureJIPipeNode(menuPath = "Labels\nMeasure", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Image 1", create = true)
-@AddJIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Image 2", create = true)
+@AddJIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, name = "Image 1", create = true)
+@AddJIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, name = "Image 2", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Total", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Per label", create = true)
 @AddJIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +

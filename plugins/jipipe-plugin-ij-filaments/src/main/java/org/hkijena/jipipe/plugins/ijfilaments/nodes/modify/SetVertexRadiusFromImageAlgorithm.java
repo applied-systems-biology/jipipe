@@ -33,8 +33,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 @SetJIPipeDocumentation(name = "Set filament vertex radius from image", description = "Sets the radius of each vertex from the given input image. Please note that if the C/T coordinates are set to zero, the value is extracted from the 0/0 slice.")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Filaments", create = true)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Radius", description = "The radius is sourced from the pixels in this image", create = true)
+@AddJIPipeInputSlot(value = Filaments3DData.class, name = "Filaments", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Radius", description = "The radius is sourced from the pixels in this image", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
 public class SetVertexRadiusFromImageAlgorithm extends JIPipeIteratingAlgorithm {
     public SetVertexRadiusFromImageAlgorithm(JIPipeNodeInfo info) {

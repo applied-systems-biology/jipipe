@@ -51,7 +51,7 @@ import java.util.List;
 
 @SetJIPipeDocumentation(name = "Annotate project with OMERO metadata", description = "Annotates an OMERO project ID with OMERO metadata.")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For OMERO")
-@AddJIPipeInputSlot(value = OMEROProjectReferenceData.class, slotName = "Projects", create = true)
+@AddJIPipeInputSlot(value = OMEROProjectReferenceData.class, name = "Projects", create = true)
 @AddJIPipeOutputSlot(value = OMEROProjectReferenceData.class, slotName = "Projects", create = true)
 public class AnnotateOMEROProjectReferenceAlgorithm extends JIPipeSingleIterationAlgorithm implements OMEROCredentialAccessNode {
 

@@ -71,8 +71,8 @@ import java.util.stream.Collectors;
         "The extrema detection can list a large number of extrema in the first place. Usually a threshold on the score is then used to limit this number (i.e. returning local extrema with a score above/below the threshold).\n" +
         "To prevent overlapping detection of the same object, Non-Maxima Supression is performed after extrema detection.\n\n\n\n" +
         "Please visit https://github.com/multi-template-matching/MultiTemplateMatching-Fiji/wiki for more information about the Multi-Template Matching plugin.")
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
-@AddJIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Template", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
+@AddJIPipeInputSlot(value = ImagePlus2DData.class, name = "Template", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", create = true, description = "Table containing information about the matched templates. To access the templates directly, enable 'Output matched templates'")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Assembled templates")

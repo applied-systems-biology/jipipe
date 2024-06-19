@@ -38,7 +38,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.Optiona
  */
 @SetJIPipeDocumentation(name = "Change ROI properties", description = "Sets properties of all Roi to a user-defined value.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = ROIListData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ROIListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

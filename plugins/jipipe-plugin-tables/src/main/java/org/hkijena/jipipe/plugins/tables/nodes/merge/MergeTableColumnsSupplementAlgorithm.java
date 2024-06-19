@@ -41,8 +41,8 @@ import java.util.*;
  */
 @SetJIPipeDocumentation(name = "Merge table columns (supplement)", description = "Merges columns from the source table into the target table. You can choose one or multiple reference columns that determine which rows from each table should be merged together.")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Merge")
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Target", create = true)
-@AddJIPipeInputSlot(value = ResultsTableData.class, slotName = "Source", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Target", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Source", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
 public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorithm {
 

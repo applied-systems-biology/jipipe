@@ -33,8 +33,8 @@ import org.hkijena.jipipe.plugins.filesystem.dataypes.PathData;
 @ConfigureJIPipeNode(menuPath = "Modify", nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
 
-@AddJIPipeInputSlot(value = PathData.class, slotName = "Left", create = true)
-@AddJIPipeInputSlot(value = PathData.class, slotName = "Right", create = true)
+@AddJIPipeInputSlot(value = PathData.class, name = "Left", create = true)
+@AddJIPipeInputSlot(value = PathData.class, name = "Right", create = true)
 @AddJIPipeOutputSlot(value = PathData.class, slotName = "Output", create = true)
 
 

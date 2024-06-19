@@ -32,7 +32,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
  */
 @SetJIPipeDocumentation(name = "Unset ROI image", description = "Removes any association of the ROI from any image.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ROIListData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = ROIListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
 public class UnsetRoiImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

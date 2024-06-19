@@ -33,7 +33,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
  */
 @SetJIPipeDocumentation(name = "2D FFT swap quadrants", description = "Swaps the quadrants of a frequency space image.")
 @ConfigureJIPipeNode(menuPath = "FFT", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusFFT2DData.class, create = true, slotName = "Input")
+@AddJIPipeInputSlot(value = ImagePlusFFT2DData.class, create = true, name = "Input")
 @AddJIPipeOutputSlot(value = ImagePlusFFT2DData.class, slotName = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nFFT", aliasName = "Swap Quadrants")
 public class FFT2DSwapQuadrants extends JIPipeSimpleIteratingAlgorithm {

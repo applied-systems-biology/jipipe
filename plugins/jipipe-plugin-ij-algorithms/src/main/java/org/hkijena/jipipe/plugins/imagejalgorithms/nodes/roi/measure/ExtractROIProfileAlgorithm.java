@@ -54,8 +54,8 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Extract ROI profile", description = "Extracts the pixel intensities along the ROI if a straight or irregular line ROI are given. " +
         "If a rotated rectangle is processed, it is converted into a straight line." +
         "If any other ROI type is given, either the row or column average of the bounding rectangle is calculated.")
-@AddJIPipeInputSlot(value = ROIListData.class, slotName = "ROI", create = true)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Reference", create = true, description = "The profile(s) are created on this image")
+@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Reference", create = true, description = "The profile(s) are created on this image")
 @AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze\nPlot profile")

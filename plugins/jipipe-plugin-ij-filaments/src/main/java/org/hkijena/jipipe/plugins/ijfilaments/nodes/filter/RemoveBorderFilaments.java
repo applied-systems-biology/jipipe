@@ -31,8 +31,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 
 @SetJIPipeDocumentation(name = "Remove border filaments", description = "Removes filament components that are within a specified distance of the image borders.")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Filter")
-@AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", create = true)
-@AddJIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", create = true)
+@AddJIPipeInputSlot(value = Filaments3DData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
 public class RemoveBorderFilaments extends JIPipeIteratingAlgorithm {
 

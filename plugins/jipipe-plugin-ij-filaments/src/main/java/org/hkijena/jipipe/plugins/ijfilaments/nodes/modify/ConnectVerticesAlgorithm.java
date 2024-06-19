@@ -56,9 +56,9 @@ import java.util.stream.Collectors;
 
 @SetJIPipeDocumentation(name = "Connect filament vertices", description = "Connect existing vertices based on customizable criteria.")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", create = true)
+@AddJIPipeInputSlot(value = Filaments3DData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", optional = true, create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Mask", optional = true, create = true)
 public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
     private final VertexMaskParameter vertexMask;
     private boolean connectAcrossC = false;
