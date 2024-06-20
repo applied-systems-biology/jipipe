@@ -47,7 +47,7 @@ import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true, optional = true)
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Image", create = true)
 public class GenerateMissingImageFromMathExpression2D extends JIPipeMissingDataGeneratorAlgorithm {
 
     private JIPipeExpressionParameter function = new JIPipeExpressionParameter("0");

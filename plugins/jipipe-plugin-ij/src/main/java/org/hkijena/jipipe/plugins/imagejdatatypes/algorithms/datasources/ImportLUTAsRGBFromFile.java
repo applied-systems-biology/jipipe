@@ -32,7 +32,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d2.color.ImagePlus2D
 
 @SetJIPipeDocumentation(name = "Import LUT as RGB image", description = "Imports an ImageJ *.lut file")
 @AddJIPipeInputSlot(value = FileData.class, name = "Input", description = "A *.lut file", create = true)
-@AddJIPipeOutputSlot(value = ImagePlus2DColorRGBData.class, slotName = "Output", description = "Description of the LUT as RGB image", create = true)
+@AddJIPipeOutputSlot(value = ImagePlus2DColorRGBData.class, name = "Output", description = "Description of the LUT as RGB image", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File", aliasName = "Open (LUT)")
 public class ImportLUTAsRGBFromFile extends JIPipeSimpleIteratingAlgorithm {

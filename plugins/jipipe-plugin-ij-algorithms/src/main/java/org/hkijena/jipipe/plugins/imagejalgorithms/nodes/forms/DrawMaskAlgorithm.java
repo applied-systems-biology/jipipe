@@ -56,7 +56,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Forms")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Mask", create = true, optional = true)
-@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Mask", create = true)
 public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgorithm {
 
     private OptionalIntegerParameter overwriteSizeZ = new OptionalIntegerParameter(false, 1);

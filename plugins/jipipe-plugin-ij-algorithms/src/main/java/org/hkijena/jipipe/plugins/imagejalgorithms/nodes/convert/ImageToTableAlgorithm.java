@@ -47,7 +47,7 @@ import java.util.Collections;
         "For color images, column names depend on the color space.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Convert")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class ImageToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean applyPerSlice = false;

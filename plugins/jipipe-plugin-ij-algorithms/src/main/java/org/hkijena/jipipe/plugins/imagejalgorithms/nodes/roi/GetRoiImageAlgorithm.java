@@ -37,7 +37,7 @@ import java.util.Optional;
 @SetJIPipeDocumentation(name = "Get ROI image", description = "Gets the associated image from a ROI. No output is generated if the ROI have no associated images.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Image", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Image", create = true)
 public class GetRoiImageAlgorithm extends JIPipeIteratingAlgorithm {
 
     /**

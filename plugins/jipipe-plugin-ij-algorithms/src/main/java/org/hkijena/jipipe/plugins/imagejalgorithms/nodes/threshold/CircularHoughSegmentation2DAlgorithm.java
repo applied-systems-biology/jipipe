@@ -48,8 +48,8 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
 
 @AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", create = true)
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Mask", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Measurements", create = true)
 
 
 public class CircularHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

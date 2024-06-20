@@ -33,7 +33,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
  */
 @SetJIPipeDocumentation(name = "Import annotation table")
 @AddJIPipeInputSlot(value = FileData.class, name = "Files", create = true)
-@AddJIPipeOutputSlot(value = AnnotationTableData.class, slotName = "Annotation table", create = true)
+@AddJIPipeOutputSlot(value = AnnotationTableData.class, name = "Annotation table", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class AnnotationTableFromFile extends JIPipeSimpleIteratingAlgorithm {
 

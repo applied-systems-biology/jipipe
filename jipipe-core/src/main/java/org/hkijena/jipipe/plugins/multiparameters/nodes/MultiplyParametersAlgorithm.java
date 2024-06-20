@@ -29,7 +29,7 @@ import org.hkijena.jipipe.plugins.multiparameters.datatypes.ParametersData;
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Parameters")
 @AddJIPipeInputSlot(value = ParametersData.class, name = "Input 1", create = true)
 @AddJIPipeInputSlot(value = ParametersData.class, name = "Input 2", create = true)
-@AddJIPipeOutputSlot(value = ParametersData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ParametersData.class, name = "Output", create = true)
 public class MultiplyParametersAlgorithm extends JIPipeAlgorithm {
     public MultiplyParametersAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()

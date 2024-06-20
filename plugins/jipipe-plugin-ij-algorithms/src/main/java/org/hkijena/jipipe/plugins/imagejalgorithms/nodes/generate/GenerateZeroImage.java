@@ -40,7 +40,7 @@ import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataParame
 @SetJIPipeDocumentation(name = "Create empty image", description = "Creates a new image that is black.")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Annotations", create = true, optional = true, description = "Optional annotations that can be referenced in the expression")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
 public class GenerateZeroImage extends JIPipeSimpleIteratingAlgorithm {
 
     private int width = 256;

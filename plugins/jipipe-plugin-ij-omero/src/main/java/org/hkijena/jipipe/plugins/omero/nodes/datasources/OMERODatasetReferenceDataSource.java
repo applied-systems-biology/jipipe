@@ -39,7 +39,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.list.LongList;
 import java.util.List;
 
 @SetJIPipeDocumentation(name = "Define dataset IDs", description = "Manually defines OMERO dataset ids.")
-@AddJIPipeOutputSlot(value = OMERODatasetReferenceData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = OMERODatasetReferenceData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class, menuPath = "OMERO")
 public class OMERODatasetReferenceDataSource extends JIPipeSimpleIteratingAlgorithm implements OMEROCredentialAccessNode {
 

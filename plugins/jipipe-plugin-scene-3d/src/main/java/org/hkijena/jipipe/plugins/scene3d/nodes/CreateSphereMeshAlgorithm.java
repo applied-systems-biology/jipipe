@@ -28,7 +28,7 @@ import org.hkijena.jipipe.plugins.scene3d.datatypes.Scene3DData;
 import org.hkijena.jipipe.plugins.scene3d.model.geometries.Scene3DSphereGeometry;
 
 @SetJIPipeDocumentation(name = "Create 3D sphere mesh", description = "Generates a 3D scene containing a sphere mesh at the specified location.")
-@AddJIPipeOutputSlot(value = Scene3DData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = Scene3DData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class CreateSphereMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

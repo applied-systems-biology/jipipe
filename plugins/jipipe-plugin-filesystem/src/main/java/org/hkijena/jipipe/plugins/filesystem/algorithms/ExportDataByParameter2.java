@@ -41,7 +41,7 @@ import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Export data", description = "Exports the input data via JIPipe's standard exporter. The output is the directory that contains the generated file(s).")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Data", create = true)
-@AddJIPipeOutputSlot(value = FolderData.class, slotName = "Output path", create = true)
+@AddJIPipeOutputSlot(value = FolderData.class, name = "Output path", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class)
 public class ExportDataByParameter2 extends JIPipeSimpleIteratingAlgorithm {
 

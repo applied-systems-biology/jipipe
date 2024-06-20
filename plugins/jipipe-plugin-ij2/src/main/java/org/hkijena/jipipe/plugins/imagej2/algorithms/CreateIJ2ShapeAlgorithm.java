@@ -33,7 +33,7 @@ import org.hkijena.jipipe.utils.classfilters.NonGenericClassFilter;
 
 @SetJIPipeDocumentation(name = "Create shape", description = "Defines an ImageJ2 shape")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@AddJIPipeOutputSlot(value = ImageJ2ShapeData.class, slotName = "Shape", create = true)
+@AddJIPipeOutputSlot(value = ImageJ2ShapeData.class, name = "Shape", create = true)
 public class CreateIJ2ShapeAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeDataInfoRef shapeType = new JIPipeDataInfoRef("ij2-shape-empty");

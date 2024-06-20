@@ -47,7 +47,7 @@ import java.util.Set;
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
 @AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", description = "Optional reference image used to calculate the size of the output", create = true, optional = true)
-@AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Labels", description = "Output label image", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Labels", description = "Output label image", create = true)
 public class ROIToLabelsExpressionAlgorithm extends JIPipeIteratingAlgorithm {
 
     private OptionalJIPipeExpressionParameter roiToLabelTransformation = new OptionalJIPipeExpressionParameter(false, "index");

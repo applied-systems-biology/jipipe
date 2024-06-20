@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
  */
 @SetJIPipeDocumentation(name = "Table to ImageJ", description = "Opens all incoming tables in ImageJ")
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nExport")
 public class ResultsTableToGUI extends JIPipeSimpleIteratingAlgorithm {

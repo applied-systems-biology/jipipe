@@ -39,7 +39,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.greyscale.ImagePl
  */
 @SetJIPipeDocumentation(name = "Generate structure element (3D)", description = "Generates a structure element that is consistent with the ones used by the 3D morphological operation.")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class, dataSourceMenuLocation = ImagePlusData.class)
-@AddJIPipeOutputSlot(value = ImagePlus3DGreyscaleMaskData.class, slotName = "Kernel", create = true)
+@AddJIPipeOutputSlot(value = ImagePlus3DGreyscaleMaskData.class, name = "Kernel", create = true)
 @AddJIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
         "Bioinformatics (Oxford Univ Press) 32(22): 3532-3534, PMID 27412086, doi:10.1093/bioinformatics/btw413")
 public class GenerateStructureElement3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

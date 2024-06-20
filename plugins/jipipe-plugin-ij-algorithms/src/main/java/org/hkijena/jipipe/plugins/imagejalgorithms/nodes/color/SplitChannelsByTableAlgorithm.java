@@ -56,7 +56,7 @@ import java.util.stream.Collectors;
 @ConfigureJIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true, description = "Contains the image to be split")
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Table", create = true, description = "The table that matches images to channel configurations")
-@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output")
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Output")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nColor", aliasName = "Split Channels (by table)")
 public class SplitChannelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
     private boolean ignoreMissingChannels = false;

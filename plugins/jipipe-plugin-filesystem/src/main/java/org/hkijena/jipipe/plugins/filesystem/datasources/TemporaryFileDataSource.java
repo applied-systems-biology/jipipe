@@ -33,7 +33,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Temporary file", description = "Generates a temporary file that will be located within your operating system's temporary directory or " +
         "the directory specified in the JIPipe settings. Please note that there are no guarantees on the actual file name, as the outcome depends on the operating system.")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@AddJIPipeOutputSlot(value = FileData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = FileData.class, name = "Output", create = true)
 public class TemporaryFileDataSource extends JIPipeParameterSlotAlgorithm {
 
     private String prefix = "";

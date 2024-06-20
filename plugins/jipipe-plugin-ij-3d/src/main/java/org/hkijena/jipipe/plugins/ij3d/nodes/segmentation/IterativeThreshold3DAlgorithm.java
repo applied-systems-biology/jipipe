@@ -50,7 +50,7 @@ import java.util.ArrayList;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Threshold")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Markers", optional = true, description = "Optional seeds for the objects", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Output", create = true)
 public class IterativeThreshold3DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private int minVolumePixels = 100;

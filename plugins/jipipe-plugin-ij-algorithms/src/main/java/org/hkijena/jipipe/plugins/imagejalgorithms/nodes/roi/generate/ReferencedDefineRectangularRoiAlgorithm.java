@@ -42,7 +42,7 @@ import java.awt.*;
         "image, but also allows more flexibility in defining the rectangles.")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, name = "Output", create = true)
 @Deprecated
 @LabelAsJIPipeHidden
 public class ReferencedDefineRectangularRoiAlgorithm extends JIPipeIteratingAlgorithm {

@@ -53,7 +53,7 @@ import org.hkijena.jipipe.utils.ImageJCalibrationMode;
         "into a greyscale value.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Colors\nConvert")
 @AddJIPipeInputSlot(value = ImagePlusColorData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Output", create = true)
 public class ColorToGreyscaleExpression2D extends JIPipeSimpleIteratingAlgorithm {
 
     private static ColorSpace COLOR_SPACE_RGB = new RGBColorSpace();

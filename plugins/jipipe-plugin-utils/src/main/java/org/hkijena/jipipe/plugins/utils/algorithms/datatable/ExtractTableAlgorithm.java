@@ -35,7 +35,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Unpack data table", description = "Extracts data stored in the input slot into the output." +
         " If multiple tables are supplied, the rows are merged.")
 @AddJIPipeInputSlot(value = JIPipeDataTable.class, name = "Table", create = true)
-@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, name = "Data", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Data tables")
 public class ExtractTableAlgorithm extends JIPipeParameterSlotAlgorithm {
 

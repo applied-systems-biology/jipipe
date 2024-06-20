@@ -46,7 +46,7 @@ import java.util.Collections;
         "It generates following output columns: <code>value</code>, <code>count</code>.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Histogram")
 public class HistogramGenerator extends JIPipeSimpleIteratingAlgorithm {
 

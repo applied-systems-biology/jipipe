@@ -49,7 +49,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Local image calculator 2D (Expression)", description = "Applies a pixel-wise mathematical operation that produces a single output image. Available " +
         "are both the current pixel values, as well as the local areas around these pixels.")
 @AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class)
-@AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(menuPath = "Math\nLocal", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nMath", aliasName = "Macro... (local)")
 public class LocalImageCalculator2DExpression extends JIPipeIteratingAlgorithm {

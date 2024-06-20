@@ -85,12 +85,12 @@ import java.util.*;
         "</ul>" +
         "Please note that you need to setup a valid Python environment with Omnipose installed. You can find the setting in Project &gt; Application settings &gt; Extensions &gt; Omnipose.")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels")
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Flows XY")
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Flows Z")
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Flows d")
-@AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Probabilities")
-@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI")
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Labels")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Flows XY")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Flows Z")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Flows d")
+@AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Probabilities")
+@AddJIPipeOutputSlot(value = ROIListData.class, name = "ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 @Deprecated
 @LabelAsJIPipeHidden

@@ -58,7 +58,7 @@ public class DefaultAddJIPipeOutputSlot implements AddJIPipeOutputSlot {
     }
 
     @Override
-    public String slotName() {
+    public String name() {
         return slotName;
     }
 

@@ -55,7 +55,7 @@ import java.util.concurrent.ExecutionException;
 @ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Tables")
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Tables", create = true, description = "The table to attach")
 @AddJIPipeInputSlot(value = OMEROImageReferenceData.class, name = "Target", create = true, description = "The target OMERO image")
-@AddJIPipeOutputSlot(value = OMEROAnnotationReferenceData.class, slotName = "Tables", create = true, description = "Reference to the generated table annotation")
+@AddJIPipeOutputSlot(value = OMEROAnnotationReferenceData.class, name = "Tables", create = true, description = "Reference to the generated table annotation")
 public class UploadOMEROTableAlgorithm extends JIPipeIteratingAlgorithm implements OMEROCredentialAccessNode {
 
     private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();

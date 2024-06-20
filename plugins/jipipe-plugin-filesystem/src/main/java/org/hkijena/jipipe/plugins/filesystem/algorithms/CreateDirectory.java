@@ -41,7 +41,7 @@ import java.nio.file.Files;
 
 
 @AddJIPipeInputSlot(value = PathData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = FolderData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = FolderData.class, name = "Output", create = true)
 
 
 public class CreateDirectory extends JIPipeSimpleIteratingAlgorithm {

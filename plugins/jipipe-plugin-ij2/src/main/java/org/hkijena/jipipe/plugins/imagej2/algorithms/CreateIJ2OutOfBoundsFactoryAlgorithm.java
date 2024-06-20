@@ -33,7 +33,7 @@ import org.hkijena.jipipe.utils.classfilters.NonGenericClassFilter;
 
 @SetJIPipeDocumentation(name = "Create Out Of Bounds factory", description = "Defines an ImageJ2 Out Of Bounds factory")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@AddJIPipeOutputSlot(value = ImageJ2OutOfBoundsFactoryData.class, slotName = "Factory", create = true)
+@AddJIPipeOutputSlot(value = ImageJ2OutOfBoundsFactoryData.class, name = "Factory", create = true)
 public class CreateIJ2OutOfBoundsFactoryAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeDataInfoRef factoryType = new JIPipeDataInfoRef("ij2-out-of-bounds-factory-empty");

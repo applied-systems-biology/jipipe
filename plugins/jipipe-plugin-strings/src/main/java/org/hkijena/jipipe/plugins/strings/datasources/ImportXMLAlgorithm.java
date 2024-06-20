@@ -35,7 +35,7 @@ import java.nio.file.Files;
 @SetJIPipeDocumentation(name = "Import XML", description = "Imports XML data from a file")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = FileData.class, name = "File", create = true)
-@AddJIPipeOutputSlot(value = XMLData.class, slotName = "XML", create = true)
+@AddJIPipeOutputSlot(value = XMLData.class, name = "XML", create = true)
 public class ImportXMLAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean validateXml = true;

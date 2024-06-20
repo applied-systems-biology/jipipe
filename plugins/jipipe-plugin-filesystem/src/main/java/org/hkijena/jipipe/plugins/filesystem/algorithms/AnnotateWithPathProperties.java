@@ -42,7 +42,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Annotate with path properties", description = "Annotates files or directories with their properties")
 @ConfigureJIPipeNode(menuPath = "For paths", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = PathData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = PathData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = PathData.class, name = "Output", create = true)
 public class AnnotateWithPathProperties extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalTextAnnotationNameParameter fileNameAnnotation = new OptionalTextAnnotationNameParameter("File name", true);

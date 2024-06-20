@@ -36,7 +36,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
 @AddJIPipeInputSlot(value = Filaments3DData.class, name = "Filaments", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Value", description = "The value is sourced from the pixels in this image", create = true)
-@AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = Filaments3DData.class, name = "Output", create = true)
 public class SetVertexMetadataFromImageAlgorithm extends JIPipeIteratingAlgorithm {
 
     private String metadataKey = "key";

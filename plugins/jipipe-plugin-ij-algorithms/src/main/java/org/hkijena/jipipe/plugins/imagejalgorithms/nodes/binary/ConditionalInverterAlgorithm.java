@@ -41,7 +41,7 @@ import java.util.Set;
 @SetJIPipeDocumentation(name = "Conditional invert", description = "Inverts the image if a condition (based on statistics) is met. Otherwise, the image is not inverted.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Binary")
 @AddJIPipeInputSlot(name = "Input", value = ImagePlusGreyscaleMaskData.class, create = true)
-@AddJIPipeOutputSlot(slotName = "Output", value = ImagePlusGreyscaleMaskData.class, create = true)
+@AddJIPipeOutputSlot(name = "Output", value = ImagePlusGreyscaleMaskData.class, create = true)
 public class ConditionalInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter condition = new JIPipeExpressionParameter("num_white > num_black");

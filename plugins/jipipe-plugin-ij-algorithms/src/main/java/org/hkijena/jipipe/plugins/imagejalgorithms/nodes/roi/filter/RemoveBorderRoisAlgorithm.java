@@ -44,7 +44,7 @@ import java.awt.*;
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
 @AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", description = "The ROI to be processed", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", description = "The reference image", create = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Cleaned ROI", description = "The cleaned ROI", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, name = "Cleaned ROI", description = "The cleaned ROI", create = true)
 public class RemoveBorderRoisAlgorithm extends JIPipeIteratingAlgorithm {
 
     private Margin borderDefinition = new Margin();

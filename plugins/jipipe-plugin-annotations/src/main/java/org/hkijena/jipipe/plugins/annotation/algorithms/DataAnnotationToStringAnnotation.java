@@ -37,7 +37,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Convert data annotation to string annotation", description = "Convert data annotations to a strings and generates a string annotation based on it. The string annotations have the same names as the data annotations.")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, name = "Output", create = true)
 public class DataAnnotationToStringAnnotation extends JIPipeSimpleIteratingAlgorithm {
 
     private StringQueryExpression nameFilter = new StringQueryExpression();

@@ -31,7 +31,7 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 @SetJIPipeDocumentation(name = "Measure edges", description = "Measures the edges and outputs the results into a table")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nMeasure")
 @AddJIPipeInputSlot(value = TrackCollectionData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class MeasureEdgesNode extends JIPipeSimpleIteratingAlgorithm {
 
     public MeasureEdgesNode(JIPipeNodeInfo info) {

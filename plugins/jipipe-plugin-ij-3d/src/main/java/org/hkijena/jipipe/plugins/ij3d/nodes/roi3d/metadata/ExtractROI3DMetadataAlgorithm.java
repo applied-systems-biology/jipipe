@@ -36,7 +36,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Extract 3D ROI metadata as table", description = "Extracts the metadata (properties map) of each 3D ROI and writes them into a table")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Metadata")
 @AddJIPipeInputSlot(value = ROI3DListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class ExtractROI3DMetadataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalStringParameter nameColumn = new OptionalStringParameter("ROI Name", false);

@@ -37,7 +37,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
 @SetJIPipeDocumentation(name = "To numeric column", description = "Converts one or multiple columns into a numeric column")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class ColumnToNumericAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private StringQueryExpression filters = new StringQueryExpression();

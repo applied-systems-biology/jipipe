@@ -39,7 +39,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Remove annotation", description = "Removes annotations by name or value")
 @ConfigureJIPipeNode(menuPath = "Remove", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, name = "Output", create = true)
 public class RemoveAnnotationAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private AnnotationQueryExpression annotationExpression = new AnnotationQueryExpression("key == \"#Dataset\"");

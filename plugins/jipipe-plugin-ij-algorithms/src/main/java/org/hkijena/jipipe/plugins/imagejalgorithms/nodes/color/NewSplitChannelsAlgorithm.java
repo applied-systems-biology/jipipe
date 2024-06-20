@@ -49,7 +49,7 @@ import java.util.List;
         "This operation is applied for each 2D image slice.")
 @ConfigureJIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output")
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Output")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nColor", aliasName = "Split Channels")
 public class NewSplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

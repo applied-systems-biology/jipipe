@@ -32,7 +32,7 @@ import org.hkijena.jipipe.plugins.opencv.utils.OpenCvType;
 @SetJIPipeDocumentation(name = "OpenCV Convert Type", description = "Converts an OpenCV image to another type.")
 @ConfigureJIPipeNode(menuPath = "Convert", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = OpenCvImageData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = OpenCvImageData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = OpenCvImageData.class, name = "Output", create = true)
 public class ConvertTypeAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OpenCvType type = OpenCvType.CV_8U;

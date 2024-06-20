@@ -37,7 +37,7 @@ import java.util.Map;
         "Parameters are converted into JSON data.")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For parameters")
 @AddJIPipeInputSlot(value = ParametersData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ParametersData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ParametersData.class, name = "Output", create = true)
 public class ParametersToAnnotationsAlgorithm extends JIPipeParameterlessSimpleIteratingAlgorithm {
 
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;

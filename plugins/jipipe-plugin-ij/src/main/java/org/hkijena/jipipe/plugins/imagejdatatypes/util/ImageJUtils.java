@@ -1199,9 +1199,10 @@ public class ImageJUtils {
                     if (progressInfo.isCancelled())
                         return;
                     ImagePlus cube = extractCTStack(img, c, t);
-                    progressInfo.resolveAndLog("Frame/Channel", iterationIndex++, img.getNChannels() * img.getNFrames()).log("c=" + c + ", t=" + t);
-                    JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Frame/Channel", iterationIndex++, img.getNChannels() * img.getNFrames()).resolve("c=" + c + ", t=" + t);
+                    progressInfo.resolveAndLog("Frame/Channel", iterationIndex, img.getNChannels() * img.getNFrames()).log("c=" + c + ", t=" + t);
+                    JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Frame/Channel", iterationIndex, img.getNChannels() * img.getNFrames()).resolve("c=" + c + ", t=" + t);
                     function.accept(cube, new ImageSliceIndex(c, -1, t), stackProgress);
+                    ++iterationIndex;
                 }
             }
         } else {

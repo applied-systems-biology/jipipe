@@ -33,7 +33,7 @@ import org.hkijena.jipipe.plugins.parameters.library.util.LogicalOperation;
         " preprocess using a ROI splitter algorithm.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ROI3DListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ROI3DListData.class, name = "Output", create = true)
 public class ROI3DCalculatorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private LogicalOperation operation = LogicalOperation.LogicalAnd;

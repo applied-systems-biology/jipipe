@@ -27,7 +27,6 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
-import org.hkijena.jipipe.plugins.cellpose.parameters.PretrainedCellpose2Model;
 import org.hkijena.jipipe.plugins.omnipose.parameters.PretrainedOmnipose0Model;
 import org.hkijena.jipipe.plugins.omnipose.parameters.PretrainedOmnipose0ModelList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
@@ -37,7 +36,7 @@ import java.util.List;
 
 @SetJIPipeDocumentation(name = "Pretrained Omnipose 0.x model", description = "Imports one or a selection of pretrained Omnipose 0.x models")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@AddJIPipeOutputSlot(value = CellposeModelData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = CellposeModelData.class, name = "Output", create = true)
 public class ImportPretrainedOmnipose0ModelAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private PretrainedOmnipose0ModelList models = new PretrainedOmnipose0ModelList();

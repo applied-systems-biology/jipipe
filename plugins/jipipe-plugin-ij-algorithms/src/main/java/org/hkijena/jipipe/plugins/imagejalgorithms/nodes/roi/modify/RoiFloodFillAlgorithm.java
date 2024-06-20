@@ -41,7 +41,7 @@ import java.awt.*;
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, name = "ROI", create = true)
 public class RoiFloodFillAlgorithm extends JIPipeIteratingAlgorithm {
 
     private double tolerance = 0;

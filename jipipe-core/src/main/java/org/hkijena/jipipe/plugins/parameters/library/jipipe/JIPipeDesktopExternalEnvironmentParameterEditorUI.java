@@ -121,7 +121,7 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
                 menuItems.add(presetMenu);
             }
 
-            JMenuItem savePresetItem = new JMenuItem("Save as preset ...", UIUtils.getIconFromResources("actions/save.png"));
+            JMenuItem savePresetItem = new JMenuItem("Save as preset ...", UIUtils.getIconFromResources("actions/filesave.png"));
             savePresetItem.addActionListener(e -> saveAsPreset());
             menuItems.add(savePresetItem);
         }

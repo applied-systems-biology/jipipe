@@ -251,7 +251,7 @@ public class JIPipeDesktopDataBatchAssistantDataTableUI extends JIPipeDesktopWor
         exportStandardizedZIPSlotItem.addActionListener(e -> exportAsJIPipeSlotZIP());
         exportMenu.add(exportStandardizedZIPSlotItem);
 
-        JMenuItem exportByMetadataExporterItem = new JMenuItem("Data as files", UIUtils.getIconFromResources("actions/save.png"));
+        JMenuItem exportByMetadataExporterItem = new JMenuItem("Data as files", UIUtils.getIconFromResources("actions/filesave.png"));
         exportByMetadataExporterItem.addActionListener(e -> exportByMetadataExporter());
         exportMenu.add(exportByMetadataExporterItem);
     }

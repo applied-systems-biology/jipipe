@@ -130,7 +130,7 @@ public class JIPipeDesktopPlotEditorUI extends JIPipeDesktopWorkbenchPanel imple
         // Create plot reader
         plotReader = new JIPipeDesktopPlotDisplayComponent(this);
 
-        JButton saveButton = new JButton("Save", UIUtils.getIconFromResources("actions/save.png"));
+        JButton saveButton = new JButton("Save", UIUtils.getIconFromResources("actions/filesave.png"));
         saveButton.addActionListener(e -> savePlot());
         plotReader.getToolBar().add(saveButton, 0);
 

@@ -31,7 +31,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 
 @SetJIPipeDocumentation(name = "CLIJ2 Pull from GPU", description = "Converts a GPU image into a non-CLIJ image")
 @AddJIPipeInputSlot(name = "Input", value = CLIJImageData.class, create = true)
-@AddJIPipeOutputSlot(slotName = "Output", value = ImagePlusData.class, create = true)
+@AddJIPipeOutputSlot(name = "Output", value = ImagePlusData.class, create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "CLIJ")
 public class Clij2PullAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

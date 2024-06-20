@@ -58,8 +58,8 @@ import java.util.List;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Analyze")
 
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Mask", description = "The mask where particles are extracted from. White pixels are foreground.", create = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", description = "The extracted ROI", create = true)
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", create = true, description = "The measurements of the ROI")
+@AddJIPipeOutputSlot(value = ROIListData.class, name = "ROI", description = "The extracted ROI", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Measurements", create = true, description = "The measurements of the ROI")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Analyze Particles...")
 public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
     private double minParticleSize = 0;

@@ -46,8 +46,8 @@ import java.util.Map;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Segment")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Seeds", create = true, optional = true, description = "Optional seeds")
-@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Dams", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Labels", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Dams", create = true)
 public class Watershed3DSegmentationAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final SeedSegmentationSettings seedSegmentationSettings;

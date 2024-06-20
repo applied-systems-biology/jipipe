@@ -39,7 +39,7 @@ import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Export table", description = "Exports a results table to CSV/XLSX")
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = FileData.class, slotName = "Exported file", create = true)
+@AddJIPipeOutputSlot(value = FileData.class, name = "Exported file", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Tables")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nSave")
 public class ExportTableAlgorithm2 extends JIPipeIteratingAlgorithm {

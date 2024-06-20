@@ -34,7 +34,7 @@ import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataParame
 
 @SetJIPipeDocumentation(name = "Convert image", description = "Converts an image into another image type")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscale8UData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(menuPath = "Convert", nodeTypeCategory = ImagesNodeTypeCategory.class)
 public class ConvertImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

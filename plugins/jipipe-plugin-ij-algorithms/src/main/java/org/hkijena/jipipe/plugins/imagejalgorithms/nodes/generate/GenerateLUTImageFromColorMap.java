@@ -37,7 +37,7 @@ import java.awt.image.BufferedImage;
  */
 @SetJIPipeDocumentation(name = "Render color map", description = "Creates a new image that renders the contents of a color map as RGB image.")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
 public class GenerateLUTImageFromColorMap extends JIPipeSimpleIteratingAlgorithm {
 
     private int width = 256;

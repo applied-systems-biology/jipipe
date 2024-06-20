@@ -28,7 +28,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColor
 
 @SetJIPipeDocumentation(name = "Convert image to LAB", description = "Converts an image into LAB colors")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusColorLABData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusColorLABData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(menuPath = "Convert", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nType", aliasName = "LAB")
 public class ConvertImageToLABAlgorithm extends JIPipeSimpleIteratingAlgorithm {

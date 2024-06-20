@@ -49,10 +49,10 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Binary")
 @AddJIPipeCitation("Based on code by David Chatting, https://github.com/davidchatting/hough_lines/blob/master/HoughTransform.java")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Mask", description = "Mask that contains the segmented edges. ", create = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Lines", create = true, description = "The detected lines represented as ROI")
-@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", create = true, description = "Mask that contains the detected lines")
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Results", create = true, description = "The detected lines as table")
-@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Accumulator", create = true, description = "The Hough array")
+@AddJIPipeOutputSlot(value = ROIListData.class, name = "Lines", create = true, description = "The detected lines represented as ROI")
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Mask", create = true, description = "Mask that contains the detected lines")
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Results", create = true, description = "The detected lines as table")
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Accumulator", create = true, description = "The Hough array")
 public class LinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalIntegerParameter selectTopN = new OptionalIntegerParameter(true, 10);

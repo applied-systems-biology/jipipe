@@ -18,7 +18,7 @@ import org.hkijena.jipipe.plugins.opencv.utils.OpenCvDepth;
 
 @SetJIPipeDocumentation(name = "Generate Gaussian Kernel (OpenCV)", description = "Returns Gaussian filter coefficients. ")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@AddJIPipeOutputSlot(value = OpenCvImageData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = OpenCvImageData.class, name = "Output", create = true)
 public class GaussianKernelGenerator extends JIPipeSimpleIteratingAlgorithm {
     private int size = 31;
     private double sigma = 5;

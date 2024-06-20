@@ -62,10 +62,10 @@ public class CreateNewNodeByInfoDatabaseEntry implements JIPipeNodeDatabaseEntry
             }
         }
         for (AddJIPipeOutputSlot outputSlot : nodeInfo.getOutputSlots()) {
-            if (!StringUtils.isNullOrEmpty(outputSlot.slotName())) {
-                outputSlots.put(outputSlot.slotName(), new JIPipeDataSlotInfo(outputSlot.value(),
+            if (!StringUtils.isNullOrEmpty(outputSlot.name())) {
+                outputSlots.put(outputSlot.name(), new JIPipeDataSlotInfo(outputSlot.value(),
                         JIPipeSlotType.Output,
-                        outputSlot.slotName(),
+                        outputSlot.name(),
                         outputSlot.description()));
             }
         }

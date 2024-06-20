@@ -43,7 +43,7 @@ import java.lang.reflect.InvocationTargetException;
 @SetJIPipeDocumentation(name = "Render track scheme", description = "Renders the track scheme as image")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nVisualize")
 @AddJIPipeInputSlot(value = TrackCollectionData.class, name = "Tracks", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Track scheme", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Track scheme", create = true)
 public class TrackSchemeRendererNode extends JIPipeSimpleIteratingAlgorithm {
 
     public TrackSchemeRendererNode(JIPipeNodeInfo info) {

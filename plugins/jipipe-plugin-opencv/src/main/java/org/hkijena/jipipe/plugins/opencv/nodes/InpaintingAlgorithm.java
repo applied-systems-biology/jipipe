@@ -39,7 +39,7 @@ import org.hkijena.jipipe.plugins.opencv.utils.OpenCvType;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Restore")
 @AddJIPipeInputSlot(value = OpenCvImageData.class, name = "Input", create = true, description = "Input 8-bit, 16-bit unsigned or 32-bit float 1-channel or 8-bit 3-channel image. ")
 @AddJIPipeInputSlot(value = OpenCvImageData.class, name = "Mask", create = true, description = "Inpainting mask, 8-bit 1-channel image. Non-zero pixels indicate the area that needs to be inpainted.")
-@AddJIPipeOutputSlot(value = OpenCvImageData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = OpenCvImageData.class, name = "Output", create = true)
 @AddJIPipeCitation("https://docs.opencv.org/3.4/df/d3d/tutorial_py_inpainting.html")
 @AddJIPipeCitation("https://docs.opencv.org/4.x/dc/d2f/tutorial_xphoto_inpainting.html")
 public class InpaintingAlgorithm extends JIPipeIteratingAlgorithm {

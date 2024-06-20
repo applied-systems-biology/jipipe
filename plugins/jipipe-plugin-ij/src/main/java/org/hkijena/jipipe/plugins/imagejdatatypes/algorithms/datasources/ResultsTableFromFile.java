@@ -46,7 +46,7 @@ import java.util.*;
         "<li>XLSX</li>" +
         "</ul>")
 @AddJIPipeInputSlot(value = FileData.class, name = "Files", create = true)
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Results table", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Results table", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File", aliasName = "Open (CSV/XLSX)")
 public class ResultsTableFromFile extends JIPipeSimpleIteratingAlgorithm {

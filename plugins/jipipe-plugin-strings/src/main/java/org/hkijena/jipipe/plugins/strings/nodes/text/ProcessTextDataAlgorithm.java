@@ -34,7 +34,7 @@ import org.hkijena.jipipe.plugins.strings.StringData;
 @SetJIPipeDocumentation(name = "Process text (expression)", description = "Processes text with an expression.")
 @ConfigureJIPipeNode(menuPath = "Text", nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = StringData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = StringData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = StringData.class, name = "Output", create = true)
 public class ProcessTextDataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter textProcessor = new JIPipeExpressionParameter("text");

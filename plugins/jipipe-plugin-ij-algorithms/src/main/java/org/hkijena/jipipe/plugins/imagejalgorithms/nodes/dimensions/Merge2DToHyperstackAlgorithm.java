@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
         "The node can handle missing and negative slice positions due to a remapping procedure. Please ensure that there are no duplicate locations.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
 @AddJIPipeInputSlot(value = ImagePlus2DData.class, name = "Slices", description = "The 2D slices. Each one should be annotated by the Z, C, and T position", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Hyperstack", description = "The generated hyperstack", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Hyperstack", description = "The generated hyperstack", create = true)
 public class Merge2DToHyperstackAlgorithm extends JIPipeMergingAlgorithm {
     private JIPipeExpressionParameter sliceZLocation = new JIPipeExpressionParameter("Z");
     private JIPipeExpressionParameter sliceCLocation = new JIPipeExpressionParameter("C");

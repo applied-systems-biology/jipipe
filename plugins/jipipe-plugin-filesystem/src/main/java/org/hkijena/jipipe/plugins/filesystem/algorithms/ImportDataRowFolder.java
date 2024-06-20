@@ -49,7 +49,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Import data row folder", description = "Imports one data row from a standardized row folder. Please ensure to define the appropriate data type.")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = FolderData.class, name = "Data row folder", create = true)
-@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, name = "Data", create = true)
 public class ImportDataRowFolder extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeDataInfoRef dataType = new JIPipeDataInfoRef();

@@ -37,7 +37,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
 @AddJIPipeInputSlot(value = Filaments3DData.class, name = "Filaments", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Intensity", description = "The calibration is extracted from this image", create = true)
-@AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = Filaments3DData.class, name = "Output", create = true)
 public class SetVertexPhysicalSizeFromImageAlgorithm extends JIPipeIteratingAlgorithm {
     public SetVertexPhysicalSizeFromImageAlgorithm(JIPipeNodeInfo info) {
         super(info);

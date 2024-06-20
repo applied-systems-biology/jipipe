@@ -39,7 +39,7 @@ import java.awt.*;
 @SetJIPipeDocumentation(name = "Get pixels as matrix", description = "Extracts the pixel values of an image and puts them into a table in form of a matrix.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Convert")
 @AddJIPipeInputSlot(value = ImagePlus2DData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class ImageToMatrixAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
 

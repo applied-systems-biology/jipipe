@@ -39,7 +39,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.Optiona
 @SetJIPipeDocumentation(name = "Extract data annotations", description = "Extracts a data annotation.")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, name = "Output", create = true)
 public class ExtractDataAnnotation extends JIPipeSimpleIteratingAlgorithm {
 
     private StringQueryExpression annotationNameQuery = new StringQueryExpression();

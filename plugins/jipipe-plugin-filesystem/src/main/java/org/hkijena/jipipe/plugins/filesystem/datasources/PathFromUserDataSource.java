@@ -42,7 +42,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @SetJIPipeDocumentation(name = "Select path (interactive)", description = "Asks for a path (file/folder) interactively when the node is run.")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@AddJIPipeOutputSlot(value = PathData.class, slotName = "Path", create = true)
+@AddJIPipeOutputSlot(value = PathData.class, name = "Path", create = true)
 public class PathFromUserDataSource extends JIPipeSimpleIteratingAlgorithm {
 
     private PathIOMode pathIOMode = PathIOMode.Open;

@@ -248,7 +248,7 @@ public class FilamentsManagerPlugin3D extends JIPipeImageViewerPlugin3D implemen
 
             renderingBand.add(new JIPipeDesktopSmallButtonRibbonAction("More settings ...", "Opens more rendering settings", UIUtils.getIconFromResources("actions/configure.png"), this::openDrawingSettings));
             renderingBand.add(displayROIAsVolumeItem);
-            renderingBand.add(new JIPipeDesktopSmallButtonRibbonAction("Save settings", "Saves the current settings as default", UIUtils.getIconFromResources("actions/save.png"), this::saveDefaults));
+            renderingBand.add(new JIPipeDesktopSmallButtonRibbonAction("Save settings", "Saves the current settings as default", UIUtils.getIconFromResources("actions/filesave.png"), this::saveDefaults));
             renderingBand.add(new JIPipeDesktopSmallButtonRibbonAction("Rebuild", "Re-renders the ROI", UIUtils.getIconFromResources("actions/run-build.png"), this::rebuildRoiContentNow));
         }
 
@@ -288,7 +288,7 @@ public class FilamentsManagerPlugin3D extends JIPipeImageViewerPlugin3D implemen
             JIPipeDesktopRibbon.Band fileBand = importExportTask.addBand("File");
 
             fileBand.add(new JIPipeDesktopSmallButtonRibbonAction("Import from file", "Imports filaments from a *.roi or *.zip file", UIUtils.getIconFromResources("actions/fileopen.png"), this::importFilamentsFromFile));
-            fileBand.add(new JIPipeDesktopSmallButtonRibbonAction("Export to file", "Exports filaments to a *.zip file", UIUtils.getIconFromResources("actions/save.png"), this::exportFilamentsToFile));
+            fileBand.add(new JIPipeDesktopSmallButtonRibbonAction("Export to file", "Exports filaments to a *.zip file", UIUtils.getIconFromResources("actions/filesave.png"), this::exportFilamentsToFile));
         }
     }
 

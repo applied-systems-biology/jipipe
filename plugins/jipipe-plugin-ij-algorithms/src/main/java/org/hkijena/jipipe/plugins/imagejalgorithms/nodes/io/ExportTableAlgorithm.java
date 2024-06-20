@@ -43,7 +43,7 @@ import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Export table", description = "Deprecated. Please use the new node. Exports a results table to CSV/XLSX")
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = FileData.class, slotName = "Exported file", create = true)
+@AddJIPipeOutputSlot(value = FileData.class, name = "Exported file", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Tables")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nSave")
 @Deprecated

@@ -29,7 +29,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
 @SetJIPipeDocumentation(name = "Simplify filaments", description = "Removes all intermediate vertices (degree 2) and thus produces a graph that contains only the endpoints and junctions.")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Process")
 @AddJIPipeInputSlot(value = Filaments3DData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = Filaments3DData.class, name = "Output", create = true)
 public class SimplifyFilamentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public SimplifyFilamentsAlgorithm(JIPipeNodeInfo info) {

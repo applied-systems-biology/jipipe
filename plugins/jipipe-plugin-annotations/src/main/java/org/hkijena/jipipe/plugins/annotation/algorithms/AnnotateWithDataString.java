@@ -39,7 +39,7 @@ import org.hkijena.jipipe.utils.StringUtils;
         "contains this generated string.")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Data", create = true)
-@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Annotated data", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, name = "Annotated data", create = true)
 public class AnnotateWithDataString extends JIPipeSimpleIteratingAlgorithm {
 
     private String generatedAnnotation = "Data";

@@ -55,7 +55,7 @@ import java.util.stream.Collectors;
 @AddJIPipeCitation("JsonPath: https://goessner.net/articles/JsonPath/")
 @ConfigureJIPipeNode(menuPath = "JSON", nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = JsonData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class ExtractJsonDataAsTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private ParameterCollectionList entries = ParameterCollectionList.containingCollection(Entry.class);

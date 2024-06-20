@@ -51,7 +51,7 @@ import java.util.UUID;
  * Provides an input file
  */
 @SetJIPipeDocumentation(name = "File list", description = "Converts each provided path into file data.")
-@AddJIPipeOutputSlot(value = FileData.class, slotName = "Filenames", create = true)
+@AddJIPipeOutputSlot(value = FileData.class, name = "Filenames", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class FileListDataSource extends JIPipeAlgorithm {
 

@@ -49,7 +49,7 @@ import java.util.stream.Stream;
 
 
 @AddJIPipeInputSlot(value = FolderData.class, name = "Folders", create = true)
-@AddJIPipeOutputSlot(value = FolderData.class, slotName = "Subfolders", create = true)
+@AddJIPipeOutputSlot(value = FolderData.class, name = "Subfolders", create = true)
 
 
 public class ListSubfolders extends JIPipeSimpleIteratingAlgorithm {

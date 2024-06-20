@@ -30,7 +30,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
 @SetJIPipeDocumentation(name = "Extract OME ROI", description = "Extracts the ROI from an OME image")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Convert")
 @AddJIPipeInputSlot(value = OMEImageData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, name = "Output", create = true)
 public class ExtractOMEROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public ExtractOMEROIAlgorithm(JIPipeNodeInfo info) {
         super(info);

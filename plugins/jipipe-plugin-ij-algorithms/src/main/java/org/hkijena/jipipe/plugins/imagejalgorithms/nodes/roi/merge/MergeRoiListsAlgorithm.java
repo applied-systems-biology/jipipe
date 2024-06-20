@@ -35,7 +35,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
         "annotation columns empty.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Merge")
 @AddJIPipeInputSlot(value = ROIListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, name = "Output", create = true)
 public class MergeRoiListsAlgorithm extends JIPipeMergingAlgorithm {
 
     /**

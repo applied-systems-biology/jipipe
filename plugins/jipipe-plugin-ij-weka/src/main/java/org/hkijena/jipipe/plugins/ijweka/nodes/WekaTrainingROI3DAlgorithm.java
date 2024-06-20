@@ -59,7 +59,7 @@ import java.util.stream.Collectors;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
 @AddJIPipeInputSlot(value = ImagePlus3DData.class, name = "Image", description = "Image on which the training should be applied", create = true)
 @AddJIPipeInputSlot(value = ROIListData.class)
-@AddJIPipeOutputSlot(value = WekaModelData.class, slotName = "Trained model", description = "The model", create = true)
+@AddJIPipeOutputSlot(value = WekaModelData.class, name = "Trained model", description = "The model", create = true)
 public class WekaTrainingROI3DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final InputSlotMapParameterCollection classAssignment;

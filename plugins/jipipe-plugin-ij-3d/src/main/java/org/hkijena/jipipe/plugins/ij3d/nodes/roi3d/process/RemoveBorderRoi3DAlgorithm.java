@@ -33,7 +33,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ROI3DListData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true)
-@AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ROI3DListData.class, name = "Output", create = true)
 public class RemoveBorderRoi3DAlgorithm extends JIPipeIteratingAlgorithm {
     private boolean removeInX = true;
 

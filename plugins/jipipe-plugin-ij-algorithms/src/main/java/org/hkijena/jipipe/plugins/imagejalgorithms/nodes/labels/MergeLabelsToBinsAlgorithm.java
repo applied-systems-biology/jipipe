@@ -46,7 +46,7 @@ import java.util.List;
         " If the image has multiple slices, the algorithm is applied per slice.")
 @ConfigureJIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Output", create = true)
 public class MergeLabelsToBinsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private int numBins = 10;

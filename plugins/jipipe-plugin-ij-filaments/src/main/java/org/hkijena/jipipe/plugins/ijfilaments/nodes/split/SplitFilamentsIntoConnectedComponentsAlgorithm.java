@@ -41,7 +41,7 @@ import java.util.Set;
 @SetJIPipeDocumentation(name = "Split filaments into connected components", description = "Splits the filament graph into connected components and outputs one graph per component")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Split")
 @AddJIPipeInputSlot(value = Filaments3DData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = Filaments3DData.class, name = "Output", create = true)
 public class SplitFilamentsIntoConnectedComponentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalTextAnnotationNameParameter componentIdAnnotation = new OptionalTextAnnotationNameParameter("#Component", true);

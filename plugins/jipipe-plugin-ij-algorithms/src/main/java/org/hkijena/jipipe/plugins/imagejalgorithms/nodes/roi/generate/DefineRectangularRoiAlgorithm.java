@@ -35,7 +35,7 @@ import java.awt.*;
  */
 @SetJIPipeDocumentation(name = "Define rectangular ROI", description = "Manually defines rectangular ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
+@AddJIPipeOutputSlot(value = ROIListData.class, name = "Output")
 @Deprecated
 @LabelAsJIPipeHidden
 public class DefineRectangularRoiAlgorithm extends JIPipeAlgorithm {

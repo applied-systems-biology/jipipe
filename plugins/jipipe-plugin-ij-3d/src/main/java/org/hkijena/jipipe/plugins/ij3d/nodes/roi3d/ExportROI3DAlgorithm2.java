@@ -41,7 +41,7 @@ import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Export 3D ROI", description = "Exports a 3D ROI list into one or multiple ROI files")
 @AddJIPipeInputSlot(value = ROI3DListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = FileData.class, slotName = "Exported file", create = true)
+@AddJIPipeOutputSlot(value = FileData.class, name = "Exported file", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "ROI")
 public class ExportROI3DAlgorithm2 extends JIPipeIteratingAlgorithm {
 

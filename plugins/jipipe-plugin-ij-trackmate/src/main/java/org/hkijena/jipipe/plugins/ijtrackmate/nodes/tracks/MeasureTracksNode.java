@@ -30,7 +30,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 @SetJIPipeDocumentation(name = "Measure tracks", description = "Measures the tracks and outputs the results into a table")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nMeasure")
 @AddJIPipeInputSlot(value = TrackCollectionData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class MeasureTracksNode extends JIPipeSimpleIteratingAlgorithm {
 
     public MeasureTracksNode(JIPipeNodeInfo info) {

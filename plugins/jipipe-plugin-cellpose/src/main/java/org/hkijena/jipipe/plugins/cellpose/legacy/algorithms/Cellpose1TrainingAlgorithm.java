@@ -75,7 +75,7 @@ import java.util.stream.Collectors;
 @AddJIPipeInputSlot(value = ImagePlus3DData.class, name = "Training data", create = true)
 @AddJIPipeInputSlot(value = ImagePlus3DData.class, name = "Test data", create = true, optional = true)
 @AddJIPipeInputSlot(value = LegacyCellposeModelData.class)
-@AddJIPipeOutputSlot(value = LegacyCellposeModelData.class, slotName = "Model", create = true)
+@AddJIPipeOutputSlot(value = LegacyCellposeModelData.class, name = "Model", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 @LabelAsJIPipeHidden
 public class Cellpose1TrainingAlgorithm extends JIPipeSingleIterationAlgorithm {

@@ -38,7 +38,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 @SetJIPipeDocumentation(name = "Unique annotation", description = "Generates a unique annotation for each row based on its index. The annotations will have the format (Base name)[(row index)]")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Data", create = true)
-@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Annotated data", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, name = "Annotated data", create = true)
 public class GenerateUniqueAnnotation extends JIPipeSimpleIteratingAlgorithm {
 
     private String generatedAnnotation = "#uid";

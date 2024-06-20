@@ -31,7 +31,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.parameters.OMEExporterSettings
 @SetJIPipeDocumentation(name = "Setup Bio-Formats exporter", description = "Sets the settings of an OME image that will be used to write the image into an *.ome.tif file.")
 @ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
 @AddJIPipeInputSlot(value = OMEImageData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = OMEImageData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = OMEImageData.class, name = "Output", create = true)
 public class SetBioFormatsExporterSettings extends JIPipeSimpleIteratingAlgorithm {
 
     private OMEExporterSettings exporterSettings = new OMEExporterSettings();

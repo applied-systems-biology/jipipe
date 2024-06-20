@@ -49,7 +49,7 @@ import java.util.Arrays;
         " of the next similar pixel in polar coordinates (default) or cartesian coordinates.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Optical flow")
 @AddJIPipeInputSlot(value = ImagePlus3DGreyscale32FData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ImagePlus4DGreyscale32FData.class, slotName = "Vector field", create = true)
+@AddJIPipeOutputSlot(value = ImagePlus4DGreyscale32FData.class, name = "Vector field", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nOptic Flow", aliasName = "Integral Block PMCC")
 public class PMCCBlockFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

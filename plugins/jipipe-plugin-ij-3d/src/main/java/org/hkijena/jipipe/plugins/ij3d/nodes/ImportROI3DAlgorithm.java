@@ -32,7 +32,7 @@ import java.nio.file.Path;
 @SetJIPipeDocumentation(name = "Import 3D ROI", description = "Imports a 3D ROI list from a *.zip file")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = FileData.class, name = "Input", create = true, description = "A *.zip file")
-@AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ROI3DListData.class, name = "Output", create = true)
 public class ImportROI3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public ImportROI3DAlgorithm(JIPipeNodeInfo info) {

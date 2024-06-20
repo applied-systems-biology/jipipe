@@ -52,7 +52,7 @@ import java.nio.file.Path;
         " If the variable is set to null or empty, the data is discarded.")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Filter")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input")
-@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output")
+@AddJIPipeOutputSlot(value = JIPipeData.class, name = "Output")
 public class SplitByAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
 
     private PythonInterpreter pythonInterpreter;

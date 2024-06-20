@@ -49,7 +49,7 @@ import java.util.Set;
 @SetJIPipeDocumentation(name = "Annotation table to paths", description = "Converts an annotation table to path data. If available, annotation are added to the output.")
 @ConfigureJIPipeNode(menuPath = "Convert", nodeTypeCategory = TableNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = AnnotationTableData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = PathData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = PathData.class, name = "Output", create = true)
 public class AnnotationTableToPaths extends JIPipeSimpleIteratingAlgorithm {
 
     private TableColumnSourceExpressionParameter column = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"data\"");

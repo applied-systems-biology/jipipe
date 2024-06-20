@@ -59,7 +59,7 @@ import java.util.List;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Key", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Value", create = true)
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Histogram", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Histogram", create = true)
 public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
     private String outputKeyColumn = "key";
 

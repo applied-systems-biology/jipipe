@@ -35,7 +35,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.Optiona
 @SetJIPipeDocumentation(name = "Convert filaments to mask", description = "Converts filaments into a 3D ROI")
 @AddJIPipeInputSlot(value = Filaments3DData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true, description = "Optional reference image that determines the size of the mask")
-@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Convert")
 public class ConvertFilamentsToMaskAlgorithm extends JIPipeIteratingAlgorithm {
     private boolean withEdges = true;

@@ -35,7 +35,7 @@ import java.util.List;
 
 @SetJIPipeDocumentation(name = "Annotate with data table properties", description = "Annotates data table data with properties (e.g., the size)")
 @AddJIPipeInputSlot(value = JIPipeDataTable.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = JIPipeDataTable.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = JIPipeDataTable.class, name = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For data tables")
 public class AnnotateWithDataTableProperties extends JIPipeSimpleIteratingAlgorithm {
 

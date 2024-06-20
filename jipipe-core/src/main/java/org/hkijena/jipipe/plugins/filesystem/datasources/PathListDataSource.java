@@ -52,7 +52,7 @@ import java.util.UUID;
  * Provides an input folder
  */
 @SetJIPipeDocumentation(name = "Path list", description = "Converts each provided path into path data.")
-@AddJIPipeOutputSlot(value = PathData.class, slotName = "Paths", create = true)
+@AddJIPipeOutputSlot(value = PathData.class, name = "Paths", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class PathListDataSource extends JIPipeAlgorithm {
 

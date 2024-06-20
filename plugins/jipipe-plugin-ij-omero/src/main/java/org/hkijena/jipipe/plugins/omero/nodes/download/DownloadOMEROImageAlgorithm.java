@@ -65,7 +65,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Download image from OMERO", description = "Imports an image from OMERO into ImageJ")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = OMEROImageReferenceData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = OMEImageData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = OMEImageData.class, name = "Output", create = true)
 public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm implements OMEROCredentialAccessNode {
     private final ImageImportParameters imageImportParameters;
     private final OMEROKeyValuePairToAnnotationImporter keyValuePairToAnnotationImporter;

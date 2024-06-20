@@ -43,7 +43,7 @@ import java.io.IOException;
         "in a space-efficient way to reduce the file sizes.")
 @ConfigureJIPipeNode(menuPath = "Meta run", nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = FileData.class, name = "Project file", create = true)
-@AddJIPipeOutputSlot(value = ImagePlus2DColorRGBData.class, slotName = "Render", create = true)
+@AddJIPipeOutputSlot(value = ImagePlus2DColorRGBData.class, name = "Render", create = true)
 public class RenderJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final RenderPipelineRunSettings settings;

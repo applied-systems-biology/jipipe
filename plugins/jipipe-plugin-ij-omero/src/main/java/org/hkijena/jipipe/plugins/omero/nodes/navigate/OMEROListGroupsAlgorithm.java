@@ -46,7 +46,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SetJIPipeDocumentation(name = "List OMERO groups", description = "Returns the ID(s) of groups(s) according to search criteria.")
-@AddJIPipeOutputSlot(value = OMEROGroupReferenceData.class, slotName = "Groups", create = true)
+@AddJIPipeOutputSlot(value = OMEROGroupReferenceData.class, name = "Groups", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = FileSystemNodeTypeCategory.class, menuPath = "OMERO")
 public class OMEROListGroupsAlgorithm extends JIPipeSingleIterationAlgorithm implements OMEROCredentialAccessNode {
 

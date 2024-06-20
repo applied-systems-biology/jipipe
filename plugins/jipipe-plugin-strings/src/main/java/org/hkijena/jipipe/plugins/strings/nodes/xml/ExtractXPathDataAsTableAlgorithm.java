@@ -54,7 +54,7 @@ import java.util.Map;
 @AddJIPipeCitation("XPath: https://www.w3schools.com/xml/xpath_intro.asp")
 @ConfigureJIPipeNode(menuPath = "XML", nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = XMLData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class ExtractXPathDataAsTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private ParameterCollectionList entries = ParameterCollectionList.containingCollection(Entry.class);
     private TableColumnNormalization columnNormalization = TableColumnNormalization.ZeroOrEmpty;

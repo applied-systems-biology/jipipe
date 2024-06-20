@@ -40,7 +40,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Split labels into individual images", description = "Splits all labels from a labels image into their own image. Can be reverted with Image calculator 2D (merge).")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Labels")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Output", create = true)
 public class SeparateLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalTextAnnotationNameParameter labelIndexAnnotation = new OptionalTextAnnotationNameParameter("Label", true);

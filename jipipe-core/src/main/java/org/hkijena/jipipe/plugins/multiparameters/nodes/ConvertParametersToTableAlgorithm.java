@@ -29,7 +29,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
 @SetJIPipeDocumentation(name = "Convert parameters to table", description = "Converts parameter data into da table")
 @AddJIPipeInputSlot(name = "Input", value = ParametersData.class, create = true)
-@AddJIPipeOutputSlot(slotName = "Output", value = ResultsTableData.class, create = true)
+@AddJIPipeOutputSlot(name = "Output", value = ResultsTableData.class, create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Convert")
 public class ConvertParametersToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public ConvertParametersToTableAlgorithm(JIPipeNodeInfo info) {

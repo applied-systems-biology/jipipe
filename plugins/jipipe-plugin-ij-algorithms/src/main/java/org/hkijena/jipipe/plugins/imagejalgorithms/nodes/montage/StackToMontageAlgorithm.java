@@ -46,7 +46,7 @@ import java.awt.*;
 @SetJIPipeDocumentation(name = "Stack to montage", description = "Converts an image stack into a montage. Deprecated. Use the algorithm with the same name.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Montage")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ImagePlus2DData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ImagePlus2DData.class, name = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Make Montage... (of stacks)")
 @LabelAsJIPipeHidden
 @Deprecated

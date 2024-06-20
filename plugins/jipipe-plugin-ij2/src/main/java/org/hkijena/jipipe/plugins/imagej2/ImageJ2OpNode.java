@@ -134,7 +134,7 @@ public class ImageJ2OpNode extends JIPipeIteratingAlgorithm {
                 entry.getValue().transferToJIPipe(this, iterationStep, moduleOutputParameters, entry.getKey(), moduleInstance, progressInfo);
             }
             if (getModuleNodeInfo().hasParameterDataOutputSlot()) {
-                iterationStep.addOutputData(getModuleNodeInfo().getOrCreateParameterDataOutputSlot().slotName(), moduleOutputParameters, progressInfo);
+                iterationStep.addOutputData(getModuleNodeInfo().getOrCreateParameterDataOutputSlot().name(), moduleOutputParameters, progressInfo);
             }
         } finally {
             for (Map.Entry<ModuleItem<?>, Object> entry : moduleItemDefaults.entrySet()) {

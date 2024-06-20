@@ -47,7 +47,7 @@ import java.util.*;
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Data", create = true)
 @AddJIPipeInputSlot(value = AnnotationTableData.class, name = "Annotations", create = true)
-@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Annotated data", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, name = "Annotated data", create = true)
 public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
 
     private JIPipeIteratingAlgorithmIterationStepGenerationSettings tableMergeSettings = new JIPipeIteratingAlgorithmIterationStepGenerationSettings();

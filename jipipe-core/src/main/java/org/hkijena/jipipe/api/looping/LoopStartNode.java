@@ -45,7 +45,7 @@ import java.util.List;
         "You can also explicitly insert loop end nodes to collect results.")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Data")
-@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Data")
+@AddJIPipeOutputSlot(value = JIPipeData.class, name = "Data")
 @LabelAsJIPipeHidden
 @Deprecated
 public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeIterationStepAlgorithm {

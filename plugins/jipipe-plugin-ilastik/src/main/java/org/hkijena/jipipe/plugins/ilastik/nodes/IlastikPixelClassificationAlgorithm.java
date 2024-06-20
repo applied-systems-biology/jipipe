@@ -75,12 +75,12 @@ import static org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils.*;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Ilastik")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true, description = "The image(s) to classify.")
 @AddJIPipeInputSlot(value = IlastikModelData.class, name = "Project", create = true, description = "The Ilastik project. Must support pixel classification.")
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Probabilities", description = "Multi-channel image where pixel values represent the probability that that pixel belongs to the class represented by that channel")
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Simple Segmentation", description = "A single-channel image where the (integer) pixel values indicate the class to which a pixel belongs. " +
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Probabilities", description = "Multi-channel image where pixel values represent the probability that that pixel belongs to the class represented by that channel")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Simple Segmentation", description = "A single-channel image where the (integer) pixel values indicate the class to which a pixel belongs. " +
         "For this image, every pixel with the same value should belong to the same class of pixels")
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Uncertainty", description = "Image where pixel intensity is proportional to the uncertainty found when trying to classify that pixel")
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Features", description = "Multi-channel image where each channel represents one of the computed pixel features")
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Labels", description = "Image representing the users’ manually created annotations")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Uncertainty", description = "Image where pixel intensity is proportional to the uncertainty found when trying to classify that pixel")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Features", description = "Multi-channel image where each channel represents one of the computed pixel features")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Labels", description = "Image representing the users’ manually created annotations")
 public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAlgorithm implements IlastikEnvironmentAccessNode {
 
     public static final String PROJECT_TYPE = "PixelClassification";
@@ -224,8 +224,8 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
                 IlastikEnvironment environment = getConfiguredIlastikEnvironment();
                 IlastikPlugin.runIlastik(environment,
                         args,
-                        exportSourceProgress.resolve("Run Ilastik"),
-                        false);
+                        false, exportSourceProgress.resolve("Run Ilastik")
+                );
 
                 // Extract results
                 for (int imageIndex = 0; imageIndex < exportedImagePaths.size(); imageIndex++) {

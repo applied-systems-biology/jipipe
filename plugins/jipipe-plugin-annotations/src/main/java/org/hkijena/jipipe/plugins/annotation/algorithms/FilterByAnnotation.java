@@ -35,7 +35,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Filter by annotation", description = "Filters data based on the annotation value.")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Filter")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, name = "Output", create = true)
 public class FilterByAnnotation extends JIPipeAlgorithm {
 
     private AnnotationFilterExpression filter = new AnnotationFilterExpression();

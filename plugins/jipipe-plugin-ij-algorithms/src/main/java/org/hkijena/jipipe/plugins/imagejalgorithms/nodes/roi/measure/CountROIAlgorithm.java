@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
         "All output table column is named according to the slot name of the incoming ROI list." +
         "This node can merge ROI lists according to their annotations. The sum of the counts within the same data batch are generated.")
 @AddJIPipeInputSlot(value = ROIListData.class)
-@AddJIPipeOutputSlot(value = AnnotationTableData.class, slotName = "Counts")
+@AddJIPipeOutputSlot(value = AnnotationTableData.class, name = "Counts")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")
 public class CountROIAlgorithm extends JIPipeMergingAlgorithm {
 

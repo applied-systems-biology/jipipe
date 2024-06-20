@@ -43,7 +43,7 @@ import java.util.*;
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Merge")
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Target", create = true)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Source", create = true)
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorithm {
 
     private TableColumnNormalization rowNormalization = TableColumnNormalization.ZeroOrEmpty;

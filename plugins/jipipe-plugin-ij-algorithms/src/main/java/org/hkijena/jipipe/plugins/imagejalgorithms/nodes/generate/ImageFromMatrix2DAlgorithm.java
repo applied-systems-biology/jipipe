@@ -41,7 +41,7 @@ import org.hkijena.jipipe.plugins.parameters.library.matrix.Matrix2DFloat;
  */
 @SetJIPipeDocumentation(name = "Image from matrix", description = "Creates an image from a matrix")
 @ConfigureJIPipeNode(menuPath = "Convolve", nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
 public class ImageFromMatrix2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Matrix2DFloat matrix = new Matrix2DFloat();

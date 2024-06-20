@@ -44,7 +44,7 @@ import java.util.Objects;
  * Provides an input file
  */
 @SetJIPipeDocumentation(name = "File", description = "Converts the path parameter into file data.")
-@AddJIPipeOutputSlot(value = FileData.class, slotName = "Filename", create = true)
+@AddJIPipeOutputSlot(value = FileData.class, name = "Filename", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class FileDataSource extends JIPipeAlgorithm {
 

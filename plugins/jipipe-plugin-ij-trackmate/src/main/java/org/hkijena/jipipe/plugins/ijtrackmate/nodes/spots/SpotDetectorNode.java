@@ -41,7 +41,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", description = "The image where the spots should be detected", create = true)
 @AddJIPipeInputSlot(value = SpotDetectorData.class, name = "Spot detector", description = "The algorithm that detects the spots", create = true)
-@AddJIPipeOutputSlot(value = SpotsCollectionData.class, slotName = "Spots", description = "The detected spots", create = true)
+@AddJIPipeOutputSlot(value = SpotsCollectionData.class, name = "Spots", description = "The detected spots", create = true)
 public class SpotDetectorNode extends JIPipeIteratingAlgorithm {
 
     private int numThreads = 1;

@@ -78,14 +78,14 @@ import static org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils.*;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Ilastik")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true, description = "The image(s) to classify. Requires a data annotation that contains the segmentation image.")
 @AddJIPipeInputSlot(value = IlastikModelData.class, name = "Project", create = true, description = "The Ilastik project. Must support pixel classification.")
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Object Predictions", description = "A label image of the object class predictions")
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Object Probabilities", description = "A multi-channel image volume of object prediction probabilities instead of a label image (one channel for each prediction class)")
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Blockwise Object Predictions", description = "A label image of the object class predictions. " +
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Object Predictions", description = "A label image of the object class predictions")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Object Probabilities", description = "A multi-channel image volume of object prediction probabilities instead of a label image (one channel for each prediction class)")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Blockwise Object Predictions", description = "A label image of the object class predictions. " +
         "The image will be processed in independent blocks. To configure the block size and halo, use the Ilastik GUI.")
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Blockwise Object Probabilities", description = "A multi-channel image volume of object prediction probabilities instead of a label image (one channel for each prediction class) " +
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Blockwise Object Probabilities", description = "A multi-channel image volume of object prediction probabilities instead of a label image (one channel for each prediction class) " +
         "The image will be processed in independent blocks. To configure the block size and halo, use the Ilastik GUI.")
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Pixel Probabilities", description = "Pixel prediction images of the pixel classification part of that workflow")
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Features", description = "Table of the computed object features that were used during classification, indexed by object id")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Pixel Probabilities", description = "Pixel prediction images of the pixel classification part of that workflow")
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Features", description = "Table of the computed object features that were used during classification, indexed by object id")
 public class IlastikPredictionMapsObjectClassificationAlgorithm extends JIPipeSingleIterationAlgorithm implements IlastikEnvironmentAccessNode {
 
     public static final List<String> PROJECT_TYPES = Collections.singletonList("ObjectClassification");
@@ -271,8 +271,8 @@ public class IlastikPredictionMapsObjectClassificationAlgorithm extends JIPipeSi
                     // Run ilastik
                     IlastikPlugin.runIlastik(getConfiguredIlastikEnvironment(),
                             args,
-                            imageProgress.resolve("Run Ilastik"),
-                            false);
+                            false, imageProgress.resolve("Run Ilastik")
+                    );
 
 
                     List<JIPipeTextAnnotation> textAnnotations = new ArrayList<>(imageInputSlot.getTextAnnotations(imageIndex));

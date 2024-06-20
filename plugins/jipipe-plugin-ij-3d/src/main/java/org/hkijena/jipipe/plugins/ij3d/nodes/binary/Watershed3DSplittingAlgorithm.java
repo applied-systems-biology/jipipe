@@ -53,8 +53,8 @@ import java.util.Map;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Binary")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Seeds", create = true, optional = true, description = "Optional seeds")
-@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Distance transform", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Labels", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Distance transform", create = true)
 public class Watershed3DSplittingAlgorithm extends JIPipeIteratingAlgorithm {
 
     private int radius = 2;

@@ -43,7 +43,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Annotate data with table values", description = "Annotates the incoming data with values from the input table")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Data", description = "The data that should be annotated", create = true)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Table", description = "The table that contains the data", create = true)
-@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Annotated data", description = "The annotated data", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, name = "Annotated data", description = "The annotated data", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
 public class AnnotateDataWithTableValues extends JIPipeIteratingAlgorithm {
 

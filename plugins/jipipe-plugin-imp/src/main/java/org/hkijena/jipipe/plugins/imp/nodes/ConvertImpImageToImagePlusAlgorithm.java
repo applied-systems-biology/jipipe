@@ -41,7 +41,7 @@ import java.awt.image.BufferedImage;
         "an ImageJ1 image")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "IMP\nConvert")
 @AddJIPipeInputSlot(value = ImpImageData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
 public class ConvertImpImageToImagePlusAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private boolean createCheckerboard = true;
     private int checkerboardSize = 10;

@@ -49,7 +49,7 @@ import java.util.List;
         "The three available channels can be addressed individually.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Math")
 @AddJIPipeInputSlot(value = ImagePlusColorData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusColorData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusColorData.class, name = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nMath", aliasName = "Macro... (per pixel, color)")
 public class ApplyColorMathExpression2DExpression extends JIPipeSimpleIteratingAlgorithm {
 

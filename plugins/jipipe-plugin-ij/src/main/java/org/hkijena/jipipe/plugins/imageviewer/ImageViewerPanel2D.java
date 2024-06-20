@@ -456,7 +456,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
         exportMenuButton.setToolTipText("Export currently displayed image");
         JPopupMenu exportMenu = new JPopupMenu();
 
-        JMenuItem saveRawImageItem = new JMenuItem("Export raw image to *.tif", UIUtils.getIconFromResources("actions/save.png"));
+        JMenuItem saveRawImageItem = new JMenuItem("Export raw image to *.tif", UIUtils.getIconFromResources("actions/filesave.png"));
         saveRawImageItem.addActionListener(e -> saveRawImage());
         exportMenu.add(saveRawImageItem);
 

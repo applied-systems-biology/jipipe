@@ -29,7 +29,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 @SetJIPipeDocumentation(name = "Combine channel slices to RGB", description = "If the input image has 3 channel slices, those channels are merged into one RGB slice. Useful if you imported images via Bio-Formats or other importers that automatically split channels.")
 @ConfigureJIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nColor")
 public class CombineChannelsToRGBAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

@@ -45,7 +45,7 @@ import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 @SetJIPipeDocumentation(name = "Generate image from math expression", description = "Applies a mathematical operation to each pixel. The value is written into the image.")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Annotations", create = true, optional = true, description = "Optional annotations that can be referenced in the expression")
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
 public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter function = new JIPipeExpressionParameter("x + y");

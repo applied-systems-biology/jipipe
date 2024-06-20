@@ -40,7 +40,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.list.LongList;
 import java.util.List;
 
 @SetJIPipeDocumentation(name = "Define project IDs", description = "Manually defines OMERO project ids.")
-@AddJIPipeOutputSlot(value = OMEROProjectReferenceData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = OMEROProjectReferenceData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class, menuPath = "OMERO")
 public class OMEROProjectReferenceDataSource extends JIPipeSimpleIteratingAlgorithm implements OMEROCredentialAccessNode {
 

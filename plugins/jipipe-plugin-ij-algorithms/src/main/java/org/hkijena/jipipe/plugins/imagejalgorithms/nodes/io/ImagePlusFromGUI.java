@@ -42,7 +42,7 @@ import java.util.List;
  * Imports {@link org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData} from the GUI
  */
 @SetJIPipeDocumentation(name = "Image from ImageJ", description = "Imports one or multiple active ImageJ image windows into JIPipe")
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nImport")
 public class ImagePlusFromGUI extends JIPipeSimpleIteratingAlgorithm {

@@ -158,7 +158,7 @@ public class SpotsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
             visualizationBand.add(new JIPipeDesktopRibbon.Action(new JPanel(), 1, new Insets(2, 2, 2, 2)));
 
             visualizationBand.add(new JIPipeDesktopSmallButtonRibbonAction("More settings ...", "Opens a dialog where all available visualization settings can be changed", UIUtils.getIconFromResources("actions/configure.png"), this::openDrawingSettings));
-            visualizationBand.add(new JIPipeDesktopSmallButtonRibbonAction("Save settings", "Saves the current settings as default", UIUtils.getIconFromResources("actions/save.png"), this::saveDefaults));
+            visualizationBand.add(new JIPipeDesktopSmallButtonRibbonAction("Save settings", "Saves the current settings as default", UIUtils.getIconFromResources("actions/filesave.png"), this::saveDefaults));
         }
         {
             JIPipeDesktopRibbon.Task selectionTask = ribbon.addTask("Selection");
@@ -185,7 +185,7 @@ public class SpotsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
             JIPipeDesktopRibbon.Band fileBand = importExportTask.addBand("File");
 
             fileBand.add(new JIPipeDesktopSmallButtonRibbonAction("Import from file", "Imports spots from a file", UIUtils.getIconFromResources("actions/fileopen.png"), this::importSpotsFromFile));
-            fileBand.add(new JIPipeDesktopSmallButtonRibbonAction("Export to file", "Exports ROI to a file", UIUtils.getIconFromResources("actions/save.png"), this::exportSpotsToFile));
+            fileBand.add(new JIPipeDesktopSmallButtonRibbonAction("Export to file", "Exports ROI to a file", UIUtils.getIconFromResources("actions/filesave.png"), this::exportSpotsToFile));
         }
     }
 

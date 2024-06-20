@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
         "that is ignored while defining the groups.")
 @ConfigureJIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlus2DData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ImagePlus3DData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ImagePlus3DData.class, name = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Images to Stack")
 public class CreateStackAlgorithm extends JIPipeMergingAlgorithm {
 

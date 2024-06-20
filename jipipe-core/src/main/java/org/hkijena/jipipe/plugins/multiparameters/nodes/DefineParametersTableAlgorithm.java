@@ -30,14 +30,13 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterKeyPi
 import org.hkijena.jipipe.plugins.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.plugins.parameters.library.table.ParameterTable;
 
-import javax.swing.*;
 import java.util.List;
 
 /**
  * Generates {@link org.hkijena.jipipe.plugins.multiparameters.datatypes.ParametersData} objects
  */
 @SetJIPipeDocumentation(name = "Define multiple parameters", description = "Defines algorithm parameters that can be consumed by a multi-parameter algorithm")
-@AddJIPipeOutputSlot(value = ParametersData.class, slotName = "Parameters", create = true)
+@AddJIPipeOutputSlot(value = ParametersData.class, name = "Parameters", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class DefineParametersTableAlgorithm extends JIPipeAlgorithm {
 

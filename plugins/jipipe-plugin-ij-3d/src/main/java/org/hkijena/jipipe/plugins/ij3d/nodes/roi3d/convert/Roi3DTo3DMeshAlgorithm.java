@@ -38,7 +38,7 @@ import java.awt.*;
 @SetJIPipeDocumentation(name = "3D ROI to 3D scene", description = "Converts 3D ROI into a 3D scene.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
 @AddJIPipeInputSlot(value = ROI3DListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = Scene3DData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = Scene3DData.class, name = "Output", create = true)
 public class Roi3DTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private String meshNamePrefix;

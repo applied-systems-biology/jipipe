@@ -50,7 +50,7 @@ import org.hkijena.jipipe.utils.ReflectionUtils;
 @SetJIPipeDocumentation(name = "Convert table to image", description = "Converts a table of pixel information into an image")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Convert")
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
 public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final JIPipeDynamicParameterCollection columnAssignment;

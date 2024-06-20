@@ -36,7 +36,7 @@ import java.util.Set;
 @SetJIPipeDocumentation(name = "Erode end vertices", description = "Iteratively removes vertices that have a degree of at most 1")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
 @AddJIPipeInputSlot(value = Filaments3DData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = Filaments3DData.class, name = "Output", create = true)
 public class ErodeEndVerticesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final VertexMaskParameter vertexMask;

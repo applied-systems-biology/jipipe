@@ -41,7 +41,7 @@ import java.util.Map;
 @ConfigureJIPipeNode(menuPath = "Transform", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
 @AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Cropped", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Cropped", create = true)
 public class CropToRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     private boolean cropXY = true;

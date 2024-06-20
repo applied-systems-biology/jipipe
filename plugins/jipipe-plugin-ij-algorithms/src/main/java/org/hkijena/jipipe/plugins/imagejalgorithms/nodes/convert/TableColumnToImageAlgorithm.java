@@ -36,7 +36,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
 @SetJIPipeDocumentation(name = "Table column to image", description = "Converts a selected numeric table column into an image with 1px width and a height based on the number of rows. Opposite operation to 'Image to table column'.")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Convert")
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ImagePlus2DGreyscale32FData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ImagePlus2DGreyscale32FData.class, name = "Output", create = true)
 public class TableColumnToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private TableColumnSourceExpressionParameter selectedColumn = new TableColumnSourceExpressionParameter();

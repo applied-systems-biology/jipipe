@@ -54,7 +54,7 @@ import java.util.*;
         "This node has similar functionality to the 'Combine stacks' node. " +
         "If no order (ascending) is given for each input, the order of input images is determined by the order in the slot list.")
 @ConfigureJIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nHyperstacks")
 public class StackToDimensionMerger2Algorithm extends JIPipeIteratingAlgorithm {
 

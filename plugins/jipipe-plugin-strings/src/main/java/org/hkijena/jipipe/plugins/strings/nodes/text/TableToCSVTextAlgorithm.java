@@ -34,7 +34,7 @@ import java.nio.file.Path;
 @SetJIPipeDocumentation(name = "Convert table to CSV text", description = "Converts a table to a text in CSV format")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Convert")
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = StringData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = StringData.class, name = "Output", create = true)
 public class TableToCSVTextAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public TableToCSVTextAlgorithm(JIPipeNodeInfo info) {
         super(info);

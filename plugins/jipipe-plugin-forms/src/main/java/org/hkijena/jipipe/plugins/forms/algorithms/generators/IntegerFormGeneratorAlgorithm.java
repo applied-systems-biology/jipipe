@@ -25,7 +25,7 @@ import org.hkijena.jipipe.plugins.forms.datatypes.IntegerFormData;
 
 @SetJIPipeDocumentation(name = "Integer input form", description = "Creates a integer input form. ")
 @AddJIPipeInputSlot(value = FormData.class, name = "Existing")
-@AddJIPipeOutputSlot(value = FormData.class, slotName = "Combined")
+@AddJIPipeOutputSlot(value = FormData.class, name = "Combined")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class IntegerFormGeneratorAlgorithm extends SimpleFormGeneratorAlgorithm {
 

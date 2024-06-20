@@ -38,7 +38,7 @@ import java.util.HashSet;
         "the items according to the index range. You can use this to remove duplicates. Annotations are not modified (merged annotations are not copied into " +
         "the output).")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Filter")
 public class IterationStepSlicer extends JIPipeMergingAlgorithm {
 

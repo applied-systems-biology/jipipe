@@ -29,7 +29,7 @@ import org.hkijena.jipipe.plugins.omero.datatypes.OMEROProjectReferenceData;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.LongList;
 
 @SetJIPipeDocumentation(name = "Define group IDs", description = "Manually defines OMERO group ids.")
-@AddJIPipeOutputSlot(value = OMEROGroupReferenceData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = OMEROGroupReferenceData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class, menuPath = "OMERO")
 public class OMEROGroupReferenceDataSource extends JIPipeSimpleIteratingAlgorithm {
 

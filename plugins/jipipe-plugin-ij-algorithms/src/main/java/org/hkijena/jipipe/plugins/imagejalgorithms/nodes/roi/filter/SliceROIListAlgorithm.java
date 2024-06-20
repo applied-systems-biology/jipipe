@@ -40,7 +40,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Slice ROI list", description = "Extracts a sublist of ROI from the input")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
 @AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, name = "Output", create = true)
 public class SliceROIListAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private IntegerRange selectedIndices = new IntegerRange();

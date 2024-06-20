@@ -37,7 +37,7 @@ public @interface AddJIPipeOutputSlot {
      *
      * @return slot name
      */
-    String slotName() default "";
+    String name() default "";
 
     /**
      * An optional description.

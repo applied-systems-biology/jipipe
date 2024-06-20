@@ -36,7 +36,7 @@ import java.awt.geom.Point2D;
 @SetJIPipeDocumentation(name = "Convert to centroid", description = "Converts the ROI into point ROI that are the centroids of their inputs")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ROIListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, name = "Output", create = true)
 public class RoiToCentroidAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
 

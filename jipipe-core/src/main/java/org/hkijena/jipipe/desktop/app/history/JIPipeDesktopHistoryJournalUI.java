@@ -63,7 +63,7 @@ public class JIPipeDesktopHistoryJournalUI extends JPanel implements JIPipeHisto
         clearButton.addActionListener(e -> clearSnapshots());
         toolBar.add(clearButton);
 
-        JButton createSnapshotButton = new JButton("Create snapshot", UIUtils.getIconFromResources("actions/save.png"));
+        JButton createSnapshotButton = new JButton("Create snapshot", UIUtils.getIconFromResources("actions/filesave.png"));
         createSnapshotButton.addActionListener(e -> createSnapshot());
         toolBar.add(createSnapshotButton);
 
@@ -81,7 +81,7 @@ public class JIPipeDesktopHistoryJournalUI extends JPanel implements JIPipeHisto
     }
 
     private void createSnapshot() {
-        historyJournal.snapshot("Manual snapshot", "Created via the Journal interface", null, UIUtils.getIconFromResources("actions/save.png"));
+        historyJournal.snapshot("Manual snapshot", "Created via the Journal interface", null, UIUtils.getIconFromResources("actions/filesave.png"));
     }
 
     public void reloadList() {

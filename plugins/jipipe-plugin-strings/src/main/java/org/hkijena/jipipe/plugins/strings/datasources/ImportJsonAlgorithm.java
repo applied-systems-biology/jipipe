@@ -36,7 +36,7 @@ import java.nio.file.Files;
 @SetJIPipeDocumentation(name = "Import JSON", description = "Imports JSON data from a file")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = FileData.class, name = "File", create = true)
-@AddJIPipeOutputSlot(value = JsonData.class, slotName = "Json", create = true)
+@AddJIPipeOutputSlot(value = JsonData.class, name = "Json", create = true)
 public class ImportJsonAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean validateJson = true;

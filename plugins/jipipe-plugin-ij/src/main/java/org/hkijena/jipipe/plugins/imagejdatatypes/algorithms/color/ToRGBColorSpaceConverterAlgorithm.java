@@ -27,7 +27,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColor
         "Use 'Render to RGB'/'Convert image to RGB colors (Render)' if you have issues.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Colors\nConvert")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input")
-@AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output")
+@AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, name = "Output")
 public class ToRGBColorSpaceConverterAlgorithm extends ColorSpaceConverterAlgorithm {
     public ToRGBColorSpaceConverterAlgorithm(JIPipeNodeInfo info) {
         super(info, ImagePlusColorRGBData.class);

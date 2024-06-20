@@ -40,7 +40,7 @@ import org.hkijena.jipipe.plugins.parameters.library.util.LogicalOperation;
 @ConfigureJIPipeNode(menuPath = "Binary", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, name = "Input 1", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, name = "Input 2", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Output", create = true, inheritedSlot = "Input 1")
+@AddJIPipeOutputSlot(value = ImagePlusGreyscale8UData.class, name = "Output", create = true, inheritedSlot = "Input 1")
 public class BitwiseLogicalOperationAlgorithm extends JIPipeIteratingAlgorithm {
 
     private LogicalOperation logicalOperation = LogicalOperation.LogicalOr;

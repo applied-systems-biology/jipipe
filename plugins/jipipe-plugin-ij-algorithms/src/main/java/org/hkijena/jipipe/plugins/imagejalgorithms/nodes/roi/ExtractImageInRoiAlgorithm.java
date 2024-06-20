@@ -38,7 +38,7 @@ import java.util.List;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "ROI")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
 @AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "ROI images", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "ROI images", create = true)
 public class ExtractImageInRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     private boolean ignoreZ = false;

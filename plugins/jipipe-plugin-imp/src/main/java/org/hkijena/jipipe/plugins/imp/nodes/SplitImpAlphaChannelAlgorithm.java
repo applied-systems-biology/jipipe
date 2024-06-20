@@ -32,8 +32,8 @@ import org.hkijena.jipipe.utils.BufferedImageUtils;
 @SetJIPipeDocumentation(name = "Split alpha channel", description = "Splits the alpha channel of IMP images into a dedicated image")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "IMP")
 @AddJIPipeInputSlot(value = ImpImageData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ImpImageData.class, slotName = "RGB", create = true)
-@AddJIPipeOutputSlot(value = ImpImageData.class, slotName = "Alpha", create = true)
+@AddJIPipeOutputSlot(value = ImpImageData.class, name = "RGB", create = true)
+@AddJIPipeOutputSlot(value = ImpImageData.class, name = "Alpha", create = true)
 public class SplitImpAlphaChannelAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public SplitImpAlphaChannelAlgorithm(JIPipeNodeInfo info) {
         super(info);

@@ -141,7 +141,7 @@ public class JIPipeDesktopPlotExporterDialog extends JDialog {
         cancelButton.addActionListener(e -> setVisible(false));
         buttonPanel.add(cancelButton);
 
-        JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/save.png"));
+        JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/filesave.png"));
         exportButton.setDefaultCapable(true);
         exportButton.addActionListener(e -> exportPlot());
         buttonPanel.add(exportButton);

@@ -45,7 +45,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Z-Project", description = "Performs a Z-Projection. Also supports other axes C-Project/T-Project.")
 @ConfigureJIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Z Project... (alternative)")
 public class NewZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

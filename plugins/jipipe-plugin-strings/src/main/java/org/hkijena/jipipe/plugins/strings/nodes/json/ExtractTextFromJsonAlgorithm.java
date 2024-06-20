@@ -41,7 +41,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 @AddJIPipeCitation("JsonPath: https://goessner.net/articles/JsonPath/")
 @ConfigureJIPipeNode(menuPath = "JSON", nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = JsonData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = StringData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = StringData.class, name = "Output", create = true)
 public class ExtractTextFromJsonAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter jsonPath = new JIPipeExpressionParameter("\"$\"");

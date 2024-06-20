@@ -40,7 +40,7 @@ import java.nio.file.Paths;
         "If the specified annotation is not present, an empty path is generated.")
 @ConfigureJIPipeNode(menuPath = "Convert", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = PathData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = PathData.class, name = "Output", create = true)
 public class AnnotationToPath extends JIPipeSimpleIteratingAlgorithm {
 
     private AnnotationQueryExpression annotationExpression = new AnnotationQueryExpression("key == \"#Dataset\"");

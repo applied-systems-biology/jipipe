@@ -103,7 +103,7 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D implements Mas
 
         JIPipeDesktopRibbon.Task importExportTask = getRibbon().getOrCreateTask("Import/Export");
         JIPipeDesktopRibbon.Band importExportMeasurementsBand = importExportTask.addBand("Measurements");
-        importExportMeasurementsBand.add(new JIPipeDesktopSmallButtonRibbonAction("Export to file", "Exports the measurements to *.csv/*.xlsx", UIUtils.getIconFromResources("actions/save.png"), this::exportMeasurementsToFile));
+        importExportMeasurementsBand.add(new JIPipeDesktopSmallButtonRibbonAction("Export to file", "Exports the measurements to *.csv/*.xlsx", UIUtils.getIconFromResources("actions/filesave.png"), this::exportMeasurementsToFile));
         importExportMeasurementsBand.add(new JIPipeDesktopSmallButtonRibbonAction("Open in editor", "Opens the measurements in a table editor", UIUtils.getIconFromResources("actions/open-in-new-window.png"), this::exportMeasurementsToEditor));
 
         autoMeasureToggle.setSelected(true);

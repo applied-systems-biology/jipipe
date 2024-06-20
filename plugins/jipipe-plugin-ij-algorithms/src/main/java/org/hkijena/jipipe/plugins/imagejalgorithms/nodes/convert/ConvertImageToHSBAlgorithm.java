@@ -28,7 +28,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColor
 
 @SetJIPipeDocumentation(name = "Convert image to HSB", description = "Converts an image into HSB colors")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusColorHSBData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusColorHSBData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(menuPath = "Convert", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nType", aliasName = "HSB")
 public class ConvertImageToHSBAlgorithm extends JIPipeSimpleIteratingAlgorithm {

@@ -38,7 +38,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.RoiDrawer;
 @SetJIPipeDocumentation(name = "Render 3D overlay", description = "Renders the 3D overlay to RGB")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "ROI")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, name = "Output", create = true)
 public class RenderOverlay3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final Roi3DDrawer drawer;

@@ -44,7 +44,7 @@ import java.util.Map;
         "Neighbouring objects can then be computed as objects having a line in common. ")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Binary")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Labels", create = true)
 public class Voronoi3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private float maxRadius = 0;

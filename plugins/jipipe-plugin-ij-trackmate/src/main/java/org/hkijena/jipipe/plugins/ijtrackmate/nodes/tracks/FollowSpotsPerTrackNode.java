@@ -48,7 +48,7 @@ import java.util.Set;
 @ConfigureJIPipeNode(menuPath = "Tracking\nVisualize", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
 @AddJIPipeInputSlot(value = TrackCollectionData.class, name = "Tracks", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
 public class FollowSpotsPerTrackNode extends JIPipeIteratingAlgorithm {
 
     private OptionalTextAnnotationNameParameter trackIDAnnotation = new OptionalTextAnnotationNameParameter("Track ID", true);

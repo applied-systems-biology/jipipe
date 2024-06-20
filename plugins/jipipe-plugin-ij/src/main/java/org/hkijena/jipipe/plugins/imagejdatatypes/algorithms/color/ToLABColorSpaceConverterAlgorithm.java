@@ -26,7 +26,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColor
         "Please note that this node is designed for color images.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Colors\nConvert")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input")
-@AddJIPipeOutputSlot(value = ImagePlusColorLABData.class, slotName = "Output")
+@AddJIPipeOutputSlot(value = ImagePlusColorLABData.class, name = "Output")
 public class ToLABColorSpaceConverterAlgorithm extends ColorSpaceConverterAlgorithm {
     public ToLABColorSpaceConverterAlgorithm(JIPipeNodeInfo info) {
         super(info, ImagePlusColorLABData.class);

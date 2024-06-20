@@ -78,14 +78,10 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
      *
      * @param environment  the environment. can be null (then the {@link IlastikPluginApplicationSettings} environment is taken)
      * @param parameters   the cli parameters
-     * @param progressInfo the progress info
      * @param detached     if the process is launched detached
+     * @param progressInfo the progress info
      */
-    public static void runIlastik(IlastikEnvironment environment, List<String> parameters, JIPipeProgressInfo progressInfo, boolean detached) {
-
-        // CLI
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.set("cli_parameters", parameters);
+    public static void runIlastik(IlastikEnvironment environment, List<String> parameters, boolean detached, JIPipeProgressInfo progressInfo) {
 
         // Environment variables
         Map<String, String> environmentVariables = new HashMap<>();
@@ -97,27 +93,7 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         environmentVariables.put("LC_ALL", "en_US.UTF-8");
         environmentVariables.put("LC_CTYPE", "en_US.UTF-8");
 
-        ProcessEnvironment processEnvironment = new ProcessEnvironment();
-        processEnvironment.setArguments(environment.getArguments());
-        processEnvironment.setEnvironmentVariables(environment.getEnvironmentVariables());
-        if(SystemUtils.IS_OS_WINDOWS) {
-            processEnvironment.setExecutablePathWindows(environment.getAbsoluteExecutablePath());
-        }
-        else if(SystemUtils.IS_OS_LINUX) {
-            processEnvironment.setExecutablePathLinux(environment.getAbsoluteExecutablePath());
-        }
-        else if(SystemUtils.IS_OS_MAC) {
-            processEnvironment.setExecutablePathOSX(environment.getAbsoluteExecutablePath());
-        }
-        else {
-            throw new UnsupportedOperationException("Unsupported OS: " + SystemUtils.OS_NAME);
-        }
-
-        if (detached) {
-            ProcessUtils.launchProcess(processEnvironment, variables, environmentVariables, false, progressInfo);
-        } else {
-            ProcessUtils.runProcess(processEnvironment, variables, environmentVariables, false, progressInfo);
-        }
+        environment.runExecutable(parameters, environmentVariables, detached, progressInfo);
     }
 
     public static IlastikEnvironment getEnvironment(JIPipeProject project, OptionalIlastikEnvironment nodeEnvironment) {
@@ -165,7 +141,7 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
         progressInfo.setLogToStdOut(true);
         workbench.sendStatusBarText("Launching Ilastik ...");
-        IlastikPlugin.runIlastik(environment, arguments, progressInfo, true);
+        IlastikPlugin.runIlastik(environment, arguments, true, progressInfo);
     }
 
     @Override

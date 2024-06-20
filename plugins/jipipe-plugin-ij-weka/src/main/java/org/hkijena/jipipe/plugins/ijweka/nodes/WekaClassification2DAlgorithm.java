@@ -44,7 +44,7 @@ import trainableSegmentation.WekaSegmentation;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", description = "Image on which the classification should be applied", create = true)
 @AddJIPipeInputSlot(value = WekaModelData.class, name = "Model", description = "The model", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Classified image", description = "The classified image", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Classified image", description = "The classified image", create = true)
 public class WekaClassification2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final WekaTiling2DSettings tilingSettings;

@@ -76,21 +76,21 @@ import static org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils.*;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Ilastik")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true, description = "The image(s) to classify.")
 @AddJIPipeInputSlot(value = IlastikModelData.class, name = "Project", create = true, description = "The Ilastik project. Must support pixel classification.")
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Probabilities Stage 1", description = "Multi-channel image where pixel values represent the probability that that pixel belongs to the class represented by that channel (Stage 1)")
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Probabilities Stage 2", description = "Multi-channel image where pixel values represent the probability that that pixel belongs to the class represented by that channel (Stage 2)")
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Probabilities All Stages", description = "Contains both \"Probabilities Stage 1\" and \"Probabilities Stage 2\" in a single multi-channel image")
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Simple Segmentation Stage 1", description = "A single-channel image where the (integer) pixel values indicate the class to which a pixel belongs. " +
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Probabilities Stage 1", description = "Multi-channel image where pixel values represent the probability that that pixel belongs to the class represented by that channel (Stage 1)")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Probabilities Stage 2", description = "Multi-channel image where pixel values represent the probability that that pixel belongs to the class represented by that channel (Stage 2)")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Probabilities All Stages", description = "Contains both \"Probabilities Stage 1\" and \"Probabilities Stage 2\" in a single multi-channel image")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Simple Segmentation Stage 1", description = "A single-channel image where the (integer) pixel values indicate the class to which a pixel belongs. " +
         "For this image, every pixel with the same value should belong to the same class of pixels")
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Simple Segmentation Stage 2", description = "A single-channel image where the (integer) pixel values indicate the class to which a pixel belongs. " +
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Simple Segmentation Stage 2", description = "A single-channel image where the (integer) pixel values indicate the class to which a pixel belongs. " +
         "For this image, every pixel with the same value should belong to the same class of pixels")
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Uncertainty Stage 1", description = "Image where pixel intensity is proportional to the uncertainty found when trying to classify that pixel")
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Uncertainty Stage 2", description = "Image where pixel intensity is proportional to the uncertainty found when trying to classify that pixel")
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Features Stage 1", description = "Multi-channel image where each channel represents one of the computed pixel features")
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Features Stage 2", description = "Multi-channel image where each channel represents one of the computed pixel features")
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Labels Stage 1", description = "Image representing the users’ manually created annotations")
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Labels Stage 2", description = "Image representing the users’ manually created annotations")
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Input Stage 1", description = "Raw input image that was fed into the first stage of the workflow")
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Input Stage 2", description = "Input received by the second Pixel Classification stage in the workflow")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Uncertainty Stage 1", description = "Image where pixel intensity is proportional to the uncertainty found when trying to classify that pixel")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Uncertainty Stage 2", description = "Image where pixel intensity is proportional to the uncertainty found when trying to classify that pixel")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Features Stage 1", description = "Multi-channel image where each channel represents one of the computed pixel features")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Features Stage 2", description = "Multi-channel image where each channel represents one of the computed pixel features")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Labels Stage 1", description = "Image representing the users’ manually created annotations")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Labels Stage 2", description = "Image representing the users’ manually created annotations")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Input Stage 1", description = "Raw input image that was fed into the first stage of the workflow")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Input Stage 2", description = "Input received by the second Pixel Classification stage in the workflow")
 public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm implements IlastikEnvironmentAccessNode {
 
     public static final String PROJECT_TYPE = "PixelClassification01";
@@ -286,8 +286,8 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
                 IlastikEnvironment environment = getConfiguredIlastikEnvironment();
                 IlastikPlugin.runIlastik(environment,
                         args,
-                        exportSourceProgress.resolve("Run Ilastik"),
-                        false);
+                        false, exportSourceProgress.resolve("Run Ilastik")
+                );
 
                 // Extract results
                 for (int imageIndex = 0; imageIndex < exportedImagePaths.size(); imageIndex++) {

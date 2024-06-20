@@ -45,7 +45,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Manual color threshold (RGB)", description = "Thresholds RGB images.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Threshold\nColor")
 @AddJIPipeInputSlot(value = ImagePlusColorRGBData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust")
 public class ManualRGBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

@@ -38,7 +38,7 @@ import java.awt.*;
 @SetJIPipeDocumentation(name = "Change 3D ROI properties", description = "Sets the properties of all 3D ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
 @AddJIPipeInputSlot(value = ROI3DListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ROI3DListData.class, name = "Output", create = true)
 public class ChangeRoi3DPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private OptionalStringParameter roiName = new OptionalStringParameter("", false);
     private OptionalStringParameter roiComment = new OptionalStringParameter("", false);

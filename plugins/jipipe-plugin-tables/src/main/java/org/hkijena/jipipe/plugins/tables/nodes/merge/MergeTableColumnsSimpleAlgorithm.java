@@ -44,7 +44,7 @@ import java.util.Set;
         "The algorithm behind this is not 'smart' and is not capable of supplementing a table with data from another table. ")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Merge")
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class MergeTableColumnsSimpleAlgorithm extends JIPipeMergingAlgorithm {
 
     private TableColumnNormalization rowNormalization = TableColumnNormalization.ZeroOrEmpty;

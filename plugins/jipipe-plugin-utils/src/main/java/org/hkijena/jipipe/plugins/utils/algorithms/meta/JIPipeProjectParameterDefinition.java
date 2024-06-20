@@ -43,7 +43,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Define JIPipe project parameters", description = "Defines parameters that will be put into JIPipe projects. The parameter key has two modes: " +
         "If it matches with a pipeline parameter (that can be set up via a pipeline's settings), this parameter is changed. It can also match with an absolute path to a node's parameter with following format: " +
         "[node-id]/[node parameter key]")
-@AddJIPipeOutputSlot(value = ParametersData.class, slotName = "Parameters", create = true)
+@AddJIPipeOutputSlot(value = ParametersData.class, name = "Parameters", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class JIPipeProjectParameterDefinition extends DefineParametersTableAlgorithm {
     public JIPipeProjectParameterDefinition(JIPipeNodeInfo info) {

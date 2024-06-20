@@ -35,7 +35,7 @@ import java.util.List;
         "the directory specified in the JIPipe settings. Please note that there are no guarantees on the actual folder name, as the outcome depends on the operating system. " +
         "The folder is already existing, so a 'Create directories' operation is not needed.")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@AddJIPipeOutputSlot(value = FolderData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = FolderData.class, name = "Output", create = true)
 public class TemporaryFolderDataSource extends JIPipeParameterSlotAlgorithm {
 
     private String baseName = "";

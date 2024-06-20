@@ -43,7 +43,7 @@ import java.util.List;
 
 @SetJIPipeDocumentation(name = "R data set", description = "Imports a standard R data set (datasets package) as table.")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm implements REnvironmentAccessNode {
 
     private Dataset dataset = Dataset.iris;

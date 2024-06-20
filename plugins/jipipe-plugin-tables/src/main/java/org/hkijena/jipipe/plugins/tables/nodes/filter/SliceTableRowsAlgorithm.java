@@ -34,7 +34,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 @SetJIPipeDocumentation(name = "Select table rows", description = "Allows to select/slice the only specific rows from the input table.")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Filter")
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class SliceTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private IntegerRange limit = new IntegerRange("0-10");

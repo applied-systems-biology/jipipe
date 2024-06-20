@@ -36,7 +36,7 @@ import java.util.Map;
  * Generates {@link org.hkijena.jipipe.plugins.multiparameters.datatypes.ParametersData} objects
  */
 @SetJIPipeDocumentation(name = "Define parameter", description = "Defines an algorithm parameter that can be consumed by a multi-parameter algorithm")
-@AddJIPipeOutputSlot(value = ParametersData.class, slotName = "Parameters", create = true)
+@AddJIPipeOutputSlot(value = ParametersData.class, name = "Parameters", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class DefineParametersAlgorithm extends JIPipeAlgorithm {
 

@@ -472,4 +472,12 @@ public class PathUtils {
             throw new RuntimeException(e);
         }
     }
+
+    public static void createDirectories(Path path) {
+        try {
+            Files.createDirectories(path);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

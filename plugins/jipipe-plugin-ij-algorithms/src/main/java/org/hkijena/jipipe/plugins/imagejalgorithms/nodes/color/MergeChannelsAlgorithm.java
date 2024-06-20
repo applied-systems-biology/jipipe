@@ -53,7 +53,7 @@ import java.util.Set;
 @SetJIPipeDocumentation(name = "Merge channels", description = "Merges each greyscale image plane into a multi-channel image. ")
 @ConfigureJIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input")
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nColor", aliasName = "Merge Channels...")
 public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
 

@@ -38,7 +38,7 @@ import java.nio.file.Path;
 
 
 @AddJIPipeInputSlot(value = PathData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = FolderData.class, slotName = "Parent", create = true)
+@AddJIPipeOutputSlot(value = FolderData.class, name = "Parent", create = true)
 
 
 public class ExtractParent extends JIPipeSimpleIteratingAlgorithm {

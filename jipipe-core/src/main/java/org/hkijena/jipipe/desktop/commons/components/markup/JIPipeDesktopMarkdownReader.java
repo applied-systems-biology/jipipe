@@ -155,7 +155,7 @@ public class JIPipeDesktopMarkdownReader extends JPanel {
         if (withToolbar) {
             toolBar.setFloatable(false);
 
-            JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/save.png"));
+            JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/filesave.png"));
             JPopupMenu exportMenu = UIUtils.addPopupMenuToButton(exportButton);
 
             JMenuItem saveMarkdown = new JMenuItem("as Markdown (*.md)", UIUtils.getIconFromResources("mimetypes/text-markdown.png"));

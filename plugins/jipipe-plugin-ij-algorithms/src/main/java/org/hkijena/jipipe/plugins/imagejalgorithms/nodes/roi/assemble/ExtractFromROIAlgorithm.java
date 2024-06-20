@@ -46,7 +46,7 @@ import java.util.List;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "ROI")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
 @AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
-@AddJIPipeOutputSlot(value = ImagePlus2DData.class, slotName = "Extracted", create = true)
+@AddJIPipeOutputSlot(value = ImagePlus2DData.class, name = "Extracted", create = true)
 public class ExtractFromROIAlgorithm extends JIPipeIteratingAlgorithm {
 
     private OptionalColorParameter outsideColor = new OptionalColorParameter(Color.BLACK, true);

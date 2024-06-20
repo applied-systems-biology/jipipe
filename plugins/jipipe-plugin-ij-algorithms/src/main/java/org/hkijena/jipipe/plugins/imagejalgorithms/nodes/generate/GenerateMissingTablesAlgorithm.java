@@ -33,7 +33,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Data", create = true)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "ROI", create = true, optional = true)
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "ROI", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "ROI", create = true)
 @Deprecated
 public class GenerateMissingTablesAlgorithm extends JIPipeMissingDataGeneratorAlgorithm {
 

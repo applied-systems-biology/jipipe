@@ -81,11 +81,11 @@ import java.util.stream.Collectors;
                 "</ul>" +
                 "Please note that you need to setup a valid Python environment with Cellpose installed. You can find the setting in Project &gt; Application settings &gt; Extensions &gt; Cellpose.")
 @AddJIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Labels")
-@AddJIPipeOutputSlot(value = ImagePlus3DColorRGBData.class, slotName = "Flows")
-@AddJIPipeOutputSlot(value = ImagePlus3DGreyscale32FData.class, slotName = "Probabilities")
-@AddJIPipeOutputSlot(value = ImagePlus2DGreyscale32FData.class, slotName = "Styles")
-@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI")
+@AddJIPipeOutputSlot(value = ImagePlus3DGreyscaleData.class, name = "Labels")
+@AddJIPipeOutputSlot(value = ImagePlus3DColorRGBData.class, name = "Flows")
+@AddJIPipeOutputSlot(value = ImagePlus3DGreyscale32FData.class, name = "Probabilities")
+@AddJIPipeOutputSlot(value = ImagePlus2DGreyscale32FData.class, name = "Styles")
+@AddJIPipeOutputSlot(value = ROIListData.class, name = "ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 @Deprecated
 @LabelAsJIPipeHidden

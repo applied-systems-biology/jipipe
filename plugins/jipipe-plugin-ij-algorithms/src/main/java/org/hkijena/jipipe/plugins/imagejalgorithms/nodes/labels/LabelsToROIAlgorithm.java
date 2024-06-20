@@ -47,7 +47,7 @@ import java.util.Set;
         "Automatic and unbiased segmentation and quantification of myofibers in skeletal muscle. Sci Rep 11, 11793 (2021). doi: https://doi.org/10.1038/s41598-021-91191-6.")
 @ConfigureJIPipeNode(menuPath = "Labels\nConvert", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Labels", description = "The labels image", create = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", description = "The generated ROI", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, name = "ROI", description = "The generated ROI", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nLabel Images", aliasName = "Labels to ROI")
 public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

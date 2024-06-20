@@ -43,7 +43,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
         "</ul>")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Measure")
 @AddJIPipeInputSlot(value = Filaments3DData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class MeasureFilamentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public MeasureFilamentsAlgorithm(JIPipeNodeInfo info) {
         super(info);

@@ -43,11 +43,11 @@ import java.util.Map;
         "Then the symmetry filter will vote for the voxels inside the object based on the gradient vector direction.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Features")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Symmetry", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Symmetry smoothed", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Edges", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Bin", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "BinEdge", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Symmetry", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Symmetry smoothed", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Edges", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Bin", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "BinEdge", create = true)
 @AddJIPipeCitation("https://mcib3d.frama.io/3d-suite-imagej/plugins/Filters/3D-Edge-and-Symmetry-Filter/")
 public class SymmetryFilter3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

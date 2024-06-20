@@ -47,9 +47,9 @@ import java.awt.*;
 @AddJIPipeCitation("https://imagej.net/plugins/ridge-detection")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Segment")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", create = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Lines", create = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Junctions", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Mask", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, name = "Lines", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, name = "Junctions", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins", aliasName = "Ridge Detection")
 public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

@@ -34,7 +34,7 @@ import java.awt.*;
         "The operation is applied to all slices.")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust", aliasName = "Brightness/Contrast... (Apply)")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
 public class ApplyDisplayContrastAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public ApplyDisplayContrastAlgorithm(JIPipeNodeInfo info) {
         super(info);

@@ -35,7 +35,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumn;
 @SetJIPipeDocumentation(name = "To string column", description = "Converts one or multiple columns into a string column")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class ColumnToStringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private StringQueryExpression filters = new StringQueryExpression();

@@ -36,8 +36,8 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
         "another output that contains all data that does not match the filter")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Filter")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Matched", create = true, description = "Data that matched the filter")
-@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Unmatched", create = true, description = "Data that does not match the filter")
+@AddJIPipeOutputSlot(value = JIPipeData.class, name = "Matched", create = true, description = "Data that matched the filter")
+@AddJIPipeOutputSlot(value = JIPipeData.class, name = "Unmatched", create = true, description = "Data that does not match the filter")
 public class FilterByAnnotationIfElse extends JIPipeSimpleIteratingAlgorithm {
     private AnnotationFilterExpression filter = new AnnotationFilterExpression();
 

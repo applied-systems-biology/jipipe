@@ -55,7 +55,7 @@ import java.util.Collections;
 @SetJIPipeDocumentation(name = "Render overlay", description = "Renders the overlay ROI of an image to RGB")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "ROI")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, name = "Output", create = true)
 public class RenderOverlayAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private ROIElementDrawingMode drawOutlineMode = ROIElementDrawingMode.Always;

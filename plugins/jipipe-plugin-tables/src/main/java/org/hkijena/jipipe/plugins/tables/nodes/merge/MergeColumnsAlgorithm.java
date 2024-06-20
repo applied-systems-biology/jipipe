@@ -37,7 +37,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Merge columns", description = "Merges multiple table columns into a table.")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Merge")
 @AddJIPipeInputSlot(value = TableColumn.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class MergeColumnsAlgorithm extends JIPipeMergingAlgorithm {
 
     /**

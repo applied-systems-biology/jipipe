@@ -35,7 +35,7 @@ import java.util.*;
 
 @SetJIPipeDocumentation(name = "Extract parameters from node", description = "Extracts parameters from the incoming node(s)")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Node", create = true)
-@AddJIPipeOutputSlot(value = ParametersData.class, slotName = "Parameters", create = true)
+@AddJIPipeOutputSlot(value = ParametersData.class, name = "Parameters", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class ExtractParametersAlgorithm extends JIPipeAlgorithm {
 

@@ -57,7 +57,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Overlay images", description = "Overlays greyscale or RGB images RGB image. ")
 @ConfigureJIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, name = "Input")
-@AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output")
+@AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, name = "Output")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nColor", aliasName = "Merge Channels... (overlay)")
 @Deprecated
 @LabelAsJIPipeHidden

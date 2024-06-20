@@ -31,7 +31,7 @@ import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
         "executed per data batch of this loop start node")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Data")
-@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Data")
+@AddJIPipeOutputSlot(value = JIPipeData.class, name = "Data")
 @LabelAsJIPipeHidden
 @Deprecated
 public class LoopEndNode extends IOInterfaceAlgorithm {

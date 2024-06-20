@@ -29,7 +29,7 @@ import java.nio.file.Path;
 
 @SetJIPipeDocumentation(name = "Run output folder", description = "Generates a path that points to the data output folder of the current run.")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@AddJIPipeOutputSlot(value = FolderData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = FolderData.class, name = "Output", create = true)
 public class OutputFolderDataSource extends JIPipeAlgorithm {
 
 

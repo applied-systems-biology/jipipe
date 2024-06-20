@@ -35,7 +35,7 @@ import java.util.Objects;
 
 @SetJIPipeDocumentation(name = "Project user directory", description = "Returns a project user (Project > Project settings > User directories) folder as data")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@AddJIPipeOutputSlot(value = FolderData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = FolderData.class, name = "Output", create = true)
 public class ProjectUserFolderDataSource extends JIPipeSimpleIteratingAlgorithm {
 
     private String key = "";

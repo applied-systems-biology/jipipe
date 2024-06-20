@@ -52,8 +52,8 @@ import java.util.*;
 @AddJIPipeInputSlot(value = ROIListData.class, name = "ROI 1", create = true)
 @AddJIPipeInputSlot(value = ROIListData.class, name = "ROI 2", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, description = "An optional reference image", optional = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI 1", create = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI 2", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, name = "ROI 1", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, name = "ROI 2", create = true)
 public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
     private ImageStatisticsSetParameter overlapFilterMeasurements = new ImageStatisticsSetParameter();

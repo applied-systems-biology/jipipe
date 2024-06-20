@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
 @AddJIPipeInputSlot(value = ImagePlus2DData.class, name = "Image", description = "Image on which the training should be applied", create = true)
 @AddJIPipeInputSlot(value = ImagePlus2DGreyscaleMaskData.class, name = "Mask", description = "Mask that marks foreground objects via white pixels (255) and the background with black pixels (0)", create = true)
-@AddJIPipeOutputSlot(value = WekaModelData.class, slotName = "Trained model", description = "The model", create = true)
+@AddJIPipeOutputSlot(value = WekaModelData.class, name = "Trained model", description = "The model", create = true)
 public class WekaTrainingMask2DAlgorithm2 extends JIPipeMergingAlgorithm {
 
     private WekaFeature2DSettings featureSettings = new WekaFeature2DSettings();

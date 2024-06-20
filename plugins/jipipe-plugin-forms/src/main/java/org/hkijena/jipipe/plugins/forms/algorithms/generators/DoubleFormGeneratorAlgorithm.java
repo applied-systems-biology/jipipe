@@ -25,7 +25,7 @@ import org.hkijena.jipipe.plugins.forms.datatypes.FormData;
 
 @SetJIPipeDocumentation(name = "Number input form", description = "Creates a real number input form. ")
 @AddJIPipeInputSlot(value = FormData.class, name = "Existing")
-@AddJIPipeOutputSlot(value = FormData.class, slotName = "Combined")
+@AddJIPipeOutputSlot(value = FormData.class, name = "Combined")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class DoubleFormGeneratorAlgorithm extends SimpleFormGeneratorAlgorithm {
 

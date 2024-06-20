@@ -46,7 +46,7 @@ import java.util.Map;
 @AddJIPipeCitation("XPath: https://www.w3schools.com/xml/xpath_intro.asp")
 @ConfigureJIPipeNode(menuPath = "XML", nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = XMLData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = StringData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = StringData.class, name = "Output", create = true)
 public class ExtractTextFromXMLAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private JIPipeExpressionParameter xPath = new JIPipeExpressionParameter("\"/\"");
     private StringAndStringPairParameter.List namespaceMap = new StringAndStringPairParameter.List();

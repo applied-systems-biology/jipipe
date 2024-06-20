@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
         "that this node cannot resolve multiple input slots, as, for optimization purposes, the information where data is coming from is deleted.")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Data", create = true)
-@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Annotated data", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, name = "Annotated data", create = true)
 public class AnnotateWithSourceSlot extends JIPipeSimpleIteratingAlgorithm {
 
     private String generatedAnnotation = "Source slot";

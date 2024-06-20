@@ -122,7 +122,7 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
 
     private void refreshSidebar() {
         propertiesPanel.clear();
-        JIPipeDesktopFormPanel.GroupHeaderPanel generalHeader = propertiesPanel.addGroupHeader("Backups", UIUtils.getIconFromResources("actions/save.png"));
+        JIPipeDesktopFormPanel.GroupHeaderPanel generalHeader = propertiesPanel.addGroupHeader("Backups", UIUtils.getIconFromResources("actions/filesave.png"));
         generalHeader.addDescriptionRow("Here you can manage the collection of backups automatically created by JIPipe. " +
                 "You can enable/disable backups and change the interval in the application settings.");
 

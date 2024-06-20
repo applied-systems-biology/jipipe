@@ -45,7 +45,7 @@ import java.util.Objects;
  * Provides an input folder
  */
 @SetJIPipeDocumentation(name = "Folder", description = "Converts the path parameter into folder data.")
-@AddJIPipeOutputSlot(value = FolderData.class, slotName = "Folder path", create = true)
+@AddJIPipeOutputSlot(value = FolderData.class, name = "Folder path", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class FolderDataSource extends JIPipeAlgorithm {
 

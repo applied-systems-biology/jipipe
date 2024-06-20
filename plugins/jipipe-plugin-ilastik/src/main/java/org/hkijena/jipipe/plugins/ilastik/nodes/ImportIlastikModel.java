@@ -30,7 +30,7 @@ import org.hkijena.jipipe.plugins.ilastik.datatypes.IlastikModelData;
 @SetJIPipeDocumentation(name = "Import Ilastik project", description = "Imports an *.ilp file into the workflow")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = FileData.class, name = "Project file", description = "The project file", create = true)
-@AddJIPipeOutputSlot(value = IlastikModelData.class, slotName = "Project", description = "The Ilastik project", create = true)
+@AddJIPipeOutputSlot(value = IlastikModelData.class, name = "Project", description = "The Ilastik project", create = true)
 public class ImportIlastikModel extends JIPipeSimpleIteratingAlgorithm {
     public ImportIlastikModel(JIPipeNodeInfo info) {
         super(info);

@@ -39,7 +39,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.list.LongList;
 import java.util.List;
 
 @SetJIPipeDocumentation(name = "Define image IDs", description = "Manually defines OMERO image ids that can be used for importing data.")
-@AddJIPipeOutputSlot(value = OMEROImageReferenceData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = OMEROImageReferenceData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class, menuPath = "OMERO")
 public class OMEROImageReferenceDataSource extends JIPipeSimpleIteratingAlgorithm implements OMEROCredentialAccessNode {
 

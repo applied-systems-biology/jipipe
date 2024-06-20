@@ -884,7 +884,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
          * @return The builder
          */
         public Builder addOutputSlot(AddJIPipeOutputSlot annotation) {
-            object.addSlot(annotation.slotName(), new JIPipeDataSlotInfo(annotation), false);
+            object.addSlot(annotation.name(), new JIPipeDataSlotInfo(annotation), false);
             return this;
         }
 
@@ -1055,7 +1055,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
                 }
             }
             for (AddJIPipeOutputSlot slot : klass.getAnnotationsByType(AddJIPipeOutputSlot.class)) {
-                if (slot.create() && !object.outputSlots.containsKey(slot.slotName())) {
+                if (slot.create() && !object.outputSlots.containsKey(slot.name())) {
                     object.addSlot(slot, false);
                 }
             }

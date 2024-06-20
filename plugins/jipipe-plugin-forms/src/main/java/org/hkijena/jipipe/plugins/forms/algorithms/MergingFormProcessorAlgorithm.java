@@ -69,8 +69,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Forms")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Data", create = true)
 @AddJIPipeInputSlot(value = FormData.class, name = "Forms", create = true, role = JIPipeDataSlotRole.Parameters)
-@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", create = true)
-@AddJIPipeOutputSlot(value = FormData.class, slotName = "Forms", create = true, role = JIPipeDataSlotRole.Parameters)
+@AddJIPipeOutputSlot(value = JIPipeData.class, name = "Data", create = true)
+@AddJIPipeOutputSlot(value = FormData.class, name = "Forms", create = true, role = JIPipeDataSlotRole.Parameters)
 public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JIPipeIterationStepAlgorithm {
 
     private String tabAnnotation = "Tab";

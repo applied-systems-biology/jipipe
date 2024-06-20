@@ -39,7 +39,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Labels to 3D ROI", description = "Converts a label image into 3D ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Labels")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Labels", create = true)
-@AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "ROI", create = true)
+@AddJIPipeOutputSlot(value = ROI3DListData.class, name = "ROI", create = true)
 public class Roi3DFromLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private double minParticleSize = 0;

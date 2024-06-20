@@ -55,11 +55,11 @@ import java.util.Comparator;
 @AddJIPipeInputSlot(value = ImagePlus3DGreyscaleMaskData.class, name = "Skeleton", create = true)
 @AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", description = "ROI to exclude on pruning ends")
 @AddJIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, name = "Reference", description = "Original grayscale input image (for lowest pixel intensity pruning mode)")
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Skeletons", description = "Table of all skeletons")
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Branches", description = "Table of all branches")
-@AddJIPipeOutputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Tagged skeletons", description = "End-point voxels are displayed in blue, slab voxels in orange and junction voxels in purple")
-@AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Labels", description = "Label image of the skeletons")
-@AddJIPipeOutputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Largest shortest paths", description = "The largest shortest path (in magenta)")
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Skeletons", description = "Table of all skeletons")
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Branches", description = "Table of all branches")
+@AddJIPipeOutputSlot(value = ImagePlusGreyscale8UData.class, name = "Tagged skeletons", description = "End-point voxels are displayed in blue, slab voxels in orange and junction voxels in purple")
+@AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Labels", description = "Label image of the skeletons")
+@AddJIPipeOutputSlot(value = ImagePlusGreyscale8UData.class, name = "Largest shortest paths", description = "The largest shortest path (in magenta)")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze\nSkeleton", aliasName = "Analyze Skeleton (2D/3D)")
 public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
 

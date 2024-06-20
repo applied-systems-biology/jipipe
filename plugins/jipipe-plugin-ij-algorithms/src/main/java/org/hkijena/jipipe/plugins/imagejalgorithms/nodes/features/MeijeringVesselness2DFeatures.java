@@ -58,7 +58,7 @@ import java.util.Vector;
 
 
 @AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Output", create = true)
 public class MeijeringVesselness2DFeatures extends JIPipeSimpleIteratingAlgorithm {
 
     private DoubleList scales = new DoubleList();

@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 @SetJIPipeDocumentation(name = "Blend images", description = "Overlays greyscale or RGB images.")
 @ConfigureJIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input")
-@AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output")
+@AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, name = "Output")
 public class BlendImagesAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final InputSlotMapParameterCollection layers;

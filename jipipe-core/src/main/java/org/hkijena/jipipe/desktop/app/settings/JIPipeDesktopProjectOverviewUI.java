@@ -285,7 +285,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         cancelButton.addActionListener(e -> dialog.setVisible(false));
         buttonPanel.add(cancelButton);
 
-        JButton confirmButton = new JButton("Save", UIUtils.getIconFromResources("actions/save.png"));
+        JButton confirmButton = new JButton("Save", UIUtils.getIconFromResources("actions/filesave.png"));
         confirmButton.addActionListener(e -> {
             getProject().getPipelineParameters().setExportedParameters(copy);
             dialog.setVisible(false);

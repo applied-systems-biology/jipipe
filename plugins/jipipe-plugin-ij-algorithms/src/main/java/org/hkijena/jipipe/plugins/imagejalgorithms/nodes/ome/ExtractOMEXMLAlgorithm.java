@@ -30,7 +30,7 @@ import org.hkijena.jipipe.plugins.strings.XMLData;
 @SetJIPipeDocumentation(name = "Extract OME XML", description = "Extracts the OME metadata XML from an OME image")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Convert")
 @AddJIPipeInputSlot(value = OMEImageData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = XMLData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = XMLData.class, name = "Output", create = true)
 public class ExtractOMEXMLAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public ExtractOMEXMLAlgorithm(JIPipeNodeInfo info) {
         super(info);

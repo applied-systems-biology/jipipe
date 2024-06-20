@@ -35,7 +35,7 @@ import java.awt.image.BufferedImage;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "IMP")
 @AddJIPipeInputSlot(value = ImpImageData.class, name = "Image", create = true)
 @AddJIPipeInputSlot(value = ImpImageData.class, name = "Alpha", create = true)
-@AddJIPipeOutputSlot(value = ImpImageData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ImpImageData.class, name = "Output", create = true)
 public class SetImpAlphaChannelAlgorithm extends JIPipeIteratingAlgorithm {
     public SetImpAlphaChannelAlgorithm(JIPipeNodeInfo info) {
         super(info);

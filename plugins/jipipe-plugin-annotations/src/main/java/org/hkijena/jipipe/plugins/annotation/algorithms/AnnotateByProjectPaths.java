@@ -44,7 +44,7 @@ import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Annotate with data paths", description = "Annotates data with project-related paths")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = JIPipeData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
 public class AnnotateByProjectPaths extends JIPipeSimpleIteratingAlgorithm {
 

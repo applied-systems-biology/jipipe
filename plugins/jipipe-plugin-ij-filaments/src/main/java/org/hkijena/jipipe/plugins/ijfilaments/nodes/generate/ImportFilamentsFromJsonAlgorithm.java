@@ -32,7 +32,7 @@ import java.nio.file.Path;
 
 @SetJIPipeDocumentation(name = "Import filaments from JSON", description = "Imports filaments from a JSON file")
 @AddJIPipeInputSlot(value = FileData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = Filaments3DData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class ImportFilamentsFromJsonAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public ImportFilamentsFromJsonAlgorithm(JIPipeNodeInfo info) {

@@ -30,7 +30,7 @@ import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 @SetJIPipeDocumentation(name = "Import Cellpose size model from file", description = "Imports a Cellpose size model from a file")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = FileData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = CellposeSizeModelData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = CellposeSizeModelData.class, name = "Output", create = true)
 public class ImportCellposeSizeModelFromFileAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public ImportCellposeSizeModelFromFileAlgorithm(JIPipeNodeInfo info) {
         super(info);

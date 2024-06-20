@@ -45,7 +45,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Split spots", description = "Creates a list for each individual spot")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nSplit/Merge")
 @AddJIPipeInputSlot(value = SpotsCollectionData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = SpotsCollectionData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = SpotsCollectionData.class, name = "Output", create = true)
 public class SplitSpotsNode extends JIPipeSimpleIteratingAlgorithm {
     private NamedTextAnnotationGeneratorExpression.List annotationGenerator = new NamedTextAnnotationGeneratorExpression.List();
 

@@ -1516,7 +1516,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
                 toggleSaveOutputsButton.addActionListener(e -> setSaveOutputs(slot, false));
                 menu.add(toggleSaveOutputsButton);
             } else {
-                JMenuItem toggleSaveOutputsButton = new JMenuItem("Enable saving outputs", UIUtils.getIconFromResources("actions/save.png"));
+                JMenuItem toggleSaveOutputsButton = new JMenuItem("Enable saving outputs", UIUtils.getIconFromResources("actions/filesave.png"));
                 toggleSaveOutputsButton.setToolTipText("Makes that the data stored in this slot are saved in a full analysis.");
                 toggleSaveOutputsButton.addActionListener(e -> setSaveOutputs(slot, true));
                 menu.add(toggleSaveOutputsButton);

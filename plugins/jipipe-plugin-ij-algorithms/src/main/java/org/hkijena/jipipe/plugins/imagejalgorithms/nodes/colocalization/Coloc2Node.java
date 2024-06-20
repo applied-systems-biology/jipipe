@@ -73,9 +73,9 @@ import java.util.Map;
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Channel 2", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Mask", optional = true, description = "Optional mask")
 @AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", optional = true, description = "Optional ROI")
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Results", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Plots", create = true)
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Histograms", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Results", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Plots", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Histograms", create = true)
 
 public class Coloc2Node extends JIPipeIteratingAlgorithm {
 

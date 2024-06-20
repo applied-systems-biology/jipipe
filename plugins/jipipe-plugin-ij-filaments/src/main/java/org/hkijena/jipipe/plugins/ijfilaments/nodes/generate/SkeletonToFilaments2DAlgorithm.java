@@ -44,7 +44,7 @@ import java.util.Map;
         "the Z voxel size is set to zero.")
 @ConfigureJIPipeNode(menuPath = "Convert", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Skeleton", create = true)
-@AddJIPipeOutputSlot(value = Filaments3DData.class, slotName = "Filaments", description = "The filaments as extracted by the algorithm", create = true)
+@AddJIPipeOutputSlot(value = Filaments3DData.class, name = "Filaments", description = "The filaments as extracted by the algorithm", create = true)
 public class SkeletonToFilaments2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean force2D = true;

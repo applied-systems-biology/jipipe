@@ -52,7 +52,7 @@ import java.util.Map;
 @AddJIPipeCitation("XPath: https://www.w3schools.com/xml/xpath_intro.asp")
 @ConfigureJIPipeNode(menuPath = "For XML", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = XMLData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = XMLData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = XMLData.class, name = "Output", create = true)
 public class AnnotateWithXPathDataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private ParameterCollectionList entries = ParameterCollectionList.containingCollection(Entry.class);
     private JIPipeTextAnnotationMergeMode annotationMergeMode = JIPipeTextAnnotationMergeMode.Merge;

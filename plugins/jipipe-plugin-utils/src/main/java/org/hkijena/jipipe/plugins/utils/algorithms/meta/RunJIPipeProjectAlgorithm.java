@@ -51,7 +51,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Run JIPipe project", description = "Runs an existing JIPipe project with given parameter set. Use the 'Define JIPipe project parameters' node to create the necessary parameters. " +
         "Parameters can either point to a project parameter (preferred way) or to a parameter within a specific node (prefix with [node id]/). To find out the parameter ids, take a look at the 'Node ID' documentation on selecting a node.")
 @AddJIPipeInputSlot(value = ParametersData.class, name = "Project parameters", create = true)
-@AddJIPipeOutputSlot(value = JIPipeOutputData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = JIPipeOutputData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Meta run")
 public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

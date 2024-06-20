@@ -468,7 +468,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         projectMenu.addSeparator();
 
         // "Save project" entry
-        JMenuItem saveProjectButton = new JMenuItem("Save ...", UIUtils.getIconFromResources("actions/save.png"));
+        JMenuItem saveProjectButton = new JMenuItem("Save ...", UIUtils.getIconFromResources("actions/filesave.png"));
         saveProjectButton.setToolTipText("Saves the project. If the project was opened from a file or previously saved, the file will be overwritten.");
         saveProjectButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
         saveProjectButton.addActionListener(e -> {
@@ -480,7 +480,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         projectMenu.add(saveProjectButton);
 
         // "Save project" entry
-        JMenuItem saveProjectAsButton = new JMenuItem("Save as ...", UIUtils.getIconFromResources("actions/save.png"));
+        JMenuItem saveProjectAsButton = new JMenuItem("Save as ...", UIUtils.getIconFromResources("actions/filesave.png"));
         saveProjectAsButton.setToolTipText("Saves the project to a new file.");
         saveProjectAsButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK + KeyEvent.SHIFT_DOWN_MASK));
         saveProjectAsButton.addActionListener(e -> {
@@ -715,7 +715,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
             dialog.setVisible(false);
         });
         buttonPanel.add(cancelButton);
-        JButton saveButton = new JButton("Save", UIUtils.getIconFromResources("actions/save.png"));
+        JButton saveButton = new JButton("Save", UIUtils.getIconFromResources("actions/filesave.png"));
         saveButton.addActionListener(e -> {
             if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
                 JIPipe.getSettings().save();

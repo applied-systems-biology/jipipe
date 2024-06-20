@@ -42,7 +42,7 @@ import java.util.Objects;
 @SetJIPipeDocumentation(name = "Rename table column", description = "Renames columns")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 @Deprecated
 @LabelAsJIPipeHidden
 public class RenameTableColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

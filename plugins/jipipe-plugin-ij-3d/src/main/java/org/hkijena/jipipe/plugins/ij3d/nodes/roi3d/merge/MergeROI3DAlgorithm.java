@@ -31,7 +31,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Merge 3D ROI", description = "Merges the input 3D ROI lists")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Merge")
 @AddJIPipeInputSlot(value = ROI3DListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ROI3DListData.class, name = "Output", create = true)
 public class MergeROI3DAlgorithm extends JIPipeMergingAlgorithm {
 
     public MergeROI3DAlgorithm(JIPipeNodeInfo info) {

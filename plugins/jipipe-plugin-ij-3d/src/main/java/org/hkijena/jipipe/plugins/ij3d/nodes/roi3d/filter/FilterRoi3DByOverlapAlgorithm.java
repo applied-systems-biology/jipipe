@@ -54,8 +54,8 @@ import org.hkijena.jipipe.utils.StringUtils;
 @AddJIPipeInputSlot(value = ROI3DListData.class, name = "ROI 1", create = true)
 @AddJIPipeInputSlot(value = ROI3DListData.class, name = "ROI 2", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, description = "An optional reference image", optional = true)
-@AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "ROI 1", create = true)
-@AddJIPipeOutputSlot(value = ROI3DListData.class, slotName = "ROI 2", create = true)
+@AddJIPipeOutputSlot(value = ROI3DListData.class, name = "ROI 1", create = true)
+@AddJIPipeOutputSlot(value = ROI3DListData.class, name = "ROI 2", create = true)
 public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
     private ROI3DRelationMeasurementSetParameter overlapFilterMeasurements = new ROI3DRelationMeasurementSetParameter();

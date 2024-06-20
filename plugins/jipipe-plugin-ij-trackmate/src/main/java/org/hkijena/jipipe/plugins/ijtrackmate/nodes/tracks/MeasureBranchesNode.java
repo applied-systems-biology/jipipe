@@ -37,7 +37,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
         + "successors, and its duration.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nMeasure")
 @AddJIPipeInputSlot(value = TrackCollectionData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class MeasureBranchesNode extends JIPipeSimpleIteratingAlgorithm {
 
     public MeasureBranchesNode(JIPipeNodeInfo info) {

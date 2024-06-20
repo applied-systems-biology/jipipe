@@ -64,8 +64,8 @@ import java.util.stream.Collectors;
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Forms")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Data")
 @AddJIPipeInputSlot(value = FormData.class, name = "Forms", role = JIPipeDataSlotRole.Parameters)
-@AddJIPipeOutputSlot(value = JIPipeData.class, slotName = "Data")
-@AddJIPipeOutputSlot(value = FormData.class, slotName = "Forms", role = JIPipeDataSlotRole.Parameters)
+@AddJIPipeOutputSlot(value = JIPipeData.class, name = "Data")
+@AddJIPipeOutputSlot(value = FormData.class, name = "Forms", role = JIPipeDataSlotRole.Parameters)
 public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements JIPipeIterationStepAlgorithm {
 
     public static final String SLOT_FORMS = "Forms";

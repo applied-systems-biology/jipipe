@@ -42,10 +42,10 @@ import java.util.Map;
         "Will compute the gradients of the image based on the Canny edge detector. ")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Features")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Edges", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Edges X", create = true, description = "Edges in the X direction")
-@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Edges Y", create = true, description = "Edges in the Y direction")
-@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Edges Z", create = true, description = "Edges in the Z direction")
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Edges", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Edges X", create = true, description = "Edges in the X direction")
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Edges Y", create = true, description = "Edges in the Y direction")
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Edges Z", create = true, description = "Edges in the Z direction")
 @AddJIPipeCitation("https://mcib3d.frama.io/3d-suite-imagej/plugins/Filters/3D-Edge-and-Symmetry-Filter/")
 public class EdgeFilter3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

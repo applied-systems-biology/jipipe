@@ -73,9 +73,9 @@ import java.util.stream.Collectors;
         "Please visit https://github.com/multi-template-matching/MultiTemplateMatching-Fiji/wiki for more information about the Multi-Template Matching plugin.")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
 @AddJIPipeInputSlot(value = ImagePlus2DData.class, name = "Template", create = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", create = true)
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", create = true, description = "Table containing information about the matched templates. To access the templates directly, enable 'Output matched templates'")
-@AddJIPipeOutputSlot(value = ImagePlusData.class, slotName = "Assembled templates")
+@AddJIPipeOutputSlot(value = ROIListData.class, name = "ROI", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Measurements", create = true, description = "Table containing information about the matched templates. To access the templates directly, enable 'Output matched templates'")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Assembled templates")
 @ConfigureJIPipeNode(menuPath = "Analyze", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMulti-Template-Matching")
 public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {

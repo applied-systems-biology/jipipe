@@ -40,7 +40,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
 @SetJIPipeDocumentation(name = "Rename single columns", description = "Renames columns")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = TableColumn.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = TableColumn.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = TableColumn.class, name = "Output", create = true)
 public class RenameSingleColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private StringQueryExpressionAndStringPairParameter.List renamingEntries = new StringQueryExpressionAndStringPairParameter.List();

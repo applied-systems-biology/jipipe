@@ -31,7 +31,7 @@ import org.hkijena.jipipe.plugins.tables.parameters.collections.ResultsTableData
  */
 @SetJIPipeDocumentation(name = "Define tables", description = "Defines one or multiple tables.")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class DefineTablesAlgorithm extends JIPipeAlgorithm {
 
     private ResultsTableDataList tables = new ResultsTableDataList();

@@ -50,7 +50,7 @@ import java.nio.file.Path;
 
 @SetJIPipeDocumentation(name = "Get JIPipe slot folder", description = "Extracts a slot output folder from a JIPipe output. Use the 'Set output slot' button to select the correct parameters.")
 @AddJIPipeInputSlot(value = JIPipeOutputData.class, name = "JIPipe output", create = true)
-@AddJIPipeOutputSlot(value = FolderData.class, slotName = "Slot output folder", create = true)
+@AddJIPipeOutputSlot(value = FolderData.class, name = "Slot output folder", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Meta run")
 public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

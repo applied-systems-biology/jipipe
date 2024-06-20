@@ -33,7 +33,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.ImagePlus3DData;
 @SetJIPipeDocumentation(name = "Invert 3D stack Z-order", description = "Inverts the order of a Z-stack.")
 @ConfigureJIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlus3DData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ImagePlus3DData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ImagePlus3DData.class, name = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks\nTools\nReverse")
 public class StackInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

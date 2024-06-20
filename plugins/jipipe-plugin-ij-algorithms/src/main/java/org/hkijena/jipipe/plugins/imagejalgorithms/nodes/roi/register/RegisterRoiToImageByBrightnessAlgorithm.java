@@ -46,7 +46,7 @@ import java.util.List;
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Register")
 @AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlus2DData.class, name = "Image", create = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, slotName = "Registered ROI", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, name = "Registered ROI", create = true)
 public class RegisterRoiToImageByBrightnessAlgorithm extends JIPipeIteratingAlgorithm {
 
     private JIPipeExpressionParameter rotationRange = new JIPipeExpressionParameter("MAKE_SEQUENCE(-180, 180, 1)");

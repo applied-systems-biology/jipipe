@@ -54,7 +54,7 @@ import java.util.Arrays;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Threshold", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Value", create = true)
-@AddJIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class FastKeyValueThresholdStatisticsGenerator extends JIPipeIteratingAlgorithm {
     private String outputThresholdColumn = "threshold";
     private String outputForegroundColumn = "foreground";

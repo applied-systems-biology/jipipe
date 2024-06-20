@@ -31,7 +31,7 @@ import org.hkijena.jipipe.utils.xml.XmlUtils;
 @SetJIPipeDocumentation(name = "Prettify XML", description = "Prettifies/formats the input XML data")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "XML")
 @AddJIPipeInputSlot(value = XMLData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = XMLData.class, slotName = "Output", create = true)
+@AddJIPipeOutputSlot(value = XMLData.class, name = "Output", create = true)
 public class PrettifyXMLAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private int indent = 4;
