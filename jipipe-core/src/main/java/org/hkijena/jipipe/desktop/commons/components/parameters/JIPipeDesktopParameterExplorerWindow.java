@@ -116,12 +116,12 @@ public class JIPipeDesktopParameterExplorerWindow extends JFrame implements JIPi
         JButton resetEditorButton = new JButton(UIUtils.getIconFromResources("actions/rabbitvcs-reset.png"));
         resetEditorButton.setToolTipText("Reset value");
         resetEditorButton.addActionListener(e -> resetCurrentValue());
-        editorHeader.addColumn(resetEditorButton);
+        editorHeader.addToTitlePanel(resetEditorButton);
 
         JButton pasteCurrentValueJsonButton = new JButton(UIUtils.getIconFromResources("actions/edit-paste.png"));
         pasteCurrentValueJsonButton.setToolTipText("Paste JSON data. This will set the current parameter according to the pasted JSON data.");
         pasteCurrentValueJsonButton.addActionListener(e -> pasteCurrentValueJson());
-        editorHeader.addColumn(pasteCurrentValueJsonButton);
+        editorHeader.addToTitlePanel(pasteCurrentValueJsonButton);
 
         formPanel.addWideToForm(currentValuePanel, null);
 
@@ -135,22 +135,22 @@ public class JIPipeDesktopParameterExplorerWindow extends JFrame implements JIPi
         JButton resetTesterButton = new JButton(UIUtils.getIconFromResources("actions/rabbitvcs-reset.png"));
         resetTesterButton.setToolTipText("Reset value");
         resetTesterButton.addActionListener(e -> resetTesterValue());
-        valueTesterHeader.addColumn(resetTesterButton);
+        valueTesterHeader.addToTitlePanel(resetTesterButton);
 
         JButton pasteTesterValueJsonButton = new JButton(UIUtils.getIconFromResources("actions/edit-paste.png"));
         pasteTesterValueJsonButton.setToolTipText("Paste JSON data. This will set the tester value according to the pasted JSON data.");
         pasteTesterValueJsonButton.addActionListener(e -> pasteTesterValueJson());
-        valueTesterHeader.addColumn(pasteTesterValueJsonButton);
+        valueTesterHeader.addToTitlePanel(pasteTesterValueJsonButton);
 
         JButton copyCurrentValueButton = new JButton(UIUtils.getIconFromResources("actions/down.png"));
         copyCurrentValueButton.addActionListener(e -> copyCurrentValueIntoTester());
         copyCurrentValueButton.setToolTipText("Copy current value into the tester");
-        valueTesterHeader.addColumn(copyCurrentValueButton);
+        valueTesterHeader.addToTitlePanel(copyCurrentValueButton);
 
         JButton writeCurrentValueButton = new JButton(UIUtils.getIconFromResources("actions/up.png"));
         writeCurrentValueButton.addActionListener(e -> writeTesterValueIntoCurrent());
         writeCurrentValueButton.setToolTipText("Write into current value");
-        valueTesterHeader.addColumn(writeCurrentValueButton);
+        valueTesterHeader.addToTitlePanel(writeCurrentValueButton);
 
         formPanel.addWideToForm(testerValuePanel, null);
 

@@ -89,7 +89,7 @@ public class JIPipeDesktopQuickRunSetupUI extends JIPipeDesktopProjectWorkbenchP
         JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.WITH_SCROLLING);
 
         formPanel.addGroupHeader("Store to cache", "The following operations will store all results to the memory cache. " +
-                "Please note that for larger amounts of data, you might run into memory limitations.", UIUtils.getIconFromResources("actions/database.png"));
+                "Please note that for larger amounts of data, you might run into memory limitations.", false, UIUtils.getIconFromResources("actions/database.png"));
         addSelectionPanelItem(formPanel,
                 "Update cache",
                 UIUtils.getIconFromResources("actions/database.png"),
@@ -109,7 +109,7 @@ public class JIPipeDesktopQuickRunSetupUI extends JIPipeDesktopProjectWorkbenchP
                 () -> updateCache(true, true),
                 false);
 
-        formPanel.addGroupHeader("Store to disk", "The following operations will store all results to the hard drive.", UIUtils.getIconFromResources("devices/drive-harddisk.png"));
+        formPanel.addGroupHeader("Store to disk", "The following operations will store all results to the hard drive.", false, UIUtils.getIconFromResources("devices/drive-harddisk.png"));
 
         addSelectionPanelItem(formPanel,
                 "Run & Show results",

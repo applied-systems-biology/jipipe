@@ -56,7 +56,7 @@ public class ExpressionBuilderInserterUI extends JPanel {
             JIPipeDesktopFormPanel.GroupHeaderPanel groupHeader = inserterForm.addGroupHeader(String.format("<html><i style=\"color: #ffaf0a; \">Variable</i> %s (<code><strong>%s</strong></code>)</html>",
                     HtmlEscapers.htmlEscaper().escape(variable.getName()),
                     HtmlEscapers.htmlEscaper().escape(variable.getKey())), UIUtils.getIconFromResources("actions/insert-function.png"));
-            groupHeader.setDescription(variable.getDescription());
+            groupHeader.addDescriptionRow(variable.getDescription());
 
             if (!StringUtils.isNullOrEmpty(((JIPipeExpressionParameterVariableInfo) insertedObject).getKey())) {
                 JButton insertButton = new JButton("Insert", UIUtils.getIconFromResources("actions/insert-object.png"));
@@ -72,7 +72,7 @@ public class ExpressionBuilderInserterUI extends JPanel {
             JIPipeDesktopFormPanel.GroupHeaderPanel groupHeader = inserterForm.addGroupHeader(String.format("<html><i style=\"color: #0000ff; \">Constant</i> %s (<code><strong>%s</strong></code>)</html>",
                     HtmlEscapers.htmlEscaper().escape(constantEntry.getName()),
                     HtmlEscapers.htmlEscaper().escape(constantEntry.getConstant().getName())), UIUtils.getIconFromResources("actions/insert-function.png"));
-            groupHeader.setDescription(constantEntry.getDescription());
+            groupHeader.addDescriptionRow(constantEntry.getDescription());
 
             inserterButtonPanel.add(Box.createHorizontalGlue());
 
@@ -96,7 +96,7 @@ public class ExpressionBuilderInserterUI extends JPanel {
             JIPipeDesktopFormPanel.GroupHeaderPanel groupHeader = inserterForm.addGroupHeader(String.format("<html><i style=\"color: #854745; \">Operator</i> %s (<code><strong>%s</strong></code>)</html>",
                     HtmlEscapers.htmlEscaper().escape(operatorEntry.getName()),
                     HtmlEscapers.htmlEscaper().escape(operatorEntry.getSignature())), UIUtils.getIconFromResources("actions/insert-function.png"));
-            groupHeader.setDescription(operatorEntry.getDescription());
+            groupHeader.addDescriptionRow(operatorEntry.getDescription());
 
             inserterParameterEditorUIList = new ArrayList<>();
             for (int i = 0; i < operatorEntry.getOperator().getOperandCount(); i++) {
@@ -157,7 +157,7 @@ public class ExpressionBuilderInserterUI extends JPanel {
             }
             descriptionBuilder.append("</html>");
 
-            groupHeader.setDescription(descriptionBuilder.toString());
+            groupHeader.addDescriptionRow(descriptionBuilder.toString());
 
             inserterParameterEditorUIList = new ArrayList<>();
             if (function.getMinimumArgumentCount() < function.getMaximumArgumentCount()) {
@@ -178,7 +178,7 @@ public class ExpressionBuilderInserterUI extends JPanel {
                         inserterCommitted = false;
                     }
                 });
-                groupHeader.addColumn(addParameterButton);
+                groupHeader.addToTitlePanel(addParameterButton);
             }
             for (int i = 0; i < function.getMinimumArgumentCount(); i++) {
                 ParameterInfo info = function.getParameterInfo(i);
@@ -209,7 +209,7 @@ public class ExpressionBuilderInserterUI extends JPanel {
         } else {
             inserterCommitted = true;
             JIPipeDesktopFormPanel.GroupHeaderPanel groupHeader = inserterForm.addGroupHeader("Expression builder", UIUtils.getIconFromResources("actions/insert-function.png"));
-            groupHeader.setDescription("Welcome to the expression builder that simplifies the creation of expressions. On the right-hand side you will find a list of all available functions and operators. " +
+            groupHeader.addDescriptionRow("Welcome to the expression builder that simplifies the creation of expressions. On the right-hand side you will find a list of all available functions and operators. " +
                     "Please note that the list of variables can be incomplete depending on various factors.");
         }
         inserterForm.addVerticalGlue();

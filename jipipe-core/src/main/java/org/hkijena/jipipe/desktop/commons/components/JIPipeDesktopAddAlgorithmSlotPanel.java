@@ -153,7 +153,7 @@ public class JIPipeDesktopAddAlgorithmSlotPanel extends JPanel {
         // Create form located at the bottom
         JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.NONE);
         JIPipeDesktopFormPanel.GroupHeaderPanel header = formPanel.addGroupHeader("Add slot to '" + algorithm.getName() + "'", JIPipe.getInstance().getNodeRegistry().getIconFor(algorithm.getInfo()));
-        header.setDescription("Select the slot type in the list at the left-hand side. Then set the name and other properties of the newly created slot. You can later change the name or attach a custom label.");
+        header.addDescriptionRow("Select the slot type in the list at the left-hand side. Then set the name and other properties of the newly created slot. You can later change the name or attach a custom label.");
         nameEditor = new JXTextField();
         nameEditor.addKeyListener(new KeyAdapter() {
             @Override

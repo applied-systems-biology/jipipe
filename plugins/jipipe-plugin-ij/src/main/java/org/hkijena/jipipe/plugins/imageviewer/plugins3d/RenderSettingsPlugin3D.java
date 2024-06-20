@@ -42,7 +42,7 @@ public class RenderSettingsPlugin3D extends JIPipeImageViewerPlugin3D {
         JIPipeDesktopFormPanel.GroupHeaderPanel groupHeaderPanel = formPanel.addGroupHeader("Image rendering", UIUtils.getIconFromResources("actions/viewimage.png"));
         JButton saveAsDefaultButton = new JButton("Save as default", UIUtils.getIconFromResources("actions/save.png"));
         saveAsDefaultButton.addActionListener(e -> saveImageRenderSettingsAsDefault());
-        groupHeaderPanel.addColumn(saveAsDefaultButton);
+        groupHeaderPanel.addToTitlePanel(saveAsDefaultButton);
         JIPipeDesktopParameterPanel parameterPanel = new JIPipeDesktopParameterPanel(getDesktopWorkbench(), getViewerPanel3D().getImage3DRendererSettings(), null, JIPipeDesktopParameterPanel.NO_GROUP_HEADERS);
         formPanel.addWideToForm(parameterPanel);
     }

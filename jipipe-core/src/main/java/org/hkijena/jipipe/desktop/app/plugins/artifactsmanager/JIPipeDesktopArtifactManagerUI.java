@@ -148,7 +148,7 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
 
         propertyPanel.addGroupHeader("Artifacts", "A variety of external tools are managed via the artifacts system that automatically downloads and applies the " +
                 "correct version of the dependency based on project metadata.\n\n" +
-                "Artifacts are automatically downloaded to a directory shared across multiple JIPipe instances.", UIUtils.getIconFromResources("actions/help-info.png"));
+                "Artifacts are automatically downloaded to a directory shared across multiple JIPipe instances.", false, UIUtils.getIconFromResources("actions/help-info.png"));
         propertyPanel.addWideToForm(UIUtils.createButton("Open artifacts directory", UIUtils.getIconFromResources("actions/folder-open.png"), this::openArtifactsDirectory));
 
         ArtifactEntry selectedValue = artifactEntryJList.getSelectedValue();

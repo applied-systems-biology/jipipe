@@ -200,7 +200,7 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
         PluginEntry selectedValue = pluginEntryJList.getSelectedValue();
         if (selectedValue != null) {
             JIPipePlugin plugin = selectedValue.plugin;
-            propertyPanel.addGroupHeader(plugin.getMetadata().getName(), plugin.getMetadata().getDescription().getHtml(), UIUtils.getIconFromResources("actions/puzzle-piece.png"));
+            propertyPanel.addGroupHeader(plugin.getMetadata().getName(), plugin.getMetadata().getDescription().getHtml(), false, UIUtils.getIconFromResources("actions/puzzle-piece.png"));
             if (plugin.isCorePlugin()) {
                 propertyPanel.addToForm(new JLabel("Always active"), new JLabel("Status"));
             } else {
@@ -268,7 +268,7 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
             }
         } else {
             propertyPanel.addGroupHeader("Plugins", "The JIPipe feature set can be extended with a variety of plugins. " +
-                    "Select items on the left-hand side to show more information about a plugin.", UIUtils.getIconFromResources("actions/help-info.png"));
+                    "Select items on the left-hand side to show more information about a plugin.", false, UIUtils.getIconFromResources("actions/help-info.png"));
         }
 
         propertyPanel.addVerticalGlue();
@@ -402,12 +402,12 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
                 updateSiteCheckBoxes.put(name, checkBox);
                 formPanel.addWideToForm(checkBox);
             }
-            groupHeader.addColumn(UIUtils.createButton("Select all", UIUtils.getIconFromResources("actions/edit-select-all.png"), () -> {
+            groupHeader.addToTitlePanel(UIUtils.createButton("Select all", UIUtils.getIconFromResources("actions/edit-select-all.png"), () -> {
                 for (JCheckBox checkBox : updateSiteCheckBoxes.values()) {
                     checkBox.setSelected(true);
                 }
             }));
-            groupHeader.addColumn(UIUtils.createButton("Clear selection", UIUtils.getIconFromResources("actions/edit-select-none.png"), () -> {
+            groupHeader.addToTitlePanel(UIUtils.createButton("Clear selection", UIUtils.getIconFromResources("actions/edit-select-none.png"), () -> {
                 for (JCheckBox checkBox : updateSiteCheckBoxes.values()) {
                     checkBox.setSelected(false);
                 }

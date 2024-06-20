@@ -25,7 +25,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.desktop.api.nodes.AddJIPipeDesktopNodeQuickAction;
 import org.hkijena.jipipe.desktop.api.nodes.JIPipeDesktopNodeQuickAction;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
@@ -49,8 +48,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.*;
 
@@ -117,8 +114,8 @@ public class JIPipeDesktopPipelineSingleAlgorithmSelectionOverviewPanelUI extend
 
     private void initializeQuickActions(JIPipeDesktopFormPanel formPanel) {
         for (JIPipeDesktopNodeQuickAction quickAction : JIPipeDesktopNodeQuickAction.getQuickActions(node)) {
-            JIPipeDesktopFormPanel.GroupHeaderPanel groupHeaderPanel = formPanel.addGroupHeader(quickAction.getName(), quickAction.getDescription(), UIUtils.getIconFromResources(quickAction.getIcon()));
-            groupHeaderPanel.addColumn(UIUtils.createButton(quickAction.getButtonText(), UIUtils.getIconFromResources(quickAction.getButtonIcon()), () -> {
+            JIPipeDesktopFormPanel.GroupHeaderPanel groupHeaderPanel = formPanel.addGroupHeader(quickAction.getName(), quickAction.getDescription(), false, UIUtils.getIconFromResources(quickAction.getIcon()));
+            groupHeaderPanel.addToTitlePanel(UIUtils.createButton(quickAction.getButtonText(), UIUtils.getIconFromResources(quickAction.getButtonIcon()), () -> {
                quickAction.run(node, canvasUI);
             }));
         }
@@ -132,7 +129,7 @@ public class JIPipeDesktopPipelineSingleAlgorithmSelectionOverviewPanelUI extend
     private void initializeCache(JIPipeDesktopFormPanel formPanel, Map<String, JIPipeDataTable> query) {
         JIPipeDesktopFormPanel.GroupHeaderPanel groupHeader = formPanel.addGroupHeader("Results available", UIUtils.getIconFromResources("actions/database.png"));
         formPanel.addWideToForm(UIUtils.createBorderlessReadonlyTextPane("Previously generated results are stored in the memory cache. Click the 'Show results' button to review the results.", false));
-        groupHeader.addColumn(UIUtils.createButton("Show results", UIUtils.getIconFromResources("actions/open-in-new-window.png"), this::openCacheBrowser));
+        groupHeader.addToTitlePanel(UIUtils.createButton("Show results", UIUtils.getIconFromResources("actions/open-in-new-window.png"), this::openCacheBrowser));
 
         JIPipeDesktopFormPanel ioTable = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.NONE);
         for (JIPipeOutputDataSlot outputSlot : node.getOutputSlots()) {
@@ -157,7 +154,7 @@ public class JIPipeDesktopPipelineSingleAlgorithmSelectionOverviewPanelUI extend
 
     private void initializeNodeGroup(JIPipeDesktopFormPanel formPanel) {
         JIPipeDesktopFormPanel.GroupHeaderPanel groupHeader = formPanel.addGroupHeader("Group contents", UIUtils.getIconFromResources("actions/help-info.png"));
-        groupHeader.addColumn(UIUtils.createButton("Edit", UIUtils.getIconFromResources("actions/edit.png"), this::editNodeGroupContents));
+        groupHeader.addToTitlePanel(UIUtils.createButton("Edit", UIUtils.getIconFromResources("actions/edit.png"), this::editNodeGroupContents));
         formPanel.addWideToForm(UIUtils.createBorderlessReadonlyTextPane("This node executes the content of a sub-pipeline. You can modify it by clicking the 'Edit' button.", false));
 
     }
@@ -321,7 +318,7 @@ public class JIPipeDesktopPipelineSingleAlgorithmSelectionOverviewPanelUI extend
     private void initializeDocumentation(JIPipeDesktopFormPanel formPanel) {
         JIPipeGraphNode node = parentPanel.getNode();
         JIPipeDesktopFormPanel.GroupHeaderPanel documentationGroup = formPanel.addGroupHeader(node.getName(), JIPipe.getNodes().getIconFor(node.getInfo()));
-        documentationGroup.addColumn(UIUtils.createButton("Full documentation", UIUtils.getIconFromResources("actions/open-in-new-window.png"), this::openFullDocumentation));
+        documentationGroup.addToTitlePanel(UIUtils.createButton("Full documentation", UIUtils.getIconFromResources("actions/open-in-new-window.png"), this::openFullDocumentation));
 
         String description;
         if (StringUtils.isNullOrEmpty(node.getCustomDescription().getBody())) {

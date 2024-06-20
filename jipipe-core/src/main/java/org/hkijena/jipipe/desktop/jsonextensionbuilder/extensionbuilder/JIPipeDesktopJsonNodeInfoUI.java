@@ -81,7 +81,7 @@ public class JIPipeDesktopJsonNodeInfoUI extends JIPipeDesktopJsonExtensionWorkb
                 null,
                 JIPipeDesktopParameterPanel.NO_GROUP_HEADERS);
         JIPipeDesktopFormPanel.GroupHeaderPanel metadataHeader = parameterEditor.addGroupHeader("Algorithm metadata", UIUtils.getIconFromResources("actions/help-info.png"));
-        metadataHeader.setDescription("Please provide following metadata:");
+        metadataHeader.addDescriptionRow("Please provide following metadata:");
         parameterEditor.addWideToForm(infoParameterEditor, null);
         infoParameterEditor.getHoverHelpEventEmitter().subscribeLambda((emitter, event) -> {
             parameterEditor.getParameterHelp().setDocument(event.getDocument());

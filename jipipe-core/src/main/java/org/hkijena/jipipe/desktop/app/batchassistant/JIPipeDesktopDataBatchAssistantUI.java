@@ -297,9 +297,9 @@ public class JIPipeDesktopDataBatchAssistantUI extends JIPipeDesktopProjectWorkb
             SHOW_ADVANCED_SETTINGS = advancedSettingsCheck.isSelected();
             toggleParameterPanelAdvancedMode(parameterPanel, advancedSettingsCheck.isSelected());
         });
-        groupHeaderPanel.addColumn(advancedSettingsCheck);
+        groupHeaderPanel.addToTitlePanel(advancedSettingsCheck);
 
-        groupHeaderPanel.addColumn(UIUtils.createBalloonHelpButton("The settings change the behavior of how iteration steps are generated. " +
+        groupHeaderPanel.addToTitlePanel(UIUtils.createBalloonHelpButton("The settings change the behavior of how iteration steps are generated. " +
                 "You can also access more advanced settings by activating them."));
         panel.add(groupHeaderPanel, BorderLayout.NORTH);
 

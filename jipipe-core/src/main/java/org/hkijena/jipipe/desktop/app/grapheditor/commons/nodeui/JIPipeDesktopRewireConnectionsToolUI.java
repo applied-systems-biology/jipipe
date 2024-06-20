@@ -183,7 +183,7 @@ public class JIPipeDesktopRewireConnectionsToolUI extends JDialog {
 
     private void initializeAlternativesPanel(JIPipeDesktopFormPanel alternativesPanel, JList<JIPipeDataSlot> alternativesList) {
         JIPipeDesktopFormPanel.GroupHeaderPanel groupHeader = alternativesPanel.addGroupHeader("Compatible targets", UIUtils.getIconFromResources("actions/go-jump.png"));
-        groupHeader.setDescription("Please select a compatible slot where the selected connections will be moved to. Please note that this list will be empty of no compatible targets can be found.");
+        groupHeader.addDescriptionRow("Please select a compatible slot where the selected connections will be moved to. Please note that this list will be empty of no compatible targets can be found.");
         JScrollPane scrollPane = new JScrollPane(alternativesList);
         alternativesList.setCellRenderer(new JIPipeDesktopDataSlotListCellRenderer());
 
@@ -281,7 +281,7 @@ public class JIPipeDesktopRewireConnectionsToolUI extends JDialog {
 
     private void initializeConnectionsList(JIPipeDesktopFormPanel connectionsList) {
         JIPipeDesktopFormPanel.GroupHeaderPanel groupHeader = connectionsList.addGroupHeader("List of rewired connections", UIUtils.getIconFromResources("actions/lines-connector.png"));
-        groupHeader.setDescription("You have the option to only move specific connections to another output.");
+        groupHeader.addDescriptionRow("You have the option to only move specific connections to another output.");
         for (JIPipeDataSlot currentConnection : currentConnections) {
             JCheckBox checkBox;
             if (currentConnection.isInput()) {

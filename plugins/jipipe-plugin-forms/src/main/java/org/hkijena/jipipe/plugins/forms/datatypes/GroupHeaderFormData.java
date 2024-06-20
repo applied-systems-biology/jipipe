@@ -53,7 +53,7 @@ public class GroupHeaderFormData extends ParameterFormData {
     @Override
     public Component getEditor(JIPipeDesktopWorkbench workbench) {
         JIPipeDesktopFormPanel.GroupHeaderPanel panel = new JIPipeDesktopFormPanel.GroupHeaderPanel(getName(), UIUtils.getIconFromResources("actions/configure.png"), 8);
-        panel.setDescription(getDescription().getHtml());
+        panel.addDescriptionRow(getDescription().getHtml());
         return panel;
     }
 

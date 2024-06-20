@@ -33,7 +33,7 @@ public class CompositeManagerPlugin2D extends GeneralImageViewerPanelPlugin2D {
             JToggleButton compositeToggle = new JToggleButton("Enabled", UIUtils.getIconFromResources("actions/eye.png"));
             compositeToggle.setSelected(getViewerPanel2D().isComposite());
             compositeToggle.addActionListener(e -> getViewerPanel2D().setComposite(compositeToggle.isSelected()));
-            headerPanel.addColumn(compositeToggle);
+            headerPanel.addToTitlePanel(compositeToggle);
 
             for (ImageViewerPanel2D.CompositeLayer layer : getViewerPanel2D().getOrderedCompositeBlendLayers()) {
                 ImageViewer2DCompositeLayerEditor layerEditor = new ImageViewer2DCompositeLayerEditor(getViewerPanel2D(), layer.getChannel());

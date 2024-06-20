@@ -108,7 +108,7 @@ public class JIPipeDesktopSingleCompartmentSelectionOverviewPanelUI extends JIPi
 
     private void initializeCompartment(JIPipeDesktopFormPanel formPanel) {
         JIPipeDesktopFormPanel.GroupHeaderPanel groupHeader = formPanel.addGroupHeader("Compartments", UIUtils.getIconFromResources("actions/help-info.png"));
-        groupHeader.addColumn(UIUtils.createButton("Edit", UIUtils.getIconFromResources("actions/edit.png"), this::editCompartmentContents));
+        groupHeader.addToTitlePanel(UIUtils.createButton("Edit", UIUtils.getIconFromResources("actions/edit.png"), this::editCompartmentContents));
         formPanel.addWideToForm(UIUtils.createBorderlessReadonlyTextPane("Graph compartments organize the pipeline into units, which is helpful for larger workflows. " +
                 "To edit the steps that are executed in a compartment, double-click the compartment in the interface or click the 'Edit' button.", false));
     }
@@ -195,7 +195,7 @@ public class JIPipeDesktopSingleCompartmentSelectionOverviewPanelUI extends JIPi
     private void initializeCache(JIPipeDesktopFormPanel formPanel, Map<String, JIPipeDataTable> query, JIPipeProjectCompartmentOutput compartmentOutput) {
         JIPipeDesktopFormPanel.GroupHeaderPanel groupHeader = formPanel.addGroupHeader("Results available in '" + compartmentOutput.getOutputSlotName() + "'", UIUtils.getIconFromResources("actions/database.png"));
         formPanel.addWideToForm(UIUtils.createBorderlessReadonlyTextPane("Previously generated results are stored in the memory cache. Click the 'Show results' button to review the results.", false));
-        groupHeader.addColumn(UIUtils.createButton("Show results", UIUtils.getIconFromResources("actions/open-in-new-window.png"), this::openCacheBrowser));
+        groupHeader.addToTitlePanel(UIUtils.createButton("Show results", UIUtils.getIconFromResources("actions/open-in-new-window.png"), this::openCacheBrowser));
 
         JIPipeDesktopFormPanel ioTable = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.NONE);
         for (JIPipeOutputDataSlot outputSlot : compartmentOutput.getOutputSlots()) {

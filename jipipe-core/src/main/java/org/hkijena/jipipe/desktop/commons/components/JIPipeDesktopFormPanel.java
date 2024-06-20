@@ -464,12 +464,13 @@ public class JIPipeDesktopFormPanel extends JPanel {
     /**
      * Adds a group header
      *
-     * @param text        Group text
-     * @param description Group description
-     * @param icon        Group icon
+     * @param text                Group text
+     * @param description         Group description
+     * @param collapseDescription if the description should be collapsed
+     * @param icon                Group icon
      * @return the panel that allows adding more components to it
      */
-    public GroupHeaderPanel addGroupHeader(String text, String description, Icon icon) {
+    public GroupHeaderPanel addGroupHeader(String text, String description, boolean collapseDescription, Icon icon) {
         GroupHeaderPanel panel = new GroupHeaderPanel(text, icon, getGroupHeaderPanels().isEmpty() ? 8 : 32);
         if ((flags & TRANSPARENT_BACKGROUND) == TRANSPARENT_BACKGROUND) {
             panel.setOpaque(false);
@@ -489,7 +490,16 @@ public class JIPipeDesktopFormPanel extends JPanel {
         entries.add(new FormPanelEntry(numRows, null, panel, null, true));
         groupHeaderPanels.add(panel);
         ++numRows;
-        panel.setDescription(description);
+
+        if(!StringUtils.isNullOrEmpty(description)) {
+            if(collapseDescription) {
+                panel.addDescriptionPopupToTitlePanel(description);
+            }
+            else {
+                panel.addDescriptionRow(description);
+            }
+        }
+
         return panel;
     }
 
@@ -689,71 +699,44 @@ public class JIPipeDesktopFormPanel extends JPanel {
      * Panel that contains a group header
      */
     public static class GroupHeaderPanel extends JPanel {
-        private final JLabel titleLabel;
-        private final JTextPane descriptionArea;
+        private JPanel titlePanel;
         private final int marginTop;
         private final Color backgroundColor;
         private final Color borderColor;
-        private int columnCount = 0;
 
         /**
          * @param text           the text
          * @param icon           the icon
          * @param marginTop      the margin to the top
-         * @param leftComponents Components added after the icon
          */
-        public GroupHeaderPanel(String text, Icon icon, int marginTop, Component... leftComponents) {
+        public GroupHeaderPanel(String text, Icon icon, int marginTop) {
             this.marginTop = marginTop;
 
             this.backgroundColor = ColorUtils.mix(JIPipeDesktopModernMetalTheme.PRIMARY5, ColorUtils.scaleHSV(UIManager.getColor("Panel.background"), 1, 1, 0.98f), 0.92);
             this.borderColor = backgroundColor;
 
             setBorder(BorderFactory.createEmptyBorder(marginTop, 0, 8, 0));
-            setLayout(new GridBagLayout());
+            setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-            for (Component leftComponent : leftComponents) {
-                addColumn(leftComponent);
-            }
+            initializeTitlePanel(text, icon);
+        }
 
-            titleLabel = new JLabel(text, icon, JLabel.LEFT);
+        private void initializeTitlePanel(String text, Icon icon) {
+            titlePanel = new JPanel();
+            titlePanel.setOpaque(false);
+            titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.X_AXIS));
+
+            // Create and add title
+            JLabel titleLabel = new JLabel(text, icon, JLabel.LEFT);
             titleLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 12));
             titleLabel.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 4));
-            add(titleLabel, new GridBagConstraints() {
-                {
-                    gridx = columnCount;
-                    gridy = 0;
-                    anchor = GridBagConstraints.WEST;
-                    insets = UI_PADDING;
-                }
-            });
-            ++columnCount;
-            add(Box.createHorizontalGlue(), new GridBagConstraints() {
-                {
-                    gridx = columnCount;
-                    gridy = 0;
-                    fill = GridBagConstraints.HORIZONTAL;
-                    weightx = 1;
-                    anchor = GridBagConstraints.WEST;
-                    insets = UI_PADDING;
-                }
-            });
-            ++columnCount;
 
-            descriptionArea = UIUtils.createBorderlessReadonlyTextPane("", true);
-            descriptionArea.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
-            descriptionArea.setOpaque(false);
-            descriptionArea.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 4));
-            descriptionArea.setVisible(false);
-            add(descriptionArea, new GridBagConstraints() {
-                {
-                    gridx = 0;
-                    gridy = 1;
-                    gridwidth = columnCount;
-                    fill = GridBagConstraints.HORIZONTAL;
-                    anchor = GridBagConstraints.WEST;
-                    insets = UI_PADDING;
-                }
-            });
+            titlePanel.add(titleLabel);
+
+            // Add spacer
+            titlePanel.add(Box.createHorizontalGlue());
+            titlePanel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+            add(titlePanel);
         }
 
         @Override
@@ -771,39 +754,28 @@ public class JIPipeDesktopFormPanel extends JPanel {
             g2.drawRoundRect(x, y, w, h, 4, 4);
         }
 
-        public JLabel getTitleLabel() {
-            return titleLabel;
-        }
-
         /**
          * Adds a component on the right hand side
          *
          * @param component the component
          */
-        public void addColumn(Component component) {
-            add(component, new GridBagConstraints() {
-                {
-                    gridx = columnCount;
-                    gridy = 0;
-                    anchor = GridBagConstraints.WEST;
-                    insets = new Insets(4, 2, 4, 2);
-                }
-            });
-            ++columnCount;
+        public void addToTitlePanel(Component component) {
+            titlePanel.add(component);
         }
 
-        public JTextPane getDescriptionArea() {
-            return descriptionArea;
+        public void addDescriptionRow(String text) {
+            JTextPane descriptionArea = UIUtils.createBorderlessReadonlyTextPane(text, true);
+            descriptionArea.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
+            descriptionArea.setOpaque(false);
+            descriptionArea.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 4));
+            add(descriptionArea);
         }
 
-        /**
-         * Sets the description and sets the visibility
-         *
-         * @param description the description
-         */
-        public void setDescription(String description) {
-            descriptionArea.setText(description);
-            descriptionArea.setVisible(!StringUtils.isNullOrEmpty(description));
+        public void addDescriptionPopupToTitlePanel(String text) {
+            JButton helpButton = new JButton("Info", UIUtils.getIconFromResources("actions/help.png"));
+            UIUtils.addBalloonToComponent(helpButton, text);
+            helpButton.setOpaque(false);
+            addToTitlePanel(helpButton);
         }
     }
 
