@@ -97,15 +97,15 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
 
             // Centroid X
             variables.set("default", vertex.getSpatialLocation().getX());
-            vertex.getSpatialLocation().setX(centroidX.evaluateToInteger(variables));
+            vertex.getSpatialLocation().setX(centroidX.evaluateToDouble(variables));
 
             // Centroid Y
             variables.set("default", vertex.getSpatialLocation().getY());
-            vertex.getSpatialLocation().setY(centroidY.evaluateToInteger(variables));
+            vertex.getSpatialLocation().setY(centroidY.evaluateToDouble(variables));
 
             // Centroid Z
             variables.set("default", vertex.getSpatialLocation().getZ());
-            vertex.getSpatialLocation().setZ(centroidZ.evaluateToInteger(variables));
+            vertex.getSpatialLocation().setZ(centroidZ.evaluateToDouble(variables));
 
             // Centroid C
             variables.set("default", vertex.getNonSpatialLocation().getChannel());
@@ -121,7 +121,7 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
 
             // Intensity
             variables.set("default", vertex.getValue());
-            vertex.setRadius(value.evaluateToDouble(variables));
+            vertex.setValue(value.evaluateToDouble(variables));
 
             // Physical size X
             variables.set("default", vertex.getPhysicalVoxelSizeX().toString());
