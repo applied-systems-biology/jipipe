@@ -439,10 +439,28 @@ public class JIPipeDesktopParameterPanel extends JIPipeDesktopFormPanel implemen
                 }
 
                 // Create panel
-                GroupHeaderPanel groupHeaderPanel = addGroupHeader(StringUtils.orElse(tree.getSourceDocumentationName(parameterCollection), "General"), groupIcon);
+                String headerTitle = StringUtils.orElse(tree.getSourceDocumentationName(parameterCollection), "General");
+                GroupHeaderPanel groupHeaderPanel = addGroupHeader(headerTitle, groupIcon);
 
-                if (documentation != null && !StringUtils.isNullOrEmpty(DocumentationUtils.getDocumentationDescription(documentation))) {
-                    groupHeaderPanel.addDescriptionPopupToTitlePanel(DocumentationUtils.getDocumentationDescription(documentation));
+                {
+                    JButton helpButton = new JButton("Info", UIUtils.getIconFromResources("actions/help.png"));
+
+                    helpButton.addActionListener(e -> {
+                        StringBuilder stringBuilder = new StringBuilder();
+                        stringBuilder.append("# Category '").append(headerTitle).append("'\n\n");
+                        if(documentation != null) {
+                            stringBuilder.append(DocumentationUtils.getDocumentationDescription(documentation)).append("\n\n");
+                        }
+                        for (JIPipeParameterAccess parameterAccess : parameterAccesses) {
+                            stringBuilder.append("### ").append(parameterAccess.getName()).append("\n\n");
+                            stringBuilder.append(parameterAccess.getDescription()).append("\n\n");
+                        }
+
+
+                        showDocumentation(new MarkdownText(stringBuilder.toString()));
+                    });
+                    helpButton.setOpaque(false);
+                    groupHeaderPanel.addToTitlePanel(helpButton);
                 }
                 for (Component leftComponent : leftComponents) {
                     groupHeaderPanel.addToTitlePanel(leftComponent);
