@@ -276,7 +276,7 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
 
     private void closeImageJ() {
         if (JOptionPane.showConfirmDialog(this, "Do you really want to close ImageJ/JIPipe?\n" +
-                        "All your currently running calculations will be cancelled and unsaved changes will be lost.",
+                        "Please check if there are no running calculations and unsaved changes.",
                 "Close ImageJ/JIPipe",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
