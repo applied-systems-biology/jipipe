@@ -168,6 +168,7 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerNodeType("filaments-set-vertex-properties", ChangeFilamentVertexPropertiesAlgorithm.class, UIUtils.getIconURLFromResources("actions/stock_edit.png"));
         registerNodeType("filaments-set-edge-properties", ChangeFilamentEdgePropertiesAlgorithm.class, UIUtils.getIconURLFromResources("actions/stock_edit.png"));
+        registerNodeType("filaments-flatten", FlattenFilamentsAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-2d.png"));
 
         registerNodeType("filaments-filter-vertices-by-properties", FilterFilamentVerticesByProperties.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("filaments-filter-edges-by-properties", FilterFilamentEdgesByProperties.class, UIUtils.getIconURLFromResources("actions/filter.png"));

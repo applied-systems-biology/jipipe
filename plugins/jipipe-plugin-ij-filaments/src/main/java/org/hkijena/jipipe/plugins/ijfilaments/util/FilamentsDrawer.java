@@ -222,9 +222,13 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
                     targetRadius = overrideEdgeThickness.getContent();
                 }
 
+                Color edgeColor = edge.getColor();
+                if(overrideEdgeColor.isEnabled())  {
+                    edgeColor = overrideEdgeColor.getContent();
+                }
                 drawLineOnProcessor(source.getSpatialLocation().getX(), source.getSpatialLocation().getY(), source.getSpatialLocation().getZ(),
                         target.getSpatialLocation().getX(), target.getSpatialLocation().getY(), target.getSpatialLocation().getZ(),
-                        edge.getColor(),
+                        edgeColor,
                         sourceRadius,
                         targetRadius,
                         processor,
@@ -329,9 +333,14 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
                     targetRadius = overrideEdgeThickness.getContent();
                 }
 
+                Color edgeColor = edge.getColor();
+                if(overrideEdgeColor.isEnabled())  {
+                    edgeColor = overrideEdgeColor.getContent();
+                }
+
                 drawLineOnGraphics(source.getSpatialLocation().getX(), source.getSpatialLocation().getY(), source.getSpatialLocation().getZ(),
                         target.getSpatialLocation().getX(), target.getSpatialLocation().getY(), target.getSpatialLocation().getZ(),
-                        edge.getColor(),
+                        edgeColor,
                         sourceRadius,
                         targetRadius,
                         graphics2D,
