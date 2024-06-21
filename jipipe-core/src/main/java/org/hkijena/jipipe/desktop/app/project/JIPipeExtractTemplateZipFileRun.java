@@ -14,9 +14,7 @@
 package org.hkijena.jipipe.desktop.app.project;
 
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
-import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.utils.ArchiveUtils;
 
 import java.io.IOException;

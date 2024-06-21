@@ -124,18 +124,17 @@ public class ExportTableAlgorithm2 extends JIPipeIteratingAlgorithm {
                 PathType.FilesOnly,
                 UIUtils.EXTENSION_FILTER_CSV,
                 UIUtils.EXTENSION_FILTER_XLSX);
-        if(result != null) {
+        if (result != null) {
             setFilePath(result);
             emitParameterChangedEvent("file-path");
 
             // Also set the file format automatically
             String expression = result.getExpression();
-            if(expression.contains(".csv")) {
+            if (expression.contains(".csv")) {
                 setFileFormat(ExportTableAlgorithm.FileFormat.CSV);
                 emitParameterChangedEvent("file-format");
                 emitParameterUIChangedEvent();
-            }
-            else if(expression.contains(".xlsx")) {
+            } else if (expression.contains(".xlsx")) {
                 setFileFormat(ExportTableAlgorithm.FileFormat.XLSX);
                 emitParameterChangedEvent("file-format");
                 emitParameterUIChangedEvent();

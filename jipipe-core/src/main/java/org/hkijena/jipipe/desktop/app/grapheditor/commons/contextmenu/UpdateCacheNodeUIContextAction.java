@@ -15,8 +15,8 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu;
 
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.JIPipeGraphType;
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
@@ -34,6 +34,16 @@ import java.awt.event.KeyEvent;
 import java.util.Set;
 
 public class UpdateCacheNodeUIContextAction implements NodeUIContextAction {
+    private static void enqueue(JIPipeGraphNode node, JIPipeProject project) {
+        JIPipeDesktopQuickRunSettings settings = new JIPipeDesktopQuickRunSettings();
+        settings.setSaveToDisk(false);
+        settings.setStoreToCache(true);
+        settings.setStoreIntermediateResults(false);
+        settings.setExcludeSelected(false);
+        JIPipeDesktopQuickRun run = new JIPipeDesktopQuickRun(project, node, settings);
+        JIPipeRunnableQueue.getInstance().enqueue(run);
+    }
+
     @Override
     public boolean matches(Set<JIPipeDesktopGraphNodeUI> selection) {
         for (JIPipeDesktopGraphNodeUI nodeUI : selection) {
@@ -74,17 +84,6 @@ public class UpdateCacheNodeUIContextAction implements NodeUIContextAction {
         JIPipeDesktopGraphNodeUI ui = list.get(list.size() - 1);
         ui.getNodeUIActionRequestedEventEmitter().emit(new JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEvent(ui, new JIPipeDesktopUpdateCacheAction(false, false)));
     }
-
-    private static void enqueue(JIPipeGraphNode node, JIPipeProject project) {
-        JIPipeDesktopQuickRunSettings settings = new JIPipeDesktopQuickRunSettings();
-        settings.setSaveToDisk(false);
-        settings.setStoreToCache(true);
-        settings.setStoreIntermediateResults(false);
-        settings.setExcludeSelected(false);
-        JIPipeDesktopQuickRun run = new JIPipeDesktopQuickRun(project, node, settings);
-        JIPipeRunnableQueue.getInstance().enqueue(run);
-    }
-
 
     @Override
     public String getName() {

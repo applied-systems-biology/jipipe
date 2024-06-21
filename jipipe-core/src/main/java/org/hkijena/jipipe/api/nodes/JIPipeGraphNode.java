@@ -1204,7 +1204,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      */
     public ImageIcon getUIInputSlotIcon(String slotName) {
         JIPipeInputDataSlot inputSlot = getInputSlot(slotName);
-        if(inputSlot != null && inputSlot.getInfo().getRole() == JIPipeDataSlotRole.ParametersLooping) {
+        if (inputSlot != null && inputSlot.getInfo().getRole() == JIPipeDataSlotRole.ParametersLooping) {
             return UIUtils.getIconInvertedFromResources("actions/reload.png");
         }
         return null;

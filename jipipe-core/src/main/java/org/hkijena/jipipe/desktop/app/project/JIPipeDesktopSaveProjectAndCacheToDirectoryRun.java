@@ -19,7 +19,6 @@ import org.hkijena.jipipe.api.cache.JIPipeLocalProjectMemoryCache;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
-import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.cache.exporters.JIPipeDesktopDataTableToOutputExporterRun;
 import org.hkijena.jipipe.plugins.settings.JIPipeProjectDefaultsApplicationSettings;

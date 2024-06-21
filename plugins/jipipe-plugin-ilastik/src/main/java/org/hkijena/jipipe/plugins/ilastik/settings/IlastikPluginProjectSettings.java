@@ -21,8 +21,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.registries.JIPipeArtifactsRegistry;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultProjectSettingsSheet;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultProjectSettingsSheetCategory;
-import org.hkijena.jipipe.plugins.ilastik.environments.IlastikEnvironment;
 import org.hkijena.jipipe.plugins.ilastik.IlastikPlugin;
+import org.hkijena.jipipe.plugins.ilastik.environments.IlastikEnvironment;
 import org.hkijena.jipipe.plugins.ilastik.environments.OptionalIlastikEnvironment;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 

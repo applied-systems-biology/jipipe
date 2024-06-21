@@ -85,18 +85,18 @@ public class DataExportExpressionParameter extends JIPipeExpressionParameter {
                 throw new IllegalArgumentException("Unsupported path type: " + pathType);
         }
 
-        if(path != null) {
-            if(workbench instanceof JIPipeDesktopProjectWorkbench) {
+        if (path != null) {
+            if (workbench instanceof JIPipeDesktopProjectWorkbench) {
 
                 JIPipeProject project = workbench.getProject();
                 path = path.toAbsolutePath();
 
                 // Auto-replace project path
                 Path projectPath = project.getWorkDirectory();
-                if(projectPath != null) {
-                    if(path.startsWith(projectPath)) {
-                        if(JOptionPane.showConfirmDialog(parent, "The selected path '" + path + "' is located next to the project file.\n" +
-                                "Do you want to make the selected path portable for easier reproducibility?",
+                if (projectPath != null) {
+                    if (path.startsWith(projectPath)) {
+                        if (JOptionPane.showConfirmDialog(parent, "The selected path '" + path + "' is located next to the project file.\n" +
+                                        "Do you want to make the selected path portable for easier reproducibility?",
                                 "Relative path detected",
                                 JOptionPane.YES_NO_OPTION,
                                 JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
@@ -106,11 +106,11 @@ public class DataExportExpressionParameter extends JIPipeExpressionParameter {
                 }
 
                 // Auto-replace data directory
-                if(projectPath != null) {
+                if (projectPath != null) {
                     for (Map.Entry<String, Path> entry : project.getMetadata().getDirectories().getDirectoryMap(projectPath).entrySet()) {
                         Path userPath = entry.getValue();
-                        if(path.startsWith(userPath)) {
-                            if(JOptionPane.showConfirmDialog(parent, "The selected path '" + path + "' is located in the user-defined directory '" + entry.getKey() + "'=" + entry.getValue() +".\n" +
+                        if (path.startsWith(userPath)) {
+                            if (JOptionPane.showConfirmDialog(parent, "The selected path '" + path + "' is located in the user-defined directory '" + entry.getKey() + "'=" + entry.getValue() + ".\n" +
                                             "Do you want to make the selected path portable for easier reproducibility?",
                                     "Relative path detected",
                                     JOptionPane.YES_NO_OPTION,
@@ -124,8 +124,7 @@ public class DataExportExpressionParameter extends JIPipeExpressionParameter {
             }
 
             return new DataExportExpressionParameter("\"" + JIPipeExpressionEvaluator.escapeString(path.toAbsolutePath().toString().replace('\\', '/')) + "\"");
-        }
-        else {
+        } else {
             return null;
         }
     }

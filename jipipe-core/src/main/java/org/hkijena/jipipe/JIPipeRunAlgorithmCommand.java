@@ -182,12 +182,11 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
             settings.exportOutputToImageJ(runAlgorithm, progressInfo);
         } catch (Exception e) {
             throw new RuntimeException(e);
-        }
-        finally {
-            project.getCache().clearAll( run.getProgressInfo());
+        } finally {
+            project.getCache().clearAll(run.getProgressInfo());
             algorithm.clearSlotData(true, progressInfo);
             runAlgorithm.clearSlotData(true, progressInfo);
-            PathUtils.deleteDirectoryRecursively(runConfiguration.getOutputPath(),  run.getProgressInfo());
+            PathUtils.deleteDirectoryRecursively(runConfiguration.getOutputPath(), run.getProgressInfo());
         }
     }
 }

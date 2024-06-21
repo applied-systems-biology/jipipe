@@ -284,7 +284,7 @@ public class JIPipeDesktopPipelineSingleAlgorithmSelectionPanelUI extends JIPipe
 
         // Create quick action menu
         List<JIPipeDesktopNodeQuickAction> quickActions = JIPipeDesktopNodeQuickAction.getQuickActions(node);
-        if(!quickActions.isEmpty()) {
+        if (!quickActions.isEmpty()) {
             JPopupMenu quickActionsMenu = new JPopupMenu();
             for (JIPipeDesktopNodeQuickAction quickAction : quickActions) {
                 quickActionsMenu.add(UIUtils.createMenuItem(quickAction.getName(),

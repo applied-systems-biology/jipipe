@@ -391,7 +391,7 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
                     // Write variables
                     FilamentUnconnectedEdgeVariablesInfo.writeToVariables(outputData, current, other, variables, "");
                     GraphPath<FilamentVertex, FilamentEdge> path = null;
-                    if(findPath && outputDataInspector != null) {
+                    if (findPath && outputDataInspector != null) {
                         path = outputDataInspector.getPath(current, other);
                         if (hasDirection) {
                             variables.set("angle", Math.toDegrees(currentDirection.angle(otherDirection)));
@@ -400,8 +400,7 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
                             variables.set("angle", Double.NaN);
                             variables.set("dot_product", Double.NaN);
                         }
-                    }
-                    else {
+                    } else {
                         variables.set("angle", Double.NaN);
                         variables.set("dot_product", Double.NaN);
                     }

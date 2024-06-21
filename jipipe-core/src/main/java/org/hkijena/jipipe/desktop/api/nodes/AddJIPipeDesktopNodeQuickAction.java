@@ -30,24 +30,28 @@ import java.lang.annotation.Target;
 public @interface AddJIPipeDesktopNodeQuickAction {
     /**
      * The name of the quick action
+     *
      * @return the name
      */
     String name();
 
     /**
      * The description of the quick action
+     *
      * @return the description
      */
     String description();
 
     /**
      * The icon of the quick action (one of the JIPipe default icons)
+     *
      * @return the icon
      */
     String icon();
 
     /**
      * The icon of the button (one of the JIPipe default icons)
+     *
      * @return the icon
      */
     String buttonIcon();
@@ -55,6 +59,7 @@ public @interface AddJIPipeDesktopNodeQuickAction {
 
     /**
      * The text of the button (one of the JIPipe default icons)
+     *
      * @return the text
      */
     String buttonText();

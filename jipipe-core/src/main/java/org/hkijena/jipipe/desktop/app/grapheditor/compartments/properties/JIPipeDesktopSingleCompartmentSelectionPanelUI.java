@@ -155,7 +155,7 @@ public class JIPipeDesktopSingleCompartmentSelectionPanelUI extends JIPipeDeskto
             JIPipeProjectCompartmentOutput outputNode = compartment.getOutputNode(outputSlot.getName());
             tabbedPane.addTab(outputNode.getOutputSlotName(),
                     UIUtils.getIconFromResources("actions/graph-compartment.png"),
-                            new JIPipeDesktopQuickRunSetupUI(getDesktopProjectWorkbench(), outputNode),
+                    new JIPipeDesktopQuickRunSetupUI(getDesktopProjectWorkbench(), outputNode),
                     JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
         }
         return tabPane;
@@ -198,12 +198,12 @@ public class JIPipeDesktopSingleCompartmentSelectionPanelUI extends JIPipeDeskto
 
         List<String> outputsWithoutSlots = new ArrayList<>();
         for (JIPipeProjectCompartmentOutput output : compartment.getOutputNodes().values()) {
-            if(output.getOutputSlots().isEmpty()) {
+            if (output.getOutputSlots().isEmpty()) {
                 outputsWithoutSlots.add(output.getOutputSlotName());
             }
         }
 
-        if(outputsWithoutSlots.isEmpty()) {
+        if (outputsWithoutSlots.isEmpty()) {
             JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "<html>The following output nodes transfer no data: " + String.join(", " + outputsWithoutSlots) + "<br/>" +
                     "This means that the there will be no outputs generated for the compartment.<br/><br/>" +
                     "Please edit the compartment via a double-click and add inputs into the respective nodes.</html>", "No data passed to outputs", JOptionPane.WARNING_MESSAGE);

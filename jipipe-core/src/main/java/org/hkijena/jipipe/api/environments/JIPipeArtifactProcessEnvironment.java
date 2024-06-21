@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -39,7 +38,6 @@ import javax.swing.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -160,10 +158,11 @@ public abstract class JIPipeArtifactProcessEnvironment extends JIPipeArtifactEnv
 
     /**
      * Runs the environment as process
-     * @param args the arguments/cli parameters
+     *
+     * @param args                           the arguments/cli parameters
      * @param additionalEnvironmentVariables additional environment variables
-     * @param detached run process detached
-     * @param progressInfo the progress info
+     * @param detached                       run process detached
+     * @param progressInfo                   the progress info
      */
     public void runExecutable(List<String> args, Map<String, String> additionalEnvironmentVariables, boolean detached, JIPipeProgressInfo progressInfo) {
 
@@ -174,16 +173,13 @@ public abstract class JIPipeArtifactProcessEnvironment extends JIPipeArtifactEnv
         ProcessEnvironment processEnvironment = new ProcessEnvironment();
         processEnvironment.setArguments(getArguments());
         processEnvironment.setEnvironmentVariables(getEnvironmentVariables());
-        if(SystemUtils.IS_OS_WINDOWS) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             processEnvironment.setExecutablePathWindows(getAbsoluteExecutablePath());
-        }
-        else if(SystemUtils.IS_OS_LINUX) {
+        } else if (SystemUtils.IS_OS_LINUX) {
             processEnvironment.setExecutablePathLinux(getAbsoluteExecutablePath());
-        }
-        else if(SystemUtils.IS_OS_MAC) {
+        } else if (SystemUtils.IS_OS_MAC) {
             processEnvironment.setExecutablePathOSX(getAbsoluteExecutablePath());
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException("Unsupported OS: " + SystemUtils.OS_NAME);
         }
 

@@ -43,10 +43,9 @@ public enum PretrainedOmnipose0Model {
 
     @Override
     public String toString() {
-        if(id != null) {
+        if (id != null) {
             return name + " [" + id + "]";
-        }
-        else {
+        } else {
             return "No model";
         }
     }

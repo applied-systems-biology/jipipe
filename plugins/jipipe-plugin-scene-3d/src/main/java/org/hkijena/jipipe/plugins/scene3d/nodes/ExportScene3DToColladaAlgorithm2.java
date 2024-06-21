@@ -116,7 +116,7 @@ public class ExportScene3DToColladaAlgorithm2 extends JIPipeIteratingAlgorithm {
                 "Select output file",
                 PathType.FilesOnly,
                 new FileNameExtensionFilter("Collada (*.dae)", "dae"));
-        if(result != null) {
+        if (result != null) {
             setFilePath(result);
             emitParameterChangedEvent("file-path");
         }

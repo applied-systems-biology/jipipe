@@ -35,8 +35,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class JIPipeDesktopDataTableToFilesByMetadataExporterRun extends JIPipeDesktopWorkbenchPanel implements JIPipeRunnable {

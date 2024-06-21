@@ -30,9 +30,9 @@ import java.util.UUID;
 public class JIPipeDesktopDataTableToZIPExporterRun extends JIPipeDesktopWorkbenchPanel implements JIPipeRunnable {
 
     private final Path outputZipFile;
+    private final UUID uuid = UUID.randomUUID();
     private JIPipeDataTable dataTable;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-    private final UUID uuid = UUID.randomUUID();
 
     /**
      * @param workbench     the workbench

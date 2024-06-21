@@ -210,8 +210,8 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
             try {
                 Files.createDirectories(path);
                 JIPipeRunnable runnable = new JIPipeRunnable() {
-                    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
                     private final UUID uuid = UUID.randomUUID();
+                    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
                     @Override
                     public UUID getRunUUID() {
@@ -254,8 +254,8 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
         Path path = JIPipeFileChooserApplicationSettings.saveFile(getDesktopWorkbench().getWindow(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export " + getDisplayName());
         if (path != null) {
             JIPipeRunnable runnable = new JIPipeRunnable() {
-                private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
                 private final UUID uuid = UUID.randomUUID();
+                private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
                 @Override
                 public UUID getRunUUID() {

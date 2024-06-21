@@ -159,13 +159,13 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
 
     private void removeOldBackups() {
         JSpinner daySpinner = new JSpinner(new SpinnerNumberModel(60, 1, Short.MAX_VALUE, 1));
-        if(JOptionPane.showConfirmDialog(this, UIUtils.boxHorizontal(new JLabel("Remove backups older than "),
-                daySpinner,
-                new JLabel(" days")),
+        if (JOptionPane.showConfirmDialog(this, UIUtils.boxHorizontal(new JLabel("Remove backups older than "),
+                        daySpinner,
+                        new JLabel(" days")),
                 "Remove old backups",
                 JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
             int days = ((Number) daySpinner.getModel().getValue()).intValue();
-            if(days > 0) {
+            if (days > 0) {
                 DeleteOldBackupsRun run = new DeleteOldBackupsRun(Duration.ofDays(days));
                 JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, run, BACKUP_QUEUE);
             }

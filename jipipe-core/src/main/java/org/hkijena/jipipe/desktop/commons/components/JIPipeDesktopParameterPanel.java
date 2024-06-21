@@ -448,7 +448,7 @@ public class JIPipeDesktopParameterPanel extends JIPipeDesktopFormPanel implemen
                     helpButton.addActionListener(e -> {
                         StringBuilder stringBuilder = new StringBuilder();
                         stringBuilder.append("# Category '").append(headerTitle).append("'\n\n");
-                        if(documentation != null) {
+                        if (documentation != null) {
                             stringBuilder.append(DocumentationUtils.getDocumentationDescription(documentation)).append("\n\n");
                         }
                         for (JIPipeParameterAccess parameterAccess : parameterAccesses) {

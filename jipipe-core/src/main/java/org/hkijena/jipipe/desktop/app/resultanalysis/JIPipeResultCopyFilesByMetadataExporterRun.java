@@ -44,9 +44,9 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeDesktopWor
     private final List<JIPipeDataSlot> slots;
     private final boolean splitBySlot;
     private final JIPipeDataByMetadataExporter exporter;
+    private final UUID uuid = UUID.randomUUID();
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private Path outputPath;
-    private final UUID uuid = UUID.randomUUID();
 
     /**
      * @param workbench   the workbench

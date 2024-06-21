@@ -116,15 +116,16 @@ public abstract class JIPipeDesktopParameterEditorUI extends JIPipeDesktopWorkbe
 
     /**
      * Finds the graph canvas if one is available
+     *
      * @return the canvas or null
      */
     public JIPipeDesktopGraphCanvasUI getCanvasUI() {
         Container ancestor = SwingUtilities.getAncestorOfClass(JIPipeDesktopGraphCanvasUI.class, this);
-        if(ancestor instanceof JIPipeDesktopGraphCanvasUI) {
+        if (ancestor instanceof JIPipeDesktopGraphCanvasUI) {
             return (JIPipeDesktopGraphCanvasUI) ancestor;
         }
         ancestor = SwingUtilities.getAncestorOfClass(JIPipeDesktopGraphEditorUI.class, this);
-        if(ancestor instanceof JIPipeDesktopGraphEditorUI) {
+        if (ancestor instanceof JIPipeDesktopGraphEditorUI) {
             return ((JIPipeDesktopGraphEditorUI) ancestor).getCanvasUI();
         }
         return null;

@@ -53,8 +53,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.omnipose.OmniposeEnvironmentAccessNode;
-import org.hkijena.jipipe.plugins.omnipose.legacy.parameters.LegacyOmnipose0Model;
 import org.hkijena.jipipe.plugins.omnipose.OmniposePlugin;
+import org.hkijena.jipipe.plugins.omnipose.legacy.parameters.LegacyOmnipose0Model;
 import org.hkijena.jipipe.plugins.omnipose.parameters.OmniposeSegmentationThresholdSettings;
 import org.hkijena.jipipe.plugins.omnipose.parameters.OmniposeSegmentationTweaksSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
@@ -71,19 +71,19 @@ import java.util.*;
 
 @SetJIPipeDocumentation(name = "Omnipose prediction (0.x)", description =
         "Deprecated. Use the node with the same name.\n\n" +
-        "Runs Omnipose on the input image. This node supports both segmentation in 3D and executing " +
-        "Omnipose for each 2D image plane. " +
-        "This node can generate a multitude of outputs, although only ROI is activated by default. " +
-        "Go to the 'Outputs' parameter section to enable the other outputs." +
-        "<ul>" +
-        "<li><b>Labels:</b> A grayscale image where each connected component is assigned a unique value.</li>" +
-        "<li><b>Flows XY:</b> An RGB image that indicates the x and y flow of each pixel</li>" +
-        "<li><b>Flows Z:</b> Flows in Z direction (black for non-3D images)</li>" +
-        "<li><b>Flows d:</b> Multi-channel image that contains the flows [dZ, dY, dX, cell probability] (3D images) / [dY, dX, cell probability] (2D images)</li>" +
-        "<li><b>Probabilities:</b> An image indicating the cell probabilities for each pixel</li>" +
-        "<li><b>ROI:</b> ROI of the segmented areas.</li>" +
-        "</ul>" +
-        "Please note that you need to setup a valid Python environment with Omnipose installed. You can find the setting in Project &gt; Application settings &gt; Extensions &gt; Omnipose.")
+                "Runs Omnipose on the input image. This node supports both segmentation in 3D and executing " +
+                "Omnipose for each 2D image plane. " +
+                "This node can generate a multitude of outputs, although only ROI is activated by default. " +
+                "Go to the 'Outputs' parameter section to enable the other outputs." +
+                "<ul>" +
+                "<li><b>Labels:</b> A grayscale image where each connected component is assigned a unique value.</li>" +
+                "<li><b>Flows XY:</b> An RGB image that indicates the x and y flow of each pixel</li>" +
+                "<li><b>Flows Z:</b> Flows in Z direction (black for non-3D images)</li>" +
+                "<li><b>Flows d:</b> Multi-channel image that contains the flows [dZ, dY, dX, cell probability] (3D images) / [dY, dX, cell probability] (2D images)</li>" +
+                "<li><b>Probabilities:</b> An image indicating the cell probabilities for each pixel</li>" +
+                "<li><b>ROI:</b> ROI of the segmented areas.</li>" +
+                "</ul>" +
+                "Please note that you need to setup a valid Python environment with Omnipose installed. You can find the setting in Project &gt; Application settings &gt; Extensions &gt; Omnipose.")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Labels")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Flows XY")

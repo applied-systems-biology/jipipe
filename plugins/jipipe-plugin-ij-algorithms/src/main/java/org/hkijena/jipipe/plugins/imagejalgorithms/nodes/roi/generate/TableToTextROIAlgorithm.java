@@ -26,7 +26,9 @@ import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.*;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.TableColumnSourceExpressionParameter;
@@ -52,30 +54,23 @@ import java.awt.geom.Rectangle2D;
 @AddJIPipeOutputSlot(value = ROIListData.class, name = "Output", create = true)
 public class TableToTextROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
+    private final VisualROIProperties roiProperties;
     private TableColumnSourceExpressionParameter columnX = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"X\"");
     private TableColumnSourceExpressionParameter columnY = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"Y\"");
     private TableColumnSourceExpressionParameter columnText = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"Text\"");
-
     private TableColumnSourceExpressionParameter columnZ = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.Generate, "0");
-
     private TableColumnSourceExpressionParameter columnC = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.Generate, "0");
-
     private TableColumnSourceExpressionParameter columnT = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.Generate, "0");
-
     private boolean oneBasedPositions = true;
     private boolean centerX = false;
     private boolean centerY = false;
     private FontFamilyParameter fontFamily = new FontFamilyParameter();
-
     private FontStyleParameter fontStyle = FontStyleParameter.Plain;
     private int fontSize = 12;
     private double angle = 0;
-
     private boolean antialiased = true;
-
-    private final VisualROIProperties roiProperties;
     private OptionalColorParameter backgroundColor = new OptionalColorParameter(Color.BLACK, false);
-    private InnerMargin backgroundMargin = new InnerMargin(2,2,2,2);
+    private InnerMargin backgroundMargin = new InnerMargin(2, 2, 2, 2);
 
     /**
      * Instantiates a new node type.
@@ -155,15 +150,15 @@ public class TableToTextROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             double width = stringBounds.getWidth();
             double height = stringBounds.getHeight();
 
-            if(centerX) {
+            if (centerX) {
                 x -= width / 2.0;
             }
-            if(centerY) {
+            if (centerY) {
                 y -= height / 2.0;
             }
 
             // Generate background
-            if(backgroundColor.isEnabled()) {
+            if (backgroundColor.isEnabled()) {
                 int left = backgroundMargin.getLeft().evaluateToInteger(variables);
                 int top = backgroundMargin.getTop().evaluateToInteger(variables);
                 int right = backgroundMargin.getRight().evaluateToInteger(variables);

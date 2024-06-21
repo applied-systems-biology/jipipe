@@ -179,7 +179,7 @@ public class ParameterTableEditorWindow extends JFrame {
 
         ribbon.rebuildRibbon();
 
-        if(parameterTable.getColumnCount() > 0) {
+        if (parameterTable.getColumnCount() > 0) {
             ribbon.getTabPane().getTabbedPane().setSelectedIndex(1);
         }
     }
@@ -360,10 +360,9 @@ public class ParameterTableEditorWindow extends JFrame {
 
         Set<JIPipeGraphNode> existingNodes;
 
-        if(canvasUI != null) {
+        if (canvasUI != null) {
             existingNodes = canvasUI.getVisibleNodes();
-        }
-        else {
+        } else {
             existingNodes = Collections.emptySet();
         }
 
@@ -372,7 +371,7 @@ public class ParameterTableEditorWindow extends JFrame {
                 existingNodes,
                 null);
 
-        if(!result.isEmpty()) {
+        if (!result.isEmpty()) {
             for (JIPipeDesktopParameterKeyPickerUI.ParameterEntry parameterEntry : result) {
                 importParameterColumn(parameterEntry.getName(),
                         parameterEntry.getDescription(),
@@ -382,7 +381,7 @@ public class ParameterTableEditorWindow extends JFrame {
             }
 
             // Ensure that there is at least 1 row
-            if(parameterTable.getRowCount() == 0) {
+            if (parameterTable.getRowCount() == 0) {
                 addRow();
             }
         }

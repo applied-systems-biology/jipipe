@@ -26,6 +26,7 @@ public interface JIPipeRunnable extends Runnable {
 
     /**
      * Unique ID of this run
+     *
      * @return the UUID
      */
     UUID getRunUUID();

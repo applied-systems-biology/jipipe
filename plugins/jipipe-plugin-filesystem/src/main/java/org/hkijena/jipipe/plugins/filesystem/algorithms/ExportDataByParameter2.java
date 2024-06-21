@@ -112,7 +112,7 @@ public class ExportDataByParameter2 extends JIPipeSimpleIteratingAlgorithm {
     @AddJIPipeDesktopNodeQuickAction(name = "Configure exported path", description = "Selects where the data should be exported", icon = "actions/document-export.png", buttonIcon = "actions/color-select.png", buttonText = "Select")
     public void selectFilePathDesktopQuickAction(JIPipeDesktopGraphCanvasUI canvasUI) {
         DataExportExpressionParameter result = DataExportExpressionParameter.showPathChooser(canvasUI.getDesktopWorkbench().getWindow(), canvasUI.getWorkbench(), "Select output directory", PathType.DirectoriesOnly);
-        if(result != null) {
+        if (result != null) {
             setFilePath(result);
         }
         emitParameterChangedEvent("file-path");

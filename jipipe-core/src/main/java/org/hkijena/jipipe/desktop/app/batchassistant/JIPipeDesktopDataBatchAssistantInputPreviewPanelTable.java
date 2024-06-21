@@ -126,8 +126,7 @@ public class JIPipeDesktopDataBatchAssistantInputPreviewPanelTable extends JPane
             ViewOnlyMenuItem roleInfoItem = new ViewOnlyMenuItem("<html>Parameter-like data<br><small>This slot contains parametric data that is not considered for iteration step generation.</small></html>",
                     UIUtils.getIconFromResources("actions/wrench.png"));
             menu.add(roleInfoItem);
-        }
-        else if(inputSlot.getInfo().getRole() == JIPipeDataSlotRole.ParametersLooping) {
+        } else if (inputSlot.getInfo().getRole() == JIPipeDataSlotRole.ParametersLooping) {
             ViewOnlyMenuItem roleInfoItem = new ViewOnlyMenuItem("<html>Parameter-like data<br><small>This slot contains parametric data that is not considered for iteration step generation. Workloads may be repeated per input of this slot.</small></html>",
                     UIUtils.getIconFromResources("actions/wrench.png"));
             menu.add(roleInfoItem);

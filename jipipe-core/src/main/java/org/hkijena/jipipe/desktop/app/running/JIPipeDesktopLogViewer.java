@@ -89,7 +89,7 @@ public class JIPipeDesktopLogViewer extends JIPipeDesktopProjectWorkbenchPanel i
     private void updateEntryList() {
         DefaultListModel<JIPipeRunnableLogEntry> model = new DefaultListModel<>();
         for (JIPipeRunnableLogEntry logEntry : JIPipeDesktopRunnableLogsCollection.getInstance().getLogEntries()) {
-            if(!model.contains(logEntry)) {
+            if (!model.contains(logEntry)) {
                 model.add(0, logEntry);
             }
         }

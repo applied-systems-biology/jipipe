@@ -64,7 +64,7 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
     private boolean antialiased = true;
 
     private OptionalColorParameter backgroundColor = new OptionalColorParameter(Color.BLACK, false);
-    private InnerMargin backgroundMargin = new InnerMargin(2,2,2,2);
+    private InnerMargin backgroundMargin = new InnerMargin(2, 2, 2, 2);
 
 
     public DrawTextRoiAlgorithm(JIPipeNodeInfo info) {
@@ -127,7 +127,7 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         // Generate background
-        if(backgroundColor.isEnabled()) {
+        if (backgroundColor.isEnabled()) {
             int left = backgroundMargin.getLeft().evaluateToInteger(variables);
             int top = backgroundMargin.getTop().evaluateToInteger(variables);
             int right = backgroundMargin.getRight().evaluateToInteger(variables);
@@ -153,7 +153,6 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
         // Output
         iterationStep.addOutputData(getFirstOutputSlot(), target, progressInfo);
     }
-
 
 
     @SetJIPipeDocumentation(name = "Background color", description = "If enabled, draw a rectangular background ROI behind the text")

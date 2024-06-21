@@ -68,7 +68,7 @@ public abstract class ListParameter<T> extends ArrayList<T> implements JIPipeVal
             return instance;
         }
         JIPipeParameterTypeInfo parameterTypeInfo = JIPipe.getParameterTypes().getInfoByFieldClass(getContentClass());
-        if(parameterTypeInfo != null) {
+        if (parameterTypeInfo != null) {
             Object instance = parameterTypeInfo.newInstance();
             add((T) instance);
             return (T) instance;

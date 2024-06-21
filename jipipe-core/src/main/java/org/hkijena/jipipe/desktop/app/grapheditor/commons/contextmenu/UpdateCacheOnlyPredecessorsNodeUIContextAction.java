@@ -32,6 +32,16 @@ import javax.swing.*;
 import java.util.Set;
 
 public class UpdateCacheOnlyPredecessorsNodeUIContextAction implements NodeUIContextAction {
+    private static void enqueue(JIPipeGraphNode node, JIPipeProject project) {
+        JIPipeDesktopQuickRunSettings settings = new JIPipeDesktopQuickRunSettings();
+        settings.setSaveToDisk(false);
+        settings.setStoreToCache(true);
+        settings.setStoreIntermediateResults(false);
+        settings.setExcludeSelected(true);
+        JIPipeDesktopQuickRun run = new JIPipeDesktopQuickRun(project, node, settings);
+        JIPipeRunnableQueue.getInstance().enqueue(run);
+    }
+
     @Override
     public boolean matches(Set<JIPipeDesktopGraphNodeUI> selection) {
         for (JIPipeDesktopGraphNodeUI nodeUI : selection) {
@@ -71,16 +81,6 @@ public class UpdateCacheOnlyPredecessorsNodeUIContextAction implements NodeUICon
         // Send last one to UI
         JIPipeDesktopGraphNodeUI ui = list.get(list.size() - 1);
         ui.getNodeUIActionRequestedEventEmitter().emit(new JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEvent(ui, new JIPipeDesktopUpdateCacheAction(false, true)));
-    }
-
-    private static void enqueue(JIPipeGraphNode node, JIPipeProject project) {
-        JIPipeDesktopQuickRunSettings settings = new JIPipeDesktopQuickRunSettings();
-        settings.setSaveToDisk(false);
-        settings.setStoreToCache(true);
-        settings.setStoreIntermediateResults(false);
-        settings.setExcludeSelected(true);
-        JIPipeDesktopQuickRun run = new JIPipeDesktopQuickRun(project, node, settings);
-        JIPipeRunnableQueue.getInstance().enqueue(run);
     }
 
     @Override

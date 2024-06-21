@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.plugins.ijfilaments;
 
 import org.apache.commons.compress.utils.Sets;
-import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
@@ -23,7 +22,6 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.ij3d.IJ3DPlugin;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.FilamentsToRoi3dDataTypeConverter;
@@ -54,19 +52,14 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.plugins.processes.ProcessEnvironment;
 import org.hkijena.jipipe.plugins.scene3d.Scene3DPlugin;
 import org.hkijena.jipipe.plugins.strings.StringsPlugin;
 import org.hkijena.jipipe.plugins.tables.TablesPlugin;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
-import org.hkijena.jipipe.utils.ProcessUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**

@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.plugins.ijfilaments.nodes.generate;
 
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import ij.IJ;
 import ij.ImagePlus;
@@ -42,9 +41,6 @@ import org.hkijena.jipipe.plugins.ijfilaments.FilamentsPlugin;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.plugins.ijfilaments.environments.OptionalTSOAXEnvironment;
 import org.hkijena.jipipe.plugins.ijfilaments.environments.TSOAXEnvironment;
-import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
-import org.hkijena.jipipe.plugins.ijfilaments.util.NonSpatialPoint3d;
-import org.hkijena.jipipe.plugins.ijfilaments.util.Point3d;
 import org.hkijena.jipipe.plugins.ijfilaments.util.TSOAXUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
@@ -52,22 +48,18 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.Optiona
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.strings.StringData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 @SetJIPipeDocumentation(name = "Find and track filaments (TSOAX)", description = " TSOAX is an open source software to extract and track the growth and deformation of biopolymer networks from 2D and 3D time-lapse sequences. " +

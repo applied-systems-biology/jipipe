@@ -107,7 +107,7 @@ public class IlastikModelData implements JIPipeData {
         }
 
         // Open project with Ilastik
-        IlastikPlugin.launchIlastik(desktopWorkbench,  Collections.singletonList(outputFile.toString()));
+        IlastikPlugin.launchIlastik(desktopWorkbench, Collections.singletonList(outputFile.toString()));
     }
 
     @Override

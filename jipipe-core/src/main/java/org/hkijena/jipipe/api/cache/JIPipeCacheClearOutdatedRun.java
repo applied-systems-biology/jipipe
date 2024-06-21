@@ -15,8 +15,6 @@ package org.hkijena.jipipe.api.cache;
 
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 
-import java.util.UUID;
-
 public class JIPipeCacheClearOutdatedRun extends AbstractJIPipeRunnable {
     private final JIPipeCache cache;
 

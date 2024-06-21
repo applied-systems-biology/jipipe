@@ -157,7 +157,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
         int maximum = slider.getMaximum();
         int newIndex = ((value) % maximum) + 1;
         slider.setValue(newIndex);
-    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
+    }
 
     private static void decrementSlider(JSlider slider) {
         int value = slider.getValue();
@@ -166,7 +166,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
         if (newIndex < 1)
             newIndex += maximum;
         slider.setValue(newIndex);
-    }
+    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
 
     public int getCurrentImageContentsResamplingFactor() {
         return currentImageContentsResamplingFactor;

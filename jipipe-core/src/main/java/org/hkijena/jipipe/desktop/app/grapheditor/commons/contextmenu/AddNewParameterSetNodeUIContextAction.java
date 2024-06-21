@@ -43,7 +43,7 @@ public class AddNewParameterSetNodeUIContextAction implements NodeUIContextActio
                 canvasUI.getVisibleNodes(),
                 null);
 
-        if(!result.isEmpty()) {
+        if (!result.isEmpty()) {
             ParameterTable table = new ParameterTable();
             for (JIPipeDesktopParameterKeyPickerUI.ParameterEntry entry : result) {
                 ParameterTable.ParameterColumn column = new ParameterTable.ParameterColumn(entry.getName(), entry.getKey(), entry.getFieldClass());

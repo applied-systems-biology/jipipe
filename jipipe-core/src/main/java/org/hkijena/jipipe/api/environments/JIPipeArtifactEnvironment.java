@@ -80,7 +80,8 @@ public abstract class JIPipeArtifactEnvironment extends JIPipeEnvironment {
     /**
      * Applies the artifact configuration to the current environment if isLoadFromArtifact() is true
      * Also sets the last loaded artifact
-     * @param artifact the artifact
+     *
+     * @param artifact     the artifact
      * @param progressInfo the progress info
      */
     public void applyConfigurationFromArtifactAndSetLastArtifact(JIPipeLocalArtifact artifact, JIPipeProgressInfo progressInfo) {

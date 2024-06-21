@@ -92,7 +92,7 @@ import java.util.*;
 @AddJIPipeOutputSlot(value = ROIListData.class, name = "ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 public class Omnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgorithm implements OmniposeEnvironmentAccessNode {
-    
+
     public static final JIPipeDataSlotInfo OUTPUT_LABELS = new JIPipeDataSlotInfo(ImagePlusGreyscaleData.class, JIPipeSlotType.Output, "Labels", "A grayscale image where each connected component is assigned a unique value");
     public static final JIPipeDataSlotInfo OUTPUT_FLOWS_XY = new JIPipeDataSlotInfo(ImagePlusData.class, JIPipeSlotType.Output, "Flows XY", "An RGB image that indicates the x and y flow of each pixel");
     public static final JIPipeDataSlotInfo OUTPUT_FLOWS_Z = new JIPipeDataSlotInfo(ImagePlusData.class, JIPipeSlotType.Output, "Flows Z", "Flows in Z direction (black for non-3D images)");
@@ -105,7 +105,7 @@ public class Omnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
     private final OmniposeSegmentationThresholdSettings segmentationThresholdSettings;
     private final CellposeSegmentationOutputSettings segmentationOutputSettings;
     private final CellposeChannelSettings channelSettings;
-    
+
     private OptionalDoubleParameter diameter = new OptionalDoubleParameter(30.0, true);
     private boolean enable3DSegmentation = true;
     private OptionalTextAnnotationNameParameter diameterAnnotation = new OptionalTextAnnotationNameParameter("Diameter", true);
@@ -201,7 +201,7 @@ public class Omnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
         super.onParameterChanged(event);
         if (event.getSource() == segmentationOutputSettings) {
             updateOutputSlots();
-        } 
+        }
     }
 
     @Override
@@ -234,11 +234,10 @@ public class Omnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
             // Save the model out
             CellposeModelInfo modelInfo = new CellposeModelInfo();
             modelInfo.annotationList = modelSlot.getTextAnnotations(modelRow);
-            if(modelData.isPretrained()) {
+            if (modelData.isPretrained()) {
                 modelInfo.modelPretrained = true;
                 modelInfo.modelNameOrPath = modelData.getPretrainedModelName();
-            }
-            else {
+            } else {
                 Path tempDirectory = PathUtils.createTempDirectory(workDirectory.resolve("models"), "model");
                 modelData.exportData(new JIPipeFileSystemWriteDataStorage(modelProgress, tempDirectory), null, false, modelProgress);
                 modelInfo.modelPretrained = false;

@@ -116,7 +116,7 @@ public class JIPipeDesktopPipelineSingleAlgorithmSelectionOverviewPanelUI extend
         for (JIPipeDesktopNodeQuickAction quickAction : JIPipeDesktopNodeQuickAction.getQuickActions(node)) {
             JIPipeDesktopFormPanel.GroupHeaderPanel groupHeaderPanel = formPanel.addGroupHeader(quickAction.getName(), quickAction.getDescription(), false, UIUtils.getIconFromResources(quickAction.getIcon()));
             groupHeaderPanel.addToTitlePanel(UIUtils.createButton(quickAction.getButtonText(), UIUtils.getIconFromResources(quickAction.getButtonIcon()), () -> {
-               quickAction.run(node, canvasUI);
+                quickAction.run(node, canvasUI);
             }));
         }
     }

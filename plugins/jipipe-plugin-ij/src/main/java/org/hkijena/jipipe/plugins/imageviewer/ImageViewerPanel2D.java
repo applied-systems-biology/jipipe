@@ -92,6 +92,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
     private boolean isUpdatingSliders = false;
     private JScrollPane canvasScrollPane;
     private boolean composite;
+
     /**
      * Initializes a new image viewer
      *
@@ -108,14 +109,14 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
         exportDisplayedScaleToggle.setState(settings.isExportAsDisplayed());
         initialize();
         updateZoomStatus();
-    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
+    }
 
     private static void incrementSlider(JSlider slider) {
         int value = slider.getValue();
         int maximum = slider.getMaximum();
         int newIndex = ((value) % maximum) + 1;
         slider.setValue(newIndex);
-    }
+    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
 
     private static void decrementSlider(JSlider slider) {
         int value = slider.getValue();
@@ -158,17 +159,6 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
     public JIPipeRunnableQueue getViewerRunnerQueue() {
         return viewerRunnerQueue;
     }
-
-
-//    public void setRotationEnabled(boolean enabled) {
-//        rotateLeftButton.setVisible(enabled);
-//        rotateRightButton.setVisible(enabled);
-//        if (!enabled) {
-//            rotation = 0;
-//            refreshImageInfo();
-//            refreshSlice();
-//        }
-//    }
 
     private void initialize() {
 
@@ -240,6 +230,17 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
         initializeAnimationControls();
         updateSideBar();
     }
+
+
+//    public void setRotationEnabled(boolean enabled) {
+//        rotateLeftButton.setVisible(enabled);
+//        rotateRightButton.setVisible(enabled);
+//        if (!enabled) {
+//            rotation = 0;
+//            refreshImageInfo();
+//            refreshSlice();
+//        }
+//    }
 
     public boolean isComposite() {
         return composite;

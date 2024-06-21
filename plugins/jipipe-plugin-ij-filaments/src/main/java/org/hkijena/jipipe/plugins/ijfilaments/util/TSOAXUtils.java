@@ -121,29 +121,27 @@ public class TSOAXUtils {
             double value = snakesResult.getValueAsDouble(row, "intensity");
             String trackIds = StringUtils.nullToEmpty(snakesResult.getValueAsString(row, "track_ids")).trim();
 
-            if(enableTrackIdFilter) {
-                if(StringUtils.isNullOrEmpty(trackIds)) {
-                    if(trackId != -1) {
+            if (enableTrackIdFilter) {
+                if (StringUtils.isNullOrEmpty(trackIds)) {
+                    if (trackId != -1) {
                         // ID=-1 maps to no tracks
                         continue;
                     }
-                }
-                else if(trackIds.contains(",")) {
+                } else if (trackIds.contains(",")) {
                     boolean found = false;
                     for (String s : trackIds.split(",")) {
                         int id = Integer.parseInt(s.trim());
-                        if(id == trackId) {
+                        if (id == trackId) {
                             found = true;
                             break;
                         }
                     }
-                    if(!found) {
+                    if (!found) {
                         continue;
                     }
-                }
-                else {
+                } else {
                     int rowId = Integer.parseInt(trackIds);
-                    if(rowId != trackId) {
+                    if (rowId != trackId) {
                         continue;
                     }
                 }
@@ -234,15 +232,13 @@ public class TSOAXUtils {
         Set<Integer> knownTrackIds = new HashSet<>();
         for (int i = 0; i < trackIdsColumn.getRows(); i++) {
             String rowAsString = StringUtils.nullToEmpty(trackIdsColumn.getRowAsString(i)).trim();
-            if(StringUtils.isNullOrEmpty(rowAsString)) {
+            if (StringUtils.isNullOrEmpty(rowAsString)) {
                 knownTrackIds.add(-1);
-            }
-            else if(rowAsString.contains(",")) {
+            } else if (rowAsString.contains(",")) {
                 for (String s : rowAsString.split(",")) {
                     knownTrackIds.add(Integer.parseInt(s.trim()));
                 }
-            }
-            else {
+            } else {
                 knownTrackIds.add(Integer.parseInt(rowAsString));
             }
         }

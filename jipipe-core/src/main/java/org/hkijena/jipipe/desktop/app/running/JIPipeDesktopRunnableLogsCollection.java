@@ -104,7 +104,7 @@ public class JIPipeDesktopRunnableLogsCollection implements JIPipeRunnable.Finis
 
     @Override
     public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
-        if(!addedLogs.contains(event.getRun().getRunUUID())) {
+        if (!addedLogs.contains(event.getRun().getRunUUID())) {
             addedLogs.add(event.getRun().getRunUUID());
             pushToLog(event.getRun(), true);
         }
@@ -112,7 +112,7 @@ public class JIPipeDesktopRunnableLogsCollection implements JIPipeRunnable.Finis
 
     @Override
     public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
-        if(!addedLogs.contains(event.getRun().getRunUUID())) {
+        if (!addedLogs.contains(event.getRun().getRunUUID())) {
             addedLogs.add(event.getRun().getRunUUID());
             pushToLog(event.getRun(), false);
         }

@@ -78,7 +78,7 @@ public class MorphologicalFeatureContrast2DAlgorithm extends JIPipeSimpleIterati
             FloatProcessor upperMFC = null;
             FloatProcessor lowerMFC = null;
 
-            if(mode == Mode.MFC || mode == Mode.UpperMFC) {
+            if (mode == Mode.MFC || mode == Mode.UpperMFC) {
                 FloatProcessor left = (FloatProcessor) ip;
                 FloatProcessor right = (FloatProcessor) Morphology.Operation.OPENING.apply(Morphology.Operation.CLOSING.apply(ip, strelR1), strelR2);
                 FloatProcessor result = new FloatProcessor(inputImage.getWidth(), inputImage.getHeight());
@@ -90,8 +90,8 @@ public class MorphologicalFeatureContrast2DAlgorithm extends JIPipeSimpleIterati
                 }
                 upperMFC = result;
             }
-            if(mode == Mode.MFC || mode == Mode.LowerMFC) {
-                FloatProcessor left = (FloatProcessor)  Morphology.Operation.CLOSING.apply(Morphology.Operation.OPENING.apply(ip, strelR1), strelR2);
+            if (mode == Mode.MFC || mode == Mode.LowerMFC) {
+                FloatProcessor left = (FloatProcessor) Morphology.Operation.CLOSING.apply(Morphology.Operation.OPENING.apply(ip, strelR1), strelR2);
                 FloatProcessor right = (FloatProcessor) ip;
                 FloatProcessor result = new FloatProcessor(inputImage.getWidth(), inputImage.getHeight());
                 float[] leftPixels = (float[]) left.getPixels();

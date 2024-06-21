@@ -143,28 +143,25 @@ public class ExportImpImageAlgorithm extends JIPipeIteratingAlgorithm {
                 UIUtils.EXTENSION_FILTER_TIFF,
                 UIUtils.EXTENSION_FILTER_AVI,
                 UIUtils.EXTENSION_FILTER_JPEG);
-        if(result != null) {
+        if (result != null) {
             setFilePath(result);
             emitParameterChangedEvent("file-path");
 
             // Also set the file format automatically
             String expression = result.getExpression();
-            if(expression.contains(".png")) {
+            if (expression.contains(".png")) {
                 setFileFormat(ImpImageOutputFormat.PNG);
                 emitParameterChangedEvent("file-format");
                 emitParameterUIChangedEvent();
-            }
-            else if(expression.contains(".bmp")) {
+            } else if (expression.contains(".bmp")) {
                 setFileFormat(ImpImageOutputFormat.BMP);
                 emitParameterChangedEvent("file-format");
                 emitParameterUIChangedEvent();
-            }
-            else if(expression.contains(".jpg") || expression.contains(".jpeg")) {
+            } else if (expression.contains(".jpg") || expression.contains(".jpeg")) {
                 setFileFormat(ImpImageOutputFormat.JPG);
                 emitParameterChangedEvent("file-format");
                 emitParameterUIChangedEvent();
-            }
-            else if(expression.contains(".gif")) {
+            } else if (expression.contains(".gif")) {
                 setFileFormat(ImpImageOutputFormat.GIF);
                 emitParameterChangedEvent("file-format");
                 emitParameterUIChangedEvent();

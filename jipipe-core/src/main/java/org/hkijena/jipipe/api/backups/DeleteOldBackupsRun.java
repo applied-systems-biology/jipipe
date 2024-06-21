@@ -14,19 +14,14 @@
 package org.hkijena.jipipe.api.backups;
 
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.plugins.settings.JIPipeBackupApplicationSettings;
-import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.StringUtils;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class DeleteOldBackupsRun extends AbstractJIPipeRunnable {
     private final Duration maxAge;
@@ -72,7 +67,7 @@ public class DeleteOldBackupsRun extends AbstractJIPipeRunnable {
             }
         }
 
-        if(getProgressInfo().isCancelled())
+        if (getProgressInfo().isCancelled())
             return;
 
         for (JIPipeProjectBackupItem backupItem : itemsToDelete) {

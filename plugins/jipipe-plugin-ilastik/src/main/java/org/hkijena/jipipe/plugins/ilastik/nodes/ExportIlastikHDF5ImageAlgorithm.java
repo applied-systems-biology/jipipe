@@ -139,7 +139,7 @@ public class ExportIlastikHDF5ImageAlgorithm extends JIPipeSimpleIteratingAlgori
                 "Select output file",
                 PathType.FilesOnly,
                 UIUtils.EXTENSION_FILTER_HDF5);
-        if(result != null) {
+        if (result != null) {
             setHdf5Path(result);
             emitParameterChangedEvent("hdf5-path");
         }

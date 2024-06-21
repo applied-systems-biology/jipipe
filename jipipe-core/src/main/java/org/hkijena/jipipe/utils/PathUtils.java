@@ -450,7 +450,8 @@ public class PathUtils {
 
     /**
      * Marks all files in that directory as Unix executable
-     * @param dir the directory
+     *
+     * @param dir          the directory
      * @param progressInfo the progress
      */
     public static void makeAllUnixExecutable(Path dir, JIPipeProgressInfo progressInfo) {
@@ -467,8 +468,7 @@ public class PathUtils {
         try {
             Files.createDirectories(root);
             return Files.createTempDirectory(root, prefix);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

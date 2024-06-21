@@ -32,14 +32,14 @@ public class JIPipePythonAdapterLibraryEnvironment extends PythonPackageLibraryE
         this.setLibraryDirectory(Paths.get("jipipe").resolve("lib-jipipe-python"));
     }
 
+    public JIPipePythonAdapterLibraryEnvironment(PythonPackageLibraryEnvironment other) {
+        super(other);
+    }
+
     @Override
     public void applyConfigurationFromArtifact(JIPipeLocalArtifact artifact, JIPipeProgressInfo progressInfo) {
         setProvidedByEnvironment(false);
         setLibraryDirectory(artifact.getLocalPath().resolve("jipipe-python-main"));
-    }
-
-    public JIPipePythonAdapterLibraryEnvironment(PythonPackageLibraryEnvironment other) {
-        super(other);
     }
 
     /**

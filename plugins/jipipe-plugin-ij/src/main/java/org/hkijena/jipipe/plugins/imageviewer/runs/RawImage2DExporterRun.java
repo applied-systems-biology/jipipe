@@ -17,7 +17,6 @@ import ij.IJ;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.run.JIPipeRunnable;
 
 import java.nio.file.Path;
 

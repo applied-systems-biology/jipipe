@@ -57,44 +57,6 @@ public class JIPipeDesktopParameterKeyPickerUI extends JPanel {
         rebuildNodeList();
     }
 
-    private void rebuildNodeList() {
-        DefaultListModel<Object> model = new DefaultListModel<>();
-
-        // Add all node instances
-        Map<UUID, List<JIPipeGraphNode>> byCompartment = nodeInstances.stream().collect(Collectors.groupingBy(JIPipeGraphNode::getCompartmentUUIDInParentGraph));
-        for (Map.Entry<UUID, List<JIPipeGraphNode>> entry : byCompartment.entrySet()) {
-            entry.getValue().stream().sorted(Comparator.comparing(JIPipeGraphNode::getName))
-                    .filter(node -> nodeSearchField.test(node.getName() + " " + node.getInfo().getDescription().getBody()))
-                    .forEach(model::addElement);
-        }
-
-        // Add all known node types
-        JIPipe.getNodes().getRegisteredNodeInfos().values().stream()
-                .filter(info -> nodeSearchField.test(info.getName() + " " + info.getDescription().getBody()))
-                .sorted(Comparator.comparing(JIPipeNodeInfo::getName)).forEach(model::addElement);
-
-        nodeJList.setModel(model);
-
-        if(!model.isEmpty()) {
-            nodeJList.setSelectedIndex(0);
-        }
-    }
-
-    public Set<JIPipeGraphNode> getNodeInstances() {
-        return nodeInstances;
-    }
-
-    public void setNodeInstances(Set<JIPipeGraphNode> nodeInstances) {
-        this.nodeInstances = nodeInstances;
-        rebuildNodeList();
-    }
-
-    public void selectNode(Object node) {
-        if(node != null) {
-            nodeJList.setSelectedValue(node, true);
-        }
-    }
-
     /**
      * Picks a node or parameter
      *
@@ -148,22 +110,59 @@ public class JIPipeDesktopParameterKeyPickerUI extends JPanel {
         return result;
     }
 
+    private void rebuildNodeList() {
+        DefaultListModel<Object> model = new DefaultListModel<>();
+
+        // Add all node instances
+        Map<UUID, List<JIPipeGraphNode>> byCompartment = nodeInstances.stream().collect(Collectors.groupingBy(JIPipeGraphNode::getCompartmentUUIDInParentGraph));
+        for (Map.Entry<UUID, List<JIPipeGraphNode>> entry : byCompartment.entrySet()) {
+            entry.getValue().stream().sorted(Comparator.comparing(JIPipeGraphNode::getName))
+                    .filter(node -> nodeSearchField.test(node.getName() + " " + node.getInfo().getDescription().getBody()))
+                    .forEach(model::addElement);
+        }
+
+        // Add all known node types
+        JIPipe.getNodes().getRegisteredNodeInfos().values().stream()
+                .filter(info -> nodeSearchField.test(info.getName() + " " + info.getDescription().getBody()))
+                .sorted(Comparator.comparing(JIPipeNodeInfo::getName)).forEach(model::addElement);
+
+        nodeJList.setModel(model);
+
+        if (!model.isEmpty()) {
+            nodeJList.setSelectedIndex(0);
+        }
+    }
+
+    public Set<JIPipeGraphNode> getNodeInstances() {
+        return nodeInstances;
+    }
+
+    public void setNodeInstances(Set<JIPipeGraphNode> nodeInstances) {
+        this.nodeInstances = nodeInstances;
+        rebuildNodeList();
+    }
+
+    public void selectNode(Object node) {
+        if (node != null) {
+            nodeJList.setSelectedValue(node, true);
+        }
+    }
+
     private List<ParameterEntry> getSelectedEntries() {
         List<ParameterEntry> result = new ArrayList<>();
-        if(treeComponent != null && treeComponent.getSelectionPaths() != null)  {
+        if (treeComponent != null && treeComponent.getSelectionPaths() != null) {
             for (TreePath selectionPath : treeComponent.getSelectionPaths()) {
                 Object lastPathComponent = selectionPath.getLastPathComponent();
-                if(lastPathComponent instanceof DefaultMutableTreeNode) {
+                if (lastPathComponent instanceof DefaultMutableTreeNode) {
                     Object userObject = ((DefaultMutableTreeNode) lastPathComponent).getUserObject();
-                    if(userObject instanceof JIPipeParameterAccess) {
+                    if (userObject instanceof JIPipeParameterAccess) {
                         JIPipeParameterAccess parameterAccess = (JIPipeParameterAccess) userObject;
                         result.add(new ParameterEntry(parameterAccess.getName(),
                                 parameterAccess.getDescription(),
                                 lastTree.getUniqueKey(parameterAccess),
                                 parameterAccess.getFieldClass(),
                                 parameterAccess.get(Object.class)));
-                    }
-                    else if(userObject instanceof JIPipeParameterTree.Node) {
+                    } else if (userObject instanceof JIPipeParameterTree.Node) {
                         for (JIPipeParameterAccess parameterAccess : ((JIPipeParameterTree.Node) userObject).getParameters().values()) {
                             result.add(new ParameterEntry(parameterAccess.getName(),
                                     parameterAccess.getDescription(),
@@ -218,16 +217,15 @@ public class JIPipeDesktopParameterKeyPickerUI extends JPanel {
         DefaultMutableTreeNode root = new DefaultMutableTreeNode();
         DefaultTreeModel model = new DefaultTreeModel(root);
 
-        if(nodeJList.getSelectedValue() != null) {
+        if (nodeJList.getSelectedValue() != null) {
             lastTree = null;
-            if(nodeJList.getSelectedValue() instanceof JIPipeGraphNode) {
+            if (nodeJList.getSelectedValue() instanceof JIPipeGraphNode) {
                 lastTree = new JIPipeParameterTree((JIPipeParameterCollection) nodeJList.getSelectedValue());
-            }
-            else if(nodeJList.getSelectedValue() instanceof JIPipeNodeInfo) {
+            } else if (nodeJList.getSelectedValue() instanceof JIPipeNodeInfo) {
                 lastTree = new JIPipeParameterTree(((JIPipeNodeInfo) nodeJList.getSelectedValue()).newInstance());
             }
 
-            if(lastTree != null) {
+            if (lastTree != null) {
                 root.setUserObject(lastTree.getRoot());
                 traverse(root, lastTree.getRoot(), Collections.emptySet(), false);
             }
@@ -292,10 +290,9 @@ public class JIPipeDesktopParameterKeyPickerUI extends JPanel {
 
         public Object getInitialValue() {
             JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(fieldClass);
-            if(value != null) {
+            if (value != null) {
                 return info.duplicate(value);
-            }
-            else {
+            } else {
                 return info.newInstance();
             }
         }
@@ -312,7 +309,7 @@ public class JIPipeDesktopParameterKeyPickerUI extends JPanel {
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
             secondaryLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
             setLayout(new GridBagLayout());
-            Insets insets = new Insets(2,2,2,2);
+            Insets insets = new Insets(2, 2, 2, 2);
             add(iconLabel, new GridBagConstraints(0,
                     0,
                     1,
@@ -351,17 +348,16 @@ public class JIPipeDesktopParameterKeyPickerUI extends JPanel {
         @Override
         public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 
-            if(value instanceof JIPipeNodeInfo) {
+            if (value instanceof JIPipeNodeInfo) {
                 iconLabel.setIcon(((JIPipeNodeInfo) value).getIcon());
                 mainLabel.setText(((JIPipeNodeInfo) value).getName());
                 secondaryLabel.setText("");
-            }
-            else if(value instanceof JIPipeGraphNode) {
+            } else if (value instanceof JIPipeGraphNode) {
                 iconLabel.setIcon(((JIPipeGraphNode) value).getInfo().getIcon());
                 mainLabel.setText(((JIPipeGraphNode) value).getName());
                 UUID compartmentUUID = ((JIPipeGraphNode) value).getCompartmentUUIDInParentGraph();
                 JIPipeProject project = ((JIPipeGraphNode) value).getParentGraph().getProject();
-                if(compartmentUUID != null && project != null) {
+                if (compartmentUUID != null && project != null) {
                     secondaryLabel.setText(project.getCompartments().get(compartmentUUID).getName());
                 }
             }
@@ -396,7 +392,7 @@ public class JIPipeDesktopParameterKeyPickerUI extends JPanel {
                 Object userObject = treeNode.getUserObject();
                 if (userObject instanceof JIPipeParameterTree.Node) {
                     JIPipeParameterTree.Node node = (JIPipeParameterTree.Node) userObject;
-                    setIcon(   UIUtils.getIconFromResources("actions/folder.png"));
+                    setIcon(UIUtils.getIconFromResources("actions/folder.png"));
                     String name = node.getName();
                     if (name == null)
                         name = node.getKey();

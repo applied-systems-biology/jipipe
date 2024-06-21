@@ -47,7 +47,7 @@ import java.util.Map;
 @AddJIPipeCitation("Zingman, I., Saupe, D., & Lambers, K. (2014). A morphological approach for distinguishing texture and individual features in images. Pattern Recognition Letters, 47, 129-138.")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
-public class MorphologicalTextureContrast2DAlgorithm  extends JIPipeSimpleIteratingAlgorithm {
+public class MorphologicalTextureContrast2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private int radius1 = 3;
     private int radius2 = 3;

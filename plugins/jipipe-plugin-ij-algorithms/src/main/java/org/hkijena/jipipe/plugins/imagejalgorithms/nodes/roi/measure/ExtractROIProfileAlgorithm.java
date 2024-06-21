@@ -154,7 +154,7 @@ public class ExtractROIProfileAlgorithm extends JIPipeIteratingAlgorithm {
             roiNameAnnotation.addAnnotationIfEnabled(textAnnotationList, StringUtils.nullToEmpty(roi.getName()));
             roiIndexAnnotation.addAnnotationIfEnabled(textAnnotationList, String.valueOf(i));
 
-            if(roiDataAnnotation.isEnabled()) {
+            if (roiDataAnnotation.isEnabled()) {
                 dataAnnotationList.add(new JIPipeDataAnnotation(roiDataAnnotation.getContent(), new ROIListData(Collections.singletonList(roi))));
             }
 

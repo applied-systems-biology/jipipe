@@ -123,7 +123,7 @@ public class ExportROIAlgorithm2 extends JIPipeIteratingAlgorithm {
                 "Select output file",
                 PathType.FilesOnly,
                 UIUtils.EXTENSION_FILTER_ROIS);
-        if(result != null) {
+        if (result != null) {
             setFilePath(result);
             emitParameterChangedEvent("file-path");
         }

@@ -159,17 +159,15 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         // Node information
         nodeIsRunnable = node.getInfo().isRunnable() || node instanceof JIPipeAlgorithm || node instanceof JIPipeProjectCompartment;
 
-        if(node instanceof JIPipeProjectCompartmentOutput)  {
-            if(isDisplayedInForeignCompartment()) {
+        if (node instanceof JIPipeProjectCompartmentOutput) {
+            if (isDisplayedInForeignCompartment()) {
                 showInputs = false;
                 showOutputs = true;
-            }
-            else {
+            } else {
                 showInputs = true;
                 showOutputs = true;
             }
-        }
-        else if (node instanceof GraphWrapperAlgorithmInput) {
+        } else if (node instanceof GraphWrapperAlgorithmInput) {
             showInputs = false;
             showOutputs = true;
         } else if (node instanceof GraphWrapperAlgorithmOutput) {
@@ -508,18 +506,16 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         }
 
         double nameWidth;
-        if(isDisplayedInForeignCompartment()) {
+        if (isDisplayedInForeignCompartment()) {
             JIPipeProject project = getGraphCanvasUI().getWorkbench().getProject();
             JIPipeProjectCompartment projectCompartment = project.getCompartments().get(node.getCompartmentUUIDInParentGraph());
-            if(projectCompartment != null) {
+            if (projectCompartment != null) {
                 nameWidth = Math.max(tertiaryFontMetrics.stringWidth(node.getName()),
                         tertiaryFontMetrics.stringWidth("⮤ " + projectCompartment.getName()));
-            }
-            else {
+            } else {
                 nameWidth = mainFontMetrics.stringWidth(node.getName());
             }
-        }
-        else {
+        } else {
             nameWidth = mainFontMetrics.stringWidth(node.getName());
         }
         double mainWidth = (nodeIsRunnable ? 22 : 0) + 22 + nameWidth + 16;
@@ -758,7 +754,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     }
 
     public boolean isDisplayedInForeignCompartment() {
-        if(graphCanvasUI.getDesktopWorkbench().getProject() == null)
+        if (graphCanvasUI.getDesktopWorkbench().getProject() == null)
             return false;
         if (node.getCompartmentUUIDInParentGraph() != null && graphCanvasUI.getCompartmentUUID() != null) {
             return !Objects.equals(node.getCompartmentUUIDInParentGraph(), graphCanvasUI.getCompartmentUUID());
@@ -784,10 +780,9 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             }
         }
 
-        if(isDisplayedInForeignCompartment()) {
+        if (isDisplayedInForeignCompartment()) {
             g2.setFont(zoomedTertiaryFont);
-        }
-        else {
+        } else {
             g2.setFont(zoomedMainFont);
         }
 
@@ -1071,18 +1066,16 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             String nameLabel = node.getName();
             double nameWidth;
 
-            if(isDisplayedInForeignCompartment()) {
+            if (isDisplayedInForeignCompartment()) {
                 JIPipeProject project = getGraphCanvasUI().getWorkbench().getProject();
                 JIPipeProjectCompartment projectCompartment = project.getCompartments().get(node.getCompartmentUUIDInParentGraph());
-                if(projectCompartment != null) {
+                if (projectCompartment != null) {
                     nameWidth = Math.max(fontMetrics.stringWidth(nameLabel),
                             fontMetrics.stringWidth("⮤ " + projectCompartment.getName()));
-                }
-                else {
+                } else {
                     nameWidth = fontMetrics.stringWidth(nameLabel);
                 }
-            }
-            else {
+            } else {
                 nameWidth = fontMetrics.stringWidth(nameLabel);
             }
 
@@ -1121,18 +1114,16 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
             // Draw name
             g2.setPaint(mainTextColor);
-            if(isDisplayedInForeignCompartment()) {
+            if (isDisplayedInForeignCompartment()) {
                 UIUtils.drawStringVerticallyCentered(g2, nameLabel, (int) Math.round(startX + 3 * zoom), centerY - (fontMetrics.getAscent() + fontMetrics.getLeading()) / 2, fontMetrics);
                 JIPipeProject project = getGraphCanvasUI().getWorkbench().getProject();
                 JIPipeProjectCompartment projectCompartment = project.getCompartments().get(node.getCompartmentUUIDInParentGraph());
-                if(projectCompartment != null) {
+                if (projectCompartment != null) {
                     UIUtils.drawStringVerticallyCentered(g2, "⮤ " + projectCompartment.getName(), (int) Math.round(startX + 3 * zoom), centerY + (fontMetrics.getAscent() + fontMetrics.getLeading()) / 2, fontMetrics);
-                }
-                else {
+                } else {
                     UIUtils.drawStringVerticallyCentered(g2, nameLabel, (int) Math.round(startX + 3 * zoom), centerY, fontMetrics);
                 }
-            }
-            else {
+            } else {
                 UIUtils.drawStringVerticallyCentered(g2, nameLabel, (int) Math.round(startX + 3 * zoom), centerY, fontMetrics);
             }
         }
@@ -1263,7 +1254,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         if (graph != null && graph.getProject() != null && node instanceof JIPipeProjectCompartment) {
             for (Map.Entry<String, JIPipeDesktopGraphNodeUISlotActiveArea> entry : outputSlotMap.entrySet()) {
                 JIPipeProjectCompartmentOutput outputNode = ((JIPipeProjectCompartment) node).getOutputNode(entry.getKey());
-                if(outputNode != null) {
+                if (outputNode != null) {
                     cachedData = graph.getProject().getCache().query(outputNode, outputNode.getUUIDInParentGraph(), new JIPipeProgressInfo());
                     if (cachedData != null && !cachedData.isEmpty()) {
                         entry.getValue().setSlotStatus(SlotStatus.Cached);
@@ -1685,7 +1676,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         menu.add(findAlgorithmButton);
 
         // Special case for parameter slots
-        if(slot.getName().equals(JIPipeParameterSlotAlgorithm.SLOT_PARAMETERS)) {
+        if (slot.getName().equals(JIPipeParameterSlotAlgorithm.SLOT_PARAMETERS)) {
             menu.add(UIUtils.createMenuItem("Create parameter sets ...", "Creates a nodes that supplies a selection of parameter data for the external parameters",
                     UIUtils.getIconFromResources("data-types/parameters.png"), () -> createParameterSetsNode(slot)));
         }
@@ -1754,7 +1745,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
                 graphCanvasUI.getVisibleNodes(),
                 node);
 
-        if(!result.isEmpty()) {
+        if (!result.isEmpty()) {
             ParameterTable table = new ParameterTable();
             for (JIPipeDesktopParameterKeyPickerUI.ParameterEntry entry : result) {
                 ParameterTable.ParameterColumn column = new ParameterTable.ParameterColumn(entry.getName(), entry.getKey(), entry.getFieldClass());
@@ -2033,8 +2024,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         if (slot.getInfo().getRole() == JIPipeDataSlotRole.Parameters) {
             ViewOnlyMenuItem roleInfoItem = new ViewOnlyMenuItem("<html>Parameter-like data<br><small>This slot contains parametric data that is not considered for iteration step generation.</small></html>", UIUtils.getIconFromResources("actions/wrench.png"));
             menu.add(roleInfoItem);
-        }
-        else if(slot.getInfo().getRole() == JIPipeDataSlotRole.ParametersLooping) {
+        } else if (slot.getInfo().getRole() == JIPipeDataSlotRole.ParametersLooping) {
             ViewOnlyMenuItem roleInfoItem = new ViewOnlyMenuItem("<html>Parameter-like data<br><small>This slot contains parametric data that is not considered for iteration step generation. Workloads may be repeated per input of this slot.</small></html>",
                     UIUtils.getIconFromResources("actions/wrench.png"));
             menu.add(roleInfoItem);

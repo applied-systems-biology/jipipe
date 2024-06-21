@@ -123,22 +123,21 @@ public class UIUtils {
     public static final Map<String, ImageIcon> ICON_FROM_RESOURCES_CACHE = new HashMap<>();
 
     public static final Map<String, ImageIcon> ICON_INVERTED_FROM_RESOURCES_CACHE = new HashMap<>();
+    public static final JMenuItem MENU_ITEM_SEPARATOR = null;
     public static boolean DARK_THEME = false;
     private static Theme RSYNTAX_THEME_DEFAULT;
     private static Theme RSYNTAX_THEME_DARK;
-
     private static Border CONTROL_BORDER;
     private static Border CONTROL_ERROR_BORDER;
-    public static final JMenuItem MENU_ITEM_SEPARATOR = null;
 
     public static void rebuildMenu(JPopupMenu menu, List<Component> items) {
         menu.removeAll();
-        if(items.isEmpty()) {
+        if (items.isEmpty()) {
             return;
         }
         items = new ArrayList<>(items);
-        while(items.get(items.size() -1) == null) {
-           items.remove(items.size() - 1);
+        while (items.get(items.size() - 1) == null) {
+            items.remove(items.size() - 1);
         }
         boolean canAddSeparator = false;
         for (Component item : items) {
@@ -156,11 +155,11 @@ public class UIUtils {
 
     public static void rebuildMenu(JMenu menu, List<Component> items) {
         menu.removeAll();
-        if(items.isEmpty()) {
+        if (items.isEmpty()) {
             return;
         }
         items = new ArrayList<>(items);
-        while(items.get(items.size() -1) == null) {
+        while (items.get(items.size() - 1) == null) {
             items.remove(items.size() - 1);
         }
         boolean canAddSeparator = false;
@@ -2144,7 +2143,7 @@ public class UIUtils {
     public static JButton createFlatButton(String text, Icon icon, Runnable function) {
         JButton button = new JButton(text, icon);
         UIUtils.setStandardButtonBorder(button);
-        if(function != null) {
+        if (function != null) {
             button.addActionListener(e -> function.run());
         }
         return button;
@@ -2152,7 +2151,7 @@ public class UIUtils {
 
     public static JButton createButton(String text, Icon icon, Runnable function) {
         JButton button = new JButton(text, icon);
-        if(function != null) {
+        if (function != null) {
             button.addActionListener(e -> function.run());
         }
         return button;

@@ -48,19 +48,14 @@ import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
 @AddJIPipeOutputSlot(value = ROIListData.class, name = "Output", create = true)
 public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
+    private final VisualROIProperties roiProperties;
     private TableColumnSourceExpressionParameter columnX1 = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"X\"");
     private TableColumnSourceExpressionParameter columnY1 = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"Y\"");
     private TableColumnSourceExpressionParameter columnRadius = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"Radius\"");
-
     private TableColumnSourceExpressionParameter columnZ = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.Generate, "0");
-
     private TableColumnSourceExpressionParameter columnC = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.Generate, "0");
-
     private TableColumnSourceExpressionParameter columnT = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.Generate, "0");
-
     private boolean oneBasedPositions = true;
-
-    private final VisualROIProperties roiProperties;
 
     /**
      * Instantiates a new node type.

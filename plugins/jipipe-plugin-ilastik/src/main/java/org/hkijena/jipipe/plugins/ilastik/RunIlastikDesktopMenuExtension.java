@@ -13,19 +13,10 @@
 
 package org.hkijena.jipipe.plugins.ilastik;
 
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
-import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryInstallArtifactRun;
-import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
-import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
-import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collections;
@@ -56,6 +47,6 @@ public class RunIlastikDesktopMenuExtension extends JIPipeDesktopMenuExtension i
 
     @Override
     public void actionPerformed(ActionEvent e) {
-      IlastikPlugin.launchIlastik(getDesktopWorkbench(), Collections.emptyList());
+        IlastikPlugin.launchIlastik(getDesktopWorkbench(), Collections.emptyList());
     }
 }

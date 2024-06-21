@@ -54,9 +54,9 @@ public class CellposeUtils {
         Map<String, String> additionalEnvironmentVariables = new HashMap<>();
 
         // If the environment is provided via a cellpose artifact and has a model directory, override CELLPOSE_LOCAL_MODELS_PATH
-        if(environment.isLoadFromArtifact() && environment.getLastConfiguredArtifact() != null) {
+        if (environment.isLoadFromArtifact() && environment.getLastConfiguredArtifact() != null) {
             Path modelPath = environment.getLastConfiguredArtifact().getLocalPath().resolve("models");
-            if(Files.isDirectory(modelPath)) {
+            if (Files.isDirectory(modelPath)) {
                 progressInfo.log("Configuring CELLPOSE_LOCAL_MODELS_PATH as " + modelPath);
                 additionalEnvironmentVariables.put("CELLPOSE_LOCAL_MODELS_PATH", modelPath.toString());
             }

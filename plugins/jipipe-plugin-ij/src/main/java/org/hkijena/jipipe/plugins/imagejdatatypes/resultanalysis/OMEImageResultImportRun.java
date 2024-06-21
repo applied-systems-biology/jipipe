@@ -19,7 +19,6 @@ import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
-import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
 
 import java.nio.file.Path;

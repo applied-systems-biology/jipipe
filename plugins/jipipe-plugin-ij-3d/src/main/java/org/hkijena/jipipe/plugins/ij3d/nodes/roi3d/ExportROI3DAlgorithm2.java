@@ -96,7 +96,7 @@ public class ExportROI3DAlgorithm2 extends JIPipeIteratingAlgorithm {
     public void selectFilePathDesktopQuickAction(JIPipeDesktopGraphCanvasUI canvasUI) {
         DataExportExpressionParameter result = DataExportExpressionParameter.showPathChooser(canvasUI.getDesktopWorkbench().getWindow(), canvasUI.getWorkbench(), "Select output file", PathType.FilesOnly,
                 new FileNameExtensionFilter("3D ROI (*.roi3d)", "roi3d"));
-        if(result != null) {
+        if (result != null) {
             setFilePath(result);
             emitParameterChangedEvent("file-path");
         }

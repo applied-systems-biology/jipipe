@@ -23,8 +23,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeStandardMetadata;
 import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.datatypes.JIPipeCompartmentOutputData;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
@@ -38,8 +38,8 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 /**
  * Exported {@link JIPipeProjectCompartment}
@@ -180,8 +180,8 @@ public class JIPipeExportedCompartment {
 
         // Add the output slots
         for (String outputSlot : outputSlots) {
-            ((JIPipeMutableSlotConfiguration)compartment.getSlotConfiguration()).addSlot(outputSlot, new JIPipeDataSlotInfo(JIPipeCompartmentOutputData.class,
-                    JIPipeSlotType.Output, outputSlot,""), false);
+            ((JIPipeMutableSlotConfiguration) compartment.getSlotConfiguration()).addSlot(outputSlot, new JIPipeDataSlotInfo(JIPipeCompartmentOutputData.class,
+                    JIPipeSlotType.Output, outputSlot, ""), false);
         }
 
 
@@ -274,7 +274,7 @@ public class JIPipeExportedCompartment {
             if (node.has("metadata")) {
                 exportedCompartment.metadata = JsonUtils.getObjectMapper().readerFor(JIPipeStandardMetadata.class).readValue(node.get("metadata"));
             }
-            if(node.has("output-slots")) {
+            if (node.has("output-slots")) {
                 TypeReference<List<String>> typeReference = new TypeReference<List<String>>() {
                 };
                 exportedCompartment.outputSlots = JsonUtils.getObjectMapper().readerFor(typeReference).readValue(node.get("output-slots"));

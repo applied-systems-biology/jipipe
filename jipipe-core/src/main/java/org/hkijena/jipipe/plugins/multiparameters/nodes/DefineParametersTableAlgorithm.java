@@ -96,10 +96,10 @@ public class DefineParametersTableAlgorithm extends JIPipeAlgorithm {
                 canvasUI.getVisibleNodes(),
                 null);
         for (JIPipeDesktopParameterKeyPickerUI.ParameterEntry selectedParameter : selectedParameters) {
-            if(!parameterTable.containsColumn(selectedParameter.getKey())) {
+            if (!parameterTable.containsColumn(selectedParameter.getKey())) {
                 parameterTable.addColumn(new ParameterTable.ParameterColumn(selectedParameter.getName(), selectedParameter.getKey(), selectedParameter.getFieldClass()), selectedParameter.getValue());
             }
-            if(parameterTable.getRowCount() <= 0) {
+            if (parameterTable.getRowCount() <= 0) {
                 parameterTable.addRow();
             }
         }

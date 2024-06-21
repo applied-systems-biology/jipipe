@@ -408,11 +408,11 @@ public class ReflectionUtils {
     }
 
     public static boolean isInstanceOfAny(Object obj, Class<?>... classes) {
-        if(obj == null) {
+        if (obj == null) {
             return false;
         }
         for (Class<?> klass : classes) {
-            if(klass.isAssignableFrom(obj.getClass())) {
+            if (klass.isAssignableFrom(obj.getClass())) {
                 return true;
             }
         }

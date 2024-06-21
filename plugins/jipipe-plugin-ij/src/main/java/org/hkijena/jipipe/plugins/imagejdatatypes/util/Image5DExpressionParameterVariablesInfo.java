@@ -18,7 +18,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.plugins.expressions.ExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariables;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 
 import java.util.HashSet;
@@ -41,11 +40,6 @@ public class Image5DExpressionParameterVariablesInfo implements ExpressionParame
         VARIABLES.add(new JIPipeExpressionParameterVariableInfo("num_d", "Number of dimensions", "Number of dimensions"));
     }
 
-    @Override
-    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        return VARIABLES;
-    }
-
     public static void writeToVariables(ImagePlus img, JIPipeExpressionVariablesMap variables) {
         variables.put("width", img.getWidth());
         variables.put("height", img.getHeight());
@@ -53,6 +47,11 @@ public class Image5DExpressionParameterVariablesInfo implements ExpressionParame
         variables.put("num_z", img.getNSlices());
         variables.put("num_t", img.getNFrames());
         variables.put("num_d", img.getNDimensions());
+    }
+
+    @Override
+    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        return VARIABLES;
     }
 }
 

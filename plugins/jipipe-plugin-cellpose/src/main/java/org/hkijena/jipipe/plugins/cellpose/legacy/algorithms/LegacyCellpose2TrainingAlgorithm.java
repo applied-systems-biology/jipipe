@@ -36,8 +36,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.cellpose.CellposeEnvironmentAccessNode;
-import org.hkijena.jipipe.plugins.cellpose.legacy.PretrainedLegacyCellpose2TrainingModel;
 import org.hkijena.jipipe.plugins.cellpose.CellposeUtils;
+import org.hkijena.jipipe.plugins.cellpose.legacy.PretrainedLegacyCellpose2TrainingModel;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeSizeModelData;
 import org.hkijena.jipipe.plugins.cellpose.parameters.CellposeChannelSettings;
@@ -62,15 +62,18 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @SetJIPipeDocumentation(name = "Cellpose training (2.x)", description =
         "Deprecated. Use the node with the same name.\n\n" +
-        "Trains a model with Cellpose. You start from an existing model or train from scratch. " +
-        "Incoming images are automatically converted to greyscale. Only 2D or 3D images are supported. For this node to work, you need to annotate a greyscale 16-bit or 8-bit label image column to each raw data input. " +
-        "To do this, you can use the node 'Annotate with data'. By default, JIPipe will ensure that all connected components of this image are assigned a unique component. You can disable this feature via the parameters.")
+                "Trains a model with Cellpose. You start from an existing model or train from scratch. " +
+                "Incoming images are automatically converted to greyscale. Only 2D or 3D images are supported. For this node to work, you need to annotate a greyscale 16-bit or 8-bit label image column to each raw data input. " +
+                "To do this, you can use the node 'Annotate with data'. By default, JIPipe will ensure that all connected components of this image are assigned a unique component. You can disable this feature via the parameters.")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Training data", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Test data", create = true, optional = true)
 @AddJIPipeInputSlot(value = LegacyCellposeModelData.class)

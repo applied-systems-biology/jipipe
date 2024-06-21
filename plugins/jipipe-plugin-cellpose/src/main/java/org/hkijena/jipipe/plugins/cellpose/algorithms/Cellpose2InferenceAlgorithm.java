@@ -231,15 +231,14 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
 //                    sizeModelData = dataAnnotation.getData(CellposeSizeModelData.class, modelProgress);
 //                }
 //            }
-            
+
             // Save the model out
             CellposeModelInfo modelInfo = new CellposeModelInfo();
             modelInfo.annotationList = modelSlot.getTextAnnotations(modelRow);
-            if(modelData.isPretrained()) {
+            if (modelData.isPretrained()) {
                 modelInfo.modelPretrained = true;
                 modelInfo.modelNameOrPath = modelData.getPretrainedModelName();
-            }
-            else {
+            } else {
                 Path tempDirectory = PathUtils.createTempDirectory(workDirectory.resolve("models"), "model");
                 modelData.exportData(new JIPipeFileSystemWriteDataStorage(modelProgress, tempDirectory), null, false, modelProgress);
                 modelInfo.modelPretrained = false;
@@ -320,7 +319,7 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
 
         // Fetch the data from the directory
         for (CellposeImageInfo imageInfo : runWith2D) {
-            extractDataFromInfo(modelInfo,iterationStep, imageInfo, io2DPath, progressInfo.resolve("Importing results row " + imageInfo.sourceRow));
+            extractDataFromInfo(modelInfo, iterationStep, imageInfo, io2DPath, progressInfo.resolve("Importing results row " + imageInfo.sourceRow));
         }
         for (CellposeImageInfo imageInfo : runWith3D) {
             extractDataFromInfo(modelInfo, iterationStep, imageInfo, io3DPath, progressInfo.resolve("Importing results row " + imageInfo.sourceRow));

@@ -29,8 +29,8 @@ import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryApplyInstallUninstallRun;
 import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
@@ -271,9 +271,9 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                 }
 
                 // Download all missing artifacts
-                if(!remoteArtifactsToDownload.isEmpty()) {
+                if (!remoteArtifactsToDownload.isEmpty()) {
 
-                    if(!JIPipeArtifactApplicationSettings.getInstance().isAutoDownload()) {
+                    if (!JIPipeArtifactApplicationSettings.getInstance().isAutoDownload()) {
                         throw new JIPipeValidationRuntimeException(new UnspecifiedValidationReportContext(),
                                 new UnsupportedOperationException("Artifact auto-download is disabled!"),
                                 "Unable to auto-download artifacts",
@@ -283,10 +283,10 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                     }
 
                     JIPipeProgressInfo artifactsProgress = progressInfo.resolve("Artifacts");
-                    artifactsProgress.log("Artifacts to download: "+ String.join(", ", remoteArtifactsToDownload));
+                    artifactsProgress.log("Artifacts to download: " + String.join(", ", remoteArtifactsToDownload));
                     List<JIPipeRemoteArtifact> toInstall = remoteArtifactsToDownload.stream().map(id -> (JIPipeRemoteArtifact) JIPipe.getArtifacts().queryCachedArtifacts(id).get(0)).collect(Collectors.toList());
                     JIPipeArtifactRepositoryApplyInstallUninstallRun run = new JIPipeArtifactRepositoryApplyInstallUninstallRun(
-                           toInstall, Collections.emptyList());
+                            toInstall, Collections.emptyList());
                     run.setProgressInfo(artifactsProgress.resolve("Download"));
                     run.run();
                 }
@@ -299,7 +299,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                 String queryArtifactId = entry.getValue();
                 String targetArtifactId = requestedToTargetArtifactIds.get(queryArtifactId);
                 JIPipeArtifact artifact = JIPipe.getArtifacts().getCachedArtifacts().get(targetArtifactId);
-                if(!(artifact instanceof JIPipeLocalArtifact)) {
+                if (!(artifact instanceof JIPipeLocalArtifact)) {
                     throw new RuntimeException("Unable to find local artifact " + targetArtifactId + ", which was queried from " + queryArtifactId);
                 }
                 progressInfo.log("-> " + entry.getKey());
@@ -380,8 +380,8 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                     }
                 }
 
-                if((runFailed && configuration.isCleanupOutputsAfterFailure()) || (!runFailed && configuration.isCleanupOutputsAfterSuccess())) {
-                    if(configuration.getOutputPath() != null) {
+                if ((runFailed && configuration.isCleanupOutputsAfterFailure()) || (!runFailed && configuration.isCleanupOutputsAfterSuccess())) {
+                    if (configuration.getOutputPath() != null) {
                         progressInfo.log("Removing output directory as requested: " + configuration.getOutputPath());
                         PathUtils.deleteDirectoryRecursively(configuration.getOutputPath(), progressInfo.resolve("Cleanup"));
                     }
@@ -396,12 +396,12 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
 
     private void fixPartitions(JIPipeGraph graph, JIPipeProgressInfo progressInfo) {
         for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
-            if(graphNode instanceof JIPipeAlgorithm) {
+            if (graphNode instanceof JIPipeAlgorithm) {
                 JIPipeAlgorithm algorithm = (JIPipeAlgorithm) graphNode;
                 int requestedIndex = algorithm.getRuntimePartition().getIndex();
                 int mappedIndex = getValidRuntimePartitionIndex(requestedIndex);
-                if(requestedIndex != mappedIndex) {
-                    progressInfo.log(graphNode.getDisplayName() + " [" + graphNode.getUUIDInParentGraph() + "] mapping partition from " + requestedIndex + " to " + mappedIndex );
+                if (requestedIndex != mappedIndex) {
+                    progressInfo.log(graphNode.getDisplayName() + " [" + graphNode.getUUIDInParentGraph() + "] mapping partition from " + requestedIndex + " to " + mappedIndex);
                     algorithm.setRuntimePartition(new RuntimePartitionReferenceParameter(mappedIndex));
                 }
             }
@@ -666,7 +666,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                                 continue;
                             }
                         }
-                        if(!isCaching && !isExporting) {
+                        if (!isCaching && !isExporting) {
                             progressInfo.log("--> NOT detecting endpoint output " + outputSlot.getDisplayName() + " (registered as " + uuid + ") [neither exporting, nor caching]");
                             continue;
                         }
@@ -1174,10 +1174,9 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
     }
 
     public int getValidRuntimePartitionIndex(int index) {
-        if(index < 0 || index >= runtimePartitions.size()) {
+        if (index < 0 || index >= runtimePartitions.size()) {
             return 0;
-        }
-        else {
+        } else {
             return index;
         }
     }

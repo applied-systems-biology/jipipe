@@ -246,33 +246,29 @@ public class ExportImage2Algorithm extends JIPipeIteratingAlgorithm {
                 UIUtils.EXTENSION_FILTER_TIFF,
                 UIUtils.EXTENSION_FILTER_AVI,
                 UIUtils.EXTENSION_FILTER_JPEG);
-        if(result != null) {
+        if (result != null) {
             setFilePath(result);
             emitParameterChangedEvent("file-path");
 
             // Also set the file format automatically
             String expression = result.getExpression();
-            if(expression.contains(".png")) {
+            if (expression.contains(".png")) {
                 setFileFormat(ExportImageAlgorithm.FileFormat.PNG);
                 emitParameterChangedEvent("file-format");
                 emitParameterUIChangedEvent();
-            }
-            else if(expression.contains(".bmp")) {
+            } else if (expression.contains(".bmp")) {
                 setFileFormat(ExportImageAlgorithm.FileFormat.BMP);
                 emitParameterChangedEvent("file-format");
                 emitParameterUIChangedEvent();
-            }
-            else if(expression.contains(".jpg") || expression.contains(".jpeg")) {
+            } else if (expression.contains(".jpg") || expression.contains(".jpeg")) {
                 setFileFormat(ExportImageAlgorithm.FileFormat.JPEG);
                 emitParameterChangedEvent("file-format");
                 emitParameterUIChangedEvent();
-            }
-            else if(expression.contains(".tif") || expression.contains(".tiff")) {
+            } else if (expression.contains(".tif") || expression.contains(".tiff")) {
                 setFileFormat(ExportImageAlgorithm.FileFormat.TIFF);
                 emitParameterChangedEvent("file-format");
                 emitParameterUIChangedEvent();
-            }
-            else if(expression.contains(".avi")) {
+            } else if (expression.contains(".avi")) {
                 setFileFormat(ExportImageAlgorithm.FileFormat.AVI);
                 emitParameterChangedEvent("file-format");
                 emitParameterUIChangedEvent();

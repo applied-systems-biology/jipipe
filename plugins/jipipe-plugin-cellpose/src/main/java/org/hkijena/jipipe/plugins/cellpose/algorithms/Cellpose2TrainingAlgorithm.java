@@ -37,7 +37,8 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.*;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.plugins.cellpose.CellposeEnvironmentAccessNode;
 import org.hkijena.jipipe.plugins.cellpose.CellposeUtils;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
@@ -72,8 +73,8 @@ import java.util.stream.Collectors;
 
 @SetJIPipeDocumentation(name = "Cellpose training (2.x)", description =
         "Trains a model with Cellpose. You start from an existing model or train from scratch. " +
-        "Incoming images are automatically converted to greyscale. Only 2D or 3D images are supported. For this node to work, you need to annotate a greyscale 16-bit or 8-bit label image column to each raw data input. " +
-        "To do this, you can use the node 'Annotate with data'. By default, JIPipe will ensure that all connected components of this image are assigned a unique component. You can disable this feature via the parameters.")
+                "Incoming images are automatically converted to greyscale. Only 2D or 3D images are supported. For this node to work, you need to annotate a greyscale 16-bit or 8-bit label image column to each raw data input. " +
+                "To do this, you can use the node 'Annotate with data'. By default, JIPipe will ensure that all connected components of this image are assigned a unique component. You can disable this feature via the parameters.")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Training data", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Test data", create = true, optional = true)
 @AddJIPipeInputSlot(value = CellposeModelData.class, name = "Pretrained model", create = true, optional = true, description = "Optional pretrained models. All workloads are repeated per model.", role = JIPipeDataSlotRole.ParametersLooping)
@@ -272,7 +273,7 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
             // Save the model out
             CellposeModelInfo modelInfo = new CellposeModelInfo();
             modelInfo.annotationList = modelSlot.getTextAnnotations(modelRow);
-            if(modelData != null) {
+            if (modelData != null) {
                 if (modelData.isPretrained()) {
                     modelInfo.modelPretrained = true;
                     modelInfo.modelNameOrPath = modelData.getPretrainedModelName();
@@ -402,11 +403,10 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
             arguments.add(diameter.getContent() + "");
         }
 
-        if(modelInfo.modelNameOrPath != null) {
+        if (modelInfo.modelNameOrPath != null) {
             arguments.add("--pretrained_model");
             arguments.add(modelInfo.modelNameOrPath);
-        }
-        else {
+        } else {
             arguments.add("--pretrained_model");
             arguments.add("None");
         }

@@ -13,37 +13,17 @@
 
 package org.hkijena.jipipe.plugins.ilastik.environments;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonSetter;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
-import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeArtifactProcessEnvironment;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.ilastik.IlastikPlugin;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
-import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
-import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
-import org.hkijena.jipipe.utils.EnvironmentVariablesSource;
 import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  * Parameter that describes a Python environment

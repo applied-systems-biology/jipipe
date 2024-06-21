@@ -34,8 +34,8 @@ public class JIPipeDesktopLogViewLogUI extends JIPipeDesktopWorkbenchPanel {
     public static int LOG_LINE_LIMIT = 500;
     private final JIPipeRunnableLogEntry logEntry;
     private final JCheckBox displayFullLog = new JCheckBox("Show full log");
-    private JScrollPane scrollPane;
     private final JTextPane logReader = new JTextPane();
+    private JScrollPane scrollPane;
 
     public JIPipeDesktopLogViewLogUI(JIPipeDesktopWorkbench workbench, JIPipeRunnableLogEntry logEntry) {
         super(workbench);
@@ -45,16 +45,15 @@ public class JIPipeDesktopLogViewLogUI extends JIPipeDesktopWorkbenchPanel {
     }
 
     private void reloadLog() {
-        if(displayFullLog.isSelected() || CharMatcher.is('\n').countIn(logEntry.getLog()) < LOG_LINE_LIMIT) {
+        if (displayFullLog.isSelected() || CharMatcher.is('\n').countIn(logEntry.getLog()) < LOG_LINE_LIMIT) {
             logReader.setText(logEntry.getLog());
-        }
-        else {
+        } else {
             StringBuilder builder = new StringBuilder();
             builder.append("\n");
             builder.append("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n");
             builder.append("Only displaying the last ").append(LOG_LINE_LIMIT).append(" lines\n\n\n");
             String[] lines = logEntry.getLog().split("\n");
-            for(int i = Math.max(0, lines.length - LOG_LINE_LIMIT); i < lines.length; ++i) {
+            for (int i = Math.max(0, lines.length - LOG_LINE_LIMIT); i < lines.length; ++i) {
                 builder.append(lines[i]).append("\n");
             }
             logReader.setText(builder.toString());

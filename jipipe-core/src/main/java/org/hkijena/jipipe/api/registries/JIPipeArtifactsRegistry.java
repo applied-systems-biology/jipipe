@@ -91,6 +91,7 @@ public class JIPipeArtifactsRegistry {
 
     /**
      * Given a glob-like query, looks for the closest, newest artifact that matches it
+     *
      * @param query the query
      * @return the artifact
      */
@@ -392,10 +393,9 @@ public class JIPipeArtifactsRegistry {
 
     public JIPipeArtifact queryCachedArtifact(String filter) {
         List<JIPipeArtifact> artifacts = queryCachedArtifacts(filter);
-        if(!artifacts.isEmpty()) {
+        if (!artifacts.isEmpty()) {
             return artifacts.get(0);
-        }
-        else {
+        } else {
             return null;
         }
     }

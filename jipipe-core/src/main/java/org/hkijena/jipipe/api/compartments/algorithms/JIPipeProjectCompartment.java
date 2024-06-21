@@ -98,7 +98,7 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
     public void onSlotConfigurationChanged(JIPipeSlotConfiguration.SlotConfigurationChangedEvent event) {
         super.onSlotConfigurationChanged(event);
 
-        if(project != null) {
+        if (project != null) {
             project.updateCompartmentOutputs(this);
         }
     }

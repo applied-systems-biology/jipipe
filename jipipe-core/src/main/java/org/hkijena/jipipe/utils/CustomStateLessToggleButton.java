@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.utils;
 
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
-import org.hkijena.jipipe.api.events.JIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 
 import javax.swing.*;
@@ -22,12 +21,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class CustomStateLessToggleButton extends JButton implements ActionListener {
+    private final ToggledEventEmitter toggledEventEmitter;
     private String labelUnselected;
     private String labelSelected;
     private Icon iconSelected;
     private Icon iconUnselected;
     private boolean state;
-    private final ToggledEventEmitter toggledEventEmitter;
 
     public CustomStateLessToggleButton(String labelUnselected, Icon iconUnselected, String labelSelected, Icon iconSelected, boolean state) {
         this.labelUnselected = labelUnselected;
@@ -42,11 +41,10 @@ public class CustomStateLessToggleButton extends JButton implements ActionListen
     }
 
     public void updateState() {
-        if(state) {
+        if (state) {
             setText(labelSelected);
             setIcon(iconSelected);
-        }
-        else {
+        } else {
             setText(labelUnselected != null ? labelUnselected : labelSelected);
             setIcon(iconUnselected != null ? iconUnselected : iconSelected);
         }
@@ -108,6 +106,10 @@ public class CustomStateLessToggleButton extends JButton implements ActionListen
         return toggledEventEmitter;
     }
 
+    public interface ToggledEventListener {
+        void onToggle(ToggledEvent event);
+    }
+
     public static class ToggledEvent extends AbstractJIPipeEvent {
         private final CustomStateLessToggleButton button;
 
@@ -119,10 +121,6 @@ public class CustomStateLessToggleButton extends JButton implements ActionListen
         public CustomStateLessToggleButton getButton() {
             return button;
         }
-    }
-
-    public interface ToggledEventListener {
-        void onToggle(ToggledEvent event);
     }
 
     public static class ToggledEventEmitter extends JIPipeEventEmitter<ToggledEvent, ToggledEventListener> {

@@ -189,7 +189,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
      * @param desktopWorkbench the workbench
      * @param graphEditorUI    the graph editor UI that contains this canvas. can be null.
      * @param graph            The algorithm graph
-     * @param compartmentUUID      The compartment to show
+     * @param compartmentUUID  The compartment to show
      * @param historyJournal   object that tracks the history of this graph. Set to null to disable the undo feature.
      */
     public JIPipeDesktopGraphCanvasUI(JIPipeDesktopWorkbench desktopWorkbench, JIPipeDesktopGraphEditorUI graphEditorUI, JIPipeGraph graph, UUID compartmentUUID, JIPipeHistoryJournal historyJournal) {
@@ -3525,12 +3525,11 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     public Set<JIPipeGraphNode> getVisibleNodes() {
         Set<JIPipeGraphNode> visibleNodes = new HashSet<>();
         for (JIPipeGraphNode graphNode : getGraph().getGraphNodes()) {
-            if(getCompartmentUUID() != null) {
-                if(graphNode.isVisibleIn(getCompartmentUUID())) {
+            if (getCompartmentUUID() != null) {
+                if (graphNode.isVisibleIn(getCompartmentUUID())) {
                     visibleNodes.add(graphNode);
                 }
-            }
-            else {
+            } else {
                 visibleNodes.add(graphNode);
             }
         }

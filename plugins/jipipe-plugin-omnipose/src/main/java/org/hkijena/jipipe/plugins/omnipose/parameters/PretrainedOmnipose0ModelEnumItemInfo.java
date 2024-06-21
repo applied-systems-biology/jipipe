@@ -16,7 +16,6 @@ package org.hkijena.jipipe.plugins.omnipose.parameters;
 import org.hkijena.jipipe.plugins.omnipose.OmniposePlugin;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumItemInfo;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 

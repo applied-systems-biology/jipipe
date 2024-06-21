@@ -23,8 +23,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.plugins.ilastik.environments.IlastikEnvironment;
 import org.hkijena.jipipe.plugins.ilastik.IlastikPlugin;
+import org.hkijena.jipipe.plugins.ilastik.environments.IlastikEnvironment;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 
 import javax.swing.*;

@@ -491,11 +491,10 @@ public class JIPipeDesktopFormPanel extends JPanel {
         groupHeaderPanels.add(panel);
         ++numRows;
 
-        if(!StringUtils.isNullOrEmpty(description)) {
-            if(collapseDescription) {
+        if (!StringUtils.isNullOrEmpty(description)) {
+            if (collapseDescription) {
                 panel.addDescriptionPopupToTitlePanel(description);
-            }
-            else {
+            } else {
                 panel.addDescriptionRow(description);
             }
         }
@@ -699,15 +698,15 @@ public class JIPipeDesktopFormPanel extends JPanel {
      * Panel that contains a group header
      */
     public static class GroupHeaderPanel extends JPanel {
-        private JPanel titlePanel;
         private final int marginTop;
         private final Color backgroundColor;
         private final Color borderColor;
+        private JPanel titlePanel;
 
         /**
-         * @param text           the text
-         * @param icon           the icon
-         * @param marginTop      the margin to the top
+         * @param text      the text
+         * @param icon      the icon
+         * @param marginTop the margin to the top
          */
         public GroupHeaderPanel(String text, Icon icon, int marginTop) {
             this.marginTop = marginTop;
@@ -735,7 +734,7 @@ public class JIPipeDesktopFormPanel extends JPanel {
 
             // Add spacer
             titlePanel.add(Box.createHorizontalGlue());
-            titlePanel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+            titlePanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
             add(titlePanel);
         }
 

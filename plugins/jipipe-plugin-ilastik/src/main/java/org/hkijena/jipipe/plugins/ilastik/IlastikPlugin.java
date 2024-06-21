@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.plugins.ilastik;
 
 import com.google.common.collect.Sets;
-import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
@@ -31,7 +30,6 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.ilastik.datatypes.IlastikModelData;
 import org.hkijena.jipipe.plugins.ilastik.environments.IlastikEnvironment;
 import org.hkijena.jipipe.plugins.ilastik.environments.OptionalIlastikEnvironment;
@@ -44,9 +42,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.plugins.processes.ProcessEnvironment;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
-import org.hkijena.jipipe.utils.ProcessUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
@@ -108,32 +104,29 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     public static void launchIlastik(JIPipeDesktopWorkbench workbench, List<String> arguments) {
         IlastikEnvironment environment = IlastikPlugin.getEnvironment(workbench.getProject(), null);
-        if(!environment.generateValidityReport(new UnspecifiedValidationReportContext()).isValid()) {
+        if (!environment.generateValidityReport(new UnspecifiedValidationReportContext()).isValid()) {
             JOptionPane.showMessageDialog(workbench.getWindow(),
                     "Ilastik is currently not correctly installed. Please check the project/application settings and ensure that Ilastik is setup correctly.",
                     "Launch Ilastik",
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
-        if(environment.isLoadFromArtifact()) {
+        if (environment.isLoadFromArtifact()) {
             JIPipeArtifact artifact = JIPipe.getArtifacts().searchClosestCompatibleArtifactFromQuery(environment.getArtifactQuery().getQuery());
-            if(artifact instanceof JIPipeLocalArtifact) {
+            if (artifact instanceof JIPipeLocalArtifact) {
                 environment.applyConfigurationFromArtifact((JIPipeLocalArtifact) artifact, new JIPipeProgressInfo());
-            }
-            else if(artifact instanceof JIPipeRemoteArtifact) {
-                if(JOptionPane.showConfirmDialog(workbench.getWindow(), "The Ilastik version " + artifact.getVersion() + " is currently not downloaded. " +
+            } else if (artifact instanceof JIPipeRemoteArtifact) {
+                if (JOptionPane.showConfirmDialog(workbench.getWindow(), "The Ilastik version " + artifact.getVersion() + " is currently not downloaded. " +
                         "Download it now?", "Run Ilastik", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                     JIPipeArtifactRepositoryInstallArtifactRun run = new JIPipeArtifactRepositoryInstallArtifactRun((JIPipeRemoteArtifact) artifact);
                     JIPipeDesktopRunExecuteUI.runInDialog(workbench, workbench.getWindow(), run);
                     artifact = JIPipe.getArtifacts().queryCachedArtifact(artifact.getFullId());
-                    if(artifact instanceof JIPipeLocalArtifact) {
+                    if (artifact instanceof JIPipeLocalArtifact) {
                         environment.applyConfigurationFromArtifact((JIPipeLocalArtifact) artifact, new JIPipeProgressInfo());
-                    }
-                    else {
+                    } else {
                         return;
                     }
-                }
-                else {
+                } else {
                     return;
                 }
             }

@@ -40,6 +40,23 @@ public class JIPipeDesktopNodeQuickAction {
         this.method = method;
     }
 
+    public static List<JIPipeDesktopNodeQuickAction> getQuickActions(Object object) {
+        List<JIPipeDesktopNodeQuickAction> quickActions = new ArrayList<>();
+        for (Method method : object.getClass().getMethods()) {
+            AddJIPipeDesktopNodeQuickAction annotation = method.getAnnotation(AddJIPipeDesktopNodeQuickAction.class);
+            if (annotation != null) {
+                quickActions.add(new JIPipeDesktopNodeQuickAction(annotation.name(),
+                        annotation.description(),
+                        annotation.icon(),
+                        annotation.buttonIcon(),
+                        annotation.buttonText(),
+                        method));
+            }
+        }
+        quickActions.sort(Comparator.comparing(JIPipeDesktopNodeQuickAction::getName));
+        return quickActions;
+    }
+
     public String getName() {
         return name;
     }
@@ -62,23 +79,6 @@ public class JIPipeDesktopNodeQuickAction {
 
     public Method getMethod() {
         return method;
-    }
-
-    public static List<JIPipeDesktopNodeQuickAction> getQuickActions(Object object) {
-        List<JIPipeDesktopNodeQuickAction> quickActions = new ArrayList<>();
-        for (Method method : object.getClass().getMethods()) {
-            AddJIPipeDesktopNodeQuickAction annotation = method.getAnnotation(AddJIPipeDesktopNodeQuickAction.class);
-            if(annotation != null) {
-               quickActions.add(new JIPipeDesktopNodeQuickAction(annotation.name(),
-                       annotation.description(),
-                       annotation.icon(),
-                       annotation.buttonIcon(),
-                       annotation.buttonText(),
-                       method));
-            }
-        }
-        quickActions.sort(Comparator.comparing(JIPipeDesktopNodeQuickAction::getName));
-        return quickActions;
     }
 
     public void run(JIPipeGraphNode node, JIPipeDesktopGraphCanvasUI canvasUI) {
