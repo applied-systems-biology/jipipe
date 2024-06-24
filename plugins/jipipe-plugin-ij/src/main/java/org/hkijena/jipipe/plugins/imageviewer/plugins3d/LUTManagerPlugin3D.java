@@ -59,13 +59,13 @@ public class LUTManagerPlugin3D extends GeneralImageViewerPanelPlugin3D {
         if (getCurrentImagePlus().getType() == ImagePlus.COLOR_256 || getCurrentImagePlus().getType() == ImagePlus.COLOR_RGB) {
             JIPipeDesktopFormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("LUT", UIUtils.getIconFromResources("actions/color-gradient.png"));
             JButton toRGBButton = new JButton("Split channels", UIUtils.getIconFromResources("actions/channelmixer.png"));
-            headerPanel.add(toRGBButton);
+            headerPanel.addToTitlePanel(toRGBButton);
             toRGBButton.addActionListener(e -> splitChannels());
         } else {
             JIPipeDesktopFormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("LUT", UIUtils.getIconFromResources("actions/color-gradient.png"));
             if (getCurrentImagePlus().getNChannels() == 3) {
                 JButton toRGBButton = new JButton("Convert to RGB", UIUtils.getIconFromResources("actions/colors-rgb.png"));
-                headerPanel.add(toRGBButton);
+                headerPanel.addToTitlePanel(toRGBButton);
                 toRGBButton.addActionListener(e -> convertImageToRGB());
             }
             for (int channel = 0; channel < getCurrentImagePlus().getNChannels(); channel++) {
