@@ -30,11 +30,15 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@SetJIPipeDocumentation(name = "Invert colors", description = "Inverts the colors of an image")
+@SetJIPipeDocumentation(name = "Invert colors", description = "Inverts the colors/values p of an image. With 8-bit images, p=255-p.\n" +
+        "With RGB images, converts each pixel to three 8-bit pixels and uses p=255-p.\n" +
+        "With 16-bit images, p=65535-p, or p=255-p, p=1024-p, etc. if an \"Unsigned 16-bit range\" is set using the \"Set\" option of the Image>Adjust>Brightness/ Contrast dialog.\n" +
+        "With 32-bit images, p=max-(p-min), where 'min' and 'max' are the minimum and maximum displayed pixel values.")
 @ConfigureJIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Edit", aliasName = "Invert")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImagesNodeTypeCategory.class, aliasName = "Invert values")
 public class InvertColorsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     /**
