@@ -22,6 +22,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfoETA;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
@@ -240,8 +241,9 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
         }
         try {
             List<JIPipeMultiIterationStep> iterationSteps = generateDataBatchesGenerationResult(getDataInputSlots(), progressInfo).getDataBatches();
+            JIPipeProgressInfoETA eta = new JIPipeProgressInfoETA();
             for (int i = 0; i < iterationSteps.size(); i++) {
-                JIPipeProgressInfo batchProgress = progressInfo.resolveAndLog("Data batch", i, iterationSteps.size());
+                JIPipeProgressInfo batchProgress = progressInfo.resolveAndLog("Iteration", i, iterationSteps.size());
 
                 // Derive new settings and create a dedicated run
                 JIPipeGraphRunConfiguration graphRunSettings = new JIPipeGraphRunConfiguration(runContext.getGraphRun().getConfiguration());
@@ -296,6 +298,9 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
                 for (JIPipeDataSlot dataSlot : run.getGraph().getGraph().vertexSet()) {
                     dataSlot.clear(dataSlot.getNode() != copyGroupInput && dataSlot.getNode() != copyGroupOutput, progressInfo);
                 }
+
+                // Update ETA
+                eta.update(i, iterationSteps.size(), progressInfo.resolve("Iteration"));
             }
         } catch (Throwable e) {
             try {

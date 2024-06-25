@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.api;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
@@ -467,6 +468,18 @@ public class JIPipeProgressInfo implements Cancelable {
 
     public JIPipePercentageProgressInfo percentage(String text) {
         return new JIPipePercentageProgressInfo(resolve(text));
+    }
+
+    public void log(Throwable e) {
+        if(e == null) {
+            return;
+        }
+        try {
+            log(ExceptionUtils.getStackTrace(e));
+        }
+        catch (Throwable ex) {
+            log(e.getMessage());
+        }
     }
 
     public interface StatusUpdatedEventListener {
