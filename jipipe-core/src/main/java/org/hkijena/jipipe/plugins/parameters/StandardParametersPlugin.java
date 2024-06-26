@@ -68,6 +68,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.list.*;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.*;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRangeDesktopParameterEditorUI;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.*;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.OptionalQuantity;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.QuantityDesktopParameterEditorUI;
@@ -162,9 +163,21 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
         registerRangeParameters();
         registerQuantityParameters();
         registerImageParameters();
+        registerVectorParameters();
 
         registerMenuExtension(ParameterTesterJIPipeDesktopMenuExtension.class);
         registerMenuExtension(ExpressionTesterJIPipeDesktopMenuExtension.class);
+    }
+
+    private void registerVectorParameters() {
+        registerParameterType("vector2d", Vector2dParameter.class, "2D Vector (Double)", "2D vector containing double values", VectorDesktopParameterEditorUI.class);
+        registerParameterType("vector2i", Vector2iParameter.class, "2D Vector (Integer)", "2D vector containing integer values", VectorDesktopParameterEditorUI.class);
+        registerParameterType("vector3d", Vector3dParameter.class, "3D Vector (Double)", "3D vector containing double values", VectorDesktopParameterEditorUI.class);
+        registerParameterType("vector3i", Vector3iParameter.class, "3D Vector (Integer)", "3D vector containing integer values", VectorDesktopParameterEditorUI.class);
+        registerParameterType("optional-vector2d", OptionalVector2dParameter.class, "Optional 2D Vector (Double)", "2D vector containing double values");
+        registerParameterType("optional-vector2i", OptionalVector2iParameter.class, "Optional 2D Vector (Integer)", "2D vector containing integers values");
+        registerParameterType("optional-vector3d", OptionalVector3dParameter.class, "Optional 3D Vector (Double)", "3D vector containing double values");
+        registerParameterType("optional-vector3i", OptionalVector3iParameter.class, "Optional 3D Vector (Double)", "3D vector containing integers values");
     }
 
     private void registerImageParameters() {

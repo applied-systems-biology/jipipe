@@ -1119,6 +1119,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-binary-volume-opening-3d", VolumeOpening3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("ij1-binary-conditional-invert", ConditionalInverterAlgorithm.class, UIUtils.getIconURLFromResources("actions/invertimage.png"));
         registerNodeType("ij1-binary-hough-lines", LinesHoughDetection2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-line-segment.png"));
+        registerNodeType("ij1-binary-hough-line-segments", LineSegmentsHoughDetection2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-line-segment.png"));
     }
 
     private void registerMorphologyAlgorithms() {
