@@ -41,9 +41,13 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalFloatParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Detect lines 2D (Hough)", description = "Finds lines within the image via a Hough lines transformation. " + "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Binary")
@@ -93,8 +97,8 @@ public class LinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
 
-        ImageStack outputMaskStack = new ImageStack(inputMask.getWidth(), inputMask.getHeight(), inputMask.getStackSize());
-        final ImageStack[] outputAccumulatorStack = {null};
+        Map<ImageSliceIndex, ImageProcessor> outputMaskSlices = new HashMap<>();
+        Map<ImageSliceIndex, ImageProcessor> outputAccumulatorSlices = new HashMap<>();
 
         ImageJUtils.forEachIndexedZCTSlice(inputMask, (ip, index) -> {
             HoughLines houghLines = new HoughLines();
@@ -138,7 +142,7 @@ public class LinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorit
 
             // Generate mask
             ImagePlus sliceMask = localROI.toMask(ip.getWidth(), ip.getHeight(), true, false, 1);
-            outputMaskStack.setProcessor(sliceMask.getProcessor(), index.zeroSliceIndexToOneStackIndex(inputMask));
+            outputAccumulatorSlices.put(index, sliceMask.getProcessor());
 
             // Output the ROI
             for (Roi roi : localROI) {
@@ -158,21 +162,22 @@ public class LinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorit
                     float[] row = houghArray[y];
                     System.arraycopy(row, 0, pixels, y * accWidth, accWidth);
                 }
-                if (outputAccumulatorStack[0] == null) {
-                    outputAccumulatorStack[0] = new ImageStack(accWidth, accHeight, inputMask.getStackSize());
-                }
             }
-            outputAccumulatorStack[0].setProcessor(accumulator, index.zeroSliceIndexToOneStackIndex(inputMask));
+            outputAccumulatorSlices.put(index, accumulator);
 
         }, progressInfo);
 
-        ImagePlus outputMask = new ImagePlus("Lines", outputMaskStack);
+        ImagePlus outputMask = ImageJUtils.mergeMappedSlices(outputMaskSlices);
         ImageJUtils.copyHyperstackDimensions(inputMask, outputMask);
         outputMask.copyScale(inputMask);
 
+        ImagePlus outputAccumulator = ImageJUtils.mergeMappedSlices(outputAccumulatorSlices);
+        ImageJUtils.copyHyperstackDimensions(inputMask, outputAccumulator);
+        outputAccumulator.copyScale(inputMask);
+
         iterationStep.addOutputData("Lines", outputROI, progressInfo);
         iterationStep.addOutputData("Mask", new ImagePlusGreyscaleMaskData(outputMask), progressInfo);
-        iterationStep.addOutputData("Accumulator", new ImagePlusGreyscaleData(new ImagePlus("Accumulator", outputAccumulatorStack[0])), progressInfo);
+        iterationStep.addOutputData("Accumulator", new ImagePlusGreyscaleData(outputAccumulator), progressInfo);
         iterationStep.addOutputData("Results", outputTable, progressInfo);
     }
 

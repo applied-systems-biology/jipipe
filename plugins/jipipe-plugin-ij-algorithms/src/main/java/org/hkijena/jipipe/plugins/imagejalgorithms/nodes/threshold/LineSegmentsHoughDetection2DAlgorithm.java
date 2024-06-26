@@ -36,11 +36,13 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.imagejalgorithms.utils.HoughLineSegments;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.HoughLines;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalFloatParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
@@ -50,11 +52,17 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2i
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.VectorParameterSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
+import java.awt.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @SetJIPipeDocumentation(name = "Detect line segments 2D (Hough)", description = "Finds lines within the image via a Hough lines transformation. " + "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Binary")
 @AddJIPipeCitation("Based on code by Hartmut Gimpel, https://sourceforge.net/p/octave/image/ci/default/tree/inst/")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Mask", description = "Mask that contains the segmented edges. ", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, name = "Lines", create = true, description = "The detected lines represented as ROI")
+@AddJIPipeOutputSlot(value = ROIListData.class, name = "Peaks", create = true, description = "The detected peaks in the accumulator")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Mask", create = true, description = "Mask that contains the detected lines")
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Results", create = true, description = "The detected lines as table")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Accumulator", create = true, description = "The Hough array")
@@ -63,10 +71,10 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
     private int numPeaks = 100;
     private OptionalDoubleParameter peakThreshold = new OptionalDoubleParameter(0, false);
     private OptionalVector2iParameter neighborhoodSize = new OptionalVector2iParameter(new Vector2iParameter(5, 5), false);
-
-//    int[] neighborhoodSize, double fillGap, double minLength, double thetaRes
-
-    private JIPipeExpressionParameter roiNameExpression = new JIPipeExpressionParameter("line_score");
+    private double fillGap = 20;
+    private double minLength = 40;
+    private JIPipeExpressionParameter thetas = new JIPipeExpressionParameter("MAKE_SEQUENCE(-90, 90, 1)");
+    private JIPipeExpressionParameter roiNameExpression = new JIPipeExpressionParameter("");
 
     public LineSegmentsHoughDetection2DAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -78,108 +86,124 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
         this.neighborhoodSize = new OptionalVector2iParameter(other.neighborhoodSize);
         this.numPeaks = other.numPeaks;
         this.peakThreshold = new OptionalDoubleParameter(other.peakThreshold);
+        this.fillGap = other.fillGap;
+        this.minLength = other.minLength;
+        this.thetas = new JIPipeExpressionParameter(other.thetas);
     }
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-//        ImagePlus inputMask = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
-//        ROIListData outputROI = new ROIListData();
-//        ResultsTableData outputTable = new ResultsTableData();
-//        outputTable.addNumericColumn("Image Z");
-//        outputTable.addNumericColumn("Image C");
-//        outputTable.addNumericColumn("Image T");
-//        outputTable.addNumericColumn("Line Theta");
-//        outputTable.addNumericColumn("Line Rho");
-//        outputTable.addNumericColumn("Line X0");
-//        outputTable.addNumericColumn("Line Y0");
-//        outputTable.addNumericColumn("Line X1");
-//        outputTable.addNumericColumn("Line Y1");
+        ImagePlus inputMask = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
+        ROIListData outputROI = new ROIListData();
+        ResultsTableData outputTable = new ResultsTableData();
+        outputTable.addNumericColumn("Image Z");
+        outputTable.addNumericColumn("Image C");
+        outputTable.addNumericColumn("Image T");
+        outputTable.addNumericColumn("Line Theta");
+        outputTable.addNumericColumn("Line Rho");
+        outputTable.addNumericColumn("Line X0");
+        outputTable.addNumericColumn("Line Y0");
+        outputTable.addNumericColumn("Line X1");
+        outputTable.addNumericColumn("Line Y1");
 //        outputTable.addNumericColumn("Line Score");
-//
-//        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-//        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-//
-//        ImageStack outputMaskStack = new ImageStack(inputMask.getWidth(), inputMask.getHeight(), inputMask.getStackSize());
-//        final ImageStack[] outputAccumulatorStack = {null};
-//
-//        ImageJUtils.forEachIndexedZCTSlice(inputMask, (ip, index) -> {
-//            HoughLines houghLines = new HoughLines();
-//            houghLines.initialise(ip.getWidth(), ip.getHeight());
-//            houghLines.addPoints(ip, pixelThreshold.isEnabled(), pixelThreshold.getContent());
-//            ROIListData localROI = new ROIListData();
-//            for (HoughLines.HoughLine line : houghLines.getLines(selectTopN.isEnabled() ? selectTopN.getContent() : -1, accumulatorThreshold)) {
-//
-//                // Add to table
-//                outputTable.addAndModifyRow().set("Image Z", index.getZ())
-//                        .set("Image C", index.getC())
-//                        .set("Image T", index.getT())
-//                        .set("Line Theta", line.getTheta())
-//                        .set("Line Rho", line.getR())
-//                        .set("Line Score", line.getScore())
-//                        .set("Line X0", line.getX1())
-//                        .set("Line Y0", line.getY1())
-//                        .set("Line X1", line.getX2())
-//                        .set("Line Y1", line.getY2());
-//
-//                // Generate variables
-//                variables.set("img_z", index.getZ());
-//                variables.set("img_c", index.getC());
-//                variables.set("img_t", index.getT());
-//                variables.set("line_theta", line.getTheta());
-//                variables.set("line_rho", line.getR());
+
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        List<Double> thetaAngles = thetas.evaluateToDoubleList(variables);
+
+        Map<ImageSliceIndex, ImageProcessor> outputMaskSlices = new HashMap<>();
+        Map<ImageSliceIndex, ImageProcessor> outputAccumulatorSlices = new HashMap<>();
+        ROIListData outputPeaks = new ROIListData();
+
+        ImageJUtils.forEachIndexedZCTSlice(inputMask, (ip, index) -> {
+
+            ImageProcessor bw = ip.duplicate();
+            HoughLineSegments.HoughResult houghResult = HoughLineSegments.hough(bw, thetaAngles);
+            int[] neighborHood;
+            if(neighborhoodSize.isEnabled()) {
+                neighborHood = new int[] { neighborhoodSize.getContent().getX(), neighborhoodSize.getContent().getY() };
+            }
+            else {
+                neighborHood = null;
+            }
+            List<Point> peaks = HoughLineSegments.houghPeaks(houghResult.getH(), numPeaks,peakThreshold.orElse(-1), neighborHood);
+            List<HoughLineSegments.Line> lines = HoughLineSegments.houghLines(bw, houghResult.getThetas(), houghResult.getRhos(), peaks, fillGap, minLength);
+
+            ROIListData localROI = new ROIListData();
+            for (HoughLineSegments.Line line : lines) {
+
+                // Add to table
+                outputTable.addAndModifyRow().set("Image Z", index.getZ())
+                        .set("Image C", index.getC())
+                        .set("Image T", index.getT())
+                        .set("Line Theta", line.getTheta())
+                        .set("Line Rho", line.getRho())
+//                        .set("Line Score", line.g())
+                        .set("Line X0", line.getPoint1().x)
+                        .set("Line Y0", line.getPoint1().y)
+                        .set("Line X1", line.getPoint2().x)
+                        .set("Line Y1", line.getPoint2().y);
+
+                // Generate variables
+                variables.set("img_z", index.getZ());
+                variables.set("img_c", index.getC());
+                variables.set("img_t", index.getT());
+                variables.set("line_theta", line.getTheta());
+                variables.set("line_rho", line.getRho());
 //                variables.set("line_score", line.getScore());
-//                variables.set("line_x0", line.getX1());
-//                variables.set("line_y0", line.getY1());
-//                variables.set("line_x1", line.getX2());
-//                variables.set("line_y1", line.getY2());
-//
-//                // Generate ROI
-//                Line roi;
-//                {
-//                    roi = new Line(line.getX1(), line.getY1(), line.getX2(), line.getY2());
-//                    roi.setName(roiNameExpression.evaluateToString(variables));
-//                }
-//                localROI.add(roi);
-//            }
-//
-//            // Generate mask
-//            ImagePlus sliceMask = localROI.toMask(ip.getWidth(), ip.getHeight(), true, false, 1);
-//            outputMaskStack.setProcessor(sliceMask.getProcessor(), index.zeroSliceIndexToOneStackIndex(inputMask));
-//
-//            // Output the ROI
-//            for (Roi roi : localROI) {
-//                roi.setPosition(index.getC() + 1, index.getZ() + 1, index.getT() + 1);
-//            }
-//            outputROI.addAll(localROI);
-//
-//            // Generate accumulator
-//            ImageProcessor accumulator;
-//            {
-//                float[][] houghArray = houghLines.getHoughArray();
-//                int accHeight = houghArray.length;
-//                int accWidth = houghArray[0].length;
-//                accumulator = new FloatProcessor(accWidth, accHeight);
-//                float[] pixels = (float[]) accumulator.getPixels();
-//                for (int y = 0; y < accHeight; y++) {
-//                    float[] row = houghArray[y];
-//                    System.arraycopy(row, 0, pixels, y * accWidth, accWidth);
-//                }
-//                if (outputAccumulatorStack[0] == null) {
-//                    outputAccumulatorStack[0] = new ImageStack(accWidth, accHeight, inputMask.getStackSize());
-//                }
-//            }
-//            outputAccumulatorStack[0].setProcessor(accumulator, index.zeroSliceIndexToOneStackIndex(inputMask));
-//
-//        }, progressInfo);
-//
-//        ImagePlus outputMask = new ImagePlus("Lines", outputMaskStack);
-//        ImageJUtils.copyHyperstackDimensions(inputMask, outputMask);
-//        outputMask.copyScale(inputMask);
-//
-//        iterationStep.addOutputData("Lines", outputROI, progressInfo);
-//        iterationStep.addOutputData("Mask", new ImagePlusGreyscaleMaskData(outputMask), progressInfo);
-//        iterationStep.addOutputData("Accumulator", new ImagePlusGreyscaleData(new ImagePlus("Accumulator", outputAccumulatorStack[0])), progressInfo);
-//        iterationStep.addOutputData("Results", outputTable, progressInfo);
+                variables.set("line_x0",  line.getPoint1().x);
+                variables.set("line_y0", line.getPoint1().y);
+                variables.set("line_x1", line.getPoint2().x);
+                variables.set("line_y1", line.getPoint2().y);
+
+                // Generate ROI
+                Line roi;
+                {
+                    roi = new Line(line.getPoint1().x, line.getPoint1().y, line.getPoint2().x, line.getPoint2().y);
+                    roi.setName(roiNameExpression.evaluateToString(variables));
+                }
+                localROI.add(roi);
+            }
+
+            // Generate mask
+            ImagePlus sliceMask = localROI.toMask(ip.getWidth(), ip.getHeight(), true, false, 1);
+            outputMaskStack.setProcessor(sliceMask.getProcessor(), index.zeroSliceIndexToOneStackIndex(inputMask));
+
+            // Output the ROI
+            for (Roi roi : localROI) {
+                roi.setPosition(index.getC() + 1, index.getZ() + 1, index.getT() + 1);
+            }
+            outputROI.addAll(localROI);
+
+            // Generate accumulator
+            ImageProcessor accumulator;
+            {
+
+                float[][] houghArray = houghLines.getHoughArray();
+                int accHeight = houghArray.length;
+                int accWidth = houghArray[0].length;
+                accumulator = new FloatProcessor(accWidth, accHeight);
+                float[] pixels = (float[]) accumulator.getPixels();
+                for (int y = 0; y < accHeight; y++) {
+                    float[] row = houghArray[y];
+                    System.arraycopy(row, 0, pixels, y * accWidth, accWidth);
+                }
+                if (outputAccumulatorStack[0] == null) {
+                    outputAccumulatorStack[0] = new ImageStack(accWidth, accHeight, inputMask.getStackSize());
+                }
+            }
+            outputAccumulatorStack[0].setProcessor(accumulator, index.zeroSliceIndexToOneStackIndex(inputMask));
+
+        }, progressInfo);
+
+        ImagePlus outputMask = new ImagePlus("Lines", outputMaskStack);
+        ImageJUtils.copyHyperstackDimensions(inputMask, outputMask);
+        outputMask.copyScale(inputMask);
+
+        iterationStep.addOutputData("Lines", outputROI, progressInfo);
+        iterationStep.addOutputData("Mask", new ImagePlusGreyscaleMaskData(outputMask), progressInfo);
+        iterationStep.addOutputData("Accumulator", new ImagePlusGreyscaleData(new ImagePlus("Accumulator", outputAccumulatorStack[0])), progressInfo);
+        iterationStep.addOutputData("Results", outputTable, progressInfo);
     }
 
 
@@ -191,7 +215,7 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
     @JIPipeExpressionParameterVariable(key = "img_t", name = "Image T", description = "Current frame slice (zero-based)")
     @JIPipeExpressionParameterVariable(key = "line_theta", name = "Line Theta", description = "Theta parameter of the line (polar coordinates)")
     @JIPipeExpressionParameterVariable(key = "line_rho", name = "Line Rho", description = "Rho parameter of the line (polar coordinates)")
-    @JIPipeExpressionParameterVariable(key = "line_score", name = "Line score", description = "The score of the line")
+//    @JIPipeExpressionParameterVariable(key = "line_score", name = "Line score", description = "The score of the line")
     @JIPipeExpressionParameterVariable(key = "line_x0", name = "Line X0", description = "The first X position of the line (cartesian coordinates)")
     @JIPipeExpressionParameterVariable(key = "line_y0", name = "Line Y0", description = "The first Y position of the line (cartesian coordinates)")
     @JIPipeExpressionParameterVariable(key = "line_x1", name = "Line X1", description = "The second X position of the line (cartesian coordinates)")
@@ -237,5 +261,39 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
     @JIPipeParameter("num-peaks")
     public void setNumPeaks(int numPeaks) {
         this.numPeaks = numPeaks;
+    }
+
+    @SetJIPipeDocumentation(name = "Fill gap", description = "Distance between two line segments associated with the same Hough transform bin")
+    @JIPipeParameter("fill-gap")
+    public double getFillGap() {
+        return fillGap;
+    }
+
+    @JIPipeParameter("fill-gap")
+    public void setFillGap(double fillGap) {
+        this.fillGap = fillGap;
+    }
+
+    @SetJIPipeDocumentation(name = "Minimum length", description = "Minimum line length")
+    @JIPipeParameter("min-length")
+    public double getMinLength() {
+        return minLength;
+    }
+
+    @JIPipeParameter("min-length")
+    public void setMinLength(double minLength) {
+        this.minLength = minLength;
+    }
+
+    @SetJIPipeDocumentation(name = "Thetas", description = "Expression that generates the tested theta angles.")
+    @JIPipeParameter("thetas")
+    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    public JIPipeExpressionParameter getThetas() {
+        return thetas;
+    }
+
+    @JIPipeParameter("thetas")
+    public void setThetas(JIPipeExpressionParameter thetas) {
+        this.thetas = thetas;
     }
 }

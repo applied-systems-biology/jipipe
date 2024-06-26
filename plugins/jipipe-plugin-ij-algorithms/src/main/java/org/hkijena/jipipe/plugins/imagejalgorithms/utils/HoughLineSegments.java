@@ -30,10 +30,10 @@ import java.util.List;
 public class HoughLineSegments {
 
     public static class Line {
-        public Point point1;
-        public Point point2;
-        public double theta;
-        public double rho;
+        private final Point point1;
+        private final Point point2;
+        private final double theta;
+        private final double rho;
 
         public Line(Point point1, Point point2, double theta, double rho) {
             this.point1 = point1;
@@ -41,10 +41,26 @@ public class HoughLineSegments {
             this.theta = theta;
             this.rho = rho;
         }
+
+        public Point getPoint1() {
+            return point1;
+        }
+
+        public Point getPoint2() {
+            return point2;
+        }
+
+        public double getTheta() {
+            return theta;
+        }
+
+        public double getRho() {
+            return rho;
+        }
     }
 
-    public static List<Line> findLineSegments(ImageProcessor bw, int numPeaks, double peakThreshold, int[] neighborhoodSize, double fillGap, double minLength, double thetaRes) {
-        HoughResult houghResult = hough(bw, thetaRes);
+    public static List<Line> findLineSegments(ImageProcessor bw, int numPeaks, double peakThreshold, int[] neighborhoodSize, double fillGap, double minLength, List<Double> thetas) {
+        HoughResult houghResult = hough(bw, thetas);
         List<Point> peaks = houghPeaks(houghResult.getH(), numPeaks, peakThreshold, neighborhoodSize);
         return houghLines(bw, houghResult.getThetas(), houghResult.getRhos(), peaks, fillGap, minLength);
     }
@@ -217,16 +233,10 @@ public class HoughLineSegments {
         return peaks;
     }
 
-    public static HoughResult hough(ImageProcessor bw, double thetaRes) {
-        if (thetaRes <= 0 || thetaRes >= 180) {
-            throw new IllegalArgumentException("Theta resolution must be between (0, 180)");
-        }
+    public static HoughResult hough(ImageProcessor bw, List<Double> thetas) {
 
         int width = bw.getWidth();
         int height = bw.getHeight();
-
-        // Set theta range based on resolution
-        List<Double> thetas = getThetas(thetaRes);
 
         // Calculate the diagonal distance of the image
         final double diagonal = Math.hypot(width, height);
