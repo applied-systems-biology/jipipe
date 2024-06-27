@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.threshold;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.Line;
+import ij.gui.PointRoi;
 import ij.gui.Roi;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
@@ -74,7 +75,7 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
     private double fillGap = 20;
     private double minLength = 40;
     private JIPipeExpressionParameter thetas = new JIPipeExpressionParameter("MAKE_SEQUENCE(-90, 90, 1)");
-    private JIPipeExpressionParameter roiNameExpression = new JIPipeExpressionParameter("");
+    private JIPipeExpressionParameter roiNameExpression = new JIPipeExpressionParameter("line_length");
 
     public LineSegmentsHoughDetection2DAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -105,7 +106,7 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
         outputTable.addNumericColumn("Line Y0");
         outputTable.addNumericColumn("Line X1");
         outputTable.addNumericColumn("Line Y1");
-//        outputTable.addNumericColumn("Line Score");
+        outputTable.addNumericColumn("Line Length");
 
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
@@ -127,6 +128,16 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
                 neighborHood = null;
             }
             List<Point> peaks = HoughLineSegments.houghPeaks(houghResult.getH(), numPeaks,peakThreshold.orElse(-1), neighborHood);
+
+            // Output peak ROIs
+            for (Point peak : peaks) {
+                PointRoi roi = new PointRoi(peak.x, peak.y);
+                roi.setName(peak.x + ", " + peak.y);
+                roi.setPosition(index.getC() + 1, index.getZ() + 1, index.getT() + 1);
+                outputPeaks.add(roi);
+            }
+
+            // Generate line ROIs and table rows
             List<HoughLineSegments.Line> lines = HoughLineSegments.houghLines(bw, houghResult.getThetas(), houghResult.getRhos(), peaks, fillGap, minLength);
 
             ROIListData localROI = new ROIListData();
@@ -138,7 +149,7 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
                         .set("Image T", index.getT())
                         .set("Line Theta", line.getTheta())
                         .set("Line Rho", line.getRho())
-//                        .set("Line Score", line.g())
+                        .set("Line Length", line.getPoint1().distance(line.getPoint2()))
                         .set("Line X0", line.getPoint1().x)
                         .set("Line Y0", line.getPoint1().y)
                         .set("Line X1", line.getPoint2().x)
@@ -150,7 +161,7 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
                 variables.set("img_t", index.getT());
                 variables.set("line_theta", line.getTheta());
                 variables.set("line_rho", line.getRho());
-//                variables.set("line_score", line.getScore());
+                variables.set("line_length", line.getPoint1().distance(line.getPoint2()));
                 variables.set("line_x0",  line.getPoint1().x);
                 variables.set("line_y0", line.getPoint1().y);
                 variables.set("line_x1", line.getPoint2().x);
@@ -167,7 +178,7 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
 
             // Generate mask
             ImagePlus sliceMask = localROI.toMask(ip.getWidth(), ip.getHeight(), true, false, 1);
-            outputMaskStack.setProcessor(sliceMask.getProcessor(), index.zeroSliceIndexToOneStackIndex(inputMask));
+            outputMaskSlices.put(index, sliceMask.getProcessor());
 
             // Output the ROI
             for (Roi roi : localROI) {
@@ -176,33 +187,22 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
             outputROI.addAll(localROI);
 
             // Generate accumulator
-            ImageProcessor accumulator;
-            {
-
-                float[][] houghArray = houghLines.getHoughArray();
-                int accHeight = houghArray.length;
-                int accWidth = houghArray[0].length;
-                accumulator = new FloatProcessor(accWidth, accHeight);
-                float[] pixels = (float[]) accumulator.getPixels();
-                for (int y = 0; y < accHeight; y++) {
-                    float[] row = houghArray[y];
-                    System.arraycopy(row, 0, pixels, y * accWidth, accWidth);
-                }
-                if (outputAccumulatorStack[0] == null) {
-                    outputAccumulatorStack[0] = new ImageStack(accWidth, accHeight, inputMask.getStackSize());
-                }
-            }
-            outputAccumulatorStack[0].setProcessor(accumulator, index.zeroSliceIndexToOneStackIndex(inputMask));
+            outputAccumulatorSlices.put(index, houghResult.getH());
 
         }, progressInfo);
 
-        ImagePlus outputMask = new ImagePlus("Lines", outputMaskStack);
+        ImagePlus outputMask = ImageJUtils.mergeMappedSlices(outputMaskSlices);
         ImageJUtils.copyHyperstackDimensions(inputMask, outputMask);
         outputMask.copyScale(inputMask);
 
+        ImagePlus outputAccumulator = ImageJUtils.mergeMappedSlices(outputAccumulatorSlices);
+        ImageJUtils.copyHyperstackDimensions(inputMask, outputAccumulator);
+        outputAccumulator.copyScale(inputMask);
+
         iterationStep.addOutputData("Lines", outputROI, progressInfo);
+        iterationStep.addOutputData("Peaks", outputPeaks, progressInfo);
         iterationStep.addOutputData("Mask", new ImagePlusGreyscaleMaskData(outputMask), progressInfo);
-        iterationStep.addOutputData("Accumulator", new ImagePlusGreyscaleData(new ImagePlus("Accumulator", outputAccumulatorStack[0])), progressInfo);
+        iterationStep.addOutputData("Accumulator", new ImagePlusGreyscaleData(outputAccumulator), progressInfo);
         iterationStep.addOutputData("Results", outputTable, progressInfo);
     }
 

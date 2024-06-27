@@ -73,25 +73,14 @@ public class HoughLineSegments {
             throw new IllegalArgumentException("minlength must be a positive scalar number");
         }
 
-        int width = BW.getWidth();
-        int height = BW.getHeight();
-
-        // Find all foreground pixels
-        List<Point> allPixels = new ArrayList<>();
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                if (BW.getPixel(x, y) != 0) {
-                    allPixels.add(new Point(x, y));
-                }
-            }
-        }
-
         List<Line> lines = new ArrayList<>();
 
         // Process each given Hough peak individually
+        final int width = BW.getWidth();
+        final int height = BW.getHeight();
         for (Point peak : peaks) {
-            int rho_p_idx = peak.x;
-            int theta_p_idx = peak.y;
+            int rho_p_idx = peak.y;
+            int theta_p_idx = peak.x;
             double rho_p = rhos.get(rho_p_idx);
             double theta_p = thetas.get(theta_p_idx);
 
@@ -99,14 +88,23 @@ public class HoughLineSegments {
             double cosTheta = Math.cos(Math.toRadians(theta_p));
             double sinTheta = Math.sin(Math.toRadians(theta_p));
 
-            for (Point p : allPixels) {
-                double rho_val = p.x * cosTheta + p.y * sinTheta;
-                if (Math.round(rho_val) == rho_p_idx) {
-                    peakPixels.add(p);
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    if (BW.getPixel(x, y) != 0) {
+                        double rho_val = (x * cosTheta + y * sinTheta);
+//                        if (Math.round(rho_val) == rho_p_idx) {
+//                            peakPixels.add(new Point(x, y));
+//                        }
+                        if (Math.round(rho_val) == Math.round(rho_p)) {
+                            peakPixels.add(new Point(x, y));
+                        }
+                    }
                 }
             }
 
-            if (peakPixels.isEmpty()) continue;
+            if (peakPixels.isEmpty()) {
+                continue;
+            }
 
             // Order pixels
             if (Math.abs(cosTheta) > Math.abs(sinTheta)) {
@@ -115,7 +113,7 @@ public class HoughLineSegments {
                 peakPixels.sort(Comparator.comparingInt(p -> p.y));
             }
 
-            // Split line into segments based on fillgap
+            // Split line into segments based on fillGap
             List<Point> segment = new ArrayList<>();
             segment.add(peakPixels.get(0));
 
