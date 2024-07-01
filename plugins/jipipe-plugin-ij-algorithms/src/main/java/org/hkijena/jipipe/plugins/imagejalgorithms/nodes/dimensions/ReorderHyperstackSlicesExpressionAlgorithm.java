@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
@@ -124,12 +124,12 @@ public class ReorderHyperstackSlicesExpressionAlgorithm extends JIPipeSimpleIter
             "affected images.")
     @JIPipeParameter(value = "new-location-expression", important = true)
     @JIPipeExpressionParameterSettings(hint = "per slice ARRAY(c, z, t)")
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(key = "c", name = "Current channel location", description = "Current channel location of the slice (zero-based)")
-    @JIPipeExpressionParameterVariable(key = "z", name = "Current Z location", description = "Current Z location of the slice (zero-based)")
-    @JIPipeExpressionParameterVariable(key = "t", name = "Current frame location", description = "Current frame location of the slice (zero-based)")
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(key = "c", name = "Current channel location", description = "Current channel location of the slice (zero-based)")
+    @AddJIPipeExpressionParameterVariable(key = "z", name = "Current Z location", description = "Current Z location of the slice (zero-based)")
+    @AddJIPipeExpressionParameterVariable(key = "t", name = "Current frame location", description = "Current frame location of the slice (zero-based)")
     public JIPipeExpressionParameter getNewLocationExpression() {
         return newLocationExpression;
     }

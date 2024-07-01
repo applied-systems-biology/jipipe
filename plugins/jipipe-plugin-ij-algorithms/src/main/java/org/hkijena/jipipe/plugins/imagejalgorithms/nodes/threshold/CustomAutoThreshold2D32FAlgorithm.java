@@ -311,7 +311,7 @@ public class CustomAutoThreshold2D32FAlgorithm extends JIPipeIteratingAlgorithm 
             "this threshold.")
     @JIPipeParameter(value = "thresholding-function", important = true)
     @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class)
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getThresholdCalculationExpression() {
         return thresholdCalculationExpression;
     }

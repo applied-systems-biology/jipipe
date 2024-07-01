@@ -204,7 +204,7 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
 
     @SetJIPipeDocumentation(name = "Counting column", description = "The column that contains the counter (e.g., the time frame)")
     @JIPipeParameter(value = "counting-column", important = true)
-    @JIPipeExpressionParameterVariable(fromClass = CounterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = CounterVariablesInfo.class)
     public StringQueryExpression getCountingColumn() {
         return countingColumn;
     }
@@ -216,7 +216,7 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
 
     @SetJIPipeDocumentation(name = "Default values", description = "Determines the default values if a row is missing")
     @JIPipeParameter("default-values")
-    @JIPipeExpressionParameterVariable(fromClass = DefaultValuesVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = DefaultValuesVariablesInfo.class)
     public ExpressionTableColumnGeneratorProcessorParameterList getDefaultValues() {
         return defaultValues;
     }
@@ -228,7 +228,7 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
 
     @SetJIPipeDocumentation(name = "Custom minimum counter", description = "If enabled, override the automatically determined minimum counter. Otherwise, the minimum is the minimum in the whole table")
     @JIPipeParameter("min-counter")
-    @JIPipeExpressionParameterVariable(fromClass = CounterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = CounterVariablesInfo.class)
     public OptionalJIPipeExpressionParameter getMinCounter() {
         return minCounter;
     }
@@ -240,7 +240,7 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
 
     @SetJIPipeDocumentation(name = "Custom maximum counter", description = "If enabled, override the automatically determined maximum counter. Otherwise, the maximum is the maximum in the whole table")
     @JIPipeParameter("max-counter")
-    @JIPipeExpressionParameterVariable(fromClass = CounterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = CounterVariablesInfo.class)
     public OptionalJIPipeExpressionParameter getMaxCounter() {
         return maxCounter;
     }

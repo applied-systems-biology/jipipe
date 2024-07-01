@@ -13,12 +13,11 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.threshold;
 
+import com.google.common.primitives.Floats;
 import ij.ImagePlus;
-import ij.ImageStack;
 import ij.gui.Line;
 import ij.gui.PointRoi;
 import ij.gui.Roi;
-import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -34,20 +33,15 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.HoughLineSegments;
-import org.hkijena.jipipe.plugins.imagejalgorithms.utils.HoughLines;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalFloatParameter;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.OptionalVector2dParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.OptionalVector2iParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2iParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.VectorParameterSettings;
@@ -70,7 +64,7 @@ import java.util.Map;
 public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private int numPeaks = 100;
-    private OptionalDoubleParameter peakThreshold = new OptionalDoubleParameter(0, false);
+    private JIPipeExpressionParameter peakThreshold = new JIPipeExpressionParameter("0.5 * MAX(H)");
     private OptionalVector2iParameter neighborhoodSize = new OptionalVector2iParameter(new Vector2iParameter(5, 5), false);
     private double fillGap = 20;
     private double minLength = 40;
@@ -86,7 +80,7 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
         this.roiNameExpression = new JIPipeExpressionParameter(other.roiNameExpression);
         this.neighborhoodSize = new OptionalVector2iParameter(other.neighborhoodSize);
         this.numPeaks = other.numPeaks;
-        this.peakThreshold = new OptionalDoubleParameter(other.peakThreshold);
+        this.peakThreshold = new JIPipeExpressionParameter(other.peakThreshold);
         this.fillGap = other.fillGap;
         this.minLength = other.minLength;
         this.thetas = new JIPipeExpressionParameter(other.thetas);
@@ -121,13 +115,20 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
             ImageProcessor bw = ip.duplicate();
             HoughLineSegments.HoughResult houghResult = HoughLineSegments.hough(bw, thetaAngles);
             int[] neighborHood;
-            if(neighborhoodSize.isEnabled()) {
-                neighborHood = new int[] { neighborhoodSize.getContent().getX(), neighborhoodSize.getContent().getY() };
-            }
-            else {
+            if (neighborhoodSize.isEnabled()) {
+                neighborHood = new int[]{neighborhoodSize.getContent().getX(), neighborhoodSize.getContent().getY()};
+            } else {
                 neighborHood = null;
             }
-            List<Point> peaks = HoughLineSegments.houghPeaks(houghResult.getH(), numPeaks,peakThreshold.orElse(-1), neighborHood);
+
+            JIPipeExpressionVariablesMap peakThresholdVariables = new JIPipeExpressionVariablesMap();
+            peakThresholdVariables.putAnnotations(iterationStep.getMergedTextAnnotations());
+            peakThresholdVariables.put("H", Floats.asList((float[]) houghResult.getH().getPixels()));
+            peakThresholdVariables.put("H.width", houghResult.getH().getWidth());
+            peakThresholdVariables.put("H.height", houghResult.getH().getHeight());
+            double peakThreshold = this.peakThreshold.evaluateToDouble(peakThresholdVariables);
+
+            List<Point> peaks = HoughLineSegments.houghPeaks(houghResult.getH(), numPeaks, peakThreshold, neighborHood);
 
             // Output peak ROIs
             for (Point peak : peaks) {
@@ -162,7 +163,7 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
                 variables.set("line_theta", line.getTheta());
                 variables.set("line_rho", line.getRho());
                 variables.set("line_length", line.getPoint1().distance(line.getPoint2()));
-                variables.set("line_x0",  line.getPoint1().x);
+                variables.set("line_x0", line.getPoint1().x);
                 variables.set("line_y0", line.getPoint1().y);
                 variables.set("line_x1", line.getPoint2().x);
                 variables.set("line_y1", line.getPoint2().y);
@@ -209,17 +210,17 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
 
     @SetJIPipeDocumentation(name = "ROI name", description = "The name of the generated line ROI is calculated from this expression")
     @JIPipeParameter("roi-name-expression")
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(key = "img_c", name = "Image C", description = "Current channel slice (zero-based)")
-    @JIPipeExpressionParameterVariable(key = "img_z", name = "Image Z", description = "Current Z slice (zero-based)")
-    @JIPipeExpressionParameterVariable(key = "img_t", name = "Image T", description = "Current frame slice (zero-based)")
-    @JIPipeExpressionParameterVariable(key = "line_theta", name = "Line Theta", description = "Theta parameter of the line (polar coordinates)")
-    @JIPipeExpressionParameterVariable(key = "line_rho", name = "Line Rho", description = "Rho parameter of the line (polar coordinates)")
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(key = "img_c", name = "Image C", description = "Current channel slice (zero-based)")
+    @AddJIPipeExpressionParameterVariable(key = "img_z", name = "Image Z", description = "Current Z slice (zero-based)")
+    @AddJIPipeExpressionParameterVariable(key = "img_t", name = "Image T", description = "Current frame slice (zero-based)")
+    @AddJIPipeExpressionParameterVariable(key = "line_theta", name = "Line Theta", description = "Theta parameter of the line (polar coordinates)")
+    @AddJIPipeExpressionParameterVariable(key = "line_rho", name = "Line Rho", description = "Rho parameter of the line (polar coordinates)")
 //    @JIPipeExpressionParameterVariable(key = "line_score", name = "Line score", description = "The score of the line")
-    @JIPipeExpressionParameterVariable(key = "line_x0", name = "Line X0", description = "The first X position of the line (cartesian coordinates)")
-    @JIPipeExpressionParameterVariable(key = "line_y0", name = "Line Y0", description = "The first Y position of the line (cartesian coordinates)")
-    @JIPipeExpressionParameterVariable(key = "line_x1", name = "Line X1", description = "The second X position of the line (cartesian coordinates)")
-    @JIPipeExpressionParameterVariable(key = "line_y1", name = "Line Y1", description = "The second Y position of the line (cartesian coordinates)")
+    @AddJIPipeExpressionParameterVariable(key = "line_x0", name = "Line X0", description = "The first X position of the line (cartesian coordinates)")
+    @AddJIPipeExpressionParameterVariable(key = "line_y0", name = "Line Y0", description = "The first Y position of the line (cartesian coordinates)")
+    @AddJIPipeExpressionParameterVariable(key = "line_x1", name = "Line X1", description = "The second X position of the line (cartesian coordinates)")
+    @AddJIPipeExpressionParameterVariable(key = "line_y1", name = "Line Y1", description = "The second Y position of the line (cartesian coordinates)")
     public JIPipeExpressionParameter getRoiNameExpression() {
         return roiNameExpression;
     }
@@ -243,12 +244,16 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
 
     @SetJIPipeDocumentation(name = "Peak threshold", description = "Threshold for the Hough array H peak detection. Defaults to 0.5 * MAX(H).")
     @JIPipeParameter("peak-threshold")
-    public OptionalDoubleParameter getPeakThreshold() {
+    @AddJIPipeExpressionParameterVariable(name = "Hough array", description = "The hough array as list of values", key = "H")
+    @AddJIPipeExpressionParameterVariable(name = "Hough array width", description = "The hough array as list of values", key = "H.width")
+    @AddJIPipeExpressionParameterVariable(name = "Hough array height", description = "The hough array as list of values", key = "H.height")
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    public JIPipeExpressionParameter getPeakThreshold() {
         return peakThreshold;
     }
 
     @JIPipeParameter("peak-threshold")
-    public void setPeakThreshold(OptionalDoubleParameter peakThreshold) {
+    public void setPeakThreshold(JIPipeExpressionParameter peakThreshold) {
         this.peakThreshold = peakThreshold;
     }
 
@@ -287,7 +292,7 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
 
     @SetJIPipeDocumentation(name = "Thetas", description = "Expression that generates the tested theta angles.")
     @JIPipeParameter("thetas")
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getThetas() {
         return thetas;
     }

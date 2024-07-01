@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
 
@@ -102,7 +102,7 @@ public class SmoothFilamentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Location merging function", description = "A function that determines how multiple coordinates are merged together")
     @JIPipeExpressionParameterSettings(hint = "per axis")
-    @JIPipeExpressionParameterVariable(key = "values", description = "The list of values", name = "Values")
+    @AddJIPipeExpressionParameterVariable(key = "values", description = "The list of values", name = "Values")
     @JIPipeParameter("location-merging-function")
     public JIPipeExpressionParameter getLocationMergingFunction() {
         return locationMergingFunction;

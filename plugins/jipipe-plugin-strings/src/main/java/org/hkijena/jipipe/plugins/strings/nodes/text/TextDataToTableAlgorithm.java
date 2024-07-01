@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
@@ -130,8 +130,8 @@ public class TextDataToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         @SetJIPipeDocumentation(name = "Preprocessor", description = "An expression that allows to preprocess the text. You can return an ARRAY to create multiple rows.")
         @JIPipeParameter(value = "preprocessor", uiOrder = -100)
-        @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-        @JIPipeExpressionParameterVariable(name = "Text", key = "text", description = "The input text")
+        @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+        @AddJIPipeExpressionParameterVariable(name = "Text", key = "text", description = "The input text")
         public JIPipeExpressionParameter getPreprocessor() {
             return preprocessor;
         }
@@ -143,8 +143,8 @@ public class TextDataToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         @SetJIPipeDocumentation(name = "Column name", description = "The name of the output column.")
         @JIPipeParameter(value = "column-name", uiOrder = -90)
-        @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-        @JIPipeExpressionParameterVariable(name = "Text", key = "text", description = "The input text")
+        @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+        @AddJIPipeExpressionParameterVariable(name = "Text", key = "text", description = "The input text")
         public JIPipeExpressionParameter getColumnName() {
             return columnName;
         }

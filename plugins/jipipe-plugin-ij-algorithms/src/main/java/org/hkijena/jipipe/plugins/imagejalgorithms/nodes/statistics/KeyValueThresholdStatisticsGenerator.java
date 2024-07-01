@@ -38,7 +38,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
@@ -222,9 +222,9 @@ public class KeyValueThresholdStatisticsGenerator extends JIPipeIteratingAlgorit
 
     @SetJIPipeDocumentation(name = "Integration function (foreground)", description = "The function that integrates the values assigned to the same key")
     @JIPipeParameter("integration-function-foreground")
-    @JIPipeExpressionParameterVariable(key = "values_foreground", name = "Values (Foreground)", description = "The values to be integrated")
-    @JIPipeExpressionParameterVariable(key = "values_background", name = "Values (Background)", description = "The values to be integrated")
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(key = "values_foreground", name = "Values (Foreground)", description = "The values to be integrated")
+    @AddJIPipeExpressionParameterVariable(key = "values_background", name = "Values (Background)", description = "The values to be integrated")
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getIntegrationFunctionForeground() {
         return integrationFunctionForeground;
     }
@@ -236,9 +236,9 @@ public class KeyValueThresholdStatisticsGenerator extends JIPipeIteratingAlgorit
 
     @SetJIPipeDocumentation(name = "Integration function (background)", description = "The function that integrates the values assigned to the same key")
     @JIPipeParameter("integration-function-background")
-    @JIPipeExpressionParameterVariable(key = "values_foreground", name = "Values (Foreground)", description = "The values to be integrated")
-    @JIPipeExpressionParameterVariable(key = "values_background", name = "Values (Background)", description = "The values to be integrated")
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(key = "values_foreground", name = "Values (Foreground)", description = "The values to be integrated")
+    @AddJIPipeExpressionParameterVariable(key = "values_background", name = "Values (Background)", description = "The values to be integrated")
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getIntegrationFunctionBackground() {
         return integrationFunctionBackground;
     }

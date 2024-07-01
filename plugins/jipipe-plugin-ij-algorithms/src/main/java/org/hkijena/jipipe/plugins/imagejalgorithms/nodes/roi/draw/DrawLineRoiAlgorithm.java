@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
@@ -152,8 +152,8 @@ public class DrawLineRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
         @SetJIPipeDocumentation(name = "X1")
         @JIPipeParameter("x1")
-        @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-        @JIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo.class)
+        @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+        @AddJIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo.class)
         public JIPipeExpressionParameter getX1() {
             return x1;
         }
@@ -165,8 +165,8 @@ public class DrawLineRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
         @SetJIPipeDocumentation(name = "Y1")
         @JIPipeParameter("y1")
-        @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-        @JIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo.class)
+        @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+        @AddJIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo.class)
         public JIPipeExpressionParameter getY1() {
             return y1;
         }
@@ -178,8 +178,8 @@ public class DrawLineRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
         @SetJIPipeDocumentation(name = "X2")
         @JIPipeParameter("x2")
-        @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-        @JIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo.class)
+        @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+        @AddJIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo.class)
         public JIPipeExpressionParameter getX2() {
             return x2;
         }
@@ -191,8 +191,8 @@ public class DrawLineRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
         @SetJIPipeDocumentation(name = "Y2")
         @JIPipeParameter("y2")
-        @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-        @JIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo.class)
+        @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+        @AddJIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo.class)
         public JIPipeExpressionParameter getY2() {
             return y2;
         }

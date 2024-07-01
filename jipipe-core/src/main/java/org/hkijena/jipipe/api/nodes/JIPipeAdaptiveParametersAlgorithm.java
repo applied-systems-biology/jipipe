@@ -20,7 +20,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
 import org.hkijena.jipipe.plugins.expressions.ExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
 import org.hkijena.jipipe.plugins.expressions.ui.JIPipeExpressionDesktopParameterEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -73,10 +73,10 @@ public interface JIPipeAdaptiveParametersAlgorithm extends JIPipeParameterCollec
             if (adaptiveParameter != null) {
                 JIPipeManualParameterAccess dummy = JIPipeManualParameterAccess.builder()
                         .setFieldClass(StringQueryExpression.class)
-                        .addAnnotation(new JIPipeExpressionParameterVariable() {
+                        .addAnnotation(new AddJIPipeExpressionParameterVariable() {
                             @Override
                             public Class<? extends Annotation> annotationType() {
-                                return JIPipeExpressionParameterVariable.class;
+                                return AddJIPipeExpressionParameterVariable.class;
                             }
 
                             @Override

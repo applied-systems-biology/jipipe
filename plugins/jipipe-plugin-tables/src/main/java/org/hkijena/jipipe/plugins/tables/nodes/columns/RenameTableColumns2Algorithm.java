@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
@@ -121,7 +121,7 @@ public class RenameTableColumns2Algorithm extends JIPipeSimpleIteratingAlgorithm
 
         @SetJIPipeDocumentation(name = "Column to be renamed", description = "The column to be renamed")
         @JIPipeParameter("source-column")
-        @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+        @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
         public StringQueryExpression getSourceColumn() {
             return sourceColumn;
         }
@@ -133,8 +133,8 @@ public class RenameTableColumns2Algorithm extends JIPipeSimpleIteratingAlgorithm
 
         @SetJIPipeDocumentation(name = "New name", description = "The new name of the column")
         @JIPipeParameter("new-name")
-        @JIPipeExpressionParameterVariable(name = "Current name", key = "current_name", description = "The current name")
-        @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+        @AddJIPipeExpressionParameterVariable(name = "Current name", key = "current_name", description = "The current name")
+        @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
         public JIPipeExpressionParameter getNewName() {
             return newName;
         }

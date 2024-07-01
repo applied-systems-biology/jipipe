@@ -35,7 +35,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
@@ -262,9 +262,9 @@ public class SplitChannelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
     @SetJIPipeDocumentation(name = "Annotation columns", description = "Determines the table columns that are matched to the text annotations of the input images. " +
             "Please ensure that the annotations in the table exactly match the one in your data. " +
             "By default, all columns starting with a '#' are selected. Use <code>column_name IN ARRAY(...)</code> to set a predefined list of columns.")
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(key = "column_name", name = "Column name", description = "The name of the currently processed column")
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(key = "column_name", name = "Column name", description = "The name of the currently processed column")
     @JIPipeExpressionParameterSettings(hint = "per column")
     @JIPipeParameter(value = "annotation-column-filter", important = true, uiOrder = -99)
     public JIPipeExpressionParameter getAnnotationColumnFilter() {
@@ -280,9 +280,9 @@ public class SplitChannelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
             "The numeric value of these columns determine which channel index is put to which output. " +
             "Channel indices are zero-based (0 is the first channel). " +
             "By default, all columns NOT starting with a '#' are selected. Use <code>column_name IN ARRAY(...)</code> to set a predefined list of columns.")
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(key = "column_name", name = "Column name", description = "The name of the currently processed column")
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(key = "column_name", name = "Column name", description = "The name of the currently processed column")
     @JIPipeExpressionParameterSettings(hint = "per column")
     @JIPipeParameter(value = "channel-column-filter", uiOrder = -99, important = true)
     public JIPipeExpressionParameter getChannelColumnFilter() {

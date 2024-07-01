@@ -391,9 +391,9 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
     @SetJIPipeDocumentation(name = "Label", description = "Expression that generates the labels. Applied per image.")
     @JIPipeParameter(value = "label-expression", important = true, uiOrder = -100)
     @JIPipeExpressionParameterSettings(hint = "per image slice")
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(key = "default_label", name = "Default label", description = "Default label that summarizes the annotations")
-    @JIPipeExpressionParameterVariable(fromClass = Image5DSliceIndexExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(key = "default_label", name = "Default label", description = "Default label that summarizes the annotations")
+    @AddJIPipeExpressionParameterVariable(fromClass = Image5DSliceIndexExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getLabelExpression() {
         return labelExpression;
     }
@@ -405,10 +405,10 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
 
     @SetJIPipeDocumentation(name = "Custom sorting label", description = "Optional expression that generates dedicated labels that are only used for sorting. Applied per image.")
     @JIPipeParameter("sorting-label-expression")
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(key = "default_label", name = "Default label", description = "Default label that summarizes the annotations")
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(key = "default_label", name = "Default label", description = "Default label that summarizes the annotations")
     @JIPipeExpressionParameterSettings(hint = "per image")
-    @JIPipeExpressionParameterVariable(fromClass = Image5DSliceIndexExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = Image5DSliceIndexExpressionParameterVariablesInfo.class)
     public OptionalJIPipeExpressionParameter getSortingLabelExpression() {
         return sortingLabelExpression;
     }
@@ -454,10 +454,10 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
 
     @SetJIPipeDocumentation(name = "Tile width", description = "Expression that determines the width of the tiles")
     @JIPipeParameter("tile-width")
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(key = "max_image_width", name = "Maximum image width", description = "The maximum width of the input images")
-    @JIPipeExpressionParameterVariable(key = "max_image_height", name = "Maximum image height", description = "The maximum height of the input images")
-    @JIPipeExpressionParameterVariable(key = "max_label_width", name = "Maximum label width", description = "The maximum width of all labels. Zero if no labels are drawn.")
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(key = "max_image_width", name = "Maximum image width", description = "The maximum width of the input images")
+    @AddJIPipeExpressionParameterVariable(key = "max_image_height", name = "Maximum image height", description = "The maximum height of the input images")
+    @AddJIPipeExpressionParameterVariable(key = "max_label_width", name = "Maximum label width", description = "The maximum width of all labels. Zero if no labels are drawn.")
     public JIPipeExpressionParameter getTileWidth() {
         return tileWidth;
     }
@@ -469,9 +469,9 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
 
     @SetJIPipeDocumentation(name = "Tile height", description = "Expression that determines the height of the tiles")
     @JIPipeParameter("tile-height")
-    @JIPipeExpressionParameterVariable(key = "max_image_width", name = "Maximum image width", description = "The maximum width of the input images")
-    @JIPipeExpressionParameterVariable(key = "max_image_height", name = "Maximum image height", description = "The maximum height of the input images")
-    @JIPipeExpressionParameterVariable(key = "max_label_width", name = "Maximum label width", description = "The maximum width of all labels. Zero if no labels are drawn.")
+    @AddJIPipeExpressionParameterVariable(key = "max_image_width", name = "Maximum image width", description = "The maximum width of the input images")
+    @AddJIPipeExpressionParameterVariable(key = "max_image_height", name = "Maximum image height", description = "The maximum height of the input images")
+    @AddJIPipeExpressionParameterVariable(key = "max_label_width", name = "Maximum label width", description = "The maximum width of all labels. Zero if no labels are drawn.")
     public JIPipeExpressionParameter getTileHeight() {
         return tileHeight;
     }

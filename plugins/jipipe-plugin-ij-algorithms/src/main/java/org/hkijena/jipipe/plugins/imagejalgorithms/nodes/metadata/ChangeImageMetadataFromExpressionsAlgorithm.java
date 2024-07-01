@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.OptionalJIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
@@ -103,12 +103,12 @@ public class ChangeImageMetadataFromExpressionsAlgorithm extends JIPipeSimpleIte
 
     @SetJIPipeDocumentation(name = "Image title", description = "Allows to change the image title")
     @JIPipeParameter("image-title")
-    @JIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(key = "metadata", name = "Image metadata", description = "A map containing the image metadata/properties (string keys, string values)")
-    @JIPipeExpressionParameterVariable(name = "metadata.<Metadata key>", description = "Image metadata/properties accessible via their string keys")
-    @JIPipeExpressionParameterVariable(key = "name", description = "The current name of the image")
+    @AddJIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(key = "metadata", name = "Image metadata", description = "A map containing the image metadata/properties (string keys, string values)")
+    @AddJIPipeExpressionParameterVariable(name = "metadata.<Metadata key>", description = "Image metadata/properties accessible via their string keys")
+    @AddJIPipeExpressionParameterVariable(key = "name", description = "The current name of the image")
     public OptionalJIPipeExpressionParameter getImageTitle() {
         return imageTitle;
     }

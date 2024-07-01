@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
@@ -108,12 +108,12 @@ public class SpotFilterNode extends JIPipeSimpleIteratingAlgorithm {
     @SetJIPipeDocumentation(name = "Filter", description = "The expression is executed per spot. If it returns TRUE, the spot is kept.")
     @JIPipeParameter(value = "filter", important = true)
     @JIPipeExpressionParameterSettings(hint = "per spot")
-    @JIPipeExpressionParameterVariable(fromClass = SpotFeatureVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(name = "Spot ID", key = "id", description = "Numeric spot ID. Please note that the ID is not necessarily consecutive.")
-    @JIPipeExpressionParameterVariable(name = "Spot index", key = "index", description = "Numeric index.")
-    @JIPipeExpressionParameterVariable(name = "Number of spots", key = "n_spots", description = "The total number of spots")
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = SpotFeatureVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(name = "Spot ID", key = "id", description = "Numeric spot ID. Please note that the ID is not necessarily consecutive.")
+    @AddJIPipeExpressionParameterVariable(name = "Spot index", key = "index", description = "Numeric index.")
+    @AddJIPipeExpressionParameterVariable(name = "Number of spots", key = "n_spots", description = "The total number of spots")
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     public JIPipeExpressionParameter getFilter() {
         return filter;
     }

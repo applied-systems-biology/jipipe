@@ -32,7 +32,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
@@ -119,9 +119,9 @@ public class MultiIterationStepCheckerAlgorithm extends JIPipeMergingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Filter", description = "Allows to filter data batches")
     @JIPipeParameter(value = "filter", important = true)
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(name = "Current iteration step index", key = "iteration_step_index", description = "The index of the current iteration step")
-    @JIPipeExpressionParameterVariable(name = "Number of iteration steps", key = "num_iteration_steps", description = "The number of iteration steps that are processed")
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(name = "Current iteration step index", key = "iteration_step_index", description = "The index of the current iteration step")
+    @AddJIPipeExpressionParameterVariable(name = "Number of iteration steps", key = "num_iteration_steps", description = "The number of iteration steps that are processed")
     public JIPipeExpressionParameter getFilter() {
         return filter;
     }

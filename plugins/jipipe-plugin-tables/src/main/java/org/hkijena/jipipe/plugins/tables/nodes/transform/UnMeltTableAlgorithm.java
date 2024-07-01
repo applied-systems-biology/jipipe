@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
@@ -139,10 +139,10 @@ public class UnMeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "New column name", description = "The function that creates the new column name. If the returned string is empty or null, then the value will be skipped.")
     @JIPipeParameter(value = "new-column-name")
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(name = "Category values", key = "category_values", description = "The values of the selected categories")
-    @JIPipeExpressionParameterVariable(name = "Category columns", key = "category_columns", description = "The column names of the selected categories")
-    @JIPipeExpressionParameterVariable(name = "Value", key = "value", description = "The current value")
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(name = "Category values", key = "category_values", description = "The values of the selected categories")
+    @AddJIPipeExpressionParameterVariable(name = "Category columns", key = "category_columns", description = "The column names of the selected categories")
+    @AddJIPipeExpressionParameterVariable(name = "Value", key = "value", description = "The current value")
     public JIPipeExpressionParameter getNewColumnName() {
         return newColumnName;
     }

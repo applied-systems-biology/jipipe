@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
@@ -261,9 +261,9 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         @SetJIPipeDocumentation(name = "Label (horizontal)", description = "Expression that determines the text to be rendered.")
         @JIPipeParameter(value = "label-h", important = true)
-        @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-        @JIPipeExpressionParameterVariable(name = "Unit", description = "The unit of the scale bar")
-        @JIPipeExpressionParameterVariable(name = "Value", description = "The value of the scale bar")
+        @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+        @AddJIPipeExpressionParameterVariable(name = "Unit", description = "The unit of the scale bar")
+        @AddJIPipeExpressionParameterVariable(name = "Value", description = "The value of the scale bar")
         public JIPipeExpressionParameter getHorizontalLabel() {
             return horizontalLabel;
         }
@@ -275,9 +275,9 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         @SetJIPipeDocumentation(name = "Label (vertical)", description = "Expression that determines the text to be rendered.")
         @JIPipeParameter(value = "label-v", important = true)
-        @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-        @JIPipeExpressionParameterVariable(name = "Unit", description = "The unit of the scale bar")
-        @JIPipeExpressionParameterVariable(name = "Value", description = "The value of the scale bar")
+        @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+        @AddJIPipeExpressionParameterVariable(name = "Unit", description = "The unit of the scale bar")
+        @AddJIPipeExpressionParameterVariable(name = "Value", description = "The value of the scale bar")
         public JIPipeExpressionParameter getVerticalLabel() {
             return verticalLabel;
         }

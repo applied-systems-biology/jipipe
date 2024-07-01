@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
@@ -98,18 +98,18 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
             "Higher scores are selected first.")
     @JIPipeParameter("scoring-function")
     @JIPipeExpressionParameterSettings(hint = "per candidate edge")
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(fromClass = FilamentUnconnectedEdgeVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(key = "source.direction", name = "Source direction", description = "Vector that contains the direction of the source vertex")
-    @JIPipeExpressionParameterVariable(key = "target.direction", name = "Target direction", description = "Vector that contains the direction of the target vertex")
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
-    @JIPipeExpressionParameterVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
-    @JIPipeExpressionParameterVariable(key = "path_exists", name = "Path exists", description = "Returns true if there is already a path between the two candidate vertices (false if there is no path)")
-    @JIPipeExpressionParameterVariable(key = "path_length", name = "Path length", description = "Existing path length in number of edges between the vertices (NaN if there is no path)")
-    @JIPipeExpressionParameterVariable(key = "dot_product", name = "Vertices direction dot product", description = "The dot product of source and target directions. " +
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = FilamentUnconnectedEdgeVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(key = "source.direction", name = "Source direction", description = "Vector that contains the direction of the source vertex")
+    @AddJIPipeExpressionParameterVariable(key = "target.direction", name = "Target direction", description = "Vector that contains the direction of the target vertex")
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
+    @AddJIPipeExpressionParameterVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
+    @AddJIPipeExpressionParameterVariable(key = "path_exists", name = "Path exists", description = "Returns true if there is already a path between the two candidate vertices (false if there is no path)")
+    @AddJIPipeExpressionParameterVariable(key = "path_length", name = "Path length", description = "Existing path length in number of edges between the vertices (NaN if there is no path)")
+    @AddJIPipeExpressionParameterVariable(key = "dot_product", name = "Vertices direction dot product", description = "The dot product of source and target directions. " +
             "-1 if the directions are opposite and 1 if they point at the same direction (NaN if not available)")
-    @JIPipeExpressionParameterVariable(key = "angle", name = "Angle (degrees)", description = "The angle between the source and target directions (NaN if not available).")
+    @AddJIPipeExpressionParameterVariable(key = "angle", name = "Angle (degrees)", description = "The angle between the source and target directions (NaN if not available).")
     public JIPipeExpressionParameter getScoringFunction() {
         return scoringFunction;
     }
@@ -197,18 +197,18 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
     @SetJIPipeDocumentation(name = "Candidate edge filter", description = "Filter expression that determines if an edge is considered as candidate")
     @JIPipeParameter("filter-function")
     @JIPipeExpressionParameterSettings(hint = "per candidate edge")
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(fromClass = FilamentUnconnectedEdgeVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(key = "source.direction", name = "Source direction", description = "Vector that contains the direction of the source vertex")
-    @JIPipeExpressionParameterVariable(key = "target.direction", name = "Target direction", description = "Vector that contains the direction of the target vertex")
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
-    @JIPipeExpressionParameterVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
-    @JIPipeExpressionParameterVariable(key = "path_exists", name = "Path exists", description = "Returns true if there is already a path between the two candidate vertices (false if there is no path)")
-    @JIPipeExpressionParameterVariable(key = "path_length", name = "Path length", description = "Existing path length in number of edges between the vertices (NaN if there is no path)")
-    @JIPipeExpressionParameterVariable(key = "dot_product", name = "Vertices direction dot product", description = "The dot product of source and target directions. " +
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = FilamentUnconnectedEdgeVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(key = "source.direction", name = "Source direction", description = "Vector that contains the direction of the source vertex")
+    @AddJIPipeExpressionParameterVariable(key = "target.direction", name = "Target direction", description = "Vector that contains the direction of the target vertex")
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
+    @AddJIPipeExpressionParameterVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
+    @AddJIPipeExpressionParameterVariable(key = "path_exists", name = "Path exists", description = "Returns true if there is already a path between the two candidate vertices (false if there is no path)")
+    @AddJIPipeExpressionParameterVariable(key = "path_length", name = "Path length", description = "Existing path length in number of edges between the vertices (NaN if there is no path)")
+    @AddJIPipeExpressionParameterVariable(key = "dot_product", name = "Vertices direction dot product", description = "The dot product of source and target directions. " +
             "-1 if the directions are opposite and 1 if they point at the same direction (NaN if not available)")
-    @JIPipeExpressionParameterVariable(key = "angle", name = "Angle", description = "The angle between the source and target directions (NaN if not available).")
+    @AddJIPipeExpressionParameterVariable(key = "angle", name = "Angle", description = "The angle between the source and target directions (NaN if not available).")
     public JIPipeExpressionParameter getFilterFunction() {
         return filterFunction;
     }

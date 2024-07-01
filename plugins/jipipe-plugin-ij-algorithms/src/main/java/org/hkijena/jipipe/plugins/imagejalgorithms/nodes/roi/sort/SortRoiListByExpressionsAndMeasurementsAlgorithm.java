@@ -117,7 +117,7 @@ public class SortRoiListByExpressionsAndMeasurementsAlgorithm extends JIPipeIter
     @SetJIPipeDocumentation(name = "Expression", description = "The expression is executed per ROI.")
     @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class, hint = "per ROI")
     @JIPipeParameter("expression")
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     public StringQueryExpression getExpression() {
         return expression;
     }

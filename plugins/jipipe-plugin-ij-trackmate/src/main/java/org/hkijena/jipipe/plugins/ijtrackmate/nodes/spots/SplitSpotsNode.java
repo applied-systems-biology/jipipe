@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.NamedTextAnnotationGeneratorExpression;
 import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
@@ -110,12 +110,12 @@ public class SplitSpotsNode extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Generated annotations", description = "This list contains expressions to generate annotations for each spot")
     @JIPipeParameter("generated-annotations")
-    @JIPipeExpressionParameterVariable(fromClass = SpotFeatureVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(name = "Spot ID", key = "id", description = "Numeric spot ID. Please note that the ID is not necessarily consecutive.")
-    @JIPipeExpressionParameterVariable(name = "Spot index", key = "index", description = "Numeric index.")
-    @JIPipeExpressionParameterVariable(name = "Number of spots", key = "n_spots", description = "The total number of spots")
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = SpotFeatureVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(name = "Spot ID", key = "id", description = "Numeric spot ID. Please note that the ID is not necessarily consecutive.")
+    @AddJIPipeExpressionParameterVariable(name = "Spot index", key = "index", description = "Numeric index.")
+    @AddJIPipeExpressionParameterVariable(name = "Number of spots", key = "n_spots", description = "The total number of spots")
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     public NamedTextAnnotationGeneratorExpression.List getAnnotationGenerator() {
         return annotationGenerator;
     }

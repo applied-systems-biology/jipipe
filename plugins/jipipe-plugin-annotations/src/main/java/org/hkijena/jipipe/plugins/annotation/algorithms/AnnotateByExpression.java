@@ -90,9 +90,9 @@ public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("generated-annotation")
     @PairParameterSettings(keyLabel = "Value", valueLabel = "Name")
     @StringParameterSettings(monospace = true)
-    @JIPipeExpressionParameterVariable(fromClass = VariablesInfo.class)
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeProjectDirectoriesVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = VariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeProjectDirectoriesVariablesInfo.class)
     public NamedTextAnnotationGeneratorExpression.List getAnnotations() {
         return annotations;
     }

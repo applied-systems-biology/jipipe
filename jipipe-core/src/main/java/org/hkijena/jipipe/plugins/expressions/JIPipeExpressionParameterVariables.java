@@ -18,10 +18,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Repeats {@link JIPipeExpressionParameterVariable}
+ * Repeats {@link AddJIPipeExpressionParameterVariable}
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface JIPipeExpressionParameterVariables {
-    JIPipeExpressionParameterVariable[] value();
+    AddJIPipeExpressionParameterVariable[] value();
 }

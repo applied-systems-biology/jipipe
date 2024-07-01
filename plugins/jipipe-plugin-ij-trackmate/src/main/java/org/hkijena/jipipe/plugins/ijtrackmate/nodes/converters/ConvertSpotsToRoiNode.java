@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.OptionalJIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
@@ -135,11 +135,11 @@ public class ConvertSpotsToRoiNode extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Fill color", description = "Allows to change the fill color when rendered as RGB and within ImageJ. " + ColorUtils.PARSE_COLOR_DESCRIPTION)
     @JIPipeParameter("fill-color")
-    @JIPipeExpressionParameterVariable(fromClass = SpotFeatureVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(name = "Spot ID", key = "id", description = "Numeric spot ID. Please note that the ID is not necessarily consecutive.")
-    @JIPipeExpressionParameterVariable(name = "Spot index", key = "index", description = "Numeric index.")
-    @JIPipeExpressionParameterVariable(name = "Number of spots", key = "n_spots", description = "The total number of spots")
+    @AddJIPipeExpressionParameterVariable(fromClass = SpotFeatureVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(name = "Spot ID", key = "id", description = "Numeric spot ID. Please note that the ID is not necessarily consecutive.")
+    @AddJIPipeExpressionParameterVariable(name = "Spot index", key = "index", description = "Numeric index.")
+    @AddJIPipeExpressionParameterVariable(name = "Number of spots", key = "n_spots", description = "The total number of spots")
     public OptionalJIPipeExpressionParameter getFillColor() {
         return fillColor;
     }
@@ -151,11 +151,11 @@ public class ConvertSpotsToRoiNode extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Line color", description = "Allows to change the line color when rendered as RGB and within ImageJ. " + ColorUtils.PARSE_COLOR_DESCRIPTION)
     @JIPipeParameter("line-color")
-    @JIPipeExpressionParameterVariable(fromClass = SpotFeatureVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(name = "Spot ID", key = "id", description = "Numeric spot ID. Please note that the ID is not necessarily consecutive.")
-    @JIPipeExpressionParameterVariable(name = "Spot index", key = "index", description = "Numeric index.")
-    @JIPipeExpressionParameterVariable(name = "Number of spots", key = "n_spots", description = "The total number of spots")
+    @AddJIPipeExpressionParameterVariable(fromClass = SpotFeatureVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(name = "Spot ID", key = "id", description = "Numeric spot ID. Please note that the ID is not necessarily consecutive.")
+    @AddJIPipeExpressionParameterVariable(name = "Spot index", key = "index", description = "Numeric index.")
+    @AddJIPipeExpressionParameterVariable(name = "Number of spots", key = "n_spots", description = "The total number of spots")
     public OptionalJIPipeExpressionParameter getLineColor() {
         return lineColor;
     }
@@ -167,11 +167,11 @@ public class ConvertSpotsToRoiNode extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Line width", description = "Allows to change the line width when rendered as RGB and within ImageJ. The annotation value is converted to an integer.")
     @JIPipeParameter("line-width")
-    @JIPipeExpressionParameterVariable(fromClass = SpotFeatureVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(name = "Spot ID", key = "id", description = "Numeric spot ID. Please note that the ID is not necessarily consecutive.")
-    @JIPipeExpressionParameterVariable(name = "Spot index", key = "index", description = "Numeric index.")
-    @JIPipeExpressionParameterVariable(name = "Number of spots", key = "n_spots", description = "The total number of spots")
+    @AddJIPipeExpressionParameterVariable(fromClass = SpotFeatureVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(name = "Spot ID", key = "id", description = "Numeric spot ID. Please note that the ID is not necessarily consecutive.")
+    @AddJIPipeExpressionParameterVariable(name = "Spot index", key = "index", description = "Numeric index.")
+    @AddJIPipeExpressionParameterVariable(name = "Number of spots", key = "n_spots", description = "The total number of spots")
     public OptionalJIPipeExpressionParameter getLineWidth() {
         return lineWidth;
     }
@@ -183,11 +183,11 @@ public class ConvertSpotsToRoiNode extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "ROI name", description = "Allows to change the ROI name")
     @JIPipeParameter("roi-name")
-    @JIPipeExpressionParameterVariable(fromClass = SpotFeatureVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(name = "Spot ID", key = "id", description = "Numeric spot ID. Please note that the ID is not necessarily consecutive.")
-    @JIPipeExpressionParameterVariable(name = "Spot index", key = "index", description = "Numeric index.")
-    @JIPipeExpressionParameterVariable(name = "Number of spots", key = "n_spots", description = "The total number of spots")
+    @AddJIPipeExpressionParameterVariable(fromClass = SpotFeatureVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(name = "Spot ID", key = "id", description = "Numeric spot ID. Please note that the ID is not necessarily consecutive.")
+    @AddJIPipeExpressionParameterVariable(name = "Spot index", key = "index", description = "Numeric index.")
+    @AddJIPipeExpressionParameterVariable(name = "Number of spots", key = "n_spots", description = "The total number of spots")
     public OptionalJIPipeExpressionParameter getRoiName() {
         return roiName;
     }

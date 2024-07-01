@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.JIPipeProjectDirectoriesVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.PathQueryExpression;
@@ -83,7 +83,7 @@ public class ModifyPath extends JIPipeSimpleIteratingAlgorithm {
             "Additionally, annotations are available as variables if enabled.\n\nIf the expression returns a non-string value, the path data will be skipped.\n\n" +
             "To improve compatibility between operating systems, we recommend to use '/' as path separator.")
     @JIPipeParameter("expression")
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeProjectDirectoriesVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeProjectDirectoriesVariablesInfo.class)
     public PathQueryExpression getExpression() {
         return expression;
     }

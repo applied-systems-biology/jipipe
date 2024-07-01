@@ -33,7 +33,7 @@ public class Vector2iParameter implements Vector2Parameter {
         this.y = other.y;
     }
 
-    @JsonSetter("x")
+    @JsonGetter("x")
     public int getX() {
         return x;
     }

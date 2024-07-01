@@ -65,11 +65,11 @@ public class HoughLineSegments {
         return houghLines(bw, houghResult.getThetas(), houghResult.getRhos(), peaks, fillGap, minLength);
     }
 
-    public static List<Line> houghLines(ImageProcessor BW, List<Double> thetas, List<Double> rhos, List<Point> peaks, double fillGap, double minlength) {
+    public static List<Line> houghLines(ImageProcessor BW, List<Double> thetas, List<Double> rhos, List<Point> peaks, double fillGap, double minLength) {
         if (fillGap <= 0) {
             throw new IllegalArgumentException("fillGap must be a positive scalar number");
         }
-        if (minlength <= 0) {
+        if (minLength <= 0) {
             throw new IllegalArgumentException("minlength must be a positive scalar number");
         }
 
@@ -123,26 +123,26 @@ public class HoughLineSegments {
 
                 if (Math.hypot(curr.x - prev.x, curr.y - prev.y) > fillGap) {
                     if (segment.size() > 1) {
-                        addLineSegment(lines, segment, minlength, theta_p, rho_p);
+                        addLineSegment(lines, segment, minLength, theta_p, rho_p);
                     }
                     segment = new ArrayList<>();
                 }
                 segment.add(curr);
             }
             if (segment.size() > 1) {
-                addLineSegment(lines, segment, minlength, theta_p, rho_p);
+                addLineSegment(lines, segment, minLength, theta_p, rho_p);
             }
         }
 
         return lines;
     }
 
-    private static void addLineSegment(List<Line> lines, List<Point> segment, double minlength, double theta, double rho) {
+    private static void addLineSegment(List<Line> lines, List<Point> segment, double minLength, double theta, double rho) {
         Point first = segment.get(0);
         Point last = segment.get(segment.size() - 1);
         double length = Math.hypot(last.x - first.x, last.y - first.y);
 
-        if (length >= minlength) {
+        if (length >= minLength) {
             lines.add(new Line(first, last, theta, rho));
         }
     }
@@ -172,8 +172,9 @@ public class HoughLineSegments {
 
         // Check if neighborhoodSize elements are positive odd integers
         for (int size : neighborhoodSize) {
-            if (size <= 0 || size % 2 == 0)
+            if (size <= 0 || size % 2 == 0) {
                 throw new IllegalArgumentException("neighborhoodSize must be a 2-element vector of positive odd integers");
+            }
         }
 
         int neighborhoodX = (neighborhoodSize[0] - 1) / 2;

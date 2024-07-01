@@ -99,7 +99,7 @@ public class FilterTablesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Filters", description = "Expression that is applied per table to determine if it is filtered out. Must return a boolean.")
     @JIPipeParameter("filters")
-    @JIPipeExpressionParameterVariable(fromClass = VariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = VariablesInfo.class)
     public JIPipeExpressionParameter getFilters() {
         return filters;
     }

@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.omero.util.OMEROUtils;
 
@@ -62,8 +62,8 @@ public class OMEROKeyValuePairToAnnotationImporter extends AbstractJIPipeParamet
     @SetJIPipeDocumentation(name = "Filter", description = "Allows to filter out key-value pairs from being converted into annotations")
     @JIPipeParameter("filter")
     @JIPipeExpressionParameterSettings(hint = "per key-value pair")
-    @JIPipeExpressionParameterVariable(name = "Key-value pair key", key = "key", description = "The key of the key-value pair")
-    @JIPipeExpressionParameterVariable(name = "Key-value pair value", key = "value", description = "The value of the key-value pair")
+    @AddJIPipeExpressionParameterVariable(name = "Key-value pair key", key = "key", description = "The key of the key-value pair")
+    @AddJIPipeExpressionParameterVariable(name = "Key-value pair value", key = "value", description = "The value of the key-value pair")
     public JIPipeExpressionParameter getFilter() {
         return filter;
     }
@@ -76,8 +76,8 @@ public class OMEROKeyValuePairToAnnotationImporter extends AbstractJIPipeParamet
     @SetJIPipeDocumentation(name = "Annotation name", description = "The name of the generated annotation")
     @JIPipeParameter("annotation-name")
     @JIPipeExpressionParameterSettings(hint = "per key-value pair")
-    @JIPipeExpressionParameterVariable(name = "Key-value pair key", key = "key", description = "The key of the key-value pair")
-    @JIPipeExpressionParameterVariable(name = "Key-value pair value", key = "value", description = "The value of the key-value pair")
+    @AddJIPipeExpressionParameterVariable(name = "Key-value pair key", key = "key", description = "The key of the key-value pair")
+    @AddJIPipeExpressionParameterVariable(name = "Key-value pair value", key = "value", description = "The value of the key-value pair")
     public JIPipeExpressionParameter getAnnotationName() {
         return annotationName;
     }
@@ -90,8 +90,8 @@ public class OMEROKeyValuePairToAnnotationImporter extends AbstractJIPipeParamet
     @SetJIPipeDocumentation(name = "Annotation value", description = "The value of the generated annotation")
     @JIPipeParameter("annotation-value")
     @JIPipeExpressionParameterSettings(hint = "per key-value pair")
-    @JIPipeExpressionParameterVariable(name = "Key-value pair key", key = "key", description = "The key of the key-value pair")
-    @JIPipeExpressionParameterVariable(name = "Key-value pair value", key = "value", description = "The value of the key-value pair")
+    @AddJIPipeExpressionParameterVariable(name = "Key-value pair key", key = "key", description = "The key of the key-value pair")
+    @AddJIPipeExpressionParameterVariable(name = "Key-value pair value", key = "value", description = "The value of the key-value pair")
     public JIPipeExpressionParameter getAnnotationValue() {
         return annotationValue;
     }

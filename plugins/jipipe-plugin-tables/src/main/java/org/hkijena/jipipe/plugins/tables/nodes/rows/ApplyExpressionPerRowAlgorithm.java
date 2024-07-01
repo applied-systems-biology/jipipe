@@ -103,7 +103,7 @@ public class ApplyExpressionPerRowAlgorithm extends JIPipeSimpleIteratingAlgorit
     @JIPipeParameter("expression-list")
     @PairParameterSettings(singleRow = false, keyLabel = "Expression", valueLabel = "Column name")
     @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class)
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     public ExpressionTableColumnGeneratorProcessorParameterList getExpressionList() {
         return expressionList;
     }

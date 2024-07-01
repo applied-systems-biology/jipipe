@@ -151,9 +151,9 @@ public class ApplyExpressionPerRowAlgorithm2 extends JIPipeSimpleIteratingAlgori
 
         @SetJIPipeDocumentation(name = "Column name", description = "The name of the column where the value will be written")
         @JIPipeParameter("column-name")
-        @JIPipeExpressionParameterVariable(fromClass = VariablesInfo.class)
-        @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-        @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+        @AddJIPipeExpressionParameterVariable(fromClass = VariablesInfo.class)
+        @AddJIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+        @AddJIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
         public JIPipeExpressionParameter getColumnName() {
             return columnName;
         }
@@ -165,11 +165,11 @@ public class ApplyExpressionPerRowAlgorithm2 extends JIPipeSimpleIteratingAlgori
 
         @SetJIPipeDocumentation(name = "Value", description = "The generated value")
         @JIPipeParameter("value")
-        @JIPipeExpressionParameterVariable(fromClass = VariablesInfo.class)
-        @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-        @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-        @JIPipeExpressionParameterVariable(name = "Column name", description = "The output column name", key = "column_name")
-        @JIPipeExpressionParameterVariable(name = "Column index", description = "The output column index", key = "column")
+        @AddJIPipeExpressionParameterVariable(fromClass = VariablesInfo.class)
+        @AddJIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+        @AddJIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+        @AddJIPipeExpressionParameterVariable(name = "Column name", description = "The output column name", key = "column_name")
+        @AddJIPipeExpressionParameterVariable(name = "Column index", description = "The output column index", key = "column")
         public JIPipeExpressionParameter getValue() {
             return value;
         }

@@ -89,7 +89,7 @@ public class SetSingleAnnotation extends JIPipeSimpleIteratingAlgorithm {
     @SetJIPipeDocumentation(name = "Annotation value", description = "The value of the generated annotation. ")
     @JIPipeParameter("annotation-value")
     @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class)
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeProjectDirectoriesVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeProjectDirectoriesVariablesInfo.class)
     public StringQueryExpression getAnnotationValue() {
         return annotationValue;
     }

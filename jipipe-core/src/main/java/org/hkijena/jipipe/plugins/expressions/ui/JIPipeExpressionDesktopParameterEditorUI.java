@@ -163,7 +163,7 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
                 ExpressionParameterVariablesInfo variableSource = (ExpressionParameterVariablesInfo) ReflectionUtils.newInstance(settings.variableSource());
                 variables.addAll(variableSource.getVariables(getParameterTree(), getParameterAccess()));
             }
-            List<JIPipeExpressionParameterVariable> variableAnnotations = getParameterAccess().getAnnotationsOfType(JIPipeExpressionParameterVariable.class);
+            List<AddJIPipeExpressionParameterVariable> variableAnnotations = getParameterAccess().getAnnotationsOfType(AddJIPipeExpressionParameterVariable.class);
             if (variableAnnotations.isEmpty()) {
                 // Maybe the repeatable is not resolved
                 JIPipeExpressionParameterVariables container = getParameterAccess().getAnnotationOfType(JIPipeExpressionParameterVariables.class);
@@ -171,7 +171,7 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
                     variableAnnotations.addAll(Arrays.asList(container.value()));
                 }
             }
-            for (JIPipeExpressionParameterVariable variable : variableAnnotations) {
+            for (AddJIPipeExpressionParameterVariable variable : variableAnnotations) {
                 if (!StringUtils.isNullOrEmpty(variable.name()) || !StringUtils.isNullOrEmpty(variable.description()) || !StringUtils.isNullOrEmpty(variable.key())) {
                     variables.add(new JIPipeExpressionParameterVariableInfo(variable.key(), variable.name(), variable.description()));
                 }
@@ -183,7 +183,7 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
         }
         // Read from field class
         {
-            for (JIPipeExpressionParameterVariable variable : fieldClass.getAnnotationsByType(JIPipeExpressionParameterVariable.class)) {
+            for (AddJIPipeExpressionParameterVariable variable : fieldClass.getAnnotationsByType(AddJIPipeExpressionParameterVariable.class)) {
                 if (!StringUtils.isNullOrEmpty(variable.name()) || !StringUtils.isNullOrEmpty(variable.description()) || !StringUtils.isNullOrEmpty(variable.key())) {
                     variables.add(new JIPipeExpressionParameterVariableInfo(variable.key(), variable.name(), variable.description()));
                 }

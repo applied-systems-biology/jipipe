@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
@@ -113,8 +113,8 @@ public class AnnotateWithTextDataAlgorithm extends JIPipeSimpleIteratingAlgorith
 
         @SetJIPipeDocumentation(name = "Preprocessor", description = "An expression that allows to preprocess the text.")
         @JIPipeParameter(value = "preprocessor", uiOrder = -100)
-        @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-        @JIPipeExpressionParameterVariable(name = "Text", key = "text", description = "The input text")
+        @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+        @AddJIPipeExpressionParameterVariable(name = "Text", key = "text", description = "The input text")
         public JIPipeExpressionParameter getPreprocessor() {
             return preprocessor;
         }
@@ -126,8 +126,8 @@ public class AnnotateWithTextDataAlgorithm extends JIPipeSimpleIteratingAlgorith
 
         @SetJIPipeDocumentation(name = "Annotation name", description = "The name of the output annotation.")
         @JIPipeParameter(value = "annotation-name", uiOrder = -90)
-        @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-        @JIPipeExpressionParameterVariable(name = "Text", key = "text", description = "The input text")
+        @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+        @AddJIPipeExpressionParameterVariable(name = "Text", key = "text", description = "The input text")
         public JIPipeExpressionParameter getAnnotationName() {
             return annotationName;
         }

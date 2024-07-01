@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.NamedTextAnnotationGeneratorExpression;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
@@ -91,11 +91,11 @@ public class SplitTracksNode extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Generated annotations", description = "This list contains expressions to generate annotations for each spot")
     @JIPipeParameter("generated-annotations")
-    @JIPipeExpressionParameterVariable(fromClass = TrackFeatureVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(name = "Track ID", key = "id", description = "Numeric track ID. Please note that the ID is not necessarily consecutive.")
-    @JIPipeExpressionParameterVariable(name = "Track index", key = "index", description = "Numeric index.")
-    @JIPipeExpressionParameterVariable(name = "Number of tracks", key = "n_tracks", description = "The total number of tracks")
+    @AddJIPipeExpressionParameterVariable(fromClass = TrackFeatureVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(name = "Track ID", key = "id", description = "Numeric track ID. Please note that the ID is not necessarily consecutive.")
+    @AddJIPipeExpressionParameterVariable(name = "Track index", key = "index", description = "Numeric index.")
+    @AddJIPipeExpressionParameterVariable(name = "Number of tracks", key = "n_tracks", description = "The total number of tracks")
     public NamedTextAnnotationGeneratorExpression.List getAnnotationGenerator() {
         return annotationGenerator;
     }

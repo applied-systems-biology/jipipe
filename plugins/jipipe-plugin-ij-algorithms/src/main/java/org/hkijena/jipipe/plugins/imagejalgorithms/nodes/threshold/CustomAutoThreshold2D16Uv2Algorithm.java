@@ -452,7 +452,7 @@ public class CustomAutoThreshold2D16Uv2Algorithm extends JIPipeIteratingAlgorith
                 "this threshold.")
         @JIPipeParameter(value = "thresholding-function", important = true)
         @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class)
-        @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+        @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
         public JIPipeExpressionParameter getThresholdCalculationExpression() {
             return thresholdCalculationExpression;
         }

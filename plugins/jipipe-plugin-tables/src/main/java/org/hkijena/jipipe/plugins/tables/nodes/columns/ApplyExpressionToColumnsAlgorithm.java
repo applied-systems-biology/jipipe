@@ -33,7 +33,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.TableColumnValuesExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
@@ -159,7 +159,7 @@ public class ApplyExpressionToColumnsAlgorithm extends JIPipeSimpleIteratingAlgo
     @SetJIPipeDocumentation(name = "Processors", description = "Defines which columns are processed")
     @JIPipeParameter("processors")
     @JIPipeExpressionParameterSettings(variableSource = TableColumnValuesExpressionParameterVariablesInfo.class)
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     public ExpressionTableColumnProcessorParameterList getProcessorParameters() {
         return processorParameters;
     }

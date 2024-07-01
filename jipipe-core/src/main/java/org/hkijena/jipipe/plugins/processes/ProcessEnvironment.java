@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.plugins.expressions.ExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
@@ -87,8 +87,8 @@ public class ProcessEnvironment extends JIPipeEnvironment {
 
     @SetJIPipeDocumentation(name = "Arguments", description = "Arguments passed to the process.")
     @JIPipeParameter("arguments")
-    @JIPipeExpressionParameterVariable(key = "executable", name = "Executable path", description = "The path to the executable")
-    @JIPipeExpressionParameterVariable(key = "executable_dir", name = "Executable containing directory", description = "The path to the directory that contains the executable")
+    @AddJIPipeExpressionParameterVariable(key = "executable", name = "Executable path", description = "The path to the executable")
+    @AddJIPipeExpressionParameterVariable(key = "executable_dir", name = "Executable containing directory", description = "The path to the directory that contains the executable")
     @JsonGetter("arguments")
     public JIPipeExpressionParameter getArguments() {
         return arguments;
@@ -142,8 +142,8 @@ public class ProcessEnvironment extends JIPipeEnvironment {
     @SetJIPipeDocumentation(name = "Work directory", description = "The work directory of the process")
     @JIPipeParameter("work-directory")
     @JsonGetter("work-directory")
-    @JIPipeExpressionParameterVariable(key = "executable", name = "Executable path", description = "The path to the executable")
-    @JIPipeExpressionParameterVariable(key = "executable_dir", name = "Executable containing directory", description = "The path to the directory that contains the executable")
+    @AddJIPipeExpressionParameterVariable(key = "executable", name = "Executable path", description = "The path to the executable")
+    @AddJIPipeExpressionParameterVariable(key = "executable_dir", name = "Executable containing directory", description = "The path to the directory that contains the executable")
     public JIPipeExpressionParameter getWorkDirectory() {
         return workDirectory;
     }
@@ -179,7 +179,7 @@ public class ProcessEnvironment extends JIPipeEnvironment {
             "variables are available as variables")
     @JIPipeParameter("environment-variables")
     @PairParameterSettings(keyLabel = "Value", valueLabel = "Key")
-    @JIPipeExpressionParameterVariable(fromClass = EnvironmentVariablesSource.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = EnvironmentVariablesSource.class)
     public StringQueryExpressionAndStringPairParameter.List getEnvironmentVariables() {
         return environmentVariables;
     }

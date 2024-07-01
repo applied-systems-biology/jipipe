@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
@@ -63,7 +63,7 @@ public abstract class JIPipeArtifactProcessEnvironment extends JIPipeArtifactEnv
     @SetJIPipeDocumentation(name = "Arguments", description = "Arguments passed to the executable.")
     @JIPipeParameter("arguments")
     @JsonGetter("arguments")
-    @JIPipeExpressionParameterVariable(key = "cli_parameters", description = "CLI parameters that should be passed to the executable", name = "CLI parameters")
+    @AddJIPipeExpressionParameterVariable(key = "cli_parameters", description = "CLI parameters that should be passed to the executable", name = "CLI parameters")
     public JIPipeExpressionParameter getArguments() {
         return arguments;
     }

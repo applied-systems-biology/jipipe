@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
@@ -191,7 +191,7 @@ public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorit
 
     @SetJIPipeDocumentation(name = "Column filter", description = "Determines which columns are copied from source to target.")
     @JIPipeParameter("column-filter")
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public StringQueryExpression getColumnFilter() {
         return columnFilter;
     }
@@ -203,7 +203,7 @@ public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorit
 
     @SetJIPipeDocumentation(name = "Reference columns", description = "Columns that should act as reference points for the merging of the rows from different tables.")
     @JIPipeParameter(value = "reference-columns", important = true)
-    @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public StringQueryExpression getReferenceColumns() {
         return referenceColumns;
     }

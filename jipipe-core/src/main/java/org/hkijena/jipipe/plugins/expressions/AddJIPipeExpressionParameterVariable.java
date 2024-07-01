@@ -28,7 +28,7 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Repeatable(JIPipeExpressionParameterVariables.class)
-public @interface JIPipeExpressionParameterVariable {
+public @interface AddJIPipeExpressionParameterVariable {
     String name() default "";
 
     String description() default "";

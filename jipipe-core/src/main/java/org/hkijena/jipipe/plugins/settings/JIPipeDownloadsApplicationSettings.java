@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.processes.ProcessEnvironment;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -153,8 +153,8 @@ public class JIPipeDownloadsApplicationSettings extends JIPipeDefaultApplication
         @SetJIPipeDocumentation(name = "Arguments", description = "Arguments passed to the process.")
         @JIPipeParameter("arguments")
         @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class)
-        @JIPipeExpressionParameterVariable(name = "Output file", key = "output_file", description = "The downloaded file")
-        @JIPipeExpressionParameterVariable(name = "URL", key = "url", description = "The URL")
+        @AddJIPipeExpressionParameterVariable(name = "Output file", key = "output_file", description = "The downloaded file")
+        @AddJIPipeExpressionParameterVariable(name = "URL", key = "url", description = "The URL")
         @JsonGetter("arguments")
         @Override
         public JIPipeExpressionParameter getArguments() {

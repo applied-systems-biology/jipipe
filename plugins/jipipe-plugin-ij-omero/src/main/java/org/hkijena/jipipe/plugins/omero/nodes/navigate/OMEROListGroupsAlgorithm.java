@@ -34,7 +34,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialAccessNode;
 import org.hkijena.jipipe.plugins.omero.OptionalOMEROCredentialsEnvironment;
@@ -89,10 +89,10 @@ public class OMEROListGroupsAlgorithm extends JIPipeSingleIterationAlgorithm imp
     @SetJIPipeDocumentation(name = "Filter", description = "Allows to filter the returned groups")
     @JIPipeParameter("filter")
     @JIPipeExpressionParameterSettings(hint = "per OMERO data set")
-    @JIPipeExpressionParameterVariable(name = "OMERO tags", description = "List of OMERO tag names associated with the data object", key = "tags")
-    @JIPipeExpressionParameterVariable(name = "OMERO key-value pairs", description = "Map containing OMERO key-value pairs with the data object", key = "kv_pairs")
-    @JIPipeExpressionParameterVariable(name = "OMERO group name", description = "Name of the group", key = "name")
-    @JIPipeExpressionParameterVariable(name = "OMERO group id", description = "ID of the group", key = "id")
+    @AddJIPipeExpressionParameterVariable(name = "OMERO tags", description = "List of OMERO tag names associated with the data object", key = "tags")
+    @AddJIPipeExpressionParameterVariable(name = "OMERO key-value pairs", description = "Map containing OMERO key-value pairs with the data object", key = "kv_pairs")
+    @AddJIPipeExpressionParameterVariable(name = "OMERO group name", description = "Name of the group", key = "name")
+    @AddJIPipeExpressionParameterVariable(name = "OMERO group id", description = "ID of the group", key = "id")
     public JIPipeExpressionParameter getFilters() {
         return filters;
     }

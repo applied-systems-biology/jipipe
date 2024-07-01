@@ -37,7 +37,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.ImageROITargetArea;
@@ -260,12 +260,12 @@ public class KeyValueThresholdPartitionGenerator extends JIPipeIteratingAlgorith
 
         @SetJIPipeDocumentation(name = "Value")
         @JIPipeParameter("value")
-        @JIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-        @JIPipeExpressionParameterVariable(key = "key", name = "Key", description = "The current key/threshold")
-        @JIPipeExpressionParameterVariable(key = "class0", name = "Class 0", description = "Array of all value pixels with a key less than the current threshold")
-        @JIPipeExpressionParameterVariable(key = "class1", name = "Class 1", description = "Array of all value pixels with a key larger or equal to the current threshold")
-        @JIPipeExpressionParameterVariable(key = "all.values", name = "All values", description = "Array of all values")
-        @JIPipeExpressionParameterVariable(key = "all.keys", name = "All keys", description = "Array of all keys")
+        @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+        @AddJIPipeExpressionParameterVariable(key = "key", name = "Key", description = "The current key/threshold")
+        @AddJIPipeExpressionParameterVariable(key = "class0", name = "Class 0", description = "Array of all value pixels with a key less than the current threshold")
+        @AddJIPipeExpressionParameterVariable(key = "class1", name = "Class 1", description = "Array of all value pixels with a key larger or equal to the current threshold")
+        @AddJIPipeExpressionParameterVariable(key = "all.values", name = "All values", description = "Array of all values")
+        @AddJIPipeExpressionParameterVariable(key = "all.keys", name = "All keys", description = "Array of all keys")
         public JIPipeExpressionParameter getValue() {
             return value;
         }
