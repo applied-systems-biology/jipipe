@@ -167,7 +167,7 @@ public class HoughLineSegments {
         if (numPeaks <= 0) numPeaks = 1;
         if (threshold < 0) threshold = 0.5 * H.getStatistics().max;
         if (neighborhoodSize == null || neighborhoodSize.length != 2) {
-            neighborhoodSize = new int[]{Math.max((height / 50) | 1, 3), Math.max((width / 50) | 1, 3)};
+            neighborhoodSize = new int[]{Math.max((width / 50) | 1, 3), Math.max((height / 50) | 1, 3)};
         }
 
         // Check if neighborhoodSize elements are positive odd integers

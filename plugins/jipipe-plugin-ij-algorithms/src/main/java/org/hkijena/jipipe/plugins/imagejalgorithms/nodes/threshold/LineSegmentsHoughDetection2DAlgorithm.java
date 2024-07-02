@@ -46,11 +46,13 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Optional
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2iParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.VectorParameterSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @SetJIPipeDocumentation(name = "Detect line segments 2D (Hough)", description = "Finds lines within the image via a Hough lines transformation. " + "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Binary")
@@ -106,6 +108,38 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         List<Double> thetaAngles = thetas.evaluateToDoubleList(variables);
 
+        // Fix thetas, so they are within the range [-90, 90)
+        for (int i = 0; i < thetaAngles.size(); i++) {
+            final double originalTheta = thetaAngles.get(i);
+            double theta = thetaAngles.get(i);
+            while(theta < -90) {
+                theta += 180;
+            }
+            while(theta >= 90) {
+                theta -= 180;
+            }
+            if(theta != originalTheta) {
+                progressInfo.log("Fixed input theta angle " + originalTheta + " is set to " + theta);
+            }
+            thetaAngles.set(i, theta);
+        }
+
+        progressInfo.log("Thetas are: " + JsonUtils.toJsonString(thetaAngles));
+
+        int[] neighborHood;
+        if (neighborhoodSize.isEnabled()) {
+            neighborHood = new int[]{neighborhoodSize.getContent().getX(), neighborhoodSize.getContent().getY()};
+        } else {
+            neighborHood = null;
+        }
+
+        if(neighborHood != null) {
+            progressInfo.log("Neighborhood size: " + neighborHood[0] + ", " + neighborHood[1]);
+        }
+        else {
+            progressInfo.log("Neighborhood size: Auto");
+        }
+
         Map<ImageSliceIndex, ImageProcessor> outputMaskSlices = new HashMap<>();
         Map<ImageSliceIndex, ImageProcessor> outputAccumulatorSlices = new HashMap<>();
         ROIListData outputPeaks = new ROIListData();
@@ -114,12 +148,7 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
 
             ImageProcessor bw = ip.duplicate();
             HoughLineSegments.HoughResult houghResult = HoughLineSegments.hough(bw, thetaAngles);
-            int[] neighborHood;
-            if (neighborhoodSize.isEnabled()) {
-                neighborHood = new int[]{neighborhoodSize.getContent().getX(), neighborhoodSize.getContent().getY()};
-            } else {
-                neighborHood = null;
-            }
+
 
             JIPipeExpressionVariablesMap peakThresholdVariables = new JIPipeExpressionVariablesMap();
             peakThresholdVariables.putAnnotations(iterationStep.getMergedTextAnnotations());
