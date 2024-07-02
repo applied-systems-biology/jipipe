@@ -164,8 +164,12 @@ public class HoughLineSegments {
         int height = H.getHeight();
 
         // Set default parameters if they are not provided
-        if (numPeaks <= 0) numPeaks = 1;
-        if (threshold < 0) threshold = 0.5 * H.getStatistics().max;
+        if (numPeaks <= 0) {
+            numPeaks = 1;
+        }
+        if (threshold < 0) {
+            threshold = 0.5 * H.getStats().max;
+        }
         if (neighborhoodSize == null || neighborhoodSize.length != 2) {
             neighborhoodSize = new int[]{Math.max((width / 50) | 1, 3), Math.max((height / 50) | 1, 3)};
         }
