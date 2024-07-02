@@ -43,6 +43,10 @@ public abstract class JIPipeValidationReportContext {
 
     public abstract String renderName();
 
+    public String renderDetailedName() {
+        return renderName();
+    }
+
     public abstract Icon renderIcon();
 
     public List<JIPipeValidationReportContext> traverse() {

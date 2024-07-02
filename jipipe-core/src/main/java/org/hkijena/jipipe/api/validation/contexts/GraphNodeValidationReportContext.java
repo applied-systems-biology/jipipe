@@ -75,6 +75,11 @@ public class GraphNodeValidationReportContext extends NavigableJIPipeValidationR
     public String renderName() {
         return graphNode.getDisplayName() + " (UUID " + graphNode.getUUIDInParentGraph() + ")";
     }
+    
+    @Override 
+    public String renderDetailedName() {
+        return graphNode.getDisplayName() + " (UUID " + graphNode.getUUIDInParentGraph() + ")";
+    }
 
     @Override
     public Icon renderIcon() {
