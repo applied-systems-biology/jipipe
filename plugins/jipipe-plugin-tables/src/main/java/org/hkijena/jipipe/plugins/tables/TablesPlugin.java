@@ -205,6 +205,7 @@ public class TablesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("table-column-to-string", ColumnToStringAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("table-column-to-numeric", ColumnToNumericAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("table-process-columns", ApplyExpressionToColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("table-apply-expression-to-table-by-columns", ApplyExpressionToTableByColumnAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("table-melt", MeltTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("table-unmelt", UnMeltTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("table-annotate-with-properties", AnnotateByTablePropertiesAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));

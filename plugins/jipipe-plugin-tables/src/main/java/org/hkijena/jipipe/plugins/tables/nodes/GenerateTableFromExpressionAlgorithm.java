@@ -16,6 +16,8 @@ package org.hkijena.jipipe.plugins.tables.nodes;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -27,9 +29,11 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.TableCellExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.parameters.collections.ExpressionTableColumnGeneratorProcessorParameterList;
@@ -38,8 +42,10 @@ import org.hkijena.jipipe.plugins.tables.parameters.processors.ExpressionTableCo
 /**
  * Algorithm that adds or replaces a column by a generated value
  */
-@SetJIPipeDocumentation(name = "Table from expressions", description = "Generates a table from expressions")
+@SetJIPipeDocumentation(name = "Generate table rows from expressions", description = "Generates a table from expressions that are applied for each table row, given by a parameter. " +
+        "Use 'Generate table columns from expression' if you want to do not know the number of rows.")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = JIPipeData.class, name = "Annotations", create = true, optional = true, description = "Optional source for annotations")
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class GenerateTableFromExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
@@ -72,6 +78,7 @@ public class GenerateTableFromExpressionAlgorithm extends JIPipeSimpleIteratingA
         ResultsTableData table = new ResultsTableData();
         table.addRows(generatedRows);
         JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
+        variableSet.putAnnotations(iterationStep.getMergedTextAnnotations());
         variableSet.set("num_rows", generatedRows);
         variableSet.set("num_cols", columns.size());
         for (ExpressionTableColumnGeneratorProcessor entry : columns) {
@@ -100,8 +107,9 @@ public class GenerateTableFromExpressionAlgorithm extends JIPipeSimpleIteratingA
 
     @SetJIPipeDocumentation(name = "Columns", description = "Columns to be generated")
     @JIPipeParameter("columns")
-    @JIPipeExpressionParameterSettings(variableSource = TableCellExpressionParameterVariablesInfo.class)
-    @PairParameterSettings(singleRow = false, keyLabel = "Function", valueLabel = "Output column")
+    @AddJIPipeExpressionParameterVariable(fromClass = TableCellExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @PairParameterSettings(keyLabel = "Function", valueLabel = "Output column")
     public ExpressionTableColumnGeneratorProcessorParameterList getColumns() {
         return columns;
     }
