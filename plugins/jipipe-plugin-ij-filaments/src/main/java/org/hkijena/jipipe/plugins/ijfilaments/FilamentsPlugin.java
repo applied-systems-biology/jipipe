@@ -203,7 +203,8 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("filaments-grow-end-vertices", GrowEndVerticesAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-arrow.png"));
         registerNodeType("filaments-connect-vertices", ConnectVerticesAlgorithm.class, UIUtils.getIconURLFromResources("actions/lines-connector.png"));
 
-        registerNodeType("filaments-tsoax", TSOAXAlgorithm.class, UIUtils.getIconURLFromResources("actions/labplot-xy-fit-curve.png"));
+        registerNodeType("filaments-tsoax", TSOAX3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/labplot-xy-fit-curve.png"));
+        registerNodeType("filaments-tsoax-2d", TSOAX2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/labplot-xy-fit-curve.png"));
         registerNodeType("tsoax-analyze-snakes", TSOAXResultAnalysisAlgorithm.class, UIUtils.getIconURLFromResources("actions/labplot-xy-fit-curve.png"));
     }
 
