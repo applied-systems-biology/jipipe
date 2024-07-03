@@ -16,7 +16,9 @@ package org.hkijena.jipipe.plugins.tables.nodes.transform;
 import com.google.common.primitives.Doubles;
 import gnu.trove.list.TDoubleList;
 import gnu.trove.list.array.TDoubleArrayList;
+import gnu.trove.map.TDoubleDoubleMap;
 import gnu.trove.map.TDoubleIntMap;
+import gnu.trove.map.hash.TDoubleDoubleHashMap;
 import gnu.trove.map.hash.TDoubleIntHashMap;
 import gnu.trove.set.TDoubleSet;
 import gnu.trove.set.hash.TDoubleHashSet;
@@ -41,6 +43,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @SetJIPipeDocumentation(name = "Table column to histogram", description = "Generates a histogram of table column values")
@@ -49,6 +52,7 @@ import java.util.List;
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private TableColumnSourceExpressionParameter inputColumn = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"Column name\"");
+    private TableColumnSourceExpressionParameter weightColumn = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.Generate, "1");
     private JIPipeExpressionParameter valueFilter = new JIPipeExpressionParameter("NOT IS_NAN(value)");
     private JIPipeExpressionParameter numBins = new JIPipeExpressionParameter("inf");
     private JIPipeExpressionParameter outputColumnBinMin = new JIPipeExpressionParameter("\"Bin min\"");
@@ -65,6 +69,7 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public TableToHistogramAlgorithm(TableToHistogramAlgorithm other) {
         super(other);
         this.inputColumn = new TableColumnSourceExpressionParameter(other.inputColumn);
+        this.weightColumn = new TableColumnSourceExpressionParameter(other.weightColumn);
         this.valueFilter = new JIPipeExpressionParameter(other.valueFilter);
         this.numBins = new JIPipeExpressionParameter(other.numBins);
         this.outputColumnBinMin = new JIPipeExpressionParameter(other.outputColumnBinMin);
@@ -78,9 +83,11 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData inputTable = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
-        TableColumn inputColumn = this.inputColumn.pickOrGenerateColumn(inputTable, new JIPipeExpressionVariablesMap());
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+
+        TableColumn inputColumn = this.inputColumn.pickOrGenerateColumn(inputTable, variables);
+        TableColumn weightColumn = this.weightColumn.pickOrGenerateColumn(inputTable, variables);
 
         // Calculate output column names
         String outputBinMinColumName = outputColumnBinMin.evaluateToString(variables);
@@ -100,15 +107,19 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
 
         double[] inputColumnValues = inputColumn.getDataAsDouble(inputColumn.getRows());
+        double[] weightColumnValues = weightColumn.getDataAsDouble(inputColumn.getRows());
         TDoubleHashSet uniqueFilteredInputColumnValues = new TDoubleHashSet(inputColumnValues.length);
-        TDoubleIntMap uniqueFilteredInputColumnValuesCounts = new TDoubleIntHashMap();
+        TDoubleDoubleMap uniqueFilteredInputColumnValuesCounts = new TDoubleDoubleHashMap();
 
         // Filter values
-        for (double value : inputColumnValues) {
+        for (int i = 0; i < inputColumnValues.length; i++) {
+            double value = inputColumnValues[i];
+            double weight = weightColumnValues[i];
             variables.set("value", value);
+            variables.set("weight", weight);
             if (valueFilter.evaluateToBoolean(variables)) {
                 uniqueFilteredInputColumnValues.add(value);
-                uniqueFilteredInputColumnValuesCounts.adjustOrPutValue(value, 1, 1);
+                uniqueFilteredInputColumnValuesCounts.adjustOrPutValue(value, weight, weight);
             }
         }
 
@@ -117,6 +128,8 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             iterationStep.addOutputData(getFirstOutputSlot(), dummyTable, progressInfo);
             return;
         }
+
+        variables.put("filtered_unique_values", Doubles.asList(uniqueFilteredInputColumnValues.toArray()));
 
         // Get number of bins
         double nBins_ = numBins.evaluateToDouble(variables);
@@ -171,7 +184,7 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             List<Double> allValues = new ArrayList<>();
             for (int j = 0; j < bin.size(); j++) {
                 double value = bin.get(j);
-                int count = uniqueFilteredInputColumnValuesCounts.get(value);
+                double count = uniqueFilteredInputColumnValuesCounts.get(value);
                 for (int k = 0; k < count; k++) {
                     allValues.add(value);
                 }
@@ -222,10 +235,23 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.inputColumn = inputColumn;
     }
 
+    @SetJIPipeDocumentation(name = "Weight column", description = "Column containing the weight value for each value")
+    @JIPipeParameter(value = "weight-column", important = true, uiOrder = -99)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    public TableColumnSourceExpressionParameter getWeightColumn() {
+        return weightColumn;
+    }
+
+    @JIPipeParameter("weight-column")
+    public void setWeightColumn(TableColumnSourceExpressionParameter weightColumn) {
+        this.weightColumn = weightColumn;
+    }
+
     @SetJIPipeDocumentation(name = "Value filter", description = "Allows to remove values before they are included into the histogram calculations")
     @JIPipeParameter("value-filter")
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(key = "value", description = "The value to be tested", name = "Value")
+    @AddJIPipeExpressionParameterVariable(key = "weight", description = "The weight of the value", name = "Weight")
     public JIPipeExpressionParameter getValueFilter() {
         return valueFilter;
     }
@@ -238,6 +264,7 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @SetJIPipeDocumentation(name = "Number of bins", description = "The number of bins. If set to infinite (<code>inf</code>), there will be as many bins as unique values")
     @JIPipeParameter("num-bins")
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(key = "filtered_unique_values", name = "Filtered unique values", description = "Unique values that passed the filter")
     public JIPipeExpressionParameter getNumBins() {
         return numBins;
     }
