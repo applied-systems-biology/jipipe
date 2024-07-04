@@ -33,20 +33,22 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.nodes.columns.ApplyExpressionToTableByColumnAlgorithm;
+import org.hkijena.jipipe.plugins.tables.parameters.enums.TableColumnGeneratorParameter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
-@SetJIPipeDocumentation(name = "Table column to histogram", description = "Generates a histogram of table column values")
+@SetJIPipeDocumentation(name = "Table column to histogram", description = "Generates a histogram of table column values. Also supports weighting the values via an additional column.")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Transform")
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
@@ -59,6 +61,7 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private JIPipeExpressionParameter outputColumnBinMax = new JIPipeExpressionParameter("\"Bin max\"");
     private JIPipeExpressionParameter outputColumnBinCount = new JIPipeExpressionParameter("\"Count\"");
     private JIPipeExpressionParameter accumulationFunction = new JIPipeExpressionParameter("COUNT(values)");
+    private ParameterCollectionList additionalColumns = ParameterCollectionList.containingCollection(AdditionalColumn.class);
     private boolean cumulative = false;
     private boolean normalize = false;
 
@@ -76,6 +79,7 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.outputColumnBinMax = new JIPipeExpressionParameter(other.outputColumnBinMax);
         this.outputColumnBinCount = new JIPipeExpressionParameter(other.outputColumnBinCount);
         this.accumulationFunction = new JIPipeExpressionParameter(other.accumulationFunction);
+        this.additionalColumns = new ParameterCollectionList(other.additionalColumns);
         this.cumulative = other.cumulative;
         this.normalize = other.normalize;
     }
@@ -169,18 +173,27 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 currentStart += binWidth;
                 currentEnd += binWidth;
             }
-            while (currentEnd <= maxValue);
+            while (currentEnd <= maxValue && binWidth > 0);
         }
 
         // Generate intermediate arrays
         double[] binMinValues = new double[generatedBins.size()];
         double[] binMaxValues = new double[generatedBins.size()];
+        Map<String, double[]> additionalColumns = new HashMap<>();
+        List<String> additionalColumnNames = new ArrayList<>();
         double[] binCounts = new double[generatedBins.size()];
+
+        for (AdditionalColumn column : this.additionalColumns.mapToCollection(AdditionalColumn.class)) {
+            String name = column.outputColumnName.evaluateToString(variables);
+            additionalColumnNames.add(name);
+        }
 
         for (int i = 0; i < generatedBins.size(); i++) {
             TDoubleList bin = generatedBins.get(i);
             binMinValues[i] = bin.min();
             binMaxValues[i] = bin.max();
+
+            // Calculate bin counts (all values)
             List<Double> allValues = new ArrayList<>();
             for (int j = 0; j < bin.size(); j++) {
                 double value = bin.get(j);
@@ -189,8 +202,18 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                     allValues.add(value);
                 }
             }
+
             variables.set("values", allValues);
             binCounts[i] = accumulationFunction.evaluateToDouble(variables);
+            // Calculate additional columns
+
+            for (AdditionalColumn column : this.additionalColumns.mapToCollection(AdditionalColumn.class)) {
+                String name = column.outputColumnName.evaluateToString(variables);
+                double value = column.outputColumnValues.evaluateToDouble(variables);
+
+                double[] values = additionalColumns.computeIfAbsent(name, k -> new double[generatedBins.size()]);
+                values[i] = value;
+            }
         }
 
         // Cumulative
@@ -211,16 +234,34 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ResultsTableData outputTable = new ResultsTableData();
         outputTable.addNumericColumn(outputBinMinColumName);
         outputTable.addNumericColumn(outputBinMaxColumName);
+        for (String columnName : additionalColumnNames) {
+            outputTable.addNumericColumn(columnName);
+        }
         outputTable.addNumericColumn(outputBinCountColumName);
+
 
         for (int i = 0; i < binCounts.length; i++) {
             outputTable.addRow();
             outputTable.setValueAt(binMinValues[i], i, outputBinMinColumName);
             outputTable.setValueAt(binMaxValues[i], i, outputBinMaxColumName);
             outputTable.setValueAt(binCounts[i], i, outputBinCountColumName);
+            for (Map.Entry<String, double[]> entry : additionalColumns.entrySet()) {
+                outputTable.setValueAt(entry.getValue()[i], i, entry.getKey());
+            }
         }
 
         iterationStep.addOutputData(getFirstOutputSlot(), outputTable, progressInfo);
+    }
+
+    @SetJIPipeDocumentation(name = "Additional columns", description = "Additional columns to be added into the histogram.")
+    @JIPipeParameter("additional-columns")
+    public ParameterCollectionList getAdditionalColumns() {
+        return additionalColumns;
+    }
+
+    @JIPipeParameter("additional-columns")
+    public void setAdditionalColumns(ParameterCollectionList additionalColumns) {
+        this.additionalColumns = additionalColumns;
     }
 
     @SetJIPipeDocumentation(name = "Input column", description = "The column to be used for creating a histogram")
@@ -342,5 +383,35 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("normalize")
     public void setNormalize(boolean normalize) {
         this.normalize = normalize;
+    }
+
+    public static class AdditionalColumn extends AbstractJIPipeParameterCollection {
+        private JIPipeExpressionParameter outputColumnName = new JIPipeExpressionParameter("\"Output\"");
+        private JIPipeExpressionParameter outputColumnValues = new JIPipeExpressionParameter("");
+
+        @SetJIPipeDocumentation(name = "Output column name")
+        @JIPipeParameter("name")
+        @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+        public JIPipeExpressionParameter getOutputColumnName() {
+            return outputColumnName;
+        }
+
+        @JIPipeParameter("name")
+        public void setOutputColumnName(JIPipeExpressionParameter outputColumnName) {
+            this.outputColumnName = outputColumnName;
+        }
+
+        @SetJIPipeDocumentation(name = "Output column values")
+        @JIPipeParameter("value")
+        @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+        @AddJIPipeExpressionParameterVariable(name = "Bin values", key = "values", description = "The list of values inside the bin")
+        public JIPipeExpressionParameter getOutputColumnValues() {
+            return outputColumnValues;
+        }
+
+        @JIPipeParameter("value")
+        public void setOutputColumnValues(JIPipeExpressionParameter outputColumnValues) {
+            this.outputColumnValues = outputColumnValues;
+        }
     }
 }
