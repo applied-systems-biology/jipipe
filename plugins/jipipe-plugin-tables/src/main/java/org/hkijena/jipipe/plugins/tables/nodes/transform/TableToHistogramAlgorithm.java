@@ -22,6 +22,7 @@ import gnu.trove.map.hash.TDoubleDoubleHashMap;
 import gnu.trove.map.hash.TDoubleIntHashMap;
 import gnu.trove.set.TDoubleSet;
 import gnu.trove.set.hash.TDoubleHashSet;
+import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -145,20 +146,25 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             nBins = (int) nBins_;
         }
 
+        progressInfo.log("Number of bins = " + nBins);
+
         // Determine the bins
         TDoubleList sortedUniqueFilteredInputColumnValues = new TDoubleArrayList(uniqueFilteredInputColumnValues);
         sortedUniqueFilteredInputColumnValues.sort();
         TDoubleSet usedSortedUniqueFilteredInputColumnValues = new TDoubleHashSet();
 
         List<TDoubleList> generatedBins = new ArrayList<>();
+        TODO IMPLEMENT HISTOGRAM BINS FROM HISTOGRAMDATASET
 
         {
             double minValue = sortedUniqueFilteredInputColumnValues.min();
             double maxValue = sortedUniqueFilteredInputColumnValues.max();
             double binWidth = (maxValue - minValue) / nBins;
+            
             double currentStart = minValue;
             double currentEnd = currentStart + binWidth;
             do {
+
                 TDoubleList values = new TDoubleArrayList();
                 for (int i = 0; i < sortedUniqueFilteredInputColumnValues.size(); i++) {
                     double value = sortedUniqueFilteredInputColumnValues.get(i);
@@ -172,6 +178,7 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 }
                 currentStart += binWidth;
                 currentEnd += binWidth;
+                System.out.println(currentStart + ",  " + currentEnd + " , " + maxValue);
             }
             while (currentEnd <= maxValue && binWidth > 0);
         }
