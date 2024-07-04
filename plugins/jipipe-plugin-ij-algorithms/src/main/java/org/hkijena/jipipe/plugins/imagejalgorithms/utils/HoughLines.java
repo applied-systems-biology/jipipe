@@ -26,13 +26,13 @@ import java.util.Vector;
  */
 public class HoughLines {
     // The size of the neighbourhood in which to search for other local maxima
-    final int neighbourhoodSize = 4;
+    final int neighbourhoodSize;
 
     // How many discrete values of theta shall we check?
-    final int maxTheta = 180;
+    final int maxTheta;
 
     // Using maxTheta, work out the step
-    final double thetaStep = Math.PI / maxTheta;
+    final double thetaStep;
 
     // the width and height of the image
     protected int width, height;
@@ -56,7 +56,10 @@ public class HoughLines {
     private double[] sinCache;
     private double[] cosCache;
 
-    public HoughLines() {
+    public HoughLines(int neighbourhoodSize, int maxTheta) {
+        this.neighbourhoodSize = neighbourhoodSize;
+        this.maxTheta = maxTheta;
+        this.thetaStep = Math.PI / maxTheta;
     }
 
     /**

@@ -48,7 +48,8 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import java.util.HashMap;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "Detect lines 2D (Hough)", description = "Finds lines within the image via a Hough lines transformation. " + "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+@SetJIPipeDocumentation(name = "Detect lines 2D (Hough)", description = "Finds lines within the image via a Hough lines transformation. " + "If higher-dimensional data is provided, the filter is applied to each 2D slice. " +
+        "Please note that this node will not find line segments, but finds global linear structures.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Binary")
 @AddJIPipeCitation("Based on code by David Chatting, https://github.com/davidchatting/hough_lines/blob/master/HoughTransform.java")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Mask", description = "Mask that contains the segmented edges. ", create = true)
@@ -60,6 +61,8 @@ public class LinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorit
 
     private OptionalIntegerParameter selectTopN = new OptionalIntegerParameter(true, 10);
     private int accumulatorThreshold = 0;
+    private int neighborhoodSize = 4;
+    private int maxTheta = 180;
 
     private OptionalFloatParameter pixelThreshold = new OptionalFloatParameter(true, 0f);
 
@@ -75,6 +78,8 @@ public class LinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.accumulatorThreshold = other.accumulatorThreshold;
         this.roiNameExpression = new JIPipeExpressionParameter(other.roiNameExpression);
         this.pixelThreshold = new OptionalFloatParameter(other.pixelThreshold);
+        this.neighborhoodSize = other.neighborhoodSize;
+        this.maxTheta = other.maxTheta;
     }
 
     @Override
@@ -100,7 +105,7 @@ public class LinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         Map<ImageSliceIndex, ImageProcessor> outputAccumulatorSlices = new HashMap<>();
 
         ImageJUtils.forEachIndexedZCTSlice(inputMask, (ip, index) -> {
-            HoughLines houghLines = new HoughLines();
+            HoughLines houghLines = new HoughLines(neighborhoodSize, maxTheta);
             houghLines.initialise(ip.getWidth(), ip.getHeight());
             houghLines.addPoints(ip, pixelThreshold.isEnabled(), pixelThreshold.getContent());
             ROIListData localROI = new ROIListData();
@@ -178,6 +183,28 @@ public class LinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         iterationStep.addOutputData("Mask", new ImagePlusGreyscaleMaskData(outputMask), progressInfo);
         iterationStep.addOutputData("Accumulator", new ImagePlusGreyscaleData(outputAccumulator), progressInfo);
         iterationStep.addOutputData("Results", outputTable, progressInfo);
+    }
+
+    @SetJIPipeDocumentation(name = "Neighborhood size", description = "The size of the neighbourhood in which to search for other local maxima")
+    @JIPipeParameter("neighborhood-size")
+    public int getNeighborhoodSize() {
+        return neighborhoodSize;
+    }
+
+    @JIPipeParameter("neighborhood-size")
+    public void setNeighborhoodSize(int neighborhoodSize) {
+        this.neighborhoodSize = neighborhoodSize;
+    }
+
+    @SetJIPipeDocumentation(name = "Theta step count", description = "The number of thetas to check (the step size is automatically determined as PI/step_count)")
+    @JIPipeParameter("max-theta")
+    public int getMaxTheta() {
+        return maxTheta;
+    }
+
+    @JIPipeParameter("max-theta")
+    public void setMaxTheta(int maxTheta) {
+        this.maxTheta = maxTheta;
     }
 
     @SetJIPipeDocumentation(name = "Select top N lines", description = "If enabled, only the top N lines according to their scores are selected.")
