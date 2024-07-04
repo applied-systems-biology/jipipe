@@ -103,13 +103,15 @@ public class REnvironment extends JIPipeArtifactEnvironment {
     @Override
     public void applyConfigurationFromArtifact(JIPipeLocalArtifact artifact, JIPipeProgressInfo progressInfo) {
         setArguments(new JIPipeExpressionParameter("ARRAY(script_file)"));
-        Path binaryDir = artifact.getLocalPath().resolve("r").resolve("bin");
+
         if (SystemUtils.IS_OS_WINDOWS) {
+            Path binaryDir = artifact.getLocalPath().resolve("r").resolve("bin");
             setRExecutablePath(binaryDir.resolve("R.exe"));
             setRScriptExecutablePath(binaryDir.resolve("Rscript.exe"));
         } else {
-            setRExecutablePath(binaryDir.resolve("R"));
-            setRScriptExecutablePath(binaryDir.resolve("Rscript"));
+            Path binaryDir = artifact.getLocalPath().resolve("r");
+            setRExecutablePath(binaryDir.resolve("r"));
+            setRScriptExecutablePath(binaryDir.resolve("r"));
 
             // Do chmod +x for all executables
             PathUtils.makeAllUnixExecutable(binaryDir, progressInfo);
