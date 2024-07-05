@@ -25,6 +25,7 @@ import gnu.trove.set.hash.TDoubleHashSet;
 import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
@@ -49,10 +50,13 @@ import org.hkijena.jipipe.plugins.tables.parameters.enums.TableColumnGeneratorPa
 
 import java.util.*;
 
-@SetJIPipeDocumentation(name = "Table column to histogram", description = "Generates a histogram of table column values. Also supports weighting the values via an additional column.")
+@SetJIPipeDocumentation(name = "Table column to histogram", description = "Deprecated. Replace with a new node with the same name. " +
+        "Generates a histogram of table column values. Also supports weighting the values via an additional column.")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Transform")
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
+@LabelAsJIPipeHidden
+@Deprecated
 public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private TableColumnSourceExpressionParameter inputColumn = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"Column name\"");
     private TableColumnSourceExpressionParameter weightColumn = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.Generate, "1");
@@ -154,7 +158,6 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         TDoubleSet usedSortedUniqueFilteredInputColumnValues = new TDoubleHashSet();
 
         List<TDoubleList> generatedBins = new ArrayList<>();
-        TODO IMPLEMENT HISTOGRAM BINS FROM HISTOGRAMDATASET
 
         {
             double minValue = sortedUniqueFilteredInputColumnValues.min();

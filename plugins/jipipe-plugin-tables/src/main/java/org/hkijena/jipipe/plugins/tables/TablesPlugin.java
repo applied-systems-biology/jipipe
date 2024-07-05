@@ -48,10 +48,7 @@ import org.hkijena.jipipe.plugins.tables.nodes.rows.SortTableRowsAlgorithm;
 import org.hkijena.jipipe.plugins.tables.nodes.split.SplitTableByColumnsAlgorithm;
 import org.hkijena.jipipe.plugins.tables.nodes.split.SplitTableIntoColumnsAlgorithm;
 import org.hkijena.jipipe.plugins.tables.nodes.split.SplitTableIntoRowsAlgorithm;
-import org.hkijena.jipipe.plugins.tables.nodes.transform.ApplyExpressionPerLabelAlgorithm;
-import org.hkijena.jipipe.plugins.tables.nodes.transform.MeltTableAlgorithm;
-import org.hkijena.jipipe.plugins.tables.nodes.transform.TableToHistogramAlgorithm;
-import org.hkijena.jipipe.plugins.tables.nodes.transform.UnMeltTableAlgorithm;
+import org.hkijena.jipipe.plugins.tables.nodes.transform.*;
 import org.hkijena.jipipe.plugins.tables.operations.converting.*;
 import org.hkijena.jipipe.plugins.tables.operations.integrating.*;
 import org.hkijena.jipipe.plugins.tables.parameters.ResultsTableDataDesktopParameterEditorUI;
@@ -212,6 +209,7 @@ public class TablesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("table-add-missing-rows-in-series", AddMissingRowsInSeriesAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-sort-ascending.png"));
         registerNodeType("table-convert-to-histogram-key-value", ApplyExpressionPerLabelAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
         registerNodeType("table-convert-to-histogram", TableToHistogramAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
+        registerNodeType("table-convert-to-histogram-2", TableToHistogram2Algorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
     }
 
     private void registerParameters() {
