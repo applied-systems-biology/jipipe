@@ -130,7 +130,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
      * @return if the algorithm can automatically apply pass-through
      */
     protected boolean canAutoPassThrough() {
-        return getInputSlots().size() <= 1 && getOutputSlots().size() <= 1 && (getInputSlots().isEmpty() || getOutputSlots().isEmpty() ||
+        return getDataInputSlots().size() <= 1 && getOutputSlots().size() <= 1 && (getDataInputSlots().isEmpty() || getOutputSlots().isEmpty() ||
                 JIPipe.getDataTypes().isConvertible(getFirstInputSlot().getAcceptedDataType(), getFirstOutputSlot().getAcceptedDataType()));
 
     }
