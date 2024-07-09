@@ -34,7 +34,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.BooleanParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
 
-@SetJIPipeDocumentation(name = "Filter labels", description = "Allows to keep only a specific set of labels.")
+@SetJIPipeDocumentation(name = "Filter labels by id", description = "Allows to keep only a specific set of labels.")
 @ConfigureJIPipeNode(menuPath = "Labels\nFilter", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Output", create = true)

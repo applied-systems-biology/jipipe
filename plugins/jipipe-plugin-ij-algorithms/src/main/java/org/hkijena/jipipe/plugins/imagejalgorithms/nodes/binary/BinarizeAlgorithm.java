@@ -13,6 +13,9 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.binary;
 
+import ij.ImagePlus;
+import ij.process.ByteProcessor;
+import ij.process.ShortProcessor;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -25,12 +28,14 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.threshold.ManualThreshold8U2DAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.ranges.IntNumberRangeParameter;
 
 @SetJIPipeDocumentation(name = "Binarize", description = "Converts a greyscale image into a binary image. All pixels with a value larger than zero are set to 255.")
-@ConfigureJIPipeNode(menuPath = "Binary", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, name = "Input", create = true)
+@ConfigureJIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nBinary", aliasName = "Convert to Mask")
 public class BinarizeAlgorithm extends JIPipeSimpleIteratingAlgorithm {
@@ -56,7 +61,7 @@ public class BinarizeAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.invert = other.invert;
     }
 
-    @SetJIPipeDocumentation(name = "Invert", description = "If ")
+    @SetJIPipeDocumentation(name = "Invert", description = "If enabled, invert the output")
     public boolean isInvert() {
         return invert;
     }
@@ -67,13 +72,21 @@ public class BinarizeAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ManualThreshold8U2DAlgorithm algorithm = JIPipe.createNode(ManualThreshold8U2DAlgorithm.class);
-        if (!invert)
-            algorithm.setThreshold(new IntNumberRangeParameter(1, 256));
-        else
-            algorithm.setThreshold(new IntNumberRangeParameter(256, 1));
-        algorithm.getFirstInputSlot().addData(iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class, progressInfo), progressInfo);
-        algorithm.run(runContext, progressInfo);
-        iterationStep.addOutputData(getFirstOutputSlot(), algorithm.getFirstOutputSlot().getData(0, ImagePlusGreyscaleMaskData.class, progressInfo), progressInfo);
+        ImagePlus inputImg = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
+        ImagePlus outputImg = ImageJUtils.generateForEachIndexedZCTSlice(inputImg, (ip, index) -> {
+            ByteProcessor output = new ByteProcessor(ip.getWidth(), ip.getHeight());
+            byte[] outputPixels = (byte[]) output.getPixels();
+            for (int i = 0; i < ip.getPixelCount(); i++) {
+                float v = ip.getf(i);
+                if(invert) {
+                    outputPixels[i] = (byte) ((v <= 0) ? 255 : 0);
+                }
+                else {
+                    outputPixels[i] = (byte) ((v > 0) ? 255 : 0);
+                }
+            }
+            return output;
+        }, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(outputImg), progressInfo);
     }
 }
