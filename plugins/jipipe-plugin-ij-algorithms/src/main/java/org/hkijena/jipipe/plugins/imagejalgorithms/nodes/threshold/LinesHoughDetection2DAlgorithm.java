@@ -146,7 +146,7 @@ public class LinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorit
 
             // Generate mask
             ImagePlus sliceMask = localROI.toMask(ip.getWidth(), ip.getHeight(), true, false, 1);
-            outputAccumulatorSlices.put(index, sliceMask.getProcessor());
+            outputMaskSlices.put(index, sliceMask.getProcessor());
 
             // Output the ROI
             for (Roi roi : localROI) {
