@@ -13,16 +13,21 @@
 
 package org.hkijena.jipipe.plugins.tables.operations.integrating;
 
-import org.hkijena.jipipe.plugins.tables.IntegratingColumnOperation;
+import org.apache.commons.math3.stat.descriptive.moment.Variance;
+import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
 import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
 
 /**
- * Implements calculating the number of rows
+ * Implements calculating the variance
  */
-public class StatisticsCountIntegratingColumnOperation implements IntegratingColumnOperation {
+public class StatisticsVarianceSummarizingColumnOperation implements SummarizingColumnOperation {
+
+    private static final Variance variance = new Variance();
+
     @Override
     public TableColumn apply(TableColumn column) {
-        return new DoubleArrayTableColumn(new double[]{column.getRows()}, column.getLabel());
+        double result = variance.evaluate(column.getDataAsDouble(column.getRows()));
+        return new DoubleArrayTableColumn(new double[]{result}, column.getLabel());
     }
 }

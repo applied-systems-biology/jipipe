@@ -48,7 +48,7 @@ import org.hkijena.jipipe.api.data.thumbnails.JIPipeTextThumbnailData;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.tables.ConvertingColumnOperation;
-import org.hkijena.jipipe.plugins.tables.IntegratingColumnOperation;
+import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
 import org.hkijena.jipipe.plugins.tables.TableColumnReference;
 import org.hkijena.jipipe.plugins.tables.display.CachedTableViewerWindow;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -1628,7 +1628,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
     public static class IntegratingColumnOperationEntry {
         private String sourceColumnName;
         private String targetColumnName;
-        private IntegratingColumnOperation operation;
+        private SummarizingColumnOperation operation;
 
         /**
          * Creates a new entry
@@ -1637,7 +1637,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
          * @param targetColumnName the target column
          * @param operation        the operation
          */
-        public IntegratingColumnOperationEntry(String sourceColumnName, String targetColumnName, IntegratingColumnOperation operation) {
+        public IntegratingColumnOperationEntry(String sourceColumnName, String targetColumnName, SummarizingColumnOperation operation) {
             this.sourceColumnName = sourceColumnName;
             this.targetColumnName = targetColumnName;
             this.operation = operation;
@@ -1651,7 +1651,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
             return targetColumnName;
         }
 
-        public IntegratingColumnOperation getOperation() {
+        public SummarizingColumnOperation getOperation() {
             return operation;
         }
     }

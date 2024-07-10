@@ -13,21 +13,20 @@
 
 package org.hkijena.jipipe.plugins.tables.operations.integrating;
 
-import org.apache.commons.math3.stat.descriptive.rank.Median;
-import org.hkijena.jipipe.plugins.tables.IntegratingColumnOperation;
+import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
 import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
 
 /**
- * Implements calculating the median value
+ * Implements counting non-zero elements
  */
-public class StatisticsMedianIntegratingColumnOperation implements IntegratingColumnOperation {
-
-    private static final Median median = new Median();
-
+public class StatisticsCountNonZeroSummarizingColumnOperation implements SummarizingColumnOperation {
     @Override
     public TableColumn apply(TableColumn column) {
-        double medianResult = median.evaluate(column.getDataAsDouble(column.getRows()));
-        return new DoubleArrayTableColumn(new double[]{medianResult}, column.getLabel());
+        double sum = 0;
+        for (int i = 0; i < column.getRows(); i++) {
+            sum += column.getRowAsDouble(i) != 0 ? 1 : 0;
+        }
+        return new DoubleArrayTableColumn(new double[]{sum}, column.getLabel());
     }
 }

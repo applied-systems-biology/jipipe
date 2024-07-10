@@ -15,14 +15,14 @@ package org.hkijena.jipipe.plugins.tables.operations.integrating;
 
 import gnu.trove.map.TDoubleIntMap;
 import gnu.trove.map.hash.TDoubleIntHashMap;
-import org.hkijena.jipipe.plugins.tables.IntegratingColumnOperation;
+import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
 import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
 
 /**
  * Implements calculating the mode value (most common value)
  */
-public class StatisticsModeIntegratingColumnOperation implements IntegratingColumnOperation {
+public class StatisticsModeSummarizingColumnOperation implements SummarizingColumnOperation {
 
     @Override
     public TableColumn apply(TableColumn column) {

@@ -13,14 +13,14 @@
 
 package org.hkijena.jipipe.plugins.tables.operations.integrating;
 
-import org.hkijena.jipipe.plugins.tables.IntegratingColumnOperation;
+import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
 import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
 
 /**
  * Implements calculating the cumulative sum Y_0=X_0; Y_i=Y_{i-1}+X_i
  */
-public class StatisticsCumulativeSumColumnOperation implements IntegratingColumnOperation {
+public class StatisticsCumulativeSumColumnOperation implements SummarizingColumnOperation {
     @Override
     public TableColumn apply(TableColumn column) {
         double sum = 0;

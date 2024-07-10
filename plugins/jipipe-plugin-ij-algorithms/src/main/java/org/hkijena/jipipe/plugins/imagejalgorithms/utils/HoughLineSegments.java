@@ -13,14 +13,21 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.utils;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.primitives.Doubles;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
+import org.apache.commons.math3.stat.descriptive.moment.Variance;
+import org.apache.commons.math3.stat.regression.SimpleRegression;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.jgrapht.alg.connectivity.ConnectivityInspector;
+import org.jgrapht.alg.interfaces.SpanningTreeAlgorithm;
+import org.jgrapht.alg.spanning.PrimMinimumSpanningTree;
+import org.jgrapht.graph.DefaultUndirectedWeightedGraph;
+import org.jgrapht.graph.DefaultWeightedEdge;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.*;
 import java.util.List;
 
 /**
@@ -59,13 +66,7 @@ public class HoughLineSegments {
         }
     }
 
-    public static List<Line> findLineSegments(ImageProcessor bw, int numPeaks, double peakThreshold, int[] neighborhoodSize, double fillGap, double minLength, List<Double> thetas) {
-        HoughResult houghResult = hough(bw, thetas);
-        List<Point> peaks = houghPeaks(houghResult.getH(), numPeaks, peakThreshold, neighborhoodSize);
-        return houghLines(bw, houghResult.getThetas(), houghResult.getRhos(), peaks, fillGap, minLength);
-    }
-
-    public static List<Line> houghLines(ImageProcessor BW, List<Double> thetas, List<Double> rhos, List<Point> peaks, double fillGap, double minLength) {
+    public static List<Line> houghLines(ImageProcessor BW, List<Double> thetas, List<Double> rhos, List<Point> peaks, double fillGap, double minLength, boolean fastMode, JIPipeProgressInfo progressInfo) {
         if (fillGap <= 0) {
             throw new IllegalArgumentException("fillGap must be a positive scalar number");
         }
@@ -73,12 +74,16 @@ public class HoughLineSegments {
             throw new IllegalArgumentException("minlength must be a positive scalar number");
         }
 
+        progressInfo.log("Finding segments, given " + peaks.size() + " peaks");
+
         List<Line> lines = new ArrayList<>();
 
         // Process each given Hough peak individually
         final int width = BW.getWidth();
         final int height = BW.getHeight();
-        for (Point peak : peaks) {
+        for (int j = 0; j < peaks.size(); j++) {
+            JIPipeProgressInfo peakProgress = progressInfo.resolve("Peak", j, peaks.size());
+            Point peak = peaks.get(j);
             int rho_p_idx = peak.y;
             int theta_p_idx = peak.x;
             double rho_p = rhos.get(rho_p_idx);
@@ -103,47 +108,151 @@ public class HoughLineSegments {
             }
 
             if (peakPixels.isEmpty()) {
+                peakProgress.log("Peak has no associated pixels!");
                 continue;
             }
 
-            // Order pixels
-            if (Math.abs(cosTheta) > Math.abs(sinTheta)) {
-                peakPixels.sort(Comparator.comparingInt(p -> p.x));
-            } else {
-                peakPixels.sort(Comparator.comparingInt(p -> p.y));
+            if(fastMode) {
+                extractLineSegmentsFast(fillGap, minLength, cosTheta, sinTheta, peakPixels, lines, theta_p, rho_p, peakProgress);
             }
-
-            // Split line into segments based on fillGap
-            List<Point> segment = new ArrayList<>();
-            segment.add(peakPixels.get(0));
-
-            for (int i = 1; i < peakPixels.size(); i++) {
-                Point prev = peakPixels.get(i - 1);
-                Point curr = peakPixels.get(i);
-
-                if (Math.hypot(curr.x - prev.x, curr.y - prev.y) > fillGap) {
-                    if (segment.size() > 1) {
-                        addLineSegment(lines, segment, minLength, theta_p, rho_p);
-                    }
-                    segment = new ArrayList<>();
-                }
-                segment.add(curr);
-            }
-            if (segment.size() > 1) {
-                addLineSegment(lines, segment, minLength, theta_p, rho_p);
+            else {
+                extractLineSegmentsPrecise(fillGap, minLength, peakPixels, lines, theta_p, rho_p, peakProgress );
             }
         }
 
         return lines;
     }
 
-    private static void addLineSegment(List<Line> lines, List<Point> segment, double minLength, double theta, double rho) {
+    private static void extractLineSegmentsPrecise(double fillGap, double minLength, List<Point> peakPixels, List<Line> lines, double theta_p, double rho_p, JIPipeProgressInfo peakProgress) {
+        peakProgress.log("Building graph (" + peakPixels.size() + " vertices, " + (peakPixels.size() * peakPixels.size() - peakPixels.size()) + " edges)");
+        DefaultUndirectedWeightedGraph<Point, DefaultWeightedEdge> graph = new DefaultUndirectedWeightedGraph<>(DefaultWeightedEdge.class);
+        for (Point peakPixel : peakPixels) {
+            graph.addVertex(peakPixel);
+        }
+        for (int i = 0; i < peakPixels.size(); i++) {
+            Point p1 = peakPixels.get(i);
+            for (int j = i + 1; j < peakPixels.size(); j++) {
+                Point p2 = peakPixels.get(j);
+                if(i != j) {
+                    DefaultWeightedEdge edge = graph.addEdge(p1, p2);
+                    graph.setEdgeWeight(edge, p1.distance(p2));
+                }
+                else {
+                    assert false;
+                }
+            }
+        }
+
+        peakProgress.log("Calculating MST");
+        PrimMinimumSpanningTree<Point, DefaultWeightedEdge> minimumSpanningTree = new PrimMinimumSpanningTree<>(graph);
+        SpanningTreeAlgorithm.SpanningTree<DefaultWeightedEdge> spanningTree = minimumSpanningTree.getSpanningTree();
+
+        peakProgress.log("Filter edges");
+        for (DefaultWeightedEdge edge : ImmutableList.copyOf(graph.edgeSet())) {
+            if(graph.getEdgeWeight(edge) > fillGap || !spanningTree.getEdges().contains(edge)) {
+                graph.removeEdge(edge);
+            }
+        }
+
+        peakProgress.log("Finding components");
+        ConnectivityInspector<Point, DefaultWeightedEdge> connectivityInspector = new ConnectivityInspector<>(graph);
+        List<Set<Point>> connectedSets = connectivityInspector.connectedSets();
+        for (int i = 0; i < connectedSets.size(); i++) {
+            List<Point> points = new ArrayList<>(connectedSets.get(i));
+            if (points.size() <= 1) {
+                peakProgress.log("Component " + i + " not enough vertices");
+            } else if (points.size() == 2) {
+                // Trivial line
+                peakProgress.log("Component " + i + " is trivial line");
+                addLineSegment(lines, points, minLength, theta_p, rho_p, peakProgress);
+            }
+            else {
+                peakProgress.log("Component " + i + " has " + points.size() + " vertices");
+                // Calculate variance in x values to detect vertical lines
+                Variance variance = new Variance();
+                double[] xValues = points.stream().mapToDouble(Point::getX).toArray();
+                double xVariance = variance.evaluate(xValues);
+
+                if (xVariance < 1e-10) { // Adjust threshold as needed
+                    // Handle vertical line case
+                    int x = points.get(0).x;
+                    int minY = points.stream().mapToInt(p -> p.y).min().getAsInt();
+                    int maxY = points.stream().mapToInt(p -> p.y).max().getAsInt();
+
+                    Point startPoint = new Point(x, minY);
+                    Point endPoint = new Point(x, maxY);
+
+                    addLineSegment(lines, Arrays.asList(startPoint, endPoint), minLength, theta_p, rho_p, peakProgress);
+
+                } else {
+                    // Handle general case using linear regression
+                    SimpleRegression regression = new SimpleRegression();
+                    for (Point point : points) {
+                        regression.addData(point.getX(), point.getY());
+                    }
+
+                    double slope = regression.getSlope();
+                    double intercept = regression.getIntercept();
+
+                    int minX = points.stream().mapToInt(p -> p.x).min().getAsInt();
+                    int maxX = points.stream().mapToInt(p -> p.x).max().getAsInt();
+
+                    Point startPoint = new Point(minX, (int) Math.round(slope * minX + intercept));
+                    Point endPoint = new Point(maxX, (int) Math.round(slope * maxX + intercept));
+
+                    addLineSegment(lines, Arrays.asList(startPoint, endPoint), minLength, theta_p, rho_p, peakProgress);
+                }
+            }
+        }
+
+    }
+
+    private static void extractLineSegmentsFast(double fillGap, double minLength, double cosTheta, double sinTheta, List<Point> peakPixels, List<Line> lines, double theta_p, double rho_p, JIPipeProgressInfo peakProgress) {
+        // Order pixels
+        if (Math.abs(cosTheta) > Math.abs(sinTheta)) {
+            // Line is more horizontal
+            peakPixels.sort(Comparator.comparingInt((Point p) -> p.x).thenComparingInt((Point p) -> p.y));
+        } else {
+            // Line is more vertical
+            peakPixels.sort(Comparator.comparingInt((Point p) -> p.y).thenComparingInt((Point p) -> p.x));
+        }
+
+        // Split line into segments based on fillGap
+        List<Point> segment = new ArrayList<>();
+        segment.add(peakPixels.get(0));
+
+        for (int i = 1; i < peakPixels.size(); i++) {
+            Point prev = peakPixels.get(i - 1);
+            Point curr = peakPixels.get(i);
+            double distance = prev.distance(curr);
+
+            if (distance > fillGap) {
+                if (segment.size() > 1) {
+                    peakProgress.log("Distance threshold reached (" + distance + " > " + fillGap + "). Adding new line segment (" + segment.size() + " pixels)");
+                    addLineSegment(lines, segment, minLength, theta_p, rho_p, peakProgress);
+                } else {
+                    peakProgress.log("Distance threshold reached (" + distance + " > " + fillGap + "). Not enough pixels!");
+                }
+                segment.clear();
+            }
+            segment.add(curr);
+        }
+        if (segment.size() > 1) {
+            addLineSegment(lines, segment, minLength, theta_p, rho_p, peakProgress);
+        }
+    }
+
+    private static void addLineSegment(List<Line> lines, List<Point> segment, double minLength, double theta, double rho, JIPipeProgressInfo peakProgress) {
         Point first = segment.get(0);
         Point last = segment.get(segment.size() - 1);
-        double length = Math.hypot(last.x - first.x, last.y - first.y);
+        double length = first.distance(last);
 
         if (length >= minLength) {
+            peakProgress.log("Successfully detected line segment " + first + " -> " + last + " with length=" + length);
             lines.add(new Line(first, last, theta, rho));
+        }
+        else {
+            peakProgress.log("Rejected line segment " + first + " -> " + last + " with length=" + length + " < " + minLength);
         }
     }
 

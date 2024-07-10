@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.tables.operations.integrating;
 
-import org.hkijena.jipipe.plugins.tables.IntegratingColumnOperation;
+import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
 import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumn;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
@@ -25,7 +25,7 @@ import java.util.Set;
 /**
  * Implements calculating the sum
  */
-public class MergeToJsonIntegratingColumnOperation implements IntegratingColumnOperation {
+public class MergeToJsonSummarizingColumnOperation implements SummarizingColumnOperation {
     @Override
     public TableColumn apply(TableColumn column) {
         Set<Object> values = new HashSet<>();

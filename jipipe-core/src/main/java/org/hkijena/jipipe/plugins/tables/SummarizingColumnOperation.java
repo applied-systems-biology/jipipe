@@ -16,5 +16,5 @@ package org.hkijena.jipipe.plugins.tables;
 /**
  * A {@link ColumnOperation} that creates an integrated output (meaning that the output only contains one entry)
  */
-public interface IntegratingColumnOperation extends ColumnOperation {
+public interface SummarizingColumnOperation extends ColumnOperation {
 }

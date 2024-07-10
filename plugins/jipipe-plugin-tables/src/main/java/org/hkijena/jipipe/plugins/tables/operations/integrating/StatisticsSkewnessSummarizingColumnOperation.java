@@ -13,20 +13,21 @@
 
 package org.hkijena.jipipe.plugins.tables.operations.integrating;
 
-import org.hkijena.jipipe.plugins.tables.IntegratingColumnOperation;
+import org.apache.commons.math3.stat.descriptive.moment.Skewness;
+import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
 import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
 
 /**
- * Implements calculating the min value
+ * Implements calculating the skewness
  */
-public class StatisticsMinIntegratingColumnOperation implements IntegratingColumnOperation {
+public class StatisticsSkewnessSummarizingColumnOperation implements SummarizingColumnOperation {
+
+    private static final Skewness skewness = new Skewness();
+
     @Override
     public TableColumn apply(TableColumn column) {
-        double min = Double.POSITIVE_INFINITY;
-        for (int i = 0; i < column.getRows(); i++) {
-            min = Math.min(column.getRowAsDouble(i), min);
-        }
-        return new DoubleArrayTableColumn(new double[]{min}, column.getLabel());
+        double result = skewness.evaluate(column.getDataAsDouble(column.getRows()));
+        return new DoubleArrayTableColumn(new double[]{result}, column.getLabel());
     }
 }

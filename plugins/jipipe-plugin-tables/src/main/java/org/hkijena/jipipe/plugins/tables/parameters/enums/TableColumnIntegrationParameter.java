@@ -20,7 +20,7 @@ import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicEnumParameter;
-import org.hkijena.jipipe.plugins.tables.IntegratingColumnOperation;
+import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Enum-like parameter that allows the selection of a {@link IntegratingColumnOperation}.
+ * Enum-like parameter that allows the selection of a {@link SummarizingColumnOperation}.
  * Contains JIPipeTableRegistry.ColumnOperationEntry
  */
 public class TableColumnIntegrationParameter extends DynamicEnumParameter<Object> {
@@ -38,7 +38,7 @@ public class TableColumnIntegrationParameter extends DynamicEnumParameter<Object
      * Creates a new instance
      */
     public TableColumnIntegrationParameter() {
-        List<Object> allowedValues = JIPipe.getTableOperations().getTableColumnOperationsOfType(IntegratingColumnOperation.class).values()
+        List<Object> allowedValues = JIPipe.getTableOperations().getTableColumnOperationsOfType(SummarizingColumnOperation.class).values()
                 .stream().sorted(Comparator.comparing(JIPipeExpressionRegistry.ColumnOperationEntry::getName)).collect(Collectors.toList());
         setAllowedValues(allowedValues);
         setValue(allowedValues.get(0));

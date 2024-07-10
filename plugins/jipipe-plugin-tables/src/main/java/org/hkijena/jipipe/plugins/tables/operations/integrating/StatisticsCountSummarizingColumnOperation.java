@@ -13,21 +13,16 @@
 
 package org.hkijena.jipipe.plugins.tables.operations.integrating;
 
-import org.apache.commons.math3.stat.descriptive.moment.Skewness;
-import org.hkijena.jipipe.plugins.tables.IntegratingColumnOperation;
+import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
 import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
 
 /**
- * Implements calculating the skewness
+ * Implements calculating the number of rows
  */
-public class StatisticsSkewnessIntegratingColumnOperation implements IntegratingColumnOperation {
-
-    private static final Skewness skewness = new Skewness();
-
+public class StatisticsCountSummarizingColumnOperation implements SummarizingColumnOperation {
     @Override
     public TableColumn apply(TableColumn column) {
-        double result = skewness.evaluate(column.getDataAsDouble(column.getRows()));
-        return new DoubleArrayTableColumn(new double[]{result}, column.getLabel());
+        return new DoubleArrayTableColumn(new double[]{column.getRows()}, column.getLabel());
     }
 }

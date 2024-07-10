@@ -13,20 +13,21 @@
 
 package org.hkijena.jipipe.plugins.tables.operations.integrating;
 
-import org.hkijena.jipipe.plugins.tables.IntegratingColumnOperation;
+import org.apache.commons.math3.stat.descriptive.rank.Median;
+import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
 import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
 
 /**
- * Implements calculating the max value
+ * Implements calculating the median value
  */
-public class StatisticsMaxIntegratingColumnOperation implements IntegratingColumnOperation {
+public class StatisticsMedianSummarizingColumnOperation implements SummarizingColumnOperation {
+
+    private static final Median median = new Median();
+
     @Override
     public TableColumn apply(TableColumn column) {
-        double max = Double.NEGATIVE_INFINITY;
-        for (int i = 0; i < column.getRows(); i++) {
-            max = Math.max(column.getRowAsDouble(i), max);
-        }
-        return new DoubleArrayTableColumn(new double[]{max}, column.getLabel());
+        double medianResult = median.evaluate(column.getDataAsDouble(column.getRows()));
+        return new DoubleArrayTableColumn(new double[]{medianResult}, column.getLabel());
     }
 }

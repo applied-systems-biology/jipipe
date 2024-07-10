@@ -17,7 +17,7 @@ import org.hkijena.jipipe.plugins.expressions.ExpressionFunction;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.ParameterInfo;
 import org.hkijena.jipipe.plugins.tables.ColumnOperation;
-import org.hkijena.jipipe.plugins.tables.IntegratingColumnOperation;
+import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
 import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumn;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
@@ -29,14 +29,14 @@ import java.util.List;
 /**
  * An adapter from {@link org.hkijena.jipipe.plugins.tables.ColumnOperation} to {@link org.hkijena.jipipe.plugins.expressions.ExpressionFunction}.
  * This adapter determines the number of arguments based on the ColumnOperation type:
- * {@link org.hkijena.jipipe.plugins.tables.IntegratingColumnOperation} will have infinite inputs
+ * {@link SummarizingColumnOperation} will have infinite inputs
  * All other column operations will have one parameter. Please note that the operation should only create exactly one output.
  */
 public class ColumnOperationAdapterFunction extends ExpressionFunction {
     private final ColumnOperation columnOperation;
 
     public ColumnOperationAdapterFunction(ColumnOperation columnOperation, String name) {
-        super(name, 1, columnOperation instanceof IntegratingColumnOperation ? Integer.MAX_VALUE : 1);
+        super(name, 1, columnOperation instanceof SummarizingColumnOperation ? Integer.MAX_VALUE : 1);
         this.columnOperation = columnOperation;
     }
 

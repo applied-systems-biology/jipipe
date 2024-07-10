@@ -15,7 +15,7 @@ package org.hkijena.jipipe.desktop.app.tableeditor;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
-import org.hkijena.jipipe.plugins.tables.IntegratingColumnOperation;
+import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
@@ -59,7 +59,7 @@ public class JIPipeDesktopSummarizeTableColumnsDialogUI extends JDialog {
             operationJComboBox.addItem(new CategorizeColumnRole());
 
             for (JIPipeExpressionRegistry.ColumnOperationEntry entry :
-                    JIPipe.getTableOperations().getTableColumnOperationsOfType(IntegratingColumnOperation.class)
+                    JIPipe.getTableOperations().getTableColumnOperationsOfType(SummarizingColumnOperation.class)
                             .values().stream().sorted(Comparator.comparing(JIPipeExpressionRegistry.ColumnOperationEntry::getName)).collect(Collectors.toList())) {
                 operationJComboBox.addItem(entry);
             }
@@ -114,7 +114,7 @@ public class JIPipeDesktopSummarizeTableColumnsDialogUI extends JDialog {
                     JIPipeExpressionRegistry.ColumnOperationEntry operationEntry = (JIPipeExpressionRegistry.ColumnOperationEntry) value;
                     operations.add(new ResultsTableData.IntegratingColumnOperationEntry(entry.getKey(),
                             String.format("%s(%s)", operationEntry.getShortName(), entry.getKey()),
-                            (IntegratingColumnOperation) operationEntry.getOperation()));
+                            (SummarizingColumnOperation) operationEntry.getOperation()));
                 }
             }
 

@@ -13,20 +13,20 @@
 
 package org.hkijena.jipipe.plugins.tables.operations.integrating;
 
-import org.hkijena.jipipe.plugins.tables.IntegratingColumnOperation;
+import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
 import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
 
 /**
- * Implements calculating the average
+ * Implements calculating the min value
  */
-public class StatisticsAverageIntegratingColumnOperation implements IntegratingColumnOperation {
+public class StatisticsMinSummarizingColumnOperation implements SummarizingColumnOperation {
     @Override
     public TableColumn apply(TableColumn column) {
-        double sum = 0;
+        double min = Double.POSITIVE_INFINITY;
         for (int i = 0; i < column.getRows(); i++) {
-            sum += column.getRowAsDouble(i);
+            min = Math.min(column.getRowAsDouble(i), min);
         }
-        return new DoubleArrayTableColumn(new double[]{sum / column.getRows()}, column.getLabel());
+        return new DoubleArrayTableColumn(new double[]{min}, column.getLabel());
     }
 }

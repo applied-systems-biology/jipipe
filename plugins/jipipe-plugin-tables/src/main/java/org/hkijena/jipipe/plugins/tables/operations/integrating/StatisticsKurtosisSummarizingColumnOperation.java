@@ -14,14 +14,14 @@
 package org.hkijena.jipipe.plugins.tables.operations.integrating;
 
 import org.apache.commons.math3.stat.descriptive.moment.Kurtosis;
-import org.hkijena.jipipe.plugins.tables.IntegratingColumnOperation;
+import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
 import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
 
 /**
  * Implements calculating the kurtosis
  */
-public class StatisticsKurtosisIntegratingColumnOperation implements IntegratingColumnOperation {
+public class StatisticsKurtosisSummarizingColumnOperation implements SummarizingColumnOperation {
 
     private static final Kurtosis kurtosis = new Kurtosis();
 

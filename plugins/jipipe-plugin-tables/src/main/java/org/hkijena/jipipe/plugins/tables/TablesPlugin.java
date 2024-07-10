@@ -459,17 +459,17 @@ public class TablesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         // Integrating functions
         registerTableColumnOperationAndExpressionFunction("statistics-average",
-                new StatisticsAverageIntegratingColumnOperation(),
+                new StatisticsAverageSummarizingColumnOperation(),
                 "Average",
                 "avg",
                 "Calculates the average value of all numeric values. String values are converted to numbers or zero.");
         registerTableColumnOperationAndExpressionFunction("statistics-count",
-                new StatisticsCountIntegratingColumnOperation(),
+                new StatisticsCountSummarizingColumnOperation(),
                 "Count",
                 "count",
                 "Outputs the number of input rows.");
         registerTableColumnOperationAndExpressionFunction("statistics-count-non-zero",
-                new StatisticsCountNonZeroIntegratingColumnOperation(),
+                new StatisticsCountNonZeroSummarizingColumnOperation(),
                 "Count non-zero",
                 "countn0",
                 "Counts all values that are not zero. String values are converted to numbers or zero.");
@@ -479,47 +479,47 @@ public class TablesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "cumsum",
                 "Calculates the cumulative sum of the rows in their order.");
         registerTableColumnOperationAndExpressionFunction("statistics-geometric-mean",
-                new StatisticsGeometricMeanIntegratingColumnOperation(),
+                new StatisticsGeometricMeanSummarizingColumnOperation(),
                 "Geometric mean",
                 "geomean",
                 "Calculates the geometric mean of all numeric values. String values are converted to numbers or zero.");
         registerTableColumnOperationAndExpressionFunction("statistics-kurtosis",
-                new StatisticsKurtosisIntegratingColumnOperation(),
+                new StatisticsKurtosisSummarizingColumnOperation(),
                 "Kurtosis",
                 "kurt",
                 "Calculates the kurtosis of all numeric values. String values are converted to numbers or zero.");
         registerTableColumnOperationAndExpressionFunction("statistics-min",
-                new StatisticsMinIntegratingColumnOperation(),
+                new StatisticsMinSummarizingColumnOperation(),
                 "Minimum",
                 "min",
                 "Calculates the minimum of all numeric values. String values are converted to numbers or zero.");
         registerTableColumnOperationAndExpressionFunction("statistics-max",
-                new StatisticsMaxIntegratingColumnOperation(),
+                new StatisticsMaxSummarizingColumnOperation(),
                 "Maximum",
                 "max",
                 "Calculates the maximum of all numeric values. String values are converted to numbers or zero.");
         registerTableColumnOperationAndExpressionFunction("statistics-median",
-                new StatisticsMedianIntegratingColumnOperation(),
+                new StatisticsMedianSummarizingColumnOperation(),
                 "Median",
                 "median",
                 "Calculates the median of all numeric values. String values are converted to numbers or zero.");
         registerTableColumnOperationAndExpressionFunction("statistics-mode",
-                new StatisticsModeIntegratingColumnOperation(),
+                new StatisticsModeSummarizingColumnOperation(),
                 "Mode",
                 "mode",
                 "Calculates the mode of all numeric values. String values are converted to numbers or zero.");
         registerTableColumnOperationAndExpressionFunction("statistics-skewness",
-                new StatisticsSkewnessIntegratingColumnOperation(),
+                new StatisticsSkewnessSummarizingColumnOperation(),
                 "Skewness",
                 "skewness",
                 "Calculates the skewness of all numeric values. String values are converted to numbers or zero.");
         registerTableColumnOperationAndExpressionFunction("statistics-standard-deviation",
-                new StatisticsStandardDeviationIntegratingColumnOperation(),
+                new StatisticsStandardDeviationSummarizingColumnOperation(),
                 "Standard deviation",
                 "stdev",
                 "Calculates the standard deviation of all numeric values. String values are converted to numbers or zero.");
         registerTableColumnOperationAndExpressionFunction("statistics-variance",
-                new StatisticsVarianceIntegratingColumnOperation(),
+                new StatisticsVarianceSummarizingColumnOperation(),
                 "Variance",
                 "var",
                 "Calculates the variance of all numeric values. String values are converted to numbers or zero.");
@@ -529,22 +529,22 @@ public class TablesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "wsum",
                 "Calculates the weighted sum of all values. The weight is the row index (beginning with 1). String values are converted to numbers or zero.");
         registerTableColumnOperationAndExpressionFunction("statistics-sum",
-                new SumIntegratingColumnOperation(),
+                new SumSummarizingColumnOperation(),
                 "Sum",
                 "sum",
                 "Calculates the sum of all values. String values are converted to numbers or zero.");
         registerTableColumnOperationAndExpressionFunction("integrate-get-first",
-                new GetFirstIntegratingColumnOperation(),
+                new GetFirstSummarizingColumnOperation(),
                 "Get first",
                 "first",
                 "Gets the first item if there multiple rows");
         registerTableColumnOperationAndExpressionFunction("integrate-get-last",
-                new GetLastIntegratingColumnOperation(),
+                new GetLastSummarizingColumnOperation(),
                 "Get last",
                 "last",
                 "Gets the last item if there multiple rows");
         registerTableColumnOperationAndExpressionFunction("integrate-merge",
-                new MergeToJsonIntegratingColumnOperation(),
+                new MergeToJsonSummarizingColumnOperation(),
                 "Merge",
                 "merge",
                 "If there are multiple rows, merge them into a JSON string. Otherwise returns the value.");

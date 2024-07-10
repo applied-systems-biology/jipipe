@@ -13,20 +13,21 @@
 
 package org.hkijena.jipipe.plugins.tables.operations.integrating;
 
-import org.hkijena.jipipe.plugins.tables.IntegratingColumnOperation;
+import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
+import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
 import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
 
 /**
- * Implements counting non-zero elements
+ * Implements calculating the standard deviation
  */
-public class StatisticsCountNonZeroIntegratingColumnOperation implements IntegratingColumnOperation {
+public class StatisticsStandardDeviationSummarizingColumnOperation implements SummarizingColumnOperation {
+
+    private static final StandardDeviation standardDeviation = new StandardDeviation();
+
     @Override
     public TableColumn apply(TableColumn column) {
-        double sum = 0;
-        for (int i = 0; i < column.getRows(); i++) {
-            sum += column.getRowAsDouble(i) != 0 ? 1 : 0;
-        }
-        return new DoubleArrayTableColumn(new double[]{sum}, column.getLabel());
+        double result = standardDeviation.evaluate(column.getDataAsDouble(column.getRows()));
+        return new DoubleArrayTableColumn(new double[]{result}, column.getLabel());
     }
 }

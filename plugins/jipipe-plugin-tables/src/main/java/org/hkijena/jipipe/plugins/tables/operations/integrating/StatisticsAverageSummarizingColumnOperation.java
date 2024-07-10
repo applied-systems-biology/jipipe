@@ -13,21 +13,20 @@
 
 package org.hkijena.jipipe.plugins.tables.operations.integrating;
 
-import org.apache.commons.math3.stat.descriptive.moment.GeometricMean;
-import org.hkijena.jipipe.plugins.tables.IntegratingColumnOperation;
+import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
 import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
 
 /**
- * Implements calculating the geometric mean
+ * Implements calculating the average
  */
-public class StatisticsGeometricMeanIntegratingColumnOperation implements IntegratingColumnOperation {
-
-    private static final GeometricMean geometricMean = new GeometricMean();
-
+public class StatisticsAverageSummarizingColumnOperation implements SummarizingColumnOperation {
     @Override
     public TableColumn apply(TableColumn column) {
-        double result = geometricMean.evaluate(column.getDataAsDouble(column.getRows()));
-        return new DoubleArrayTableColumn(new double[]{result}, column.getLabel());
+        double sum = 0;
+        for (int i = 0; i < column.getRows(); i++) {
+            sum += column.getRowAsDouble(i);
+        }
+        return new DoubleArrayTableColumn(new double[]{sum / column.getRows()}, column.getLabel());
     }
 }

@@ -72,6 +72,7 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
     private double minLength = 40;
     private JIPipeExpressionParameter thetas = new JIPipeExpressionParameter("MAKE_SEQUENCE(-90, 90, 1)");
     private JIPipeExpressionParameter roiNameExpression = new JIPipeExpressionParameter("line_length");
+    private boolean fastSegmentDetection = false;
 
     public LineSegmentsHoughDetection2DAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -86,6 +87,7 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
         this.fillGap = other.fillGap;
         this.minLength = other.minLength;
         this.thetas = new JIPipeExpressionParameter(other.thetas);
+        this.fastSegmentDetection = other.fastSegmentDetection;
     }
 
     @Override
@@ -144,7 +146,7 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
         Map<ImageSliceIndex, ImageProcessor> outputAccumulatorSlices = new HashMap<>();
         ROIListData outputPeaks = new ROIListData();
 
-        ImageJUtils.forEachIndexedZCTSlice(inputMask, (ip, index) -> {
+        ImageJUtils.forEachIndexedZCTSliceWithProgress(inputMask, (ip, index, sliceProgress) -> {
 
             ImageProcessor bw = ip.duplicate();
             HoughLineSegments.HoughResult houghResult = HoughLineSegments.hough(bw, thetaAngles);
@@ -168,7 +170,7 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
             }
 
             // Generate line ROIs and table rows
-            List<HoughLineSegments.Line> lines = HoughLineSegments.houghLines(bw, houghResult.getThetas(), houghResult.getRhos(), peaks, fillGap, minLength);
+            List<HoughLineSegments.Line> lines = HoughLineSegments.houghLines(bw, houghResult.getThetas(), houghResult.getRhos(), peaks, fillGap, minLength, fastSegmentDetection, sliceProgress);
 
             ROIListData localROI = new ROIListData();
             for (HoughLineSegments.Line line : lines) {
@@ -329,5 +331,17 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
     @JIPipeParameter("thetas")
     public void setThetas(JIPipeExpressionParameter thetas) {
         this.thetas = thetas;
+    }
+
+    @SetJIPipeDocumentation(name = "Fast line segment detection", description = "If enabled, use the classical algorithm for line segment detection that first sorts all points and proceeds to iteratively build each segment. " +
+            "This algorithm may not always have the expected results for all line configurations. If disabled, use a more advanced algorithm based on graph components.")
+    @JIPipeParameter("fast-segment-detection")
+    public boolean isFastSegmentDetection() {
+        return fastSegmentDetection;
+    }
+
+    @JIPipeParameter("fast-segment-detection")
+    public void setFastSegmentDetection(boolean fastSegmentDetection) {
+        this.fastSegmentDetection = fastSegmentDetection;
     }
 }

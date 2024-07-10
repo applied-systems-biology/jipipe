@@ -13,21 +13,20 @@
 
 package org.hkijena.jipipe.plugins.tables.operations.integrating;
 
-import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
-import org.hkijena.jipipe.plugins.tables.IntegratingColumnOperation;
+import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
 import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
 
 /**
- * Implements calculating the standard deviation
+ * Implements calculating the max value
  */
-public class StatisticsStandardDeviationIntegratingColumnOperation implements IntegratingColumnOperation {
-
-    private static final StandardDeviation standardDeviation = new StandardDeviation();
-
+public class StatisticsMaxSummarizingColumnOperation implements SummarizingColumnOperation {
     @Override
     public TableColumn apply(TableColumn column) {
-        double result = standardDeviation.evaluate(column.getDataAsDouble(column.getRows()));
-        return new DoubleArrayTableColumn(new double[]{result}, column.getLabel());
+        double max = Double.NEGATIVE_INFINITY;
+        for (int i = 0; i < column.getRows(); i++) {
+            max = Math.max(column.getRowAsDouble(i), max);
+        }
+        return new DoubleArrayTableColumn(new double[]{max}, column.getLabel());
     }
 }
