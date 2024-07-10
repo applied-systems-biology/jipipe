@@ -471,9 +471,10 @@ public class JIPipeDesktopProjectWindow extends JFrame {
     /**
      * Saves the project
      *
-     * @param avoidDialog If true, the project is stored in the last known valid output location if possible
+     * @param avoidDialog    If true, the project is stored in the last known valid output location if possible
+     * @param updateSavePath if true, update the save path of the window
      */
-    public void saveProjectAs(boolean avoidDialog) {
+    public void saveProjectAs(boolean avoidDialog, boolean updateSavePath) {
         Path savePath = null;
         if (avoidDialog && projectSavePath != null)
             savePath = projectSavePath;
@@ -498,7 +499,9 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             Files.copy(tempFile, savePath);
 
             // Everything OK, now set the title
-            projectSavePath = savePath;
+            if(updateSavePath) {
+                projectSavePath = savePath;
+            }
             updateTitle();
             projectUI.setProjectModified(false);
             projectUI.sendStatusBarText("Saved project to " + savePath);

@@ -472,7 +472,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         saveProjectButton.setToolTipText("Saves the project. If the project was opened from a file or previously saved, the file will be overwritten.");
         saveProjectButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
         saveProjectButton.addActionListener(e -> {
-            window.saveProjectAs(true);
+            window.saveProjectAs(true, true);
             if (JIPipeGeneralUIApplicationSettings.getInstance().isValidateOnSave()) {
                 validateProject(true);
             }
@@ -484,12 +484,23 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         saveProjectAsButton.setToolTipText("Saves the project to a new file.");
         saveProjectAsButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK + KeyEvent.SHIFT_DOWN_MASK));
         saveProjectAsButton.addActionListener(e -> {
-            window.saveProjectAs(false);
+            window.saveProjectAs(false, true);
             if (JIPipeGeneralUIApplicationSettings.getInstance().isValidateOnSave()) {
                 validateProject(true);
             }
         });
         projectMenu.add(saveProjectAsButton);
+
+        // "Save project" entry
+        JMenuItem saveProjectCopyAsButton = new JMenuItem("Save copy as ...", UIUtils.getIconFromResources("actions/filesave.png"));
+        saveProjectCopyAsButton.setToolTipText("Saves the project to a new file without changing the path of the current project");
+        saveProjectCopyAsButton.addActionListener(e -> {
+            window.saveProjectAs(false, false);
+            if (JIPipeGeneralUIApplicationSettings.getInstance().isValidateOnSave()) {
+                validateProject(true);
+            }
+        });
+        projectMenu.add(saveProjectCopyAsButton);
 
         // "Save project" entry
         JMenuItem saveProjectAndCache = new JMenuItem("Save project and cache ...", UIUtils.getIconFromResources("actions/document-export.png"));
