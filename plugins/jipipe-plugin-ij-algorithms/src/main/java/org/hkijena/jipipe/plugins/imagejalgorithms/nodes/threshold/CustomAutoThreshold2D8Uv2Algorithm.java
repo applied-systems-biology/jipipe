@@ -340,7 +340,7 @@ public class CustomAutoThreshold2D8Uv2Algorithm extends JIPipeIteratingAlgorithm
         ImageJAlgorithmUtils.updateROIOrMaskSlot(sourceArea, getSlotConfiguration());
     }
 
-    @SetJIPipeDocumentation(name = "Threshold annotation strategy", description = "Determines what happens if annotations are already present.")
+    @SetJIPipeDocumentation(name = "Threshold annotation mode", description = "Determines what happens if annotations are already present.")
     @JIPipeParameter("threshold-annotation-strategy")
     public JIPipeTextAnnotationMergeMode getThresholdAnnotationStrategy() {
         return thresholdAnnotationStrategy;
@@ -395,7 +395,7 @@ public class CustomAutoThreshold2D8Uv2Algorithm extends JIPipeIteratingAlgorithm
 
     public static class ThresholdParameters extends AbstractJIPipeParameterCollection {
         private JIPipeExpressionParameter thresholdCalculationExpression = new JIPipeExpressionParameter("(stat_max + stat_min) / 2");
-        private OptionalTextAnnotationNameParameter thresholdAnnotation = new OptionalTextAnnotationNameParameter("Threshold", true);
+        private OptionalTextAnnotationNameParameter thresholdAnnotation = new OptionalTextAnnotationNameParameter("Threshold", false);
         private JIPipeExpressionParameter thresholdCombinationExpression = new JIPipeExpressionParameter("MIN(thresholds)");
 
         public ThresholdParameters() {

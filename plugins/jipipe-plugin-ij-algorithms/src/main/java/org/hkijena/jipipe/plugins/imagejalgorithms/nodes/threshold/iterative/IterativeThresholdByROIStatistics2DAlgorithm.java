@@ -57,7 +57,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Object-based iterative thresholding 2D", description = "Applies a ROI detection and measurement for each threshold value. Based on the user-provided ROI criteria the threshold is either accepted or rejected. " +
         "Returns the mask with the first applicable threshold or an image with zero values. "
         + "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Threshold\nIterative")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Threshold")
 @AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, name = "Input", description = "The image to be thresholded", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Reference", description = "An optional reference image for the ROI statistics. If none is provided, the input image is used as reference.", optional = true, create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Mask", description = "The generated mask", create = true)
@@ -72,7 +72,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
     private IntegerRange thresholds = new IntegerRange("0-255");
     private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
     private boolean measureInPhysicalUnits = true;
-    private OptionalTextAnnotationNameParameter thresholdAnnotation = new OptionalTextAnnotationNameParameter("Threshold", true);
+    private OptionalTextAnnotationNameParameter thresholdAnnotation = new OptionalTextAnnotationNameParameter("Threshold", false);
     private JIPipeExpressionParameter thresholdCombinationExpression = new JIPipeExpressionParameter("MIN(thresholds)");
     private JIPipeTextAnnotationMergeMode thresholdAnnotationStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
     private boolean excludeEdgeROIs = false;
@@ -319,7 +319,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         this.measureInPhysicalUnits = measureInPhysicalUnits;
     }
 
-    @SetJIPipeDocumentation(name = "Threshold annotation strategy", description = "Determines what happens if annotations are already present.")
+    @SetJIPipeDocumentation(name = "Threshold annotation mode", description = "Determines what happens if annotations are already present.")
     @JIPipeParameter("threshold-annotation-strategy")
     public JIPipeTextAnnotationMergeMode getThresholdAnnotationStrategy() {
         return thresholdAnnotationStrategy;

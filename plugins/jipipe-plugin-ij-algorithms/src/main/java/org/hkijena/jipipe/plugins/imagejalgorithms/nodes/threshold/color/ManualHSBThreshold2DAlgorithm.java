@@ -52,12 +52,12 @@ public class ManualHSBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
     private IntNumberRangeParameter hueThreshold = new IntNumberRangeParameter(0, 256);
     private IntNumberRangeParameter brightnessThreshold = new IntNumberRangeParameter(0, 256);
     private IntNumberRangeParameter saturationThreshold = new IntNumberRangeParameter(0, 256);
-    private OptionalTextAnnotationNameParameter minHueThresholdAnnotation = new OptionalTextAnnotationNameParameter("Min Threshold H", true);
-    private OptionalTextAnnotationNameParameter maxHueThresholdAnnotation = new OptionalTextAnnotationNameParameter("Max Threshold H", true);
-    private OptionalTextAnnotationNameParameter minBrightnessThresholdAnnotation = new OptionalTextAnnotationNameParameter("Min Threshold B", true);
-    private OptionalTextAnnotationNameParameter maxBrightnessThresholdAnnotation = new OptionalTextAnnotationNameParameter("Max Threshold B", true);
-    private OptionalTextAnnotationNameParameter minSaturationThresholdAnnotation = new OptionalTextAnnotationNameParameter("Min Threshold S", true);
-    private OptionalTextAnnotationNameParameter maxSaturationThresholdAnnotation = new OptionalTextAnnotationNameParameter("Max Threshold S", true);
+    private OptionalTextAnnotationNameParameter minHueThresholdAnnotation = new OptionalTextAnnotationNameParameter("Min Threshold H", false);
+    private OptionalTextAnnotationNameParameter maxHueThresholdAnnotation = new OptionalTextAnnotationNameParameter("Max Threshold H", false);
+    private OptionalTextAnnotationNameParameter minBrightnessThresholdAnnotation = new OptionalTextAnnotationNameParameter("Min Threshold B", false);
+    private OptionalTextAnnotationNameParameter maxBrightnessThresholdAnnotation = new OptionalTextAnnotationNameParameter("Max Threshold B", false);
+    private OptionalTextAnnotationNameParameter minSaturationThresholdAnnotation = new OptionalTextAnnotationNameParameter("Min Threshold S", false);
+    private OptionalTextAnnotationNameParameter maxSaturationThresholdAnnotation = new OptionalTextAnnotationNameParameter("Max Threshold S", false);
     private JIPipeTextAnnotationMergeMode thresholdAnnotationStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
 
@@ -228,7 +228,7 @@ public class ManualHSBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.maxSaturationThresholdAnnotation = maxSaturationThresholdAnnotation;
     }
 
-    @SetJIPipeDocumentation(name = "Threshold annotation strategy", description = "Determines what happens if annotations are already present.")
+    @SetJIPipeDocumentation(name = "Threshold annotation mode", description = "Determines what happens if annotations are already present.")
     @JIPipeParameter("threshold-annotation-strategy")
     public JIPipeTextAnnotationMergeMode getThresholdAnnotationStrategy() {
         return thresholdAnnotationStrategy;

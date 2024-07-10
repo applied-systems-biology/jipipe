@@ -52,12 +52,12 @@ public class ManualRGBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
     private IntNumberRangeParameter redThreshold = new IntNumberRangeParameter(0, 256);
     private IntNumberRangeParameter blueThreshold = new IntNumberRangeParameter(0, 256);
     private IntNumberRangeParameter greenThreshold = new IntNumberRangeParameter(0, 256);
-    private OptionalTextAnnotationNameParameter minRedThresholdAnnotation = new OptionalTextAnnotationNameParameter("Min Threshold R", true);
-    private OptionalTextAnnotationNameParameter maxRedThresholdAnnotation = new OptionalTextAnnotationNameParameter("Max Threshold R", true);
-    private OptionalTextAnnotationNameParameter minGreenThresholdAnnotation = new OptionalTextAnnotationNameParameter("Min Threshold G", true);
-    private OptionalTextAnnotationNameParameter maxGreenThresholdAnnotation = new OptionalTextAnnotationNameParameter("Max Threshold G", true);
-    private OptionalTextAnnotationNameParameter minBlueThresholdAnnotation = new OptionalTextAnnotationNameParameter("Min Threshold B", true);
-    private OptionalTextAnnotationNameParameter maxBlueThresholdAnnotation = new OptionalTextAnnotationNameParameter("Max Threshold B", true);
+    private OptionalTextAnnotationNameParameter minRedThresholdAnnotation = new OptionalTextAnnotationNameParameter("Min Threshold R", false);
+    private OptionalTextAnnotationNameParameter maxRedThresholdAnnotation = new OptionalTextAnnotationNameParameter("Max Threshold R", false);
+    private OptionalTextAnnotationNameParameter minGreenThresholdAnnotation = new OptionalTextAnnotationNameParameter("Min Threshold G", false);
+    private OptionalTextAnnotationNameParameter maxGreenThresholdAnnotation = new OptionalTextAnnotationNameParameter("Max Threshold G", false);
+    private OptionalTextAnnotationNameParameter minBlueThresholdAnnotation = new OptionalTextAnnotationNameParameter("Min Threshold B", false);
+    private OptionalTextAnnotationNameParameter maxBlueThresholdAnnotation = new OptionalTextAnnotationNameParameter("Max Threshold B", false);
     private JIPipeTextAnnotationMergeMode thresholdAnnotationStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
 
@@ -228,7 +228,7 @@ public class ManualRGBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.maxBlueThresholdAnnotation = maxBlueThresholdAnnotation;
     }
 
-    @SetJIPipeDocumentation(name = "Threshold annotation strategy", description = "Determines what happens if annotations are already present.")
+    @SetJIPipeDocumentation(name = "Threshold annotation mode", description = "Determines what happens if annotations are already present.")
     @JIPipeParameter("threshold-annotation-strategy")
     public JIPipeTextAnnotationMergeMode getThresholdAnnotationStrategy() {
         return thresholdAnnotationStrategy;

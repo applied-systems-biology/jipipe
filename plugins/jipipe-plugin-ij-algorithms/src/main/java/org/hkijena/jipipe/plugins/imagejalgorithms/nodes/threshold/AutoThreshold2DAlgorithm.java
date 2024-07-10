@@ -59,7 +59,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private AutoThresholder.Method method = AutoThresholder.Method.Default;
     private boolean darkBackground = true;
-    private OptionalTextAnnotationNameParameter thresholdAnnotation = new OptionalTextAnnotationNameParameter("Threshold", true);
+    private OptionalTextAnnotationNameParameter thresholdAnnotation = new OptionalTextAnnotationNameParameter("Threshold", false);
     private SliceThresholdMode thresholdMode = SliceThresholdMode.ApplyPerSlice;
 
     private JIPipeExpressionParameter thresholdCombinationExpression = new JIPipeExpressionParameter("MIN(thresholds)");
@@ -213,7 +213,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    @SetJIPipeDocumentation(name = "Threshold annotation strategy", description = "Determines what happens if annotations are already present.")
+    @SetJIPipeDocumentation(name = "Threshold annotation mode", description = "Determines what happens if annotations are already present.")
     @JIPipeParameter("threshold-annotation-strategy")
     public JIPipeTextAnnotationMergeMode getThresholdAnnotationStrategy() {
         return thresholdAnnotationStrategy;
