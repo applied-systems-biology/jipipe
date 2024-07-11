@@ -66,7 +66,7 @@ public class HoughLineSegments {
         }
     }
 
-    public static List<Line> houghLines(ImageProcessor BW, List<Double> thetas, List<Double> rhos, List<Point> peaks, double fillGap, double minLength, boolean fastMode, JIPipeProgressInfo progressInfo) {
+    public static List<Line> houghLineSegments(ImageProcessor BW, List<Double> thetas, List<Double> rhos, List<Point> peaks, double fillGap, double minLength, boolean fastMode, JIPipeProgressInfo progressInfo) {
         if (fillGap <= 0) {
             throw new IllegalArgumentException("fillGap must be a positive scalar number");
         }
@@ -123,6 +123,65 @@ public class HoughLineSegments {
         return lines;
     }
 
+    public static List<Line> houghGlobalLines(ImageProcessor BW, List<Double> thetas, List<Double> rhos, List<Point> peaks, double minLength, Dimension imageSize, JIPipeProgressInfo progressInfo) {
+        if (minLength <= 0) {
+            throw new IllegalArgumentException("minlength must be a positive scalar number");
+        }
+
+        progressInfo.log("Finding segments, given " + peaks.size() + " peaks");
+
+        List<Line> lines = new ArrayList<>();
+
+        // Process each given Hough peak individually
+        final int width = BW.getWidth();
+        final int height = BW.getHeight();
+        for (int j = 0; j < peaks.size(); j++) {
+            JIPipeProgressInfo peakProgress = progressInfo.resolve("Peak", j, peaks.size());
+            Point peak = peaks.get(j);
+            int rho_p_idx = peak.y;
+            int theta_p_idx = peak.x;
+            double rho_p = rhos.get(rho_p_idx);
+            double theta_p = thetas.get(theta_p_idx);
+
+            List<Point> peakPixels = new ArrayList<>();
+            double cosTheta = Math.cos(Math.toRadians(theta_p));
+            double sinTheta = Math.sin(Math.toRadians(theta_p));
+
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    if (BW.getPixel(x, y) != 0) {
+                        double rho_val = (x * cosTheta + y * sinTheta);
+                        if (Math.round(rho_val) == Math.round(rho_p)) {
+                            peakPixels.add(new Point(x, y));
+                        }
+                    }
+                }
+            }
+
+            if (peakPixels.isEmpty()) {
+                peakProgress.log("Peak has no associated pixels!");
+                continue;
+            }
+
+            // Extract the line
+            if(peakPixels.size() <= 1) {
+                peakProgress.log("Not enough points");
+            }
+            else if(peakPixels.size() == 2) {
+                // Trivial line
+                peakProgress.log("Is trivial line");
+                addLineSegment(lines, peakPixels, minLength, theta_p, rho_p, imageSize, true, peakProgress);
+            }
+            else {
+                peakProgress.log("Has " + peakPixels.size() + " points");
+                // Calculate variance in x values to detect vertical lines
+                extractLineSegmentsWithRegression(minLength, lines, theta_p, rho_p, peakPixels, imageSize, true, peakProgress);
+            }
+        }
+
+        return lines;
+    }
+
     private static void extractLineSegmentsPrecise(double fillGap, double minLength, List<Point> peakPixels, List<Line> lines, double theta_p, double rho_p, JIPipeProgressInfo peakProgress) {
         peakProgress.log("Building graph (" + peakPixels.size() + " vertices, " + (peakPixels.size() * peakPixels.size() - peakPixels.size()) + " edges)");
         DefaultUndirectedWeightedGraph<Point, DefaultWeightedEdge> graph = new DefaultUndirectedWeightedGraph<>(DefaultWeightedEdge.class);
@@ -164,47 +223,51 @@ public class HoughLineSegments {
             } else if (points.size() == 2) {
                 // Trivial line
                 peakProgress.log("Component " + i + " is trivial line");
-                addLineSegment(lines, points, minLength, theta_p, rho_p, peakProgress);
+                addLineSegment(lines, points, minLength, theta_p, rho_p, null, false, peakProgress);
             }
             else {
                 peakProgress.log("Component " + i + " has " + points.size() + " vertices");
                 // Calculate variance in x values to detect vertical lines
-                Variance variance = new Variance();
-                double[] xValues = points.stream().mapToDouble(Point::getX).toArray();
-                double xVariance = variance.evaluate(xValues);
-
-                if (xVariance < 1e-10) { // Adjust threshold as needed
-                    // Handle vertical line case
-                    int x = points.get(0).x;
-                    int minY = points.stream().mapToInt(p -> p.y).min().getAsInt();
-                    int maxY = points.stream().mapToInt(p -> p.y).max().getAsInt();
-
-                    Point startPoint = new Point(x, minY);
-                    Point endPoint = new Point(x, maxY);
-
-                    addLineSegment(lines, Arrays.asList(startPoint, endPoint), minLength, theta_p, rho_p, peakProgress);
-
-                } else {
-                    // Handle general case using linear regression
-                    SimpleRegression regression = new SimpleRegression();
-                    for (Point point : points) {
-                        regression.addData(point.getX(), point.getY());
-                    }
-
-                    double slope = regression.getSlope();
-                    double intercept = regression.getIntercept();
-
-                    int minX = points.stream().mapToInt(p -> p.x).min().getAsInt();
-                    int maxX = points.stream().mapToInt(p -> p.x).max().getAsInt();
-
-                    Point startPoint = new Point(minX, (int) Math.round(slope * minX + intercept));
-                    Point endPoint = new Point(maxX, (int) Math.round(slope * maxX + intercept));
-
-                    addLineSegment(lines, Arrays.asList(startPoint, endPoint), minLength, theta_p, rho_p, peakProgress);
-                }
+                extractLineSegmentsWithRegression(minLength, lines, theta_p, rho_p, points, null, false, peakProgress);
             }
         }
 
+    }
+
+    private static void extractLineSegmentsWithRegression(double minLength, List<Line> lines, double theta_p, double rho_p, List<Point> points, Dimension imageSize, boolean expandToImageSize, JIPipeProgressInfo peakProgress) {
+        Variance variance = new Variance();
+        double[] xValues = points.stream().mapToDouble(Point::getX).toArray();
+        double xVariance = variance.evaluate(xValues);
+
+        if (xVariance < 1e-10) { // Adjust threshold as needed
+            // Handle vertical line case
+            int x = points.get(0).x;
+            int minY = points.stream().mapToInt(p -> p.y).min().getAsInt();
+            int maxY = points.stream().mapToInt(p -> p.y).max().getAsInt();
+
+            Point startPoint = new Point(x, minY);
+            Point endPoint = new Point(x, maxY);
+
+            addLineSegment(lines, Arrays.asList(startPoint, endPoint), minLength, theta_p, rho_p, imageSize, expandToImageSize, peakProgress);
+
+        } else {
+            // Handle general case using linear regression
+            SimpleRegression regression = new SimpleRegression();
+            for (Point point : points) {
+                regression.addData(point.getX(), point.getY());
+            }
+
+            double slope = regression.getSlope();
+            double intercept = regression.getIntercept();
+
+            int minX = points.stream().mapToInt(p -> p.x).min().getAsInt();
+            int maxX = points.stream().mapToInt(p -> p.x).max().getAsInt();
+
+            Point startPoint = new Point(minX, (int) Math.round(slope * minX + intercept));
+            Point endPoint = new Point(maxX, (int) Math.round(slope * maxX + intercept));
+
+            addLineSegment(lines, Arrays.asList(startPoint, endPoint), minLength, theta_p, rho_p, imageSize, expandToImageSize, peakProgress);
+        }
     }
 
     private static void extractLineSegmentsFast(double fillGap, double minLength, double cosTheta, double sinTheta, List<Point> peakPixels, List<Line> lines, double theta_p, double rho_p, JIPipeProgressInfo peakProgress) {
@@ -229,7 +292,7 @@ public class HoughLineSegments {
             if (distance > fillGap) {
                 if (segment.size() > 1) {
                     peakProgress.log("Distance threshold reached (" + distance + " > " + fillGap + "). Adding new line segment (" + segment.size() + " pixels)");
-                    addLineSegment(lines, segment, minLength, theta_p, rho_p, peakProgress);
+                    addLineSegment(lines, segment, minLength, theta_p, rho_p, null, false, peakProgress);
                 } else {
                     peakProgress.log("Distance threshold reached (" + distance + " > " + fillGap + "). Not enough pixels!");
                 }
@@ -238,17 +301,23 @@ public class HoughLineSegments {
             segment.add(curr);
         }
         if (segment.size() > 1) {
-            addLineSegment(lines, segment, minLength, theta_p, rho_p, peakProgress);
+            addLineSegment(lines, segment, minLength, theta_p, rho_p, null, false, peakProgress);
         }
     }
 
-    private static void addLineSegment(List<Line> lines, List<Point> segment, double minLength, double theta, double rho, JIPipeProgressInfo peakProgress) {
+    private static void addLineSegment(List<Line> lines, List<Point> segment, double minLength, double theta, double rho, Dimension imageSize, boolean expandToImageSize, JIPipeProgressInfo peakProgress) {
         Point first = segment.get(0);
         Point last = segment.get(segment.size() - 1);
         double length = first.distance(last);
 
         if (length >= minLength) {
             peakProgress.log("Successfully detected line segment " + first + " -> " + last + " with length=" + length);
+
+            // Expand if needed
+            if(imageSize != null && expandToImageSize) {
+                extendLine(first, last, imageSize);
+            }
+
             lines.add(new Line(first, last, theta, rho));
         }
         else {
@@ -256,6 +325,84 @@ public class HoughLineSegments {
         }
     }
 
+    public static void extendLine(Point first, Point last, Dimension imageSize) {
+        int xmin = 0;
+        int ymin = 0;
+        int xmax = imageSize.width;
+        int ymax = imageSize.height;
+
+        int x1 = first.x;
+        int y1 = first.y;
+        int x2 = last.x;
+        int y2 = last.y;
+
+
+
+        Point newFirst = null;
+        Point newLast = null;
+
+        if (x1 == x2) { // Vertical line
+            newFirst = new Point(x1, ymin);
+            newLast = new Point(x1, ymax);
+        } else if (y1 == y2) { // Horizontal line
+            newFirst = new Point(xmin, y1);
+            newLast = new Point(xmax, y1);
+        } else {
+            double slope = (double)(y2 - y1) / (x2 - x1);
+            double intercept = y1 - slope * x1;
+
+            // Intersection with left boundary (x = 0)
+            int yAtLeft = (int) intercept;
+            if (yAtLeft >= ymin && yAtLeft <= ymax) {
+                if (newFirst == null) {
+                    newFirst = new Point(xmin, yAtLeft);
+                } else {
+                    newLast = new Point(xmin, yAtLeft);
+                }
+            }
+
+            // Intersection with right boundary (x = xmax)
+            int yAtRight = (int) (slope * xmax + intercept);
+            if (yAtRight >= ymin && yAtRight <= ymax) {
+                if (newFirst == null) {
+                    newFirst = new Point(xmax, yAtRight);
+                } else {
+                    newLast = new Point(xmax, yAtRight);
+                }
+            }
+
+            // Intersection with top boundary (y = 0)
+            int xAtTop = (int) (-intercept / slope);
+            if (xAtTop >= xmin && xAtTop <= xmax) {
+                if (newFirst == null) {
+                    newFirst = new Point(xAtTop, ymin);
+                } else {
+                    newLast = new Point(xAtTop, ymin);
+                }
+            }
+
+            // Intersection with bottom boundary (y = ymax)
+            int xAtBottom = (int) ((ymax - intercept) / slope);
+            if (xAtBottom >= xmin && xAtBottom <= xmax) {
+                if (newFirst == null) {
+                    newFirst = new Point(xAtBottom, ymax);
+                } else {
+                    newLast = new Point(xAtBottom, ymax);
+                }
+            }
+        }
+
+        // If only one intersection point was found, the other point should be at the original point.
+        if (newFirst == null) {
+            newFirst = new Point(x1, y1);
+        }
+        if (newLast == null) {
+            newLast = new Point(x2, y2);
+        }
+
+        first.setLocation(newFirst);
+        last.setLocation(newLast);
+    }
 
     /**
      * Implementation of Hough Peaks

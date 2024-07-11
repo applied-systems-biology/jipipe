@@ -35,7 +35,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.imagejalgorithms.utils.HoughLines;
+import org.hkijena.jipipe.plugins.imagejalgorithms.utils.LegacyHoughLines;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
@@ -48,8 +48,10 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import java.util.HashMap;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "Detect lines 2D (Hough)", description = "Finds lines within the image via a Hough lines transformation. " + "If higher-dimensional data is provided, the filter is applied to each 2D slice. " +
-        "Please note that this node will not find line segments, but finds global linear structures.")
+@SetJIPipeDocumentation(name = "Detect global lines 2D (Hough, legacy)", description = "Finds lines within the image via a Hough lines transformation. "
+        + "If higher-dimensional data is provided, the filter is applied to each 2D slice. " +
+        "Please note that this node will not find line segments, but finds global linear structures. " +
+        "Legacy implementation based on code by David Chatting. We recommend to use the non-legacy algorithm for better results.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Binary")
 @AddJIPipeCitation("Based on code by David Chatting, https://github.com/davidchatting/hough_lines/blob/master/HoughTransform.java")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Mask", description = "Mask that contains the segmented edges. ", create = true)
@@ -105,11 +107,11 @@ public class LinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         Map<ImageSliceIndex, ImageProcessor> outputAccumulatorSlices = new HashMap<>();
 
         ImageJUtils.forEachIndexedZCTSlice(inputMask, (ip, index) -> {
-            HoughLines houghLines = new HoughLines(neighborhoodSize, maxTheta);
+            LegacyHoughLines houghLines = new LegacyHoughLines(neighborhoodSize, maxTheta);
             houghLines.initialise(ip.getWidth(), ip.getHeight());
             houghLines.addPoints(ip, pixelThreshold.isEnabled(), pixelThreshold.getContent());
             ROIListData localROI = new ROIListData();
-            for (HoughLines.HoughLine line : houghLines.getLines(selectTopN.isEnabled() ? selectTopN.getContent() : -1, accumulatorThreshold)) {
+            for (LegacyHoughLines.HoughLine line : houghLines.getLines(selectTopN.isEnabled() ? selectTopN.getContent() : -1, accumulatorThreshold)) {
 
                 // Add to table
                 outputTable.addAndModifyRow().set("Image Z", index.getZ())

@@ -24,7 +24,7 @@ import java.util.Vector;
  *
  * @author David Chatting - 4th March 2013
  */
-public class HoughLines {
+public class LegacyHoughLines {
     // The size of the neighbourhood in which to search for other local maxima
     final int neighbourhoodSize;
 
@@ -56,7 +56,7 @@ public class HoughLines {
     private double[] sinCache;
     private double[] cosCache;
 
-    public HoughLines(int neighbourhoodSize, int maxTheta) {
+    public LegacyHoughLines(int neighbourhoodSize, int maxTheta) {
         this.neighbourhoodSize = neighbourhoodSize;
         this.maxTheta = maxTheta;
         this.thetaStep = Math.PI / maxTheta;

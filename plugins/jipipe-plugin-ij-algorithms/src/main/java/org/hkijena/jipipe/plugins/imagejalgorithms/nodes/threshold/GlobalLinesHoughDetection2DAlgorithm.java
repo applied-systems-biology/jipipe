@@ -32,8 +32,8 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.HoughLineSegments;
@@ -53,7 +53,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "Detect line segments 2D (Hough)", description = "Finds lines within the image via a Hough lines transformation. " + "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+@SetJIPipeDocumentation(name = "Detect global lines 2D (Hough)", description = "Finds global lines within the image via a Hough lines transformation. Uses a similar algorithm to 'Detect line segments 2D (Hough)' with fill size infinite, but " +
+        "ensures that the resulting lines are starting and ending at the image borders. " +
+        "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Binary")
 @AddJIPipeCitation("Based on code by Hartmut Gimpel, https://sourceforge.net/p/octave/image/ci/default/tree/inst/")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Mask", description = "Mask that contains the segmented edges. ", create = true)
@@ -62,31 +64,27 @@ import java.util.Map;
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Mask", create = true, description = "Mask that contains the detected lines")
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Results", create = true, description = "The detected lines as table")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Accumulator", create = true, description = "The Hough array")
-public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class GlobalLinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private int numPeaks = 100;
     private JIPipeExpressionParameter peakThreshold = new JIPipeExpressionParameter("0.5 * MAX(H)");
     private OptionalVector2iParameter neighborhoodSize = new OptionalVector2iParameter(new Vector2iParameter(5, 5), false);
-    private double fillGap = 20;
     private double minLength = 40;
     private JIPipeExpressionParameter thetas = new JIPipeExpressionParameter("MAKE_SEQUENCE(-90, 90, 1)");
     private JIPipeExpressionParameter roiNameExpression = new JIPipeExpressionParameter("line_length");
-    private boolean fastSegmentDetection = false;
 
-    public LineSegmentsHoughDetection2DAlgorithm(JIPipeNodeInfo info) {
+    public GlobalLinesHoughDetection2DAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public LineSegmentsHoughDetection2DAlgorithm(LineSegmentsHoughDetection2DAlgorithm other) {
+    public GlobalLinesHoughDetection2DAlgorithm(GlobalLinesHoughDetection2DAlgorithm other) {
         super(other);
         this.roiNameExpression = new JIPipeExpressionParameter(other.roiNameExpression);
         this.neighborhoodSize = new OptionalVector2iParameter(other.neighborhoodSize);
         this.numPeaks = other.numPeaks;
         this.peakThreshold = new JIPipeExpressionParameter(other.peakThreshold);
-        this.fillGap = other.fillGap;
         this.minLength = other.minLength;
         this.thetas = new JIPipeExpressionParameter(other.thetas);
-        this.fastSegmentDetection = other.fastSegmentDetection;
     }
 
     @Override
@@ -169,7 +167,7 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
             }
 
             // Generate line ROIs and table rows
-            List<HoughLineSegments.Line> lines = HoughLineSegments.houghLineSegments(bw, houghResult.getThetas(), houghResult.getRhos(), peaks, fillGap, minLength, fastSegmentDetection, sliceProgress);
+            List<HoughLineSegments.Line> lines = HoughLineSegments.houghGlobalLines(bw, houghResult.getThetas(), houghResult.getRhos(), peaks, minLength, new Dimension(ip.getWidth(), ip.getHeight()), sliceProgress);
 
             ROIListData localROI = new ROIListData();
             for (HoughLineSegments.Line line : lines) {
@@ -287,7 +285,7 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
         this.peakThreshold = peakThreshold;
     }
 
-    @SetJIPipeDocumentation(name = "Number of peaks", description = "The maximum number of peaks/line segments that will be detected.")
+    @SetJIPipeDocumentation(name = "Number of peaks", description = "The maximum number of peaks/lines that will be detected.")
     @JIPipeParameter("num-peaks")
     public int getNumPeaks() {
         return numPeaks;
@@ -298,18 +296,8 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
         this.numPeaks = numPeaks;
     }
 
-    @SetJIPipeDocumentation(name = "Fill gap", description = "Distance between two line segments associated with the same Hough transform bin")
-    @JIPipeParameter("fill-gap")
-    public double getFillGap() {
-        return fillGap;
-    }
 
-    @JIPipeParameter("fill-gap")
-    public void setFillGap(double fillGap) {
-        this.fillGap = fillGap;
-    }
-
-    @SetJIPipeDocumentation(name = "Minimum length", description = "Minimum line length")
+    @SetJIPipeDocumentation(name = "Minimum length", description = "Minimum length of the underlying line structure")
     @JIPipeParameter("min-length")
     public double getMinLength() {
         return minLength;
@@ -330,17 +318,5 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
     @JIPipeParameter("thetas")
     public void setThetas(JIPipeExpressionParameter thetas) {
         this.thetas = thetas;
-    }
-
-    @SetJIPipeDocumentation(name = "Fast line segment detection", description = "If enabled, use the classical algorithm for line segment detection that first sorts all points and proceeds to iteratively build each segment. " +
-            "This algorithm may not always have the expected results for all line configurations. If disabled, use a more advanced algorithm based on graph components.")
-    @JIPipeParameter("fast-segment-detection")
-    public boolean isFastSegmentDetection() {
-        return fastSegmentDetection;
-    }
-
-    @JIPipeParameter("fast-segment-detection")
-    public void setFastSegmentDetection(boolean fastSegmentDetection) {
-        this.fastSegmentDetection = fastSegmentDetection;
     }
 }
