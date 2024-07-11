@@ -93,6 +93,7 @@ public class JIPipeProject implements JIPipeValidatable {
     private JIPipeRuntimePartitionConfiguration runtimePartitions = new JIPipeRuntimePartitionConfiguration();
     private Map<String, JIPipeMetadataObject> additionalMetadata = new HashMap<>();
     private Path workDirectory;
+    private Path temporaryBaseDirectory;
     private boolean isCleaningUp;
     private boolean isLoading;
 
@@ -285,11 +286,16 @@ public class JIPipeProject implements JIPipeValidatable {
             }
             else {
                 output = workDirectory.resolve("JIPipe.tmp.dir");
-                PathUtils.createDirectories(output);
-                try {
-                    output = Files.createTempDirectory(output, "tmp");
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                if(temporaryBaseDirectory == null || !temporaryBaseDirectory.startsWith(output)) {
+                    PathUtils.createDirectories(output);
+                    try {
+                        output = Files.createTempDirectory(output, "tmp");
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                else {
+                    output = temporaryBaseDirectory;
                 }
             }
         }
@@ -297,6 +303,7 @@ public class JIPipeProject implements JIPipeValidatable {
             output = JIPipeRuntimeApplicationSettings.getTemporaryBaseDirectory();
         }
         PathUtils.createDirectories(output);
+        temporaryBaseDirectory = output;
         return output;
     }
 
