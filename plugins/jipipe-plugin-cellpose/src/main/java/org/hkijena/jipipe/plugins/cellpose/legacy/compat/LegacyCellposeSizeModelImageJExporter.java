@@ -36,7 +36,7 @@ public class LegacyCellposeSizeModelImageJExporter implements ImageJDataExporter
     public List<Object> exportData(JIPipeDataTable dataTable, ImageJExportParameters parameters, JIPipeProgressInfo progressInfo) {
         Path path = Paths.get(parameters.getName());
         if (!path.isAbsolute()) {
-            path = JIPipeRuntimeApplicationSettings.generateTempDirectory("cellpose-export").resolve(path);
+            path = JIPipeRuntimeApplicationSettings.getTemporaryDirectory("cellpose-export").resolve(path);
         }
         if (Files.exists(path)) {
             if (Files.isRegularFile(path)) {

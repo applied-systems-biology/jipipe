@@ -958,7 +958,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      */
     public Path getNewScratch() {
         if (getScratchBaseDirectory() == null) {
-            return JIPipeRuntimeApplicationSettings.generateTempDirectory(getParentGraph() != null ? getAliasIdInParentGraph() : "scratch");
+            return JIPipeRuntimeApplicationSettings.getTemporaryDirectory(getParentGraph() != null ? getAliasIdInParentGraph() : "scratch");
         }
         try {
             return Files.createTempDirectory(getScratchBaseDirectory(), getParentGraph() != null ? getAliasIdInParentGraph() : "scratch");

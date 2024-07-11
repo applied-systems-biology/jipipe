@@ -91,6 +91,9 @@ public class StandardSettingsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerApplicationSettingsSheet(new JIPipeGeneralDataApplicationSettings());
         registerApplicationSettingsSheet(new JIPipeDataExporterApplicationSettings());
 
+        // Project
+        registerProjectSettingsSheet(JIPipeDataStorageProjectSettings.class);
+
 
     }
 

@@ -248,7 +248,7 @@ public class RUtils {
     }
 
     public static void runR(String script, REnvironment environment, JIPipeProgressInfo progressInfo) {
-        Path codeFilePath = JIPipeRuntimeApplicationSettings.generateTempFile("R", ".R");
+        Path codeFilePath = JIPipeRuntimeApplicationSettings.getTemporaryFile("R", ".R");
         try {
             Files.write(codeFilePath, script.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {

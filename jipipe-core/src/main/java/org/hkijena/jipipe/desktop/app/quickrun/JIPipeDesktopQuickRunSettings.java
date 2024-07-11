@@ -16,6 +16,7 @@ package org.hkijena.jipipe.desktop.app.quickrun;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
@@ -40,8 +41,13 @@ public class JIPipeDesktopQuickRunSettings extends AbstractJIPipeParameterCollec
     /**
      * Creates a new instance
      */
-    public JIPipeDesktopQuickRunSettings() {
-        outputPath = JIPipeRuntimeApplicationSettings.generateTempDirectory("QuickRun");
+    public JIPipeDesktopQuickRunSettings(JIPipeProject project) {
+        if(project != null) {
+            outputPath = project.getTemporaryDirectory("run");
+        }
+        else {
+            outputPath = JIPipeRuntimeApplicationSettings.getTemporaryDirectory("run");
+        }
     }
 
     @SetJIPipeDocumentation(name = "Output path", description = "The path where the results are stored. " +

@@ -141,7 +141,7 @@ public class JIPipeDesktopQuickRunSetupUI extends JIPipeDesktopProjectWorkbenchP
 
     private void quickRun(boolean storeIntermediates) {
         if (validateOrShowError()) {
-            currentSettings = new JIPipeDesktopQuickRunSettings();
+            currentSettings = new JIPipeDesktopQuickRunSettings(getProject());
             currentSettings.setSaveToDisk(true);
             currentSettings.setExcludeSelected(false);
             currentSettings.setLoadFromCache(true);
@@ -167,7 +167,7 @@ public class JIPipeDesktopQuickRunSetupUI extends JIPipeDesktopProjectWorkbenchP
 
     private void updateCache(boolean cacheIntermediateResults, boolean excludeSelected) {
         if (validateOrShowError()) {
-            currentSettings = new JIPipeDesktopQuickRunSettings();
+            currentSettings = new JIPipeDesktopQuickRunSettings(getProject());
             currentSettings.setSaveToDisk(false);
             currentSettings.setExcludeSelected(excludeSelected);
             currentSettings.setLoadFromCache(true);
@@ -212,7 +212,7 @@ public class JIPipeDesktopQuickRunSetupUI extends JIPipeDesktopProjectWorkbenchP
         setupPanel = new JPanel();
         setupPanel.setLayout(new BorderLayout());
 
-        currentSettings = new JIPipeDesktopQuickRunSettings();
+        currentSettings = new JIPipeDesktopQuickRunSettings(getProject());
         JIPipeDesktopParameterPanel formPanel = new JIPipeDesktopParameterPanel(getDesktopWorkbench(), currentSettings,
                 MarkdownText.fromPluginResource("documentation/testbench.md", new HashMap<>()), JIPipeDesktopParameterPanel.WITH_SCROLLING |
                 JIPipeDesktopParameterPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterPanel.DOCUMENTATION_BELOW);
@@ -316,7 +316,7 @@ public class JIPipeDesktopQuickRunSetupUI extends JIPipeDesktopProjectWorkbenchP
 
     private void openLogInExternalEditor() {
         if (currentQuickRun != null) {
-            Path tempFile = JIPipeRuntimeApplicationSettings.generateTempFile("log", ".txt");
+            Path tempFile = JIPipeRuntimeApplicationSettings.getTemporaryFile("log", ".txt");
             try {
                 Files.write(tempFile, currentQuickRun.getProgressInfo().getLog().toString().getBytes(StandardCharsets.UTF_8));
                 Desktop.getDesktop().open(tempFile.toFile());

@@ -52,7 +52,7 @@ public class JIPipeArtifactRepositoryInstallArtifactRun extends JIPipeArtifactRe
         }
 
         String suffix = artifact.getUrl().endsWith(".zip") ? ".zip" : ".tar.gz";
-        Path tmpFile = JIPipeRuntimeApplicationSettings.generateTempFile("artifact", suffix);
+        Path tmpFile = JIPipeRuntimeApplicationSettings.getTemporaryFile("artifact", suffix);
         try {
             //Download
             WebUtils.download(new URL(artifact.getUrl()), tmpFile, "Download", progressInfo);

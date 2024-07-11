@@ -97,7 +97,7 @@ public class JIPipeZIPWriteDataStorage implements JIPipeWriteDataStorage {
             return parent.getOrCreateTemporaryStorageRoot();
         }
         if (temporaryStorage == null) {
-            temporaryStorage = JIPipeRuntimeApplicationSettings.generateTempDirectory("zip");
+            temporaryStorage = JIPipeRuntimeApplicationSettings.getTemporaryDirectory("zip");
         }
         return temporaryStorage;
     }

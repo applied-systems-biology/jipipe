@@ -86,7 +86,7 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm impl
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        Path tempFile = JIPipeRuntimeApplicationSettings.generateTempFile("jipipe-r", ".csv");
+        Path tempFile = JIPipeRuntimeApplicationSettings.getTemporaryFile("jipipe-r", ".csv");
         String code = "library(datasets)\n" +
                 "write.csv(" + dataset.variableName + ", row.names = FALSE, file=\"" + MacroUtils.escapeString(tempFile.toAbsolutePath().toString()) + "\")\n";
         RUtils.runR(code,

@@ -135,9 +135,9 @@ public class JIPipeDesktopPathEditorComponent extends JPanel {
 
     private void generateRandom() {
         if (pathMode == PathType.DirectoriesOnly) {
-            setPath(JIPipeRuntimeApplicationSettings.generateTempDirectory("JIPipe"));
+            setPath(JIPipeRuntimeApplicationSettings.getTemporaryDirectory("tmp"));
         } else {
-            setPath(JIPipeRuntimeApplicationSettings.generateTempFile("JIPipe", null));
+            setPath(JIPipeRuntimeApplicationSettings.getTemporaryFile("tmp", null));
         }
     }
 

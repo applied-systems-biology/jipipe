@@ -383,7 +383,7 @@ public class JIPipeDesktopPipelineSingleAlgorithmSelectionPanelUI extends JIPipe
         tabbedPane.switchToContent(testBenchTabContent);
         activateLazyContent(tabbedPane);
         JIPipeDesktopQuickRunSetupUI testBenchSetupUI = (JIPipeDesktopQuickRunSetupUI) testBenchTabContent.getComponent(0);
-        JIPipeDesktopQuickRunSettings settings = new JIPipeDesktopQuickRunSettings();
+        JIPipeDesktopQuickRunSettings settings = new JIPipeDesktopQuickRunSettings(getProject());
         settings.setSaveToDisk(saveToDisk);
         settings.setExcludeSelected(excludeSelected);
         settings.setStoreIntermediateResults(storeIntermediateOutputs);

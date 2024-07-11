@@ -96,7 +96,7 @@ public class JIPipeZIPReadDataStorage implements JIPipeReadDataStorage {
             return parent.getOrCreateTemporaryStorageRoot();
         }
         if (temporaryStorage == null) {
-            temporaryStorage = JIPipeRuntimeApplicationSettings.generateTempDirectory("zip");
+            temporaryStorage = JIPipeRuntimeApplicationSettings.getTemporaryDirectory("zip");
             progressInfo.log("Temporary storage requested: " + temporaryStorage);
             try {
                 ArchiveUtils.decompressZipFile(zipFilePath, temporaryStorage, progressInfo.resolve("Extract ZIP"));

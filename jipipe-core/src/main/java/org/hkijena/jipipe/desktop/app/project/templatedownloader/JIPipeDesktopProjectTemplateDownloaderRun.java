@@ -136,7 +136,7 @@ public class JIPipeDesktopProjectTemplateDownloaderRun extends AbstractJIPipeRun
         for (int i = 0; i < repositories.size(); i++) {
             String repositoryURL = repositories.get(i);
             JIPipeProgressInfo repositoryProgress = progressInfo.resolve("Repository " + i);
-            Path outputFile = JIPipeRuntimeApplicationSettings.generateTempFile("repository", ".json");
+            Path outputFile = JIPipeRuntimeApplicationSettings.getTemporaryFile("repository", ".json");
             try {
                 WebUtils.download(new URL(repositoryURL), outputFile, "Download repository", repositoryProgress);
             } catch (MalformedURLException e) {

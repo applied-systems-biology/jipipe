@@ -212,7 +212,7 @@ public class JIPipeDesktopSingleCompartmentSelectionPanelUI extends JIPipeDeskto
         // Activate the quick run
         tabbedPane.selectSingletonTab("QUICK_RUN");
         JIPipeDesktopQuickRunSetupUI testBenchSetupUI = (JIPipeDesktopQuickRunSetupUI) tabbedPane.getCurrentContent();
-        JIPipeDesktopQuickRunSettings settings = new JIPipeDesktopQuickRunSettings();
+        JIPipeDesktopQuickRunSettings settings = new JIPipeDesktopQuickRunSettings(getProject());
         settings.setSaveToDisk(saveToDisk);
         settings.setExcludeSelected(excludeSelected);
         settings.setStoreIntermediateResults(storeIntermediateOutputs);

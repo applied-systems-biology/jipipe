@@ -179,7 +179,7 @@ public abstract class JIPipeDesktopEasyInstallExternalEnvironmentInstaller<T ext
             for (int i = 0; i < urlMultiPart.size(); i++) {
                 JIPipeProgressInfo partProgress = progressInfo.resolveAndLog("Download part", i, urlMultiPart.size());
                 String url = urlMultiPart.get(i);
-                Path multiPartTmpFile = JIPipeRuntimeApplicationSettings.generateTempFile("repository", extension);
+                Path multiPartTmpFile = JIPipeRuntimeApplicationSettings.getTemporaryFile("repository", extension);
 
                 try {
                     WebUtils.download(new URL(url), multiPartTmpFile, "Download part", partProgress);
@@ -191,7 +191,7 @@ public abstract class JIPipeDesktopEasyInstallExternalEnvironmentInstaller<T ext
             }
 
             // Concat the multipart files
-            outputFile = JIPipeRuntimeApplicationSettings.generateTempFile("repository", extension);
+            outputFile = JIPipeRuntimeApplicationSettings.getTemporaryFile("repository", extension);
             progressInfo.log("Following files will be combined into " + outputFile);
             for (Path multiPartFile : multiPartFiles) {
                 progressInfo.log(" - " + multiPartFile);
@@ -232,7 +232,7 @@ public abstract class JIPipeDesktopEasyInstallExternalEnvironmentInstaller<T ext
             }
 
             // Set output file and download directly
-            outputFile = JIPipeRuntimeApplicationSettings.generateTempFile("repository", extension);
+            outputFile = JIPipeRuntimeApplicationSettings.getTemporaryFile("repository", extension);
             try {
                 WebUtils.download(new URL(targetPackage.getUrl()), outputFile, "Download package", progressInfo.resolve("Download package"));
             } catch (MalformedURLException e) {

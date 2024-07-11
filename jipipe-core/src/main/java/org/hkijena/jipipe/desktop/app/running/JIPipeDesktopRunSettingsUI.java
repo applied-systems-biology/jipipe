@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
+import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
@@ -115,10 +116,11 @@ public class JIPipeDesktopRunSettingsUI extends JIPipeDesktopProjectWorkbenchPan
     private void initializeSetupGUI() {
 
         try {
+            JIPipeProject project = getDesktopProjectWorkbench().getProject();
             JIPipeGraphRunConfiguration settings = new JIPipeGraphRunConfiguration();
-            settings.setOutputPath(JIPipeRuntimeApplicationSettings.generateTempDirectory(""));
+            settings.setOutputPath(project != null ? project.getTemporaryDirectory("run") : JIPipeRuntimeApplicationSettings.getTemporaryDirectory("run"));
             settings.setLoadFromCache(false);
-            run = new JIPipeGraphRun(getDesktopProjectWorkbench().getProject(), settings);
+            run = new JIPipeGraphRun(project, settings);
         } catch (Exception e) {
             openError(e);
             return;

@@ -99,7 +99,7 @@ public class JIPipeDesktopLogViewLogUI extends JIPipeDesktopWorkbenchPanel {
     }
 
     private void openLogInExternalTool() {
-        Path tempFile = JIPipeRuntimeApplicationSettings.generateTempFile("log", ".txt");
+        Path tempFile = JIPipeRuntimeApplicationSettings.getTemporaryFile("log", ".txt");
         try {
             Files.write(tempFile, logEntry.getLog().getBytes(StandardCharsets.UTF_8));
             Desktop.getDesktop().open(tempFile.toFile());

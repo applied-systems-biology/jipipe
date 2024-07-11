@@ -204,7 +204,7 @@ public class JIPipeDesktopAlgorithmCacheBrowserUI extends JIPipeDesktopProjectWo
         }
 
         // The backup case
-        JIPipeDesktopQuickRunSettings settings = new JIPipeDesktopQuickRunSettings();
+        JIPipeDesktopQuickRunSettings settings = new JIPipeDesktopQuickRunSettings(getProject());
         settings.setLoadFromCache(true);
         settings.setStoreIntermediateResults(storeIntermediateResults);
         settings.setSaveToDisk(false);

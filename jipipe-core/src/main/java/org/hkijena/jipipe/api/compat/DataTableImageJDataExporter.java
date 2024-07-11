@@ -40,9 +40,9 @@ public class DataTableImageJDataExporter implements ImageJDataExporter {
 
     @Override
     public List<Object> exportData(JIPipeDataTable dataTable, ImageJExportParameters properties, JIPipeProgressInfo progressInfo) {
-        Path path = StringUtils.isNullOrEmpty(properties.getName()) ? JIPipeRuntimeApplicationSettings.generateTempDirectory("data-table-export") : Paths.get(properties.getName());
+        Path path = StringUtils.isNullOrEmpty(properties.getName()) ? JIPipeRuntimeApplicationSettings.getTemporaryDirectory("data-table-export") : Paths.get(properties.getName());
         if (!path.isAbsolute()) {
-            path = JIPipeRuntimeApplicationSettings.generateTempDirectory("data-table-export").resolve(path);
+            path = JIPipeRuntimeApplicationSettings.getTemporaryDirectory("data-table-export").resolve(path);
         }
         try {
             Files.createDirectories(path);

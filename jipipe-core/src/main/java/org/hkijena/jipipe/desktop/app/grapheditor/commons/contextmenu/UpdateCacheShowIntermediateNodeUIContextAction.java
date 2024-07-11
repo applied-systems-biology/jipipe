@@ -33,7 +33,7 @@ import java.util.Set;
 
 public class UpdateCacheShowIntermediateNodeUIContextAction implements NodeUIContextAction {
     private static void enqueue(JIPipeGraphNode node, JIPipeProject project) {
-        JIPipeDesktopQuickRunSettings settings = new JIPipeDesktopQuickRunSettings();
+        JIPipeDesktopQuickRunSettings settings = new JIPipeDesktopQuickRunSettings(project);
         settings.setSaveToDisk(false);
         settings.setStoreToCache(true);
         settings.setStoreIntermediateResults(true);

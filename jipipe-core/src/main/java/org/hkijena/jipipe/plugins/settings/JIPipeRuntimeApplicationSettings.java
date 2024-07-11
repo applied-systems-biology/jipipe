@@ -22,6 +22,7 @@ import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSet
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalPathParameter;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -37,6 +38,7 @@ public class JIPipeRuntimeApplicationSettings extends JIPipeDefaultApplicationsS
     private boolean allowSkipAlgorithmsWithoutInput = true;
     private boolean allowCache = true;
     private OptionalPathParameter tempDirectory = new OptionalPathParameter();
+    private boolean perProjectTempDirectory = true;
     private int defaultRunThreads = 1;
     private int defaultQuickRunThreads = 1;
     private int logLimit = 15;
@@ -51,33 +53,56 @@ public class JIPipeRuntimeApplicationSettings extends JIPipeDefaultApplicationsS
         return JIPipe.getSettings().getById(ID, JIPipeRuntimeApplicationSettings.class);
     }
 
+    public static Path getTemporaryBaseDirectory() {
+        if (JIPipe.getInstance() == null || !JIPipe.getInstance().getApplicationSettingsRegistry().getRegisteredSheets().containsKey(ID)) {
+            try {
+                return Files.createTempDirectory("JIPipe");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        OptionalPathParameter tempDirectory = getInstance().getTempDirectory();
+        if(tempDirectory.isEnabled()) {
+            try {
+                if(tempDirectory.getContent().isAbsolute()) {
+                    Files.createDirectories(tempDirectory.getContent());
+                    return tempDirectory.getContent();
+                }
+                else {
+                    Path absPath = Files.createDirectories(PathUtils.getJIPipeUserDir().resolve(tempDirectory.getContent()));
+                    Files.createDirectories(absPath);
+                    return absPath;
+                }
+            } catch (IOException e) {
+                System.err.println("Fallback temporary directory due to following error:");
+                e.printStackTrace();
+                try {
+                    return Files.createTempDirectory("JIPipe");
+                } catch (IOException e2) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        else {
+            try {
+                return Files.createTempDirectory("JIPipe");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
     /**
      * Generates a temporary directory
      *
      * @param baseName optional base name
      * @return a temporary directory
      */
-    public static Path generateTempDirectory(String baseName) {
-        if (JIPipe.getInstance() == null || !JIPipe.getInstance().getApplicationSettingsRegistry().getRegisteredSheets().containsKey(ID)) {
-            try {
-                return Files.createTempDirectory("JIPipe" + baseName);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        OptionalPathParameter tempDirectory = getInstance().getTempDirectory();
-        if (tempDirectory.isEnabled()) {
-            try {
-                return Files.createTempDirectory(tempDirectory.getContent(), "JIPipe" + baseName);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            try {
-                return Files.createTempDirectory("JIPipe" + baseName);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+    public static Path getTemporaryDirectory(String baseName) {
+        try {
+            return Files.createTempDirectory(getTemporaryBaseDirectory(), baseName);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -88,29 +113,23 @@ public class JIPipeRuntimeApplicationSettings extends JIPipeDefaultApplicationsS
      * @param suffix suffix
      * @return a temporary directory
      */
-    public static Path generateTempFile(String prefix, String suffix) {
-        if (JIPipe.getInstance() == null || !JIPipe.getInstance().getApplicationSettingsRegistry().getRegisteredSheets().containsKey(ID)) {
-            try {
-                return Files.createTempFile("JIPipe" + prefix, suffix);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            OptionalPathParameter tempDirectory = getInstance().getTempDirectory();
-            if (tempDirectory.isEnabled()) {
-                try {
-                    return Files.createTempFile(tempDirectory.getContent(), "JIPipe" + prefix, suffix);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            } else {
-                try {
-                    return Files.createTempFile("JIPipe" + prefix, suffix);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
+    public static Path getTemporaryFile(String prefix, String suffix) {
+        try {
+            return Files.createTempFile(getTemporaryBaseDirectory(), prefix, suffix);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+    }
+
+    @SetJIPipeDocumentation(name = "Temporary directory per project", description = "If enable, store temporary files are stored next to the current project file if possible")
+    @JIPipeParameter("per-project-temp-directory")
+    public boolean isPerProjectTempDirectory() {
+        return perProjectTempDirectory;
+    }
+
+    @JIPipeParameter("per-project-temp-directory")
+    public void setPerProjectTempDirectory(boolean perProjectTempDirectory) {
+        this.perProjectTempDirectory = perProjectTempDirectory;
     }
 
     @SetJIPipeDocumentation(name = "Automatically skip algorithms without input", description = "If enabled, algorithms and their dependents without " +

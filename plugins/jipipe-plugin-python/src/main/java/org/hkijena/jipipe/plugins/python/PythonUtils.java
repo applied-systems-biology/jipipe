@@ -241,7 +241,7 @@ public class PythonUtils {
 
     public static void runPython(String code, PythonEnvironment environment, List<Path> libraryPaths, boolean suppressLogs, JIPipeProgressInfo progressInfo) {
         progressInfo.log(code);
-        Path codeFilePath = JIPipeRuntimeApplicationSettings.generateTempFile("py", ".py");
+        Path codeFilePath = JIPipeRuntimeApplicationSettings.getTemporaryFile("py", ".py");
         try {
             Files.write(codeFilePath, code.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {

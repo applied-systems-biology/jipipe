@@ -389,7 +389,7 @@ public class ScriptDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
 
         private void initialize() {
             ScriptParameter parameter = getParameter(ScriptParameter.class);
-            targetDirectory = JIPipeRuntimeApplicationSettings.generateTempDirectory("script-editor");
+            targetDirectory = JIPipeRuntimeApplicationSettings.getTemporaryDirectory("script-editor");
             targetFile = targetDirectory.resolve("script" + parameter.getExtension());
             try {
                 Files.write(targetFile, StringUtils.nullToEmpty(parameter.getCode()).getBytes(StandardCharsets.UTF_8));

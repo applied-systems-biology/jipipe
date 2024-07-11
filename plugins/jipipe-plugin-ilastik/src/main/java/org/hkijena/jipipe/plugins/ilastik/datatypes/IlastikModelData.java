@@ -99,7 +99,7 @@ public class IlastikModelData implements JIPipeData {
     @Override
     public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
         // Export project to a tmp file
-        Path outputFile = JIPipeRuntimeApplicationSettings.generateTempFile("ilastik", ".ilp");
+        Path outputFile = JIPipeRuntimeApplicationSettings.getTemporaryFile("ilastik", ".ilp");
         try {
             Files.write(outputFile, data, StandardOpenOption.CREATE);
         } catch (Exception e) {

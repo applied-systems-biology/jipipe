@@ -51,7 +51,7 @@ public class TemporaryFileDataSource extends JIPipeParameterSlotAlgorithm {
 
     @Override
     public void runParameterSet(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
-        getFirstOutputSlot().addData(new FileData(JIPipeRuntimeApplicationSettings.generateTempFile(prefix, suffix)), JIPipeDataContext.create(this), progressInfo);
+        getFirstOutputSlot().addData(new FileData(JIPipeRuntimeApplicationSettings.getTemporaryFile(prefix, suffix)), JIPipeDataContext.create(this), progressInfo);
     }
 
     @SetJIPipeDocumentation(name = "Prefix", description = "Optional string that is prepended to file name.")

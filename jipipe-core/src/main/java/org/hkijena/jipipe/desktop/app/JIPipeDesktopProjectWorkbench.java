@@ -292,7 +292,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     }
 
     public void runCacheIntermediateResults(JIPipeGraphNode algorithm) {
-        JIPipeDesktopQuickRunSettings settings = new JIPipeDesktopQuickRunSettings();
+        JIPipeDesktopQuickRunSettings settings = new JIPipeDesktopQuickRunSettings(getProject());
         settings.setLoadFromCache(true);
         settings.setStoreIntermediateResults(true);
         settings.setSaveToDisk(false);
@@ -302,7 +302,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     }
 
     public void runUpdateCache(JIPipeGraphNode algorithm) {
-        JIPipeDesktopQuickRunSettings settings = new JIPipeDesktopQuickRunSettings();
+        JIPipeDesktopQuickRunSettings settings = new JIPipeDesktopQuickRunSettings(getProject());
         settings.setSilent(true);
         settings.setLoadFromCache(true);
         settings.setStoreIntermediateResults(false);

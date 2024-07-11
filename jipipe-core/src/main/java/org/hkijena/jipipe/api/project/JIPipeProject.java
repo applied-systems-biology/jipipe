@@ -52,10 +52,9 @@ import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportCon
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.utils.NaturalOrderComparator;
-import org.hkijena.jipipe.utils.ParameterUtils;
-import org.hkijena.jipipe.utils.ReflectionUtils;
-import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.plugins.settings.JIPipeDataStorageProjectSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
+import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.awt.*;
@@ -261,6 +260,44 @@ public class JIPipeProject implements JIPipeValidatable {
                 }
             }
         }
+    }
+
+    public Path getTemporaryDirectory(String baseName) {
+        try {
+            return Files.createTempDirectory(getTemporaryBaseDirectory(), baseName);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Path getTemporaryBaseDirectory() {
+        JIPipeDataStorageProjectSettings settings = getSettingsSheet(JIPipeDataStorageProjectSettings.class);
+        Path output;
+        if(settings.isForceGlobalTempDirectory()) {
+            output = JIPipeRuntimeApplicationSettings.getTemporaryBaseDirectory();
+        }
+        else if(settings.getOverrideTempDirectory().isEnabled() && settings.getOverrideTempDirectory().getContent() != null && settings.getOverrideTempDirectory().getContent().isAbsolute()) {
+            output = settings.getOverrideTempDirectory().getContent();
+        }
+        else if(workDirectory != null) {
+            if(settings.getOverrideTempDirectory().isEnabled()) {
+                output = workDirectory.resolve(settings.getOverrideTempDirectory().getContent());
+            }
+            else {
+                output = workDirectory.resolve("JIPipe.tmp.dir");
+                PathUtils.createDirectories(output);
+                try {
+                    output = Files.createTempDirectory(output, "tmp");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        else {
+            output = JIPipeRuntimeApplicationSettings.getTemporaryBaseDirectory();
+        }
+        PathUtils.createDirectories(output);
+        return output;
     }
 
     /**
