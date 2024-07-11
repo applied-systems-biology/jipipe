@@ -109,7 +109,7 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
     @AddJIPipeExpressionParameterVariable(key = "path_length", name = "Path length", description = "Existing path length in number of edges between the vertices (NaN if there is no path)")
     @AddJIPipeExpressionParameterVariable(key = "dot_product", name = "Vertices direction dot product", description = "The dot product of source and target directions. " +
             "-1 if the directions are opposite and 1 if they point at the same direction (NaN if not available)")
-    @AddJIPipeExpressionParameterVariable(key = "angle", name = "Angle (degrees)", description = "The angle between the source and target directions (NaN if not available).")
+    @AddJIPipeExpressionParameterVariable(key = "angle", name = "Angle (degrees)", description = "The angle in degrees between the source and target directions (NaN if not available).")
     public JIPipeExpressionParameter getScoringFunction() {
         return scoringFunction;
     }
