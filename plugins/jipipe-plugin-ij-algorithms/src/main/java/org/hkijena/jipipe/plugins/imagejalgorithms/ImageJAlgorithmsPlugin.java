@@ -1122,6 +1122,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-binary-hough-lines", LinesHoughDetection2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-line-segment.png"));
         registerNodeType("ij1-binary-hough-line-segments", LineSegmentsHoughDetection2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-line-segment.png"));
         registerNodeType("ij1-binary-hough-lines-global", GlobalLinesHoughDetection2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-line-segment.png"));
+        registerEnumParameterType("ij1-hough-nms-algorithm", HoughLinesNMSAlgorithm.class, "NMS algorithm", "NMS algorithm for Hough");
     }
 
     private void registerMorphologyAlgorithms() {

@@ -313,6 +313,9 @@ public class ExpressionPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerExpressionFunction(new GetItemOrDefaultFunction());
         registerExpressionFunction(new StringTrimFunction());
         registerExpressionFunction(new SwitchMapFunction());
+        registerExpressionFunction(new RoundToEvenFunction());
+        registerExpressionFunction(new RoundToOddFunction());
+        registerExpressionFunction(new NaNToNumFunction());
     }
 
     @Override

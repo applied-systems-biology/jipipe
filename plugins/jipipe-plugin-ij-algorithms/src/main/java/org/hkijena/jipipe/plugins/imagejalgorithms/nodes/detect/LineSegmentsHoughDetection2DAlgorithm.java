@@ -19,6 +19,7 @@ import ij.gui.Line;
 import ij.gui.PointRoi;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
+import inra.ijpb.morphology.Strel;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -32,9 +33,12 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
+import org.hkijena.jipipe.plugins.expressions.OptionalJIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.HoughLineSegments;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
@@ -42,9 +46,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.OptionalVector2iParameter;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2iParameter;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.VectorParameterSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -53,7 +54,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "Detect line segments 2D (Hough)", description = "Finds lines within the image via a Hough lines transformation. " + "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+@SetJIPipeDocumentation(name = "Detect line segments 2D (Hough, classic NMS)", description = "Finds lines within the image via a Hough lines transformation. " +
+        "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Detect")
 @AddJIPipeCitation("Based on code by Hartmut Gimpel, https://sourceforge.net/p/octave/image/ci/default/tree/inst/")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Mask", description = "Mask that contains the segmented edges. ", create = true)
@@ -66,7 +68,9 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
 
     private int numPeaks = 100;
     private JIPipeExpressionParameter peakThreshold = new JIPipeExpressionParameter("0.5 * MAX(H)");
-    private OptionalVector2iParameter neighborhoodSize = new OptionalVector2iParameter(new Vector2iParameter(5, 5), false);
+    private OptionalJIPipeExpressionParameter houghArrayNMSNeighborhoodSize = new OptionalJIPipeExpressionParameter(false, "ARRAY(MAX(3, ROUND_ODD(H.width / 50)), MAX(3, ROUND_EVEN(H.height / 50)))");
+    private int inputNMSNeighborhoodSize = 3;
+    private HoughLinesNMSAlgorithm nmsAlgorithm = HoughLinesNMSAlgorithm.HoughArray;
     private double fillGap = 20;
     private double minLength = 40;
     private JIPipeExpressionParameter thetas = new JIPipeExpressionParameter("MAKE_SEQUENCE(-90, 90, 1)");
@@ -80,13 +84,15 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
     public LineSegmentsHoughDetection2DAlgorithm(LineSegmentsHoughDetection2DAlgorithm other) {
         super(other);
         this.roiNameExpression = new JIPipeExpressionParameter(other.roiNameExpression);
-        this.neighborhoodSize = new OptionalVector2iParameter(other.neighborhoodSize);
+        this.houghArrayNMSNeighborhoodSize = new OptionalJIPipeExpressionParameter(other.houghArrayNMSNeighborhoodSize);
         this.numPeaks = other.numPeaks;
         this.peakThreshold = new JIPipeExpressionParameter(other.peakThreshold);
         this.fillGap = other.fillGap;
         this.minLength = other.minLength;
         this.thetas = new JIPipeExpressionParameter(other.thetas);
         this.fastSegmentDetection = other.fastSegmentDetection;
+        this.nmsAlgorithm = other.nmsAlgorithm;
+        this.inputNMSNeighborhoodSize = other.inputNMSNeighborhoodSize;
     }
 
     @Override
@@ -127,20 +133,6 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
 
         progressInfo.log("Thetas are: " + JsonUtils.toJsonString(thetaAngles));
 
-        int[] neighborHood;
-        if (neighborhoodSize.isEnabled()) {
-            neighborHood = new int[]{neighborhoodSize.getContent().getX(), neighborhoodSize.getContent().getY()};
-        } else {
-            neighborHood = null;
-        }
-
-        if(neighborHood != null) {
-            progressInfo.log("Neighborhood size: " + neighborHood[0] + ", " + neighborHood[1]);
-        }
-        else {
-            progressInfo.log("Neighborhood size: Auto");
-        }
-
         Map<ImageSliceIndex, ImageProcessor> outputMaskSlices = new HashMap<>();
         Map<ImageSliceIndex, ImageProcessor> outputAccumulatorSlices = new HashMap<>();
         ROIListData outputPeaks = new ROIListData();
@@ -148,63 +140,101 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
         ImageJUtils.forEachIndexedZCTSliceWithProgress(inputMask, (ip, index, sliceProgress) -> {
 
             ImageProcessor bw = ip.duplicate();
-            HoughLineSegments.HoughResult houghResult = HoughLineSegments.hough(bw, thetaAngles);
-
-
-            JIPipeExpressionVariablesMap peakThresholdVariables = new JIPipeExpressionVariablesMap();
-            peakThresholdVariables.putAnnotations(iterationStep.getMergedTextAnnotations());
-            peakThresholdVariables.put("H", Floats.asList((float[]) houghResult.getH().getPixels()));
-            peakThresholdVariables.put("H.width", houghResult.getH().getWidth());
-            peakThresholdVariables.put("H.height", houghResult.getH().getHeight());
-            double peakThreshold = this.peakThreshold.evaluateToDouble(peakThresholdVariables);
-
-            List<Point> peaks = HoughLineSegments.houghPeaks(houghResult.getH(), numPeaks, peakThreshold, neighborHood, progressInfo);
-
-            // Output peak ROIs
-            for (Point peak : peaks) {
-                PointRoi roi = new PointRoi(peak.x, peak.y);
-                roi.setName(peak.x + ", " + peak.y);
-                roi.setPosition(index.getC() + 1, index.getZ() + 1, index.getT() + 1);
-                outputPeaks.add(roi);
-            }
-
-            // Generate line ROIs and table rows
-            List<HoughLineSegments.Line> lines = HoughLineSegments.houghLineSegments(bw, houghResult.getThetas(), houghResult.getRhos(), peaks, fillGap, minLength, fastSegmentDetection, sliceProgress);
-
+            final int numPeakIterations = nmsAlgorithm == HoughLinesNMSAlgorithm.HoughArray ? 1 : this.numPeaks;
+            final int numPeaksPerIteration = nmsAlgorithm == HoughLinesNMSAlgorithm.HoughArray ? this.numPeaks : 1;
             ROIListData localROI = new ROIListData();
-            for (HoughLineSegments.Line line : lines) {
+            ImageProcessor houghArray = null;
 
-                // Add to table
-                outputTable.addAndModifyRow().set("Image Z", index.getZ())
-                        .set("Image C", index.getC())
-                        .set("Image T", index.getT())
-                        .set("Line Theta", line.getTheta())
-                        .set("Line Rho", line.getRho())
-                        .set("Line Length", line.getPoint1().distance(line.getPoint2()))
-                        .set("Line X0", line.getPoint1().x)
-                        .set("Line Y0", line.getPoint1().y)
-                        .set("Line X1", line.getPoint2().x)
-                        .set("Line Y1", line.getPoint2().y);
+            for (int peakIterationIndex = 0; peakIterationIndex < numPeakIterations; peakIterationIndex++) {
+                JIPipeProgressInfo peakIterationProgress = sliceProgress.resolve("Peak iteration", peakIterationIndex, numPeakIterations);
+                HoughLineSegments.HoughResult houghResult = HoughLineSegments.hough(bw, thetaAngles);
 
-                // Generate variables
-                variables.set("img_z", index.getZ());
-                variables.set("img_c", index.getC());
-                variables.set("img_t", index.getT());
-                variables.set("line_theta", line.getTheta());
-                variables.set("line_rho", line.getRho());
-                variables.set("line_length", line.getPoint1().distance(line.getPoint2()));
-                variables.set("line_x0", line.getPoint1().x);
-                variables.set("line_y0", line.getPoint1().y);
-                variables.set("line_x1", line.getPoint2().x);
-                variables.set("line_y1", line.getPoint2().y);
-
-                // Generate ROI
-                Line roi;
-                {
-                    roi = new Line(line.getPoint1().x, line.getPoint1().y, line.getPoint2().x, line.getPoint2().y);
-                    roi.setName(roiNameExpression.evaluateToString(variables));
+                if(houghArray == null) {
+                    houghArray = houghResult.getH().duplicate();
                 }
-                localROI.add(roi);
+
+                JIPipeExpressionVariablesMap peakThresholdVariables = new JIPipeExpressionVariablesMap();
+                peakThresholdVariables.putAnnotations(iterationStep.getMergedTextAnnotations());
+                peakThresholdVariables.put("H", Floats.asList((float[]) houghResult.getH().getPixels()));
+                peakThresholdVariables.put("H.width", houghResult.getH().getWidth());
+                peakThresholdVariables.put("H.height", houghResult.getH().getHeight());
+                double peakThreshold = this.peakThreshold.evaluateToDouble(peakThresholdVariables);
+
+                int[] neighborHood;
+                if (houghArrayNMSNeighborhoodSize.isEnabled() && nmsAlgorithm == HoughLinesNMSAlgorithm.HoughArray) {
+                    List<Double> doubles = houghArrayNMSNeighborhoodSize.getContent().evaluateToDoubleList(peakThresholdVariables);
+                    neighborHood = new int[]{doubles.get(0).intValue(), doubles.get(1).intValue()};
+                } else {
+                    neighborHood = null;
+                }
+
+                List<Point> peaks = HoughLineSegments.houghPeaks(houghResult.getH(), numPeaksPerIteration, peakThreshold, neighborHood, peakIterationProgress);
+
+                // Output peak ROIs
+                for (Point peak : peaks) {
+                    PointRoi roi = new PointRoi(peak.x, peak.y);
+                    roi.setName(peak.x + ", " + peak.y);
+                    roi.setPosition(index.getC() + 1, index.getZ() + 1, index.getT() + 1);
+                    outputPeaks.add(roi);
+                }
+
+                // Generate line ROIs and table rows
+                List<HoughLineSegments.Line> lines = HoughLineSegments.houghLineSegments(bw, houghResult.getThetas(), houghResult.getRhos(), peaks, fillGap, minLength, fastSegmentDetection, peakIterationProgress);
+                ROIListData currentIterationROI = new ROIListData();
+
+                for (HoughLineSegments.Line line : lines) {
+
+                    // Add to table
+                    outputTable.addAndModifyRow().set("Image Z", index.getZ())
+                            .set("Image C", index.getC())
+                            .set("Image T", index.getT())
+                            .set("Line Theta", line.getTheta())
+                            .set("Line Rho", line.getRho())
+                            .set("Line Length", line.getPoint1().distance(line.getPoint2()))
+                            .set("Line X0", line.getPoint1().x)
+                            .set("Line Y0", line.getPoint1().y)
+                            .set("Line X1", line.getPoint2().x)
+                            .set("Line Y1", line.getPoint2().y);
+
+                    // Generate variables
+                    variables.set("img_z", index.getZ());
+                    variables.set("img_c", index.getC());
+                    variables.set("img_t", index.getT());
+                    variables.set("line_theta", line.getTheta());
+                    variables.set("line_rho", line.getRho());
+                    variables.set("line_length", line.getPoint1().distance(line.getPoint2()));
+                    variables.set("line_x0", line.getPoint1().x);
+                    variables.set("line_y0", line.getPoint1().y);
+                    variables.set("line_x1", line.getPoint2().x);
+                    variables.set("line_y1", line.getPoint2().y);
+
+                    // Generate ROI
+                    Line roi;
+                    {
+                        roi = new Line(line.getPoint1().x, line.getPoint1().y, line.getPoint2().x, line.getPoint2().y);
+                        roi.setName(roiNameExpression.evaluateToString(variables));
+                    }
+                    localROI.add(roi);
+                    currentIterationROI.add(roi);
+                }
+
+                // Erase on input
+                if(nmsAlgorithm == HoughLinesNMSAlgorithm.Input) {
+                    ImagePlus mask = currentIterationROI.toMask(ip.getWidth(), ip.getHeight(), true, false, 1);
+                    if(inputNMSNeighborhoodSize > 0) {
+                        Strel strel = Strel.Shape.DISK.fromRadius(inputNMSNeighborhoodSize);
+                        ImageProcessor dilation = strel.dilation(mask.getProcessor());
+                        mask.setProcessor(dilation);
+                    }
+                    byte[] bwPixels = (byte[]) bw.getPixels();
+                    byte[] maskPixels = (byte[]) mask.getProcessor().getPixels();
+                    assert bwPixels.length == maskPixels.length;
+                    for (int i = 0; i < bwPixels.length; i++) {
+                        if(Byte.toUnsignedInt(maskPixels[i]) > 0) {
+                            bwPixels[i] = 0;
+                        }
+                    }
+                }
             }
 
             // Generate mask
@@ -217,8 +247,14 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
             }
             outputROI.addAll(localROI);
 
+            // Create fallback hough array
+            if(houghArray == null) {
+                HoughLineSegments.HoughResult houghResult = HoughLineSegments.hough(bw, thetaAngles);
+                houghArray = houghResult.getH();
+            }
+
             // Generate accumulator
-            outputAccumulatorSlices.put(index, houghResult.getH());
+            outputAccumulatorSlices.put(index, houghArray);
 
         }, progressInfo);
 
@@ -260,17 +296,61 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
         this.roiNameExpression = roiNameExpression;
     }
 
-    @SetJIPipeDocumentation(name = "Neighborhood size", description = "Neighborhood size for the non-maximum suppression. Defaults to [height / 50, width / 50] if not enabled. Must be positive odd integers.")
-    @JIPipeParameter("neighborhood-size")
-    @VectorParameterSettings(xLabel = "Width", yLabel = "Height")
-    public OptionalVector2iParameter getNeighborhoodSize() {
-        return neighborhoodSize;
+    @SetJIPipeDocumentation(name = "Neighborhood size (H)", description = "Neighborhood size for the non-maximum suppression in the space of the hough array (the X axis containing the theta values, Y containing the rho values). " +
+            "Defaults to [width / 50, height / 50] with a minimum of 3 if not enabled. Must be positive odd integers.")
+    @JIPipeParameter("hough-array-nms-neighborhood-size")
+    @AddJIPipeExpressionParameterVariable(name = "Hough array", description = "The hough array as list of values", key = "H")
+    @AddJIPipeExpressionParameterVariable(name = "Hough array width", description = "The hough array as list of values", key = "H.width")
+    @AddJIPipeExpressionParameterVariable(name = "Hough array height", description = "The hough array as list of values", key = "H.height")
+    public OptionalJIPipeExpressionParameter getHoughArrayNMSNeighborhoodSize() {
+        return houghArrayNMSNeighborhoodSize;
     }
 
-    @JIPipeParameter("neighborhood-size")
-    public void setNeighborhoodSize(OptionalVector2iParameter neighborhoodSize) {
-        this.neighborhoodSize = neighborhoodSize;
+    @JIPipeParameter("hough-array-nms-neighborhood-size")
+    public void setHoughArrayNMSNeighborhoodSize(OptionalJIPipeExpressionParameter houghArrayNMSNeighborhoodSize) {
+        this.houghArrayNMSNeighborhoodSize = houghArrayNMSNeighborhoodSize;
     }
+
+    @SetJIPipeDocumentation(name = "Neighborhood size (I)", description = "Neighborhood size for the non-maximum suppression on the input mask. Set to zero or lower to turn off.")
+    @JIPipeParameter("input-nms-neighborhood-size")
+    public int getInputNMSNeighborhoodSize() {
+        return inputNMSNeighborhoodSize;
+    }
+
+    @JIPipeParameter("input-nms-neighborhood-size")
+    public void setInputNMSNeighborhoodSize(int inputNMSNeighborhoodSize) {
+        this.inputNMSNeighborhoodSize = inputNMSNeighborhoodSize;
+    }
+
+    @SetJIPipeDocumentation(name = "Non-maximum suppression", description = "Determines the algorithm used for the non-maximum suppression. " +
+            "The classic method erases peaks within the Hough array, which is fast, but may not always yield the expected results. " +
+            "Alternatively, detected lines can be erased within the input mask (slower, as the Hough array needs to be regenerated)")
+    @JIPipeParameter("nms-algorithm")
+    public HoughLinesNMSAlgorithm getNmsAlgorithm() {
+        return nmsAlgorithm;
+    }
+
+    @JIPipeParameter("nms-algorithm")
+    public void setNmsAlgorithm(HoughLinesNMSAlgorithm nmsAlgorithm) {
+        this.nmsAlgorithm = nmsAlgorithm;
+        emitParameterUIChangedEvent();
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        if(nmsAlgorithm == HoughLinesNMSAlgorithm.HoughArray) {
+            if("input-nms-neighborhood-size".equals(access.getKey())) {
+                return false;
+            }
+        }
+        if(nmsAlgorithm == HoughLinesNMSAlgorithm.Input) {
+            if("hough-array-nms-neighborhood-size".equals(access.getKey())) {
+                return false;
+            }
+        }
+        return super.isParameterUIVisible(tree, access);
+    }
+
 
     @SetJIPipeDocumentation(name = "Peak threshold", description = "Threshold for the Hough array H peak detection. Defaults to 0.5 * MAX(H).")
     @JIPipeParameter("peak-threshold")
