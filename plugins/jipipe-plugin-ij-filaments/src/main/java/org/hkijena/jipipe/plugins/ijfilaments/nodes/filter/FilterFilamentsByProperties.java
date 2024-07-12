@@ -32,17 +32,16 @@ import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVaria
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
+import org.hkijena.jipipe.plugins.ijfilaments.util.AllFilamentComponentVariablesInfo;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentComponentVariablesInfo;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.jgrapht.alg.connectivity.ConnectivityInspector;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-@SetJIPipeDocumentation(name = "Filter filaments", description = "Filters filament connected components by various properties")
+@SetJIPipeDocumentation(name = "Filter filament components", description = "Filters filament connected components by various properties")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Filter")
 @AddJIPipeInputSlot(value = Filaments3DData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DData.class, name = "Output", create = true)
@@ -72,12 +71,28 @@ public class FilterFilamentsByProperties extends JIPipeSimpleIteratingAlgorithm 
         List<Set<FilamentVertex>> connectedSets = connectivityInspector.connectedSets();
         String consensusPhysicalSizeUnit = outputData.getConsensusPhysicalSizeUnit();
         Set<FilamentVertex> toDelete = new HashSet<>();
+        List<ResultsTableData> measurementList = new ArrayList<>();
+        ResultsTableData mergedMeasurements = new ResultsTableData();
 
+        // Collect all measurements
         for (int i = 0; i < connectedSets.size(); i++) {
             ResultsTableData measurements = new ResultsTableData();
             Set<FilamentVertex> vertices = connectedSets.get(i);
             outputData.measureComponent(measurements, consensusPhysicalSizeUnit, vertices);
 
+            measurementList.add(measurements);
+            mergedMeasurements.addRows(measurements);
+        }
+
+        // Create all. variables
+        for (String columnName : mergedMeasurements.getColumnNames()) {
+            variables.set("all." + columnName, mergedMeasurements.getColumnReference(columnName).getDataAsObjectList());
+        }
+
+        // Filter
+        for (int i = 0; i < connectedSets.size(); i++) {
+            ResultsTableData measurements = measurementList.get(i);
+            Set<FilamentVertex> vertices = connectedSets.get(i);
             for (int col = 0; col < measurements.getColumnCount(); col++) {
                 variables.set(measurements.getColumnName(col), measurements.getValueAt(0, col));
             }
@@ -87,6 +102,7 @@ public class FilterFilamentsByProperties extends JIPipeSimpleIteratingAlgorithm 
             }
         }
 
+
         outputData.removeAllVertices(toDelete);
         iterationStep.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
@@ -94,6 +110,7 @@ public class FilterFilamentsByProperties extends JIPipeSimpleIteratingAlgorithm 
     @SetJIPipeDocumentation(name = "Only keep filament if", description = "If the filter is left empty or returns TRUE, the filament is kept. Otherwise the vertex is deleted.")
     @JIPipeParameter("filter")
     @AddJIPipeExpressionParameterVariable(fromClass = FilamentComponentVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = AllFilamentComponentVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     @JIPipeExpressionParameterSettings(hint = "per filament")
