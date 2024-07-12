@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.threshold;
+package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.detect;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -42,9 +42,9 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 /**
  * Segments using a Hough circle transform
  */
-@SetJIPipeDocumentation(name = "Circular Hough segmentation 2D", description = "Finds circular 2D objects via a Hough transform. " +
+@SetJIPipeDocumentation(name = "Detect circles 2D (Hough)", description = "Finds circular 2D objects via a Hough transform. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@ConfigureJIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@ConfigureJIPipeNode(menuPath = "Detect", nodeTypeCategory = ImagesNodeTypeCategory.class)
 
 
 @AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, name = "Input", create = true)

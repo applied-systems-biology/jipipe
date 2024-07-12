@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.threshold;
+package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.detect;
 
 import ij.ImagePlus;
 import ij.gui.Line;
@@ -52,7 +52,7 @@ import java.util.Map;
         + "If higher-dimensional data is provided, the filter is applied to each 2D slice. " +
         "Please note that this node will not find line segments, but finds global linear structures. " +
         "Legacy implementation based on code by David Chatting. We recommend to use the non-legacy algorithm for better results.")
-@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Binary")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Detect")
 @AddJIPipeCitation("Based on code by David Chatting, https://github.com/davidchatting/hough_lines/blob/master/HoughTransform.java")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Mask", description = "Mask that contains the segmented edges. ", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, name = "Lines", create = true, description = "The detected lines represented as ROI")

@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.threshold;
+package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.detect;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -53,10 +53,10 @@ import java.util.List;
  * Segments using a Hough circle transform
  * This code is based on <a href="https://github.com/closms/detectcircles">...</a>
  */
-@SetJIPipeDocumentation(name = "Circular Hough segmentation 2D (fast)", description = "Finds circular 2D objects via a Hough transform. This implementation is based on code by Michael Closson and is generally faster than the other Hough-based segmentation. " +
+@SetJIPipeDocumentation(name = "Detect circles 2D (Hough, fast)", description = "Finds circular 2D objects via a Hough transform. This implementation is based on code by Michael Closson and is generally faster than the other Hough-based segmentation. " +
         "It outputs the segmented mask, the maximum Hough accumulator image, and a table of all detected circles (x, y, Diameter, and Score)." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@ConfigureJIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@ConfigureJIPipeNode(menuPath = "Detect", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeCitation("https://github.com/closms/detectcircles")
 @AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Mask", create = true)

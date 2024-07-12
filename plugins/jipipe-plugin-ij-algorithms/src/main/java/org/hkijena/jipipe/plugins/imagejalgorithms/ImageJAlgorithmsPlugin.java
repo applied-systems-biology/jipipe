@@ -45,6 +45,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.convolve.ConvolveByImag
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.convolve.ConvolveByParameter2DAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.datasources.ImageStackFromFolder;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.datasources.OMEImageFromImagePlus;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.detect.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.dimensions.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.edge.CannyEdgeDetectorAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.edge.LaplacianEdgeDetectorAlgorithm;
