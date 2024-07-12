@@ -413,7 +413,7 @@ public class HoughLineSegments {
      * @param neighborhoodSize neighborhood size. array with length 2. defaults to [height / 50, width / 50] if null. must be positive odd integers.
      * @return the peaks
      */
-    public static List<Point> houghPeaks(FloatProcessor H, int numPeaks, double threshold, int[] neighborhoodSize) {
+    public static List<Point> houghPeaks(FloatProcessor H, int numPeaks, double threshold, int[] neighborhoodSize, JIPipeProgressInfo progressInfo) {
         List<Point> peaks = new ArrayList<>();
 
         int width = H.getWidth();
@@ -429,6 +429,8 @@ public class HoughLineSegments {
         if (neighborhoodSize == null || neighborhoodSize.length != 2) {
             neighborhoodSize = new int[]{Math.max((width / 50) | 1, 3), Math.max((height / 50) | 1, 3)};
         }
+
+        progressInfo.log("Neighborhood size is " + Arrays.toString(neighborhoodSize));
 
         // Check if neighborhoodSize elements are positive odd integers
         for (int size : neighborhoodSize) {

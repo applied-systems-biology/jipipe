@@ -156,7 +156,7 @@ public class GlobalLinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingA
             peakThresholdVariables.put("H.height", houghResult.getH().getHeight());
             double peakThreshold = this.peakThreshold.evaluateToDouble(peakThresholdVariables);
 
-            List<Point> peaks = HoughLineSegments.houghPeaks(houghResult.getH(), numPeaks, peakThreshold, neighborHood);
+            List<Point> peaks = HoughLineSegments.houghPeaks(houghResult.getH(), numPeaks, peakThreshold, neighborHood, progressInfo);
 
             // Output peak ROIs
             for (Point peak : peaks) {
