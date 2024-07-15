@@ -54,7 +54,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@SetJIPipeDocumentation(name = "Connect filament vertices", description = "Connect existing vertices based on customizable criteria.")
+@SetJIPipeDocumentation(name = "Connect filament vertices (Expression)", description = "Connect existing vertices based on customizable criteria. Uses expressions to filter candidate edges, which can be slow.")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
 @AddJIPipeInputSlot(value = Filaments3DData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DData.class, name = "Output", create = true)
