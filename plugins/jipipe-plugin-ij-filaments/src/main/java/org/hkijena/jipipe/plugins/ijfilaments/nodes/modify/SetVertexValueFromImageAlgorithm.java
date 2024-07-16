@@ -33,24 +33,29 @@ import org.hkijena.jipipe.plugins.ijfilaments.parameters.VertexMaskParameter;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalStringParameter;
+import org.hkijena.jipipe.utils.StringUtils;
 
-@SetJIPipeDocumentation(name = "Set filament vertex radius from image", description = "Sets the radius of each vertex from the given input image. Please note that if the C/T coordinates are set to zero, the value is extracted from the 0/0 slice.")
+@SetJIPipeDocumentation(name = "Set filament vertex value from image", description = "Sets the value/intensity of each vertex from the given input image. Please note that if the C/T coordinates are set to zero, the value is extracted from the 0/0 slice.")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
 @AddJIPipeInputSlot(value = Filaments3DData.class, name = "Filaments", create = true)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Radius", description = "The radius is sourced from the pixels in this image", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Intensity", description = "The value/intensity is sourced from the pixels in this image", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DData.class, name = "Output", create = true)
-public class SetVertexRadiusFromImageAlgorithm extends JIPipeIteratingAlgorithm {
+public class SetVertexValueFromImageAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final VertexMaskParameter vertexMask;
+    private OptionalStringParameter backupOldValue = new OptionalStringParameter("old_value", false);
 
-    public SetVertexRadiusFromImageAlgorithm(JIPipeNodeInfo info) {
+    public SetVertexValueFromImageAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.vertexMask = new VertexMaskParameter();
         registerSubParameter(vertexMask);
     }
 
-    public SetVertexRadiusFromImageAlgorithm(SetVertexRadiusFromImageAlgorithm other) {
+    public SetVertexValueFromImageAlgorithm(SetVertexValueFromImageAlgorithm other) {
         super(other);
+        this.backupOldValue = other.backupOldValue;
         this.vertexMask = new VertexMaskParameter(other.vertexMask);
         registerSubParameter(vertexMask);
     }
@@ -58,7 +63,7 @@ public class SetVertexRadiusFromImageAlgorithm extends JIPipeIteratingAlgorithm 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Filaments3DData filaments = new Filaments3DData(iterationStep.getInputData("Filaments", Filaments3DData.class, progressInfo));
-        ImagePlus thickness = iterationStep.getInputData("Radius", ImagePlusGreyscaleData.class, progressInfo).getImage();
+        ImagePlus intensity = iterationStep.getInputData("Intensity", ImagePlusGreyscaleData.class, progressInfo).getImage();
         JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap();
         variablesMap.putAnnotations(iterationStep.getMergedTextAnnotations());
 
@@ -66,12 +71,27 @@ public class SetVertexRadiusFromImageAlgorithm extends JIPipeIteratingAlgorithm 
             int z = (int) Math.max(0, vertex.getSpatialLocation().getZ());
             int c = Math.max(0, vertex.getNonSpatialLocation().getChannel());
             int t = Math.max(0, vertex.getNonSpatialLocation().getFrame());
-            ImageProcessor ip = ImageJUtils.getSliceZero(thickness, c, z, t);
-            float d = ip.getf((int) vertex.getSpatialLocation().getX(), (int) vertex.getSpatialLocation().getY());
-            vertex.setRadius(d);
+            ImageProcessor ip = ImageJUtils.getSliceZero(intensity, c, z, t);
+            double d = ip.getf((int) vertex.getSpatialLocation().getX(), (int) vertex.getSpatialLocation().getY());
+            if(backupOldValue.isEnabled()) {
+                vertex.getValueBackups().put(StringUtils.nullToEmpty(backupOldValue.getContent()), d);
+            }
+            vertex.setValue(d);
         }
 
         iterationStep.addOutputData(getFirstOutputSlot(), filaments, progressInfo);
+    }
+
+    @SetJIPipeDocumentation(name = "Backup old value", description = "If enabled, backup the value to the specified storage")
+    @JIPipeParameter("backup-old-value")
+    @StringParameterSettings(monospace = true)
+    public OptionalStringParameter getBackupOldValue() {
+        return backupOldValue;
+    }
+
+    @JIPipeParameter("backup-old-value")
+    public void setBackupOldValue(OptionalStringParameter backupOldValue) {
+        this.backupOldValue = backupOldValue;
     }
 
     @SetJIPipeDocumentation(name = "Vertex mask", description = "Used to filter vertices")
@@ -79,5 +99,4 @@ public class SetVertexRadiusFromImageAlgorithm extends JIPipeIteratingAlgorithm 
     public VertexMaskParameter getVertexMask() {
         return vertexMask;
     }
-
 }

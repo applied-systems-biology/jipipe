@@ -13,8 +13,7 @@
 
 package org.hkijena.jipipe.plugins.ijfilaments.nodes.modify;
 
-import ij.ImagePlus;
-import ij.process.ImageProcessor;
+import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -22,35 +21,38 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
+import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.plugins.ijfilaments.parameters.VertexMaskParameter;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
-@SetJIPipeDocumentation(name = "Set filament vertex radius from image", description = "Sets the radius of each vertex from the given input image. Please note that if the C/T coordinates are set to zero, the value is extracted from the 0/0 slice.")
+@SetJIPipeDocumentation(name = "Remove filament vertex value backups", description = "Removes value backups from vertices")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = Filaments3DData.class, name = "Filaments", create = true)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Radius", description = "The radius is sourced from the pixels in this image", create = true)
+@AddJIPipeInputSlot(value = Filaments3DData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DData.class, name = "Output", create = true)
-public class SetVertexRadiusFromImageAlgorithm extends JIPipeIteratingAlgorithm {
+public class RemoveVertexValueBackupsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final VertexMaskParameter vertexMask;
+    private JIPipeExpressionParameter backupFilter = new JIPipeExpressionParameter("name == \"old_value\"");
 
-    public SetVertexRadiusFromImageAlgorithm(JIPipeNodeInfo info) {
+    public RemoveVertexValueBackupsAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.vertexMask = new VertexMaskParameter();
         registerSubParameter(vertexMask);
     }
 
-    public SetVertexRadiusFromImageAlgorithm(SetVertexRadiusFromImageAlgorithm other) {
+    public RemoveVertexValueBackupsAlgorithm(RemoveVertexValueBackupsAlgorithm other) {
         super(other);
+        this.backupFilter = new JIPipeExpressionParameter(other.backupFilter);
         this.vertexMask = new VertexMaskParameter(other.vertexMask);
         registerSubParameter(vertexMask);
     }
@@ -58,20 +60,31 @@ public class SetVertexRadiusFromImageAlgorithm extends JIPipeIteratingAlgorithm 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Filaments3DData filaments = new Filaments3DData(iterationStep.getInputData("Filaments", Filaments3DData.class, progressInfo));
-        ImagePlus thickness = iterationStep.getInputData("Radius", ImagePlusGreyscaleData.class, progressInfo).getImage();
         JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap();
         variablesMap.putAnnotations(iterationStep.getMergedTextAnnotations());
-
         for (FilamentVertex vertex : vertexMask.filter(filaments, filaments.vertexSet(), variablesMap)) {
-            int z = (int) Math.max(0, vertex.getSpatialLocation().getZ());
-            int c = Math.max(0, vertex.getNonSpatialLocation().getChannel());
-            int t = Math.max(0, vertex.getNonSpatialLocation().getFrame());
-            ImageProcessor ip = ImageJUtils.getSliceZero(thickness, c, z, t);
-            float d = ip.getf((int) vertex.getSpatialLocation().getX(), (int) vertex.getSpatialLocation().getY());
-            vertex.setRadius(d);
+            for (String key : ImmutableList.copyOf(vertex.getValueBackups().keySet())) {
+                variablesMap.put("name", key);
+                variablesMap.put("value", vertex.getValueBackups().get(key));
+                if(backupFilter.test(variablesMap)) {
+                    vertex.getValueBackups().remove(key);
+                }
+            }
         }
+    }
 
-        iterationStep.addOutputData(getFirstOutputSlot(), filaments, progressInfo);
+    @SetJIPipeDocumentation(name = "Remove if ...", description = "Removes all vertex value backups that match the filter")
+    @JIPipeParameter("backup-filter")
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(key = "name", name = "Name", description = "The name of the backup")
+    @AddJIPipeExpressionParameterVariable(key = "value", name = "Value", description = "The value of the backup")
+    public JIPipeExpressionParameter getBackupFilter() {
+        return backupFilter;
+    }
+
+    @JIPipeParameter("backup-filter")
+    public void setBackupFilter(JIPipeExpressionParameter backupFilter) {
+        this.backupFilter = backupFilter;
     }
 
     @SetJIPipeDocumentation(name = "Vertex mask", description = "Used to filter vertices")
@@ -79,5 +92,4 @@ public class SetVertexRadiusFromImageAlgorithm extends JIPipeIteratingAlgorithm 
     public VertexMaskParameter getVertexMask() {
         return vertexMask;
     }
-
 }

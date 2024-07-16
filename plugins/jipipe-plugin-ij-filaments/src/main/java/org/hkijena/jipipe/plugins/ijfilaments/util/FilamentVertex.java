@@ -47,6 +47,8 @@ public class FilamentVertex {
 
     private Map<String, String> metadata = new HashMap<>();
 
+    private Map<String, Double> valueBackups = new HashMap<>();
+
     public FilamentVertex() {
 
     }
@@ -61,6 +63,17 @@ public class FilamentVertex {
         this.physicalVoxelSizeX = new Quantity(other.physicalVoxelSizeX);
         this.physicalVoxelSizeY = new Quantity(other.physicalVoxelSizeY);
         this.physicalVoxelSizeZ = new Quantity(other.physicalVoxelSizeZ);
+        this.valueBackups = new HashMap<>(other.valueBackups);
+    }
+
+    @JsonGetter("value-backups")
+    public Map<String, Double> getValueBackups() {
+        return valueBackups;
+    }
+
+    @JsonSetter("value-backups")
+    public void setValueBackups(Map<String, Double> valueBackups) {
+        this.valueBackups = valueBackups;
     }
 
     @JsonGetter("spatial-location")
