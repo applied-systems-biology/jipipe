@@ -42,7 +42,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@SetJIPipeDocumentation(name = "Extract from ROI", description = "Extracts parts of the incoming image within the given ROI by extracting the bounding area.")
+@SetJIPipeDocumentation(name = "Extract from 2D ROI", description = "Extracts parts of the incoming image within the given ROI by extracting the bounding area.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "ROI")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
 @AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)

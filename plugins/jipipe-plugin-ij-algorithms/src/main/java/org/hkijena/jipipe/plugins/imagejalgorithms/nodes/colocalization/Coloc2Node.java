@@ -351,7 +351,7 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
         return settings;
     }
 
-    @SetJIPipeDocumentation(name = "Restrict to ROI/mask", description = "Allows to change whether to restrict the calculations to a ROI or to a mask")
+    @SetJIPipeDocumentation(name = "Restrict to 2D ROI/mask", description = "Allows to change whether to restrict the calculations to a 2D ROI or to a mask")
     @JIPipeParameter("input-masks")
     @BooleanParameterSettings(comboBoxStyle = true, trueLabel = "Mask", falseLabel = "ROI")
     public boolean isInputMasks() {

@@ -32,8 +32,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.RoiOutline;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@SetJIPipeDocumentation(name = "Flatten ROI", description = "Removes the Z/C/T coordinates of ROI. Equivalent to setting Z/C/T to zero.")
-@ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "Flatten 2D ROI", description = "Removes the Z/C/T coordinates of ROI. Equivalent to setting Z/C/T to zero.")
+@ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
 @AddJIPipeInputSlot(value = ROIListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, name = "Output", create = true)
 public class FlattenRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {

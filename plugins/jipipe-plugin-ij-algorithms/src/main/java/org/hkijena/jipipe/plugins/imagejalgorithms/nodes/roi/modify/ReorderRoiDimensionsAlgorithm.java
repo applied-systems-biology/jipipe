@@ -32,7 +32,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.HyperstackDimension;
 /**
  * Algorithm that reorders Hyperstack dimensions
  */
-@SetJIPipeDocumentation(name = "Reorder ROI dimensions", description = "Reorders dimensions of all the ROI contained in the ROI lists. " +
+@SetJIPipeDocumentation(name = "Reorder 2D ROI dimensions", description = "Reorders dimensions of all the ROI contained in the ROI lists. " +
         "Unlike the equivalent method for images, this node allows to have non-unique mappings.")
 @AddJIPipeInputSlot(value = ROIListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, name = "Output", create = true)

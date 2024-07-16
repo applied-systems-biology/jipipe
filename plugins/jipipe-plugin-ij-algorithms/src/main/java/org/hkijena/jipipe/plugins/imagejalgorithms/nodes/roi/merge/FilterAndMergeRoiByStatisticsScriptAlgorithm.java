@@ -50,7 +50,7 @@ import java.util.List;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@SetJIPipeDocumentation(name = "Filter & merge ROI by statistics (Script)", description = "Executes a script that has full control over the input ROI lists. The Python script contains a variable 'row_lists' " +
+@SetJIPipeDocumentation(name = "Filter & merge 2D ROI by statistics (Script)", description = "Executes a script that has full control over the input ROI lists. The Python script contains a variable 'row_lists' " +
         "that contains dictionaries with following entries: 'roi_list' is a list of dictionaries, 'annotations' is a dictionary containing the annotations. Each 'data' dictionary has " +
         "an item 'data' containing the ImageJ ROI, and a dictionary 'stats' with the extracted statistics.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")

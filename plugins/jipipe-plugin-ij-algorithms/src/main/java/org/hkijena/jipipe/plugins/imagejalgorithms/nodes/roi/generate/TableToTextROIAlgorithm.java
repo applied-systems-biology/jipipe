@@ -47,7 +47,7 @@ import java.awt.geom.Rectangle2D;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@SetJIPipeDocumentation(name = "Table to text ROIs", description = "Converts data from a table to text ROIs.")
+@SetJIPipeDocumentation(name = "Table to 2D text ROI", description = "Converts data from a table to text ROIs.")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Convert")
 @AddJIPipeNodeAlias(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Draw", aliasName = "Draw text ROIs from table")
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)

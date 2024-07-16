@@ -357,7 +357,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
         this.titleAnnotation = titleAnnotation;
     }
 
-    @SetJIPipeDocumentation(name = "Extract ROIs", description = "If enabled, ROIs are extracted from OME data.")
+    @SetJIPipeDocumentation(name = "Extract 2D ROI", description = "If enabled, ROIs are extracted from OME data.")
     @JIPipeParameter("extract-rois")
     public boolean isExtractRois() {
         return extractRois;

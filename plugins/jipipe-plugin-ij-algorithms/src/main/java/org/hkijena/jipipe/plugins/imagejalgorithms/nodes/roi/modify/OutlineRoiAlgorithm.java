@@ -31,8 +31,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.RoiOutline;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@SetJIPipeDocumentation(name = "Outline ROI", description = "Converts the ROI into polygons, bounding rectangles, or convex hulls.")
-@ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "Outline 2D ROI (Hull)", description = "Converts the ROI into polygons, bounding rectangles, or convex hulls.")
+@ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
 @AddJIPipeInputSlot(value = ROIListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, name = "Output", create = true)
 public class OutlineRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {

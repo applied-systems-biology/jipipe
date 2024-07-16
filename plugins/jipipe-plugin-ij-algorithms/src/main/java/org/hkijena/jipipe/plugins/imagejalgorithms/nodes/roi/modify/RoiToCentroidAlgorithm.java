@@ -33,8 +33,8 @@ import java.awt.geom.Point2D;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@SetJIPipeDocumentation(name = "Convert to centroid", description = "Converts the ROI into point ROI that are the centroids of their inputs")
-@ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "Outline 2D ROI (Centroid)", description = "Converts the ROI into point ROI that are the centroids of their inputs")
+@ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
 @AddJIPipeInputSlot(value = ROIListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, name = "Output", create = true)
 public class RoiToCentroidAlgorithm extends JIPipeSimpleIteratingAlgorithm {

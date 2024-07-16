@@ -41,7 +41,7 @@ import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
 import java.awt.*;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "Overlay with extracted ROI", description = "Assembles/overlays extracted ROI onto the target images.")
+@SetJIPipeDocumentation(name = "Overlay with extracted 2D ROI", description = "Assembles/overlays extracted ROI onto the target images.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "ROI")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Target", create = true)
 @AddJIPipeInputSlot(value = ImagePlus2DData.class, name = "ROI", create = true)

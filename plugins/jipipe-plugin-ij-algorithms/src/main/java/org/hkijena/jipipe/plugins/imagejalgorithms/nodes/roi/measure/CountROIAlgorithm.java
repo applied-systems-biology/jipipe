@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@SetJIPipeDocumentation(name = "Count ROI", description = "Outputs one table that contains the counts for each incoming ROI. " +
+@SetJIPipeDocumentation(name = "Count 2D ROI", description = "Outputs one table that contains the counts for each incoming ROI. " +
         "Each ROI list produces one column in the output table and contains all annotations of the incoming ROI data. " +
         "You can add multiple input slots. " +
         "All output table column is named according to the slot name of the incoming ROI list." +

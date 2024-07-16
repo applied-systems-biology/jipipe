@@ -38,7 +38,7 @@ import java.awt.geom.Point2D;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@SetJIPipeDocumentation(name = "Rotate ROI 2D", description = "Rotates all ROI in the ROI list.")
+@SetJIPipeDocumentation(name = "Rotate 2D ROI", description = "Rotates all ROI in the ROI list.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
 @AddJIPipeInputSlot(value = ROIListData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)

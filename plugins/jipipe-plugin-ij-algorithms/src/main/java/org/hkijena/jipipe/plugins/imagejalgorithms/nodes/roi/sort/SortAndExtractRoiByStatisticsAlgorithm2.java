@@ -48,7 +48,7 @@ import java.util.List;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@SetJIPipeDocumentation(name = "Sort and extract ROI by statistics", description = "Sorts the ROI list elements via statistics and allows to you extract the n top values. " +
+@SetJIPipeDocumentation(name = "Sort and extract 2D ROI by statistics", description = "Sorts the ROI list elements via statistics and allows to you extract the n top values. " +
         "Optionally, line and fill colors of the output rows can be colored according to the output order. ")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
 @AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)

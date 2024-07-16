@@ -38,7 +38,7 @@ import java.util.Optional;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@SetJIPipeDocumentation(name = "Convert only ROI to mask", description = "Converts ROI lists to masks. " +
+@SetJIPipeDocumentation(name = "Convert only 2D ROI to mask", description = "Converts ROI lists to masks. " +
         "This algorithm does not need a reference image that determines the output size.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
 @AddJIPipeInputSlot(value = ROIListData.class, name = "Input", create = true)

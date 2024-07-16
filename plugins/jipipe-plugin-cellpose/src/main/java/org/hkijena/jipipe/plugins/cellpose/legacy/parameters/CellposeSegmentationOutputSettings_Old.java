@@ -84,7 +84,7 @@ public class CellposeSegmentationOutputSettings_Old extends AbstractJIPipeParame
         this.outputStyles = outputStyles;
     }
 
-    @SetJIPipeDocumentation(name = "Output ROI", description = "Output a ROI list containing all detected objects")
+    @SetJIPipeDocumentation(name = "Output 2D ROI", description = "Output a ROI list containing all detected objects")
     @JIPipeParameter("output-roi")
     public boolean isOutputROI() {
         return outputROI;

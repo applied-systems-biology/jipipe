@@ -87,7 +87,7 @@ public class OMEExporterSettings extends AbstractJIPipeParameterCollection {
         this.padded = padded;
     }
 
-    @SetJIPipeDocumentation(name = "Save ROIs", description = "If enabled, ROI are saved into the OME TIFF file")
+    @SetJIPipeDocumentation(name = "Save 2D ROI", description = "If enabled, ROI are saved into the OME TIFF file")
     @JIPipeParameter("save-roi")
     public boolean isSaveROI() {
         return saveROI;

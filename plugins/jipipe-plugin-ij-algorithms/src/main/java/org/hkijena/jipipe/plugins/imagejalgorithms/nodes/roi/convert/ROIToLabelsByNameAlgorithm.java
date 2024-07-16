@@ -49,7 +49,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-@SetJIPipeDocumentation(name = "ROI to Labels (by name)", description = "Converts ROI and an optional reference image into a label image. " +
+@SetJIPipeDocumentation(name = "2D ROI to Labels (by name)", description = "Converts ROI and an optional reference image into a label image. " +
         "The label value is provided by mapping the name to a value. If no name mapping is provided for a ROI, a unique label is generated. If no reference image is provided, " +
         "the dimensions are estimated from the ROI. The background color (where no ROI is located) is zero.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")

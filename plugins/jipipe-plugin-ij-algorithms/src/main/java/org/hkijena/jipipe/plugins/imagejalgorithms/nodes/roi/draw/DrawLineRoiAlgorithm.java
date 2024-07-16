@@ -37,7 +37,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.Image5DExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
 
-@SetJIPipeDocumentation(name = "Draw line ROI", description = "Draws one or multiple line ROI.")
+@SetJIPipeDocumentation(name = "Draw 2D line ROI", description = "Draws one or multiple line ROI.")
 @AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", description = "Optional existing list of ROI. The new ROI will be appended to it.", optional = true, create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", description = "Reference image for the positioning. If not set, all image-related variables will be set to 0", optional = true, create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, name = "ROI", create = true)

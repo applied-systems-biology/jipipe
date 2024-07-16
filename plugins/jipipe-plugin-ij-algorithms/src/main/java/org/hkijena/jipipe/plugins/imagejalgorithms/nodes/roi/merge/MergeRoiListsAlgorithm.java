@@ -29,7 +29,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@SetJIPipeDocumentation(name = "Merge ROI lists", description = "Merges multiple ROI lists by using data annotations. " +
+@SetJIPipeDocumentation(name = "Merge 2D ROI lists", description = "Merges multiple ROI lists by using data annotations. " +
         "By default, ROIs with equivalent annotations are put into the same group and merged into one ROI list for each group. " +
         "Use the parameters to control how groups are created. To merge all incoming ROI lists into just one list, set the matching strategy to 'Custom' and leave the list of " +
         "annotation columns empty.")

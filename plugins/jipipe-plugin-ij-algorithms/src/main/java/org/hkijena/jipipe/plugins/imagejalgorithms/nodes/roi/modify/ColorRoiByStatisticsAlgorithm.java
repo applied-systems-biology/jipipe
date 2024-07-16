@@ -41,7 +41,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@SetJIPipeDocumentation(name = "Color ROI by statistics", description = "Sets the ROI item colors by measurements.")
+@SetJIPipeDocumentation(name = "Color 2D ROI by statistics", description = "Sets the ROI item colors by measurements.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
 @AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)

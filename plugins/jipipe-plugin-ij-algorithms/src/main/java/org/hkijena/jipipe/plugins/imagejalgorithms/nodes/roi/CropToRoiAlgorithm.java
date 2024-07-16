@@ -37,7 +37,7 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "Crop to ROI", description = "Crops the incoming images to fit into the boundaries defined by the ROI.")
+@SetJIPipeDocumentation(name = "Crop image to 2D ROI", description = "Crops the incoming images to fit into the boundaries defined by the ROI.")
 @ConfigureJIPipeNode(menuPath = "Transform", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
 @AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)

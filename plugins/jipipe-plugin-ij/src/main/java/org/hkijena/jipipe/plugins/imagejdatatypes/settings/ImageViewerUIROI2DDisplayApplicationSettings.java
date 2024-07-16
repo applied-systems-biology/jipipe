@@ -36,7 +36,7 @@ public class ImageViewerUIROI2DDisplayApplicationSettings extends JIPipeDefaultA
         return JIPipe.getSettings().getById(ID, ImageViewerUIROI2DDisplayApplicationSettings.class);
     }
 
-    @SetJIPipeDocumentation(name = "ROI visualization")
+    @SetJIPipeDocumentation(name = "2D ROI visualization")
     @JIPipeParameter("roi-drawer")
     public RoiDrawer getRoiDrawer() {
         return roiDrawer;
@@ -46,7 +46,7 @@ public class ImageViewerUIROI2DDisplayApplicationSettings extends JIPipeDefaultA
         this.roiDrawer = roiDrawer;
     }
 
-    @SetJIPipeDocumentation(name = "Show ROI", description = "If enabled, ROI are visible")
+    @SetJIPipeDocumentation(name = "Show 2D ROI", description = "If enabled, ROI are visible")
     @JIPipeParameter("show-roi")
     public boolean isShowROI() {
         return showROI;
@@ -57,7 +57,7 @@ public class ImageViewerUIROI2DDisplayApplicationSettings extends JIPipeDefaultA
         this.showROI = showROI;
     }
 
-    @SetJIPipeDocumentation(name = "Render ROI as overlay", description = "If enabled, ROI are rendered as overlay.")
+    @SetJIPipeDocumentation(name = "Render 2D ROI as overlay", description = "If enabled, ROI are rendered as overlay.")
     @JIPipeParameter("render-roi-as-overlay")
     public boolean isRenderROIAsOverlay() {
         return renderROIAsOverlay;

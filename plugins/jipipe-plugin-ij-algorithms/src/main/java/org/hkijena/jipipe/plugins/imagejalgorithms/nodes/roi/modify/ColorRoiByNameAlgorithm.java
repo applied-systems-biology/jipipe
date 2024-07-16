@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-@SetJIPipeDocumentation(name = "Color ROI by name", description = "Sets the ROI item colors by their name.")
+@SetJIPipeDocumentation(name = "Color 2D ROI by name", description = "Sets the ROI item colors by their name.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
 @AddJIPipeInputSlot(value = ROIListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, name = "Output", create = true)

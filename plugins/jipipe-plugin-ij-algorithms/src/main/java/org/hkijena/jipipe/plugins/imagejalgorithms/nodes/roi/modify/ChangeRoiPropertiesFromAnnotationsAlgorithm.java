@@ -36,7 +36,7 @@ import org.hkijena.jipipe.utils.ColorUtils;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@SetJIPipeDocumentation(name = "Change ROI properties from annotations", description = "Sets properties of all Roi to values extracted from annotations.")
+@SetJIPipeDocumentation(name = "Change 2D ROI properties from annotations", description = "Sets properties of all Roi to values extracted from annotations.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
 @AddJIPipeInputSlot(value = ROIListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, name = "Output", create = true)

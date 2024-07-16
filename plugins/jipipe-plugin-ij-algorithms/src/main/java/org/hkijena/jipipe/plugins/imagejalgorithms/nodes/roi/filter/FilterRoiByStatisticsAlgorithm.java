@@ -51,7 +51,7 @@ import java.util.Map;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@SetJIPipeDocumentation(name = "Filter ROI by statistics", description = "Filters the ROI list elements via statistics.")
+@SetJIPipeDocumentation(name = "Filter 2D ROI by statistics", description = "Filters the ROI list elements via statistics.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
 @AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)

@@ -11,9 +11,10 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi;
+package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.modify;
 
 import ij.ImagePlus;
+import ij.gui.Roi;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -28,24 +29,22 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
 
-import java.util.Map;
-import java.util.Optional;
-
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@SetJIPipeDocumentation(name = "Get ROI image", description = "Gets the associated image from a ROI. No output is generated if the ROI have no associated images.")
+@SetJIPipeDocumentation(name = "Set 2D ROI image", description = "Associates an image to the ROI.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Image", create = true)
-public class GetRoiImageAlgorithm extends JIPipeIteratingAlgorithm {
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
+@AddJIPipeOutputSlot(value = ROIListData.class, name = "Output", create = true)
+public class SetRoiImageAlgorithm extends JIPipeIteratingAlgorithm {
 
     /**
      * Instantiates a new node type.
      *
      * @param info the info
      */
-    public GetRoiImageAlgorithm(JIPipeNodeInfo info) {
+    public SetRoiImageAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
@@ -54,17 +53,17 @@ public class GetRoiImageAlgorithm extends JIPipeIteratingAlgorithm {
      *
      * @param other the other
      */
-    public GetRoiImageAlgorithm(GetRoiImageAlgorithm other) {
+    public SetRoiImageAlgorithm(SetRoiImageAlgorithm other) {
         super(other);
     }
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROIListData data = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
-        for (Map.Entry<Optional<ImagePlus>, ROIListData> entry : data.groupByReferenceImage().entrySet()) {
-            if (entry.getKey().isPresent()) {
-                iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(entry.getKey().get()).duplicate(progressInfo), progressInfo);
-            }
+        ROIListData data = (ROIListData) iterationStep.getInputData("ROI", ROIListData.class, progressInfo).duplicate(progressInfo);
+        ImagePlus reference = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getDuplicateImage();
+        for (Roi roi : data) {
+            roi.setImage(reference);
         }
+        iterationStep.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }
 }

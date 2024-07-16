@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi;
+package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.convert;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;

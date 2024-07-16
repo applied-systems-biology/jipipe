@@ -42,7 +42,7 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
-@SetJIPipeDocumentation(name = "Register ROI 2D (by intensity)", description = "Tests multiple locations of the specified ROI within the image and finds the scale, rotation, and translation of the ROI where its components align to the maximum average intensity.")
+@SetJIPipeDocumentation(name = "Register 2D ROI (by intensity)", description = "Tests multiple locations of the specified ROI within the image and finds the scale, rotation, and translation of the ROI where its components align to the maximum average intensity.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Register")
 @AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlus2DData.class, name = "Image", create = true)

@@ -51,7 +51,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-@SetJIPipeDocumentation(name = "Extract ROI profile", description = "Extracts the pixel intensities along the ROI if a straight or irregular line ROI are given. " +
+@SetJIPipeDocumentation(name = "Extract 2D ROI profile", description = "Extracts the pixel intensities along the ROI if a straight or irregular line ROI are given. " +
         "If a rotated rectangle is processed, it is converted into a straight line." +
         "If any other ROI type is given, either the row or column average of the bounding rectangle is calculated.")
 @AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)

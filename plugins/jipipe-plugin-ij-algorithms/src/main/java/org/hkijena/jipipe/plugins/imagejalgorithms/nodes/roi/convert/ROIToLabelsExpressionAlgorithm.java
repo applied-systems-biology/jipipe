@@ -41,7 +41,7 @@ import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
 
-@SetJIPipeDocumentation(name = "ROI to Labels (Expression)", description = "Converts ROI and an optional reference image into a label image. " +
+@SetJIPipeDocumentation(name = "2D ROI to Labels (Expression)", description = "Converts ROI and an optional reference image into a label image. " +
         "Each ROI is assigned its own label. Alternatively, the label can be set generated from an expression. If no reference image is provided, " +
         "the dimensions are estimated from the ROI. The background color (where no ROI is located) is zero.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")

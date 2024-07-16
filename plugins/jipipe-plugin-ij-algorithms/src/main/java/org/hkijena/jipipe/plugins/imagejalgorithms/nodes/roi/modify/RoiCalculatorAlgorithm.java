@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi;
+package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.modify;
 
 import ij.gui.Roi;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -36,7 +36,7 @@ import java.util.Map;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@SetJIPipeDocumentation(name = "ROI calculator", description = "Applies logical operations to the input ROI list. The logical operations are applied to " +
+@SetJIPipeDocumentation(name = "2D ROI calculator (AND/OR/XOR)", description = "Applies logical operations to the input ROI list. The logical operations are applied to " +
         "the whole list, meaning that an AND operation will create the union of all ROI in the list. If you want to apply the operation only to a sub-set of ROI," +
         " preprocess using a ROI splitter algorithm.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)

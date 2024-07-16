@@ -38,7 +38,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@SetJIPipeDocumentation(name = "Table to line ROIs", description = "Converts data from a table to line ROIs.")
+@SetJIPipeDocumentation(name = "Table to 2D line ROI", description = "Converts data from a table to line ROIs.")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Convert")
 @AddJIPipeNodeAlias(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Draw", aliasName = "Draw line ROIs from table")
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)

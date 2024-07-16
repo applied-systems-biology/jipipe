@@ -37,7 +37,7 @@ import java.util.List;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@SetJIPipeDocumentation(name = "Slice ROI list", description = "Extracts a sublist of ROI from the input")
+@SetJIPipeDocumentation(name = "Slice 2D ROI list", description = "Extracts a sublist of ROI from the input")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
 @AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, name = "Output", create = true)
