@@ -428,6 +428,9 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         for (Map.Entry<String, String> entry : vertex.getMetadata().entrySet()) {
             target.put(prefix + entry.getKey(), StringUtils.tryParseDoubleOrReturnString(entry.getValue()));
         }
+        for (Map.Entry<String, Double> entry : vertex.getValueBackups().entrySet()) {
+            target.put(prefix + ".value." + entry.getKey(), entry.getValue());
+        }
     }
 
     public ResultsTableData measureEdges() {
