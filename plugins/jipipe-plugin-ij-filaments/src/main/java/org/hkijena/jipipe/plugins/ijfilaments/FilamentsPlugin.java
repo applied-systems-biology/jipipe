@@ -45,6 +45,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.nodes.process.SimplifyFilamentsAlg
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.process.SmoothFilamentsAlgorithm;
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.split.SplitFilamentsIntoConnectedComponentsAlgorithm;
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.split.SplitFilamentsIntoCyclesAlgorithm;
+import org.hkijena.jipipe.plugins.ijfilaments.parameters.CycleFinderAlgorithm;
 import org.hkijena.jipipe.plugins.ijfilaments.settings.FilamentsPluginProjectSettings;
 import org.hkijena.jipipe.plugins.ijfilaments.settings.ImageViewerUIFilamentDisplayApplicationSettings;
 import org.hkijena.jipipe.plugins.ijfilaments.settings.TSOAXApplicationSettings;
@@ -162,6 +163,8 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerDatatypeConversion(new FilamentsToRoiDataTypeConverter());
         registerDatatypeConversion(new FilamentsToRoi3dDataTypeConverter());
 
+        registerEnumParameterType("filaments-cycle-finder-algorithm", CycleFinderAlgorithm.class, "Cycle finder algorithm", "An algorithm for finding cycles");
+
         registerNodeType("filaments-from-json", ImportFilamentsFromJsonAlgorithm.class);
         registerNodeType("filaments-skeleton-to-filaments-2d3d-simplified", SkeletonToSimplifiedFilamentsFijiAlgorithm.class, UIUtils.getIconURLFromResources("actions/path-mode-spiro.png"));
         registerNodeType("filaments-skeleton-to-filaments-2d", SkeletonToFilaments2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/path-mode-spiro.png"));
@@ -169,7 +172,7 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerNodeType("filaments-set-vertex-properties", ChangeFilamentVertexPropertiesAlgorithm.class, UIUtils.getIconURLFromResources("actions/stock_edit.png"));
         registerNodeType("filaments-set-edge-properties", ChangeFilamentEdgePropertiesAlgorithm.class, UIUtils.getIconURLFromResources("actions/stock_edit.png"));
-        registerNodeType("filaments-flatten", FlattenFilamentsAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-2d.png"));
+        registerNodeType("filaments-flatten", FlattenFilamentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/layer-flatten-z.png"));
 
         registerNodeType("filaments-filter-vertices-by-properties", FilterFilamentVerticesByProperties.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("filaments-filter-edges-by-properties", FilterFilamentEdgesByProperties.class, UIUtils.getIconURLFromResources("actions/filter.png"));
@@ -181,6 +184,7 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerNodeType("filaments-merge", MergeFilamentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
 
+        registerNodeType("filaments-convert-cycles-to-roi", FilamentCyclesToROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
         registerNodeType("filaments-convert-to-roi", ConvertFilamentsToRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
         registerNodeType("filaments-convert-to-roi3d", ConvertFilamentsToRoi3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
         registerNodeType("filaments-convert-to-mask", ConvertFilamentsToMaskAlgorithm.class, UIUtils.getIconURLFromResources("actions/reload.png"));

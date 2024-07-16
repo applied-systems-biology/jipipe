@@ -913,6 +913,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-roi-set-metadata-from-table", SetROIMetadataFromTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_packfiles.png"));
         registerNodeType("ij1-roi-set-metadata-from-statistics-expression", SetRoiMetadataByStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_packfiles.png"));
         registerNodeType("ij1-roi-remove-metadata", RemoveROIMetadataAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
+        registerNodeType("ij1-roi-flatten", FlattenRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/layer-flatten-z.png"));
 
         registerNodeType("ij1-roi-draw-rectangle", DrawRectangleRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-rectangle.png"));
         registerNodeType("ij1-roi-draw-oval", DrawOvalRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-ellipse.png"));

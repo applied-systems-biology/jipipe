@@ -11,13 +11,22 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.ijfilaments.nodes.modify;
+package org.hkijena.jipipe.plugins.ijfilaments.nodes.convert;
 
+import com.google.common.primitives.Doubles;
+import com.itextpdf.awt.geom.PolylineShape;
+import gnu.trove.list.TDoubleList;
+import gnu.trove.list.TFloatList;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TDoubleArrayList;
+import gnu.trove.list.array.TFloatArrayList;
+import gnu.trove.list.array.TIntArrayList;
+import ij.gui.PolygonRoi;
+import ij.gui.Roi;
+import ij.gui.ShapeRoi;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -31,89 +40,82 @@ import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.plugins.ijfilaments.parameters.CycleFinderAlgorithm;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalStringParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.jgrapht.alg.cycle.PatonCycleBase;
 import org.jgrapht.alg.interfaces.CycleBasisAlgorithm;
 
-import java.util.*;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-@SetJIPipeDocumentation(name = "Filament cycles to components", description = "Finds all cycles in the input filament graph and makes each cycle a component. Unlike 'Split filaments into cycles', this node outputs one filament graph where each component is a cycle.")
-@ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
+@SetJIPipeDocumentation(name = "Convert filament cycles to 2D ROI", description = "Finds all cycles in the input filament graph and converts each cycle into a 2D ROI. Please note that the Z position will be set to the median Z/C/T value of all points plus 1.")
+@ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Convert")
 @AddJIPipeInputSlot(value = Filaments3DData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = Filaments3DData.class, name = "Output", create = true)
-public class FilamentCyclesToComponentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+@AddJIPipeOutputSlot(value = ROIListData.class, name = "Output", create = true)
+public class FilamentCyclesToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private OptionalStringParameter cycleIdAnnotation = new OptionalStringParameter("Cycle", true);
     private CycleFinderAlgorithm cycleFinderAlgorithm = CycleFinderAlgorithm.PatonCycleBasis;
 
-    public FilamentCyclesToComponentsAlgorithm(JIPipeNodeInfo info) {
+    public FilamentCyclesToROIAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public FilamentCyclesToComponentsAlgorithm(FilamentCyclesToComponentsAlgorithm other) {
+    public FilamentCyclesToROIAlgorithm(FilamentCyclesToROIAlgorithm other) {
         super(other);
-        this.cycleIdAnnotation = new OptionalTextAnnotationNameParameter(other.cycleIdAnnotation);
         this.cycleFinderAlgorithm = other.cycleFinderAlgorithm;
     }
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Filaments3DData inputData = iterationStep.getInputData(getFirstInputSlot(), Filaments3DData.class, progressInfo);
-        Filaments3DData outputData = new Filaments3DData();
-
-        PatonCycleBase<FilamentVertex, FilamentEdge> patonCycleBase = new PatonCycleBase<>(inputData);
+        ROIListData outputData = new ROIListData();
         progressInfo.log("Finding cycles ...");
         Set<List<FilamentEdge>> cycles = cycleFinderAlgorithm.findCycles(inputData);
         progressInfo.log("Detected " + cycles.size() + " cycles");
         int componentId = 0;
         for (List<FilamentEdge> cycle : cycles) {
 
-            Map<FilamentVertex, FilamentVertex> copyMap = new IdentityHashMap<>();
-
-            for (FilamentEdge filamentEdge : cycle) {
-                FilamentVertex edgeSource = inputData.getEdgeSource(filamentEdge);
-                FilamentVertex edgeTarget = inputData.getEdgeTarget(filamentEdge);
-                FilamentVertex copyEdgeSource = copyMap.get(edgeSource);
-                FilamentVertex copyEdgeTarget = copyMap.get(edgeTarget);
-
-                if (copyEdgeSource == null) {
-                    copyEdgeSource = new FilamentVertex(edgeSource);
-                    if(cycleIdAnnotation.isEnabled()) {
-                        copyEdgeSource.getMetadata().put(cycleIdAnnotation.getContent(), String.valueOf(componentId));
-                    }
-                    copyMap.put(edgeSource, copyEdgeSource);
-                }
-
-                if (copyEdgeTarget == null) {
-                    copyEdgeTarget = new FilamentVertex(edgeSource);
-                    if(cycleIdAnnotation.isEnabled()) {
-                        copyEdgeTarget.getMetadata().put(cycleIdAnnotation.getContent(), String.valueOf(componentId));
-                    }
-                    copyMap.put(edgeTarget, copyEdgeTarget);
-                }
-
-                outputData.addVertex(copyEdgeSource);
-                outputData.addVertex(copyEdgeTarget);
-                outputData.addEdge(copyEdgeSource, copyEdgeTarget, new FilamentEdge(filamentEdge));
+            if(cycle.isEmpty()) {
+                continue;
             }
+
+            TFloatList xPoints = new TFloatArrayList();
+            TFloatList yPoints = new TFloatArrayList();
+            TIntList zPoints = new TIntArrayList();
+            TIntList cPoints = new TIntArrayList();
+            TIntList tPoints = new TIntArrayList();
+
+            for (FilamentEdge edge : cycle) {
+                FilamentVertex edgeSource = inputData.getEdgeSource(edge);
+                xPoints.add((float) edgeSource.getSpatialLocation().getX());
+                yPoints.add((float) edgeSource.getSpatialLocation().getY());
+                zPoints.add((int) edgeSource.getSpatialLocation().getZ());
+                cPoints.add(edgeSource.getNonSpatialLocation().getChannel());
+                tPoints.add(edgeSource.getNonSpatialLocation().getFrame());
+            }
+
+            zPoints.sort();
+            cPoints.sort();
+            tPoints.sort();
+
+            int medianZ = zPoints.get(zPoints.size() / 2);
+            int medianC = zPoints.get(cPoints.size() / 2);
+            int medianT = tPoints.get(cPoints.size() / 2);
+
+            PolygonRoi roi = new PolygonRoi(xPoints.toArray(), yPoints.toArray(), xPoints.size(), Roi.POLYGON);
+            roi.setPosition(Math.max(0, medianC + 1), Math.max(0, medianZ + 1), Math.max(0, medianT + 1));
+            roi.setName("Cycle " + componentId);
+
+            outputData.add(roi);
 
             componentId++;
 
         }
 
         iterationStep.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
-    }
-
-    @SetJIPipeDocumentation(name = "Set cycle ID as metadata", description = "If enabled, cycle ID is stored into the metadata ")
-    @JIPipeParameter("cycle-id-metadata")
-    public OptionalStringParameter getCycleIdAnnotation() {
-        return cycleIdAnnotation;
-    }
-
-    @JIPipeParameter("cycle-id-metadata")
-    public void setCycleIdAnnotation(OptionalStringParameter cycleIdAnnotation) {
-        this.cycleIdAnnotation = cycleIdAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Cycle finder algorithm", description = "The algorithm used for finding cycles. See https://jgrapht.org/javadoc/org.jgrapht.core/org/jgrapht/alg/cycle/package-summary.html for more information.")

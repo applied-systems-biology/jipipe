@@ -28,6 +28,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
+import org.hkijena.jipipe.plugins.ijfilaments.parameters.CycleFinderAlgorithm;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
@@ -49,6 +50,7 @@ import java.util.Set;
 public class SplitFilamentsIntoCyclesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalTextAnnotationNameParameter cycleIdAnnotation = new OptionalTextAnnotationNameParameter("#Cycle", true);
+    private CycleFinderAlgorithm cycleFinderAlgorithm = CycleFinderAlgorithm.PatonCycleBasis;
 
     public SplitFilamentsIntoCyclesAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -57,17 +59,18 @@ public class SplitFilamentsIntoCyclesAlgorithm extends JIPipeSimpleIteratingAlgo
     public SplitFilamentsIntoCyclesAlgorithm(SplitFilamentsIntoCyclesAlgorithm other) {
         super(other);
         this.cycleIdAnnotation = new OptionalTextAnnotationNameParameter(other.cycleIdAnnotation);
+        this.cycleFinderAlgorithm = other.cycleFinderAlgorithm;
     }
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Filaments3DData inputData = iterationStep.getInputData(getFirstInputSlot(), Filaments3DData.class, progressInfo);
         PatonCycleBase<FilamentVertex, FilamentEdge> patonCycleBase = new PatonCycleBase<>(inputData);
-        progressInfo.log("Finding cycle basis (Paton) ...");
-        CycleBasisAlgorithm.CycleBasis<FilamentVertex, FilamentEdge> cycleBasis = patonCycleBase.getCycleBasis();
-        progressInfo.log("Detected " + cycleBasis.getCycles().size() + " cycles");
+        progressInfo.log("Finding cycles ...");
+        Set<List<FilamentEdge>> cycles = cycleFinderAlgorithm.findCycles(inputData);
+        progressInfo.log("Detected " + cycles.size() + " cycles");
         int componentId = 0;
-        for (List<FilamentEdge> cycle : cycleBasis.getCycles()) {
+        for (List<FilamentEdge> cycle : cycles) {
             Filaments3DData outputData = new Filaments3DData();
             List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
             cycleIdAnnotation.addAnnotationIfEnabled(annotationList, componentId + "");
