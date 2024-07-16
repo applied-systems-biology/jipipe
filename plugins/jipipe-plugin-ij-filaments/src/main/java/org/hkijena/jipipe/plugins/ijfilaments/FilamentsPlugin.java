@@ -44,6 +44,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.nodes.process.RemoveDuplicateVerti
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.process.SimplifyFilamentsAlgorithm;
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.process.SmoothFilamentsAlgorithm;
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.split.SplitFilamentsIntoConnectedComponentsAlgorithm;
+import org.hkijena.jipipe.plugins.ijfilaments.nodes.split.SplitFilamentsIntoCyclesAlgorithm;
 import org.hkijena.jipipe.plugins.ijfilaments.settings.FilamentsPluginProjectSettings;
 import org.hkijena.jipipe.plugins.ijfilaments.settings.ImageViewerUIFilamentDisplayApplicationSettings;
 import org.hkijena.jipipe.plugins.ijfilaments.settings.TSOAXApplicationSettings;
@@ -176,6 +177,7 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("filaments-filter-filaments-at-border", RemoveBorderFilaments.class, UIUtils.getIconURLFromResources("actions/filter.png"));
 
         registerNodeType("filaments-split-into-connected-components", SplitFilamentsIntoConnectedComponentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
+        registerNodeType("filaments-split-into-cycles", SplitFilamentsIntoCyclesAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
 
         registerNodeType("filaments-merge", MergeFilamentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
 
@@ -194,6 +196,7 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("filaments-smooth-downscale", SmoothFilamentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("filaments-simplify", SimplifyFilamentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/distribute-graph-directed.png"));
         registerNodeType("filaments-fix-overlaps-non-branching", FixOverlapsNonBranchingAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-line-perpendicular.png"));
+        registerNodeType("filaments-cycles-to-components", FilamentCyclesToComponentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/circle-nodes.png"));
 
         registerNodeType("filaments-measure-vertices", MeasureVerticesAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
         registerNodeType("filaments-measure-edges", MeasureEdgesAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
