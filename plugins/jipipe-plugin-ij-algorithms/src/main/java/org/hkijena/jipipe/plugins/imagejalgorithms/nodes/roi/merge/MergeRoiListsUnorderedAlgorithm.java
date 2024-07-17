@@ -29,19 +29,21 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@SetJIPipeDocumentation(name = "Combine 2D ROI lists", description = "Merges multiple ROI lists. The ROI from 'Source' are added to the end of the 'Target' list. Compared to 'Merge ROI lists', this node allows to control the order of the operation.")
+@SetJIPipeDocumentation(name = "Merge 2D ROI lists", description = "Merges multiple ROI lists by using data annotations. " +
+        "By default, ROIs with equivalent annotations are put into the same group and merged into one ROI list for each group. " +
+        "Use the parameters to control how groups are created. To merge all incoming ROI lists into just one list, set the matching strategy to 'Custom' and leave the list of " +
+        "annotation columns empty.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Merge")
-@AddJIPipeInputSlot(value = ROIListData.class, name = "Target", create = true, description = "Where the ROI are added")
-@AddJIPipeInputSlot(value = ROIListData.class, name = "Source", create = true, description = "The ROI to be added")
+@AddJIPipeInputSlot(value = ROIListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROIListData.class, name = "Output", create = true)
-public class AddRoiListsAlgorithm extends JIPipeMergingAlgorithm {
+public class MergeRoiListsUnorderedAlgorithm extends JIPipeMergingAlgorithm {
 
     /**
      * Instantiates a new node type.
      *
      * @param info the info
      */
-    public AddRoiListsAlgorithm(JIPipeNodeInfo info) {
+    public MergeRoiListsUnorderedAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
@@ -50,17 +52,14 @@ public class AddRoiListsAlgorithm extends JIPipeMergingAlgorithm {
      *
      * @param other the other
      */
-    public AddRoiListsAlgorithm(AddRoiListsAlgorithm other) {
+    public MergeRoiListsUnorderedAlgorithm(MergeRoiListsUnorderedAlgorithm other) {
         super(other);
     }
 
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROIListData result = new ROIListData();
-        for (ROIListData rois : iterationStep.getInputData("Target", ROIListData.class, progressInfo)) {
-            result.mergeWith(rois);
-        }
-        for (ROIListData rois : iterationStep.getInputData("Source", ROIListData.class, progressInfo)) {
+        for (ROIListData rois : iterationStep.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo)) {
             result.mergeWith(rois);
         }
         iterationStep.addOutputData(getFirstOutputSlot(), result, progressInfo);

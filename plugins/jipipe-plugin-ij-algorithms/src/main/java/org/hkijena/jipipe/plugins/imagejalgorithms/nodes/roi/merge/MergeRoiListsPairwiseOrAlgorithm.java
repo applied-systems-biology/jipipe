@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.merge;
 
+import ij.gui.Roi;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -26,24 +27,24 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
 
+import java.util.List;
+
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@SetJIPipeDocumentation(name = "Merge 2D ROI lists", description = "Merges multiple ROI lists by using data annotations. " +
-        "By default, ROIs with equivalent annotations are put into the same group and merged into one ROI list for each group. " +
-        "Use the parameters to control how groups are created. To merge all incoming ROI lists into just one list, set the matching strategy to 'Custom' and leave the list of " +
-        "annotation columns empty.")
+@SetJIPipeDocumentation(name = "Merge 2D ROI lists (pairwise OR)", description = "Merges each individual ROI in Target with each individual ROI in Source, generating all pairwise combinations of all ROI.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Merge")
-@AddJIPipeInputSlot(value = ROIListData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = ROIListData.class, name = "Target", create = true, description = "Where the ROI are added")
+@AddJIPipeInputSlot(value = ROIListData.class, name = "Source", create = true, description = "The ROI to be added")
 @AddJIPipeOutputSlot(value = ROIListData.class, name = "Output", create = true)
-public class MergeRoiListsAlgorithm extends JIPipeMergingAlgorithm {
+public class MergeRoiListsPairwiseOrAlgorithm extends JIPipeMergingAlgorithm {
 
     /**
      * Instantiates a new node type.
      *
      * @param info the info
      */
-    public MergeRoiListsAlgorithm(JIPipeNodeInfo info) {
+    public MergeRoiListsPairwiseOrAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
@@ -52,16 +53,40 @@ public class MergeRoiListsAlgorithm extends JIPipeMergingAlgorithm {
      *
      * @param other the other
      */
-    public MergeRoiListsAlgorithm(MergeRoiListsAlgorithm other) {
+    public MergeRoiListsPairwiseOrAlgorithm(MergeRoiListsPairwiseOrAlgorithm other) {
         super(other);
     }
 
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROIListData result = new ROIListData();
-        for (ROIListData rois : iterationStep.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo)) {
-            result.mergeWith(rois);
+        List<ROIListData> targetRoiLists = iterationStep.getInputData("Target", ROIListData.class, progressInfo);
+        List<ROIListData> sourceRoiLists = iterationStep.getInputData("Source", ROIListData.class, progressInfo);
+
+        // Merge all into one list
+        ROIListData targetRois = new ROIListData();
+        ROIListData sourceRois = new ROIListData();
+
+        for (ROIListData targetRoiList : targetRoiLists) {
+            targetRois.addAll(targetRoiList);
         }
+        for (ROIListData sourceRoiList : sourceRoiLists) {
+            sourceRois.addAll(sourceRoiList);
+        }
+
+        // pairwise iteration
+        ROIListData result = new ROIListData();
+        for (Roi roi1 : targetRois) {
+            for (Roi roi2 : sourceRois) {
+                if(roi1 != roi2) {
+                    ROIListData tmp = new ROIListData();
+                    tmp.add(roi1);
+                    tmp.add(roi2);
+                    tmp.logicalOr();
+                    result.addAll(tmp);
+                }
+            }
+        }
+
         iterationStep.addOutputData(getFirstOutputSlot(), result, progressInfo);
     }
 }

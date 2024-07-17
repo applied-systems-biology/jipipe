@@ -99,9 +99,10 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.CountROIAlg
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractROIProfileAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractRoi2DRelationStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.RoiStatisticsAlgorithm;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.merge.AddRoiListsAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.merge.MergeRoiListsOrderedAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.merge.FilterAndMergeRoiByStatisticsScriptAlgorithm;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.merge.MergeRoiListsAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.merge.MergeRoiListsPairwiseOrAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.merge.MergeRoiListsUnorderedAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.modify.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.properties.ExtractROIMetadataAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.properties.RemoveROIMetadataAlgorithm;
@@ -858,8 +859,9 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-roi-split", SplitRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("ij1-roi-split-into-connected-components", SplitRoiConnectedComponentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("ij1-roi-explode", ExplodeRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
-        registerNodeType("ij1-roi-merge", MergeRoiListsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
-        registerNodeType("ij1-roi-combine", AddRoiListsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
+        registerNodeType("ij1-roi-merge", MergeRoiListsUnorderedAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
+        registerNodeType("ij1-roi-combine", MergeRoiListsOrderedAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
+        registerNodeType("ij1-roi-merge-pairwise-or", MergeRoiListsPairwiseOrAlgorithm.class, UIUtils.getIconURLFromResources("actions/asterisk.png"));
         registerNodeType("ij1-roi-calculator", RoiCalculatorAlgorithm.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
         registerNodeType("ij1-roi-to-mask-unreferenced", UnreferencedRoiToMaskAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("ij1-roi-to-mask", RoiToMaskAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
