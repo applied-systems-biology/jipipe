@@ -26,11 +26,11 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.plugins.ijfilaments.FilamentsNodeTypeCategory;
-import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
+import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
 
 @SetJIPipeDocumentation(name = "Convert filaments to 3D ROI", description = "Converts filaments into a 3D ROI")
-@AddJIPipeInputSlot(value = Filaments3DData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROI3DListData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Convert")
 public class ConvertFilamentsToRoi3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
@@ -55,7 +55,7 @@ public class ConvertFilamentsToRoi3DAlgorithm extends JIPipeSimpleIteratingAlgor
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        Filaments3DData inputData = iterationStep.getInputData(getFirstInputSlot(), Filaments3DData.class, progressInfo);
+        Filaments3DGraphData inputData = iterationStep.getInputData(getFirstInputSlot(), Filaments3DGraphData.class, progressInfo);
         ROI3DListData outputData = inputData.toRoi3D(withEdges, withVertices, forcedLineThickness.orElse(-1), forcedVertexRadius.orElse(-1), progressInfo);
 
         iterationStep.addOutputData(getFirstOutputSlot(), outputData, progressInfo);

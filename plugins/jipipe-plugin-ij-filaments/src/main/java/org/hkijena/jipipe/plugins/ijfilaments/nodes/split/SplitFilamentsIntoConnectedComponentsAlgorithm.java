@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.ijfilaments.FilamentsNodeTypeCategory;
-import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
+import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
@@ -40,8 +40,8 @@ import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Split filaments into connected components", description = "Splits the filament graph into connected components and outputs one graph per component")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Split")
-@AddJIPipeInputSlot(value = Filaments3DData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = Filaments3DData.class, name = "Output", create = true)
+@AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Output", create = true)
 public class SplitFilamentsIntoConnectedComponentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalTextAnnotationNameParameter componentIdAnnotation = new OptionalTextAnnotationNameParameter("#Component", true);
@@ -57,11 +57,11 @@ public class SplitFilamentsIntoConnectedComponentsAlgorithm extends JIPipeSimple
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        Filaments3DData inputData = iterationStep.getInputData(getFirstInputSlot(), Filaments3DData.class, progressInfo);
+        Filaments3DGraphData inputData = iterationStep.getInputData(getFirstInputSlot(), Filaments3DGraphData.class, progressInfo);
         ConnectivityInspector<FilamentVertex, FilamentEdge> connectivityInspector = new ConnectivityInspector<>(inputData);
         int componentId = 0;
         for (Set<FilamentVertex> connectedSet : connectivityInspector.connectedSets()) {
-            Filaments3DData outputData = new Filaments3DData();
+            Filaments3DGraphData outputData = new Filaments3DGraphData();
             List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
             componentIdAnnotation.addAnnotationIfEnabled(annotationList, componentId + "");
 

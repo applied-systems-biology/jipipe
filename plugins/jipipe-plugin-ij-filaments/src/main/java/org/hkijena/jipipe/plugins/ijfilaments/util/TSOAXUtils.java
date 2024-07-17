@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.ijfilaments.util;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
+import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -103,8 +103,8 @@ public class TSOAXUtils {
         return result;
     }
 
-    public static Filaments3DData extractFilaments(ResultsTableData snakesResult, int trackId, boolean enableTrackIdFilter, JIPipeProgressInfo progressInfo) {
-        Filaments3DData filaments3DData = new Filaments3DData();
+    public static Filaments3DGraphData extractFilaments(ResultsTableData snakesResult, int trackId, boolean enableTrackIdFilter, JIPipeProgressInfo progressInfo) {
+        Filaments3DGraphData filaments3DGraphData = new Filaments3DGraphData();
 
         // Create snake vertices
         progressInfo.log("Creating " + snakesResult.getRowCount() + " vertices ...");
@@ -154,7 +154,7 @@ public class TSOAXUtils {
             vertex.getMetadata().put("snake_index", String.valueOf(snakeIndex));
             vertex.getMetadata().put("snake_type", String.valueOf(snakeType));
             vertex.getMetadata().put("point_index", String.valueOf(pointIndex));
-            filaments3DData.addVertex(vertex);
+            filaments3DGraphData.addVertex(vertex);
 
             snakeTypes.put(snakeIndex, snakeType);
             List<FilamentVertex> vertexList = snakeVertices.getOrDefault(snakeIndex, null);
@@ -171,14 +171,14 @@ public class TSOAXUtils {
         for (Map.Entry<Integer, List<FilamentVertex>> entry : snakeVertices.entrySet()) {
             List<FilamentVertex> vertexList = entry.getValue();
             for (int i = 1; i < vertexList.size(); i++) {
-                filaments3DData.addEdge(vertexList.get(i - 1), vertexList.get(i));
+                filaments3DGraphData.addEdge(vertexList.get(i - 1), vertexList.get(i));
             }
             if (vertexList.size() > 1 && snakeTypes.get(entry.getKey()) == 0) {
-                filaments3DData.addEdge(vertexList.get(vertexList.size() - 1), vertexList.get(0));
+                filaments3DGraphData.addEdge(vertexList.get(vertexList.size() - 1), vertexList.get(0));
             }
         }
 
-        return filaments3DData;
+        return filaments3DGraphData;
     }
 
     public static List<List<Integer>> parseSnakesTracks(Path resultsFile, JIPipeProgressInfo progressInfo) {

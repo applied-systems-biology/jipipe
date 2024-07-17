@@ -32,7 +32,7 @@ import org.hkijena.jipipe.api.data.thumbnails.JIPipeImageThumbnailData;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.ijtrackmate.display.spots.CachedSpotCollectionDataViewerWindow;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.colors.ColorMap;
@@ -127,7 +127,7 @@ public class SpotsCollectionData extends ModelData {
         rgbImage = ImageJUtils.convertToColorRGBIfNeeded(rgbImage);
 
         // ROI rendering
-        ROIListData rois = spotsToROIList();
+        ROI2DListData rois = spotsToROIList();
         int dMax = 1;
         for (Roi roi : rois) {
             int d = roi.getZPosition() + roi.getCPosition() + roi.getTPosition();
@@ -168,7 +168,7 @@ public class SpotsCollectionData extends ModelData {
         rgbImage = ImageJUtils.convertToColorRGBIfNeeded(rgbImage);
 
         // ROI rendering
-        ROIListData rois = spotsToROIList();
+        ROI2DListData rois = spotsToROIList();
         int dMax = 1;
         for (Roi roi : rois) {
             int d = roi.getZPosition() + roi.getCPosition() + roi.getTPosition();
@@ -218,8 +218,8 @@ public class SpotsCollectionData extends ModelData {
             return result;
     }
 
-    public ROIListData spotsToROIList() {
-        ROIListData result = new ROIListData();
+    public ROI2DListData spotsToROIList() {
+        ROI2DListData result = new ROI2DListData();
         for (Spot spot : getSpots().iterable(true)) {
             double x = spot.getDoublePosition(0) / getImage().getCalibration().pixelWidth;
             double y = spot.getDoublePosition(1) / getImage().getCalibration().pixelHeight;

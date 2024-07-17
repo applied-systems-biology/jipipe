@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalStringParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -36,7 +36,7 @@ import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Extract 2D ROI metadata as table", description = "Extracts the metadata (properties map) of each ROI and writes them into a table")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Metadata")
-@AddJIPipeInputSlot(value = ROIListData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class ExtractROIMetadataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
@@ -57,7 +57,7 @@ public class ExtractROIMetadataAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROIListData rois = iterationStep.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo);
+        ROI2DListData rois = iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo);
         ResultsTableData table = new ResultsTableData();
         for (int i = 0; i < rois.size(); i++) {
             Roi roi = rois.get(i);

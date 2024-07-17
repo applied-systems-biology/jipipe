@@ -27,16 +27,16 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
 @SetJIPipeDocumentation(name = "Set 2D ROI image", description = "Associates an image to the ROI.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, name = "Output", create = true)
+@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
 public class SetRoiImageAlgorithm extends JIPipeIteratingAlgorithm {
 
     /**
@@ -59,7 +59,7 @@ public class SetRoiImageAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROIListData data = (ROIListData) iterationStep.getInputData("ROI", ROIListData.class, progressInfo).duplicate(progressInfo);
+        ROI2DListData data = (ROI2DListData) iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo).duplicate(progressInfo);
         ImagePlus reference = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getDuplicateImage();
         for (Roi roi : data) {
             roi.setImage(reference);

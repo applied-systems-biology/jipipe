@@ -25,15 +25,15 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
 @SetJIPipeDocumentation(name = "Clear 2D ROI image", description = "Removes any association of the ROI from any image.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ROIListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, name = "Output", create = true)
+@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
 public class UnsetRoiImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     /**
@@ -56,7 +56,7 @@ public class UnsetRoiImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROIListData data = (ROIListData) iterationStep.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo).duplicate(progressInfo);
+        ROI2DListData data = (ROI2DListData) iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo).duplicate(progressInfo);
         for (Roi roi : data) {
             roi.setImage(null);
         }

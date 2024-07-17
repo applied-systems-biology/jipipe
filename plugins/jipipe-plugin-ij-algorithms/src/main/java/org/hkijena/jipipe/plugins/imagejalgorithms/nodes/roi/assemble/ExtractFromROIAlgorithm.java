@@ -31,7 +31,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
@@ -45,7 +45,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Extract from 2D ROI", description = "Extracts parts of the incoming image within the given ROI by extracting the bounding area.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "ROI")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
-@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
 @AddJIPipeOutputSlot(value = ImagePlus2DData.class, name = "Extracted", create = true)
 public class ExtractFromROIAlgorithm extends JIPipeIteratingAlgorithm {
 
@@ -81,11 +81,11 @@ public class ExtractFromROIAlgorithm extends JIPipeIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData image = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo);
-        ROIListData rois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+        ROI2DListData rois = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
 
         ImageJUtils.forEachIndexedZCTSlice(image.getImage(), (processor, index) -> {
             for (Roi roi : rois) {
-                if (ROIListData.isVisibleIn(roi, index, false, false, false)) {
+                if (ROI2DListData.isVisibleIn(roi, index, false, false, false)) {
                     ImageProcessor resultProcessor;
                     if (outsideColor.isEnabled()) {
                         resultProcessor = processor.duplicate();

@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.ijfilaments.FilamentsNodeTypeCategory;
-import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
+import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentsDrawer;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
@@ -37,7 +37,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 @SetJIPipeDocumentation(name = "Convert filaments to RGB", description = "Visualizes filaments by rendering them onto an RGB image")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Convert")
-@AddJIPipeInputSlot(value = Filaments3DData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, name = "Output", create = true)
 public class ConvertFilamentsToRGBAlgorithm extends JIPipeIteratingAlgorithm {
@@ -77,10 +77,10 @@ public class ConvertFilamentsToRGBAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        Filaments3DData filaments3DData = iterationStep.getInputData("Input", Filaments3DData.class, progressInfo);
+        Filaments3DGraphData filaments3DGraphData = iterationStep.getInputData("Input", Filaments3DGraphData.class, progressInfo);
         ImagePlus reference = ImageJUtils.unwrap(iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo));
         if (reference == null) {
-            reference = filaments3DData.createBlankCanvas("Image", BitDepth.ColorRGB);
+            reference = filaments3DGraphData.createBlankCanvas("Image", BitDepth.ColorRGB);
         } else if (!drawOverReference) {
             ImagePlus blank = IJ.createHyperStack("Image", reference.getWidth(), reference.getHeight(), reference.getNChannels(), reference.getNSlices(), reference.getNFrames(), 24);
             blank.copyScale(reference);
@@ -91,7 +91,7 @@ public class ConvertFilamentsToRGBAlgorithm extends JIPipeIteratingAlgorithm {
             reference = ImageJUtils.convertToColorRGBIfNeeded(reference);
         }
         ImageJUtils.forEachIndexedZCTSlice(reference, (ip, index) -> {
-            filamentsDrawer.drawFilamentsOnProcessor(filaments3DData, (ColorProcessor) ip, index.getZ(), index.getC(), index.getT());
+            filamentsDrawer.drawFilamentsOnProcessor(filaments3DGraphData, (ColorProcessor) ip, index.getZ(), index.getC(), index.getT());
         }, progressInfo);
         iterationStep.addOutputData("Output", new ImagePlusColorRGBData(reference), progressInfo);
     }

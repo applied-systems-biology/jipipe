@@ -43,7 +43,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ROIHandler;
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialAccessNode;
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialsEnvironment;
@@ -194,7 +194,7 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                         annotations.add(new JIPipeTextAnnotation(idAnnotation.getContent(), String.valueOf(imageReferenceData.getImageId())));
                     }
 
-                    ROIListData rois = new ROIListData();
+                    ROI2DListData rois = new ROI2DListData();
                     if (imageImportParameters.isExtractRois()) {
                         rois = ROIHandler.openROIs(process.getOMEMetadata(), new ImagePlus[]{image});
                     }

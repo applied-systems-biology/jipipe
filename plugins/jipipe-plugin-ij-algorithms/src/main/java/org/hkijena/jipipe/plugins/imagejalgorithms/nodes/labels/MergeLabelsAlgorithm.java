@@ -25,14 +25,14 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 @SetJIPipeDocumentation(name = "Merge label inside ROI", description = "Sets all labels inside the specified ROI to the same value.")
 @ConfigureJIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Labels", create = true)
-@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Labels", create = true)
 @AddJIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
         "Bioinformatics (Oxford Univ Press) 32(22): 3532-3534, PMID 27412086, doi:10.1093/bioinformatics/btw413")
@@ -50,13 +50,13 @@ public class MergeLabelsAlgorithm extends JIPipeIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus inputImage = iterationStep.getInputData("Labels", ImagePlusGreyscaleData.class, progressInfo).getImage();
-        ROIListData rois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+        ROI2DListData rois = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
         if (rois.isEmpty()) {
             iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(inputImage), progressInfo);
             return;
         }
         if (rois.size() > 1) {
-            rois = new ROIListData(rois);
+            rois = new ROI2DListData(rois);
             rois.logicalOr();
         }
         ImagePlus outputImage = ImageJUtils.duplicate(inputImage);

@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.ijfilaments.FilamentsNodeTypeCategory;
-import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
+import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.ijfilaments.parameters.VertexMaskParameter;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
@@ -39,9 +39,9 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 @SetJIPipeDocumentation(name = "Set filament vertex value from image", description = "Sets the value/intensity of each vertex from the given input image. Please note that if the C/T coordinates are set to zero, the value is extracted from the 0/0 slice.")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = Filaments3DData.class, name = "Filaments", create = true)
+@AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Filaments", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Intensity", description = "The value/intensity is sourced from the pixels in this image", create = true)
-@AddJIPipeOutputSlot(value = Filaments3DData.class, name = "Output", create = true)
+@AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Output", create = true)
 public class SetVertexValueFromImageAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final VertexMaskParameter vertexMask;
@@ -62,7 +62,7 @@ public class SetVertexValueFromImageAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        Filaments3DData filaments = new Filaments3DData(iterationStep.getInputData("Filaments", Filaments3DData.class, progressInfo));
+        Filaments3DGraphData filaments = new Filaments3DGraphData(iterationStep.getInputData("Filaments", Filaments3DGraphData.class, progressInfo));
         ImagePlus intensity = iterationStep.getInputData("Intensity", ImagePlusGreyscaleData.class, progressInfo).getImage();
         JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap();
         variablesMap.putAnnotations(iterationStep.getMergedTextAnnotations());

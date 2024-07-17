@@ -29,7 +29,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.*;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.settings.ImageViewerUIROI2DDisplayApplicationSettings;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
@@ -54,7 +54,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
-    private final ROIListData overlayRois = new ROIListData();
+    private final ROI2DListData overlayRois = new ROI2DListData();
     private final JList<Roi> roiListControl = new JList<>();
     private final RoiDrawer roiDrawer = new RoiDrawer();
     private final JIPipeDesktopLargeToggleButtonRibbonAction displayROIViewMenuItem = new JIPipeDesktopLargeToggleButtonRibbonAction("Display ROI", "Determines whether ROI are displayed", UIUtils.getIcon32FromResources("data-types/roi.png"));
@@ -62,7 +62,7 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     private final List<ROIManagerPlugin2DSelectionContextPanel> selectionContextPanels = new ArrayList<>();
     private final JPanel selectionContentPanelUI = new JPanel();
     private final JIPipeDesktopRibbon ribbon = new JIPipeDesktopRibbon(3);
-    private ROIListData rois = new ROIListData();
+    private ROI2DListData rois = new ROI2DListData();
     private boolean filterListHideInvisible = false;
     private boolean filterListOnlySelected = false;
     private JPanel mainPanel;
@@ -103,8 +103,8 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
 
     @Override
     public void onOverlayAdded(Object overlay) {
-        if (overlay instanceof ROIListData) {
-            importROIs((ROIListData) overlay, false);
+        if (overlay instanceof ROI2DListData) {
+            importROIs((ROI2DListData) overlay, false);
         }
     }
 
@@ -125,7 +125,7 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
         formPanel.addVerticalGlue(mainPanel, null);
     }
 
-    public ROIListData getSelectedROIOrAll(String title, String message) {
+    public ROI2DListData getSelectedROIOrAll(String title, String message) {
         if (rois.isEmpty()) {
             JOptionPane.showMessageDialog(getViewerPanel(), "There are no ROI in the list", title, JOptionPane.ERROR_MESSAGE);
             return null;
@@ -144,7 +144,7 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
             else if (result == JOptionPane.YES_OPTION)
                 return rois;
             else
-                return new ROIListData(roiListControl.getSelectedValuesList());
+                return new ROI2DListData(roiListControl.getSelectedValuesList());
         }
         return rois;
     }
@@ -301,7 +301,7 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     }
 
     private void showSelectedROIMetadata() {
-        ROIListData rois = getSelectedROIOrAll("Show metadata", "Please select which ROI metadata you want displayed");
+        ROI2DListData rois = getSelectedROIOrAll("Show metadata", "Please select which ROI metadata you want displayed");
         ResultsTableData table = new ResultsTableData();
         table.addStringColumn("ROI Name");
         table.addStringColumn("ROI Index");
@@ -319,7 +319,7 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     }
 
     private void measureSelectedROI() {
-        ROIListData data = getSelectedROIOrAll("Measure", "Please select which ROI you want to measure");
+        ROI2DListData data = getSelectedROIOrAll("Measure", "Please select which ROI you want to measure");
         Measurement2DSettings settings = Measurement2DSettings.INSTANCE;
         ResultsTableData measurements = data.measure(ImageJUtils.duplicate(getViewerPanel().getImagePlus()),
                 settings.getStatistics(), true, settings.isMeasureInPhysicalUnits());
@@ -385,19 +385,19 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     private void importROIsFromFile() {
         Path path = JIPipeFileChooserApplicationSettings.openFile(getViewerPanel(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Import ROI", UIUtils.EXTENSION_FILTER_ROIS);
         if (path != null) {
-            ROIListData importedROIs = ROIListData.loadRoiListFromFile(path);
+            ROI2DListData importedROIs = ROI2DListData.loadRoiListFromFile(path);
             importROIs(importedROIs, false);
         }
     }
 
     private void exportROIsToFile() {
-        ROIListData result = getSelectedROIOrAll("Export ROI", "Do you want to export all ROI or only the selected ones?");
+        ROI2DListData result = getSelectedROIOrAll("Export ROI", "Do you want to export all ROI or only the selected ones?");
         if (result != null) {
             exportROIsToFile(result);
         }
     }
 
-    private void exportROIsToFile(ROIListData rois) {
+    private void exportROIsToFile(ROI2DListData rois) {
         FileNameExtensionFilter[] fileNameExtensionFilters;
         if (rois.size() == 1) {
             fileNameExtensionFilters = new FileNameExtensionFilter[]{UIUtils.EXTENSION_FILTER_ROI, UIUtils.EXTENSION_FILTER_ROI_ZIP};
@@ -440,7 +440,7 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     public void postprocessDrawForExport(BufferedImage image, ImageSliceIndex sliceIndex, double magnification) {
         if (displayROIViewMenuItem.getState() && renderROIAsOverlayViewMenuItem.getState()) {
             Graphics2D graphics = image.createGraphics();
-            ROIListData copy = new ROIListData();
+            ROI2DListData copy = new ROI2DListData();
             ImageCanvas canvas = ImageJUtils.createZoomedDummyCanvas(getCurrentImagePlus(), magnification);
             for (Roi roi : rois) {
                 Roi clone = (Roi) roi.clone();
@@ -614,7 +614,7 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
         mainPanel.add(selectionContentPanelUI, BorderLayout.SOUTH);
     }
 
-    public void importROIs(ROIListData rois, boolean deferUploadSlice) {
+    public void importROIs(ROI2DListData rois, boolean deferUploadSlice) {
         for (Roi roi : rois) {
             Roi clone = (Roi) roi.clone();
             ImageJUtils.setRoiCanvas(clone, getCurrentImagePlus(), getViewerPanel2D().getZoomedDummyCanvas());
@@ -634,23 +634,23 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
         updateListModel(deferUploadSlice, Collections.emptySet());
     }
 
-    public ROIListData getRois() {
+    public ROI2DListData getRois() {
         return rois;
     }
 
-    public void setRois(ROIListData rois, boolean deferUploadSlice) {
+    public void setRois(ROI2DListData rois, boolean deferUploadSlice) {
         this.rois = rois;
         updateListModel(deferUploadSlice, Collections.emptySet());
     }
 
     public void exportROIsToManager() {
-        ROIListData rois = getSelectedROIOrAll("Export ROI to ImageJ", "Please select which ROI should be exported.");
+        ROI2DListData rois = getSelectedROIOrAll("Export ROI to ImageJ", "Please select which ROI should be exported.");
         if (rois != null) {
             exportROIsToManager(rois);
         }
     }
 
-    public void exportROIsToManager(ROIListData rois) {
+    public void exportROIsToManager(ROI2DListData rois) {
         rois.addToRoiManager(RoiManager.getRoiManager());
     }
 
@@ -689,7 +689,7 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
         ImageSliceIndex currentIndex = getCurrentSlicePosition();
         for (Roi roi : rois) {
             boolean excluded = excludeFromFilter.contains(roi);
-            if (!excluded && (filterListHideInvisible && !ROIListData.isVisibleIn(roi, currentIndex, roiDrawer.isIgnoreZ(), roiDrawer.isIgnoreC(), roiDrawer.isIgnoreT())))
+            if (!excluded && (filterListHideInvisible && !ROI2DListData.isVisibleIn(roi, currentIndex, roiDrawer.isIgnoreZ(), roiDrawer.isIgnoreC(), roiDrawer.isIgnoreT())))
                 continue;
             if (!excluded && !selectedValuesList.isEmpty() && (filterListOnlySelected && !selectedValuesList.contains(roi)))
                 continue;

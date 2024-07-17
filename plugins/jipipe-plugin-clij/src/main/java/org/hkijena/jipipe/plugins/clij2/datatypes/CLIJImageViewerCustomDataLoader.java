@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.display.CachedImagePlusDataViewerWindow;
 
 public class CLIJImageViewerCustomDataLoader extends CachedImagePlusDataViewerWindow.CustomDataLoader {
@@ -29,6 +29,6 @@ public class CLIJImageViewerCustomDataLoader extends CachedImagePlusDataViewerWi
         } else if (data instanceof CLIJImageData) {
             setImagePlus(((CLIJImageData) data).pull().getImage());
         }
-        setRois(new ROIListData());
+        setRois(new ROI2DListData());
     }
 }

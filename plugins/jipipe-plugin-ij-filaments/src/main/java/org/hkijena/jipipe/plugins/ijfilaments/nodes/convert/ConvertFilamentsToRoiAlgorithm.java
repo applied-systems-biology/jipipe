@@ -25,14 +25,14 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.ijfilaments.FilamentsNodeTypeCategory;
-import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.BooleanParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
 
 @SetJIPipeDocumentation(name = "Convert filaments to ROI", description = "Converts filaments into 2D line ImageJ ROI")
-@AddJIPipeInputSlot(value = Filaments3DData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, name = "Output", create = true)
+@AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Convert")
 public class ConvertFilamentsToRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
@@ -61,8 +61,8 @@ public class ConvertFilamentsToRoiAlgorithm extends JIPipeSimpleIteratingAlgorit
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        Filaments3DData inputData = iterationStep.getInputData(getFirstInputSlot(), Filaments3DData.class, progressInfo);
-        ROIListData outputData = inputData.toRoi(ignoreNon2DEdges, withEdges, withVertices, forcedLineThickness.orElse(-1), forcedVertexRadius.orElse(-1));
+        Filaments3DGraphData inputData = iterationStep.getInputData(getFirstInputSlot(), Filaments3DGraphData.class, progressInfo);
+        ROI2DListData outputData = inputData.toRoi(ignoreNon2DEdges, withEdges, withVertices, forcedLineThickness.orElse(-1), forcedVertexRadius.orElse(-1));
 
         iterationStep.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }

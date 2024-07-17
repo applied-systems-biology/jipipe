@@ -31,7 +31,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.plugins.expressions.*;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.BooleanParameterSettings;
 
 import java.util.HashSet;
@@ -79,7 +79,7 @@ public class FilterRoi3DListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         if (filter.test(parameters)) {
             iterationStep.addOutputData(getFirstOutputSlot(), rois, progressInfo);
         } else if (outputEmptyLists) {
-            iterationStep.addOutputData(getFirstOutputSlot(), new ROIListData(), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new ROI2DListData(), progressInfo);
         }
     }
 

@@ -77,12 +77,12 @@ import java.util.zip.ZipOutputStream;
         "*.roi is a single ImageJ ROI. *.zip contains multiple ImageJ ROI. Please note that if multiple *.roi/*.zip are present, only " +
         "one will be loaded.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/roi-list-data.schema.json")
 @LabelAsJIPipeCommonData
-public class ROIListData extends ArrayList<Roi> implements JIPipeData {
+public class ROI2DListData extends ArrayList<Roi> implements JIPipeData {
 
     /**
      * Creates an empty set of ROI
      */
-    public ROIListData() {
+    public ROI2DListData() {
     }
 
     /**
@@ -90,7 +90,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
      *
      * @param other the original
      */
-    public ROIListData(List<Roi> other) {
+    public ROI2DListData(List<Roi> other) {
         for (Roi roi : other) {
             String properties = roi.getProperties();
             Roi clone = (Roi) roi.clone();
@@ -118,7 +118,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
      *
      * @param roiManager the ROI manager
      */
-    public ROIListData(RoiManager roiManager) {
+    public ROI2DListData(RoiManager roiManager) {
         this.addAll(Arrays.asList(roiManager.getRoisAsArray()));
     }
 
@@ -128,10 +128,10 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
      * @param rois the rois
      * @return the image. 1x1 pixel if no ROI or empty roi are provided
      */
-    public static ImagePlus createDummyImageFor(Collection<ROIListData> rois) {
+    public static ImagePlus createDummyImageFor(Collection<ROI2DListData> rois) {
         int width = 1;
         int height = 1;
-        for (ROIListData data : rois) {
+        for (ROI2DListData data : rois) {
             Rectangle bounds = data.getBounds();
             int w = Math.max(0, bounds.x) + bounds.width;
             int h = Math.max(0, bounds.y) + bounds.height;
@@ -146,8 +146,8 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
      *
      * @param storage path that contains a zip/roi file
      */
-    public static ROIListData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        ROIListData result = new ROIListData();
+    public static ROI2DListData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        ROI2DListData result = new ROI2DListData();
         Path zipFile = PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".zip");
         Path roiFile = PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".roi");
         if (zipFile != null) {
@@ -166,9 +166,9 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
      * @param fileName the zip file
      * @return the Roi list
      */
-    public static ROIListData loadRoiListFromFile(Path fileName) {
+    public static ROI2DListData loadRoiListFromFile(Path fileName) {
         // Code adapted from ImageJ RoiManager
-        ROIListData result = new ROIListData();
+        ROI2DListData result = new ROI2DListData();
 
         if (fileName.toString().toLowerCase().endsWith(".roi")) {
             try {
@@ -417,8 +417,8 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
      *
      * @return shallow copy
      */
-    public ROIListData shallowClone() {
-        ROIListData result = new ROIListData();
+    public ROI2DListData shallowClone() {
+        ROI2DListData result = new ROI2DListData();
         result.addAll(this);
         return result;
     }
@@ -611,7 +611,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
 
     @Override
     public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
-        return new ROIListData(this);
+        return new ROI2DListData(this);
     }
 
     @Override
@@ -620,7 +620,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
         if (isEmpty()) {
             mask = IJ.createImage("empty", "8-bit", width, height, 1);
         } else {
-            ROIListData copy = new ROIListData(this);
+            ROI2DListData copy = new ROI2DListData(this);
             copy.flatten();
             copy.crop(true, false, false, false);
             Margin margin = new Margin();
@@ -638,7 +638,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
         if (isEmpty()) {
             mask = IJ.createImage("empty", "8-bit", width, height, 1);
         } else {
-            ROIListData copy = new ROIListData(this);
+            ROI2DListData copy = new ROI2DListData(this);
             copy.flatten();
             copy.crop(true, false, false, false);
             Margin margin = new Margin();
@@ -662,13 +662,13 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
      *
      * @return map of reference image to ROI
      */
-    public Map<Optional<ImagePlus>, ROIListData> groupByReferenceImage() {
-        Map<Optional<ImagePlus>, ROIListData> byImage = new HashMap<>();
+    public Map<Optional<ImagePlus>, ROI2DListData> groupByReferenceImage() {
+        Map<Optional<ImagePlus>, ROI2DListData> byImage = new HashMap<>();
         for (Roi roi : this) {
             Optional<ImagePlus> key = Optional.ofNullable(roi.getImage());
-            ROIListData rois = byImage.getOrDefault(key, null);
+            ROI2DListData rois = byImage.getOrDefault(key, null);
             if (rois == null) {
-                rois = new ROIListData();
+                rois = new ROI2DListData();
                 byImage.put(key, rois);
             }
             rois.add(roi);
@@ -684,8 +684,8 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
      * @param scaleY   the y-scale
      * @param centered if the scaling expands from the ROI center
      */
-    public ROIListData scale(double scaleX, double scaleY, boolean centered) {
-        ROIListData result = new ROIListData();
+    public ROI2DListData scale(double scaleX, double scaleY, boolean centered) {
+        ROI2DListData result = new ROI2DListData();
         for (Roi roi : this) {
             result.add(RoiScaler.scale(roi, scaleX, scaleY, centered));
         }
@@ -700,8 +700,8 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
      * @param center the center point
      * @return the rotated ROIs
      */
-    public ROIListData rotate(double angle, Point2D center) {
-        ROIListData result = new ROIListData();
+    public ROI2DListData rotate(double angle, Point2D center) {
+        ROI2DListData result = new ROI2DListData();
         for (Roi roi : this) {
             result.add(RoiRotator.rotate(roi, angle, center.getX(), center.getY()));
         }
@@ -1199,7 +1199,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
      *
      * @param other the other data. The entries are copied.
      */
-    public void mergeWith(ROIListData other) {
+    public void mergeWith(ROI2DListData other) {
         for (Roi item : other) {
             add((Roi) item.clone());
         }

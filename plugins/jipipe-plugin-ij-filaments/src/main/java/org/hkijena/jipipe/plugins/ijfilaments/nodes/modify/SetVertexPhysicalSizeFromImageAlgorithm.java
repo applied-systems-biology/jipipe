@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.ijfilaments.FilamentsNodeTypeCategory;
-import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
+import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity;
@@ -35,9 +35,9 @@ import org.hkijena.jipipe.utils.StringUtils;
 @SetJIPipeDocumentation(name = "Set filament vertex physical sizes from image", description = "Sets the physical voxel sizes of all vertices to the data provided in the image. If the image has no calibration data, " +
         "the filament voxel sizes will be reset to 1 pixel.")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = Filaments3DData.class, name = "Filaments", create = true)
+@AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Filaments", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Intensity", description = "The calibration is extracted from this image", create = true)
-@AddJIPipeOutputSlot(value = Filaments3DData.class, name = "Output", create = true)
+@AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Output", create = true)
 public class SetVertexPhysicalSizeFromImageAlgorithm extends JIPipeIteratingAlgorithm {
     public SetVertexPhysicalSizeFromImageAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -49,7 +49,7 @@ public class SetVertexPhysicalSizeFromImageAlgorithm extends JIPipeIteratingAlgo
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        Filaments3DData filaments = new Filaments3DData(iterationStep.getInputData("Filaments", Filaments3DData.class, progressInfo));
+        Filaments3DGraphData filaments = new Filaments3DGraphData(iterationStep.getInputData("Filaments", Filaments3DGraphData.class, progressInfo));
         ImagePlus img = iterationStep.getInputData("Intensity", ImagePlusGreyscaleData.class, progressInfo).getImage();
         Calibration calibration = img.getCalibration();
         for (FilamentVertex vertex : filaments.vertexSet()) {

@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.plugins.imageviewer.plugins2d.roimanager;
 
 import ij.gui.Roi;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
 
 import javax.swing.*;
@@ -36,5 +36,5 @@ public abstract class ROIManagerPlugin2DSelectionContextPanel extends JPanel {
         return roiManagerPlugin.getViewerPanel();
     }
 
-    public abstract void selectionUpdated(ROIListData allROI, List<Roi> selectedROI);
+    public abstract void selectionUpdated(ROI2DListData allROI, List<Roi> selectedROI);
 }

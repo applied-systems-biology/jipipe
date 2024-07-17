@@ -33,7 +33,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.RoiLabel;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
@@ -120,7 +120,7 @@ public class RenderOverlayAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus reference = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
-        ROIListData rois = new ROIListData();
+        ROI2DListData rois = new ROI2DListData();
         if (reference.getOverlay() != null) {
             rois.addAll(Arrays.asList(reference.getOverlay().toArray()));
         }
@@ -146,12 +146,12 @@ public class RenderOverlayAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             result.setOverlay(null);
             iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
         } else {
-            rois = new ROIListData(rois);
+            rois = new ROI2DListData(rois);
             ImageCanvas canvas = ImageJUtils.createZoomedDummyCanvas(reference, magnification);
             for (Roi roi : rois) {
                 ImageJUtils.setRoiCanvas(roi, reference, canvas);
             }
-            ROIListData finalRois = rois;
+            ROI2DListData finalRois = rois;
             final int targetWidth = (int) (magnification * reference.getWidth());
             final int targetHeight = (int) (magnification * reference.getHeight());
             ImageStack targetStack = new ImageStack(targetWidth, targetHeight, reference.getStackSize());
@@ -169,7 +169,7 @@ public class RenderOverlayAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    private void drawScaledRoi(ImagePlus reference, RoiDrawer drawer, ROIListData finalRois, ImageStack targetStack, ImageProcessor sourceIp, ImageSliceIndex index) {
+    private void drawScaledRoi(ImagePlus reference, RoiDrawer drawer, ROI2DListData finalRois, ImageStack targetStack, ImageProcessor sourceIp, ImageSliceIndex index) {
         ImageProcessor scaledSourceIp = magnification != 1.0 ? sourceIp.resize((int) (magnification * sourceIp.getWidth()), (int) (magnification * sourceIp.getHeight()), false) : sourceIp;
         ImagePlus sliceImage = new ImagePlus("slice", scaledSourceIp);
         sliceImage.copyScale(reference);

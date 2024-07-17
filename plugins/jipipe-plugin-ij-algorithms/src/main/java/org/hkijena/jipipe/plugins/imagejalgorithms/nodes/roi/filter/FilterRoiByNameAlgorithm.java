@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.plugins.expressions.*;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.HashSet;
@@ -40,8 +40,8 @@ import java.util.Set;
  */
 @SetJIPipeDocumentation(name = "Filter 2D ROI by properties (expression)", description = "Filters the ROI list elements by the name and other basic properties.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
-@AddJIPipeInputSlot(value = ROIListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, name = "Output", create = true)
+@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
 public class FilterRoiByNameAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter filters = new JIPipeExpressionParameter();
@@ -69,8 +69,8 @@ public class FilterRoiByNameAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROIListData inputRois = iterationStep.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo);
-        ROIListData outputRois = new ROIListData();
+        ROI2DListData inputRois = iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo);
+        ROI2DListData outputRois = new ROI2DListData();
 
         JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap();
         parameters.putAnnotations(iterationStep.getMergedTextAnnotations());

@@ -44,7 +44,7 @@ import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.plugins.ij3d.utils.Roi3DDrawer;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.Neighborhood3D;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewerPlugin3D;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer3d.Image3DRenderType;
@@ -69,7 +69,7 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D implements JIP
     private final JPanel selectionContentPanelUI = new JPanel();
     private final JIPipeDesktopRibbon ribbon = new JIPipeDesktopRibbon(3);
     private final Timer updateContentLaterTimer;
-    private final ROIListData scheduledRoi2D = new ROIListData();
+    private final ROI2DListData scheduledRoi2D = new ROI2DListData();
     private ROI3DListData rois = new ROI3DListData();
     private boolean filterListOnlySelected = false;
     private JPanel mainPanel;
@@ -113,8 +113,8 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D implements JIP
 
     @Override
     public void onOverlayAdded(Object overlay) {
-        if (overlay instanceof ROIListData) {
-            importROIs((ROIListData) overlay);
+        if (overlay instanceof ROI2DListData) {
+            importROIs((ROI2DListData) overlay);
         } else if (overlay instanceof ROI3DListData) {
             importROIs((ROI3DListData) overlay);
         }
@@ -416,7 +416,7 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D implements JIP
     private void importROIsFromFile() {
         Path path = JIPipeFileChooserApplicationSettings.openFile(getViewerPanel(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Import ROI", UIUtils.EXTENSION_FILTER_ROIS);
         if (path != null) {
-            ROIListData importedROIs = ROIListData.loadRoiListFromFile(path);
+            ROI2DListData importedROIs = ROI2DListData.loadRoiListFromFile(path);
             importROIs(importedROIs);
         }
     }
@@ -552,7 +552,7 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D implements JIP
         updateContentLaterTimer.restart();
     }
 
-    public void importROIs(ROIListData rois) {
+    public void importROIs(ROI2DListData rois) {
         scheduledRoi2D.addAll(rois);
         rebuildRoiContentNow();
     }
@@ -611,7 +611,7 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D implements JIP
         updateListModel(Collections.emptySet());
     }
 
-    public void exportROIsToManager(ROIListData rois) {
+    public void exportROIsToManager(ROI2DListData rois) {
         rois.addToRoiManager(RoiManager.getRoiManager());
     }
 
@@ -702,7 +702,7 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D implements JIP
 
         @Override
         public void run() {
-            ROIListData inputData = new ROIListData();
+            ROI2DListData inputData = new ROI2DListData();
             inputData.addAll(rois);
             ROI3DListData outputData = IJ3DUtils.roi2DtoRoi3D(inputData, true, false, Neighborhood3D.TwentySixConnected, getProgressInfo());
             converted.addAll(outputData);

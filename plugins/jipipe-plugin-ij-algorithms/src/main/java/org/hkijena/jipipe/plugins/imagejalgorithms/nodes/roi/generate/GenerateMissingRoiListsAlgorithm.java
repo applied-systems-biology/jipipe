@@ -25,14 +25,14 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMissingDataGeneratorAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 
 @SetJIPipeDocumentation(name = "Generate missing 2D ROI lists", description = "Generates empty ROI lists for data that are not paired " +
         "with a matching ROI in the same data batch. ")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Data", create = true)
-@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true, optional = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true, optional = true)
+@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "ROI", create = true)
 public class GenerateMissingRoiListsAlgorithm extends JIPipeMissingDataGeneratorAlgorithm {
     public GenerateMissingRoiListsAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -44,6 +44,6 @@ public class GenerateMissingRoiListsAlgorithm extends JIPipeMissingDataGenerator
 
     @Override
     protected void runGenerator(JIPipeMultiIterationStep iterationStep, JIPipeInputDataSlot inputSlot, JIPipeOutputDataSlot outputSlot, JIPipeProgressInfo progressInfo) {
-        iterationStep.addOutputData(outputSlot, new ROIListData(), progressInfo);
+        iterationStep.addOutputData(outputSlot, new ROI2DListData(), progressInfo);
     }
 }

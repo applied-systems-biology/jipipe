@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewerCacheDataViewerWindow;
 
 public class CachedImagePlusDataViewerWindow extends JIPipeImageViewerCacheDataViewerWindow {
@@ -41,7 +41,7 @@ public class CachedImagePlusDataViewerWindow extends JIPipeImageViewerCacheDataV
     @Override
     protected void loadData(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo) {
         ImagePlusData image;
-        ROIListData rois = new ROIListData();
+        ROI2DListData rois = new ROI2DListData();
         if (customDataLoader != null) {
             customDataLoader.load(virtualData, progressInfo);
             image = new ImagePlusData(customDataLoader.getImagePlus());
@@ -77,7 +77,7 @@ public class CachedImagePlusDataViewerWindow extends JIPipeImageViewerCacheDataV
      */
     public abstract static class CustomDataLoader {
         private ImagePlus imagePlus;
-        private ROIListData rois;
+        private ROI2DListData rois;
 
         public ImagePlus getImagePlus() {
             return imagePlus;
@@ -87,11 +87,11 @@ public class CachedImagePlusDataViewerWindow extends JIPipeImageViewerCacheDataV
             this.imagePlus = imagePlus;
         }
 
-        public ROIListData getRois() {
+        public ROI2DListData getRois() {
             return rois;
         }
 
-        public void setRois(ROIListData rois) {
+        public void setRois(ROI2DListData rois) {
             this.rois = rois;
         }
 

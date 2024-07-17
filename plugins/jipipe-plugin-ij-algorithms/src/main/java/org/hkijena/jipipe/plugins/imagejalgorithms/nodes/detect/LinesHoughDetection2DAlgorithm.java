@@ -36,7 +36,7 @@ import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariab
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.LegacyHoughLines;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
@@ -55,7 +55,7 @@ import java.util.Map;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Detect")
 @AddJIPipeCitation("Based on code by David Chatting, https://github.com/davidchatting/hough_lines/blob/master/HoughTransform.java")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Mask", description = "Mask that contains the segmented edges. ", create = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, name = "Lines", create = true, description = "The detected lines represented as ROI")
+@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Lines", create = true, description = "The detected lines represented as ROI")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Mask", create = true, description = "Mask that contains the detected lines")
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Results", create = true, description = "The detected lines as table")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Accumulator", create = true, description = "The Hough array")
@@ -87,7 +87,7 @@ public class LinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorit
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus inputMask = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
-        ROIListData outputROI = new ROIListData();
+        ROI2DListData outputROI = new ROI2DListData();
         ResultsTableData outputTable = new ResultsTableData();
         outputTable.addNumericColumn("Image Z");
         outputTable.addNumericColumn("Image C");
@@ -110,7 +110,7 @@ public class LinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorit
             LegacyHoughLines houghLines = new LegacyHoughLines(neighborhoodSize, maxTheta);
             houghLines.initialise(ip.getWidth(), ip.getHeight());
             houghLines.addPoints(ip, pixelThreshold.isEnabled(), pixelThreshold.getContent());
-            ROIListData localROI = new ROIListData();
+            ROI2DListData localROI = new ROI2DListData();
             for (LegacyHoughLines.HoughLine line : houghLines.getLines(selectTopN.isEnabled() ? selectTopN.getContent() : -1, accumulatorThreshold)) {
 
                 // Add to table

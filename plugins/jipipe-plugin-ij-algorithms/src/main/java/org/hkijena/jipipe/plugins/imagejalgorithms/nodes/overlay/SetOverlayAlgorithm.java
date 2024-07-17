@@ -26,11 +26,11 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 
 @SetJIPipeDocumentation(name = "Set 2D overlay", description = "Set overlay ROIs")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
-@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "ROI")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nOverlay", aliasName = "Set Overlay")
@@ -47,7 +47,7 @@ public class SetOverlayAlgorithm extends JIPipeIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus img = iterationStep.getInputData("Input", ImagePlusData.class, progressInfo).getDuplicateImage();
-        ROIListData rois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+        ROI2DListData rois = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
         Overlay overlay = new Overlay();
         for (Roi roi : rois) {
             overlay.add(roi);

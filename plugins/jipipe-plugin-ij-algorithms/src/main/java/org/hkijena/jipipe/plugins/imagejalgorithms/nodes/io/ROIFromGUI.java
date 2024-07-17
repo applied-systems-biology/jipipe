@@ -27,13 +27,13 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 
 /**
  * Imports {@link ImagePlusData} from the GUI
  */
 @SetJIPipeDocumentation(name = "ROI from ImageJ", description = "Imports ROI from the ImageJ ROI manager")
-@AddJIPipeOutputSlot(value = ROIListData.class, name = "Output", create = true)
+@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nImport")
 public class ROIFromGUI extends JIPipeSimpleIteratingAlgorithm {
@@ -48,7 +48,7 @@ public class ROIFromGUI extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROIListData rois = new ROIListData(RoiManager.getRoiManager());
+        ROI2DListData rois = new ROI2DListData(RoiManager.getRoiManager());
         iterationStep.addOutputData(getFirstOutputSlot(), rois.duplicate(progressInfo), progressInfo);
     }
 }

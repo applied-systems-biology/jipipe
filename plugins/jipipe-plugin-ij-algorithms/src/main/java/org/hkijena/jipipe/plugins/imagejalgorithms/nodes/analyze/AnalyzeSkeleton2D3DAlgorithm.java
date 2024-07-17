@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale8UData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;
@@ -53,7 +53,7 @@ import java.util.Comparator;
 @AddJIPipeCitation("G. Polder, H.L.E Hovens and A.J Zweers, Measuring shoot length of submerged aquatic plants using graph analysis (2010), In: Proceedings of the ImageJ User and Developer Conference, Centre de Recherche Public Henri Tudor, Luxembourg, 27-29 October, pp 172-177.")
 @ConfigureJIPipeNode(menuPath = "Analyze", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlus3DGreyscaleMaskData.class, name = "Skeleton", create = true)
-@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", description = "ROI to exclude on pruning ends")
+@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", description = "ROI to exclude on pruning ends")
 @AddJIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, name = "Reference", description = "Original grayscale input image (for lowest pixel intensity pruning mode)")
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Skeletons", description = "Table of all skeletons")
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Branches", description = "Table of all branches")
@@ -63,7 +63,7 @@ import java.util.Comparator;
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze\nSkeleton", aliasName = "Analyze Skeleton (2D/3D)")
 public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
 
-    public static final JIPipeDataSlotInfo ROI_INPUT_SLOT = new JIPipeDataSlotInfo(ROIListData.class, JIPipeSlotType.Input, "ROI", "ROI to exclude on pruning ends", true);
+    public static final JIPipeDataSlotInfo ROI_INPUT_SLOT = new JIPipeDataSlotInfo(ROI2DListData.class, JIPipeSlotType.Input, "ROI", "ROI to exclude on pruning ends", true);
     public static final JIPipeDataSlotInfo REFERENCE_INPUT_SLOT = new JIPipeDataSlotInfo(ImagePlus3DGreyscale8UData.class, JIPipeSlotType.Input, "Reference", "Original grayscale input image (for lowest pixel intensity pruning mode)", true);
 
     public static final JIPipeDataSlotInfo SKELETONS_TABLE_OUTPUT_SLOT = new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Output, "Skeletons", "Table of all skeletons");
@@ -103,12 +103,12 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Get the excluded ROI
         if (pruneEndsMethod == EndRemovalMethod.ExcludeROI) {
-            ROIListData roi = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+            ROI2DListData roi = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
             if (roi != null && !roi.isEmpty()) {
                 if (roi.size() == 1)
                     excludeRoi = roi.get(0);
                 else {
-                    roi = new ROIListData(roi);
+                    roi = new ROI2DListData(roi);
                     roi.logicalOr();
                     excludeRoi = roi.get(0);
                 }

@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.RoiStatisticsAlgorithm;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
@@ -44,7 +44,7 @@ import java.awt.*;
         "rectangle formed by the image dimensions.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Analyze")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Image", create = true)
-@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true, optional = true)
+@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Measurements", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Measure (whole image)")
 public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
@@ -84,9 +84,9 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusGreyscaleData inputImage = iterationStep.getInputData("Image", ImagePlusGreyscaleData.class, progressInfo);
-        ROIListData inputRois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+        ROI2DListData inputRois = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
         if (inputRois == null || inputRois.isEmpty()) {
-            inputRois = new ROIListData();
+            inputRois = new ROI2DListData();
             inputRois.add(new ShapeRoi(new Rectangle(0, 0, inputImage.getWidth(), inputImage.getHeight())));
         }
 

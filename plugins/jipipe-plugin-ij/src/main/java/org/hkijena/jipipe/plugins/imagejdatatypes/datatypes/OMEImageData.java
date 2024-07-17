@@ -88,11 +88,11 @@ import java.util.List;
 public class OMEImageData implements JIPipeData {
 
     private final ImagePlus image;
-    private ROIListData rois;
+    private ROI2DListData rois;
     private OMEXMLMetadata metadata;
     private OMEExporterSettings exporterSettings = new OMEExporterSettings();
 
-    public OMEImageData(ImagePlus image, ROIListData rois, OMEXMLMetadata metadata) {
+    public OMEImageData(ImagePlus image, ROI2DListData rois, OMEXMLMetadata metadata) {
         this.image = image;
         this.rois = rois;
         this.metadata = metadata;
@@ -153,7 +153,7 @@ public class OMEImageData implements JIPipeData {
             if (process.getOMEMetadata() instanceof OMEXMLMetadata) {
                 omexmlMetadata = (OMEXMLMetadata) process.getOMEMetadata();
             }
-            ROIListData rois = ROIHandler.openROIs(process.getOMEMetadata(), new ImagePlus[]{image});
+            ROI2DListData rois = ROIHandler.openROIs(process.getOMEMetadata(), new ImagePlus[]{image});
             return new OMEImageData(image, rois, omexmlMetadata);
         } catch (IOException | FormatException e) {
             throw new RuntimeException(e);
@@ -1063,7 +1063,7 @@ public class OMEImageData implements JIPipeData {
         return image;
     }
 
-    public ROIListData getRois() {
+    public ROI2DListData getRois() {
         return rois;
     }
 
@@ -1088,7 +1088,7 @@ public class OMEImageData implements JIPipeData {
     public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         ImagePlus imp = ImageJUtils.duplicate(image);
         imp.setTitle(getImage().getTitle());
-        OMEImageData copy = new OMEImageData(imp, new ROIListData(rois), metadata);
+        OMEImageData copy = new OMEImageData(imp, new ROI2DListData(rois), metadata);
         copy.exporterSettings = new OMEExporterSettings(exporterSettings);
         return copy;
     }

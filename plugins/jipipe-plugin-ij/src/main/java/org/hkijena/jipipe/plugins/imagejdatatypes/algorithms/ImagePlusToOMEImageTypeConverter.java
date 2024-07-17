@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 
 public class ImagePlusToOMEImageTypeConverter implements JIPipeDataConverter {
     @Override
@@ -35,7 +35,7 @@ public class ImagePlusToOMEImageTypeConverter implements JIPipeDataConverter {
     @Override
     public JIPipeData convert(JIPipeData input, JIPipeProgressInfo progressInfo) {
         ImagePlus img = ((ImagePlusData) input).getImage();
-        ROIListData rois = new ROIListData();
+        ROI2DListData rois = new ROI2DListData();
         if (img.getRoi() != null) {
             rois.add(img.getRoi());
         }

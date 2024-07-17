@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.ijfilaments.parameters;
 
-import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
+import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
 import org.jgrapht.alg.cycle.PatonCycleBase;
@@ -29,7 +29,7 @@ public enum CycleFinderAlgorithm {
     StackBFSCycleBasis,
     QueueBFSCycleBasis;
 
-    public Set<List<FilamentEdge>> findCycles(Filaments3DData graph) {
+    public Set<List<FilamentEdge>> findCycles(Filaments3DGraphData graph) {
         switch (this) {
             case PatonCycleBasis: {
                 PatonCycleBase<FilamentVertex, FilamentEdge> patonCycleBase = new PatonCycleBase<>(graph);

@@ -34,7 +34,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.RoiStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ROIElementDrawingMode;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.Measurement;
@@ -54,7 +54,7 @@ import java.util.Optional;
 @SetJIPipeDocumentation(name = "Convert only 2D ROI to RGB", description = "Converts ROI lists to color images. The line and fill color is stored within the ROI themselves. " +
         "This algorithm does not need a reference image that determines the output size.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
-@AddJIPipeInputSlot(value = ROIListData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, name = "Output", create = true)
 public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
@@ -122,18 +122,18 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         if (preferAssociatedImage) {
-            for (Map.Entry<Optional<ImagePlus>, ROIListData> referenceEntry : iterationStep.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo).groupByReferenceImage().entrySet()) {
-                ROIListData inputData = (ROIListData) referenceEntry.getValue().duplicate(progressInfo);
+            for (Map.Entry<Optional<ImagePlus>, ROI2DListData> referenceEntry : iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo).groupByReferenceImage().entrySet()) {
+                ROI2DListData inputData = (ROI2DListData) referenceEntry.getValue().duplicate(progressInfo);
                 processROIList(iterationStep, inputData, referenceEntry.getKey().orElse(null), runContext, progressInfo);
             }
         } else {
-            ROIListData inputData = (ROIListData) iterationStep.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo).duplicate(progressInfo);
+            ROI2DListData inputData = (ROI2DListData) iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo).duplicate(progressInfo);
             processROIList(iterationStep, inputData, null, runContext, progressInfo);
         }
 
     }
 
-    private void processROIList(JIPipeSingleIterationStep iterationStep, ROIListData inputData, ImagePlus reference, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+    private void processROIList(JIPipeSingleIterationStep iterationStep, ROI2DListData inputData, ImagePlus reference, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         // Find the bounds and future stack position
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());

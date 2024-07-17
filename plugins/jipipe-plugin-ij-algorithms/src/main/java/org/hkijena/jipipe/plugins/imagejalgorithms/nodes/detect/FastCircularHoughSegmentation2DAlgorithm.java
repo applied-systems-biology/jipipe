@@ -36,7 +36,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.NumericFunctionExpression;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
@@ -270,7 +270,7 @@ public class FastCircularHoughSegmentation2DAlgorithm extends JIPipeSimpleIterat
         }
 
         /* draw the circles we found.  Using the best score list. */
-        ROIListData rois = new ROIListData();
+        ROI2DListData rois = new ROI2DListData();
         for (int y = 0; y < H; y++) {
             for (int x = 0; x < W; x++) {
                 if (scores[x][y] > 0) {

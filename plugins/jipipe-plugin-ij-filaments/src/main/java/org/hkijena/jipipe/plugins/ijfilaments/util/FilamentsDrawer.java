@@ -18,7 +18,7 @@ import mcib3d.geom.Vector3D;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
+import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageBlendMode;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
@@ -196,7 +196,7 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
         this.ignoreT = ignoreT;
     }
 
-    public void drawFilamentsOnProcessor(Filaments3DData graph, ColorProcessor processor, int z, int c, int t) {
+    public void drawFilamentsOnProcessor(Filaments3DGraphData graph, ColorProcessor processor, int z, int c, int t) {
         if (drawEdges) {
             for (FilamentEdge edge : graph.edgeSet()) {
                 FilamentVertex source = graph.getEdgeSource(edge);
@@ -307,7 +307,7 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
         }
     }
 
-    public void drawFilamentsOnGraphics(Filaments3DData graph, Graphics2D graphics2D, Rectangle renderArea, double magnification, int z, int c, int t, boolean drawMuted) {
+    public void drawFilamentsOnGraphics(Filaments3DGraphData graph, Graphics2D graphics2D, Rectangle renderArea, double magnification, int z, int c, int t, boolean drawMuted) {
         if (drawEdges) {
             for (FilamentEdge edge : graph.edgeSet()) {
                 FilamentVertex source = graph.getEdgeSource(edge);

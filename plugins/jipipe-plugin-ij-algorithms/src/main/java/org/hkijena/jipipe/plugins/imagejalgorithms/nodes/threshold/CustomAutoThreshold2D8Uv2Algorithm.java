@@ -39,7 +39,7 @@ import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExp
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.ImageROITargetArea;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
@@ -125,7 +125,7 @@ public class CustomAutoThreshold2D8Uv2Algorithm extends JIPipeIteratingAlgorithm
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
-        ROIListData roiInput = null;
+        ROI2DListData roiInput = null;
         ImagePlus maskInput = null;
         JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap();
 
@@ -142,7 +142,7 @@ public class CustomAutoThreshold2D8Uv2Algorithm extends JIPipeIteratingAlgorithm
         switch (sourceArea) {
             case InsideRoi:
             case OutsideRoi:
-                roiInput = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+                roiInput = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
                 break;
             case InsideMask:
             case OutsideMask:
@@ -150,7 +150,7 @@ public class CustomAutoThreshold2D8Uv2Algorithm extends JIPipeIteratingAlgorithm
                 break;
         }
 
-        ROIListData finalRoiInput = roiInput;
+        ROI2DListData finalRoiInput = roiInput;
         ImagePlus finalMaskInput = maskInput;
 
         if (thresholdMode == AutoThreshold2DAlgorithm.SliceThresholdMode.ApplyPerSlice) {

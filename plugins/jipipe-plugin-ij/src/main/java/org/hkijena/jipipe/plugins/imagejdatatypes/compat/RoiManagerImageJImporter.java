@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.compat.ImageJDataImporter;
 import org.hkijena.jipipe.api.compat.ImageJImportParameters;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 
 import java.util.List;
 
@@ -28,20 +28,20 @@ import java.util.List;
 public class RoiManagerImageJImporter implements ImageJDataImporter {
     @Override
     public JIPipeDataTable importData(List<Object> objects, ImageJImportParameters parameters, JIPipeProgressInfo progressInfo) {
-        JIPipeDataTable result = new JIPipeDataTable(ROIListData.class);
+        JIPipeDataTable result = new JIPipeDataTable(ROI2DListData.class);
         if (objects != null && !objects.isEmpty()) {
             for (Object object : objects) {
                 RoiManager manager = (RoiManager) object;
-                ROIListData data = new ROIListData(manager);
+                ROI2DListData data = new ROI2DListData(manager);
                 if (parameters.isDuplicate())
-                    data = (ROIListData) data.duplicate(new JIPipeProgressInfo());
+                    data = (ROI2DListData) data.duplicate(new JIPipeProgressInfo());
                 result.addData(data, new JIPipeProgressInfo());
             }
         } else {
             RoiManager manager = RoiManager.getRoiManager();
-            ROIListData data = new ROIListData(manager);
+            ROI2DListData data = new ROI2DListData(manager);
             if (parameters.isDuplicate())
-                data = (ROIListData) data.duplicate(new JIPipeProgressInfo());
+                data = (ROI2DListData) data.duplicate(new JIPipeProgressInfo());
             result.addData(data, new JIPipeProgressInfo());
         }
         return result;
@@ -49,7 +49,7 @@ public class RoiManagerImageJImporter implements ImageJDataImporter {
 
     @Override
     public Class<? extends JIPipeData> getImportedJIPipeDataType() {
-        return ROIListData.class;
+        return ROI2DListData.class;
     }
 
     @Override

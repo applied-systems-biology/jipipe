@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
+import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.BitDepth;
 import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewerCacheDataViewerWindow;
 import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewerPlugin;
@@ -35,7 +35,7 @@ public class CachedFilamentsDataViewerWindow extends JIPipeImageViewerCacheDataV
 
     @Override
     protected void loadData(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo) {
-        Filaments3DData data = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), Filaments3DData.class, progressInfo);
+        Filaments3DGraphData data = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), Filaments3DGraphData.class, progressInfo);
         getImageViewer().setError(null);
         ImagePlus image = data.createBlankCanvas("empty", BitDepth.Grayscale8u);
         getImageViewer().clearOverlays();

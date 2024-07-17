@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.RoiOutline;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Margin;
@@ -42,9 +42,9 @@ import java.awt.*;
 @SetJIPipeDocumentation(name = "Remove 2D ROI at borders", description = "Removes all ROI that intersect with image borders. Use the 'Border' parameter " +
         "to define a rectangle inside of the image dimensions. If a ROI is not contained within this region, it is removed.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
-@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", description = "The ROI to be processed", create = true)
+@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", description = "The ROI to be processed", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", description = "The reference image", create = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, name = "Cleaned ROI", description = "The cleaned ROI", create = true)
+@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Cleaned ROI", description = "The cleaned ROI", create = true)
 public class RemoveBorderRoisAlgorithm extends JIPipeIteratingAlgorithm {
 
     private Margin borderDefinition = new Margin();
@@ -77,7 +77,7 @@ public class RemoveBorderRoisAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROIListData data = (ROIListData) iterationStep.getInputData("ROI", ROIListData.class, progressInfo).duplicate(progressInfo);
+        ROI2DListData data = (ROI2DListData) iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo).duplicate(progressInfo);
         data.outline(outline);
         ImagePlus reference = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();

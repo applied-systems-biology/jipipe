@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
+import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.ijfilaments.environments.TSOAXEnvironment;
 import org.hkijena.jipipe.plugins.ijfilaments.util.TSOAXUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
@@ -54,7 +54,7 @@ import java.util.*;
 @AddJIPipeCitation("Website https://www.lehigh.edu/~div206/tsoax/index.html")
 @AddJIPipeCitation("Documentation (SOAX) https://www.lehigh.edu/~div206/soax/doc/soax_manual.pdf")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Image", description = "The image to be analyzed", create = true)
-@AddJIPipeOutputSlot(value = Filaments3DData.class, name = "Filaments", description = "The snakes extracted as filaments", create = true)
+@AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Filaments", description = "The snakes extracted as filaments", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Snakes", description = "The snakes extracted as table", create = true)
 @AddJIPipeOutputSlot(value = StringData.class, name = "Raw", description = "The raw TSOAX output", create = true)
 public class TSOAX3DAlgorithm extends TSOAXAlgorithm {
@@ -132,13 +132,13 @@ public class TSOAX3DAlgorithm extends TSOAXAlgorithm {
             for (int knownTrackId : knownTrackIds) {
                 List<JIPipeTextAnnotation> annotations = new ArrayList<>();
                 getTrackAnnotationName().addAnnotationIfEnabled(annotations, String.valueOf(knownTrackId));
-                Filaments3DData filaments3DData = TSOAXUtils.extractFilaments(snakesResult, knownTrackId, true, progressInfo);
-                iterationStep.addOutputData("Filaments", filaments3DData, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+                Filaments3DGraphData filaments3DGraphData = TSOAXUtils.extractFilaments(snakesResult, knownTrackId, true, progressInfo);
+                iterationStep.addOutputData("Filaments", filaments3DGraphData, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
             }
         } else {
             // Single filament
-            Filaments3DData filaments3DData = TSOAXUtils.extractFilaments(snakesResult, -1, false, progressInfo);
-            iterationStep.addOutputData("Filaments", filaments3DData, progressInfo);
+            Filaments3DGraphData filaments3DGraphData = TSOAXUtils.extractFilaments(snakesResult, -1, false, progressInfo);
+            iterationStep.addOutputData("Filaments", filaments3DGraphData, progressInfo);
         }
 
         // Clean up

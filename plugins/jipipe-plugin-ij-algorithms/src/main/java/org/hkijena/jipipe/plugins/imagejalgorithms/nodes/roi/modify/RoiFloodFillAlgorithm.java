@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 import java.awt.*;
@@ -39,9 +39,9 @@ import java.awt.*;
  */
 @SetJIPipeDocumentation(name = "2D ROI flood fill", description = "Starts a flood fill (magic wand) operation starting at the location of the ROI. Multiple operations are applied for each point within the ROI. Returns the generated outlines.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, name = "ROI", create = true)
+@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "ROI", create = true)
 public class RoiFloodFillAlgorithm extends JIPipeIteratingAlgorithm {
 
     private double tolerance = 0;
@@ -74,14 +74,14 @@ public class RoiFloodFillAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROIListData inputRoi = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+        ROI2DListData inputRoi = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
         ImagePlus inputImage = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
 
-        ROIListData outputRoi = new ROIListData();
+        ROI2DListData outputRoi = new ROI2DListData();
         ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
             for (Roi roi : inputRoi) {
                 ImagePlus wrapper = new ImagePlus("slice", ip);
-                ROIListData collection = new ROIListData();
+                ROI2DListData collection = new ROI2DListData();
                 for (Point point : roi.getContainedPoints()) {
                     IJ.doWand(wrapper, point.x, point.y, tolerance, mode.getNativeValue() + (smooth ? " smooth" : ""));
                     Roi wand = wrapper.getRoi();

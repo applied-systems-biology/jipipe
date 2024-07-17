@@ -14,13 +14,13 @@
 package org.hkijena.jipipe.plugins.ijfilaments.display;
 
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopColorIcon;
-import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
+import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class FilamentListCellRenderer extends JPanel implements ListCellRenderer<Filaments3DData> {
+public class FilamentListCellRenderer extends JPanel implements ListCellRenderer<Filaments3DGraphData> {
 
     private final SolidJIPipeDesktopColorIcon strokeFillPreview = new SolidJIPipeDesktopColorIcon(16, 16);
     private final JLabel iconLabel = new JLabel();
@@ -64,7 +64,7 @@ public class FilamentListCellRenderer extends JPanel implements ListCellRenderer
     }
 
     @Override
-    public Component getListCellRendererComponent(JList<? extends Filaments3DData> list, Filaments3DData value, int index, boolean isSelected, boolean cellHasFocus) {
+    public Component getListCellRendererComponent(JList<? extends Filaments3DGraphData> list, Filaments3DGraphData value, int index, boolean isSelected, boolean cellHasFocus) {
         nameLabel.setText("Filament " + (index + 1));
         strokeFillPreview.setFillColor(value.getAverageVertexColor());
         strokeFillPreview.setBorderColor(value.getAverageEdgeColor());

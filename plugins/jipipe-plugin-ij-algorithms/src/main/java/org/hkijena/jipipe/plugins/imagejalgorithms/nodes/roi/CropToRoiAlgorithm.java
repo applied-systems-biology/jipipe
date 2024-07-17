@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 
@@ -40,7 +40,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Crop image to 2D ROI", description = "Crops the incoming images to fit into the boundaries defined by the ROI.")
 @ConfigureJIPipeNode(menuPath = "Transform", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
-@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Cropped", create = true)
 public class CropToRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
@@ -64,7 +64,7 @@ public class CropToRoiAlgorithm extends JIPipeIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus input = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
-        ROIListData rois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+        ROI2DListData rois = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
         Rectangle bounds = rois.getBounds();
 
         if (input.getStackSize() <= 1) {

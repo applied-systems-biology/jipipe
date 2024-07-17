@@ -26,14 +26,14 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.ijfilaments.FilamentsNodeTypeCategory;
-import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
+import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 
 @SetJIPipeDocumentation(name = "Remove border filaments", description = "Removes filament components that are within a specified distance of the image borders.")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Filter")
-@AddJIPipeInputSlot(value = Filaments3DData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true)
-@AddJIPipeOutputSlot(value = Filaments3DData.class, name = "Output", create = true)
+@AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Output", create = true)
 public class RemoveBorderFilaments extends JIPipeIteratingAlgorithm {
 
     private boolean removeInX = true;
@@ -59,9 +59,9 @@ public class RemoveBorderFilaments extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        Filaments3DData inputData = iterationStep.getInputData("Input", Filaments3DData.class, progressInfo);
+        Filaments3DGraphData inputData = iterationStep.getInputData("Input", Filaments3DGraphData.class, progressInfo);
         ImagePlus reference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo).getImage();
-        Filaments3DData outputData = new Filaments3DData(inputData);
+        Filaments3DGraphData outputData = new Filaments3DGraphData(inputData);
         outputData.removeComponentsAtBorder(reference, removeInX, removeInY, removeInZ, useThickness, borderDistance);
         iterationStep.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }

@@ -33,7 +33,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.RoiLabel;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.*;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
@@ -52,7 +52,7 @@ import java.util.Collections;
 @SetJIPipeDocumentation(name = "Convert 2D ROI to RGB", description = "Converts ROI lists to masks. The line and fill color is stored within the ROI themselves. " +
         "This algorithm needs a reference image that provides the output sizes. If you do not have a reference image, you can use the unreferenced variant.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
-@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", description = "The ROI", create = true)
+@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", description = "The ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", description = "The image where ROI are drawn on", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, name = "Output", description = "The ROI visualization (RGB image)", create = true)
 public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
@@ -128,7 +128,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROIListData rois = (ROIListData) iterationStep.getInputData("ROI", ROIListData.class, progressInfo).duplicate(progressInfo);
+        ROI2DListData rois = (ROI2DListData) iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo).duplicate(progressInfo);
         ImagePlus reference = ImageJUtils.unwrap(iterationStep.getInputData("Image", ImagePlusData.class, progressInfo));
 
         if (reference == null) {
@@ -156,12 +156,12 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
             ImagePlus result = drawer.draw(reference, rois, progressInfo);
             iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
         } else {
-            rois = new ROIListData(rois);
+            rois = new ROI2DListData(rois);
             ImageCanvas canvas = ImageJUtils.createZoomedDummyCanvas(reference, magnification);
             for (Roi roi : rois) {
                 ImageJUtils.setRoiCanvas(roi, reference, canvas);
             }
-            ROIListData finalRois = rois;
+            ROI2DListData finalRois = rois;
             final int targetWidth = (int) (magnification * reference.getWidth());
             final int targetHeight = (int) (magnification * reference.getHeight());
             ImageStack targetStack = new ImageStack(targetWidth, targetHeight, reference.getStackSize());
@@ -179,7 +179,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
 
     }
 
-    private void drawScaledRoi(ImagePlus reference, RoiDrawer drawer, ROIListData finalRois, ImageStack targetStack, ImageProcessor sourceIp, ImageSliceIndex index) {
+    private void drawScaledRoi(ImagePlus reference, RoiDrawer drawer, ROI2DListData finalRois, ImageStack targetStack, ImageProcessor sourceIp, ImageSliceIndex index) {
         ImageProcessor scaledSourceIp = magnification != 1.0 ? sourceIp.resize((int) (magnification * sourceIp.getWidth()), (int) (magnification * sourceIp.getHeight()), false) : sourceIp;
         ImagePlus sliceImage = new ImagePlus("slice", scaledSourceIp);
         sliceImage.copyScale(reference);

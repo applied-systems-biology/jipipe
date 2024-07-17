@@ -39,7 +39,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.plugins.forms.ui.FormsDialog;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
 
 import javax.swing.*;
@@ -55,8 +55,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
         "node parameters.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Forms")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true)
-@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true, optional = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true, optional = true)
+@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "ROI", create = true)
 public class DrawROIAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgorithm {
 
     private OptionalIntegerParameter overwriteSizeZ = new OptionalIntegerParameter(false, 1);

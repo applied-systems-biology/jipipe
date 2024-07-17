@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Margin;
 
@@ -37,9 +37,9 @@ import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 
 @SetJIPipeDocumentation(name = "Draw 2D rectangular ROI", description = "Draws one or multiple rectangular ROI. Also supports the drawing of rounded rectangles.")
-@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", description = "Optional existing list of ROI. The new ROI will be appended to it.", optional = true, create = true)
+@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", description = "Optional existing list of ROI. The new ROI will be appended to it.", optional = true, create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", description = "Reference image for the positioning. If not set, the area covered by the existing ROI are used (or width=0, height=0)", optional = true, create = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, name = "ROI", create = true)
+@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "ROI", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Draw")
 public class DrawRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
@@ -86,11 +86,11 @@ public class DrawRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm {
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
 
         // Collect target and reference
-        ROIListData target = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+        ROI2DListData target = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
         if (target == null) {
-            target = new ROIListData();
+            target = new ROI2DListData();
         } else {
-            target = new ROIListData(target);
+            target = new ROI2DListData(target);
         }
         Rectangle reference;
         ImagePlusData referenceImage = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);

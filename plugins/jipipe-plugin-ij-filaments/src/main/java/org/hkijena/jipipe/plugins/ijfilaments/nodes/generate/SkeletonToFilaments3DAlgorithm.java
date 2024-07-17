@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
+import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.plugins.ijfilaments.util.NonSpatialPoint3d;
 import org.hkijena.jipipe.plugins.ijfilaments.util.Point3d;
@@ -43,7 +43,7 @@ import java.util.Map;
         "This algorithm 3D data and will apply the processing per C/T stack.")
 @ConfigureJIPipeNode(menuPath = "Convert", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Skeleton", create = true)
-@AddJIPipeOutputSlot(value = Filaments3DData.class, name = "Filaments", description = "The filaments as extracted by the algorithm", create = true)
+@AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Filaments", description = "The filaments as extracted by the algorithm", create = true)
 public class SkeletonToFilaments3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public SkeletonToFilaments3DAlgorithm(JIPipeNodeInfo info) {
@@ -57,7 +57,7 @@ public class SkeletonToFilaments3DAlgorithm extends JIPipeSimpleIteratingAlgorit
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus skeleton = iterationStep.getInputData("Skeleton", ImagePlusData.class, progressInfo).getImage();
-        Filaments3DData filamentsData = new Filaments3DData();
+        Filaments3DGraphData filamentsData = new Filaments3DGraphData();
 
         Calibration calibration = skeleton.getCalibration();
 

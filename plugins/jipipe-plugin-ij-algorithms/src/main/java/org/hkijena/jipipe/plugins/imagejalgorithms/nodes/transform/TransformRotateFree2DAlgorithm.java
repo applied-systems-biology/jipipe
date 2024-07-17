@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
 
@@ -43,7 +43,7 @@ import java.util.Collections;
 @ConfigureJIPipeNode(menuPath = "Transform", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, name = "Content")
+@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Content")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nTransform", aliasName = "Rotate (free)")
 public class TransformRotateFree2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
@@ -84,7 +84,7 @@ public class TransformRotateFree2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         if (outputRoi) {
             Roi roi = imp.getRoi();
             imp.setRoi((Roi) null);
-            iterationStep.addOutputData("Content", new ROIListData(Collections.singletonList(roi)), progressInfo);
+            iterationStep.addOutputData("Content", new ROI2DListData(Collections.singletonList(roi)), progressInfo);
         }
     }
 
@@ -137,7 +137,7 @@ public class TransformRotateFree2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         if (outputRoi) {
             if (!hasOutputSlot("Content")) {
                 JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-                slotConfiguration.addOutputSlot("Content", "ROI that separates background from the original image", ROIListData.class, null, false);
+                slotConfiguration.addOutputSlot("Content", "ROI that separates background from the original image", ROI2DListData.class, null, false);
             }
         } else {
             if (hasOutputSlot("Content")) {

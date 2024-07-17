@@ -36,7 +36,7 @@ import org.hkijena.jipipe.api.data.thumbnails.JIPipeImageThumbnailData;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.plugins.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
@@ -94,13 +94,13 @@ public class ImageJUtils {
                 statisticsSetParameter.getValues().add(statistic);
             }
         }
-        ROIListData dummy = new ROIListData();
+        ROI2DListData dummy = new ROI2DListData();
         dummy.add(roi);
         return dummy.measure(reference, statisticsSetParameter, true, physicalUnits);
     }
 
     public static Roi intersectROI(Roi roi1, Roi roi2) {
-        ROIListData dummy = new ROIListData();
+        ROI2DListData dummy = new ROI2DListData();
         dummy.add(roi1);
         dummy.add(roi2);
         dummy.logicalAnd();

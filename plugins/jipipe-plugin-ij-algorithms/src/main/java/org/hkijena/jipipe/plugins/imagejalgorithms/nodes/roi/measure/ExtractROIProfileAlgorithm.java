@@ -36,7 +36,7 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDataAnnotationNameParameter;
@@ -54,7 +54,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Extract 2D ROI profile", description = "Extracts the pixel intensities along the ROI if a straight or irregular line ROI are given. " +
         "If a rotated rectangle is processed, it is converted into a straight line." +
         "If any other ROI type is given, either the row or column average of the bounding rectangle is calculated.")
-@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Reference", create = true, description = "The profile(s) are created on this image")
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Measurements", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")
@@ -83,7 +83,7 @@ public class ExtractROIProfileAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROIListData rois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+        ROI2DListData rois = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
         ImagePlus img = iterationStep.getInputData("Reference", ImagePlusGreyscaleData.class, progressInfo).getImage();
         Calibration calibration = measureInPhysicalUnits ? img.getCalibration() : null;
 
@@ -155,7 +155,7 @@ public class ExtractROIProfileAlgorithm extends JIPipeIteratingAlgorithm {
             roiIndexAnnotation.addAnnotationIfEnabled(textAnnotationList, String.valueOf(i));
 
             if (roiDataAnnotation.isEnabled()) {
-                dataAnnotationList.add(new JIPipeDataAnnotation(roiDataAnnotation.getContent(), new ROIListData(Collections.singletonList(roi))));
+                dataAnnotationList.add(new JIPipeDataAnnotation(roiDataAnnotation.getContent(), new ROI2DListData(Collections.singletonList(roi))));
             }
 
             iterationStep.addOutputData(getFirstOutputSlot(),

@@ -46,7 +46,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.ImageROITargetArea;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.ImageJAlgorithmUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
@@ -81,13 +81,13 @@ public class MergeLabelsToThicknessAlgorithm extends JIPipeIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus image = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
-        ROIListData roiInput = null;
+        ROI2DListData roiInput = null;
         ImagePlus maskInput = null;
 
         switch (sourceArea) {
             case InsideRoi:
             case OutsideRoi:
-                roiInput = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+                roiInput = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
                 break;
             case InsideMask:
             case OutsideMask:
@@ -95,7 +95,7 @@ public class MergeLabelsToThicknessAlgorithm extends JIPipeIteratingAlgorithm {
                 break;
         }
 
-        ROIListData finalRoiInput = roiInput;
+        ROI2DListData finalRoiInput = roiInput;
         ImagePlus finalMaskInput = maskInput;
 
         if (image.getBitDepth() == 8) {
@@ -358,7 +358,7 @@ public class MergeLabelsToThicknessAlgorithm extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(image), progressInfo);
     }
 
-    private ImageProcessor getMask(int width, int height, ROIListData rois, ImagePlus mask, ImageSliceIndex sliceIndex) {
+    private ImageProcessor getMask(int width, int height, ROI2DListData rois, ImagePlus mask, ImageSliceIndex sliceIndex) {
         return ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(sourceArea, width, height, rois, mask, sliceIndex);
     }
 

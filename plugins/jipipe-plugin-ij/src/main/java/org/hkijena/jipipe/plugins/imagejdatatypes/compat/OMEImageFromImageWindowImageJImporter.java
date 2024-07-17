@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.compat.ImageJImportParameters;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.List;
@@ -47,7 +47,7 @@ public class OMEImageFromImageWindowImageJImporter implements ImageJDataImporter
             imagePlus.setTitle(title);
         }
         JIPipeDataTable result = new JIPipeDataTable(OMEImageData.class);
-        ROIListData rois = new ROIListData();
+        ROI2DListData rois = new ROI2DListData();
         for (Roi roi : RoiManager.getRoiManager().getRoisAsArray()) {
             if (roi.getImage() == imagePlus) {
                 if (parameters.isDuplicate())

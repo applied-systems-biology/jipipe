@@ -22,7 +22,7 @@ import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariab
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
+import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentEdgeVariablesInfo;
 
@@ -56,7 +56,7 @@ public class EdgeMaskParameter extends AbstractJIPipeParameterCollection {
         this.filter = filter;
     }
 
-    public Set<FilamentEdge> filter(Filaments3DData graph, Set<FilamentEdge> edgeSet, JIPipeExpressionVariablesMap variables) {
+    public Set<FilamentEdge> filter(Filaments3DGraphData graph, Set<FilamentEdge> edgeSet, JIPipeExpressionVariablesMap variables) {
         Set<FilamentEdge> matched = new HashSet<>();
         for (FilamentEdge filamentEdge : edgeSet) {
             FilamentEdgeVariablesInfo.writeToVariables(graph, filamentEdge, variables, "");

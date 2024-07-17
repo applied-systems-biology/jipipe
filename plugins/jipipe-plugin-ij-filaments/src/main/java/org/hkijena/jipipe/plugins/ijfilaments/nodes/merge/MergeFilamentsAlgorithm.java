@@ -24,12 +24,12 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.plugins.ijfilaments.FilamentsNodeTypeCategory;
-import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
+import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 
 @SetJIPipeDocumentation(name = "Merge filaments", description = "Merges multiple filament graphs into one")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Split")
-@AddJIPipeInputSlot(value = Filaments3DData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = Filaments3DData.class, name = "Output", create = true)
+@AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Output", create = true)
 public class MergeFilamentsAlgorithm extends JIPipeMergingAlgorithm {
 
     public MergeFilamentsAlgorithm(JIPipeNodeInfo info) {
@@ -42,8 +42,8 @@ public class MergeFilamentsAlgorithm extends JIPipeMergingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        Filaments3DData outputData = new Filaments3DData();
-        for (Filaments3DData data : iterationStep.getInputData(getFirstInputSlot(), Filaments3DData.class, progressInfo)) {
+        Filaments3DGraphData outputData = new Filaments3DGraphData();
+        for (Filaments3DGraphData data : iterationStep.getInputData(getFirstInputSlot(), Filaments3DGraphData.class, progressInfo)) {
             outputData.mergeWith(data);
         }
         iterationStep.addOutputData(getFirstOutputSlot(), outputData, progressInfo);

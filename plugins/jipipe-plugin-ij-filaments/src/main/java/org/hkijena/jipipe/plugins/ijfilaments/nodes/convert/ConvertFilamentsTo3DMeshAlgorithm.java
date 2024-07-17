@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.ijfilaments.FilamentsNodeTypeCategory;
-import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
+import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalFloatParameter;
@@ -37,7 +37,7 @@ import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Convert filaments to 3D scene", description = "Converts 3D filaments into a 3D scene.")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Convert")
-@AddJIPipeInputSlot(value = Filaments3DData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Scene3DData.class, name = "Output", create = true)
 public class ConvertFilamentsTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
@@ -196,11 +196,11 @@ public class ConvertFilamentsTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgo
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        Filaments3DData inputData = iterationStep.getInputData(getFirstInputSlot(), Filaments3DData.class, progressInfo);
+        Filaments3DGraphData inputData = iterationStep.getInputData(getFirstInputSlot(), Filaments3DGraphData.class, progressInfo);
         Scene3DData scene3DData = new Scene3DData();
         if (splitIntoConnectedComponents) {
             for (Set<FilamentVertex> connectedSet : inputData.getConnectivityInspector().connectedSets()) {
-                Filaments3DData component = inputData.extractShallowCopy(connectedSet);
+                Filaments3DGraphData component = inputData.extractShallowCopy(connectedSet);
                 scene3DData.add(component.toScene3D(withVertices,
                         withEdges,
                         physicalSizes,

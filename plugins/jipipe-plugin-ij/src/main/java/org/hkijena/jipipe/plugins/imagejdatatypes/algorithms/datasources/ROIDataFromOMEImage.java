@@ -25,14 +25,14 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 
 /**
  * Loads ROI data from a file via IJ.openFile()
  */
 @SetJIPipeDocumentation(name = "Extract ROI from OME image", description = "Loads a ROI list from an OME image.")
 @AddJIPipeInputSlot(value = OMEImageData.class, name = "Image", create = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, name = "ROI", create = true)
+@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "ROI", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class ROIDataFromOMEImage extends JIPipeSimpleIteratingAlgorithm {
 
@@ -58,6 +58,6 @@ public class ROIDataFromOMEImage extends JIPipeSimpleIteratingAlgorithm {
         if (omeImageData.getRois() != null)
             iterationStep.addOutputData(getFirstOutputSlot(), omeImageData.getRois(), progressInfo);
         else
-            iterationStep.addOutputData(getFirstOutputSlot(), new ROIListData(), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new ROI2DListData(), progressInfo);
     }
 }

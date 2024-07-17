@@ -16,13 +16,13 @@ package org.hkijena.jipipe.plugins.ijfilaments.util;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
+import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 
 import java.io.IOException;
 
-public class FilamentsDataSerializer extends JsonSerializer<Filaments3DData> {
+public class FilamentsDataSerializer extends JsonSerializer<Filaments3DGraphData> {
     @Override
-    public void serialize(Filaments3DData filamentsData, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+    public void serialize(Filaments3DGraphData filamentsData, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
         jsonGenerator.writeStartObject();
         jsonGenerator.writeObjectFieldStart("vertices");
         for (FilamentVertex vertex : filamentsData.vertexSet()) {

@@ -33,14 +33,14 @@ import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariab
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.Image5DExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
 
 @SetJIPipeDocumentation(name = "Draw 2D line ROI", description = "Draws one or multiple line ROI.")
-@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", description = "Optional existing list of ROI. The new ROI will be appended to it.", optional = true, create = true)
+@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", description = "Optional existing list of ROI. The new ROI will be appended to it.", optional = true, create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", description = "Reference image for the positioning. If not set, all image-related variables will be set to 0", optional = true, create = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, name = "ROI", create = true)
+@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "ROI", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Draw")
 public class DrawLineRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
@@ -69,11 +69,11 @@ public class DrawLineRoiAlgorithm extends JIPipeIteratingAlgorithm {
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
 
         // Collect target and reference
-        ROIListData target = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+        ROI2DListData target = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
         if (target == null) {
-            target = new ROIListData();
+            target = new ROI2DListData();
         } else {
-            target = new ROIListData(target);
+            target = new ROI2DListData(target);
         }
 
         // Extract reference variables

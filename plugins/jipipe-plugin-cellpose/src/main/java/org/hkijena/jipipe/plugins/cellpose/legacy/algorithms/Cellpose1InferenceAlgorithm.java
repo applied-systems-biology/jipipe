@@ -44,7 +44,7 @@ import org.hkijena.jipipe.plugins.cellpose.legacy.PretrainedLegacyCellpose2Infer
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeSizeModelData;
 import org.hkijena.jipipe.plugins.cellpose.legacy.parameters.*;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscale32FData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorRGBData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale32FData;
@@ -85,7 +85,7 @@ import java.util.stream.Collectors;
 @AddJIPipeOutputSlot(value = ImagePlus3DColorRGBData.class, name = "Flows")
 @AddJIPipeOutputSlot(value = ImagePlus3DGreyscale32FData.class, name = "Probabilities")
 @AddJIPipeOutputSlot(value = ImagePlus2DGreyscale32FData.class, name = "Styles")
-@AddJIPipeOutputSlot(value = ROIListData.class, name = "ROI")
+@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 @Deprecated
 @LabelAsJIPipeHidden
@@ -627,7 +627,7 @@ public class Cellpose1InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
         }
         if (outputParameters.isOutputROI()) {
             if (!getOutputSlotMap().containsKey("ROI")) {
-                slotConfiguration.addOutputSlot("ROI", "", ROIListData.class, null, false);
+                slotConfiguration.addOutputSlot("ROI", "", ROI2DListData.class, null, false);
             }
         } else {
             if (getOutputSlotMap().containsKey("ROI")) {

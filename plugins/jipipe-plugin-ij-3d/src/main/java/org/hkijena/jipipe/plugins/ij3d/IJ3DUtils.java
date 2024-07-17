@@ -30,7 +30,7 @@ import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DRelationMeasurement;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.Neighborhood3D;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Margin;
@@ -95,7 +95,7 @@ public class IJ3DUtils {
      * @param progressInfo the progress info
      * @return the 3D ROI
      */
-    public static ROI3DListData roi2DtoRoi3D(ROIListData roi2DList, boolean force2D, boolean fast, Neighborhood3D neighborhood, JIPipeProgressInfo progressInfo) {
+    public static ROI3DListData roi2DtoRoi3D(ROI2DListData roi2DList, boolean force2D, boolean fast, Neighborhood3D neighborhood, JIPipeProgressInfo progressInfo) {
         ROI3DListData roi3DList = new ROI3DListData();
 
         // Put into groups
@@ -115,7 +115,7 @@ public class IJ3DUtils {
                 Map.Entry<ImageSliceIndex, List<Roi>> group = groups.get(i);
                 progressInfo.resolveAndLog("Slice", i, groups.size());
 
-                ROIListData forGroup = new ROIListData();
+                ROI2DListData forGroup = new ROI2DListData();
                 forGroup.addAll(group.getValue());
                 ImagePlus mask = forGroup.toMask(new Margin(), true, true, 1);
 
@@ -137,7 +137,7 @@ public class IJ3DUtils {
                     Roi roi = rois.get(j);
                     sliceProgress.resolveAndLog("ROI", j, rois.size());
 
-                    ROIListData singleton = new ROIListData();
+                    ROI2DListData singleton = new ROI2DListData();
                     singleton.add(roi);
 
                     ImagePlus mask = singleton.toMask(new Margin(), true, true, 1);

@@ -35,7 +35,7 @@ import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExp
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.TrackCollectionData;
 import org.hkijena.jipipe.plugins.ijtrackmate.utils.TrackFeatureVariablesInfo;
 import org.hkijena.jipipe.plugins.ijtrackmate.utils.TrackSpotFeatureVariablesInfo;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.utils.ColorUtils;
 
 import java.awt.*;
@@ -45,7 +45,7 @@ import java.util.*;
 @SetJIPipeDocumentation(name = "Convert tracks to ROI", description = "Converts TrackMate tracks into ROI lists. Each lists contains the spot ROI of one track.")
 @ConfigureJIPipeNode(menuPath = "Tracking\nConvert", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = TrackCollectionData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, name = "Output", create = true)
+@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
 public class ConvertTracksToRoiNode extends JIPipeSimpleIteratingAlgorithm {
 
     private NamedTextAnnotationGeneratorExpression.List annotationGenerator = new NamedTextAnnotationGeneratorExpression.List();
@@ -88,7 +88,7 @@ public class ConvertTracksToRoiNode extends JIPipeSimpleIteratingAlgorithm {
                 variables.set(variableName, feature);
             }
 
-            ROIListData rois = new ROIListData();
+            ROI2DListData rois = new ROI2DListData();
             int spotIndex = 0;
             for (Spot spot : spots) {
                 double x = spot.getDoublePosition(0) / image.getCalibration().pixelWidth;

@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.imp.utils;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.display.CachedImagePlusDataViewerWindow;
 import org.hkijena.jipipe.plugins.imp.datatypes.ImpImageData;
 
@@ -23,6 +23,6 @@ public class ImpImageDataImageViewerCustomLoader extends CachedImagePlusDataView
     @Override
     public void load(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo) {
         setImagePlus(virtualData.getData(ImpImageData.class, progressInfo).toImagePlus(true, 10));
-        setRois(new ROIListData());
+        setRois(new ROI2DListData());
     }
 }

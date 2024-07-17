@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Margin;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -43,8 +43,8 @@ public class AddToROIManagerDataDisplay implements JIPipeDataDisplayOperation {
 
     @Override
     public void display(JIPipeData data, String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-        ROIListData rois = (ROIListData) data;
-        Map<Optional<ImagePlus>, ROIListData> byImage = rois.groupByReferenceImage();
+        ROI2DListData rois = (ROI2DListData) data;
+        Map<Optional<ImagePlus>, ROI2DListData> byImage = rois.groupByReferenceImage();
 
         RoiManager roiManager = null;
         if (Macro.getOptions() != null && Interpreter.isBatchMode())
@@ -81,7 +81,7 @@ public class AddToROIManagerDataDisplay implements JIPipeDataDisplayOperation {
             }
         }
 
-        for (Map.Entry<Optional<ImagePlus>, ROIListData> entry : byImage.entrySet()) {
+        for (Map.Entry<Optional<ImagePlus>, ROI2DListData> entry : byImage.entrySet()) {
             if (!entry.getKey().isPresent()) {
                 if (fallbackImage == null) {
                     fallbackImage = entry.getValue().toMask(margin, false, true, 1);

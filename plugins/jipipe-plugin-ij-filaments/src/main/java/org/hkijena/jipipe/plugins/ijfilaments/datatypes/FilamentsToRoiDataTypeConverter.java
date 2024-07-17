@@ -16,21 +16,21 @@ package org.hkijena.jipipe.plugins.ijfilaments.datatypes;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 
 public class FilamentsToRoiDataTypeConverter implements JIPipeDataConverter {
     @Override
     public Class<? extends JIPipeData> getInputType() {
-        return Filaments3DData.class;
+        return Filaments3DGraphData.class;
     }
 
     @Override
     public Class<? extends JIPipeData> getOutputType() {
-        return ROIListData.class;
+        return ROI2DListData.class;
     }
 
     @Override
     public JIPipeData convert(JIPipeData input, JIPipeProgressInfo progressInfo) {
-        return ((Filaments3DData) input).toRoi(false, true, true, -1, -1);
+        return ((Filaments3DGraphData) input).toRoi(false, true, true, -1, -1);
     }
 }

@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.plugins.expressions.ExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
-import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
+import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -38,7 +38,7 @@ public class FilamentUnconnectedEdgeVariablesInfo implements ExpressionParameter
         }
     }
 
-    public static void writeToVariables(Filaments3DData graph, FilamentVertex source, FilamentVertex target, JIPipeExpressionVariablesMap variables, String prefix) {
+    public static void writeToVariables(Filaments3DGraphData graph, FilamentVertex source, FilamentVertex target, JIPipeExpressionVariablesMap variables, String prefix) {
         graph.measureVertex(source, variables, prefix + "source.");
         graph.measureVertex(target, variables, prefix + "target.");
         variables.set("length", source.getSpatialLocation().distanceTo(target.getSpatialLocation()));

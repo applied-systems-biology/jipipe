@@ -32,7 +32,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.plugins.expressions.*;
 import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.MeasurementColumn;
@@ -42,9 +42,9 @@ import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import java.util.*;
 
 @SetJIPipeDocumentation(name = "Sort 2D ROI list (expression)", description = "Sorts a ROI list according to an expression-defined property. Has access to annotations and measurements.")
-@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, name = "ROI", create = true)
+@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "ROI", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
 public class SortRoiListByExpressionsAndMeasurementsAlgorithm extends JIPipeIteratingAlgorithm {
 
@@ -70,11 +70,11 @@ public class SortRoiListByExpressionsAndMeasurementsAlgorithm extends JIPipeIter
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
-        ROIListData inputRois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+        ROI2DListData inputRois = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
         ImagePlusData inputReference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
         JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap();
-        ROIListData tmp = new ROIListData();
+        ROI2DListData tmp = new ROI2DListData();
 
         if (includeAnnotations) {
             variablesMap.putAnnotations(iterationStep.getMergedTextAnnotations());
@@ -106,7 +106,7 @@ public class SortRoiListByExpressionsAndMeasurementsAlgorithm extends JIPipeIter
             sortKeys.put(roi, expression.evaluate(variablesMap));
         }
 
-        ROIListData outputRois = inputRois.shallowClone();
+        ROI2DListData outputRois = inputRois.shallowClone();
         if (reverseSortOrder)
             outputRois.sort(Comparator.comparing(sortKeys::get, NaturalOrderComparator.INSTANCE).reversed());
         else

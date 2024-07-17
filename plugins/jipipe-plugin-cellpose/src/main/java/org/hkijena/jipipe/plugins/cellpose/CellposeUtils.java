@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.plugins.cellpose.legacy.parameters.CellposeSegmentationOutputSettings_Old;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorRGBData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale32FData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
@@ -83,13 +83,13 @@ public class CellposeUtils {
     }
 
     /**
-     * Converts a Cellpose ROI to {@link ROIListData} according to <a href="https://github.com/MouseLand/cellpose/blob/master/imagej_roi_converter.py">...</a>
+     * Converts a Cellpose ROI to {@link ROI2DListData} according to <a href="https://github.com/MouseLand/cellpose/blob/master/imagej_roi_converter.py">...</a>
      *
      * @param file the Cellpose ROI
      * @return ImageJ ROI
      */
-    public static ROIListData cellposeROIToImageJ(Path file) {
-        ROIListData rois = new ROIListData();
+    public static ROI2DListData cellposeROIToImageJ(Path file) {
+        ROI2DListData rois = new ROI2DListData();
         try {
             for (String line : Files.readAllLines(file)) {
                 TIntList xList = new TIntArrayList();
@@ -111,13 +111,13 @@ public class CellposeUtils {
     }
 
     /**
-     * Converts ROI in a custom Json format to {@link ROIListData}
+     * Converts ROI in a custom Json format to {@link ROI2DListData}
      *
      * @param file the ROI file
      * @return ImageJ ROI
      */
-    public static ROIListData cellposeROIJsonToImageJ(Path file) {
-        ROIListData rois = new ROIListData();
+    public static ROI2DListData cellposeROIJsonToImageJ(Path file) {
+        ROI2DListData rois = new ROI2DListData();
         try {
             JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(file.toFile());
             for (JsonNode roiItem : ImmutableList.copyOf(node.elements())) {
@@ -156,7 +156,7 @@ public class CellposeUtils {
 
     public static void extractCellposeOutputs(JIPipeMultiIterationStep iterationStep, JIPipeProgressInfo progressInfo, Path outputRoiOutline, Path outputLabels, Path outputFlows, Path outputProbabilities, Path outputStyles, List<JIPipeTextAnnotation> annotationList, CellposeSegmentationOutputSettings_Old outputParameters) {
         if (outputParameters.isOutputROI()) {
-            ROIListData rois = cellposeROIJsonToImageJ(outputRoiOutline);
+            ROI2DListData rois = cellposeROIJsonToImageJ(outputRoiOutline);
             iterationStep.addOutputData("ROI", rois, annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
         }
         if (outputParameters.isOutputLabels()) {

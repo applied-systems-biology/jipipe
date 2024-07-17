@@ -26,7 +26,7 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallToggleButtonRibbonAction;
 import org.hkijena.jipipe.plugins.ijfilaments.FilamentsPlugin;
-import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
+import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.ijfilaments.settings.ImageViewerUIFilamentDisplayApplicationSettings;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
@@ -51,12 +51,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class FilamentsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
-    private final JList<Filaments3DData> filamentsListControl = new JList<>();
+    private final JList<Filaments3DGraphData> filamentsListControl = new JList<>();
     private final JIPipeDesktopSmallToggleButtonRibbonAction displayFilamentsViewMenuItem = new JIPipeDesktopSmallToggleButtonRibbonAction("Display filaments", "Determines whether filaments are displayed", UIUtils.getIconFromResources("actions/eye.png"));
     private final List<SelectionContextPanel> selectionContextPanels = new ArrayList<>();
     private final JPanel selectionContentPanelUI = new JPanel();
     private final JIPipeDesktopRibbon ribbon = new JIPipeDesktopRibbon(3);
-    private List<Filaments3DData> filamentsList = new ArrayList<>();
+    private List<Filaments3DGraphData> filamentsList = new ArrayList<>();
     private FilamentsDrawer filamentsDrawer = new FilamentsDrawer();
     private FilamentListCellRenderer filamentListCellRenderer;
     private JPanel mainPanel;
@@ -76,11 +76,11 @@ public class FilamentsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
 
     @Override
     public void onOverlayAdded(Object overlay) {
-        if (overlay instanceof Filaments3DData) {
-            Filaments3DData filaments3DData = (Filaments3DData) overlay;
-            ConnectivityInspector<FilamentVertex, FilamentEdge> connectivityInspector = filaments3DData.getConnectivityInspector();
+        if (overlay instanceof Filaments3DGraphData) {
+            Filaments3DGraphData filaments3DGraphData = (Filaments3DGraphData) overlay;
+            ConnectivityInspector<FilamentVertex, FilamentEdge> connectivityInspector = filaments3DGraphData.getConnectivityInspector();
             for (Set<FilamentVertex> connectedSet : connectivityInspector.connectedSets()) {
-                filamentsList.add(filaments3DData.extractDeepCopy(connectedSet));
+                filamentsList.add(filaments3DGraphData.extractDeepCopy(connectedSet));
             }
             updateFilamentsJList(false);
         }
@@ -88,7 +88,7 @@ public class FilamentsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
 
     @Override
     public void onOverlayRemoved(Object overlay) {
-        if (overlay instanceof Filaments3DData) {
+        if (overlay instanceof Filaments3DGraphData) {
             filamentsList.clear();
             updateFilamentsJList(false);
         }
@@ -132,7 +132,7 @@ public class FilamentsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     }
 
     private void measureSelectedFilaments() {
-        Filaments3DData selected = getSelectedFilamentsOrAll("Measure filaments", "Please select which filaments should be measured");
+        Filaments3DGraphData selected = getSelectedFilamentsOrAll("Measure filaments", "Please select which filaments should be measured");
         ResultsTableData measurements = selected.measureComponents();
         JIPipeDesktopTableEditor.openWindow(getViewerPanel().getDesktopWorkbench(), measurements, "Measurements");
     }
@@ -157,13 +157,13 @@ public class FilamentsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     }
 
     private void exportFilamentsToFile() {
-        Filaments3DData result = getSelectedFilamentsOrAll("Export filaments", "Do you want to export all filaments or only the selected ones?");
+        Filaments3DGraphData result = getSelectedFilamentsOrAll("Export filaments", "Do you want to export all filaments or only the selected ones?");
         if (result != null) {
             exportFilamentsToFile(result);
         }
     }
 
-    public Filaments3DData getSelectedFilamentsOrAll(String title, String message) {
+    public Filaments3DGraphData getSelectedFilamentsOrAll(String title, String message) {
         if (!filamentsListControl.getSelectedValuesList().isEmpty()) {
             int result = JOptionPane.showOptionDialog(getViewerPanel(),
                     message,
@@ -176,22 +176,22 @@ public class FilamentsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
             if (result == JOptionPane.CANCEL_OPTION)
                 return null;
             else if (result == JOptionPane.YES_OPTION) {
-                Filaments3DData copy = new Filaments3DData();
-                for (Filaments3DData data : filamentsList) {
+                Filaments3DGraphData copy = new Filaments3DGraphData();
+                for (Filaments3DGraphData data : filamentsList) {
                     copy.mergeWith(data);
                 }
                 return copy;
             } else {
-                Filaments3DData copy = new Filaments3DData();
-                for (Filaments3DData data : filamentsListControl.getSelectedValuesList()) {
+                Filaments3DGraphData copy = new Filaments3DGraphData();
+                for (Filaments3DGraphData data : filamentsListControl.getSelectedValuesList()) {
                     copy.mergeWith(data);
                 }
                 return copy;
             }
         }
         {
-            Filaments3DData copy = new Filaments3DData();
-            for (Filaments3DData data : filamentsList) {
+            Filaments3DGraphData copy = new Filaments3DGraphData();
+            for (Filaments3DGraphData data : filamentsList) {
                 copy.mergeWith(data);
             }
             return copy;
@@ -244,10 +244,10 @@ public class FilamentsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
         if (path != null && displayFilamentsViewMenuItem.getState()) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             try (JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo, path)) {
-                Filaments3DData filaments3DData = Filaments3DData.importData(storage, progressInfo);
-                ConnectivityInspector<FilamentVertex, FilamentEdge> connectivityInspector = filaments3DData.getConnectivityInspector();
+                Filaments3DGraphData filaments3DGraphData = Filaments3DGraphData.importData(storage, progressInfo);
+                ConnectivityInspector<FilamentVertex, FilamentEdge> connectivityInspector = filaments3DGraphData.getConnectivityInspector();
                 for (Set<FilamentVertex> connectedSet : connectivityInspector.connectedSets()) {
-                    filamentsList.add(filaments3DData.extractShallowCopy(connectedSet));
+                    filamentsList.add(filaments3DGraphData.extractShallowCopy(connectedSet));
                 }
                 updateFilamentsJList(false);
                 uploadSliceToCanvas();
@@ -257,7 +257,7 @@ public class FilamentsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
         }
     }
 
-    private void exportFilamentsToFile(Filaments3DData filaments) {
+    private void exportFilamentsToFile(Filaments3DGraphData filaments) {
         FileNameExtensionFilter[] fileNameExtensionFilters = new FileNameExtensionFilter[]{UIUtils.EXTENSION_FILTER_ZIP};
         Path path = JIPipeFileChooserApplicationSettings.saveFile(getViewerPanel(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export filaments", fileNameExtensionFilters);
         if (path != null) {
@@ -273,21 +273,21 @@ public class FilamentsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     @Override
     public void postprocessDraw(Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex sliceIndex) {
         if (displayFilamentsViewMenuItem.getState()) {
-            ImmutableList<Filaments3DData> copy = ImmutableList.copyOf(filamentsList);
-            List<Filaments3DData> selectedValuesList = filamentsListControl.getSelectedValuesList();
+            ImmutableList<Filaments3DGraphData> copy = ImmutableList.copyOf(filamentsList);
+            List<Filaments3DGraphData> selectedValuesList = filamentsListControl.getSelectedValuesList();
             if (selectedValuesList.isEmpty()) {
-                for (Filaments3DData data : copy) {
+                for (Filaments3DGraphData data : copy) {
                     filamentsDrawer.drawFilamentsOnGraphics(data, graphics2D, renderArea,
                             getViewerPanel2D().getCanvas().getZoom(), sliceIndex.getZ(), sliceIndex.getC(), sliceIndex.getT(), false);
                 }
             } else {
-                for (Filaments3DData data : copy) {
+                for (Filaments3DGraphData data : copy) {
                     if (!selectedValuesList.contains(data)) {
                         filamentsDrawer.drawFilamentsOnGraphics(data, graphics2D, renderArea,
                                 getViewerPanel2D().getCanvas().getZoom(), sliceIndex.getZ(), sliceIndex.getC(), sliceIndex.getT(), true);
                     }
                 }
-                for (Filaments3DData data : selectedValuesList) {
+                for (Filaments3DGraphData data : selectedValuesList) {
                     filamentsDrawer.drawFilamentsOnGraphics(data, graphics2D, renderArea,
                             getViewerPanel2D().getCanvas().getZoom(), sliceIndex.getZ(), sliceIndex.getC(), sliceIndex.getT(), false);
                 }
@@ -298,7 +298,7 @@ public class FilamentsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     @Override
     public void postprocessDrawForExport(BufferedImage image, ImageSliceIndex sliceIndex, double magnification) {
         if (displayFilamentsViewMenuItem.getState()) {
-            for (Filaments3DData data : filamentsList) {
+            for (Filaments3DGraphData data : filamentsList) {
                 Graphics2D graphics2D = image.createGraphics();
                 filamentsDrawer.drawFilamentsOnGraphics(data, graphics2D, new Rectangle(0, 0, (int) (image.getWidth() * magnification), (int) (image.getHeight() * magnification)),
                         magnification, sliceIndex.getZ(), sliceIndex.getC(), sliceIndex.getT(), false);
@@ -372,11 +372,11 @@ public class FilamentsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     }
 
     private void updateFilamentsJList(boolean deferUploadSlice) {
-        DefaultListModel<Filaments3DData> model = new DefaultListModel<>();
+        DefaultListModel<Filaments3DGraphData> model = new DefaultListModel<>();
         int[] selectedIndices = filamentsListControl.getSelectedIndices();
 
-        for (Filaments3DData filaments3DData : filamentsList) {
-            model.addElement(filaments3DData);
+        for (Filaments3DGraphData filaments3DGraphData : filamentsList) {
+            model.addElement(filaments3DGraphData);
         }
 
         filamentsListControl.setModel(model);
@@ -387,13 +387,13 @@ public class FilamentsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     }
 
     private void updateContextPanels() {
-        List<Filaments3DData> selectedValuesList = filamentsListControl.getSelectedValuesList();
+        List<Filaments3DGraphData> selectedValuesList = filamentsListControl.getSelectedValuesList();
         for (SelectionContextPanel selectionContextPanel : selectionContextPanels) {
             selectionContextPanel.selectionUpdated(filamentsList, selectedValuesList);
         }
     }
 
-    public JList<Filaments3DData> getFilamentsListControl() {
+    public JList<Filaments3DGraphData> getFilamentsListControl() {
         return filamentsListControl;
     }
 
@@ -413,7 +413,7 @@ public class FilamentsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
             return filamentsManagerPlugin2D.getViewerPanel();
         }
 
-        public abstract void selectionUpdated(List<Filaments3DData> filaments, List<Filaments3DData> selectedFilaments);
+        public abstract void selectionUpdated(List<Filaments3DGraphData> filaments, List<Filaments3DGraphData> selectedFilaments);
     }
 
     public static class SelectionInfoContextPanel extends SelectionContextPanel {
@@ -432,7 +432,7 @@ public class FilamentsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
         }
 
         @Override
-        public void selectionUpdated(List<Filaments3DData> filaments, List<Filaments3DData> selectedFilaments) {
+        public void selectionUpdated(List<Filaments3DGraphData> filaments, List<Filaments3DGraphData> selectedFilaments) {
             if (selectedFilaments.isEmpty())
                 roiInfoLabel.setText(filaments.size() + " filaments");
             else

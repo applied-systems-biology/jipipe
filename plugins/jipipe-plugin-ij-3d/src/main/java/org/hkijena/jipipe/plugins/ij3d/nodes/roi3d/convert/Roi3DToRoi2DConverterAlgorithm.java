@@ -25,12 +25,12 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 
 @SetJIPipeDocumentation(name = "Convert 3D ROI to 2D ROI", description = "Converts a 3D ROI list into a 2D ROI list.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
 @AddJIPipeInputSlot(value = ROI3DListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, name = "Output", create = true)
+@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
 public class Roi3DToRoi2DConverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public Roi3DToRoi2DConverterAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -43,7 +43,7 @@ public class Roi3DToRoi2DConverterAlgorithm extends JIPipeSimpleIteratingAlgorit
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROI3DListData inputRois = iterationStep.getInputData(getFirstInputSlot(), ROI3DListData.class, progressInfo);
-        ROIListData outputRois = inputRois.toRoi2D(progressInfo);
+        ROI2DListData outputRois = inputRois.toRoi2D(progressInfo);
         iterationStep.addOutputData(getFirstOutputSlot(), outputRois, progressInfo);
     }
 }

@@ -38,7 +38,7 @@ import org.hkijena.jipipe.plugins.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.plugins.ij3d.display.CachedROIList3DDataViewerWindow;
 import org.hkijena.jipipe.plugins.ij3d.utils.ExtendedObject3DVoxels;
 import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DOutline;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.BitDepth;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -494,8 +494,8 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
         return outputImage;
     }
 
-    public ROIListData toRoi2D(JIPipeProgressInfo progressInfo) {
-        ROIListData result = new ROIListData();
+    public ROI2DListData toRoi2D(JIPipeProgressInfo progressInfo) {
+        ROI2DListData result = new ROI2DListData();
         for (int i = 0; i < this.size(); i++) {
             if (progressInfo.isCancelled())
                 return null;

@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 import java.awt.*;
@@ -35,7 +35,7 @@ public class CachedROIListDataViewerWindow extends CachedImagePlusDataViewerWind
 
     @Override
     protected void loadData(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo) {
-        ROIListData data = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), ROIListData.class, progressInfo);
+        ROI2DListData data = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), ROI2DListData.class, progressInfo);
         int width;
         int height;
         int numZ = 1;

@@ -42,7 +42,7 @@ import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.plugins.ij3d.utils.ExtendedObjectCreator3D;
 import org.hkijena.jipipe.plugins.ijfilaments.display.CachedFilamentsDataViewerWindow;
 import org.hkijena.jipipe.plugins.ijfilaments.util.*;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.BitDepth;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity;
@@ -76,23 +76,23 @@ import java.util.stream.Collectors;
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
 @JsonSerialize(using = FilamentsDataSerializer.class)
 @JsonDeserialize(using = FilamentsDataDeserializer.class)
-public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> implements JIPipeData {
+public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEdge> implements JIPipeData {
 
-    public Filaments3DData() {
+    public Filaments3DGraphData() {
         super(FilamentEdge.class);
     }
 
-    public Filaments3DData(Filaments3DData other) {
+    public Filaments3DGraphData(Filaments3DGraphData other) {
         super(FilamentEdge.class);
         mergeWithCopy(other);
     }
 
-    public static Filaments3DData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        Filaments3DData graph;
+    public static Filaments3DGraphData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        Filaments3DGraphData graph;
         JSONImporter<FilamentVertex, FilamentEdge> importer = new JSONImporter<>();
         Path jsonPath = storage.findFileByExtension(".json").get();
         try (InputStream stream = storage.open(jsonPath)) {
-            graph = JsonUtils.getObjectMapper().readValue(stream, Filaments3DData.class);
+            graph = JsonUtils.getObjectMapper().readValue(stream, Filaments3DGraphData.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -129,7 +129,7 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         return finalLocation;
     }
 
-    public void mergeWithCopy(Filaments3DData other) {
+    public void mergeWithCopy(Filaments3DGraphData other) {
         Map<FilamentVertex, FilamentVertex> copyMap = new IdentityHashMap<>();
         for (FilamentVertex vertex : other.vertexSet()) {
             FilamentVertex copy = new FilamentVertex(vertex);
@@ -146,7 +146,7 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         }
     }
 
-    public void mergeWith(Filaments3DData other) {
+    public void mergeWith(Filaments3DGraphData other) {
         for (FilamentVertex vertex : other.vertexSet()) {
             addVertex(vertex);
         }
@@ -168,7 +168,7 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
 
     @Override
     public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
-        return new Filaments3DData(this);
+        return new Filaments3DGraphData(this);
     }
 
     @Override
@@ -243,8 +243,8 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         return String.format("Filaments [%d vertices, %d edges]", vertexSet().size(), edgeSet().size());
     }
 
-    public ROIListData toRoi(boolean ignoreNon2DEdges, boolean withEdges, boolean withVertices, int forcedLineThickness, int forcedVertexRadius) {
-        ROIListData outputData = new ROIListData();
+    public ROI2DListData toRoi(boolean ignoreNon2DEdges, boolean withEdges, boolean withVertices, int forcedLineThickness, int forcedVertexRadius) {
+        ROI2DListData outputData = new ROI2DListData();
 
         if (withEdges) {
             for (FilamentEdge edge : edgeSet()) {
@@ -694,8 +694,8 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
      *
      * @return the shallow copy
      */
-    public Filaments3DData shallowCopy() {
-        Filaments3DData copy = new Filaments3DData();
+    public Filaments3DGraphData shallowCopy() {
+        Filaments3DGraphData copy = new Filaments3DGraphData();
         for (FilamentVertex vertex : vertexSet()) {
             copy.addVertex(vertex);
         }
@@ -711,8 +711,8 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
      * @param vertices the vertices
      * @return the shallow copy
      */
-    public Filaments3DData extractShallowCopy(Set<FilamentVertex> vertices) {
-        Filaments3DData copy = new Filaments3DData();
+    public Filaments3DGraphData extractShallowCopy(Set<FilamentVertex> vertices) {
+        Filaments3DGraphData copy = new Filaments3DGraphData();
         for (FilamentVertex vertex : vertexSet()) {
             if (vertices.contains(vertex)) {
                 copy.addVertex(vertex);
@@ -734,8 +734,8 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
      * @param vertices the vertices
      * @return the shallow copy
      */
-    public Filaments3DData extractDeepCopy(Set<FilamentVertex> vertices) {
-        Filaments3DData copy = new Filaments3DData();
+    public Filaments3DGraphData extractDeepCopy(Set<FilamentVertex> vertices) {
+        Filaments3DGraphData copy = new Filaments3DGraphData();
         Map<FilamentVertex, FilamentVertex> vertexMap = new IdentityHashMap<>();
         for (FilamentVertex vertex : vertexSet()) {
             if (vertices.contains(vertex)) {
@@ -845,7 +845,7 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         }
 
         // Make a simplified copy and calculate the simplified edge lengths
-        Filaments3DData simplified = extractShallowCopy(vertices);
+        Filaments3DGraphData simplified = extractShallowCopy(vertices);
         simplified.simplify();
         double simplifiedSumEdgeLengthPixels = 0;
         double simplifiedSumEdgeLengthUnit = 0;
@@ -1049,7 +1049,7 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
 
                 if (withEdges) {
                     objectCreator3D.reset();
-                    Filaments3DData extracted = extractShallowCopy(connectedSet);
+                    Filaments3DGraphData extracted = extractShallowCopy(connectedSet);
                     for (FilamentEdge edge : extracted.edgeSet()) {
                         if (ctProgress.isCancelled())
                             return;

@@ -30,12 +30,12 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
+import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.plugins.ijfilaments.util.Point3d;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.analyze.AnalyzeSkeleton2D3DAlgorithm;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale8UData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;
@@ -44,19 +44,19 @@ import sc.fiji.analyzeSkeleton.*;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "Binary skeleton to simplified filaments (Analyze Skeleton 2D/3D)", description = "Converts a binary skeleton into filaments by utilizing the Analyze Skeleton (2D/3D) plugin from Fiji. " +
+@SetJIPipeDocumentation(name = "Extract filaments using Analyze Skeleton 2D/3D", description = "Converts a binary skeleton into filaments by utilizing the Analyze Skeleton (2D/3D) plugin from Fiji. " +
         "Please note that the generated filaments are were automatically simplified by the method and might not fully represent anymore all structural information contained within the skeleton. " +
         "Use 'Binary skeleton to 2D filaments' or 'Binary skeleton to 3D filaments' to if you are unsure about the functionality of this node.")
 @AddJIPipeCitation("Arganda-Carreras, I., Fernández-González, R., Muñoz-Barrutia, A., & Ortiz-De-Solorzano, C. (2010). 3D reconstruction of histological sections: Application to mammary gland tissue. Microscopy Research and Technique, 73(11), 1019–1029. doi:10.1002/jemt.20829")
 @AddJIPipeCitation("G. Polder, H.L.E Hovens and A.J Zweers, Measuring shoot length of submerged aquatic plants using graph analysis (2010), In: Proceedings of the ImageJ User and Developer Conference, Centre de Recherche Public Henri Tudor, Luxembourg, 27-29 October, pp 172-177.")
 @ConfigureJIPipeNode(menuPath = "Convert", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlus3DGreyscaleMaskData.class, name = "Skeleton", create = true)
-@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", description = "ROI to exclude on pruning ends")
+@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", description = "ROI to exclude on pruning ends")
 @AddJIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, name = "Reference", description = "Original grayscale input image (for lowest pixel intensity pruning mode)")
-@AddJIPipeOutputSlot(value = Filaments3DData.class, name = "Filaments", description = "The filaments as extracted by the algorithm", create = true)
+@AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Filaments", description = "The filaments as extracted by the algorithm", create = true)
 public class SkeletonToSimplifiedFilamentsFijiAlgorithm extends JIPipeIteratingAlgorithm {
 
-    public static final JIPipeDataSlotInfo ROI_INPUT_SLOT = new JIPipeDataSlotInfo(ROIListData.class, JIPipeSlotType.Input, "ROI", "ROI to exclude on pruning ends", true);
+    public static final JIPipeDataSlotInfo ROI_INPUT_SLOT = new JIPipeDataSlotInfo(ROI2DListData.class, JIPipeSlotType.Input, "ROI", "ROI to exclude on pruning ends", true);
     public static final JIPipeDataSlotInfo REFERENCE_INPUT_SLOT = new JIPipeDataSlotInfo(ImagePlus3DGreyscale8UData.class, JIPipeSlotType.Input, "Reference", "Original grayscale input image (for lowest pixel intensity pruning mode)", true);
     private AnalyzeSkeleton2D3DAlgorithm.CycleRemovalMethod pruneCyclesMethod = AnalyzeSkeleton2D3DAlgorithm.CycleRemovalMethod.None;
     private AnalyzeSkeleton2D3DAlgorithm.EndRemovalMethod pruneEndsMethod = AnalyzeSkeleton2D3DAlgorithm.EndRemovalMethod.None;
@@ -79,12 +79,12 @@ public class SkeletonToSimplifiedFilamentsFijiAlgorithm extends JIPipeIteratingA
 
         // Get the excluded ROI
         if (pruneEndsMethod == AnalyzeSkeleton2D3DAlgorithm.EndRemovalMethod.ExcludeROI) {
-            ROIListData roi = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+            ROI2DListData roi = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
             if (roi != null && !roi.isEmpty()) {
                 if (roi.size() == 1)
                     excludeRoi = roi.get(0);
                 else {
-                    roi = new ROIListData(roi);
+                    roi = new ROI2DListData(roi);
                     roi.logicalOr();
                     excludeRoi = roi.get(0);
                 }
@@ -104,7 +104,7 @@ public class SkeletonToSimplifiedFilamentsFijiAlgorithm extends JIPipeIteratingA
         SkeletonResult result = analyzeSkeleton.run(pruneCyclesMethod.getNativeValue(), pruneEndsMethod != AnalyzeSkeleton2D3DAlgorithm.EndRemovalMethod.None, true, referenceImage, true, true, excludeRoi);
 
         // Generate filaments
-        Filaments3DData filamentsData = new Filaments3DData();
+        Filaments3DGraphData filamentsData = new Filaments3DGraphData();
         for (Graph graph : result.getGraph()) {
             Map<Vertex, FilamentVertex> vertexMapping = new IdentityHashMap<>();
             for (Vertex vertex : graph.getVertices()) {

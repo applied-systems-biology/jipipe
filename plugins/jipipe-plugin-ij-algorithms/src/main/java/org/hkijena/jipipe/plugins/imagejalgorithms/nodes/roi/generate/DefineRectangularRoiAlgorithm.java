@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.parameters.library.roi.RectangleList;
 
 import java.awt.*;
@@ -35,7 +35,7 @@ import java.awt.*;
  */
 @SetJIPipeDocumentation(name = "Define rectangular ROI", description = "Manually defines rectangular ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@AddJIPipeOutputSlot(value = ROIListData.class, name = "Output")
+@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output")
 @Deprecated
 @LabelAsJIPipeHidden
 public class DefineRectangularRoiAlgorithm extends JIPipeAlgorithm {
@@ -50,7 +50,7 @@ public class DefineRectangularRoiAlgorithm extends JIPipeAlgorithm {
      */
     public DefineRectangularRoiAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addOutputSlot("Output", "", ROIListData.class, null)
+                .addOutputSlot("Output", "", ROI2DListData.class, null)
                 .seal()
                 .build());
         rectangles.addNewInstance();
@@ -69,12 +69,12 @@ public class DefineRectangularRoiAlgorithm extends JIPipeAlgorithm {
 
     @Override
     public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROIListData currentData = new ROIListData();
+        ROI2DListData currentData = new ROI2DListData();
         for (Rectangle rectangle : rectangles) {
             currentData.add(new ShapeRoi(rectangle));
             if (split) {
                 getFirstOutputSlot().addData(currentData, progressInfo);
-                currentData = new ROIListData();
+                currentData = new ROI2DListData();
             }
         }
         if (!currentData.isEmpty()) {

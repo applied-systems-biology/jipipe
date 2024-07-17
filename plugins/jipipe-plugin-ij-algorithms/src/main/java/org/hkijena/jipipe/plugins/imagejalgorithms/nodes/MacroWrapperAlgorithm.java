@@ -45,7 +45,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.parameters.library.graph.InputSlotMapParameterCollection;
 import org.hkijena.jipipe.plugins.parameters.library.graph.OutputSlotMapParameterCollection;
 import org.hkijena.jipipe.plugins.parameters.library.references.ImageJDataExportOperationRef;
@@ -81,11 +81,11 @@ import java.util.Map;
         "</ul>")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(ImagePlusData.class)
-@AddJIPipeInputSlot(ROIListData.class)
+@AddJIPipeInputSlot(ROI2DListData.class)
 @AddJIPipeInputSlot(ResultsTableData.class)
 @AddJIPipeInputSlot(PathData.class)
 @AddJIPipeOutputSlot(ImagePlusData.class)
-@AddJIPipeOutputSlot(ROIListData.class)
+@AddJIPipeOutputSlot(ROI2DListData.class)
 @AddJIPipeOutputSlot(ResultsTableData.class)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMacros", aliasName = "Run...")
 public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
@@ -397,8 +397,8 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
-        long roiInputSlotCount = getNonParameterInputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ROIListData.class).count();
-        long roiOutputSlotCount = getOutputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ROIListData.class).count();
+        long roiInputSlotCount = getNonParameterInputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ROI2DListData.class).count();
+        long roiOutputSlotCount = getOutputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ROI2DListData.class).count();
         if (roiInputSlotCount > 1) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     reportContext,

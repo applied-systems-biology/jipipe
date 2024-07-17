@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
@@ -47,7 +47,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Extract 2D ROI statistics", description = "Generates a results table containing ROI statistics. If a reference image is provided, the statistics are calculated for the reference image. Otherwise, " +
         "an empty reference image is automatically generated.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")
-@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true, description = "Optional image that is the basis for the measurements. If not set, an empty image is generated.")
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Measurements", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Measure (ROI)")
@@ -90,7 +90,7 @@ public class RoiStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROIListData roi = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+        ROI2DListData roi = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
         ImagePlus reference = getReferenceImage(iterationStep, progressInfo);
         if (roi.isEmpty()) {
             iterationStep.addOutputData(getFirstOutputSlot(), new ResultsTableData(), progressInfo);
@@ -98,7 +98,7 @@ public class RoiStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         }
         Map<ImageSliceIndex, List<Roi>> grouped = roi.groupByPosition(applyPerSlice, applyPerChannel, applyPerFrame);
         for (Map.Entry<ImageSliceIndex, List<Roi>> entry : grouped.entrySet()) {
-            ROIListData data = new ROIListData(entry.getValue());
+            ROI2DListData data = new ROI2DListData(entry.getValue());
             ResultsTableData result = data.measure(reference, measurements, addNameToTable, measureInPhysicalUnits);
             List<JIPipeTextAnnotation> annotations = new ArrayList<>();
             if (indexAnnotation.isEnabled() && !StringUtils.isNullOrEmpty(indexAnnotation.getContent())) {

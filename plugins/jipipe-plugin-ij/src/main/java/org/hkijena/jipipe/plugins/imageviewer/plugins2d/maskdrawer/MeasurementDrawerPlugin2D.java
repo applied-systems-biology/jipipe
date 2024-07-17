@@ -28,7 +28,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
@@ -156,7 +156,7 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D implements Mas
         if (roi == null) {
             roi = new Roi(0, 0, getCurrentImagePlus().getWidth(), getCurrentImagePlus().getHeight());
         }
-        ROIListData data = new ROIListData();
+        ROI2DListData data = new ROI2DListData();
         data.add(roi);
         ImagePlus dummy = new ImagePlus("Reference", getViewerPanel2D().getCurrentSlice().duplicate());
         dummy.setCalibration(getCurrentImagePlus().getCalibration());

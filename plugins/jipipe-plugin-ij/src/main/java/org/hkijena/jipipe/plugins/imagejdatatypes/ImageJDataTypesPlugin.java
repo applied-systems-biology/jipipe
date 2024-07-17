@@ -467,7 +467,7 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerImageDataType("imagej-imgplus-5d-color-lab", ImagePlus5DColorLABData.class, imageImporter, imageExporter, "icons/data-types/imgplus-5d-color-lab.png");
         registerConverters();
 
-        registerDatatype("imagej-roi", ROIListData.class, ResourceUtils.getPluginResource("icons/data-types/roi.png"),
+        registerDatatype("imagej-roi", ROI2DListData.class, ResourceUtils.getPluginResource("icons/data-types/roi.png"),
                 null, ROIDataPreview.class,
                 new AddToROIManagerDataDisplay(),
                 new AddROIToActiveJIPipeImageViewerDataDisplay(),

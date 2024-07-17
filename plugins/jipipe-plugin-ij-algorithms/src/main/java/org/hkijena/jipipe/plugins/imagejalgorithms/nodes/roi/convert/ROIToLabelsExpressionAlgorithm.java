@@ -33,7 +33,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.plugins.expressions.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -45,7 +45,7 @@ import java.util.Set;
         "Each ROI is assigned its own label. Alternatively, the label can be set generated from an expression. If no reference image is provided, " +
         "the dimensions are estimated from the ROI. The background color (where no ROI is located) is zero.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
-@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", description = "Optional reference image used to calculate the size of the output", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Labels", description = "Output label image", create = true)
 public class ROIToLabelsExpressionAlgorithm extends JIPipeIteratingAlgorithm {
@@ -70,7 +70,7 @@ public class ROIToLabelsExpressionAlgorithm extends JIPipeIteratingAlgorithm {
         JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap();
         parameters.putAnnotations(iterationStep.getMergedTextAnnotations());
 
-        ROIListData rois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+        ROI2DListData rois = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
 
         // Create result image
         ImagePlus result;

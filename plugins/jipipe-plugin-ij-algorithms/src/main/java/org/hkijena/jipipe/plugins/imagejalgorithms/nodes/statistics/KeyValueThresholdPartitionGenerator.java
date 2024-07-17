@@ -42,7 +42,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.ImageROITargetArea;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.ImageJAlgorithmUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
@@ -85,13 +85,13 @@ public class KeyValueThresholdPartitionGenerator extends JIPipeIteratingAlgorith
         ImagePlus keyImage = iterationStep.getInputData("Key", ImagePlusGreyscale32FData.class, progressInfo).getImage();
         ImagePlus valueImage = iterationStep.getInputData("Value", ImagePlusGreyscale32FData.class, progressInfo).getImage();
 
-        ROIListData roiInput = null;
+        ROI2DListData roiInput = null;
         ImagePlus maskInput = null;
 
         switch (sourceArea) {
             case InsideRoi:
             case OutsideRoi:
-                roiInput = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+                roiInput = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
                 break;
             case InsideMask:
             case OutsideMask:
@@ -99,7 +99,7 @@ public class KeyValueThresholdPartitionGenerator extends JIPipeIteratingAlgorith
                 break;
         }
 
-        ROIListData finalRoiInput = roiInput;
+        ROI2DListData finalRoiInput = roiInput;
         ImagePlus finalMaskInput = maskInput;
 
         List<Float> allValues = new ArrayList<>();
@@ -199,7 +199,7 @@ public class KeyValueThresholdPartitionGenerator extends JIPipeIteratingAlgorith
         iterationStep.addOutputData(getFirstOutputSlot(), outputTable, progressInfo);
     }
 
-    private ImageProcessor getMask(int width, int height, ROIListData rois, ImagePlus mask, ImageSliceIndex sliceIndex) {
+    private ImageProcessor getMask(int width, int height, ROI2DListData rois, ImagePlus mask, ImageSliceIndex sliceIndex) {
         return ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(sourceArea, width, height, rois, mask, sliceIndex);
     }
 

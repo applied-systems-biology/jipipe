@@ -36,7 +36,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.ROI2DRelationMeasur
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.ImageROITargetArea;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.Neighborhood3D;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
@@ -234,7 +234,7 @@ public class ImageJAlgorithmUtils {
         return result;
     }
 
-    public static ImageProcessor getMaskProcessorFromMaskOrROI(ImageROITargetArea sourceArea, int width, int height, ROIListData rois, ImagePlus mask, ImageSliceIndex sliceIndex) {
+    public static ImageProcessor getMaskProcessorFromMaskOrROI(ImageROITargetArea sourceArea, int width, int height, ROI2DListData rois, ImagePlus mask, ImageSliceIndex sliceIndex) {
         switch (sourceArea) {
             case WholeImage: {
                 return null;
@@ -289,7 +289,7 @@ public class ImageJAlgorithmUtils {
             }
         } else if (sourceArea == ImageROITargetArea.InsideRoi || sourceArea == ImageROITargetArea.OutsideRoi) {
             if (!slotConfiguration.getInputSlots().containsKey("ROI")) {
-                slotConfiguration.addSlot("ROI", new JIPipeDataSlotInfo(ROIListData.class, JIPipeSlotType.Input), false);
+                slotConfiguration.addSlot("ROI", new JIPipeDataSlotInfo(ROI2DListData.class, JIPipeSlotType.Input), false);
             }
             if (slotConfiguration.getInputSlots().containsKey("Mask")) {
                 slotConfiguration.removeInputSlot("Mask", false);
@@ -311,7 +311,7 @@ public class ImageJAlgorithmUtils {
                 return ImageROITargetArea.createWhiteMaskProcessor(img.getImage());
             }
             case InsideRoi: {
-                ROIListData rois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+                ROI2DListData rois = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
                 ImagePlusData img = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo);
                 if (rois.isEmpty()) {
                     return ImageROITargetArea.createWhiteMaskProcessor(img.getImage());
@@ -321,7 +321,7 @@ public class ImageJAlgorithmUtils {
                 }
             }
             case OutsideRoi: {
-                ROIListData rois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+                ROI2DListData rois = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
                 ImagePlusData img = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo);
                 if (rois.isEmpty()) {
                     return ImageROITargetArea.createWhiteMaskProcessor(img.getImage());
@@ -362,7 +362,7 @@ public class ImageJAlgorithmUtils {
                 return ImageROITargetArea.createWhiteMask(img.getImage());
             }
             case InsideRoi: {
-                ROIListData rois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+                ROI2DListData rois = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
                 ImagePlusData img = iterationStep.getInputData(imageSlotName, ImagePlusData.class, progressInfo);
                 if (rois.isEmpty()) {
                     return ImageROITargetArea.createWhiteMask(img.getImage());
@@ -371,7 +371,7 @@ public class ImageJAlgorithmUtils {
                 }
             }
             case OutsideRoi: {
-                ROIListData rois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+                ROI2DListData rois = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
                 ImagePlusData img = iterationStep.getInputData(imageSlotName, ImagePlusData.class, progressInfo);
                 if (rois.isEmpty()) {
                     return ImageROITargetArea.createWhiteMask(img.getImage());
@@ -400,7 +400,7 @@ public class ImageJAlgorithmUtils {
         throw new UnsupportedOperationException();
     }
 
-    public static void measureROI(ImagePlus referenceImage, ROIListData roiList, ImageStatisticsSetParameter measurements, boolean physicalUnits, String columnPrefix, ResultsTableData target, JIPipeProgressInfo progressInfo) {
+    public static void measureROI(ImagePlus referenceImage, ROI2DListData roiList, ImageStatisticsSetParameter measurements, boolean physicalUnits, String columnPrefix, ResultsTableData target, JIPipeProgressInfo progressInfo) {
         int lastPercentage = 0;
         for (int i = 0; i < roiList.size(); i++) {
             if (progressInfo.isCancelled()) {
@@ -416,7 +416,7 @@ public class ImageJAlgorithmUtils {
         }
     }
 
-    public static void measureROIRelation(ImagePlus referenceImage, ROIListData roi1List, ROIListData roi2List, int measurements, boolean physicalUnits, boolean requireColocalization,
+    public static void measureROIRelation(ImagePlus referenceImage, ROI2DListData roi1List, ROI2DListData roi2List, int measurements, boolean physicalUnits, boolean requireColocalization,
                                           boolean preciseColocalization, String columnPrefix, ResultsTableData target, JIPipeProgressInfo progressInfo) {
         int maxItems = roi1List.size() * roi2List.size();
         int currentItems = 0;
@@ -440,7 +440,7 @@ public class ImageJAlgorithmUtils {
                         continue;
                     }
                     if (preciseColocalization) {
-                        ROIListData dummy = new ROIListData();
+                        ROI2DListData dummy = new ROI2DListData();
                         dummy.add(roi1);
                         dummy.add(roi2);
                         dummy.logicalAnd();
@@ -573,7 +573,7 @@ public class ImageJAlgorithmUtils {
     }
 
     public static void generateROIRowMeasurements(ImagePlus referenceImage, int index, Roi roi, ImageStatisticsSetParameter measurements, boolean physicalUnits, ResultsTableData target, int targetRow, String columnPrefix) {
-        ROIListData dummy = new ROIListData();
+        ROI2DListData dummy = new ROI2DListData();
         dummy.add(roi);
         ResultsTableData forROI = dummy.measure(referenceImage, measurements, true, physicalUnits);
         for (int col = 0; col < forROI.getColumnCount(); col++) {

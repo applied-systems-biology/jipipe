@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.ij3d.IJ3DPlugin;
-import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DData;
+import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.FilamentsToRoi3dDataTypeConverter;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.FilamentsToRoiDataTypeConverter;
 import org.hkijena.jipipe.plugins.ijfilaments.environments.OptionalTSOAXEnvironment;
@@ -159,7 +159,7 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerApplicationSettingsSheet(tsoaxApplicationSettings);
         registerProjectSettingsSheet(FilamentsPluginProjectSettings.class);
 
-        registerDatatype("filaments", Filaments3DData.class, RESOURCES.getIcon16URLFromResources("data-type-filaments.png"));
+        registerDatatype("filaments", Filaments3DGraphData.class, RESOURCES.getIcon16URLFromResources("data-type-filaments.png"));
         registerDatatypeConversion(new FilamentsToRoiDataTypeConverter());
         registerDatatypeConversion(new FilamentsToRoi3dDataTypeConverter());
 
@@ -184,13 +184,14 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerNodeType("filaments-merge", MergeFilamentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
 
-        registerNodeType("filaments-convert-cycles-to-roi", FilamentCyclesToROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
+        registerNodeType("filaments-convert-cycles-to-roi", ConvertFilamentCyclesToROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
         registerNodeType("filaments-convert-to-roi", ConvertFilamentsToRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
         registerNodeType("filaments-convert-to-roi3d", ConvertFilamentsToRoi3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
         registerNodeType("filaments-convert-to-mask", ConvertFilamentsToMaskAlgorithm.class, UIUtils.getIconURLFromResources("actions/reload.png"));
         registerNodeType("filaments-convert-to-labels", ConvertFilamentsToLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/reload.png"));
         registerNodeType("filaments-convert-to-rgb", ConvertFilamentsToRGBAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-management.png"));
         registerNodeType("filaments-convert-to-scene-3d", ConvertFilamentsTo3DMeshAlgorithm.class, UIUtils.getIconURLFromResources("actions/shape-cuboid.png"));
+        registerNodeType("filaments-convert-roi2d-to-filaments", ConvertROIToFilamentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/format-node-curve.png"));
 
         registerNodeType("filaments-set-vertex-thickness-from-image", SetVertexRadiusFromImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-circle-from-radius.png"));
         registerNodeType("filaments-set-vertex-intensity-from-image", SetVertexValueFromImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
@@ -199,6 +200,7 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("filaments-remove-duplicate-vertices", RemoveDuplicateVerticesAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
         registerNodeType("filaments-smooth-downscale", SmoothFilamentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("filaments-simplify", SimplifyFilamentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/distribute-graph-directed.png"));
+        registerNodeType("filaments-subdivide-edges", SubdivideFilamentEdges.class, UIUtils.getIconURLFromResources("actions/connector-ignore.png"));
         registerNodeType("filaments-fix-overlaps-non-branching", FixOverlapsNonBranchingAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-line-perpendicular.png"));
         registerNodeType("filaments-cycles-to-components", FilamentCyclesToComponentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/circle-nodes.png"));
 

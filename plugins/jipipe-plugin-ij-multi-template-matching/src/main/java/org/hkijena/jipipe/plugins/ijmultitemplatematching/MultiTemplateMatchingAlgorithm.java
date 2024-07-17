@@ -40,7 +40,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
@@ -73,7 +73,7 @@ import java.util.stream.Collectors;
         "Please visit https://github.com/multi-template-matching/MultiTemplateMatching-Fiji/wiki for more information about the Multi-Template Matching plugin.")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
 @AddJIPipeInputSlot(value = ImagePlus2DData.class, name = "Template", create = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, name = "ROI", create = true)
+@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "ROI", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Measurements", create = true, description = "Table containing information about the matched templates. To access the templates directly, enable 'Output matched templates'")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Assembled templates")
 @ConfigureJIPipeNode(menuPath = "Analyze", nodeTypeCategory = ImagesNodeTypeCategory.class)
@@ -131,7 +131,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         List<ImagePlus> images = new ArrayList<>();
         List<ImagePlus> templates = new ArrayList<>();
         Map<ImagePlus, Integer> templateSourceRows = new HashMap<>();
-        ROIListData mergedSearchRois = new ROIListData();
+        ROI2DListData mergedSearchRois = new ROI2DListData();
 
         for (ImagePlusData image : iterationStep.getInputData("Image", ImagePlusData.class, progressInfo)) {
             images.add(image.getImage());
@@ -144,7 +144,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
             templateSourceRows.put(duplicateImage, row);
         }
         if (restrictToROI) {
-            for (ROIListData roi : iterationStep.getInputData("ROI", ROIListData.class, progressInfo)) {
+            for (ROI2DListData roi : iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo)) {
                 mergedSearchRois.addAll(roi);
             }
         }
@@ -167,7 +167,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
 
         for (int i = 0; i < images.size(); i++) {
             ImagePlus image = images.get(i);
-            ROIListData detectedROIs = new ROIListData();
+            ROI2DListData detectedROIs = new ROI2DListData();
             ResultsTableData measurements = new ResultsTableData();
 
             pythonInterpreter.set("ImpImage", image);
@@ -441,7 +441,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         this.restrictToROI = restrictToROI;
         JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
         if (restrictToROI && !getInputSlotMap().containsKey("ROI")) {
-            slotConfiguration.addSlot("ROI", new JIPipeDataSlotInfo(ROIListData.class, JIPipeSlotType.Input), false);
+            slotConfiguration.addSlot("ROI", new JIPipeDataSlotInfo(ROI2DListData.class, JIPipeSlotType.Input), false);
         } else if (!restrictToROI && getInputSlotMap().containsKey("ROI")) {
             slotConfiguration.removeInputSlot("ROI", false);
         }

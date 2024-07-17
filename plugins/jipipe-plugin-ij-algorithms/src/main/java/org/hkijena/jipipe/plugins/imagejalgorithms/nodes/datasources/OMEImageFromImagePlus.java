@@ -25,12 +25,12 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.parameters.OMEExporterSettings;
 
 @SetJIPipeDocumentation(name = "Image to OME Image", description = "Converts an image into an OME image. Optionally allows the attachment of ROI that are then stored within the OME image")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
-@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true, optional = true)
+@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true, optional = true)
 @AddJIPipeOutputSlot(value = OMEImageData.class, name = "OME Image", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nBio-Formats", aliasName = "Bio-Formats Exporter (automated export)")
@@ -52,7 +52,7 @@ public class OMEImageFromImagePlus extends JIPipeIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData imagePlusData = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo);
-        ROIListData rois = iterationStep.getInputRow("ROI") >= 0 ? iterationStep.getInputData("ROI", ROIListData.class, progressInfo) : new ROIListData();
+        ROI2DListData rois = iterationStep.getInputRow("ROI") >= 0 ? iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo) : new ROI2DListData();
         OMEImageData omeImageData = new OMEImageData(imagePlusData.getImage(), rois, null);
         omeImageData.setExporterSettings(new OMEExporterSettings(exporterSettings));
         iterationStep.addOutputData(getFirstOutputSlot(), omeImageData, progressInfo);

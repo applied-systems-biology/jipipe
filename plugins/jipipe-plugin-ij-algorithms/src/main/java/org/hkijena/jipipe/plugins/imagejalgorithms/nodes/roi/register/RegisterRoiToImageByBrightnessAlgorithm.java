@@ -33,7 +33,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.jetbrains.annotations.NotNull;
 
@@ -44,9 +44,9 @@ import java.util.List;
 
 @SetJIPipeDocumentation(name = "Register 2D ROI (by intensity)", description = "Tests multiple locations of the specified ROI within the image and finds the scale, rotation, and translation of the ROI where its components align to the maximum average intensity.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Register")
-@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlus2DData.class, name = "Image", create = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, name = "Registered ROI", create = true)
+@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Registered ROI", create = true)
 public class RegisterRoiToImageByBrightnessAlgorithm extends JIPipeIteratingAlgorithm {
 
     private JIPipeExpressionParameter rotationRange = new JIPipeExpressionParameter("MAKE_SEQUENCE(-180, 180, 1)");
@@ -70,7 +70,7 @@ public class RegisterRoiToImageByBrightnessAlgorithm extends JIPipeIteratingAlgo
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImageProcessor ip = iterationStep.getInputData("Image", ImagePlus2DData.class, progressInfo).getImage().getProcessor();
-        ROIListData rois = new ROIListData(iterationStep.getInputData("ROI", ROIListData.class, progressInfo));
+        ROI2DListData rois = new ROI2DListData(iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo));
         rois.logicalOr();
 
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
@@ -89,7 +89,7 @@ public class RegisterRoiToImageByBrightnessAlgorithm extends JIPipeIteratingAlgo
                 return;
 
             // Generate the scaled ROI
-            ROIListData scaledRoi = rois.scale(scale, scale, false);
+            ROI2DListData scaledRoi = rois.scale(scale, scale, false);
             Rectangle scaledBounds = scaledRoi.getBounds();
 
             // Find the bounds to test
@@ -103,7 +103,7 @@ public class RegisterRoiToImageByBrightnessAlgorithm extends JIPipeIteratingAlgo
                     return;
 
                 // Generate new roi
-                ROIListData scaledRotatedRoi = scaledRoi.rotate(rotation, new Point2D.Double(scaledBounds.x + scaledBounds.width / 2.0,
+                ROI2DListData scaledRotatedRoi = scaledRoi.rotate(rotation, new Point2D.Double(scaledBounds.x + scaledBounds.width / 2.0,
                         scaledBounds.y + scaledBounds.height / 2.0));
 
                 // Measure
@@ -143,7 +143,7 @@ public class RegisterRoiToImageByBrightnessAlgorithm extends JIPipeIteratingAlgo
             annotations.add(new JIPipeTextAnnotation("X", candidate.translateX + ""));
             annotations.add(new JIPipeTextAnnotation("Y", candidate.translateY + ""));
             candidate.roi.setLocation(candidate.translateX, candidate.translateY);
-            ROIListData output = new ROIListData();
+            ROI2DListData output = new ROI2DListData();
             output.add(candidate.roi);
             iterationStep.addOutputData(getFirstOutputSlot(), output, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         }

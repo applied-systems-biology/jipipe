@@ -34,7 +34,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.calibration.ScaleBarGenerator;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.FontFamilyParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.FontStyleParameter;
@@ -45,9 +45,9 @@ import java.awt.*;
 
 @SetJIPipeDocumentation(name = "Draw 2D scale bar ROI", description = "Draws a scale bar ROI. Compared to 'Draw scale bar', this node allows better control over overlay.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Calibration")
-@AddJIPipeInputSlot(value = ROIListData.class, name = "ROI", description = "Optional existing list of ROI. The new ROI will be appended to it.", optional = true, create = true)
+@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", description = "Optional existing list of ROI. The new ROI will be appended to it.", optional = true, create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", description = "Reference image for the positioning. If not set, the area covered by the existing ROI are used (or width=0, height=0)", create = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, name = "ROI", create = true)
+@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "ROI", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze\nTools", aliasName = "Scale Bar... (as ROI)")
 public class DrawScaleBarRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
@@ -85,11 +85,11 @@ public class DrawScaleBarRoiAlgorithm extends JIPipeIteratingAlgorithm {
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
         // Collect target and reference
-        ROIListData target = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+        ROI2DListData target = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
         if (target == null) {
-            target = new ROIListData();
+            target = new ROI2DListData();
         } else {
-            target = new ROIListData(target);
+            target = new ROI2DListData(target);
         }
         ImagePlus imp = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo).getDuplicateImage();
 

@@ -21,7 +21,7 @@ import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
 public class FilamentsToRoi3dDataTypeConverter implements JIPipeDataConverter {
     @Override
     public Class<? extends JIPipeData> getInputType() {
-        return Filaments3DData.class;
+        return Filaments3DGraphData.class;
     }
 
     @Override
@@ -31,6 +31,6 @@ public class FilamentsToRoi3dDataTypeConverter implements JIPipeDataConverter {
 
     @Override
     public JIPipeData convert(JIPipeData input, JIPipeProgressInfo progressInfo) {
-        return ((Filaments3DData) input).toRoi3D(false, true, -1, -1, progressInfo);
+        return ((Filaments3DGraphData) input).toRoi3D(false, true, -1, -1, progressInfo);
     }
 }

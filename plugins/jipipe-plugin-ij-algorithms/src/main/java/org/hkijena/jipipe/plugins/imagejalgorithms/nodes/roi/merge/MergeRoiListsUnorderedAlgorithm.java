@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
@@ -34,8 +34,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROIListData;
         "Use the parameters to control how groups are created. To merge all incoming ROI lists into just one list, set the matching strategy to 'Custom' and leave the list of " +
         "annotation columns empty.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Merge")
-@AddJIPipeInputSlot(value = ROIListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROIListData.class, name = "Output", create = true)
+@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
 public class MergeRoiListsUnorderedAlgorithm extends JIPipeMergingAlgorithm {
 
     /**
@@ -58,8 +58,8 @@ public class MergeRoiListsUnorderedAlgorithm extends JIPipeMergingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROIListData result = new ROIListData();
-        for (ROIListData rois : iterationStep.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo)) {
+        ROI2DListData result = new ROI2DListData();
+        for (ROI2DListData rois : iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo)) {
             result.mergeWith(rois);
         }
         iterationStep.addOutputData(getFirstOutputSlot(), result, progressInfo);
