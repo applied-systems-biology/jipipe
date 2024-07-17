@@ -119,7 +119,7 @@ public class ConvertFilamentCyclesToROIAlgorithm extends JIPipeSimpleIteratingAl
             for (int col = 0; col < measurements.getColumnCount(); col++) {
                 variablesMap.set(measurements.getColumnName(col), measurements.getValueAt(0, col));
             }
-            variablesMap.set("cycle_id", componentId);
+            variablesMap.set("cycle_index", componentId);
 
             // Create ROI
             PolygonRoi roi = new PolygonRoi(xPoints.toArray(), yPoints.toArray(), xPoints.size(), Roi.POLYGON);

@@ -54,7 +54,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "Detect global lines 2D (Hough, classic NMS)", description = "Finds global lines within the image via a Hough lines transformation. Uses a similar algorithm to 'Detect line segments 2D (Hough)' with fill size infinite, but " +
+@SetJIPipeDocumentation(name = "Detect global lines 2D (Hough)", description = "Finds global lines within the image via a Hough lines transformation. Uses a similar algorithm to 'Detect line segments 2D (Hough)' with fill size infinite, but " +
         "ensures that the resulting lines are starting and ending at the image borders. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Detect")
