@@ -58,6 +58,7 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
     }
 
     private void initialize() {
+        JIPipeExpressionParameterSettings settings = getParameterAccess().getAnnotationOfType(JIPipeExpressionParameterSettings.class);
         setLayout(new BorderLayout());
 //        add(availableModes, BorderLayout.WEST);
 
@@ -73,7 +74,9 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
 //        optionPanel.add(functionBuilder);
         functionBuilder.addActionListener(e -> editInFunctionBuilder());
 
-        expressionEditorPanel.add(functionBuilder, BorderLayout.EAST);
+        if(settings == null || !settings.withoutEditorButton()) {
+            expressionEditorPanel.add(functionBuilder, BorderLayout.EAST);
+        }
 
         TokenMakerFactory tokenMakerFactory = new TokenMakerFactory() {
             @Override
@@ -121,7 +124,7 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
 
         add(expressionEditorPanel, BorderLayout.CENTER);
 
-        JIPipeExpressionParameterSettings settings = getParameterAccess().getAnnotationOfType(JIPipeExpressionParameterSettings.class);
+
         if (settings != null) {
             if (!StringUtils.isNullOrEmpty(settings.hint())) {
                 expressionHintLabel.setText("Expression: " + settings.hint());

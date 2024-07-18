@@ -146,6 +146,11 @@ public class IntegerRangeDesktopParameterEditorUI extends JIPipeDesktopParameter
         }
 
         @Override
+        public boolean withoutEditorButton() {
+            return false;
+        }
+
+        @Override
         public Class<? extends Annotation> annotationType() {
             return JIPipeExpressionParameterSettings.class;
         }

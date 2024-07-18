@@ -47,4 +47,10 @@ public @interface JIPipeExpressionParameterSettings {
      * @return the hint
      */
     String hint() default "";
+
+    /**
+     * If true, hide the editor button
+     * @return if the editor button should be hidden
+     */
+    boolean withoutEditorButton() default false;
 }
