@@ -31,12 +31,14 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@SetJIPipeDocumentation(name = "Math operation", description = "Applies a mathematical operation to each pixel. Supported operations are SET, ADD, SUBTRACT, MULTIPLY, DIVIDE, GAMMA, MINIMUM, MAXIMUM, LOGICAL OR, LOGICAL AND, and LOGICAL XOR")
+@SetJIPipeDocumentation(name = "Legacy image math operation (scalar)", description = "Applies a mathematical operation to each pixel. Supported operations are SET, ADD, SUBTRACT, MULTIPLY, DIVIDE, GAMMA, MINIMUM, MAXIMUM, LOGICAL OR, LOGICAL AND, and LOGICAL XOR. " +
+        "We recommend to use 'Fast image arithmetics' instead.")
 @ConfigureJIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nMath", aliasName = "Math operation (with scalar)")
-public class ApplyMath2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+@Deprecated
+public class LegacyApplyMath2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Transformation transformation = Transformation.Set;
     private double value = 0;
@@ -46,7 +48,7 @@ public class ApplyMath2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      *
      * @param info the info
      */
-    public ApplyMath2DAlgorithm(JIPipeNodeInfo info) {
+    public LegacyApplyMath2DAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
@@ -55,7 +57,7 @@ public class ApplyMath2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      *
      * @param other the other
      */
-    public ApplyMath2DAlgorithm(ApplyMath2DAlgorithm other) {
+    public LegacyApplyMath2DAlgorithm(LegacyApplyMath2DAlgorithm other) {
         super(other);
         this.transformation = other.transformation;
         this.value = other.value;

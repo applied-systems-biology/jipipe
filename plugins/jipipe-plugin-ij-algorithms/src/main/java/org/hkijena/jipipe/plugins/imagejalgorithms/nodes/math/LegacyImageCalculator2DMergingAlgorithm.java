@@ -39,7 +39,7 @@ import java.util.List;
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@SetJIPipeDocumentation(name = "Image calculator 2D (merge)", description = "Applies a mathematical operation between multiple images. The algorithm iteratively applies the operation to each image in the following order: " +
+@SetJIPipeDocumentation(name = "Legacy image calculator 2D (merge)", description = "Applies a mathematical operation between multiple images. The algorithm iteratively applies the operation to each image in the following order: " +
         "f( f( f( f(image 1, image 2), image 3), image 4), ... " +
         "The order is determined by how JIPipe calculates the merging and currently cannot be controlled." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
@@ -47,9 +47,10 @@ import java.util.List;
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true, description = "The input images")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true, description = "The calculation result")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process", aliasName = "Image Calculator... (multiple into one)")
-public class ImageCalculator2DMergingAlgorithm extends JIPipeMergingAlgorithm {
+@Deprecated
+public class LegacyImageCalculator2DMergingAlgorithm extends JIPipeMergingAlgorithm {
 
-    private ImageCalculator2DAlgorithm.Operation operation = ImageCalculator2DAlgorithm.Operation.Max;
+    private LegacyImageCalculator2DAlgorithm.Operation operation = LegacyImageCalculator2DAlgorithm.Operation.Max;
     private boolean floatingPointOutput = false;
 
     /**
@@ -57,7 +58,7 @@ public class ImageCalculator2DMergingAlgorithm extends JIPipeMergingAlgorithm {
      *
      * @param info the info
      */
-    public ImageCalculator2DMergingAlgorithm(JIPipeNodeInfo info) {
+    public LegacyImageCalculator2DMergingAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
@@ -66,7 +67,7 @@ public class ImageCalculator2DMergingAlgorithm extends JIPipeMergingAlgorithm {
      *
      * @param other the other
      */
-    public ImageCalculator2DMergingAlgorithm(ImageCalculator2DMergingAlgorithm other) {
+    public LegacyImageCalculator2DMergingAlgorithm(LegacyImageCalculator2DMergingAlgorithm other) {
         super(other);
         this.operation = other.operation;
     }
@@ -120,12 +121,12 @@ public class ImageCalculator2DMergingAlgorithm extends JIPipeMergingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Function", description = "The function is applied to each pixel pair.")
     @JIPipeParameter("operation")
-    public ImageCalculator2DAlgorithm.Operation getOperation() {
+    public LegacyImageCalculator2DAlgorithm.Operation getOperation() {
         return operation;
     }
 
     @JIPipeParameter("operation")
-    public void setOperation(ImageCalculator2DAlgorithm.Operation operation) {
+    public void setOperation(LegacyImageCalculator2DAlgorithm.Operation operation) {
         this.operation = operation;
 
     }

@@ -42,14 +42,16 @@ import java.util.Set;
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@SetJIPipeDocumentation(name = "Image calculator 2D", description = "Applies a mathematical operation between two images. " +
-        "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+@SetJIPipeDocumentation(name = "Legacy image calculator 2D", description = "Applies a mathematical operation between two images. " +
+        "If higher-dimensional data is provided, the filter is applied to each 2D slice. " +
+        "Old implementation that directly uses the one provided by ImageJ. We recommend to use 'Fast image arithmetics' instead.")
+@Deprecated
 @ConfigureJIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input 1", create = true, description = "The first operand")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input 2", create = true, description = "The second operand")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true, description = "The calculation result")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process", aliasName = "Image Calculator...")
-public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
+public class LegacyImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private Operation operation = Operation.Difference;
     private boolean floatingPointOutput = false;
@@ -60,7 +62,7 @@ public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
      *
      * @param info the info
      */
-    public ImageCalculator2DAlgorithm(JIPipeNodeInfo info) {
+    public LegacyImageCalculator2DAlgorithm(JIPipeNodeInfo info) {
         super(info);
         operands = new InputSlotMapParameterCollection(Operand.class, this, this::getNewOperand, false);
         operands.updateSlots();
@@ -73,7 +75,7 @@ public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
      *
      * @param other the other
      */
-    public ImageCalculator2DAlgorithm(ImageCalculator2DAlgorithm other) {
+    public LegacyImageCalculator2DAlgorithm(LegacyImageCalculator2DAlgorithm other) {
         super(other);
         this.operation = other.operation;
         operands = new InputSlotMapParameterCollection(Operand.class, this, this::getNewOperand, false);

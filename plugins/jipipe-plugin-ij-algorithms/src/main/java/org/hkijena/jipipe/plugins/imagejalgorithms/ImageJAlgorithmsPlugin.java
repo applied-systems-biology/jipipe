@@ -624,17 +624,17 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         super.postprocess(progressInfo);
 
         // Register examples
-        registerNodeExample(ImageCalculator2DAlgorithm.class, "Add images", node -> node.setOperation(ImageCalculator2DAlgorithm.Operation.Add));
-        registerNodeExample(ImageCalculator2DAlgorithm.class, "Subtract images", node -> node.setOperation(ImageCalculator2DAlgorithm.Operation.Subtract));
-        registerNodeExample(ImageCalculator2DAlgorithm.class, "Multiply images", node -> node.setOperation(ImageCalculator2DAlgorithm.Operation.Multiply));
-        registerNodeExample(ImageCalculator2DAlgorithm.class, "Divide images", node -> node.setOperation(ImageCalculator2DAlgorithm.Operation.Divide));
-        registerNodeExample(ImageCalculator2DAlgorithm.class, "Image difference", node -> node.setOperation(ImageCalculator2DAlgorithm.Operation.Difference));
-        registerNodeExample(ImageCalculator2DAlgorithm.class, "Pixel-wise min", node -> node.setOperation(ImageCalculator2DAlgorithm.Operation.Min));
-        registerNodeExample(ImageCalculator2DAlgorithm.class, "Pixel-wise max", node -> node.setOperation(ImageCalculator2DAlgorithm.Operation.Max));
-        registerNodeExample(ImageCalculator2DAlgorithm.class, "Pixel-wise average", node -> node.setOperation(ImageCalculator2DAlgorithm.Operation.Average));
-        registerNodeExample(ImageCalculator2DAlgorithm.class, "Pixel-wise AND", node -> node.setOperation(ImageCalculator2DAlgorithm.Operation.AND));
-        registerNodeExample(ImageCalculator2DAlgorithm.class, "Pixel-wise OR", node -> node.setOperation(ImageCalculator2DAlgorithm.Operation.OR));
-        registerNodeExample(ImageCalculator2DAlgorithm.class, "Pixel-wise XOR", node -> node.setOperation(ImageCalculator2DAlgorithm.Operation.XOR));
+        registerNodeExample(LegacyImageCalculator2DAlgorithm.class, "Add images", node -> node.setOperation(LegacyImageCalculator2DAlgorithm.Operation.Add));
+        registerNodeExample(LegacyImageCalculator2DAlgorithm.class, "Subtract images", node -> node.setOperation(LegacyImageCalculator2DAlgorithm.Operation.Subtract));
+        registerNodeExample(LegacyImageCalculator2DAlgorithm.class, "Multiply images", node -> node.setOperation(LegacyImageCalculator2DAlgorithm.Operation.Multiply));
+        registerNodeExample(LegacyImageCalculator2DAlgorithm.class, "Divide images", node -> node.setOperation(LegacyImageCalculator2DAlgorithm.Operation.Divide));
+        registerNodeExample(LegacyImageCalculator2DAlgorithm.class, "Image difference", node -> node.setOperation(LegacyImageCalculator2DAlgorithm.Operation.Difference));
+        registerNodeExample(LegacyImageCalculator2DAlgorithm.class, "Pixel-wise min", node -> node.setOperation(LegacyImageCalculator2DAlgorithm.Operation.Min));
+        registerNodeExample(LegacyImageCalculator2DAlgorithm.class, "Pixel-wise max", node -> node.setOperation(LegacyImageCalculator2DAlgorithm.Operation.Max));
+        registerNodeExample(LegacyImageCalculator2DAlgorithm.class, "Pixel-wise average", node -> node.setOperation(LegacyImageCalculator2DAlgorithm.Operation.Average));
+        registerNodeExample(LegacyImageCalculator2DAlgorithm.class, "Pixel-wise AND", node -> node.setOperation(LegacyImageCalculator2DAlgorithm.Operation.AND));
+        registerNodeExample(LegacyImageCalculator2DAlgorithm.class, "Pixel-wise OR", node -> node.setOperation(LegacyImageCalculator2DAlgorithm.Operation.OR));
+        registerNodeExample(LegacyImageCalculator2DAlgorithm.class, "Pixel-wise XOR", node -> node.setOperation(LegacyImageCalculator2DAlgorithm.Operation.XOR));
 
         registerNodeExample(SetToValueAlgorithm.class, "Inside mask", node -> node.setTargetArea(ImageROITargetArea.InsideMask));
         registerNodeExample(SetToValueAlgorithm.class, "Outside mask", node -> node.setTargetArea(ImageROITargetArea.OutsideMask));
@@ -1163,7 +1163,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     private void registerMathAlgorithms() {
         registerNodeType("ij1-math-round-32f", RoundFloatImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-math-math2d", ApplyMath2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-math2d", LegacyApplyMath2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-math-transform2d", ApplyTransform2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-math-math2d-expression", ApplyMathExpression2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-math-math2d-expression-color", ApplyColorMathExpression2DExpression.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
@@ -1177,8 +1177,8 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-math-local-minimum3d", LocalMinimumFilter3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-math-local-imagecalculator2d-expression", LocalImageCalculator2DExpression.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
         registerNodeType("ij1-math-replace-nan-by-median2d", RemoveNaNFilter2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-math-imagecalculator2d", ImageCalculator2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
-        registerNodeType("ij1-math-imagecalculator2d-merging", ImageCalculator2DMergingAlgorithm.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
+        registerNodeType("ij1-math-imagecalculator2d", LegacyImageCalculator2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
+        registerNodeType("ij1-math-imagecalculator2d-merging", LegacyImageCalculator2DMergingAlgorithm.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
         registerNodeType("ij1-math-compare-images-2d", ImageComparer2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
         registerNodeType("ij1-math-imagecalculator2d-expression", ImageCalculator2DExpression.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
         registerNodeType("ij1-math-hessian2d", Hessian2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
@@ -1212,14 +1212,14 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerEnumParameterType("ij-math-chamfer-distance-map-2d:weights", ChamferWeights.class, "Chamfer weights (2D)", "Predefined weights for the Chamfer distance map");
         registerEnumParameterType("ij-math-chamfer-distance-map-23:weights", ChamferWeights3D.class, "Chamfer weights (3D)", "Predefined weights for the Chamfer distance map");
 
-        registerEnumParameterType("ij1-math-math2d:transformation", ApplyMath2DAlgorithm.Transformation.class,
+        registerEnumParameterType("ij1-math-math2d:transformation", LegacyApplyMath2DAlgorithm.Transformation.class,
                 "Transformation", "Available transformations");
         registerEnumParameterType("ij1-math-transform2d:transformation", ApplyTransform2DAlgorithm.Transformation.class,
                 "Transformation", "Available transformations");
 
-        registerEnumParameterType("ij1-math-imagecalculator2d:operation", ImageCalculator2DAlgorithm.Operation.class,
+        registerEnumParameterType("ij1-math-imagecalculator2d:operation", LegacyImageCalculator2DAlgorithm.Operation.class,
                 "Operation", "Available operations");
-        registerEnumParameterType("ij1-math-imagecalculator2d:operand", ImageCalculator2DAlgorithm.Operand.class,
+        registerEnumParameterType("ij1-math-imagecalculator2d:operand", LegacyImageCalculator2DAlgorithm.Operand.class,
                 "Operand", "Available operands");
 
         registerEnumParameterType("ij1-math-compare-images-2d:operation", ImageComparer2DAlgorithm.Operation.class,
