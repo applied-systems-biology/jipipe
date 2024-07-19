@@ -28,6 +28,7 @@ import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.forms.FormsPlugin;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.MacroWrapperAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.analyze.*;
@@ -624,17 +625,17 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         super.postprocess(progressInfo);
 
         // Register examples
-//        registerNodeExample(LegacyImageCalculator2DAlgorithm.class, "Add images", node -> node.setOperation(LegacyImageCalculator2DAlgorithm.Operation.Add));
-//        registerNodeExample(LegacyImageCalculator2DAlgorithm.class, "Subtract images", node -> node.setOperation(LegacyImageCalculator2DAlgorithm.Operation.Subtract));
-//        registerNodeExample(LegacyImageCalculator2DAlgorithm.class, "Multiply images", node -> node.setOperation(LegacyImageCalculator2DAlgorithm.Operation.Multiply));
-//        registerNodeExample(LegacyImageCalculator2DAlgorithm.class, "Divide images", node -> node.setOperation(LegacyImageCalculator2DAlgorithm.Operation.Divide));
-//        registerNodeExample(LegacyImageCalculator2DAlgorithm.class, "Image difference", node -> node.setOperation(LegacyImageCalculator2DAlgorithm.Operation.Difference));
-//        registerNodeExample(LegacyImageCalculator2DAlgorithm.class, "Pixel-wise min", node -> node.setOperation(LegacyImageCalculator2DAlgorithm.Operation.Min));
-//        registerNodeExample(LegacyImageCalculator2DAlgorithm.class, "Pixel-wise max", node -> node.setOperation(LegacyImageCalculator2DAlgorithm.Operation.Max));
-//        registerNodeExample(LegacyImageCalculator2DAlgorithm.class, "Pixel-wise average", node -> node.setOperation(LegacyImageCalculator2DAlgorithm.Operation.Average));
-//        registerNodeExample(LegacyImageCalculator2DAlgorithm.class, "Pixel-wise AND", node -> node.setOperation(LegacyImageCalculator2DAlgorithm.Operation.AND));
-//        registerNodeExample(LegacyImageCalculator2DAlgorithm.class, "Pixel-wise OR", node -> node.setOperation(LegacyImageCalculator2DAlgorithm.Operation.OR));
-//        registerNodeExample(LegacyImageCalculator2DAlgorithm.class, "Pixel-wise XOR", node -> node.setOperation(LegacyImageCalculator2DAlgorithm.Operation.XOR));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Add images", node -> node.setExpression(new JIPipeExpressionParameter("I1 + I2")));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Subtract images", node -> node.setExpression(new JIPipeExpressionParameter("I1 - I2")));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Multiply images", node -> node.setExpression(new JIPipeExpressionParameter("I1 * I2")));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Divide images", node -> node.setExpression(new JIPipeExpressionParameter("I1 / I2")));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Image difference", node -> node.setExpression(new JIPipeExpressionParameter("ABS(I1 - I2)")));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Pixel-wise min", node -> node.setExpression(new JIPipeExpressionParameter("MIN(I1, I2)")));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Pixel-wise max", node -> node.setExpression(new JIPipeExpressionParameter("MAX(I1, I2)")));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Pixel-wise average", node -> node.setExpression(new JIPipeExpressionParameter("(I1 + I2) / 2")));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Pixel-wise AND", node -> node.setExpression(new JIPipeExpressionParameter("AND(I1, I2)")));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Pixel-wise OR", node -> node.setExpression(new JIPipeExpressionParameter("OR(I1, I2)")));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Pixel-wise XOR", node -> node.setExpression(new JIPipeExpressionParameter("XOR(I1, I2)")));
 
         registerNodeExample(SetToValueAlgorithm.class, "Inside mask", node -> node.setTargetArea(ImageROITargetArea.InsideMask));
         registerNodeExample(SetToValueAlgorithm.class, "Outside mask", node -> node.setTargetArea(ImageROITargetArea.OutsideMask));
