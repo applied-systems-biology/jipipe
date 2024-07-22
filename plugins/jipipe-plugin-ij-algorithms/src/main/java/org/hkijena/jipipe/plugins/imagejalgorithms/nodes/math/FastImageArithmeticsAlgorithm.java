@@ -14,12 +14,12 @@
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.math;
 
 import ij.ImagePlus;
-import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
@@ -42,6 +42,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.OptionalBitDepth;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.DefaultDirectedGraph;
@@ -138,12 +139,12 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus referenceImage = inputImagesMap.values().iterator().next();
         int finalTargetBitDepth = targetBitDepth;
         ImagePlus outputImage = ImageJUtils.generateForEachIndexedZCTSlice(referenceImage, (referenceIp, index) ->
-                applyAST(inputImagesMap, astNode, index, referenceImage.getWidth(), referenceImage.getHeight(), finalTargetBitDepth, progressInfo), progressInfo);
+                applyAST(inputImagesMap, astNode, index, referenceImage.getWidth(), referenceImage.getHeight(), finalTargetBitDepth, iterationStep.getMergedTextAnnotations(), progressInfo), progressInfo);
 
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(outputImage), progressInfo);
     }
 
-    private ImageProcessor applyAST(Map<String, ImagePlus> inputImagesMap, JIPipeExpressionCustomASTParser.ASTNode astNode, ImageSliceIndex index, int width, int height, int bitDepth, JIPipeProgressInfo progressInfo) {
+    private ImageProcessor applyAST(Map<String, ImagePlus> inputImagesMap, JIPipeExpressionCustomASTParser.ASTNode astNode, ImageSliceIndex index, int width, int height, int bitDepth, Map<String, JIPipeTextAnnotation> textAnnotationMap, JIPipeProgressInfo progressInfo) {
         // Build a DAG
         DefaultDirectedGraph<JIPipeExpressionCustomASTParser.ASTNode, DefaultEdge> graph = new DefaultDirectedGraph<>(DefaultEdge.class);
         addASTNodeToGraph(graph, astNode, null);
@@ -168,8 +169,16 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
                         ip = createConstantProcessor(width, height, bitDepth, index.getC());
                     } else if ("t".equals(variableNode.getName())) {
                         ip = createConstantProcessor(width, height, bitDepth, index.getT());
-                    } else {
+                    } else if(inputImagesMap.containsKey(variableNode.getName())) {
                         ip = ImageJUtils.getSliceZero(inputImagesMap.get(variableNode.getName()), index);
+                    }
+                    else {
+                        // Text annotation name
+                        JIPipeTextAnnotation textAnnotation = textAnnotationMap.getOrDefault(variableNode.getName(), null);
+                        if(textAnnotation == null) {
+                            throw new IllegalArgumentException("Unknown text annotation: " + variableNode.getName());
+                        }
+                        ip = createConstantProcessor(width, height, bitDepth, StringUtils.parseDouble(textAnnotation.getValue()));
                     }
                     storedData.put(nextNode, ip);
                 } else if (nextNode instanceof JIPipeExpressionCustomASTParser.OperationNode) {
@@ -421,6 +430,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             "<ul>" +
             "<li>Input slot names reference the pixel value at the current coordinate</li>" +
             "<li><code>x</code>, <code>y</code>, <code>z</code>, <code>c</code>, <code>t</code> will point to the current location of the pixel</li>" +
+            "<li>You can use annotations as variables (they will be converted to numerics)</li>" +
             "<li>Numeric constants like <code>0.15</code> can be used</li>" +
             "<li>You can use brackets <code>( )</code> to ensure the correct order</li>" +
             "<li><code>[] + []</code> to add the pixel values</li>" +
