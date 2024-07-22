@@ -172,6 +172,11 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
                     } else if(inputImagesMap.containsKey(variableNode.getName())) {
                         ip = ImageJUtils.getSliceZero(inputImagesMap.get(variableNode.getName()), index);
                     }
+                    else if(variableNode.getName().startsWith("custom.") && getDefaultCustomExpressionVariables().containsKey(variableNode.getName().substring("custom.".length()))) {
+                        // Custom variable
+                        ip = createConstantProcessor(width, height, bitDepth,
+                                StringUtils.parseDouble(getDefaultCustomExpressionVariables().get(variableNode.getName().substring("custom.".length())).get(Object.class).toString()));
+                    }
                     else {
                         // Text annotation name
                         JIPipeTextAnnotation textAnnotation = textAnnotationMap.getOrDefault(variableNode.getName(), null);
@@ -215,6 +220,11 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             result = createConstantProcessor(width, height, bitDepth, ((Number) result).doubleValue());
         }
         return (ImageProcessor) result;
+    }
+
+    @Override
+    public boolean isEnableDefaultCustomExpressionVariables() {
+        return true;
     }
 
     private Object applyFunction(List<Object> arguments, String functionName) {
@@ -431,6 +441,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             "<li>Input slot names reference the pixel value at the current coordinate</li>" +
             "<li><code>x</code>, <code>y</code>, <code>z</code>, <code>c</code>, <code>t</code> will point to the current location of the pixel</li>" +
             "<li>You can use annotations as variables (they will be converted to numerics)</li>" +
+            "<li>You can use custom variables (prefix with <code>custom.</code>)</li>" +
             "<li>Numeric constants like <code>0.15</code> can be used</li>" +
             "<li>You can use brackets <code>( )</code> to ensure the correct order</li>" +
             "<li><code>[] + []</code> to add the pixel values</li>" +
