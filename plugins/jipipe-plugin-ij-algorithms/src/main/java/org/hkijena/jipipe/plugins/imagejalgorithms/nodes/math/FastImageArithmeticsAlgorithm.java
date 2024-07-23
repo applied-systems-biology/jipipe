@@ -13,9 +13,6 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.math;
 
-import com.fathzer.soft.javaluator.Constant;
-import com.fathzer.soft.javaluator.Function;
-import com.fathzer.soft.javaluator.Operator;
 import com.google.common.collect.Sets;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
@@ -263,64 +260,98 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
     private Object applyFunction(List<Object> arguments, String functionName, int bitDepth) {
         switch (functionName) {
             case "MIN":
+                checkArgumentCount(functionName, arguments, 2);
                 return applyMinFunction(arguments.get(0), arguments.get(1), bitDepth);
             case "MAX":
+                checkArgumentCount(functionName, arguments, 2);
                 return applyMaxFunction(arguments.get(0), arguments.get(1), bitDepth);
             case "MOD":
+                checkArgumentCount(functionName, arguments, 2);
                 return applyModuloFunction(arguments.get(0), arguments.get(1), bitDepth);
             case "SQR":
+                checkArgumentCount(functionName, arguments, 1);
                 return applyPowFunction(arguments.get(0), 2, bitDepth);
             case "POW":
+                checkArgumentCount(functionName, arguments, 2);
                 return applyPowFunction(arguments.get(0), arguments.get(1), bitDepth);
             case "GAMMA":
+                checkArgumentCount(functionName, arguments, 2);
                 return applyGammaFunction(arguments.get(0), arguments.get(1), bitDepth);
             case "SQRT":
+                checkArgumentCount(functionName, arguments, 1);
                 return applySqrtFunction(arguments.get(0), bitDepth);
             case "EXP":
+                checkArgumentCount(functionName, arguments, 1);
                 return applyExpFunction(arguments.get(0), bitDepth);
             case "LN":
             case "LOG":
+                checkArgumentCount(functionName, arguments, 1);
                 return applyLnFunction(arguments.get(0), bitDepth);
             case "ABS":
+                checkArgumentCount(functionName, arguments, 1);
                 return applyAbsFunction(arguments.get(0), bitDepth);
             case "INVERT":
+                checkArgumentCount(functionName, arguments, 1);
                 return applyInvertFunction(arguments.get(0), bitDepth);
             case "AND":
+                checkArgumentCount(functionName, arguments, 2);
                 return applyAndFunction(arguments.get(0), arguments.get(1), bitDepth);
             case "OR":
+                checkArgumentCount(functionName, arguments, 2);
                 return applyOrFunction(arguments.get(0), arguments.get(1), bitDepth);
             case "XOR":
+                checkArgumentCount(functionName, arguments, 2);
                 return applyXorFunction(arguments.get(0), arguments.get(1), bitDepth);
             case "NOT":
+                checkArgumentCount(functionName, arguments,1);
                 return applyNotFunction(arguments.get(0), bitDepth);
             case "FLOOR":
+                checkArgumentCount(functionName, arguments, 1);
                 return applyFloorFunction(arguments.get(0), bitDepth);
             case "CEIL":
+                checkArgumentCount(functionName, arguments, 1);
                 return applyCeilFunction(arguments.get(0), bitDepth);
             case "ROUND":
+                checkArgumentCount(functionName, arguments, 1);
                 return applyRoundFunction(arguments.get(0), bitDepth);
             case "SIGNUM":
+                checkArgumentCount(functionName, arguments, 1);
                 return applySignumFunction(arguments.get(0), bitDepth);
             case "SIN":
+                checkArgumentCount(functionName, arguments, 1);
                 return applySinFunction(arguments.get(0), bitDepth);
             case "SINH":
+                checkArgumentCount(functionName, arguments, 1);
                 return applySinHFunction(arguments.get(0), bitDepth);
             case "ASIN":
+                checkArgumentCount(functionName, arguments, 1);
                 return applyASinFunction(arguments.get(0), bitDepth);
             case "COS":
+                checkArgumentCount(functionName, arguments, 1);
                 return applyCosFunction(arguments.get(0), bitDepth);
             case "COSH":
+                checkArgumentCount(functionName, arguments, 1);
                 return applyCosHFunction(arguments.get(0), bitDepth);
             case "ACOS":
+                checkArgumentCount(functionName, arguments, 1);
                 return applyACosFunction(arguments.get(0), bitDepth);
             case "TAN":
+                checkArgumentCount(functionName, arguments, 1);
                 return applyTanFunction(arguments.get(0), bitDepth);
             case "TANH":
+                checkArgumentCount(functionName, arguments, 1);
                 return applyTanHFunction(arguments.get(0), bitDepth);
             case "ATAN2":
+                checkArgumentCount(functionName, arguments, 2);
                 return applyATan2Function(arguments.get(0), arguments.get(1), bitDepth);
             default:
                 throw new IllegalArgumentException("Unknown function: " + functionName);
+        }
+    }
+
+    private void checkArgumentCount(String functionName, List<Object> arguments, int numArguments) {
+        if(arguments.size() != numArguments) {
+            throw new IllegalArgumentException("The function " + functionName + " accepts exactly " + numArguments + " arguments!");
         }
     }
 
