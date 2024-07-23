@@ -13,10 +13,7 @@
 
 package org.hkijena.jipipe.plugins.expressions.ui;
 
-import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
-import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.fife.ui.rsyntaxtextarea.TokenMaker;
-import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
+import org.fife.ui.rsyntaxtextarea.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
@@ -39,7 +36,7 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
 
     private final JPanel expressionEditorPanel = new JPanel(new BorderLayout());
 
-    private final JIPipeExpressionEvaluatorSyntaxTokenMaker tokenMaker = new JIPipeExpressionEvaluatorSyntaxTokenMaker();
+    private final AbstractTokenMaker tokenMaker;
     private final Set<JIPipeExpressionParameterVariableInfo> variables = new HashSet<>();
     private RSyntaxTextArea expressionEditor;
 
@@ -52,6 +49,16 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
      */
     public JIPipeExpressionDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterTree, parameterAccess);
+
+        // Init the token maker
+        JIPipeExpressionParameterSettings settings = getParameterAccess().getAnnotationOfType(JIPipeExpressionParameterSettings.class);
+        if(settings != null) {
+            tokenMaker = (AbstractTokenMaker) ReflectionUtils.newInstance(settings.tokenMaker());
+        }
+        else {
+            tokenMaker = new JIPipeExpressionEvaluatorSyntaxTokenMaker();
+        }
+
         initialize();
 //        reloadVariables();
         reload();

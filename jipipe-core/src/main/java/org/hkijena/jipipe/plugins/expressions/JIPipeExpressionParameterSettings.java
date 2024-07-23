@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.expressions;
 
+import org.fife.ui.rsyntaxtextarea.AbstractTokenMaker;
 import org.hkijena.jipipe.plugins.expressions.variables.UndefinedExpressionParameterVariablesInfo;
 
 import java.lang.annotation.ElementType;
@@ -53,4 +54,10 @@ public @interface JIPipeExpressionParameterSettings {
      * @return if the editor button should be hidden
      */
     boolean withoutEditorButton() default false;
+
+    /**
+     * Allows to set a custom token maker
+     * @return the token maker
+     */
+    Class<? extends AbstractTokenMaker> tokenMaker() default JIPipeExpressionEvaluatorSyntaxTokenMaker.class;
 }
