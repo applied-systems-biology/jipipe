@@ -41,7 +41,7 @@ import java.util.List;
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@SetJIPipeDocumentation(name = "Math expression (Vector)", description = "Applies a mathematical operation to each vector in the image. " +
+@SetJIPipeDocumentation(name = "Apply expression per pixel (vector)", description = "Applies a mathematical operation to each vector in the image. " +
         "One dimension is defined as the dimension that contains the vector components. For example, you can make the channel " +
         "the vector components. The algorithm then would iterate through all X, Y, Z, and T pixels and provide you with an array of " +
         "all channel pixel values for this position. The output is a scalar image.")

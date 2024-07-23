@@ -45,8 +45,9 @@ import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataParame
 
 import java.util.List;
 
-@SetJIPipeDocumentation(name = "Color math expression", description = "Applies a mathematical operation to each pixel. " +
-        "The three available channels can be addressed individually.")
+@SetJIPipeDocumentation(name = "Apply expression per pixel (color)", description = "Applies a mathematical operation to each pixel. " +
+        "The three available channels can be addressed individually. " +
+        "Please note that is node has a high computational cost.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Math")
 @AddJIPipeInputSlot(value = ImagePlusColorData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusColorData.class, name = "Output", create = true)

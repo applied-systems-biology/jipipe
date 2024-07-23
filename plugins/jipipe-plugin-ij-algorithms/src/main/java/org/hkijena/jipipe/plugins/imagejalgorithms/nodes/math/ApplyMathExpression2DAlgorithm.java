@@ -38,7 +38,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@SetJIPipeDocumentation(name = "Math expression", description = "Applies a mathematical operation to each pixel.")
+@SetJIPipeDocumentation(name = "Apply expression per pixel (greyscale)", description = "Applies a mathematical operation to each pixel. " +
+        "Please note that is node has a high computational cost. Check if you can replace it with 'Fast image arithmetics'.")
 @ConfigureJIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Output", create = true)
