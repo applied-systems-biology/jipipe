@@ -46,12 +46,14 @@ import java.util.Set;
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@SetJIPipeDocumentation(name = "Compare pixels 2D (where)", description = "Compares each pixel position and returns a 255 where the condition applies and 0 where the condition does not apply." +
-        "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+@SetJIPipeDocumentation(name = "Legacy compare pixels 2D (where)", description = "Compares each pixel position and returns a 255 where the condition applies and 0 where the condition does not apply." +
+        "If higher-dimensional data is provided, the filter is applied to each 2D slice. " +
+        "'Fast image arithmetics' covers the feature set of this node.")
 @ConfigureJIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input 1", create = true, description = "The first operand")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input 2", create = true, description = "The second operand")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Output", create = true, description = "The calculation result")
+@Deprecated
 public class ImageComparer2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private Operation operation = Operation.Equals;

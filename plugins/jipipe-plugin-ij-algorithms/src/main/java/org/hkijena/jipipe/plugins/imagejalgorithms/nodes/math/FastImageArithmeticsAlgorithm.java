@@ -93,10 +93,15 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private void buildASTParser() {
         // Build AST parser
-        astParser.addOperator("+", 1)
-                .addOperator("-", 1)
-                .addOperator("*", 2)
-                .addOperator("/", 2);
+        astParser.addOperator("+", 5)
+                .addOperator("-", 5)
+                .addOperator("*", 10)
+                .addOperator("/", 10)
+                .addOperator("<", 2)
+                .addOperator(">", 2)
+                .addOperator("<=", 2)
+                .addOperator(">=", 2)
+                .addOperator("==", 2);
         astParser.addFunctions(FUNCTIONS.toArray(new String[0]));
     }
 
@@ -1013,6 +1018,41 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
                 }
                 return result;
             }
+            case "==": {
+                ImageProcessor result = ImageJUtils.createProcessor(right.getWidth(), right.getHeight(), right.getBitDepth());
+                for (int i = 0; i < result.getPixelCount(); i++) {
+                    setIpValueSafe(result, i, booleanToFloat(left.getf(i) == right.getf(i), bitDepth), bitDepth);
+                }
+                return result;
+            }
+            case "<": {
+                ImageProcessor result = ImageJUtils.createProcessor(right.getWidth(), right.getHeight(), right.getBitDepth());
+                for (int i = 0; i < result.getPixelCount(); i++) {
+                    setIpValueSafe(result, i, booleanToFloat(left.getf(i) < right.getf(i), bitDepth), bitDepth);
+                }
+                return result;
+            }
+            case ">": {
+                ImageProcessor result = ImageJUtils.createProcessor(right.getWidth(), right.getHeight(), right.getBitDepth());
+                for (int i = 0; i < result.getPixelCount(); i++) {
+                    setIpValueSafe(result, i, booleanToFloat(left.getf(i) > right.getf(i), bitDepth), bitDepth);
+                }
+                return result;
+            }
+            case "<=": {
+                ImageProcessor result = ImageJUtils.createProcessor(right.getWidth(), right.getHeight(), right.getBitDepth());
+                for (int i = 0; i < result.getPixelCount(); i++) {
+                    setIpValueSafe(result, i, booleanToFloat(left.getf(i) <= right.getf(i), bitDepth), bitDepth);
+                }
+                return result;
+            }
+            case ">=": {
+                ImageProcessor result = ImageJUtils.createProcessor(right.getWidth(), right.getHeight(), right.getBitDepth());
+                for (int i = 0; i < result.getPixelCount(); i++) {
+                    setIpValueSafe(result, i, booleanToFloat(left.getf(i) >= right.getf(i), bitDepth), bitDepth);
+                }
+                return result;
+            }
             default:
                 throw new UnsupportedOperationException("Unsupported operator type: " + operator);
         }
@@ -1031,6 +1071,34 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
                 ImageProcessor result = ImageJUtils.createProcessor(left.getWidth(), left.getHeight(), left.getBitDepth());
                 for (int i = 0; i < result.getPixelCount(); i++) {
                     setIpValueSafe(result, i, left.getf(i) - right, bitDepth);
+                }
+                return result;
+            }
+            case "<": {
+                ImageProcessor result = ImageJUtils.createProcessor(left.getWidth(), left.getHeight(), left.getBitDepth());
+                for (int i = 0; i < result.getPixelCount(); i++) {
+                    setIpValueSafe(result, i, booleanToFloat(left.getf(i) < right, bitDepth), bitDepth);
+                }
+                return result;
+            }
+            case ">": {
+                ImageProcessor result = ImageJUtils.createProcessor(left.getWidth(), left.getHeight(), left.getBitDepth());
+                for (int i = 0; i < result.getPixelCount(); i++) {
+                    setIpValueSafe(result, i, booleanToFloat(left.getf(i) > right, bitDepth), bitDepth);
+                }
+                return result;
+            }
+            case "<=": {
+                ImageProcessor result = ImageJUtils.createProcessor(left.getWidth(), left.getHeight(), left.getBitDepth());
+                for (int i = 0; i < result.getPixelCount(); i++) {
+                    setIpValueSafe(result, i, booleanToFloat(left.getf(i) <= right, bitDepth), bitDepth);
+                }
+                return result;
+            }
+            case ">=": {
+                ImageProcessor result = ImageJUtils.createProcessor(left.getWidth(), left.getHeight(), left.getBitDepth());
+                for (int i = 0; i < result.getPixelCount(); i++) {
+                    setIpValueSafe(result, i, booleanToFloat(left.getf(i) >= right, bitDepth), bitDepth);
                 }
                 return result;
             }
@@ -1070,6 +1138,41 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
                 }
                 return result;
             }
+            case "==": {
+                ImageProcessor result = ImageJUtils.createProcessor(right.getWidth(), right.getHeight(), right.getBitDepth());
+                for (int i = 0; i < result.getPixelCount(); i++) {
+                    setIpValueSafe(result, i,  booleanToFloat(left == right.getf(i), bitDepth), bitDepth);
+                }
+                return result;
+            }
+            case "<": {
+                ImageProcessor result = ImageJUtils.createProcessor(right.getWidth(), right.getHeight(), right.getBitDepth());
+                for (int i = 0; i < result.getPixelCount(); i++) {
+                    setIpValueSafe(result, i,  booleanToFloat(left < right.getf(i), bitDepth), bitDepth);
+                }
+                return result;
+            }
+            case ">": {
+                ImageProcessor result = ImageJUtils.createProcessor(right.getWidth(), right.getHeight(), right.getBitDepth());
+                for (int i = 0; i < result.getPixelCount(); i++) {
+                    setIpValueSafe(result, i,  booleanToFloat(left > right.getf(i), bitDepth), bitDepth);
+                }
+                return result;
+            }
+            case "<=": {
+                ImageProcessor result = ImageJUtils.createProcessor(right.getWidth(), right.getHeight(), right.getBitDepth());
+                for (int i = 0; i < result.getPixelCount(); i++) {
+                    setIpValueSafe(result, i,  booleanToFloat(left <= right.getf(i), bitDepth), bitDepth);
+                }
+                return result;
+            }
+            case ">=": {
+                ImageProcessor result = ImageJUtils.createProcessor(right.getWidth(), right.getHeight(), right.getBitDepth());
+                for (int i = 0; i < result.getPixelCount(); i++) {
+                    setIpValueSafe(result, i,  booleanToFloat(left >= right.getf(i), bitDepth), bitDepth);
+                }
+                return result;
+            }
             default:
                 throw new UnsupportedOperationException("Unsupported operator type: " + operator);
         }
@@ -1085,8 +1188,30 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
                 return left * right;
             case "/":
                 return left / right;
+            case "==":
+                return booleanToFloat(left == right, bitDepth);
+            case "<":
+                return booleanToFloat(left < right, bitDepth);
+            case ">":
+                return booleanToFloat(left > right, bitDepth);
+            case "<=":
+                return booleanToFloat(left <= right, bitDepth);
+            case ">=":
+                return booleanToFloat(left >= right, bitDepth);
             default:
                 throw new UnsupportedOperationException("Unsupported operator: " + operator);
+        }
+    }
+
+    private float booleanToFloat(boolean b, int bitDepth) {
+        if(bitDepth == 8) {
+            return b ? 255 : 0;
+        }
+        else if(bitDepth == 16) {
+            return b ? 65535 : 0;
+        }
+        else {
+            return b ? 1 : 0;
         }
     }
 
@@ -1182,6 +1307,11 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             "<li><code>[] - []</code> to subtract the pixel values</li>" +
             "<li><code>[] * []</code> to multiply the pixel values</li>" +
             "<li><code>[] / []</code> to divide the pixel values</li>" +
+            "<li><code>[] == []</code> returns 255 (8-bit)/65535 (16-bit)/1 (32-bit) if the left operand is equal to the right operand</li>" +
+            "<li><code>[] < []</code> returns 255 (8-bit)/65535 (16-bit)/1 (32-bit) if the left operand is less than the right operand</li>" +
+            "<li><code>[] > []</code> returns 255 (8-bit)/65535 (16-bit)/1 (32-bit) if the left operand is more than the right operand</li>" +
+            "<li><code>[] <= []</code> returns 255 (8-bit)/65535 (16-bit)/1 (32-bit) if the left operand is less than or equal to the right operand</li>" +
+            "<li><code>[] >= []</code> returns 255 (8-bit)/65535 (16-bit)/1 (32-bit) if the left operand is more than or equal to the right operand</li>" +
             "<li><code>MIN([], [])</code> to calculate the minimum of the operands</li>" +
             "<li><code>MAX([], [])</code> to calculate the maximum of the operands</li>" +
             "<li><code>SQR([])</code> to calculate the square of the operand</li>" +
@@ -1223,6 +1353,12 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             tokenMap.put("-", Token.OPERATOR);
             tokenMap.put("*", Token.OPERATOR);
             tokenMap.put("/", Token.OPERATOR);
+
+            tokenMap.put("<", Token.OPERATOR);
+            tokenMap.put(">", Token.OPERATOR);
+            tokenMap.put("==", Token.OPERATOR);
+            tokenMap.put("<=", Token.OPERATOR);
+            tokenMap.put(">=", Token.OPERATOR);
             return tokenMap;
         }
     }
