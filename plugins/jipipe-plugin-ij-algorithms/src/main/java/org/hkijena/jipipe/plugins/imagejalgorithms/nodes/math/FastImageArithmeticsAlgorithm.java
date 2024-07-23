@@ -146,17 +146,33 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private ImageProcessor applyAST(Map<String, ImagePlus> inputImagesMap, JIPipeExpressionCustomASTParser.ASTNode astNode, ImageSliceIndex index, int width, int height, int bitDepth, Map<String, JIPipeTextAnnotation> textAnnotationMap, JIPipeProgressInfo progressInfo) {
         // Build a DAG
-        DefaultDirectedGraph<JIPipeExpressionCustomASTParser.ASTNode, DefaultEdge> graph = new DefaultDirectedGraph<>(DefaultEdge.class);
-        addASTNodeToGraph(graph, astNode, null);
+        DefaultDirectedGraph<JIPipeExpressionCustomASTParser.ASTNode, DefaultEdge> flowGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
+        addASTNodeToGraph(flowGraph, astNode, null);
+
+        // Find direct predecessors of each vertex
+        Map<JIPipeExpressionCustomASTParser.ASTNode, Set<JIPipeExpressionCustomASTParser.ASTNode>> predecessors = new HashMap<>();
+        for (JIPipeExpressionCustomASTParser.ASTNode node : flowGraph.vertexSet()) {
+            predecessors.put(node, new HashSet<>(Graphs.predecessorListOf(flowGraph, node)));
+        }
 
         // Go through the DAG
         Map<JIPipeExpressionCustomASTParser.ASTNode, Object> storedData = new HashMap<>();
         while (true) {
-            JIPipeExpressionCustomASTParser.ASTNode nextNode = graph.vertexSet().stream().filter(v -> graph.inDegreeOf(v) == 0).findFirst().orElse(null);
+
+            if(progressInfo.isCancelled()) {
+                return null;
+            }
+
+            JIPipeExpressionCustomASTParser.ASTNode nextNode = flowGraph.vertexSet().stream().filter(v -> flowGraph.inDegreeOf(v) == 0 && !storedData.containsKey(v)).findFirst().orElse(null);
+//            System.out.println(nextNode);
             if (nextNode != null) {
+
+                // Remove the node
+                flowGraph.removeVertex(nextNode);
+
                 if (nextNode instanceof JIPipeExpressionCustomASTParser.NumberNode) {
                     storedData.put(nextNode, ((JIPipeExpressionCustomASTParser.NumberNode) nextNode).getValue());
-                } else if (nextNode instanceof JIPipeExpressionCustomASTParser.VariableNode) {
+                } else if (nextNode instanceof JIPipeExpressionCustomASTParser.VariableNode) {  
                     JIPipeExpressionCustomASTParser.VariableNode variableNode = (JIPipeExpressionCustomASTParser.VariableNode) nextNode;
                     Object ip;
                     if ("x".equals(variableNode.getName())) {
@@ -187,11 +203,11 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
                     JIPipeExpressionCustomASTParser.OperationNode operationNode = (JIPipeExpressionCustomASTParser.OperationNode) nextNode;
 
                     // Calculate output
-                    Object ip = applyOperation(storedData.get(operationNode.getLeft()), storedData.get(operationNode.getRight()), operationNode.getOperator());
+                    Object ip = applyOperation(storedData.get(operationNode.getLeft()), storedData.get(operationNode.getRight()), operationNode.getOperator(), bitDepth);
                     storedData.put(operationNode, ip);
 
                     // Clear inputs
-                    for (JIPipeExpressionCustomASTParser.ASTNode node : Graphs.predecessorListOf(graph, nextNode)) {
+                    for (JIPipeExpressionCustomASTParser.ASTNode node : predecessors.get(nextNode)) {
                         storedData.remove(node);
                     }
 
@@ -199,11 +215,11 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
                     JIPipeExpressionCustomASTParser.FunctionNode functionNode = (JIPipeExpressionCustomASTParser.FunctionNode) nextNode;
 
                     // Calculate output
-                    Object ip = applyFunction(storedData.keySet().stream().map(storedData::get).collect(Collectors.toList()), functionNode.getFunctionName());
+                    Object ip = applyFunction(storedData.keySet().stream().map(storedData::get).collect(Collectors.toList()), functionNode.getFunctionName(), bitDepth);
                     storedData.put(functionNode, ip);
 
                     // Clear inputs
-                    for (JIPipeExpressionCustomASTParser.ASTNode node : Graphs.predecessorListOf(graph, nextNode)) {
+                    for (JIPipeExpressionCustomASTParser.ASTNode node : predecessors.get(nextNode)) {
                         storedData.remove(node);
                     }
                 }
@@ -224,43 +240,43 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
         return true;
     }
 
-    private Object applyFunction(List<Object> arguments, String functionName) {
+    private Object applyFunction(List<Object> arguments, String functionName, int bitDepth) {
         switch (functionName) {
             case "MIN":
-                return applyMinFunction(arguments.get(0), arguments.get(1));
+                return applyMinFunction(arguments.get(0), arguments.get(1), bitDepth);
             case "MAX":
-                return applyMaxFunction(arguments.get(0), arguments.get(1));
+                return applyMaxFunction(arguments.get(0), arguments.get(1), bitDepth);
             case "SQR":
-                return applyPowFunction(arguments.get(0), 2);
+                return applyPowFunction(arguments.get(0), 2, bitDepth);
             case "POW":
-                return applyPowFunction(arguments.get(0), arguments.get(1));
+                return applyPowFunction(arguments.get(0), arguments.get(1), bitDepth);
             case "GAMMA":
-                return applyGammaFunction(arguments.get(0), arguments.get(1));
+                return applyGammaFunction(arguments.get(0), arguments.get(1), bitDepth);
             case "SQRT":
-                return applySqrtFunction(arguments.get(0));
+                return applySqrtFunction(arguments.get(0), bitDepth);
             case "EXP":
-                return applyExpFunction(arguments.get(0));
+                return applyExpFunction(arguments.get(0), bitDepth);
             case "LN":
             case "LOG":
-                return applyLnFunction(arguments.get(0));
+                return applyLnFunction(arguments.get(0), bitDepth);
             case "ABS":
-                return applyAbsFunction(arguments.get(0));
+                return applyAbsFunction(arguments.get(0), bitDepth);
             case "INVERT":
-                return applyInvertFunction(arguments.get(0));
+                return applyInvertFunction(arguments.get(0), bitDepth);
             case "AND":
-                return applyAndFunction(arguments.get(0), arguments.get(1));
+                return applyAndFunction(arguments.get(0), arguments.get(1), bitDepth);
             case "OR":
-                return applyOrFunction(arguments.get(0), arguments.get(1));
+                return applyOrFunction(arguments.get(0), arguments.get(1), bitDepth);
             case "XOR":
-                return applyXorFunction(arguments.get(0), arguments.get(1));
+                return applyXorFunction(arguments.get(0), arguments.get(1), bitDepth);
             case "NOT":
-                return applyNotFunction(arguments.get(0));
+                return applyNotFunction(arguments.get(0), bitDepth);
             default:
                 throw new IllegalArgumentException("Unknown function: " + functionName);
         }
     }
 
-    private Object applyMinFunction(Object o1, Object o2) {
+    private Object applyMinFunction(Object o1, Object o2, int bitDepth) {
         if (o1 instanceof Number && o2 instanceof Number) {
             return Math.min(((Number) o1).doubleValue(), ((Number) o2).doubleValue());
         } else if (o1 instanceof Number && o2 instanceof ImageProcessor) {
@@ -268,7 +284,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             ImageProcessor o2_ = (ImageProcessor) o2;
             ImageProcessor result = ImageJUtils.createProcessor(o2_.getWidth(), o2_.getHeight(), o2_.getBitDepth());
             for (int i = 0; i < o2_.getPixelCount(); i++) {
-                result.setf(i, Math.min(o1_, o2_.getf(i)));
+                setIpValueSafe(result, i, Math.min(o1_, o2_.getf(i)), bitDepth);
             }
             return result;
         } else if (o2 instanceof Number && o1 instanceof ImageProcessor) {
@@ -276,7 +292,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             ImageProcessor o1_ = (ImageProcessor) o1;
             ImageProcessor result = ImageJUtils.createProcessor(o1_.getWidth(), o1_.getHeight(), o1_.getBitDepth());
             for (int i = 0; i < o1_.getPixelCount(); i++) {
-                result.setf(i, Math.min(o1_.getf(i), o2_));
+                 setIpValueSafe(result,i, Math.min(o1_.getf(i), o2_), bitDepth);
             }
             return result;
         } else if (o2 instanceof ImageProcessor && o1 instanceof ImageProcessor) {
@@ -284,7 +300,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             ImageProcessor o1_ = (ImageProcessor) o1;
             ImageProcessor result = ImageJUtils.createProcessor(o1_.getWidth(), o1_.getHeight(), o1_.getBitDepth());
             for (int i = 0; i < o1_.getPixelCount(); i++) {
-                result.setf(i, Math.min(o1_.getf(i), o2_.getf(i)));
+                 setIpValueSafe(result,i, Math.min(o1_.getf(i), o2_.getf(i)), bitDepth);
             }
             return result;
         } else {
@@ -292,7 +308,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private Object applyMaxFunction(Object o1, Object o2) {
+    private Object applyMaxFunction(Object o1, Object o2, int bitDepth) {
         if (o1 instanceof Number && o2 instanceof Number) {
             return Math.max(((Number) o1).doubleValue(), ((Number) o2).doubleValue());
         } else if (o1 instanceof Number && o2 instanceof ImageProcessor) {
@@ -300,7 +316,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             ImageProcessor o2_ = (ImageProcessor) o2;
             ImageProcessor result = ImageJUtils.createProcessor(o2_.getWidth(), o2_.getHeight(), o2_.getBitDepth());
             for (int i = 0; i < o2_.getPixelCount(); i++) {
-                result.setf(i, Math.max(o1_, o2_.getf(i)));
+                 setIpValueSafe(result,i, Math.max(o1_, o2_.getf(i)), bitDepth);
             }
             return result;
         } else if (o2 instanceof Number && o1 instanceof ImageProcessor) {
@@ -308,7 +324,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             ImageProcessor o1_ = (ImageProcessor) o1;
             ImageProcessor result = ImageJUtils.createProcessor(o1_.getWidth(), o1_.getHeight(), o1_.getBitDepth());
             for (int i = 0; i < o1_.getPixelCount(); i++) {
-                result.setf(i, Math.max(o1_.getf(i), o2_));
+                 setIpValueSafe(result,i, Math.max(o1_.getf(i), o2_), bitDepth);
             }
             return result;
         } else if (o2 instanceof ImageProcessor && o1 instanceof ImageProcessor) {
@@ -316,7 +332,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             ImageProcessor o1_ = (ImageProcessor) o1;
             ImageProcessor result = ImageJUtils.createProcessor(o1_.getWidth(), o1_.getHeight(), o1_.getBitDepth());
             for (int i = 0; i < o1_.getPixelCount(); i++) {
-                result.setf(i, Math.max(o1_.getf(i), o2_.getf(i)));
+                 setIpValueSafe(result,i, Math.max(o1_.getf(i), o2_.getf(i)), bitDepth);
             }
             return result;
         } else {
@@ -324,7 +340,27 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private Object applyPowFunction(Object o1, Object o2) {
+    private void setIpValueSafe(ImageProcessor target, int index, float value, int bitDepth) {
+        if(bitDepth == 8) {
+            if(value < 0) {
+                value = 0;
+            }
+            if(value > 255) {
+                value = 255;
+            }
+        }
+        else if(bitDepth == 16) {
+            if(value < 0) {
+                value = 0;
+            }
+            if(value > 65535) {
+                value = 65535;
+            }
+        }
+        target.setf(index, value);
+    }
+
+    private Object applyPowFunction(Object o1, Object o2, int bitDepth) {
         if (o1 instanceof Number && o2 instanceof Number) {
             return Math.pow(((Number) o1).doubleValue(), ((Number) o2).doubleValue());
         } else if (o1 instanceof Number && o2 instanceof ImageProcessor) {
@@ -332,7 +368,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             ImageProcessor o2_ = (ImageProcessor) o2;
             ImageProcessor result = ImageJUtils.createProcessor(o2_.getWidth(), o2_.getHeight(), o2_.getBitDepth());
             for (int i = 0; i < o2_.getPixelCount(); i++) {
-                result.setf(i, (float) Math.pow(o1_, o2_.getf(i)));
+                 setIpValueSafe(result,i, (float) Math.pow(o1_, o2_.getf(i)), bitDepth);
             }
             return result;
         } else if (o2 instanceof Number && o1 instanceof ImageProcessor) {
@@ -340,7 +376,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             ImageProcessor o1_ = (ImageProcessor) o1;
             ImageProcessor result = ImageJUtils.createProcessor(o1_.getWidth(), o1_.getHeight(), o1_.getBitDepth());
             for (int i = 0; i < o1_.getPixelCount(); i++) {
-                result.setf(i, (float) Math.pow(o1_.getf(i), o2_));
+                 setIpValueSafe(result,i, (float) Math.pow(o1_.getf(i), o2_), bitDepth);
             }
             return result;
         } else if (o2 instanceof ImageProcessor && o1 instanceof ImageProcessor) {
@@ -348,7 +384,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             ImageProcessor o1_ = (ImageProcessor) o1;
             ImageProcessor result = ImageJUtils.createProcessor(o1_.getWidth(), o1_.getHeight(), o1_.getBitDepth());
             for (int i = 0; i < o1_.getPixelCount(); i++) {
-                result.setf(i, (float) Math.pow(o1_.getf(i), o2_.getf(i)));
+                 setIpValueSafe(result,i, (float) Math.pow(o1_.getf(i), o2_.getf(i)), bitDepth);
             }
             return result;
         } else {
@@ -356,7 +392,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private Object applyGammaFunction(Object o1, Object o2) {
+    private Object applyGammaFunction(Object o1, Object o2, int bitDepth) {
         if (o1 instanceof Number && o2 instanceof Number) {
             double v1 = ((Number) o1).doubleValue();
             double c = ((Number) o2).doubleValue();
@@ -373,7 +409,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
                 double v1 = o1_;
                 double c = o2_.getf(i);
                 if (v1 > 0) {
-                    result.setf(i, (float) Math.exp(c * Math.log(v1)));
+                     setIpValueSafe(result,i, (float) Math.exp(c * Math.log(v1)), bitDepth);
                 }
             }
             return result;
@@ -385,7 +421,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
                 double v1 = o1_.getf(i);
                 double c = o2_;
                 if (v1 > 0) {
-                    result.setf(i, (float) Math.exp(c * Math.log(v1)));
+                     setIpValueSafe(result,i, (float) Math.exp(c * Math.log(v1)), bitDepth);
                 }
             }
             return result;
@@ -397,7 +433,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
                 double v1 = ((ImageProcessor) o1).getf(i);
                 double c = o2_.getf(i);
                 if (v1 > 0) {
-                    result.setf(i, (float) Math.exp(c * Math.log(v1)));
+                     setIpValueSafe(result,i, (float) Math.exp(c * Math.log(v1)), bitDepth);
                 }
             }
             return result;
@@ -406,7 +442,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private Object applySqrtFunction(Object o) {
+    private Object applySqrtFunction(Object o, int bitDepth) {
         if (o instanceof Number) {
             return Math.sqrt(((Number) o).doubleValue());
         } else if (o instanceof ImageProcessor) {
@@ -415,7 +451,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             for (int i = 0; i < o_.getPixelCount(); i++) {
                 float v = o_.getf(i);
                 if (v > 0) {
-                    result.setf(i, (float) Math.sqrt(v));
+                     setIpValueSafe(result,i, (float) Math.sqrt(v), bitDepth);
                 }
             }
             return result;
@@ -424,14 +460,14 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private Object applyExpFunction(Object o) {
+    private Object applyExpFunction(Object o, int bitDepth) {
         if (o instanceof Number) {
             return Math.exp(((Number) o).doubleValue());
         } else if (o instanceof ImageProcessor) {
             ImageProcessor o_ = (ImageProcessor) o;
             ImageProcessor result = ImageJUtils.createProcessor(o_.getWidth(), o_.getHeight(), o_.getBitDepth());
             for (int i = 0; i < o_.getPixelCount(); i++) {
-                result.setf(i, (float) Math.exp(o_.getf(i)));
+                 setIpValueSafe(result,i, (float) Math.exp(o_.getf(i)), bitDepth);
             }
             return result;
         } else {
@@ -439,14 +475,14 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private Object applyLnFunction(Object o) {
+    private Object applyLnFunction(Object o, int bitDepth) {
         if (o instanceof Number) {
             return Math.log(((Number) o).doubleValue());
         } else if (o instanceof ImageProcessor) {
             ImageProcessor o_ = (ImageProcessor) o;
             ImageProcessor result = ImageJUtils.createProcessor(o_.getWidth(), o_.getHeight(), o_.getBitDepth());
             for (int i = 0; i < o_.getPixelCount(); i++) {
-                result.setf(i, (float) Math.log(o_.getf(i)));
+                 setIpValueSafe(result,i, (float) Math.log(o_.getf(i)), bitDepth);
             }
             return result;
         } else {
@@ -454,14 +490,14 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private Object applyAbsFunction(Object o) {
+    private Object applyAbsFunction(Object o, int bitDepth) {
         if (o instanceof Number) {
             return Math.abs(((Number) o).doubleValue());
         } else if (o instanceof ImageProcessor) {
             ImageProcessor o_ = (ImageProcessor) o;
             ImageProcessor result = ImageJUtils.createProcessor(o_.getWidth(), o_.getHeight(), o_.getBitDepth());
             for (int i = 0; i < o_.getPixelCount(); i++) {
-                result.setf(i, Math.abs(o_.getf(i)));
+                 setIpValueSafe(result,i, Math.abs(o_.getf(i)), bitDepth);
             }
             return result;
         } else {
@@ -469,9 +505,9 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private Object applyInvertFunction(Object o) {
+    private Object applyInvertFunction(Object o, int bitDepth) {
         if (o instanceof Number) {
-            return applyNotFunction(o);
+            return applyNotFunction(o, bitDepth);
         } else if (o instanceof ImageProcessor) {
             ImageProcessor o_ = (ImageProcessor) o;
             ImageProcessor result = o_.duplicate();
@@ -482,7 +518,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private Object applyAndFunction(Object o1, Object o2) {
+    private Object applyAndFunction(Object o1, Object o2, int bitDepth) {
         if (o1 instanceof Number && o2 instanceof Number) {
             return ((Number) o1).intValue() & ((Number) o2).intValue();
         } else if (o1 instanceof Number && o2 instanceof ImageProcessor) {
@@ -490,7 +526,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             ImageProcessor o2_ = (ImageProcessor) o2;
             ImageProcessor result = ImageJUtils.createProcessor(o2_.getWidth(), o2_.getHeight(), o2_.getBitDepth());
             for (int i = 0; i < o2_.getPixelCount(); i++) {
-                result.setf(i, o1_ & (int)o2_.getf(i));
+                 setIpValueSafe(result,i, o1_ & (int)o2_.getf(i), bitDepth);
             }
             return result;
         } else if (o2 instanceof Number && o1 instanceof ImageProcessor) {
@@ -498,7 +534,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             ImageProcessor o1_ = (ImageProcessor) o1;
             ImageProcessor result = ImageJUtils.createProcessor(o1_.getWidth(), o1_.getHeight(), o1_.getBitDepth());
             for (int i = 0; i < o1_.getPixelCount(); i++) {
-                result.setf(i, o2_ & (int)o1_.getf(i));
+                 setIpValueSafe(result,i, o2_ & (int)o1_.getf(i), bitDepth);
             }
             return result;
         } else if (o2 instanceof ImageProcessor && o1 instanceof ImageProcessor) {
@@ -506,7 +542,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             ImageProcessor o1_ = (ImageProcessor) o1;
             ImageProcessor result = ImageJUtils.createProcessor(o1_.getWidth(), o1_.getHeight(), o1_.getBitDepth());
             for (int i = 0; i < o1_.getPixelCount(); i++) {
-                result.setf(i, (int)o1_.getf(i) & (int)o2_.getf(i));
+                 setIpValueSafe(result,i, (int)o1_.getf(i) & (int)o2_.getf(i), bitDepth);
             }
             return result;
         } else {
@@ -514,7 +550,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private Object applyOrFunction(Object o1, Object o2) {
+    private Object applyOrFunction(Object o1, Object o2, int bitDepth) {
         if (o1 instanceof Number && o2 instanceof Number) {
             return ((Number) o1).intValue() | ((Number) o2).intValue();
         } else if (o1 instanceof Number && o2 instanceof ImageProcessor) {
@@ -522,7 +558,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             ImageProcessor o2_ = (ImageProcessor) o2;
             ImageProcessor result = ImageJUtils.createProcessor(o2_.getWidth(), o2_.getHeight(), o2_.getBitDepth());
             for (int i = 0; i < o2_.getPixelCount(); i++) {
-                result.setf(i, o1_ | (int)o2_.getf(i));
+                 setIpValueSafe(result,i, o1_ | (int)o2_.getf(i), bitDepth);
             }
             return result;
         } else if (o2 instanceof Number && o1 instanceof ImageProcessor) {
@@ -530,7 +566,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             ImageProcessor o1_ = (ImageProcessor) o1;
             ImageProcessor result = ImageJUtils.createProcessor(o1_.getWidth(), o1_.getHeight(), o1_.getBitDepth());
             for (int i = 0; i < o1_.getPixelCount(); i++) {
-                result.setf(i, o2_ | (int)o1_.getf(i));
+                 setIpValueSafe(result,i, o2_ | (int)o1_.getf(i), bitDepth);
             }
             return result;
         } else if (o2 instanceof ImageProcessor && o1 instanceof ImageProcessor) {
@@ -538,7 +574,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             ImageProcessor o1_ = (ImageProcessor) o1;
             ImageProcessor result = ImageJUtils.createProcessor(o1_.getWidth(), o1_.getHeight(), o1_.getBitDepth());
             for (int i = 0; i < o1_.getPixelCount(); i++) {
-                result.setf(i, (int)o1_.getf(i) | (int)o2_.getf(i));
+                 setIpValueSafe(result,i, (int)o1_.getf(i) | (int)o2_.getf(i), bitDepth);
             }
             return result;
         } else {
@@ -546,7 +582,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private Object applyXorFunction(Object o1, Object o2) {
+    private Object applyXorFunction(Object o1, Object o2, int bitDepth) {
         if (o1 instanceof Number && o2 instanceof Number) {
             return ((Number) o1).intValue() ^ ((Number) o2).intValue();
         } else if (o1 instanceof Number && o2 instanceof ImageProcessor) {
@@ -554,7 +590,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             ImageProcessor o2_ = (ImageProcessor) o2;
             ImageProcessor result = ImageJUtils.createProcessor(o2_.getWidth(), o2_.getHeight(), o2_.getBitDepth());
             for (int i = 0; i < o2_.getPixelCount(); i++) {
-                result.setf(i, o1_ ^ (int)o2_.getf(i));
+                 setIpValueSafe(result,i, o1_ ^ (int)o2_.getf(i), bitDepth);
             }
             return result;
         } else if (o2 instanceof Number && o1 instanceof ImageProcessor) {
@@ -562,7 +598,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             ImageProcessor o1_ = (ImageProcessor) o1;
             ImageProcessor result = ImageJUtils.createProcessor(o1_.getWidth(), o1_.getHeight(), o1_.getBitDepth());
             for (int i = 0; i < o1_.getPixelCount(); i++) {
-                result.setf(i, o2_ ^ (int)o1_.getf(i));
+                 setIpValueSafe(result,i, o2_ ^ (int)o1_.getf(i), bitDepth);
             }
             return result;
         } else if (o2 instanceof ImageProcessor && o1 instanceof ImageProcessor) {
@@ -570,7 +606,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             ImageProcessor o1_ = (ImageProcessor) o1;
             ImageProcessor result = ImageJUtils.createProcessor(o1_.getWidth(), o1_.getHeight(), o1_.getBitDepth());
             for (int i = 0; i < o1_.getPixelCount(); i++) {
-                result.setf(i, (int)o1_.getf(i) ^ (int)o2_.getf(i));
+                 setIpValueSafe(result,i, (int)o1_.getf(i) ^ (int)o2_.getf(i), bitDepth);
             }
             return result;
         } else {
@@ -578,14 +614,14 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private Object applyNotFunction(Object o) {
+    private Object applyNotFunction(Object o, int bitDepth) {
         if (o instanceof Number) {
             return ~((Number) o).intValue();
         } else if (o instanceof ImageProcessor) {
             ImageProcessor o_ = (ImageProcessor) o;
             ImageProcessor result = ImageJUtils.createProcessor(o_.getWidth(), o_.getHeight(), o_.getBitDepth());
             for (int i = 0; i < o_.getPixelCount(); i++) {
-                result.setf(i, ~(int)(o_.getf(i)));
+                 setIpValueSafe(result,i, ~(int)(o_.getf(i)), bitDepth);
             }
             return result;
         } else {
@@ -593,47 +629,47 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private Object applyOperation(Object left, Object right, String operator) {
+    private Object applyOperation(Object left, Object right, String operator, int bitDepth) {
         if (left instanceof Number && right instanceof Number) {
-            return applyOperationNumberNumber(((Number) left).floatValue(), ((Number) right).floatValue(), operator);
+            return applyOperationNumberNumber(((Number) left).floatValue(), ((Number) right).floatValue(), operator, bitDepth);
         } else if (left instanceof Number && right instanceof ImageProcessor) {
-            return applyOperationNumberImage(((Number) left).floatValue(), (ImageProcessor) right, operator);
+            return applyOperationNumberImage(((Number) left).floatValue(), (ImageProcessor) right, operator, bitDepth);
         } else if (left instanceof ImageProcessor && right instanceof Number) {
-            return applyOperationImageNumber((ImageProcessor) left, ((Number) right).floatValue(), operator);
+            return applyOperationImageNumber((ImageProcessor) left, ((Number) right).floatValue(), operator, bitDepth);
         } else if (left instanceof ImageProcessor && right instanceof ImageProcessor) {
-            return applyOperationImageImage((ImageProcessor) left, (ImageProcessor) right, operator);
+            return applyOperationImageImage((ImageProcessor) left, (ImageProcessor) right, operator, bitDepth);
         } else {
             throw new UnsupportedOperationException("Unsupported operator types: " + left + ", " + right);
         }
     }
 
-    private ImageProcessor applyOperationImageImage(ImageProcessor left, ImageProcessor right, String operator) {
+    private ImageProcessor applyOperationImageImage(ImageProcessor left, ImageProcessor right, String operator, int bitDepth) {
         switch (operator) {
             case "+": {
                 ImageProcessor result = ImageJUtils.createProcessor(right.getWidth(), right.getHeight(), right.getBitDepth());
                 for (int i = 0; i < result.getPixelCount(); i++) {
-                    result.setf(i, left.getf(i) + right.getf(i));
+                     setIpValueSafe(result,i, left.getf(i) + right.getf(i), bitDepth);
                 }
                 return result;
             }
             case "-": {
                 ImageProcessor result = ImageJUtils.createProcessor(right.getWidth(), right.getHeight(), right.getBitDepth());
                 for (int i = 0; i < result.getPixelCount(); i++) {
-                    result.setf(i, left.getf(i) - right.getf(i));
+                     setIpValueSafe(result,i, left.getf(i) - right.getf(i), bitDepth);
                 }
                 return result;
             }
             case "*": {
                 ImageProcessor result = ImageJUtils.createProcessor(right.getWidth(), right.getHeight(), right.getBitDepth());
                 for (int i = 0; i < result.getPixelCount(); i++) {
-                    result.setf(i, left.getf(i) * right.getf(i));
+                     setIpValueSafe(result,i, left.getf(i) * right.getf(i), bitDepth);
                 }
                 return result;
             }
             case "/": {
                 ImageProcessor result = ImageJUtils.createProcessor(right.getWidth(), right.getHeight(), right.getBitDepth());
                 for (int i = 0; i < result.getPixelCount(); i++) {
-                    result.setf(i, left.getf(i) / right.getf(i));
+                     setIpValueSafe(result,i, left.getf(i) / right.getf(i), bitDepth);
                 }
                 return result;
             }
@@ -642,55 +678,55 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private ImageProcessor applyOperationImageNumber(ImageProcessor left, float right, String operator) {
+    private ImageProcessor applyOperationImageNumber(ImageProcessor left, float right, String operator, int bitDepth) {
         switch (operator) {
             case "/": {
                 ImageProcessor result = ImageJUtils.createProcessor(left.getWidth(), left.getHeight(), left.getBitDepth());
                 for (int i = 0; i < result.getPixelCount(); i++) {
-                    result.setf(i, left.getf(i) / right);
+                     setIpValueSafe(result,i, left.getf(i) / right, bitDepth);
                 }
                 return result;
             }
             case "-": {
                 ImageProcessor result = ImageJUtils.createProcessor(left.getWidth(), left.getHeight(), left.getBitDepth());
                 for (int i = 0; i < result.getPixelCount(); i++) {
-                    result.setf(i, left.getf(i) - right);
+                     setIpValueSafe(result,i, left.getf(i) - right, bitDepth);
                 }
                 return result;
             }
             default:
                 // All other operators are commutative
-                return applyOperationNumberImage(right, left, operator);
+                return applyOperationNumberImage(right, left, operator, bitDepth);
         }
     }
 
-    private ImageProcessor applyOperationNumberImage(float left, ImageProcessor right, String operator) {
+    private ImageProcessor applyOperationNumberImage(float left, ImageProcessor right, String operator, int bitDepth) {
         switch (operator) {
             case "+": {
                 ImageProcessor result = ImageJUtils.createProcessor(right.getWidth(), right.getHeight(), right.getBitDepth());
                 for (int i = 0; i < result.getPixelCount(); i++) {
-                    result.setf(i, left + right.getf(i));
+                     setIpValueSafe(result,i, left + right.getf(i), bitDepth);
                 }
                 return result;
             }
             case "-": {
                 ImageProcessor result = ImageJUtils.createProcessor(right.getWidth(), right.getHeight(), right.getBitDepth());
                 for (int i = 0; i < result.getPixelCount(); i++) {
-                    result.setf(i, left - right.getf(i));
+                     setIpValueSafe(result,i, left - right.getf(i), bitDepth);
                 }
                 return result;
             }
             case "*": {
                 ImageProcessor result = ImageJUtils.createProcessor(right.getWidth(), right.getHeight(), right.getBitDepth());
                 for (int i = 0; i < result.getPixelCount(); i++) {
-                    result.setf(i, left * right.getf(i));
+                     setIpValueSafe(result,i, left * right.getf(i), bitDepth);
                 }
                 return result;
             }
             case "/": {
                 ImageProcessor result = ImageJUtils.createProcessor(right.getWidth(), right.getHeight(), right.getBitDepth());
                 for (int i = 0; i < result.getPixelCount(); i++) {
-                    result.setf(i, left / right.getf(i));
+                     setIpValueSafe(result,i, left / right.getf(i), bitDepth);
                 }
                 return result;
             }
@@ -699,7 +735,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private float applyOperationNumberNumber(float left, float right, String operator) {
+    private float applyOperationNumberNumber(float left, float right, String operator, int bitDepth) {
         switch (operator) {
             case "+":
                 return left + right;
