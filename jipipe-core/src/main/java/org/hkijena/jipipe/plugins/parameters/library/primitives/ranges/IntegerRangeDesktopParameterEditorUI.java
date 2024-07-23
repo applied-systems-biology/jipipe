@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.primitives.ranges;
 
+import org.fife.ui.rsyntaxtextarea.AbstractTokenMaker;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
@@ -21,10 +22,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
-import org.hkijena.jipipe.plugins.expressions.ExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
+import org.hkijena.jipipe.plugins.expressions.*;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -148,6 +146,11 @@ public class IntegerRangeDesktopParameterEditorUI extends JIPipeDesktopParameter
         @Override
         public boolean withoutEditorButton() {
             return false;
+        }
+
+        @Override
+        public Class<? extends AbstractTokenMaker> tokenMaker() {
+            return JIPipeExpressionEvaluatorSyntaxTokenMaker.class;
         }
 
         @Override
