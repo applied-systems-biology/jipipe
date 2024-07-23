@@ -158,32 +158,29 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
                     storedData.put(nextNode, ((JIPipeExpressionCustomASTParser.NumberNode) nextNode).getValue());
                 } else if (nextNode instanceof JIPipeExpressionCustomASTParser.VariableNode) {
                     JIPipeExpressionCustomASTParser.VariableNode variableNode = (JIPipeExpressionCustomASTParser.VariableNode) nextNode;
-                    ImageProcessor ip;
+                    Object ip;
                     if ("x".equals(variableNode.getName())) {
                         ip = createXVariableProcessor(width, height, bitDepth);
                     } else if ("y".equals(variableNode.getName())) {
                         ip = createYVariableProcessor(width, height, bitDepth);
                     } else if ("z".equals(variableNode.getName())) {
-                        ip = createConstantProcessor(width, height, bitDepth, index.getZ());
+                        ip = index.getZ();
                     } else if ("c".equals(variableNode.getName())) {
-                        ip = createConstantProcessor(width, height, bitDepth, index.getC());
+                        ip = index.getC();
                     } else if ("t".equals(variableNode.getName())) {
-                        ip = createConstantProcessor(width, height, bitDepth, index.getT());
-                    } else if(inputImagesMap.containsKey(variableNode.getName())) {
+                        ip = index.getT();
+                    } else if (inputImagesMap.containsKey(variableNode.getName())) {
                         ip = ImageJUtils.getSliceZero(inputImagesMap.get(variableNode.getName()), index);
-                    }
-                    else if(variableNode.getName().startsWith("custom.") && getDefaultCustomExpressionVariables().containsKey(variableNode.getName().substring("custom.".length()))) {
+                    } else if (variableNode.getName().startsWith("custom.") && getDefaultCustomExpressionVariables().containsKey(variableNode.getName().substring("custom.".length()))) {
                         // Custom variable
-                        ip = createConstantProcessor(width, height, bitDepth,
-                                StringUtils.parseDouble(getDefaultCustomExpressionVariables().get(variableNode.getName().substring("custom.".length())).get(Object.class).toString()));
-                    }
-                    else {
+                        ip = StringUtils.parseDouble(getDefaultCustomExpressionVariables().get(variableNode.getName().substring("custom.".length())).get(Object.class).toString());
+                    } else {
                         // Text annotation name
                         JIPipeTextAnnotation textAnnotation = textAnnotationMap.getOrDefault(variableNode.getName(), null);
-                        if(textAnnotation == null) {
+                        if (textAnnotation == null) {
                             throw new IllegalArgumentException("Unknown text annotation: " + variableNode.getName());
                         }
-                        ip = createConstantProcessor(width, height, bitDepth, StringUtils.parseDouble(textAnnotation.getValue()));
+                        ip = StringUtils.parseDouble(textAnnotation.getValue());
                     }
                     storedData.put(nextNode, ip);
                 } else if (nextNode instanceof JIPipeExpressionCustomASTParser.OperationNode) {
@@ -216,7 +213,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         Object result = storedData.get(astNode);
-        if(result instanceof Number) {
+        if (result instanceof Number) {
             result = createConstantProcessor(width, height, bitDepth, ((Number) result).doubleValue());
         }
         return (ImageProcessor) result;
@@ -228,23 +225,384 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     private Object applyFunction(List<Object> arguments, String functionName) {
-        return null;
+        switch (functionName) {
+            case "MIN":
+                return applyMinFunction(arguments.get(0), arguments.get(1));
+            case "MAX":
+                return applyMaxFunction(arguments.get(0), arguments.get(1));
+            case "SQR":
+                return applyPowFunction(arguments.get(0), 2);
+            case "POW":
+                return applyPowFunction(arguments.get(0), arguments.get(1));
+            case "GAMMA":
+                return applyGammaFunction(arguments.get(0), arguments.get(1));
+            case "SQRT":
+                return applySqrtFunction(arguments.get(0));
+            case "EXP":
+                return applyExpFunction(arguments.get(0));
+            case "LN":
+            case "LOG":
+                return applyLnFunction(arguments.get(0));
+            case "ABS":
+                return applyAbsFunction(arguments.get(0));
+            case "INVERT":
+                return applyInvertFunction(arguments.get(0));
+            case "AND":
+                return applyAndFunction(arguments.get(0), arguments.get(1));
+            case "OR":
+                return applyOrFunction(arguments.get(0), arguments.get(1));
+            case "XOR":
+                return applyXorFunction(arguments.get(0), arguments.get(1));
+            case "NOT":
+                return applyNotFunction(arguments.get(0));
+            default:
+                throw new IllegalArgumentException("Unknown function: " + functionName);
+        }
+    }
+
+    private Object applyMinFunction(Object o1, Object o2) {
+        if (o1 instanceof Number && o2 instanceof Number) {
+            return Math.min(((Number) o1).doubleValue(), ((Number) o2).doubleValue());
+        } else if (o1 instanceof Number && o2 instanceof ImageProcessor) {
+            float o1_ = ((Number) o1).floatValue();
+            ImageProcessor o2_ = (ImageProcessor) o2;
+            ImageProcessor result = ImageJUtils.createProcessor(o2_.getWidth(), o2_.getHeight(), o2_.getBitDepth());
+            for (int i = 0; i < o2_.getPixelCount(); i++) {
+                result.setf(i, Math.min(o1_, o2_.getf(i)));
+            }
+            return result;
+        } else if (o2 instanceof Number && o1 instanceof ImageProcessor) {
+            float o2_ = ((Number) o2).floatValue();
+            ImageProcessor o1_ = (ImageProcessor) o1;
+            ImageProcessor result = ImageJUtils.createProcessor(o1_.getWidth(), o1_.getHeight(), o1_.getBitDepth());
+            for (int i = 0; i < o1_.getPixelCount(); i++) {
+                result.setf(i, Math.min(o1_.getf(i), o2_));
+            }
+            return result;
+        } else if (o2 instanceof ImageProcessor && o1 instanceof ImageProcessor) {
+            ImageProcessor o2_ = (ImageProcessor) o2;
+            ImageProcessor o1_ = (ImageProcessor) o1;
+            ImageProcessor result = ImageJUtils.createProcessor(o1_.getWidth(), o1_.getHeight(), o1_.getBitDepth());
+            for (int i = 0; i < o1_.getPixelCount(); i++) {
+                result.setf(i, Math.min(o1_.getf(i), o2_.getf(i)));
+            }
+            return result;
+        } else {
+            throw new UnsupportedOperationException("Unsupported arguments: " + o1 + " " + o2);
+        }
+    }
+
+    private Object applyMaxFunction(Object o1, Object o2) {
+        if (o1 instanceof Number && o2 instanceof Number) {
+            return Math.max(((Number) o1).doubleValue(), ((Number) o2).doubleValue());
+        } else if (o1 instanceof Number && o2 instanceof ImageProcessor) {
+            float o1_ = ((Number) o1).floatValue();
+            ImageProcessor o2_ = (ImageProcessor) o2;
+            ImageProcessor result = ImageJUtils.createProcessor(o2_.getWidth(), o2_.getHeight(), o2_.getBitDepth());
+            for (int i = 0; i < o2_.getPixelCount(); i++) {
+                result.setf(i, Math.max(o1_, o2_.getf(i)));
+            }
+            return result;
+        } else if (o2 instanceof Number && o1 instanceof ImageProcessor) {
+            float o2_ = ((Number) o2).floatValue();
+            ImageProcessor o1_ = (ImageProcessor) o1;
+            ImageProcessor result = ImageJUtils.createProcessor(o1_.getWidth(), o1_.getHeight(), o1_.getBitDepth());
+            for (int i = 0; i < o1_.getPixelCount(); i++) {
+                result.setf(i, Math.max(o1_.getf(i), o2_));
+            }
+            return result;
+        } else if (o2 instanceof ImageProcessor && o1 instanceof ImageProcessor) {
+            ImageProcessor o2_ = (ImageProcessor) o2;
+            ImageProcessor o1_ = (ImageProcessor) o1;
+            ImageProcessor result = ImageJUtils.createProcessor(o1_.getWidth(), o1_.getHeight(), o1_.getBitDepth());
+            for (int i = 0; i < o1_.getPixelCount(); i++) {
+                result.setf(i, Math.max(o1_.getf(i), o2_.getf(i)));
+            }
+            return result;
+        } else {
+            throw new UnsupportedOperationException("Unsupported arguments: " + o1 + " " + o2);
+        }
+    }
+
+    private Object applyPowFunction(Object o1, Object o2) {
+        if (o1 instanceof Number && o2 instanceof Number) {
+            return Math.pow(((Number) o1).doubleValue(), ((Number) o2).doubleValue());
+        } else if (o1 instanceof Number && o2 instanceof ImageProcessor) {
+            float o1_ = ((Number) o1).floatValue();
+            ImageProcessor o2_ = (ImageProcessor) o2;
+            ImageProcessor result = ImageJUtils.createProcessor(o2_.getWidth(), o2_.getHeight(), o2_.getBitDepth());
+            for (int i = 0; i < o2_.getPixelCount(); i++) {
+                result.setf(i, (float) Math.pow(o1_, o2_.getf(i)));
+            }
+            return result;
+        } else if (o2 instanceof Number && o1 instanceof ImageProcessor) {
+            float o2_ = ((Number) o2).floatValue();
+            ImageProcessor o1_ = (ImageProcessor) o1;
+            ImageProcessor result = ImageJUtils.createProcessor(o1_.getWidth(), o1_.getHeight(), o1_.getBitDepth());
+            for (int i = 0; i < o1_.getPixelCount(); i++) {
+                result.setf(i, (float) Math.pow(o1_.getf(i), o2_));
+            }
+            return result;
+        } else if (o2 instanceof ImageProcessor && o1 instanceof ImageProcessor) {
+            ImageProcessor o2_ = (ImageProcessor) o2;
+            ImageProcessor o1_ = (ImageProcessor) o1;
+            ImageProcessor result = ImageJUtils.createProcessor(o1_.getWidth(), o1_.getHeight(), o1_.getBitDepth());
+            for (int i = 0; i < o1_.getPixelCount(); i++) {
+                result.setf(i, (float) Math.pow(o1_.getf(i), o2_.getf(i)));
+            }
+            return result;
+        } else {
+            throw new UnsupportedOperationException("Unsupported arguments: " + o1 + " " + o2);
+        }
+    }
+
+    private Object applyGammaFunction(Object o1, Object o2) {
+        if (o1 instanceof Number && o2 instanceof Number) {
+            double v1 = ((Number) o1).doubleValue();
+            double c = ((Number) o2).doubleValue();
+            if (v1 > 0) {
+                return Math.exp(c * Math.log(v1));
+            } else {
+                return 0;
+            }
+        } else if (o1 instanceof Number && o2 instanceof ImageProcessor) {
+            float o1_ = ((Number) o1).floatValue();
+            ImageProcessor o2_ = (ImageProcessor) o2;
+            ImageProcessor result = ImageJUtils.createProcessor(o2_.getWidth(), o2_.getHeight(), o2_.getBitDepth());
+            for (int i = 0; i < o2_.getPixelCount(); i++) {
+                double v1 = o1_;
+                double c = o2_.getf(i);
+                if (v1 > 0) {
+                    result.setf(i, (float) Math.exp(c * Math.log(v1)));
+                }
+            }
+            return result;
+        } else if (o2 instanceof Number && o1 instanceof ImageProcessor) {
+            float o2_ = ((Number) o2).floatValue();
+            ImageProcessor o1_ = (ImageProcessor) o1;
+            ImageProcessor result = ImageJUtils.createProcessor(o1_.getWidth(), o1_.getHeight(), o1_.getBitDepth());
+            for (int i = 0; i < o1_.getPixelCount(); i++) {
+                double v1 = o1_.getf(i);
+                double c = o2_;
+                if (v1 > 0) {
+                    result.setf(i, (float) Math.exp(c * Math.log(v1)));
+                }
+            }
+            return result;
+        } else if (o2 instanceof ImageProcessor && o1 instanceof ImageProcessor) {
+            ImageProcessor o2_ = (ImageProcessor) o2;
+            ImageProcessor o1_ = (ImageProcessor) o1;
+            ImageProcessor result = ImageJUtils.createProcessor(o1_.getWidth(), o1_.getHeight(), o1_.getBitDepth());
+            for (int i = 0; i < o1_.getPixelCount(); i++) {
+                double v1 = ((ImageProcessor) o1).getf(i);
+                double c = o2_.getf(i);
+                if (v1 > 0) {
+                    result.setf(i, (float) Math.exp(c * Math.log(v1)));
+                }
+            }
+            return result;
+        } else {
+            throw new UnsupportedOperationException("Unsupported arguments: " + o1 + " " + o2);
+        }
+    }
+
+    private Object applySqrtFunction(Object o) {
+        if (o instanceof Number) {
+            return Math.sqrt(((Number) o).doubleValue());
+        } else if (o instanceof ImageProcessor) {
+            ImageProcessor o_ = (ImageProcessor) o;
+            ImageProcessor result = ImageJUtils.createProcessor(o_.getWidth(), o_.getHeight(), o_.getBitDepth());
+            for (int i = 0; i < o_.getPixelCount(); i++) {
+                float v = o_.getf(i);
+                if (v > 0) {
+                    result.setf(i, (float) Math.sqrt(v));
+                }
+            }
+            return result;
+        } else {
+            throw new UnsupportedOperationException("Unsupported arguments: " + o);
+        }
+    }
+
+    private Object applyExpFunction(Object o) {
+        if (o instanceof Number) {
+            return Math.exp(((Number) o).doubleValue());
+        } else if (o instanceof ImageProcessor) {
+            ImageProcessor o_ = (ImageProcessor) o;
+            ImageProcessor result = ImageJUtils.createProcessor(o_.getWidth(), o_.getHeight(), o_.getBitDepth());
+            for (int i = 0; i < o_.getPixelCount(); i++) {
+                result.setf(i, (float) Math.exp(o_.getf(i)));
+            }
+            return result;
+        } else {
+            throw new UnsupportedOperationException("Unsupported arguments: " + o);
+        }
+    }
+
+    private Object applyLnFunction(Object o) {
+        if (o instanceof Number) {
+            return Math.log(((Number) o).doubleValue());
+        } else if (o instanceof ImageProcessor) {
+            ImageProcessor o_ = (ImageProcessor) o;
+            ImageProcessor result = ImageJUtils.createProcessor(o_.getWidth(), o_.getHeight(), o_.getBitDepth());
+            for (int i = 0; i < o_.getPixelCount(); i++) {
+                result.setf(i, (float) Math.log(o_.getf(i)));
+            }
+            return result;
+        } else {
+            throw new UnsupportedOperationException("Unsupported arguments: " + o);
+        }
+    }
+
+    private Object applyAbsFunction(Object o) {
+        if (o instanceof Number) {
+            return Math.abs(((Number) o).doubleValue());
+        } else if (o instanceof ImageProcessor) {
+            ImageProcessor o_ = (ImageProcessor) o;
+            ImageProcessor result = ImageJUtils.createProcessor(o_.getWidth(), o_.getHeight(), o_.getBitDepth());
+            for (int i = 0; i < o_.getPixelCount(); i++) {
+                result.setf(i, Math.abs(o_.getf(i)));
+            }
+            return result;
+        } else {
+            throw new UnsupportedOperationException("Unsupported arguments: " + o);
+        }
+    }
+
+    private Object applyInvertFunction(Object o) {
+        if (o instanceof Number) {
+            return applyNotFunction(o);
+        } else if (o instanceof ImageProcessor) {
+            ImageProcessor o_ = (ImageProcessor) o;
+            ImageProcessor result = o_.duplicate();
+            result.invert();
+            return result;
+        } else {
+            throw new UnsupportedOperationException("Unsupported arguments: " + o);
+        }
+    }
+
+    private Object applyAndFunction(Object o1, Object o2) {
+        if (o1 instanceof Number && o2 instanceof Number) {
+            return ((Number) o1).intValue() & ((Number) o2).intValue();
+        } else if (o1 instanceof Number && o2 instanceof ImageProcessor) {
+            int o1_ = ((Number) o1).intValue();
+            ImageProcessor o2_ = (ImageProcessor) o2;
+            ImageProcessor result = ImageJUtils.createProcessor(o2_.getWidth(), o2_.getHeight(), o2_.getBitDepth());
+            for (int i = 0; i < o2_.getPixelCount(); i++) {
+                result.setf(i, o1_ & (int)o2_.getf(i));
+            }
+            return result;
+        } else if (o2 instanceof Number && o1 instanceof ImageProcessor) {
+            int o2_ = ((Number) o2).intValue();
+            ImageProcessor o1_ = (ImageProcessor) o1;
+            ImageProcessor result = ImageJUtils.createProcessor(o1_.getWidth(), o1_.getHeight(), o1_.getBitDepth());
+            for (int i = 0; i < o1_.getPixelCount(); i++) {
+                result.setf(i, o2_ & (int)o1_.getf(i));
+            }
+            return result;
+        } else if (o2 instanceof ImageProcessor && o1 instanceof ImageProcessor) {
+            ImageProcessor o2_ = (ImageProcessor) o2;
+            ImageProcessor o1_ = (ImageProcessor) o1;
+            ImageProcessor result = ImageJUtils.createProcessor(o1_.getWidth(), o1_.getHeight(), o1_.getBitDepth());
+            for (int i = 0; i < o1_.getPixelCount(); i++) {
+                result.setf(i, (int)o1_.getf(i) & (int)o2_.getf(i));
+            }
+            return result;
+        } else {
+            throw new UnsupportedOperationException("Unsupported arguments: " + o1 + " " + o2);
+        }
+    }
+
+    private Object applyOrFunction(Object o1, Object o2) {
+        if (o1 instanceof Number && o2 instanceof Number) {
+            return ((Number) o1).intValue() | ((Number) o2).intValue();
+        } else if (o1 instanceof Number && o2 instanceof ImageProcessor) {
+            int o1_ = ((Number) o1).intValue();
+            ImageProcessor o2_ = (ImageProcessor) o2;
+            ImageProcessor result = ImageJUtils.createProcessor(o2_.getWidth(), o2_.getHeight(), o2_.getBitDepth());
+            for (int i = 0; i < o2_.getPixelCount(); i++) {
+                result.setf(i, o1_ | (int)o2_.getf(i));
+            }
+            return result;
+        } else if (o2 instanceof Number && o1 instanceof ImageProcessor) {
+            int o2_ = ((Number) o2).intValue();
+            ImageProcessor o1_ = (ImageProcessor) o1;
+            ImageProcessor result = ImageJUtils.createProcessor(o1_.getWidth(), o1_.getHeight(), o1_.getBitDepth());
+            for (int i = 0; i < o1_.getPixelCount(); i++) {
+                result.setf(i, o2_ | (int)o1_.getf(i));
+            }
+            return result;
+        } else if (o2 instanceof ImageProcessor && o1 instanceof ImageProcessor) {
+            ImageProcessor o2_ = (ImageProcessor) o2;
+            ImageProcessor o1_ = (ImageProcessor) o1;
+            ImageProcessor result = ImageJUtils.createProcessor(o1_.getWidth(), o1_.getHeight(), o1_.getBitDepth());
+            for (int i = 0; i < o1_.getPixelCount(); i++) {
+                result.setf(i, (int)o1_.getf(i) | (int)o2_.getf(i));
+            }
+            return result;
+        } else {
+            throw new UnsupportedOperationException("Unsupported arguments: " + o1 + " " + o2);
+        }
+    }
+
+    private Object applyXorFunction(Object o1, Object o2) {
+        if (o1 instanceof Number && o2 instanceof Number) {
+            return ((Number) o1).intValue() ^ ((Number) o2).intValue();
+        } else if (o1 instanceof Number && o2 instanceof ImageProcessor) {
+            int o1_ = ((Number) o1).intValue();
+            ImageProcessor o2_ = (ImageProcessor) o2;
+            ImageProcessor result = ImageJUtils.createProcessor(o2_.getWidth(), o2_.getHeight(), o2_.getBitDepth());
+            for (int i = 0; i < o2_.getPixelCount(); i++) {
+                result.setf(i, o1_ ^ (int)o2_.getf(i));
+            }
+            return result;
+        } else if (o2 instanceof Number && o1 instanceof ImageProcessor) {
+            int o2_ = ((Number) o2).intValue();
+            ImageProcessor o1_ = (ImageProcessor) o1;
+            ImageProcessor result = ImageJUtils.createProcessor(o1_.getWidth(), o1_.getHeight(), o1_.getBitDepth());
+            for (int i = 0; i < o1_.getPixelCount(); i++) {
+                result.setf(i, o2_ ^ (int)o1_.getf(i));
+            }
+            return result;
+        } else if (o2 instanceof ImageProcessor && o1 instanceof ImageProcessor) {
+            ImageProcessor o2_ = (ImageProcessor) o2;
+            ImageProcessor o1_ = (ImageProcessor) o1;
+            ImageProcessor result = ImageJUtils.createProcessor(o1_.getWidth(), o1_.getHeight(), o1_.getBitDepth());
+            for (int i = 0; i < o1_.getPixelCount(); i++) {
+                result.setf(i, (int)o1_.getf(i) ^ (int)o2_.getf(i));
+            }
+            return result;
+        } else {
+            throw new UnsupportedOperationException("Unsupported arguments: " + o1 + " " + o2);
+        }
+    }
+
+    private Object applyNotFunction(Object o) {
+        if (o instanceof Number) {
+            return ~((Number) o).intValue();
+        } else if (o instanceof ImageProcessor) {
+            ImageProcessor o_ = (ImageProcessor) o;
+            ImageProcessor result = ImageJUtils.createProcessor(o_.getWidth(), o_.getHeight(), o_.getBitDepth());
+            for (int i = 0; i < o_.getPixelCount(); i++) {
+                result.setf(i, ~(int)(o_.getf(i)));
+            }
+            return result;
+        } else {
+            throw new UnsupportedOperationException("Unsupported arguments: " + o);
+        }
     }
 
     private Object applyOperation(Object left, Object right, String operator) {
-        if(left instanceof Number && right instanceof Number) {
+        if (left instanceof Number && right instanceof Number) {
             return applyOperationNumberNumber(((Number) left).floatValue(), ((Number) right).floatValue(), operator);
-        }
-        else if(left instanceof Number && right instanceof ImageProcessor) {
-            return applyOperationNumberImage(((Number) left).floatValue(), (ImageProcessor)right, operator);
-        }
-        else if(left instanceof ImageProcessor && right instanceof Number) {
-            return applyOperationImageNumber((ImageProcessor)left, ((Number) right).floatValue(), operator);
-        }
-        else if(left instanceof ImageProcessor && right instanceof ImageProcessor) {
-            return applyOperationImageImage((ImageProcessor)left, (ImageProcessor)right, operator);
-        }
-        else {
+        } else if (left instanceof Number && right instanceof ImageProcessor) {
+            return applyOperationNumberImage(((Number) left).floatValue(), (ImageProcessor) right, operator);
+        } else if (left instanceof ImageProcessor && right instanceof Number) {
+            return applyOperationImageNumber((ImageProcessor) left, ((Number) right).floatValue(), operator);
+        } else if (left instanceof ImageProcessor && right instanceof ImageProcessor) {
+            return applyOperationImageImage((ImageProcessor) left, (ImageProcessor) right, operator);
+        } else {
             throw new UnsupportedOperationException("Unsupported operator types: " + left + ", " + right);
         }
     }
@@ -451,12 +809,14 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             "<li><code>MIN([], [])</code> to calculate the minimum of the operands</li>" +
             "<li><code>MAX([], [])</code> to calculate the maximum of the operands</li>" +
             "<li><code>SQR([])</code> to calculate the square of the operand</li>" +
+            "<li><code>POW([], [])</code> to calculate the power</li>" +
+            "<li><code>GAMMA([], [])</code> to calculate <code>EXP(LN( [] ) * [])</code></li>" +
             "<li><code>SQRT([])</code> to calculate the square root of the operand</li>" +
             "<li><code>EXP([])</code> to calculate the e^operand</li>" +
-            "<li><code>LN([])</code> to calculate the LN(operand)</li>" +
+            "<li><code>LN([])</code> or <code>LOG([])</code> to calculate the LN(operand)</li>" +
             "<li><code>ABS([])</code> to calculate absolute value</li>" +
-            "<li><code>INVERT([])</code> calculates the inverted pixel value</li>" +
-            "<li><code>AND([], [])</code>, <code>OR([], [])</code>, <code>XOR([], [])</code>, <code>NOT([])</code> to calculate logical operations </li>" +
+            "<li><code>INVERT([])</code> calculates the inverted pixel value (for numbers it will return NOT(x))</li>" +
+            "<li><code>AND([], [])</code>, <code>OR([], [])</code>, <code>XOR([], [])</code>, <code>NOT([])</code> to calculate bitwise logical operations. Values are automatically converted to integers to allow the operation.</li>" +
             "</ul>")
     @JIPipeParameter("expression")
     @JIPipeExpressionParameterSettings(withoutEditorButton = true)
