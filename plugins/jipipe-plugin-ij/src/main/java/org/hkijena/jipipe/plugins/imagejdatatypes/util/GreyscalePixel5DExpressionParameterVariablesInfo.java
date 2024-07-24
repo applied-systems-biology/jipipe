@@ -13,9 +13,10 @@
 
 package org.hkijena.jipipe.plugins.imagejdatatypes.util;
 
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.plugins.expressions.ExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
 
 import java.util.HashSet;
@@ -24,7 +25,7 @@ import java.util.Set;
 /**
  * Variable source that allows to address x, y, and value
  */
-public class GreyscalePixel5DExpressionParameterVariablesInfo implements ExpressionParameterVariablesInfo {
+public class GreyscalePixel5DExpressionParameterVariablesInfo implements JIPipeExpressionVariablesInfo {
 
     private final static Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
@@ -45,7 +46,7 @@ public class GreyscalePixel5DExpressionParameterVariablesInfo implements Express
     }
 
     @Override
-    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         return VARIABLES;
     }
 }

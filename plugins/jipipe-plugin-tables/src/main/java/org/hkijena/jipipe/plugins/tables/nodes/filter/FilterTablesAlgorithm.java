@@ -15,6 +15,7 @@ package org.hkijena.jipipe.plugins.tables.nodes.filter;
 
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
@@ -109,7 +110,7 @@ public class FilterTablesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.filters = filters;
     }
 
-    public static class VariablesInfo implements ExpressionParameterVariablesInfo {
+    public static class VariablesInfo implements JIPipeExpressionVariablesInfo {
 
         public static final Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
@@ -122,7 +123,7 @@ public class FilterTablesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
 
         @Override
-        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             return VARIABLES;
         }
     }

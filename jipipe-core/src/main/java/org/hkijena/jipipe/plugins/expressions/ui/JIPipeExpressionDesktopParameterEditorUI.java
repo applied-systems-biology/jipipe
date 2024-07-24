@@ -170,8 +170,8 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
                 settings = fieldClass.getAnnotation(JIPipeExpressionParameterSettings.class);
             }
             if (settings != null && settings.variableSource() != UndefinedExpressionParameterVariablesInfo.class) {
-                ExpressionParameterVariablesInfo variableSource = (ExpressionParameterVariablesInfo) ReflectionUtils.newInstance(settings.variableSource());
-                variables.addAll(variableSource.getVariables(getParameterTree(), getParameterAccess()));
+                JIPipeExpressionVariablesInfo variableSource = (JIPipeExpressionVariablesInfo) ReflectionUtils.newInstance(settings.variableSource());
+                variables.addAll(variableSource.getVariables(workbench, getParameterTree(), getParameterAccess()));
             }
             List<AddJIPipeExpressionParameterVariable> variableAnnotations = getParameterAccess().getAnnotationsOfType(AddJIPipeExpressionParameterVariable.class);
             if (variableAnnotations.isEmpty()) {
@@ -186,8 +186,8 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
                     variables.add(new JIPipeExpressionParameterVariableInfo(variable.key(), variable.name(), variable.description()));
                 }
                 if (variable.fromClass() != UndefinedExpressionParameterVariablesInfo.class) {
-                    ExpressionParameterVariablesInfo variableSource = (ExpressionParameterVariablesInfo) ReflectionUtils.newInstance(variable.fromClass());
-                    variables.addAll(variableSource.getVariables(getParameterTree(), getParameterAccess()));
+                    JIPipeExpressionVariablesInfo variableSource = (JIPipeExpressionVariablesInfo) ReflectionUtils.newInstance(variable.fromClass());
+                    variables.addAll(variableSource.getVariables(workbench, getParameterTree(), getParameterAccess()));
                 }
             }
         }
@@ -198,8 +198,8 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
                     variables.add(new JIPipeExpressionParameterVariableInfo(variable.key(), variable.name(), variable.description()));
                 }
                 if (variable.fromClass() != UndefinedExpressionParameterVariablesInfo.class) {
-                    ExpressionParameterVariablesInfo variableSource = (ExpressionParameterVariablesInfo) ReflectionUtils.newInstance(variable.fromClass());
-                    variables.addAll(variableSource.getVariables(getParameterTree(), getParameterAccess()));
+                    JIPipeExpressionVariablesInfo variableSource = (JIPipeExpressionVariablesInfo) ReflectionUtils.newInstance(variable.fromClass());
+                    variables.addAll(variableSource.getVariables(workbench, getParameterTree(), getParameterAccess()));
                 }
             }
         }

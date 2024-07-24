@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.expressions;
 
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 
@@ -20,10 +21,10 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * {@link ExpressionParameterVariablesInfo} that contains exactly one variable.
+ * {@link JIPipeExpressionVariablesInfo} that contains exactly one variable.
  * Please note that this class cannot be used directly within {@link JIPipeExpressionParameterSettings}, as there is not default constructor available.
  */
-public class SingleExpressionParameterVariablesInfo implements ExpressionParameterVariablesInfo {
+public class SingleExpressionParameterVariablesInfo implements JIPipeExpressionVariablesInfo {
     private final JIPipeExpressionParameterVariableInfo variable;
 
     public SingleExpressionParameterVariablesInfo(String name, String description, String key) {
@@ -35,7 +36,7 @@ public class SingleExpressionParameterVariablesInfo implements ExpressionParamet
     }
 
     @Override
-    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         return Collections.singleton(variable);
     }
 }

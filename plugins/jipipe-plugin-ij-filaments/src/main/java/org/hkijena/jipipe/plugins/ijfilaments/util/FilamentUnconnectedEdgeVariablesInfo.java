@@ -13,9 +13,10 @@
 
 package org.hkijena.jipipe.plugins.ijfilaments.util;
 
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.plugins.expressions.ExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
@@ -23,7 +24,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import java.util.HashSet;
 import java.util.Set;
 
-public class FilamentUnconnectedEdgeVariablesInfo implements ExpressionParameterVariablesInfo {
+public class FilamentUnconnectedEdgeVariablesInfo implements JIPipeExpressionVariablesInfo {
 
     private static final Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
@@ -32,7 +33,7 @@ public class FilamentUnconnectedEdgeVariablesInfo implements ExpressionParameter
         VARIABLES.add(new JIPipeExpressionParameterVariableInfo("length", "Length", "The length of the edge"));
 
         FilamentVertexVariablesInfo source = new FilamentVertexVariablesInfo();
-        for (JIPipeExpressionParameterVariableInfo variable : source.getVariables(null, null)) {
+        for (JIPipeExpressionParameterVariableInfo variable : source.getVariables(workbench, null, null)) {
             VARIABLES.add(new JIPipeExpressionParameterVariableInfo("source." + variable.getKey(), "Source " + variable.getName(), variable.getDescription()));
             VARIABLES.add(new JIPipeExpressionParameterVariableInfo("target." + variable.getKey(), "Target " + variable.getName(), variable.getDescription()));
         }
@@ -45,7 +46,7 @@ public class FilamentUnconnectedEdgeVariablesInfo implements ExpressionParameter
     }
 
     @Override
-    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         return VARIABLES;
     }
 }

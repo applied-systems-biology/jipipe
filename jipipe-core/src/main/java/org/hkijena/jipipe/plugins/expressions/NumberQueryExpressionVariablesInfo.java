@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.expressions;
 
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 
@@ -22,7 +23,7 @@ import java.util.Set;
 /**
  * Variables for querying strings
  */
-public class NumberQueryExpressionVariablesInfo implements ExpressionParameterVariablesInfo {
+public class NumberQueryExpressionVariablesInfo implements JIPipeExpressionVariablesInfo {
     private final static Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
     static {
@@ -31,7 +32,7 @@ public class NumberQueryExpressionVariablesInfo implements ExpressionParameterVa
     }
 
     @Override
-    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         return VARIABLES;
     }
 }

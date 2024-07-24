@@ -134,7 +134,7 @@ public class IntegerRangeDesktopParameterEditorUI extends JIPipeDesktopParameter
 
     private static class IntegerRangeExpressionVariablesAnnotationImpl implements JIPipeExpressionParameterSettings {
         @Override
-        public Class<? extends ExpressionParameterVariablesInfo> variableSource() {
+        public Class<? extends JIPipeExpressionVariablesInfo> variableSource() {
             return IntegerRange.VariablesInfo.class;
         }
 

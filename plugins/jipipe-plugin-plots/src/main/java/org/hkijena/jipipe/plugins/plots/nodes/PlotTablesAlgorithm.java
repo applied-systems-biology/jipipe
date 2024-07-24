@@ -14,10 +14,7 @@
 package org.hkijena.jipipe.plugins.plots.nodes;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.ConfigureJIPipeNode;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
@@ -238,7 +235,7 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
         this.seriesName = seriesName;
     }
 
-    public static class VariablesInfo implements ExpressionParameterVariablesInfo {
+    public static class VariablesInfo implements JIPipeExpressionVariablesInfo {
 
         public static final Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
@@ -248,7 +245,7 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
         }
 
         @Override
-        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             return VARIABLES;
         }
     }

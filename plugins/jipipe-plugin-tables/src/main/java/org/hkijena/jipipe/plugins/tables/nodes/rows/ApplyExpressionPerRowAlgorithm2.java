@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.tables.nodes.rows;
 import com.google.common.primitives.Doubles;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -117,7 +118,7 @@ public class ApplyExpressionPerRowAlgorithm2 extends JIPipeSimpleIteratingAlgori
         return true;
     }
 
-    public static class VariablesInfo implements ExpressionParameterVariablesInfo {
+    public static class VariablesInfo implements JIPipeExpressionVariablesInfo {
         private final static Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
         static {
@@ -132,7 +133,7 @@ public class ApplyExpressionPerRowAlgorithm2 extends JIPipeSimpleIteratingAlgori
         }
 
         @Override
-        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             return VARIABLES;
         }
     }

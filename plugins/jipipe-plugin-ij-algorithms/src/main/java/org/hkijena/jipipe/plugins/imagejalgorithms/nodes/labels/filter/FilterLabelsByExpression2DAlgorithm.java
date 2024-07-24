@@ -17,10 +17,7 @@ import com.google.common.primitives.Ints;
 import gnu.trove.list.array.TIntArrayList;
 import ij.ImagePlus;
 import inra.ijpb.label.LabelImages;
-import org.hkijena.jipipe.api.AddJIPipeCitation;
-import org.hkijena.jipipe.api.ConfigureJIPipeNode;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
@@ -99,9 +96,9 @@ public class FilterLabelsByExpression2DAlgorithm extends JIPipeSimpleIteratingAl
         this.expression = expression;
     }
 
-    public static class VariablesInfo implements ExpressionParameterVariablesInfo {
+    public static class VariablesInfo implements JIPipeExpressionVariablesInfo {
         @Override
-        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             Set<JIPipeExpressionParameterVariableInfo> result = new HashSet<>();
             result.add(new JIPipeExpressionParameterVariableInfo("id", "Label ID", "The ID of the label (number larger than zero)"));
             result.add(new JIPipeExpressionParameterVariableInfo("all.id", "All Label IDs", "All label IDs as list"));

@@ -15,6 +15,7 @@ package org.hkijena.jipipe.plugins.expressions;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.utils.scripting.MacroUtils;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -49,6 +50,10 @@ public class JIPipeExpressionParameter extends AbstractExpressionParameter {
             }
         }
         return EVALUATOR;
+    }
+
+    public static boolean isValidVariableName(String key) {
+        return MacroUtils.isValidVariableName(key);
     }
 
     @Override

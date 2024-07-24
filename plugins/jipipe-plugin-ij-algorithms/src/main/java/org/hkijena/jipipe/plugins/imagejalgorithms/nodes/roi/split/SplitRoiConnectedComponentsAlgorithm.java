@@ -16,10 +16,7 @@ package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.split;
 import com.google.common.collect.ImmutableList;
 import ij.ImagePlus;
 import ij.gui.Roi;
-import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
-import org.hkijena.jipipe.api.ConfigureJIPipeNode;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
@@ -505,7 +502,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
         Split
     }
 
-    public static class GraphPostprocessingVariables implements ExpressionParameterVariablesInfo {
+    public static class GraphPostprocessingVariables implements JIPipeExpressionVariablesInfo {
 
         public static final Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
@@ -522,7 +519,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
         }
 
         @Override
-        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             return VARIABLES;
         }
     }

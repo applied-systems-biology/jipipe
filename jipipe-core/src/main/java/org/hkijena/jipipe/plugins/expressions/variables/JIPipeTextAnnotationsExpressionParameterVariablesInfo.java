@@ -13,10 +13,11 @@
 
 package org.hkijena.jipipe.plugins.expressions.variables;
 
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.plugins.expressions.ExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
 
 import java.util.*;
@@ -24,10 +25,10 @@ import java.util.*;
 /**
  * Adds the indication that annotations are available
  */
-public class JIPipeTextAnnotationsExpressionParameterVariablesInfo implements ExpressionParameterVariablesInfo {
+public class JIPipeTextAnnotationsExpressionParameterVariablesInfo implements JIPipeExpressionVariablesInfo {
     @Override
-    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        Map<UUID, Map<String, JIPipeDataTable>> predecessorNodeCache = ExpressionParameterVariablesInfo.findPredecessorNodeCache(parameterTree, parameterAccess);
+    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        Map<UUID, Map<String, JIPipeDataTable>> predecessorNodeCache = JIPipeExpressionVariablesInfo.findPredecessorNodeCache(parameterTree, parameterAccess);
         if (!predecessorNodeCache.isEmpty()) {
             Set<JIPipeExpressionParameterVariableInfo> variables = new HashSet<>();
             variables.add(JIPipeExpressionParameterVariableInfo.ANNOTATIONS_VARIABLE);

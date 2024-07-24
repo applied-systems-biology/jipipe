@@ -15,6 +15,7 @@ package org.hkijena.jipipe.plugins.expressions;
 
 import com.google.common.primitives.Doubles;
 import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
@@ -176,7 +177,7 @@ public class TableColumnSourceExpressionParameter extends PairParameter<TableCol
         }
     }
 
-    public static class VariablesInfo implements ExpressionParameterVariablesInfo {
+    public static class VariablesInfo implements JIPipeExpressionVariablesInfo {
         public final static Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
         static {
@@ -190,7 +191,7 @@ public class TableColumnSourceExpressionParameter extends PairParameter<TableCol
         }
 
         @Override
-        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             return VARIABLES;
         }
     }

@@ -53,7 +53,8 @@ import java.util.stream.Collectors;
         "</pre>\n\n" +
         "Using path combination: You can combine combine variables provided from annotations and expression variables to, for example, save create a path relative to the project directory or to a project user directory" +
         "<pre>PATH_COMBINE(project_dir, \"Outputs\", \"Output_file\")</pre>" +
-        "<pre>PATH_COMBINE(project_data_dirs [\"outputs\"], \"Outputs\", \"Output_file\")</pre>\n\n" +
+        "<pre>PATH_COMBINE(project_data_dirs [\"outputs\"], \"Outputs\", \"Output_file\")</pre>" +
+        "Alternative: <pre>PATH_COMBINE(project_data_dir.outputs, \"Outputs\", \"Output_file\")</pre>\n\n" +
         "Using expression functions: You can also use the standard string concatenation function to generate paths" +
         "<pre>project_dir + \"/Outputs/Output_file\"</pre>")
 public class DataExportExpressionParameter extends JIPipeExpressionParameter {
@@ -115,8 +116,13 @@ public class DataExportExpressionParameter extends JIPipeExpressionParameter {
                                     "Relative path detected",
                                     JOptionPane.YES_NO_OPTION,
                                     JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-                                return new DataExportExpressionParameter("PATH_COMBINE(project_data_dirs @ \"" + JIPipeExpressionEvaluator.escapeString(entry.getKey()) +
-                                        "\", \"" + JIPipeExpressionEvaluator.escapeString(userPath.relativize(path).toString().replace('\\', '/')) + "\")");
+                                if(JIPipeExpressionParameter.isValidVariableName(entry.getKey())) {
+                                    return new DataExportExpressionParameter("PATH_COMBINE(project_data_dir." + entry.getKey() + ", \"" + JIPipeExpressionEvaluator.escapeString(userPath.relativize(path).toString().replace('\\', '/')) + "\")");
+                                }
+                                else {
+                                    return new DataExportExpressionParameter("PATH_COMBINE(project_data_dirs @ \"" + JIPipeExpressionEvaluator.escapeString(entry.getKey()) +
+                                            "\", \"" + JIPipeExpressionEvaluator.escapeString(userPath.relativize(path).toString().replace('\\', '/')) + "\")");
+                                }
                             }
                         }
                     }

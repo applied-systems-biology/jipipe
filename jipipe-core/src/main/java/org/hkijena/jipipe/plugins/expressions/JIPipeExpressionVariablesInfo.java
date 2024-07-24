@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.plugins.expressions;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -29,7 +30,7 @@ import java.util.UUID;
 /**
  * Provides the list of available variables.
  */
-public interface ExpressionParameterVariablesInfo {
+public interface JIPipeExpressionVariablesInfo {
     /**
      * Helper method that attempts to find the underlying graph node of a parameter access and returns its cache if available
      *
@@ -38,7 +39,7 @@ public interface ExpressionParameterVariablesInfo {
      * @return the graph node caches (by predecessor node UUIDs) or an empty map
      */
     static Map<UUID, Map<String, JIPipeDataTable>> findPredecessorNodeCache(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        JIPipeGraphNode node = ExpressionParameterVariablesInfo.findNode(parameterTree, parameterAccess);
+        JIPipeGraphNode node = JIPipeExpressionVariablesInfo.findNode(parameterTree, parameterAccess);
         Map<UUID, Map<String, JIPipeDataTable>> result = new HashMap<>();
         if (node != null) {
             JIPipeProject project = node.getParentGraph().getProject();
@@ -100,9 +101,10 @@ public interface ExpressionParameterVariablesInfo {
     /**
      * Returns the list of known variables for the user interface.
      *
+     * @param workbench
      * @param parameterTree   the parameter tree that contains the access. can be null.
      * @param parameterAccess the parameter access that holds the {@link AbstractExpressionParameter} instance. can be null.
      * @return the set of variables
      */
-    Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess);
+    Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess);
 }

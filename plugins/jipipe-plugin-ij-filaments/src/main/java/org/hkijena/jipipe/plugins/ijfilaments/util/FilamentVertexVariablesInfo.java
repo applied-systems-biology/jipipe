@@ -13,9 +13,10 @@
 
 package org.hkijena.jipipe.plugins.ijfilaments.util;
 
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.plugins.expressions.ExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
@@ -23,7 +24,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import java.util.HashSet;
 import java.util.Set;
 
-public class FilamentVertexVariablesInfo implements ExpressionParameterVariablesInfo {
+public class FilamentVertexVariablesInfo implements JIPipeExpressionVariablesInfo {
 
     private static final Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
@@ -48,7 +49,7 @@ public class FilamentVertexVariablesInfo implements ExpressionParameterVariables
     }
 
     @Override
-    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         return VARIABLES;
     }
 }

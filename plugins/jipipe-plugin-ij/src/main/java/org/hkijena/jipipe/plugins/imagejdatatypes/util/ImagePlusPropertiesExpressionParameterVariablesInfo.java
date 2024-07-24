@@ -15,10 +15,11 @@ package org.hkijena.jipipe.plugins.imagejdatatypes.util;
 
 import ij.ImagePlus;
 import ij.measure.Calibration;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.plugins.expressions.ExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 
@@ -29,7 +30,7 @@ import java.util.Set;
 /**
  * Variable source that contains image statistics
  */
-public class ImagePlusPropertiesExpressionParameterVariablesInfo implements ExpressionParameterVariablesInfo {
+public class ImagePlusPropertiesExpressionParameterVariablesInfo implements JIPipeExpressionVariablesInfo {
 
     private final static Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
@@ -63,7 +64,7 @@ public class ImagePlusPropertiesExpressionParameterVariablesInfo implements Expr
     }
 
     @Override
-    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         return VARIABLES;
     }
 }

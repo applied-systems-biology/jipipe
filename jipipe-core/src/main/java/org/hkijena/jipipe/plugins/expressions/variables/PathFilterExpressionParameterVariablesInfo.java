@@ -14,9 +14,10 @@
 package org.hkijena.jipipe.plugins.expressions.variables;
 
 import com.google.common.collect.ImmutableSet;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.plugins.expressions.ExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 
@@ -24,9 +25,9 @@ import java.nio.file.Path;
 import java.util.Set;
 
 /**
- * {@link ExpressionParameterVariablesInfo} that defines one variable 'x' that references a filesystem path or file name.
+ * {@link JIPipeExpressionVariablesInfo} that defines one variable 'x' that references a filesystem path or file name.
  */
-public class PathFilterExpressionParameterVariablesInfo implements ExpressionParameterVariablesInfo {
+public class PathFilterExpressionParameterVariablesInfo implements JIPipeExpressionVariablesInfo {
     public static final JIPipeExpressionParameterVariableInfo VARIABLE_PATH = new JIPipeExpressionParameterVariableInfo("path", "Path", "The full path. Can be relative or absolute.");
     public static final JIPipeExpressionParameterVariableInfo VARIABLE_ABSPATH = new JIPipeExpressionParameterVariableInfo("absolute_path", "Absolute path", "The full absolute path.");
     public static final JIPipeExpressionParameterVariableInfo VARIABLE_NAME = new JIPipeExpressionParameterVariableInfo("name", "Name", "The file or directory name");
@@ -45,7 +46,7 @@ public class PathFilterExpressionParameterVariablesInfo implements ExpressionPar
     }
 
     @Override
-    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         return VARIABLES;
     }
 }

@@ -18,6 +18,7 @@ import gnu.trove.list.array.TDoubleArrayList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -250,7 +251,7 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
         this.maxCounter = maxCounter;
     }
 
-    public static class CounterVariablesInfo implements ExpressionParameterVariablesInfo {
+    public static class CounterVariablesInfo implements JIPipeExpressionVariablesInfo {
         private final static Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
         static {
@@ -263,12 +264,12 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
         }
 
         @Override
-        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             return VARIABLES;
         }
     }
 
-    public static class DefaultValuesVariablesInfo implements ExpressionParameterVariablesInfo {
+    public static class DefaultValuesVariablesInfo implements JIPipeExpressionVariablesInfo {
         private final static Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
         static {
@@ -282,7 +283,7 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
         }
 
         @Override
-        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             return VARIABLES;
         }
     }

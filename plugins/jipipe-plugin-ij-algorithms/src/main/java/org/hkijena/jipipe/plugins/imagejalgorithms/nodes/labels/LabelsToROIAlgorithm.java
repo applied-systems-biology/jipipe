@@ -212,10 +212,10 @@ public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    public static class VariablesInfo implements ExpressionParameterVariablesInfo {
+    public static class VariablesInfo implements JIPipeExpressionVariablesInfo {
 
         @Override
-        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             Set<JIPipeExpressionParameterVariableInfo> variables = new HashSet<>();
             variables.add(JIPipeExpressionParameterVariableInfo.ANNOTATIONS_VARIABLE);
             variables.add(new JIPipeExpressionParameterVariableInfo("index", "Label index", "The index of the label (value > 0)"));

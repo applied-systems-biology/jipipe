@@ -13,18 +13,19 @@
 
 package org.hkijena.jipipe.utils;
 
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.plugins.expressions.ExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
 
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class EnvironmentVariablesSource implements ExpressionParameterVariablesInfo {
+public class EnvironmentVariablesSource implements JIPipeExpressionVariablesInfo {
     @Override
-    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         Set<JIPipeExpressionParameterVariableInfo> result = new HashSet<>();
         for (Map.Entry<String, String> entry : System.getenv().entrySet()) {
             result.add(new JIPipeExpressionParameterVariableInfo(entry.getKey(), entry.getKey(), entry.getValue()));

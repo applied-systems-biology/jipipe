@@ -91,6 +91,11 @@ public class JIPipeExpressionVariablesMap extends HashMap<String, Object> {
                 } else {
                     projectDataDirs_.put(entry.getKey(), projectDir.resolve(entry.getValue()).toString());
                 }
+
+                // Shorthand property
+                if(JIPipeExpressionParameter.isValidVariableName(entry.getKey())) {
+                    set("project_data_dir." + entry.getKey(), projectDataDirs_.get(entry.getKey()));
+                }
             }
         }
         set("project_data_dirs", projectDataDirs_);

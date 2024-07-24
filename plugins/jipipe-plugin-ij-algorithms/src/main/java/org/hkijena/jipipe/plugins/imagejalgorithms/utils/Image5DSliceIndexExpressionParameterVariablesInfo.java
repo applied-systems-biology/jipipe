@@ -14,9 +14,10 @@
 package org.hkijena.jipipe.plugins.imagejalgorithms.utils;
 
 import ij.ImagePlus;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.plugins.expressions.ExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
@@ -24,7 +25,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Image5DSliceIndexExpressionParameterVariablesInfo implements ExpressionParameterVariablesInfo {
+public class Image5DSliceIndexExpressionParameterVariablesInfo implements JIPipeExpressionVariablesInfo {
     public static void apply(JIPipeExpressionVariablesMap target, ImagePlus img, ImageSliceIndex index) {
         target.set("width", img.getWidth());
         target.set("height", img.getHeight());
@@ -38,7 +39,7 @@ public class Image5DSliceIndexExpressionParameterVariablesInfo implements Expres
     }
 
     @Override
-    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         Set<JIPipeExpressionParameterVariableInfo> result = new HashSet<>();
         result.add(new JIPipeExpressionParameterVariableInfo("width", "Image width", "The width of the image"));
         result.add(new JIPipeExpressionParameterVariableInfo("height", "Image height", "The height of the image"));

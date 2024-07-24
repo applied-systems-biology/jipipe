@@ -33,13 +33,13 @@ public @interface JIPipeExpressionParameterSettings {
      * The variable source instance has access to the {@link org.hkijena.jipipe.api.parameters.JIPipeParameterAccess}.
      * <p>
      * New: You can use as alternative multiple {@link AddJIPipeExpressionParameterVariable} annotations that also support inheritance from the field class and
-     * merging of multiple {@link ExpressionParameterVariablesInfo} instances.
+     * merging of multiple {@link JIPipeExpressionVariablesInfo} instances.
      * </p>
      *
      * @return the variable source class
      */
     @Deprecated
-    Class<? extends ExpressionParameterVariablesInfo> variableSource() default UndefinedExpressionParameterVariablesInfo.class;
+    Class<? extends JIPipeExpressionVariablesInfo> variableSource() default UndefinedExpressionParameterVariablesInfo.class;
 
     /**
      * Hint displayed in the UI.

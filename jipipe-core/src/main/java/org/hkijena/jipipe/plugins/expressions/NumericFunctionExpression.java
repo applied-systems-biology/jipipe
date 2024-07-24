@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.expressions;
 
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 
@@ -63,7 +64,7 @@ public class NumericFunctionExpression extends JIPipeExpressionParameter {
         setExpression(value + "");
     }
 
-    public static class VariablesInfo implements ExpressionParameterVariablesInfo {
+    public static class VariablesInfo implements JIPipeExpressionVariablesInfo {
 
         private static final Set<JIPipeExpressionParameterVariableInfo> VARIABLES = new HashSet<>();
 
@@ -74,7 +75,7 @@ public class NumericFunctionExpression extends JIPipeExpressionParameter {
         }
 
         @Override
-        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             return VARIABLES;
         }
     }

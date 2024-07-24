@@ -21,8 +21,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Alternative to creating an {@link ExpressionParameterVariablesInfo} class and attaching it to {@link JIPipeExpressionParameterSettings}.
- * If an {@link ExpressionParameterVariablesInfo} is provided, this variable is merged into the list of variables.
+ * Alternative to creating an {@link JIPipeExpressionVariablesInfo} class and attaching it to {@link JIPipeExpressionParameterSettings}.
+ * If an {@link JIPipeExpressionVariablesInfo} is provided, this variable is merged into the list of variables.
  * You can leave name(), description() and key() empty if you provide fromClass()
  */
 @Retention(RetentionPolicy.RUNTIME)
@@ -35,5 +35,5 @@ public @interface AddJIPipeExpressionParameterVariable {
 
     String key() default "";
 
-    Class<? extends ExpressionParameterVariablesInfo> fromClass() default UndefinedExpressionParameterVariablesInfo.class;
+    Class<? extends JIPipeExpressionVariablesInfo> fromClass() default UndefinedExpressionParameterVariablesInfo.class;
 }

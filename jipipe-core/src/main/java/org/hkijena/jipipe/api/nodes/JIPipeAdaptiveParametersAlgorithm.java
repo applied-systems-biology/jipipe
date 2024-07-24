@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
-import org.hkijena.jipipe.plugins.expressions.ExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
@@ -95,7 +95,7 @@ public interface JIPipeAdaptiveParametersAlgorithm extends JIPipeParameterCollec
                             }
 
                             @Override
-                            public Class<? extends ExpressionParameterVariablesInfo> fromClass() {
+                            public Class<? extends JIPipeExpressionVariablesInfo> fromClass() {
                                 return JIPipeAdaptiveParameterSettings.VariablesInfo.class;
                             }
                         })

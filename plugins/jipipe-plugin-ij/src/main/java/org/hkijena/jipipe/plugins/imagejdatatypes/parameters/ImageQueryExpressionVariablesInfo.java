@@ -14,16 +14,17 @@
 package org.hkijena.jipipe.plugins.imagejdatatypes.parameters;
 
 import ij.ImagePlus;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.plugins.expressions.ExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class ImageQueryExpressionVariablesInfo implements ExpressionParameterVariablesInfo {
+public class ImageQueryExpressionVariablesInfo implements JIPipeExpressionVariablesInfo {
     private final static Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
     static {
@@ -70,7 +71,7 @@ public class ImageQueryExpressionVariablesInfo implements ExpressionParameterVar
     }
 
     @Override
-    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         return VARIABLES;
     }
 }
