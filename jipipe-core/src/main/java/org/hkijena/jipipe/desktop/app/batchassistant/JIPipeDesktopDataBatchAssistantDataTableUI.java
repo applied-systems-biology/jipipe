@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopDataInfoCellRenderer;
-import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopDataTableRowUI;
+import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopDataTableRowDisplayUtil;
 import org.hkijena.jipipe.desktop.app.cache.exporters.JIPipeDesktopDataExporterRun;
 import org.hkijena.jipipe.desktop.app.cache.exporters.JIPipeDesktopDataTableToFilesByMetadataExporterRun;
 import org.hkijena.jipipe.desktop.app.cache.exporters.JIPipeDesktopDataTableToOutputExporterRun;
@@ -444,7 +444,7 @@ public class JIPipeDesktopDataBatchAssistantDataTableUI extends JIPipeDesktopWor
     private void handleSlotRowDefaultAction(int selectedRow, int selectedColumn) {
         int row = table.getRowSorter().convertRowIndexToModel(selectedRow);
         int dataAnnotationColumn = selectedColumn >= 0 ? dataTableModel.toDataAnnotationColumnIndex(table.convertColumnIndexToModel(selectedColumn)) : -1;
-        JIPipeDesktopDataTableRowUI rowUI = new JIPipeDesktopDataTableRowUI(getDesktopWorkbench(), new WeakStore<>(dataTable), row);
+        JIPipeDesktopDataTableRowDisplayUtil rowUI = new JIPipeDesktopDataTableRowDisplayUtil(getDesktopWorkbench(), new WeakStore<>(dataTable), row);
         rowUI.handleDefaultActionOrDisplayDataAnnotation(dataAnnotationColumn);
     }
 
@@ -493,15 +493,6 @@ public class JIPipeDesktopDataBatchAssistantDataTableUI extends JIPipeDesktopWor
             panel.add(UIUtils.createPopupHelpButton("There are iteration steps multiple data items are assigned to one slot. " +
                     "If this is unexpected, please check the annotations in the 'Input data' section to find out why this is the case."), BorderLayout.EAST);
             rowUIList.addWideToForm(panel);
-        }
-
-        for (int viewRow : selectedRows) {
-            int row = table.getRowSorter().convertRowIndexToModel(viewRow);
-            JLabel nameLabel = new JLabel("Iteration step " + row);
-            JIPipeDesktopDataTableRowUI rowUI = new JIPipeDesktopDataTableRowUI(getDesktopWorkbench(), new WeakStore<>(dataTable), row);
-            rowUI.getDataAnnotationsButton().setText("Slots ...");
-            rowUI.getDataAnnotationsButton().setIcon(UIUtils.getIconFromResources("data-types/slot.png"));
-            rowUIList.addToForm(rowUI, nameLabel, null);
         }
     }
 

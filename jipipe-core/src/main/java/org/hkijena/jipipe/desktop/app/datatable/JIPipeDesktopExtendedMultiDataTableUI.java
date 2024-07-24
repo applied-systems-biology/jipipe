@@ -30,7 +30,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopDataInfoCellRenderer;
-import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopDataTableRowUI;
+import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopDataTableRowDisplayUtil;
 import org.hkijena.jipipe.desktop.app.cache.exporters.JIPipeDesktopDataExporterRun;
 import org.hkijena.jipipe.desktop.app.cache.exporters.JIPipeDesktopDataTableToFilesByMetadataExporterRun;
 import org.hkijena.jipipe.desktop.app.cache.exporters.JIPipeDesktopDataTableToOutputExporterRun;
@@ -90,7 +90,7 @@ public class JIPipeDesktopExtendedMultiDataTableUI extends JIPipeDesktopWorkbenc
     private final JIPipeDesktopSearchTextField searchTextField = new JIPipeDesktopSearchTextField();
     private final JIPipeDesktopRibbon ribbon = new JIPipeDesktopRibbon(2);
     private final JIPipeDesktopExtendedMultiDataTableModel multiSlotTable;
-    private JIPipeDesktopFormPanel rowUIList;
+    private final JLabel infoLabel = new JLabel();
 
     /**
      * @param workbenchUI                 the workbench UI
@@ -106,7 +106,7 @@ public class JIPipeDesktopExtendedMultiDataTableUI extends JIPipeDesktopWorkbenc
         this.multiSlotTable = new JIPipeDesktopExtendedMultiDataTableModel(table, withCompartmentAndAlgorithm);
         JIPipeProject project = null;
         if (getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
-            project = ((JIPipeDesktopProjectWorkbench) getDesktopWorkbench()).getProject();
+            project = getDesktopWorkbench().getProject();
         }
         for (Store<JIPipeDataTable> dataTable : dataTableStores) {
             multiSlotTable.add(project, dataTable);
@@ -115,7 +115,7 @@ public class JIPipeDesktopExtendedMultiDataTableUI extends JIPipeDesktopWorkbenc
         initialize();
         reloadTable();
         if (getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
-            ((JIPipeDesktopProjectWorkbench) getDesktopWorkbench()).getProject().getCache().getModifiedEventEmitter().subscribeWeak(this);
+            getDesktopWorkbench().getProject().getCache().getModifiedEventEmitter().subscribeWeak(this);
         }
         updateStatus();
         JIPipeGeneralDataApplicationSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(this);
@@ -180,9 +180,6 @@ public class JIPipeDesktopExtendedMultiDataTableUI extends JIPipeDesktopWorkbenc
             }
         });
 
-        rowUIList = new JIPipeDesktopFormPanel(null, JIPipeDesktopParameterPanel.WITH_SCROLLING);
-        add(rowUIList, BorderLayout.SOUTH);
-
         // Menu/Toolbar
         JPanel menuContainerPanel = new JPanel();
         menuContainerPanel.setLayout(new BoxLayout(menuContainerPanel, BoxLayout.Y_AXIS));
@@ -193,6 +190,10 @@ public class JIPipeDesktopExtendedMultiDataTableUI extends JIPipeDesktopWorkbenc
 
         // Search toolbar
         initializeToolbar(menuContainerPanel);
+
+        // Add info label
+        infoLabel.setBorder(UIUtils.createEmptyBorder(4));
+        add(infoLabel, BorderLayout.SOUTH);
     }
 
     private void showContextMenu(MouseEvent e) {
@@ -586,7 +587,7 @@ public class JIPipeDesktopExtendedMultiDataTableUI extends JIPipeDesktopWorkbenc
                 String name = multiSlotTable.getDataAnnotationColumns().get(multiDataAnnotationColumn);
                 dataAnnotationColumn = slot.getDataAnnotationColumnNames().indexOf(name);
             }
-            JIPipeDesktopDataTableRowUI rowUI = new JIPipeDesktopDataTableRowUI(getDesktopWorkbench(), slotStore, row);
+            JIPipeDesktopDataTableRowDisplayUtil rowUI = new JIPipeDesktopDataTableRowDisplayUtil(getDesktopWorkbench(), slotStore, row);
             rowUI.handleDefaultActionOrDisplayDataAnnotation(dataAnnotationColumn);
 //        slot.getData(row, JIPipeData.class).display(slot.getNode().getName() + "/" + slot.getName() + "/" + row, getWorkbench());
         } else {
@@ -595,7 +596,6 @@ public class JIPipeDesktopExtendedMultiDataTableUI extends JIPipeDesktopWorkbenc
     }
 
     private void showDataRows(int[] selectedRows) {
-        rowUIList.clear();
 
         List<JIPipeDataTable> dataTables = new ArrayList<>();
         for (Store<JIPipeDataTable> dataTableReference : dataTableStores) {
@@ -606,29 +606,9 @@ public class JIPipeDesktopExtendedMultiDataTableUI extends JIPipeDesktopWorkbenc
             dataTables.add(dataTable);
         }
 
-        JLabel infoLabel = new JLabel();
+
         int rowCount = dataTables.stream().mapToInt(JIPipeDataTable::getRowCount).sum();
         infoLabel.setText(rowCount + " rows" + (dataTables.size() > 1 ? " across " + dataTables.size() + " tables" : "") + (selectedRows.length > 0 ? ", " + selectedRows.length + " selected" : ""));
-        infoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        rowUIList.addWideToForm(infoLabel, null);
-
-        for (int viewRow : selectedRows) {
-            int multiRow = table.getRowSorter().convertRowIndexToModel(viewRow);
-            Store<JIPipeDataTable> slotStore = multiSlotTable.getSlotStore(multiRow);
-            if (slotStore.isPresent()) {
-                JIPipeDataTable slot = slotStore.get();
-                int row = multiSlotTable.getRow(multiRow);
-                Class<? extends JIPipeData> dataClass = slot.getDataClass(row);
-                String name = slot.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "") + "/" +
-                        slot.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "") + "/" + row;
-                JLabel nameLabel = new JLabel(name, JIPipe.getDataTypes().getIconFor(dataClass), JLabel.LEFT);
-                nameLabel.setToolTipText(TooltipUtils.getDataTableTooltip(slot));
-                JIPipeDesktopDataTableRowUI JIPipeDataTableRowUI = new JIPipeDesktopDataTableRowUI(getDesktopWorkbench(), slotStore, row);
-                rowUIList.addToForm(JIPipeDataTableRowUI, nameLabel, null);
-            } else {
-                throw new RuntimeException("Data was already cleared!");
-            }
-        }
     }
 
     /**

@@ -27,7 +27,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopDataInfoCellRenderer;
-import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopDataTableRowUI;
+import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopDataTableRowDisplayUtil;
 import org.hkijena.jipipe.desktop.app.cache.exporters.JIPipeDesktopDataExporterRun;
 import org.hkijena.jipipe.desktop.app.resultanalysis.renderers.JIPipeDesktopAnnotationTableCellRenderer;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
@@ -287,7 +287,7 @@ public class JIPipeDesktopDataTracerDataTableUI extends JIPipeDesktopWorkbenchPa
         if (dataTable != null) {
             int row = table.getRowSorter().convertRowIndexToModel(selectedRow);
             int dataAnnotationColumn = selectedColumn >= 0 ? dataTableModel.toDataAnnotationColumnIndex(table.convertColumnIndexToModel(selectedColumn)) : -1;
-            JIPipeDesktopDataTableRowUI rowUI = new JIPipeDesktopDataTableRowUI(getDesktopWorkbench(), dataTableStore, row);
+            JIPipeDesktopDataTableRowDisplayUtil rowUI = new JIPipeDesktopDataTableRowDisplayUtil(getDesktopWorkbench(), dataTableStore, row);
             rowUI.handleDefaultActionOrDisplayDataAnnotation(dataAnnotationColumn);
         }
     }

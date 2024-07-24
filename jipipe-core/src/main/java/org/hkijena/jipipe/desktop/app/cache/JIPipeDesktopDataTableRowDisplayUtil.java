@@ -16,6 +16,7 @@ package org.hkijena.jipipe.desktop.app.cache;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -28,11 +29,10 @@ import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.desktop.app.datatracer.JIPipeDesktopDataTracerUI;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionEvaluator;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.DynamicDataDisplayOperationIdEnumParameter;
 import org.hkijena.jipipe.plugins.settings.JIPipeDefaultCacheDisplayApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
@@ -42,10 +42,8 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.Store;
 import org.hkijena.jipipe.utils.data.WeakStore;
-import org.hkijena.jipipe.utils.scripting.MacroUtils;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
@@ -59,13 +57,12 @@ import java.util.Objects;
 /**
  * UI for a row
  */
-public class JIPipeDesktopDataTableRowUI extends JIPipeDesktopWorkbenchPanel {
+public class JIPipeDesktopDataTableRowDisplayUtil implements JIPipeDesktopWorkbenchAccess {
+    private final JIPipeDesktopWorkbench workbench;
     private final Store<JIPipeDataTable> dataTableStore;
     private final int row;
     private final List<Store<JIPipeDataAnnotation>> dataAnnotationStores;
     private final List<JIPipeDataDisplayOperation> displayOperations;
-    private JButton dataAnnotationsButton;
-    private JButton textAnnotationsButton;
 
     /**
      * Creates a new instance
@@ -74,8 +71,8 @@ public class JIPipeDesktopDataTableRowUI extends JIPipeDesktopWorkbenchPanel {
      * @param dataTableStore the data table store
      * @param row            the row
      */
-    public JIPipeDesktopDataTableRowUI(JIPipeDesktopWorkbench workbench, Store<JIPipeDataTable> dataTableStore, int row) {
-        super(workbench);
+    public JIPipeDesktopDataTableRowDisplayUtil(JIPipeDesktopWorkbench workbench, Store<JIPipeDataTable> dataTableStore, int row) {
+        this.workbench = workbench;
         this.dataTableStore = dataTableStore;
         this.row = row;
         this.dataAnnotationStores = new ArrayList<>();
@@ -85,7 +82,6 @@ public class JIPipeDesktopDataTableRowUI extends JIPipeDesktopWorkbenchPanel {
         Class<? extends JIPipeData> dataClass = dataTableStore.get().getDataClass(row);
         String datatypeId = JIPipe.getInstance().getDatatypeRegistry().getIdOf(dataClass);
         displayOperations = JIPipe.getInstance().getDatatypeRegistry().getSortedDisplayOperationsFor(datatypeId);
-        this.initialize(dataTableStore.get());
     }
 
     public static JIPipeDataDisplayOperation getMainOperation(Class<? extends JIPipeData> dataClass) {
@@ -111,131 +107,17 @@ public class JIPipeDesktopDataTableRowUI extends JIPipeDesktopWorkbenchPanel {
         return null;
     }
 
-    private void initialize(JIPipeDataTable dataTable) {
-
-        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-        add(Box.createHorizontalGlue());
-
-        if (getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
-            JButton traceButton = new JButton("Trace ...", UIUtils.getIconFromResources("actions/footsteps.png"));
-            traceButton.addActionListener(e -> traceData());
-            add(traceButton);
-        }
-
-        if (!dataAnnotationStores.isEmpty()) {
-            dataAnnotationsButton = new JButton("Data annotations ...", UIUtils.getIconFromResources("data-types/data-annotation.png"));
-            JPopupMenu menu = UIUtils.addPopupMenuToButton(dataAnnotationsButton);
-
-            for (Store<JIPipeDataAnnotation> store : dataAnnotationStores) {
-                JMenu subMenu = new JMenu(store.get().getName());
-                subMenu.setIcon(JIPipe.getDataTypes().getIconFor(store.get().getDataClass()));
-                String datatypeId = JIPipe.getInstance().getDatatypeRegistry().getIdOf(store.get().getDataClass());
-                List<JIPipeDataDisplayOperation> displayOperations = JIPipe.getInstance().getDatatypeRegistry().getSortedDisplayOperationsFor(datatypeId);
-                for (JIPipeDataDisplayOperation displayOperation : displayOperations) {
-                    JMenuItem item = new JMenuItem(displayOperation.getName(), displayOperation.getIcon());
-                    item.setToolTipText(displayOperation.getDescription());
-                    item.addActionListener(e -> {
-                        runDisplayOperation(displayOperation, store.get());
-                    });
-                    subMenu.add(item);
-                }
-                menu.add(subMenu);
-            }
-
-            add(dataAnnotationsButton);
-        }
-
-        List<JIPipeTextAnnotation> textAnnotations = dataTable.getTextAnnotations(row);
-        if (!textAnnotations.isEmpty()) {
-            textAnnotationsButton = new JButton("Annotations ...", UIUtils.getIconFromResources("data-types/annotation.png"));
-            JPopupMenu annotationMenu = UIUtils.addPopupMenuToButton(textAnnotationsButton);
-            {
-                JMenuItem toTableItem = new JMenuItem("Display as table", UIUtils.getIconFromResources("data-types/results-table.png"));
-                toTableItem.addActionListener(e -> displayAnnotationsAsTable(textAnnotations));
-                annotationMenu.add(toTableItem);
-            }
-            for (JIPipeTextAnnotation annotation : textAnnotations) {
-                JMenu entryMenu = new JMenu(annotation.getName());
-                entryMenu.setIcon(UIUtils.getIconFromResources("data-types/annotation.png"));
-
-                JMenuItem valueItem = new JMenuItem(StringUtils.nullToEmpty(annotation.getValue()), UIUtils.getIconFromResources("actions/equals.png"));
-                valueItem.setEnabled(false);
-                entryMenu.add(valueItem);
-
-                entryMenu.addSeparator();
-
-                JMenuItem copyAnnotationNameItem = new JMenuItem("Copy name", UIUtils.getIconFromResources("actions/edit-copy.png"));
-                copyAnnotationNameItem.addActionListener(e -> UIUtils.copyToClipboard(annotation.getName()));
-                entryMenu.add(copyAnnotationNameItem);
-
-                JMenuItem copyAnnotationNameAsVariableItem = new JMenuItem("Copy name as expression variable", UIUtils.getIconFromResources("actions/edit-copy.png"));
-                copyAnnotationNameAsVariableItem.addActionListener(e -> UIUtils.copyToClipboard(JIPipeExpressionEvaluator.escapeVariable(annotation.getName())));
-                entryMenu.add(copyAnnotationNameAsVariableItem);
-
-                JMenuItem copyAnnotationValueItem = new JMenuItem("Copy value", UIUtils.getIconFromResources("actions/edit-copy.png"));
-                copyAnnotationValueItem.addActionListener(e -> UIUtils.copyToClipboard(annotation.getValue()));
-                entryMenu.add(copyAnnotationValueItem);
-
-                String filterExpression = annotation.getName() + " == " + "\"" + MacroUtils.escapeString(annotation.getValue()) + "\"";
-                JMenuItem copyAnnotationAsFilter = new JMenuItem("Copy as filter", UIUtils.getIconFromResources("actions/filter.png"));
-                copyAnnotationAsFilter.addActionListener(e -> UIUtils.copyToClipboard(filterExpression));
-                entryMenu.add(copyAnnotationAsFilter);
-
-                annotationMenu.add(entryMenu);
-            }
-            add(textAnnotationsButton);
-        }
-
-        JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/document-export.png"));
-        JPopupMenu exportMenu = UIUtils.addPopupMenuToButton(exportButton);
-
-        exportMenu.add(UIUtils.createMenuItem("Copy string representation",
-                "Copies the string representation of the data",
-                UIUtils.getIconFromResources("actions/edit-copy.png"),
-                this::copyString));
-        exportMenu.addSeparator();
-
-        JMenuItem exportToFolderItem = new JMenuItem("Export to folder", UIUtils.getIconFromResources("actions/download.png"));
-        exportToFolderItem.setToolTipText("Saves the data to a folder. If multiple files are present, the names will be generated according to the selected name.");
-        exportToFolderItem.addActionListener(e -> exportToFolder());
-        exportMenu.add(exportToFolderItem);
-
-        JMenuItem exportAsFolderItem = new JMenuItem("Export as folder", UIUtils.getIconFromResources("actions/folder-new.png"));
-        exportAsFolderItem.setToolTipText("Saves the data into a new folder. Files will be named according to the data type standard.");
-        exportAsFolderItem.addActionListener(e -> exportAsFolder());
-        exportMenu.add(exportAsFolderItem);
-
-        add(exportButton);
-
-        if (!displayOperations.isEmpty()) {
-            JIPipeDataDisplayOperation mainOperation = getMainOperation();
-            if (mainOperation == null)
-                return;
-            JButton mainActionButton = new JButton(mainOperation.getName(), mainOperation.getIcon());
-            mainActionButton.setToolTipText(mainOperation.getDescription());
-            mainActionButton.addActionListener(e -> runDisplayOperation(mainOperation));
-            add(mainActionButton);
-
-            if (displayOperations.size() > 1) {
-                JButton menuButton = new JButton("Open with ...");
-                menuButton.setMaximumSize(new Dimension(1, (int) mainActionButton.getPreferredSize().getHeight()));
-                menuButton.setToolTipText("Shows more actions to display the data. On selecting an entry, " +
-                        "it becomes the default action.");
-                JPopupMenu menu = UIUtils.addPopupMenuToButton(menuButton);
-                for (JIPipeDataDisplayOperation otherSlotAction : displayOperations) {
-                    if (otherSlotAction == mainOperation)
-                        continue;
-                    JMenuItem item = new JMenuItem(otherSlotAction.getName(), otherSlotAction.getIcon());
-                    item.setToolTipText(otherSlotAction.getDescription());
-                    item.addActionListener(e -> runDisplayOperation(otherSlotAction));
-                    menu.add(item);
-                }
-                add(menuButton);
-            }
-        }
+    @Override
+    public JIPipeDesktopWorkbench getDesktopWorkbench() {
+        return workbench;
     }
 
-    private void traceData() {
+    @Override
+    public JIPipeWorkbench getWorkbench() {
+        return workbench;
+    }
+
+    public void traceData() {
         if (dataTableStore.isPresent()) {
             JIPipeDataTable dataTable = dataTableStore.get();
             JIPipeDataContext dataContext = dataTable.getDataContext(row);
@@ -243,7 +125,7 @@ public class JIPipeDesktopDataTableRowUI extends JIPipeDesktopWorkbenchPanel {
         }
     }
 
-    private void displayAnnotationsAsTable(List<JIPipeTextAnnotation> textAnnotations) {
+    public void displayAnnotationsAsTable(List<JIPipeTextAnnotation> textAnnotations) {
         if (dataTableStore.isPresent()) {
             JIPipeDataTable dataTable = dataTableStore.get();
             ResultsTableData data = new ResultsTableData();
@@ -261,7 +143,7 @@ public class JIPipeDesktopDataTableRowUI extends JIPipeDesktopWorkbenchPanel {
         }
     }
 
-    private void exportAsFolder() {
+    public void exportAsFolder() {
         if (dataTableStore.isPresent()) {
             JIPipeDataTable dataTable = dataTableStore.get();
             Path path = JIPipeFileChooserApplicationSettings.saveDirectory(getDesktopWorkbench().getWindow(),
@@ -280,7 +162,7 @@ public class JIPipeDesktopDataTableRowUI extends JIPipeDesktopWorkbenchPanel {
         }
     }
 
-    private void exportToFolder() {
+    public void exportToFolder() {
         JIPipeDataTable dataTable = dataTableStore.get();
         if (dataTable != null) {
             Path path = JIPipeFileChooserApplicationSettings.saveFile(getDesktopWorkbench().getWindow(),
@@ -294,10 +176,10 @@ public class JIPipeDesktopDataTableRowUI extends JIPipeDesktopWorkbenchPanel {
         }
     }
 
-    private void runDisplayOperation(JIPipeDataDisplayOperation operation, JIPipeDataAnnotation dataAnnotation) {
+    public void runDisplayOperation(JIPipeDataDisplayOperation operation, JIPipeDataAnnotation dataAnnotation) {
         JIPipeDataTable dataTable = dataTableStore.get();
         if (dataTable != null) {
-            try (BusyCursor cursor = new BusyCursor(this)) {
+            try (BusyCursor cursor = new BusyCursor(getDesktopWorkbench().getWindow())) {
                 JIPipeData data = dataAnnotation.getData(JIPipeData.class, new JIPipeProgressInfo());
                 String displayName;
                 String nodeName = dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "");
@@ -312,16 +194,16 @@ public class JIPipeDesktopDataTableRowUI extends JIPipeDesktopWorkbenchPanel {
         }
     }
 
-    private void runDisplayOperation(JIPipeDataDisplayOperation operation) {
+    public void runDisplayOperation(JIPipeDataDisplayOperation operation) {
         JIPipeDataTable dataTable = dataTableStore.get();
         if (dataTable != null) {
-            try (BusyCursor cursor = new BusyCursor(this)) {
+            try (BusyCursor cursor = new BusyCursor(getDesktopWorkbench().getWindow())) {
                 operation.display(dataTable, row, getDesktopWorkbench(), true);
             }
         }
     }
 
-    private JIPipeDataDisplayOperation getMainOperation() {
+    public JIPipeDataDisplayOperation getMainOperation() {
         JIPipeDataTable dataTable = dataTableStore.get();
         if (dataTable != null) {
             if (!displayOperations.isEmpty()) {
@@ -344,14 +226,6 @@ public class JIPipeDesktopDataTableRowUI extends JIPipeDesktopWorkbenchPanel {
             }
         }
         return null;
-    }
-
-    public JButton getDataAnnotationsButton() {
-        return dataAnnotationsButton;
-    }
-
-    public JButton getTextAnnotationsButton() {
-        return textAnnotationsButton;
     }
 
     public JIPipeDataTable getDataTable() {
@@ -399,7 +273,7 @@ public class JIPipeDesktopDataTableRowUI extends JIPipeDesktopWorkbenchPanel {
         }
     }
 
-    private void copyString() {
+    public void copyString() {
         JIPipeDataTable dataTable = dataTableStore.get();
         if (dataTable != null) {
             String string = "" + dataTable.getData(row, JIPipeData.class, new JIPipeProgressInfo());

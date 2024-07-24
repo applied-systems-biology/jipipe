@@ -27,7 +27,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopDataInfoCellRenderer;
-import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopDataTableRowUI;
+import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopDataTableRowDisplayUtil;
 import org.hkijena.jipipe.desktop.app.cache.exporters.JIPipeDesktopDataExporterRun;
 import org.hkijena.jipipe.desktop.app.cache.exporters.JIPipeDesktopDataTableToFilesByMetadataExporterRun;
 import org.hkijena.jipipe.desktop.app.cache.exporters.JIPipeDesktopDataTableToOutputExporterRun;
@@ -84,7 +84,7 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
     private final JIPipeDesktopRibbon ribbon = new JIPipeDesktopRibbon(2);
     private Store<JIPipeDataTable> dataTableStore;
     private JXTable table;
-    private JIPipeDesktopFormPanel rowUIList;
+    private final JLabel infoLabel = new JLabel();
     private JIPipeDesktopExtendedDataTableModel dataTableModel;
     private JScrollPane scrollPane;
 
@@ -172,8 +172,9 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
             }
         });
 
-        rowUIList = new JIPipeDesktopFormPanel(null, JIPipeDesktopParameterPanel.WITH_SCROLLING);
-        add(rowUIList, BorderLayout.SOUTH);
+        // Add info label
+        infoLabel.setBorder(UIUtils.createEmptyBorder(4));
+        add(infoLabel, BorderLayout.SOUTH);
 
         // Menu/Toolbar
         JPanel menuContainerPanel = new JPanel();
@@ -509,37 +510,19 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
         if (dataTable != null) {
             int row = table.getRowSorter().convertRowIndexToModel(selectedRow);
             int dataAnnotationColumn = selectedColumn >= 0 ? dataTableModel.toDataAnnotationColumnIndex(table.convertColumnIndexToModel(selectedColumn)) : -1;
-            JIPipeDesktopDataTableRowUI rowUI = new JIPipeDesktopDataTableRowUI(getDesktopWorkbench(), dataTableStore, row);
+            JIPipeDesktopDataTableRowDisplayUtil rowUI = new JIPipeDesktopDataTableRowDisplayUtil(getDesktopWorkbench(), dataTableStore, row);
             rowUI.handleDefaultActionOrDisplayDataAnnotation(dataAnnotationColumn);
         }
     }
 
     private void showDataRows(int[] selectedRows) {
 
-        rowUIList.clear();
-
         JIPipeDataTable dataTable = dataTableStore.get();
         if (dataTable != null) {
-
-            JLabel infoLabel = new JLabel();
             infoLabel.setText(dataTable.getRowCount() + " rows" + (selectedRows.length > 0 ? ", " + selectedRows.length + " selected" : ""));
-            infoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-            rowUIList.addWideToForm(infoLabel, null);
-
-            for (int viewRow : selectedRows) {
-                int row = table.getRowSorter().convertRowIndexToModel(viewRow);
-                String name;
-                String nodeName = dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "");
-                if (!StringUtils.isNullOrEmpty(nodeName))
-                    name = nodeName + "/" + dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "") + "/" + row;
-                else
-                    name = dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "") + "/" + row;
-                JLabel nameLabel = new JLabel(name, JIPipe.getDataTypes().getIconFor(dataTable.getAcceptedDataType()), JLabel.LEFT);
-                nameLabel.setToolTipText(TooltipUtils.getDataTableTooltip(dataTable));
-                JIPipeDesktopDataTableRowUI rowUI = new JIPipeDesktopDataTableRowUI(getDesktopWorkbench(), dataTableStore, row);
-                rowUIList.addToForm(rowUI, nameLabel, null);
-            }
-
+        }
+        else {
+            infoLabel.setText("No data available");
         }
     }
 

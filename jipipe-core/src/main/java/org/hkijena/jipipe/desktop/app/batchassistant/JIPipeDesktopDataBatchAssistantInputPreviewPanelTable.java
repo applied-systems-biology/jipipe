@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.sources.JIPipeWeakDataTableDataSource;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
-import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopDataTableRowUI;
+import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopDataTableRowDisplayUtil;
 import org.hkijena.jipipe.desktop.app.datatracer.JIPipeDesktopDataTracerUI;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
 import org.hkijena.jipipe.plugins.tables.datatypes.AnnotationTableData;
@@ -291,7 +291,7 @@ public class JIPipeDesktopDataBatchAssistantInputPreviewPanelTable extends JPane
                 JIPipeDataTable dataTable = dataSource.getDataTable();
                 if (dataTable != null) {
                     JIPipeData data = dataTable.getData(dataSource.getRow(), JIPipeData.class, new JIPipeProgressInfo());
-                    JIPipeDataDisplayOperation mainOperation = JIPipeDesktopDataTableRowUI.getMainOperation(data.getClass());
+                    JIPipeDataDisplayOperation mainOperation = JIPipeDesktopDataTableRowDisplayUtil.getMainOperation(data.getClass());
                     if (mainOperation != null) {
                         mainOperation.display(dataTable, dataSource.getRow(), previewPanel.getDesktopWorkbench(), false);
                     } else {

@@ -2221,6 +2221,10 @@ public class UIUtils {
                         BorderFactory.createEmptyBorder(3, 3, 3, 3)));
     }
 
+    public static Border createEmptyBorder(int i) {
+        return BorderFactory.createEmptyBorder(i,i,i,i);
+    }
+
 
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {
         private final Component component;
