@@ -33,6 +33,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJLogWrapper;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
@@ -119,7 +120,8 @@ public class CornerHarris2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ROI2DListData overlay = new ROI2DListData();
         ResultsTableData results = new ResultsTableData();
 
-        ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
+        ImageJUtils.forEachIndexedZCTSliceWithProgress(inputImage, (ip, index, sliceProgress) -> {
+            OrientationJLogWrapper log = new OrientationJLogWrapper(sliceProgress);
             OrientationParameters params = new OrientationParameters(OrientationService.HARRIS);
 
             // Pass structure tensor settings
@@ -141,11 +143,18 @@ public class CornerHarris2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
             // Apply algorithm
             ImageWare source = Builder.create(new ImagePlus("slice", ip));
-            WalkBarOrientationJ walk = new WalkBarOrientationJ();
-            OrientationProcess process = new OrientationProcess(walk, source, params);
-            process.run();
+            GroupImage groupImage = new GroupImage(log, source, params);
 
-            GroupImage groupImage = process.getGroupImage();
+            if (params.gradient == OrientationParameters.HESSIAN) {
+                new Hessian(log, groupImage, params).run();
+            } else {
+                new Gradient(log, groupImage, params).run();
+            }
+
+            StructureTensor st = new StructureTensor(log, groupImage, params);
+            st.run();
+
+            // Extract results
             extractHarris(groupImage, params, index, results, overlay);
 
             if(outputParameters.outputEnergy) {
