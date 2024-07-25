@@ -518,6 +518,11 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                         "Erik",
                         "Meijering",
                         new StringList("School of Computer Science and Engineering & Graduate School of Biomedical Engineering, University of New South Wales, Sydney, Australia"),
+                        "", "", true, true),
+                new JIPipeAuthorMetadata("",
+                        "Daniel",
+                        "Sage",
+                        new StringList("Biomedical Image Group (BIG), EPFL, Switzerland"),
                         "", "", true, true));
     }
 
@@ -540,6 +545,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         result.add("MTrackJ by Erik Meijering. https://imagescience.org/meijering/software/mtrackj/");
         result.add("RandomJ by Erik Meijering. https://imagescience.org/meijering/software/randomj/");
         result.add("ImageScience by Erik Meijering. https://imagescience.org/meijering/software/imagescience/");
+        result.add("OrientationJ by Daniel Sage at the Biomedical Image Group (BIG), EPFL, Switzerland. https://bigwww.epfl.ch/demo/orientation/");
         return result;
     }
 
@@ -1240,6 +1246,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-feature-mtc-2d", MorphologicalTextureContrast2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-feature-amf-2d", AlternatingMorphologicalFilters2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-feature-mfc-2d", MorphologicalFeatureContrast2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-feature-harris-corner-2d", CornerHarris2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
 
         registerEnumParameterType("ij1-feature-vesselness-frangi:slicing-mode", FrangiVesselnessFeatures.SlicingMode.class,
                 "Slicing mode", "Available slicing modes");
