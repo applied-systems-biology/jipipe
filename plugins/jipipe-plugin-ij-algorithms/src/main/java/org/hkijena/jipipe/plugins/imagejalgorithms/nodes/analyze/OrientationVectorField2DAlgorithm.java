@@ -36,6 +36,7 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJLogWrapper;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJStructureTensorParameters;
+import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJVectorFieldType;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
@@ -65,6 +66,10 @@ public class OrientationVectorField2DAlgorithm extends JIPipeSimpleIteratingAlgo
     private final OrientationJStructureTensorParameters structureTensorParameters;
     private final OutputParameters outputParameters;
     private boolean radians = true;
+    private int gridSize = 10;
+    private double scaleVectorPercentage = 80;
+    private OrientationJVectorFieldType vectorFieldType = OrientationJVectorFieldType.Maximum;
+
 
     public OrientationVectorField2DAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -81,6 +86,9 @@ public class OrientationVectorField2DAlgorithm extends JIPipeSimpleIteratingAlgo
         registerSubParameters(structureTensorParameters, outputParameters);
         updateOutputSlots();
         this.radians = other.radians;
+        this.gridSize = other.gridSize;
+        this.scaleVectorPercentage = other.scaleVectorPercentage;
+        this.vectorFieldType = other.vectorFieldType;
     }
 
     private void updateOutputSlots() {
@@ -116,6 +124,11 @@ public class OrientationVectorField2DAlgorithm extends JIPipeSimpleIteratingAlgo
             // Pass structure tensor settings
             params.sigmaST = structureTensorParameters.getLocalWindowSigma();
             params.gradient = structureTensorParameters.getGradient().getNativeValue();
+
+            // Vector field settings
+            params.vectorGrid = gridSize;
+            params.vectorScale = scaleVectorPercentage;
+            params.vectorType = vectorFieldType.getNativeValue();
 
             // Enable all outputs
             params.showVectorOverlay = true;
@@ -260,6 +273,39 @@ public class OrientationVectorField2DAlgorithm extends JIPipeSimpleIteratingAlgo
                     overlay.add(roi);
                 }
         }
+    }
+
+    @SetJIPipeDocumentation(name = "Grid size", description = "The grid size")
+    @JIPipeParameter("grid-size")
+    public int getGridSize() {
+        return gridSize;
+    }
+
+    @JIPipeParameter("grid-size")
+    public void setGridSize(int gridSize) {
+        this.gridSize = gridSize;
+    }
+
+    @SetJIPipeDocumentation(name = "Scale vector (%)", description = "Percentage by what the vector is scaled")
+    @JIPipeParameter("scale-vector-percentage")
+    public double getScaleVectorPercentage() {
+        return scaleVectorPercentage;
+    }
+
+    @JIPipeParameter("scale-vector-percentage")
+    public void setScaleVectorPercentage(double scaleVectorPercentage) {
+        this.scaleVectorPercentage = scaleVectorPercentage;
+    }
+
+    @SetJIPipeDocumentation(name = "Vector type", description = "The type of the vector")
+    @JIPipeParameter("vector-field-type")
+    public OrientationJVectorFieldType getVectorFieldType() {
+        return vectorFieldType;
+    }
+
+    @JIPipeParameter("vector-field-type")
+    public void setVectorFieldType(OrientationJVectorFieldType vectorFieldType) {
+        this.vectorFieldType = vectorFieldType;
     }
 
     @SetJIPipeDocumentation(name = "Structure tensor")

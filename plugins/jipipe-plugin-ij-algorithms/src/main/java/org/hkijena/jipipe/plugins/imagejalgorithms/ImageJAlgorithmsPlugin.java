@@ -131,6 +131,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.transform.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OMEAccessorStorage;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJGradientOperator;
+import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJVectorFieldType;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.ApplyDisplayContrastAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.DisplayRangeCalibrationAlgorithm;
@@ -1025,6 +1026,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Multichannel mode", "Available modes");
         registerEnumParameterType("ij1-analyze-skeleton-2d3d:remove-cycles-method", AnalyzeSkeleton2D3DAlgorithm.CycleRemovalMethod.class, "Cycle removal method", "Method to remove cycles");
         registerEnumParameterType("ij1-analyze-skeleton-2d3d:remove-ends-method", AnalyzeSkeleton2D3DAlgorithm.EndRemovalMethod.class, "End removal method", "Method to remove ends in an end-point");
+        registerEnumParameterType("ij1-orientationj-vector-field-type", OrientationJVectorFieldType.class, "OrientationJ vector field type", "Vector field type");
     }
 
     private void registerDimensionAlgorithms() {

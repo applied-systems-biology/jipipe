@@ -13,18 +13,16 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.utils;
 
-public enum OrientationJGradientOperator {
-    CubicSpline("Cubic Spline", 0),
-    FiniteDifference("Finite Difference", 1),
-    Fourier("Fourier", 2),
-    Riesz("Riesz Filters", 3),
-    Gaussian("Gaussian", 4),
-    Hessian("Hessian", 5);
+public enum OrientationJVectorFieldType {
+    Maximum("Maximum", 0),
+    NBSPEnergy("~ Energy", 1),
+    Coherency("~ Coherency", 2),
+    NBSPEnergyTimesCoherency("~ Energy x Coherency", 3);
 
     private final String label;
     private final int nativeValue;
 
-    OrientationJGradientOperator(String label, int nativeValue) {
+    OrientationJVectorFieldType(String label, int nativeValue) {
 
         this.label = label;
         this.nativeValue = nativeValue;
@@ -42,6 +40,4 @@ public enum OrientationJGradientOperator {
     public int getNativeValue() {
         return nativeValue;
     }
-
-
 }
