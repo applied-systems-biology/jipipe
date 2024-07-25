@@ -1019,6 +1019,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-analyze-statistics-threshold-value-fast-avg", AverageKeyValueThresholdStatisticsGenerator.class, UIUtils.getIconURLFromResources("data-types/imgplus-2d-greyscale-mask.png"));
         registerNodeType("ij1-analyze-statistics-threshold-partition-key-value", KeyValueThresholdPartitionGenerator.class, UIUtils.getIconURLFromResources("actions/office-chart-bar.png"));
         registerNodeType("ij1-analyze-statistics-threshold-partition-key-value-avg", KeyValueThresholdPartitionAveragesGenerator.class, UIUtils.getIconURLFromResources("actions/office-chart-bar.png"));
+        registerNodeType("ij1-analyze-orientationj-vector-field-2d", OrientationVectorField2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
 
         registerEnumParameterType("ij1-analyze-statistics-histogram:multi-channel-mode", HistogramGenerator.MultiChannelMode.class,
                 "Multichannel mode", "Available modes");

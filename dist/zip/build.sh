@@ -183,6 +183,10 @@ if [ ! -e "./dependencies/balloontip-1.2.4.1.jar" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/balloontip-1.2.4.1.jar https://maven.scijava.org/service/local/repositories/bedatadriven/content/net/java/balloontip/balloontip/1.2.4.1/balloontip-1.2.4.1.jar
 fi
+if [ ! -e "./dependencies/OrientationJ_.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/OrientationJ_.jar https://bigwww.epfl.ch/demo/orientation/OrientationJ_.jar
+fi
 if [ ! -e "./dependencies/LICENSE_Javaluator.html" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/LICENSE_Javaluator.html https://opensource.org/licenses/lgpl-3.0.html
@@ -222,6 +226,10 @@ fi
 if [ ! -e "./dependencies/LICENSE_mslinks.txt" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/LICENSE_mslinks.txt https://raw.githubusercontent.com/DmitriiShamrikov/mslinks/master/LICENSE
+fi
+if [ ! -e "./dependencies/LICENSE_OrientationJ.txt" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/LICENSE_OrientationJ.txt https://raw.githubusercontent.com/Biomedical-Imaging-Group/OrientationJ/master/LICENSE
 fi
 
 rm -r package
