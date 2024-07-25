@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.features;
+package org.hkijena.jipipe.plugins.imagejalgorithms.utils;
 
 public enum OrientationJGradientOperator {
     CubicSpline("Cubic Spline", 0),

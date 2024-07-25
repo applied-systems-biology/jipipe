@@ -149,14 +149,6 @@ public class ImageToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    private ResultsTableData toResultsTable(TDoubleList pixels) {
-        ResultsTable resultsTable = new ResultsTable(pixels.size());
-        for (int i = 0; i < pixels.size(); ++i) {
-            resultsTable.setValue("value", i, pixels.get(i));
-        }
-        return new ResultsTableData(resultsTable);
-    }
-
     @SetJIPipeDocumentation(name = "Apply per slice", description = "If higher dimensional data is provided, generate a table for each slice. If disabled, " +
             "a table is generated for the whole image.")
     @JIPipeParameter("apply-per-slice")

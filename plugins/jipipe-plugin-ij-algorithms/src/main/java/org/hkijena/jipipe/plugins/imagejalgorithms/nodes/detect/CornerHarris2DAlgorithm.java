@@ -11,9 +11,8 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.features;
+package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.detect;
 
-import gui_orientation.WalkBarOrientationJ;
 import ij.ImagePlus;
 import ij.gui.OvalRoi;
 import ij.gui.Roi;
@@ -33,6 +32,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJStructureTensorParameters;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJLogWrapper;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
@@ -48,23 +48,23 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "Corner detection 2D (Harris)", description = "OrientationJ implementation of the the Harris corner detection.")
-@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Features")
+@SetJIPipeDocumentation(name = "Detect corners 2D (Harris)", description = "OrientationJ implementation of the the Harris corner detection.")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Detect")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Overlay", create = true, description = "Detected corners as ROI")
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Results", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Energy")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Orientation")
-@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Coherence")
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Coherency")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Harris-index")
 public class CornerHarris2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public static final JIPipeDataSlotInfo OUTPUT_ENERGY = new JIPipeDataSlotInfo(ImagePlusGreyscaleData.class, JIPipeSlotType.Output, "Energy", "");
     public static final JIPipeDataSlotInfo OUTPUT_ORIENTATION = new JIPipeDataSlotInfo(ImagePlusGreyscaleData.class, JIPipeSlotType.Output, "Orientation", "");
-    public static final JIPipeDataSlotInfo OUTPUT_COHERENCE = new JIPipeDataSlotInfo(ImagePlusGreyscaleData.class, JIPipeSlotType.Output, "Coherence", "");
+    public static final JIPipeDataSlotInfo OUTPUT_COHERENCY = new JIPipeDataSlotInfo(ImagePlusGreyscaleData.class, JIPipeSlotType.Output, "Coherency", "");
     public static final JIPipeDataSlotInfo OUTPUT_HARRIS_INDEX = new JIPipeDataSlotInfo(ImagePlusGreyscaleData.class, JIPipeSlotType.Output, "Harris-index", "");
 
-    private final StructureTensorParameters structureTensorParameters;
+    private final OrientationJStructureTensorParameters structureTensorParameters;
     private final OutputParameters outputParameters;
     private double harrisK = 0.05;
     private int harrisL = 2;
@@ -73,7 +73,7 @@ public class CornerHarris2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public CornerHarris2DAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.structureTensorParameters = new StructureTensorParameters();
+        this.structureTensorParameters = new OrientationJStructureTensorParameters();
         this.outputParameters = new OutputParameters();
         registerSubParameters(structureTensorParameters, outputParameters);
         updateOutputSlots();
@@ -81,7 +81,7 @@ public class CornerHarris2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public CornerHarris2DAlgorithm(CornerHarris2DAlgorithm other) {
         super(other);
-        this.structureTensorParameters = new StructureTensorParameters(other.structureTensorParameters);
+        this.structureTensorParameters = new OrientationJStructureTensorParameters(other.structureTensorParameters);
         this.outputParameters = new OutputParameters(other.outputParameters);
         registerSubParameters(structureTensorParameters, outputParameters);
         updateOutputSlots();
@@ -95,7 +95,7 @@ public class CornerHarris2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private void updateOutputSlots() {
         toggleSlot(OUTPUT_ORIENTATION, outputParameters.outputOrientation);
         toggleSlot(OUTPUT_ENERGY, outputParameters.outputEnergy);
-        toggleSlot(OUTPUT_COHERENCE, outputParameters.outputCoherence);
+        toggleSlot(OUTPUT_COHERENCY, outputParameters.outputCoherency);
         toggleSlot(OUTPUT_HARRIS_INDEX, outputParameters.outputHarrisIndex);
     }
 
@@ -116,7 +116,7 @@ public class CornerHarris2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         Map<ImageSliceIndex, ImageProcessor> harrisIndexSlices = new HashMap<>();
         Map<ImageSliceIndex, ImageProcessor> orientationSlices = new HashMap<>();
         Map<ImageSliceIndex, ImageProcessor> energySlices = new HashMap<>();
-        Map<ImageSliceIndex, ImageProcessor> coherenceIndexSlices = new HashMap<>();
+        Map<ImageSliceIndex, ImageProcessor> coherencyIndexSlices = new HashMap<>();
         ROI2DListData overlay = new ROI2DListData();
         ResultsTableData results = new ResultsTableData();
 
@@ -125,8 +125,8 @@ public class CornerHarris2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             OrientationParameters params = new OrientationParameters(OrientationService.HARRIS);
 
             // Pass structure tensor settings
-            params.sigmaST = structureTensorParameters.localWindowSigma;
-            params.gradient = structureTensorParameters.gradient.getNativeValue();
+            params.sigmaST = structureTensorParameters.getLocalWindowSigma();
+            params.gradient = structureTensorParameters.getGradient().getNativeValue();
 
             // Pass other parameters
             params.harrisK = harrisK;
@@ -138,7 +138,7 @@ public class CornerHarris2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             params.showHarrisOverlay = true;
             params.view[OrientationParameters.TENSOR_ENERGY] = outputParameters.outputEnergy;
             params.view[OrientationParameters.TENSOR_ORIENTATION] = outputParameters.outputOrientation;
-            params.view[OrientationParameters.TENSOR_COHERENCY] = outputParameters.outputCoherence;
+            params.view[OrientationParameters.TENSOR_COHERENCY] = outputParameters.outputCoherency;
             params.view[OrientationParameters.HARRIS] = outputParameters.outputHarrisIndex;
 
             // Apply algorithm
@@ -160,8 +160,8 @@ public class CornerHarris2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             if(outputParameters.outputEnergy) {
                 energySlices.put(index, groupImage.energy.buildImageStack().getProcessor(1));
             }
-            if(outputParameters.outputCoherence) {
-                coherenceIndexSlices.put(index, groupImage.coherency.buildImageStack().getProcessor(1));
+            if(outputParameters.outputCoherency) {
+                coherencyIndexSlices.put(index, groupImage.coherency.buildImageStack().getProcessor(1));
             }
             if(outputParameters.outputOrientation) {
                 orientationSlices.put(index, groupImage.orientation.buildImageStack().getProcessor(1));
@@ -179,10 +179,10 @@ public class CornerHarris2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             img.copyScale(inputImage);
             iterationStep.addOutputData("Energy", new ImagePlusGreyscaleData(img), progressInfo);
         }
-        if(!coherenceIndexSlices.isEmpty()) {
-            ImagePlus img = ImageJUtils.mergeMappedSlices(coherenceIndexSlices);
+        if(!coherencyIndexSlices.isEmpty()) {
+            ImagePlus img = ImageJUtils.mergeMappedSlices(coherencyIndexSlices);
             img.copyScale(inputImage);
-            iterationStep.addOutputData("Coherence", new ImagePlusGreyscaleData(img), progressInfo);
+            iterationStep.addOutputData("Coherency", new ImagePlusGreyscaleData(img), progressInfo);
         }
         if(!orientationSlices.isEmpty()) {
             ImagePlus img = ImageJUtils.mergeMappedSlices(orientationSlices);
@@ -255,7 +255,7 @@ public class CornerHarris2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Structure tensor")
     @JIPipeParameter("structure-tensor")
-    public StructureTensorParameters getStructureTensorParameters() {
+    public OrientationJStructureTensorParameters getStructureTensorParameters() {
         return structureTensorParameters;
     }
 
@@ -309,21 +309,8 @@ public class CornerHarris2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.radians = radians;
     }
 
-    public static class StructureTensorParameters extends AbstractJIPipeParameterCollection {
-        private int localWindowSigma = 2;
-        private OrientationJGradientOperator gradient = OrientationJGradientOperator.CubicSpline;
-
-        public StructureTensorParameters() {
-        }
-
-        public StructureTensorParameters(StructureTensorParameters other) {
-            this.localWindowSigma = other.localWindowSigma;
-            this.gradient = other.gradient;
-        }
-    }
-
     public static class OutputParameters extends AbstractJIPipeParameterCollection {
-        private boolean outputCoherence = false;
+        private boolean outputCoherency = false;
         private boolean outputEnergy = false;
         private boolean outputHarrisIndex = true;
         private boolean outputOrientation = false;
@@ -332,21 +319,21 @@ public class CornerHarris2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
 
         public OutputParameters(OutputParameters other) {
-            this.outputCoherence = other.outputCoherence;
+            this.outputCoherency = other.outputCoherency;
             this.outputEnergy = other.outputEnergy;
             this.outputHarrisIndex = other.outputHarrisIndex;
             this.outputOrientation = other.outputOrientation;
         }
 
-        @SetJIPipeDocumentation(name = "Output coherence")
-        @JIPipeParameter("output-coherence")
-        public boolean isOutputCoherence() {
-            return outputCoherence;
+        @SetJIPipeDocumentation(name = "Output coherency")
+        @JIPipeParameter("output-coherency")
+        public boolean isOutputCoherency() {
+            return outputCoherency;
         }
 
-        @JIPipeParameter("output-coherence")
-        public void setOutputCoherence(boolean outputCoherence) {
-            this.outputCoherence = outputCoherence;
+        @JIPipeParameter("output-coherency")
+        public void setOutputCoherency(boolean outputCoherency) {
+            this.outputCoherency = outputCoherency;
         }
 
         @SetJIPipeDocumentation(name = "Output energy")

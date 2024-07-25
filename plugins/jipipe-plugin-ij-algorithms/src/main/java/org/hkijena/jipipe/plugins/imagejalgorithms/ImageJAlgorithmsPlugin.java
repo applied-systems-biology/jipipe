@@ -130,6 +130,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.threshold.local.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.transform.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OMEAccessorStorage;
+import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJGradientOperator;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.ApplyDisplayContrastAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.DisplayRangeCalibrationAlgorithm;
@@ -729,6 +730,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij-convert-image-to-rgb-colors", ConvertImageToRGBAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-color-rgb.png"));
         registerNodeType("ij-convert-image-to-lab-colors", ConvertImageToLABAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-color-lab.png"));
         registerNodeType("ij1-convert-image-to-table", ImageToTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
+        registerNodeType("ij1-convert-multiple-images-to-table", MultipleImagesToTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
         registerNodeType("ij1-convert-table-to-image", TableToImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
         registerNodeType("ij1-convert-image-to-matrix", ImageToMatrixAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
         registerNodeType("ij1-convert-matrix-to-image", MatrixToImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
@@ -1247,6 +1249,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-feature-amf-2d", AlternatingMorphologicalFilters2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-feature-mfc-2d", MorphologicalFeatureContrast2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-feature-harris-corner-2d", CornerHarris2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-feature-orientationj-2d", OrientationFeatures2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
 
         registerEnumParameterType("ij1-feature-vesselness-frangi:slicing-mode", FrangiVesselnessFeatures.SlicingMode.class,
                 "Slicing mode", "Available slicing modes");
@@ -1258,6 +1261,8 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Directional filter types", "Available types");
         registerEnumParameterType("ij1-feature-mfc-2d:mode", MorphologicalFeatureContrast2DAlgorithm.Mode.class,
                 "MFC mode", "Available modes");
+        registerEnumParameterType("ij1-orientationj-gradient", OrientationJGradientOperator.class,
+                "OrientationJ gradient operator", "A gradient operator");
     }
 
     private void registerContrastAlgorithms() {
@@ -1295,6 +1300,9 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-color-split-channels-2", NewSplitChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("ij1-color-split-channels-by-table", SplitChannelsByTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("ij1-color-combine-rgb", CombineChannelsToRGBAlgorithm.class, UIUtils.getIconURLFromResources("actions/colors-rgb.png"));
+        registerNodeType("ij1-color-merge-channels-rgb", MergeRGBChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/colors-rgb.png"));
+        registerNodeType("ij1-color-merge-channels-hsb", MergeHSBChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/colors-rgb.png"));
+        registerNodeType("ij1-color-merge-channels-lab", MergeLABChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/colors-rgb.png"));
         registerNodeType("ij1-color-split-rgb", SplitRGBChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/channelmixer.png"));
         registerNodeType("ij1-color-set-to-color", SetToColorAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-fill.png"));
         registerNodeType("ij1-color-set-to-grayscale-value", SetToValueAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-fill.png"));
