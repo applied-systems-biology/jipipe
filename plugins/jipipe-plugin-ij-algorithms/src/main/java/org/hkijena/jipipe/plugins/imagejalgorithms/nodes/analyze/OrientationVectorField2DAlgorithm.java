@@ -297,7 +297,7 @@ public class OrientationVectorField2DAlgorithm extends JIPipeSimpleIteratingAlgo
         this.scaleVectorPercentage = scaleVectorPercentage;
     }
 
-    @SetJIPipeDocumentation(name = "Vector type", description = "The type of the vector")
+    @SetJIPipeDocumentation(name = "Vector length", description = "Determines how the length of the vector is calculated")
     @JIPipeParameter("vector-field-type")
     public OrientationJVectorFieldType getVectorFieldType() {
         return vectorFieldType;
