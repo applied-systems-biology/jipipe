@@ -41,7 +41,7 @@ import java.util.Map;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@SetJIPipeDocumentation(name = "Change image properties from expressions", description = "Sets properties of the input images to values extracted from expressions.")
+@SetJIPipeDocumentation(name = "Set image properties from expressions", description = "Sets properties of the input images to values extracted from expressions.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Modify")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)

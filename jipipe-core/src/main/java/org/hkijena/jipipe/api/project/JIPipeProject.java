@@ -411,7 +411,8 @@ public class JIPipeProject implements JIPipeValidatable {
         JIPipeProjectCompartment compartment = JIPipe.createNode("jipipe:project-compartment");
         compartment.setRuntimeProject(this);
         compartment.setCustomName(name);
-        compartmentGraph.insertNode(compartment);
+        UUID uuid = compartmentGraph.insertNode(compartment);
+        compartments.put(uuid, compartment);
         return compartment;
     }
 

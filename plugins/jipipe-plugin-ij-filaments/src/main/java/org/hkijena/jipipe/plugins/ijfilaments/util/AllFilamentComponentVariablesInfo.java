@@ -24,18 +24,13 @@ import java.util.Set;
 
 public class AllFilamentComponentVariablesInfo implements JIPipeExpressionVariablesInfo {
 
-    private static final Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
-
-    static {
-        VARIABLES = new HashSet<>();
+    @Override
+    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        Set<JIPipeExpressionParameterVariableInfo> VARIABLES = new HashSet<>();
         FilamentComponentVariablesInfo filamentComponentVariablesInfo = new FilamentComponentVariablesInfo();
         for (JIPipeExpressionParameterVariableInfo variable : filamentComponentVariablesInfo.getVariables(workbench, null, null)) {
             VARIABLES.add(new JIPipeExpressionParameterVariableInfo("all." + variable.getKey(), variable.getName() + " (all values)", "Array of all measurement values. " + variable.getDescription()));
         }
-    }
-
-    @Override
-    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         return VARIABLES;
     }
 }

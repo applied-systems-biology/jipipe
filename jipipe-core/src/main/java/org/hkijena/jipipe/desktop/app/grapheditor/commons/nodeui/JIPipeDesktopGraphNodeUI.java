@@ -1071,7 +1071,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
                 JIPipeProjectCompartment projectCompartment = project.getCompartments().get(node.getCompartmentUUIDInParentGraph());
                 if (projectCompartment != null) {
                     nameWidth = Math.max(fontMetrics.stringWidth(nameLabel),
-                            fontMetrics.stringWidth("⮤ " + projectCompartment.getName()));
+                            fontMetrics.stringWidth("* " + projectCompartment.getName()));
                 } else {
                     nameWidth = fontMetrics.stringWidth(nameLabel);
                 }
@@ -1119,7 +1119,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
                 JIPipeProject project = getGraphCanvasUI().getWorkbench().getProject();
                 JIPipeProjectCompartment projectCompartment = project.getCompartments().get(node.getCompartmentUUIDInParentGraph());
                 if (projectCompartment != null) {
-                    UIUtils.drawStringVerticallyCentered(g2, "⮤ " + projectCompartment.getName(), (int) Math.round(startX + 3 * zoom), centerY + (fontMetrics.getAscent() + fontMetrics.getLeading()) / 2, fontMetrics);
+                    UIUtils.drawStringVerticallyCentered(g2, "* " + projectCompartment.getName(), (int) Math.round(startX + 3 * zoom), centerY + (fontMetrics.getAscent() + fontMetrics.getLeading()) / 2, fontMetrics);
                 } else {
                     UIUtils.drawStringVerticallyCentered(g2, nameLabel, (int) Math.round(startX + 3 * zoom), centerY, fontMetrics);
                 }

@@ -51,7 +51,7 @@ import java.util.Set;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@SetJIPipeDocumentation(name = "Change 2D ROI properties from expressions", description = "Sets properties of all ROI to values extracted from expressions.")
+@SetJIPipeDocumentation(name = "Set 2D ROI properties from expressions", description = "Sets properties of all ROI to values extracted from expressions.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
 @AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)

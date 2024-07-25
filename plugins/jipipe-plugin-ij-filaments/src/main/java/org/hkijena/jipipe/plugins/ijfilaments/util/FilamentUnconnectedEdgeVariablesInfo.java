@@ -26,19 +26,6 @@ import java.util.Set;
 
 public class FilamentUnconnectedEdgeVariablesInfo implements JIPipeExpressionVariablesInfo {
 
-    private static final Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
-
-    static {
-        VARIABLES = new HashSet<>();
-        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("length", "Length", "The length of the edge"));
-
-        FilamentVertexVariablesInfo source = new FilamentVertexVariablesInfo();
-        for (JIPipeExpressionParameterVariableInfo variable : source.getVariables(workbench, null, null)) {
-            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("source." + variable.getKey(), "Source " + variable.getName(), variable.getDescription()));
-            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("target." + variable.getKey(), "Target " + variable.getName(), variable.getDescription()));
-        }
-    }
-
     public static void writeToVariables(Filaments3DGraphData graph, FilamentVertex source, FilamentVertex target, JIPipeExpressionVariablesMap variables, String prefix) {
         graph.measureVertex(source, variables, prefix + "source.");
         graph.measureVertex(target, variables, prefix + "target.");
@@ -47,6 +34,15 @@ public class FilamentUnconnectedEdgeVariablesInfo implements JIPipeExpressionVar
 
     @Override
     public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        Set<JIPipeExpressionParameterVariableInfo> VARIABLES = new HashSet<>();
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("length", "Length", "The length of the edge"));
+
+        FilamentVertexVariablesInfo source = new FilamentVertexVariablesInfo();
+        for (JIPipeExpressionParameterVariableInfo variable : source.getVariables(workbench, null, null)) {
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("source." + variable.getKey(), "Source " + variable.getName(), variable.getDescription()));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("target." + variable.getKey(), "Target " + variable.getName(), variable.getDescription()));
+        }
+
         return VARIABLES;
     }
 }

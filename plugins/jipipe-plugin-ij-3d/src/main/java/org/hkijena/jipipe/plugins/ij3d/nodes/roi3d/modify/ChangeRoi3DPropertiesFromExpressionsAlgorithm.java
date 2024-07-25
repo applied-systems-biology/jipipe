@@ -51,7 +51,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "Change 3D ROI properties from expressions", description = "Sets the properties of all 3D ROI via expressions")
+@SetJIPipeDocumentation(name = "Set 3D ROI properties from expressions", description = "Sets the properties of all 3D ROI via expressions")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
 @AddJIPipeInputSlot(value = ROI3DListData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)

@@ -35,7 +35,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
 
-@SetJIPipeDocumentation(name = "Change 3D ROI properties", description = "Sets the properties of all 3D ROI")
+@SetJIPipeDocumentation(name = "Set 3D ROI properties", description = "Sets the properties of all 3D ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
 @AddJIPipeInputSlot(value = ROI3DListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROI3DListData.class, name = "Output", create = true)

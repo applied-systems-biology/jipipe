@@ -171,7 +171,7 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
             }
             if (settings != null && settings.variableSource() != UndefinedExpressionParameterVariablesInfo.class) {
                 JIPipeExpressionVariablesInfo variableSource = (JIPipeExpressionVariablesInfo) ReflectionUtils.newInstance(settings.variableSource());
-                variables.addAll(variableSource.getVariables(workbench, getParameterTree(), getParameterAccess()));
+                variables.addAll(variableSource.getVariables(getWorkbench(), getParameterTree(), getParameterAccess()));
             }
             List<AddJIPipeExpressionParameterVariable> variableAnnotations = getParameterAccess().getAnnotationsOfType(AddJIPipeExpressionParameterVariable.class);
             if (variableAnnotations.isEmpty()) {
@@ -187,7 +187,7 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
                 }
                 if (variable.fromClass() != UndefinedExpressionParameterVariablesInfo.class) {
                     JIPipeExpressionVariablesInfo variableSource = (JIPipeExpressionVariablesInfo) ReflectionUtils.newInstance(variable.fromClass());
-                    variables.addAll(variableSource.getVariables(workbench, getParameterTree(), getParameterAccess()));
+                    variables.addAll(variableSource.getVariables(getWorkbench(), getParameterTree(), getParameterAccess()));
                 }
             }
         }
@@ -199,7 +199,7 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
                 }
                 if (variable.fromClass() != UndefinedExpressionParameterVariablesInfo.class) {
                     JIPipeExpressionVariablesInfo variableSource = (JIPipeExpressionVariablesInfo) ReflectionUtils.newInstance(variable.fromClass());
-                    variables.addAll(variableSource.getVariables(workbench, getParameterTree(), getParameterAccess()));
+                    variables.addAll(variableSource.getVariables(getWorkbench(), getParameterTree(), getParameterAccess()));
                 }
             }
         }
