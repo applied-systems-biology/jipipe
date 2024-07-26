@@ -45,7 +45,6 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.desktop.app.grapheditor.JIPipeGraphViewMode;
-import org.hkijena.jipipe.desktop.app.grapheditor.JIPipeNodeHotKeyStorage;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.actions.JIPipeDesktopOpenContextMenuAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.layout.MSTGraphAutoLayoutImplementation;
@@ -134,7 +133,6 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     private final JIPipeHistoryJournal historyJournal;
     private final UUID compartmentUUID;
     private final Map<JIPipeDesktopGraphNodeUI, Point> currentlyDraggedOffsets = new HashMap<>();
-    private final JIPipeNodeHotKeyStorage nodeHotKeyStorage;
     private final Color improvedStrokeBackgroundColor = UIManager.getColor("Panel.background");
     private final Color smartEdgeSlotBackground = UIManager.getColor("EditorPane.background");
     private final Color smartEdgeSlotForeground = UIManager.getColor("Label.foreground");
@@ -198,7 +196,6 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         this.historyJournal = historyJournal;
         setLayout(null);
         this.graph = graph;
-        this.nodeHotKeyStorage = JIPipeNodeHotKeyStorage.getInstance(graph);
         this.compartmentUUID = compartmentUUID;
         this.settings = JIPipeGraphEditorUIApplicationSettings.getInstance();
 
@@ -399,23 +396,6 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                         getDesktopWorkbench().sendStatusBarText("Executed: " + contextAction.getName());
                         SwingUtilities.invokeLater(() -> contextAction.run(this, selection));
                         return true;
-                    }
-                }
-                if (keyStroke.getModifiers() == 0) {
-                    JIPipeNodeHotKeyStorage.Hotkey hotkey = JIPipeNodeHotKeyStorage.Hotkey.fromKeyCode(keyStroke.getKeyCode());
-                    if (hotkey != JIPipeNodeHotKeyStorage.Hotkey.None) {
-                        String nodeId = nodeHotKeyStorage.getNodeForHotkey(hotkey, getCompartmentUUID());
-                        JIPipeGraphNode node = graph.findNode(nodeId);
-                        if (node != null) {
-                            JIPipeDesktopGraphNodeUI nodeUI = nodeUIs.getOrDefault(node, null);
-                            if (nodeUI != null) {
-                                Container graphEditor = SwingUtilities.getAncestorOfClass(JIPipeDesktopGraphEditorUI.class, this);
-                                if (graphEditor == null)
-                                    selectOnly(nodeUI);
-                                else
-                                    ((JIPipeDesktopGraphEditorUI) graphEditor).selectOnly(nodeUI);
-                            }
-                        }
                     }
                 }
             }
@@ -3372,10 +3352,6 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 
     public JScrollPane getScrollPane() {
         return graphEditorUI != null ? graphEditorUI.getScrollPane() : null;
-    }
-
-    public JIPipeNodeHotKeyStorage getNodeHotKeyStorage() {
-        return nodeHotKeyStorage;
     }
 
     public Set<JIPipeGraphNode> getScheduledSelection() {

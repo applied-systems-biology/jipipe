@@ -500,12 +500,6 @@
     "nodes" : { },
     "edges" : [ ],
     "additional-metadata" : {
-      "node-hotkeys" : {
-        "jipipe:type" : "jipipe:node-hotkey-storage",
-        "data" : {
-          "hotkeys" : { }
-        }
-      }
     }
   },
   "compartments" : {
@@ -554,12 +548,6 @@
       },
       "edges" : [ ],
       "additional-metadata" : {
-        "node-hotkeys" : {
-          "jipipe:type" : "jipipe:node-hotkey-storage",
-          "data" : {
-            "hotkeys" : { }
-          }
-        }
       }
     }
   }
