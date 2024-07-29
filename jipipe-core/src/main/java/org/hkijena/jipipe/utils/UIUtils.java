@@ -128,6 +128,7 @@ public class UIUtils {
     private static Theme RSYNTAX_THEME_DEFAULT;
     private static Theme RSYNTAX_THEME_DARK;
     private static Border CONTROL_BORDER;
+    private static Border PANEL_BORDER;
     private static Border CONTROL_ERROR_BORDER;
 
     public static void rebuildMenu(JPopupMenu menu, List<Component> items) {
@@ -211,6 +212,19 @@ public class UIUtils {
             }
         }
         return CONTROL_BORDER;
+    }
+
+    public static Border createPanelBorder() {
+        if (PANEL_BORDER == null) {
+            if (!DARK_THEME) {
+                PANEL_BORDER = BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(JIPipeDesktopModernMetalTheme.MEDIUM_GRAY, 1),
+                        BorderFactory.createEmptyBorder(1, 1, 1, 1));
+            } else {
+                PANEL_BORDER = BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1),
+                        BorderFactory.createEmptyBorder(1, 1, 1, 1));
+            }
+        }
+        return PANEL_BORDER;
     }
 
     public static void registerHyperlinkHandler(JTextPane content) {
@@ -2223,6 +2237,15 @@ public class UIUtils {
 
     public static Border createEmptyBorder(int i) {
         return BorderFactory.createEmptyBorder(i,i,i,i);
+    }
+
+    public static JIPipeDesktopUITheme getTheme() {
+        if(JIPipe.isInstantiated()) {
+            return JIPipeGeneralUIApplicationSettings.getInstance().getTheme();
+        }
+        else {
+            return JIPipeDesktopUITheme.ModernLight;
+        }
     }
 
 
