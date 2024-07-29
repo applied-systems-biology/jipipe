@@ -49,6 +49,7 @@ import org.hkijena.jipipe.plugins.nodetoolboxtool.NodeToolBox;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.*;
+import org.hkijena.jipipe.utils.ui.FloatingDockPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -63,7 +64,6 @@ import java.util.stream.Collectors;
  */
 public class JIPipePipelineGraphEditorUI extends JIPipeDesktopGraphEditorUI {
 
-    private JPanel defaultPanel;
     private boolean disableUpdateOnSelection = false;
 
     /**
@@ -75,8 +75,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeDesktopGraphEditorUI {
      */
     public JIPipePipelineGraphEditorUI(JIPipeDesktopWorkbench workbenchUI, JIPipeGraph algorithmGraph, UUID compartment) {
         super(workbenchUI, algorithmGraph, compartment, algorithmGraph.getProject() != null ? algorithmGraph.getProject().getHistoryJournal() : new JIPipeDedicatedGraphHistoryJournal(algorithmGraph));
-        initializeDefaultPanel();
-        setPropertyPanel(defaultPanel, true);
+        initializeDefaultPanels();
 
         // Set D&D and Copy&Paste behavior
         initializeContextActions();
@@ -317,8 +316,6 @@ public class JIPipePipelineGraphEditorUI extends JIPipeDesktopGraphEditorUI {
                 NodeUIContextAction.SEPARATOR,
                 new ClearCacheNodeUIContextAction(),
                 NodeUIContextAction.SEPARATOR,
-                new ExportNodeUIContextAction(),
-                NodeUIContextAction.SEPARATOR,
                 new IsolateNodesUIContextAction(),
                 new JsonAlgorithmToGroupNodeUIContextAction(),
                 new GroupNodeUIContextAction(),
@@ -330,8 +327,6 @@ public class JIPipePipelineGraphEditorUI extends JIPipeDesktopGraphEditorUI {
                 new DisablePassThroughNodeUIContextAction(),
                 new EnableSaveOutputsNodeUIContextAction(),
                 new DisableSaveOutputsNodeUIContextAction(),
-//                new EnableVirtualOutputsNodeUIContextAction(),
-//                new DisableVirtualOutputNodeUIContextAction(),
                 new DeleteNodeUIContextAction(),
                 NodeUIContextAction.SEPARATOR,
                 new SendToForegroundUIContextAction(),
@@ -365,60 +360,55 @@ public class JIPipePipelineGraphEditorUI extends JIPipeDesktopGraphEditorUI {
         getCanvasUI().setContextActions(actions);
     }
 
-    private void initializeDefaultPanel() {
-        defaultPanel = new JPanel(new BorderLayout());
+    private void initializeDefaultPanels() {
 
-        JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.VERTICAL_SPLIT, AutoResizeSplitPane.RATIO_1_TO_3);
-        defaultPanel.add(splitPane, BorderLayout.CENTER);
+        getDockPanel().addDockPanel("MINIMAP",
+                "Minimap",
+                UIUtils.getIcon32FromResources("actions/document-preview.png"),
+                FloatingDockPanel.PanelLocation.TopLeft,
+                true,
+                new JIPipeDesktopGraphEditorMinimap(this));
+        getDockPanel().addDockPanel("QUICK_GUIDE",
+                "Quick guide",
+                UIUtils.getIcon32FromResources("actions/help.png"),
+                FloatingDockPanel.PanelLocation.BottomLeft,
+                true,
+                new JIPipeDesktopMarkdownReader(false, MarkdownText.fromPluginResource("documentation/algorithm-graph.md", new HashMap<>())));
 
-        JIPipeDesktopGraphEditorMinimap minimap = new JIPipeDesktopGraphEditorMinimap(this);
-        splitPane.setTopComponent(minimap);
 
-        JIPipeDesktopTabPane bottomPanel = new JIPipeDesktopTabPane(false, JIPipeDesktopTabPane.TabPlacement.Right);
-
-        JIPipeDesktopMarkdownReader markdownReader = new JIPipeDesktopMarkdownReader(false);
-        markdownReader.setDocument(MarkdownText.fromPluginResource("documentation/algorithm-graph.md", new HashMap<>()));
-        bottomPanel.addTab("Quick guide", UIUtils.getIcon32FromResources("actions/help.png"), markdownReader, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
-
-        bottomPanel.addTab("Add nodes", UIUtils.getIcon32FromResources("actions/node-add.png"),
-                new NodeToolBox(getDesktopWorkbench(), true), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
-
-        bottomPanel.addTab("Templates", UIUtils.getIcon32FromResources("actions/star.png"),
-                new NodeTemplateBox(getDesktopWorkbench(), true, getCanvasUI(), null), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
-
-        bottomPanel.addTab("Bookmarks", UIUtils.getIcon32FromResources("actions/bookmarks.png"),
-                new JIPipeDesktopBookmarkListPanel(getDesktopWorkbench(), getGraph(), this, null), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
-
-        bottomPanel.addTab("History",
-                UIUtils.getIcon32FromResources("actions/edit-undo-history.png"),
-                new JIPipeDesktopHistoryJournalUI(getHistoryJournal()),
-                JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
-
-        splitPane.setBottomComponent(bottomPanel);
-    }
-
-    @Override
-    public void reloadMenuBar() {
-        getMenuBar().removeAll();
-        getAddableAlgorithms().clear();
-        initializeAddNodesMenus(this, getMenuBar(), getAddableAlgorithms());
-        initializeCommonActions();
+//        JIPipeDesktopMarkdownReader markdownReader = new JIPipeDesktopMarkdownReader(false);
+//        markdownReader.setDocument(MarkdownText.fromPluginResource("documentation/algorithm-graph.md", new HashMap<>()));
+//        bottomPanel.addTab("Quick guide", UIUtils.getIcon32FromResources("actions/help.png"), markdownReader, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+//
+//        bottomPanel.addTab("Add nodes", UIUtils.getIcon32FromResources("actions/node-add.png"),
+//                new NodeToolBox(getDesktopWorkbench(), true), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+//
+//        bottomPanel.addTab("Templates", UIUtils.getIcon32FromResources("actions/star.png"),
+//                new NodeTemplateBox(getDesktopWorkbench(), true, getCanvasUI(), null), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+//
+//        bottomPanel.addTab("Bookmarks", UIUtils.getIcon32FromResources("actions/bookmarks.png"),
+//                new JIPipeDesktopBookmarkListPanel(getDesktopWorkbench(), getGraph(), this, null), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+//
+//        bottomPanel.addTab("History",
+//                UIUtils.getIcon32FromResources("actions/edit-undo-history.png"),
+//                new JIPipeDesktopHistoryJournalUI(getHistoryJournal()),
+//                JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
     }
 
     @Override
     protected void updateSelection() {
         super.updateSelection();
-        if (disableUpdateOnSelection)
-            return;
-        if (getSelection().isEmpty()) {
-            setPropertyPanel(defaultPanel, true);
-        } else if (getSelection().size() == 1) {
-            JIPipeDesktopGraphNodeUI ui = getSelection().iterator().next();
-            setPropertyPanel(new JIPipeDesktopPipelineSingleAlgorithmSelectionPanelUI(this, ui.getNode()), true);
-        } else {
-            setPropertyPanel(new JIPipeDesktopPipelineMultiAlgorithmSelectionPanelUI((JIPipeDesktopProjectWorkbench) getDesktopWorkbench(), getCanvasUI(),
-                    getSelection().stream().map(JIPipeDesktopGraphNodeUI::getNode).collect(Collectors.toSet())), true);
-        }
+//        if (disableUpdateOnSelection)
+//            return;
+//        if (getSelection().isEmpty()) {
+//            setPropertyPanel(defaultPanel, true);
+//        } else if (getSelection().size() == 1) {
+//            JIPipeDesktopGraphNodeUI ui = getSelection().iterator().next();
+//            setPropertyPanel(new JIPipeDesktopPipelineSingleAlgorithmSelectionPanelUI(this, ui.getNode()), true);
+//        } else {
+//            setPropertyPanel(new JIPipeDesktopPipelineMultiAlgorithmSelectionPanelUI((JIPipeDesktopProjectWorkbench) getDesktopWorkbench(), getCanvasUI(),
+//                    getSelection().stream().map(JIPipeDesktopGraphNodeUI::getNode).collect(Collectors.toSet())), true);
+//        }
     }
 
 
@@ -474,33 +464,33 @@ public class JIPipePipelineGraphEditorUI extends JIPipeDesktopGraphEditorUI {
      */
     @Override
     public void onNodeUIActionRequested(JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEvent event) {
-        if (event.getAction() instanceof JIPipeDesktopRunAndShowResultsAction) {
-            disableUpdateOnSelection = true;
-            selectOnly(event.getUi());
-            JIPipeDesktopPipelineSingleAlgorithmSelectionPanelUI panel = new JIPipeDesktopPipelineSingleAlgorithmSelectionPanelUI(this,
-                    event.getUi().getNode());
-            setPropertyPanel(panel, true);
-            panel.executeQuickRun(true,
-                    false,
-                    false,
-                    true,
-                    ((JIPipeDesktopRunAndShowResultsAction) event.getAction()).isStoreIntermediateResults(),
-                    false);
-            SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
-        } else if (event.getAction() instanceof JIPipeDesktopUpdateCacheAction) {
-            disableUpdateOnSelection = true;
-            selectOnly(event.getUi());
-            JIPipeDesktopPipelineSingleAlgorithmSelectionPanelUI panel = new JIPipeDesktopPipelineSingleAlgorithmSelectionPanelUI(this,
-                    event.getUi().getNode());
-            setPropertyPanel(panel, true);
-            panel.executeQuickRun(false,
-                    true,
-                    false,
-                    false,
-                    ((JIPipeDesktopUpdateCacheAction) event.getAction()).isStoreIntermediateResults(),
-                    ((JIPipeDesktopUpdateCacheAction) event.getAction()).isOnlyPredecessors());
-            SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
-        }
+//        if (event.getAction() instanceof JIPipeDesktopRunAndShowResultsAction) {
+//            disableUpdateOnSelection = true;
+//            selectOnly(event.getUi());
+//            JIPipeDesktopPipelineSingleAlgorithmSelectionPanelUI panel = new JIPipeDesktopPipelineSingleAlgorithmSelectionPanelUI(this,
+//                    event.getUi().getNode());
+//            setPropertyPanel(panel, true);
+//            panel.executeQuickRun(true,
+//                    false,
+//                    false,
+//                    true,
+//                    ((JIPipeDesktopRunAndShowResultsAction) event.getAction()).isStoreIntermediateResults(),
+//                    false);
+//            SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
+//        } else if (event.getAction() instanceof JIPipeDesktopUpdateCacheAction) {
+//            disableUpdateOnSelection = true;
+//            selectOnly(event.getUi());
+//            JIPipeDesktopPipelineSingleAlgorithmSelectionPanelUI panel = new JIPipeDesktopPipelineSingleAlgorithmSelectionPanelUI(this,
+//                    event.getUi().getNode());
+//            setPropertyPanel(panel, true);
+//            panel.executeQuickRun(false,
+//                    true,
+//                    false,
+//                    false,
+//                    ((JIPipeDesktopUpdateCacheAction) event.getAction()).isStoreIntermediateResults(),
+//                    ((JIPipeDesktopUpdateCacheAction) event.getAction()).isOnlyPredecessors());
+//            SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
+//        }
     }
 
     @Override

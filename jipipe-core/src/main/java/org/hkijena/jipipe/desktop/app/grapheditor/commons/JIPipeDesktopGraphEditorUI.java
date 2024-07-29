@@ -41,6 +41,7 @@ import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
+import org.hkijena.jipipe.utils.ui.FloatingDockPanel;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.jfree.graphics2d.svg.SVGUtils;
 import org.scijava.Disposable;
@@ -60,16 +61,10 @@ import java.util.*;
  * and a menu bar
  */
 public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchPanel implements MouseListener, MouseMotionListener, Disposable, JIPipeGraph.GraphChangedEventListener,
-        JIPipeService.NodeInfoRegisteredEventListener,
         JIPipeDesktopGraphCanvasUI.NodeSelectionChangedEventListener,
         JIPipeDesktopGraphCanvasUI.NodeUISelectedEventListener,
         JIPipeDesktopGraphNodeUI.DefaultNodeUIActionRequestedEventListener,
-        JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEventListener, JIPipeDesktopNodeDatabaseSearchBox.SelectedEventListener {
-
-    public static final int FLAGS_NONE = 0;
-    public static final int FLAGS_SPLIT_PANE_VERTICAL = 1;
-    public static final int FLAGS_SPLIT_PANE_RATIO_1_1 = 2;
-    public static final int FLAGS_SPLIT_PANE_SWITCH_CONTENT = 4;
+        JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEventListener {
 
     public static final KeyStroke KEY_STROKE_UNDO = KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK, true);
     public static final KeyStroke KEY_STROKE_REDO = KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK, true);
@@ -84,39 +79,32 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
     private final JIPipeDesktopGraphCanvasUI canvasUI;
     private final JIPipeGraph graph;
     private final JIPipeHistoryJournal historyJournal;
-    private final int flags;
-    private final JMenu graphMenu = new JMenu("Workflow");
     private final List<JIPipeGraphEditorTool> tools = new ArrayList<>();
     private final Map<Class<? extends JIPipeGraphEditorTool>, JIPipeGraphEditorTool> toolMap = new HashMap<>();
     private final BiMap<JIPipeToggleableGraphEditorTool, JToggleButton> toolToggles = HashBiMap.create();
-    protected JMenuBar menuBar = new JMenuBar();
-    private JIPipeDesktopNodeDatabaseSearchBox nodeDatabaseSearchBox;
-    private JSplitPane splitPane;
+    private final JToolBar toolBar = new JToolBar();
     private JScrollPane scrollPane;
     private Point panningOffset = null;
     private Point panningScrollbarOffset = null;
     private boolean isPanning = false;
     private Set<JIPipeNodeInfo> addableAlgorithms = new HashSet<>();
     private JIPipeToggleableGraphEditorTool currentTool;
+    private final FloatingDockPanel dockPanel = new FloatingDockPanel();
 
     /**
      * @param workbenchUI    the workbench
      * @param graph          the algorithm graph
      * @param compartment    the graph compartment to display. Set to null to display all compartments
      * @param historyJournal object that tracks the history of this graph. Set to null to disable the undo feature.
-     * @param flags          additional flags
      */
-    public JIPipeDesktopGraphEditorUI(JIPipeDesktopWorkbench workbenchUI, JIPipeGraph graph, UUID compartment, JIPipeHistoryJournal historyJournal, JIPipeGraphEditorUIApplicationSettings settings, int flags) {
+    public JIPipeDesktopGraphEditorUI(JIPipeDesktopWorkbench workbenchUI, JIPipeGraph graph, UUID compartment, JIPipeHistoryJournal historyJournal, JIPipeGraphEditorUIApplicationSettings settings) {
         super(workbenchUI);
         this.graph = graph;
         this.historyJournal = historyJournal;
-        this.flags = flags;
         this.canvasUI = new JIPipeDesktopGraphCanvasUI(getDesktopWorkbench(), this, graph, compartment, historyJournal);
         this.graphUISettings = settings;
 
         initialize();
-        reloadMenuBar();
-        JIPipe.getInstance().getNodeInfoRegisteredEventEmitter().subscribeWeak(this);
         graph.getGraphChangedEventEmitter().subscribeWeak(this);
 
         initializeHotkeys();
@@ -133,7 +121,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
      * @param historyJournal object that tracks the history of this graph. Set to null to disable the undo feature.
      */
     public JIPipeDesktopGraphEditorUI(JIPipeDesktopWorkbench workbenchUI, JIPipeGraph graph, UUID compartment, JIPipeHistoryJournal historyJournal) {
-        this(workbenchUI, graph, compartment, historyJournal, JIPipeGraphEditorUIApplicationSettings.getInstance(), JIPipeDesktopGraphEditorUI.FLAGS_NONE);
+        this(workbenchUI, graph, compartment, historyJournal, JIPipeGraphEditorUIApplicationSettings.getInstance());
     }
 
     public static void installContextActionsInto(JToolBar toolBar, Set<JIPipeDesktopGraphNodeUI> selection, List<NodeUIContextAction> actionList, JIPipeDesktopGraphCanvasUI canvasUI) {
@@ -170,18 +158,8 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
 
     @Override
     public void dispose() {
-        JIPipe.getInstance().getNodeInfoRegisteredEventEmitter().unsubscribe(this);
         graph.getGraphChangedEventEmitter().unsubscribe(this);
         canvasUI.dispose();
-//        getRootPane().unregisterKeyboardAction(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0));
-    }
-
-    public int getFlags() {
-        return flags;
-    }
-
-    public JMenu getGraphMenu() {
-        return graphMenu;
     }
 
     public JIPipeGraphEditorUIApplicationSettings getGraphUISettings() {
@@ -200,7 +178,6 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         canvasUI.registerKeyboardAction(e -> canvasUI.moveSelection(1, 0, false), KEY_STROKE_MOVE_SELECTION_RIGHT, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         canvasUI.registerKeyboardAction(e -> canvasUI.moveSelection(0, -1, false), KEY_STROKE_MOVE_SELECTION_UP, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         canvasUI.registerKeyboardAction(e -> canvasUI.moveSelection(0, 1, false), KEY_STROKE_MOVE_SELECTION_DOWN, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-
     }
 
     public JScrollPane getScrollPane() {
@@ -211,20 +188,10 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         return canvasUI;
     }
 
-    public boolean isFlagSet(int flag) {
-        return (flags & flag) == flag;
-    }
-
     private void initialize() {
         setLayout(new BorderLayout());
-        int splitPaneSplit = isFlagSet(FLAGS_SPLIT_PANE_VERTICAL) ? JSplitPane.VERTICAL_SPLIT : JSplitPane.HORIZONTAL_SPLIT;
-        AutoResizeSplitPane.Ratio splitPaneRatio;
-        if (isFlagSet(FLAGS_SPLIT_PANE_RATIO_1_1)) {
-            splitPaneRatio = new AutoResizeSplitPane.FixedRatio(AutoResizeSplitPane.RATIO_1_TO_1);
-        } else {
-            splitPaneRatio = new AutoResizeSplitPane.DynamicSidebarRatio();
-        }
-        splitPane = new AutoResizeSplitPane(splitPaneSplit, splitPaneRatio);
+
+        toolBar.setFloatable(false);
 
         canvasUI.fullRedraw();
         canvasUI.getNodeUISelectedEventEmitter().subscribe(this);
@@ -238,36 +205,16 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         scrollPane.getHorizontalScrollBar().setUnitIncrement(25);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        if (isFlagSet(FLAGS_SPLIT_PANE_SWITCH_CONTENT)) {
-            splitPane.setRightComponent(scrollPane);
-            splitPane.setLeftComponent(new JPanel());
-        } else {
-            splitPane.setLeftComponent(scrollPane);
-            splitPane.setRightComponent(new JPanel());
-        }
-        add(splitPane, BorderLayout.CENTER);
 
-//        menuBar.setLayout(new BoxLayout(menuBar, BoxLayout.X_AXIS));
-        add(menuBar, BorderLayout.NORTH);
+        dockPanel.setBackgroundComponent(scrollPane);
 
-        // Init search box
-        JIPipeNodeDatabase database;
-        if (getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
-            database = ((JIPipeDesktopProjectWorkbench) getDesktopWorkbench()).getNodeDatabase();
-        } else {
-            database = JIPipeNodeDatabase.getInstance();
-        }
-        nodeDatabaseSearchBox = new JIPipeDesktopNodeDatabaseSearchBox(getDesktopWorkbench(), getNodeDatabaseRole(), database);
-        nodeDatabaseSearchBox.setAllowNew(graphUISettings.getSearchSettings().isSearchFindNewNodes());
-        nodeDatabaseSearchBox.setAllowExisting(graphUISettings.getSearchSettings().isSearchFindExistingNodes());
-        nodeDatabaseSearchBox.getSelectedEventEmitter().subscribe(this);
+        add(dockPanel, BorderLayout.CENTER);
+        add(toolBar, BorderLayout.NORTH);
 
         initializeEditingToolbar();
     }
 
     private void initializeEditingToolbar() {
-        JIPipeDesktopVerticalToolBar toolBar = new JIPipeDesktopVerticalToolBar();
-
         for (Class<? extends JIPipeGraphEditorTool> klass : JIPipe.getInstance().getGraphEditorToolRegistry().getRegisteredTools()) {
             JIPipeGraphEditorTool tool = (JIPipeGraphEditorTool) ReflectionUtils.newInstance(klass);
             if (tool.supports(this)) {
@@ -312,9 +259,10 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
             }
 
         }
+    }
 
-
-        add(toolBar, BorderLayout.WEST);
+    public FloatingDockPanel getDockPanel() {
+        return dockPanel;
     }
 
     public List<JIPipeGraphEditorTool> getTools() {
@@ -361,226 +309,226 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         return canvasUI.getSelection();
     }
 
-    /**
-     * Reloads the menu bar
-     */
-    public void reloadMenuBar() {
-        menuBar.removeAll();
-        initializeCommonActions();
-    }
+//    /**
+//     * Reloads the menu bar
+//     */
+//    public void reloadMenuBar() {
+//        menuBar.removeAll();
+//        initializeCommonActions();
+//    }
+//
+//    /**
+//     * Initializes the tool bar
+//     */
+//    protected void initializeCommonActions() {
+//        menuBar.add(Box.createHorizontalGlue());
+//        menuBar.add(Box.createHorizontalStrut(8));
+//
+//        menuBar.add(nodeDatabaseSearchBox);
+//        nodeDatabaseSearchBox.setVisible(graphUISettings.getSearchSettings().isEnableSearch());
+//        menuBar.add(Box.createHorizontalStrut(8));
+//        menuBar.add(Box.createVerticalStrut(42));
+//
+//        List<JIPipeDesktopGraphEditorToolBarButtonExtension> graphEditorToolBarButtonExtensions = JIPipe.getCustomMenus().graphEditorToolBarButtonExtensionsFor(this);
+//        for (JIPipeDesktopGraphEditorToolBarButtonExtension extension : graphEditorToolBarButtonExtensions) {
+//            UIUtils.makeButtonFlat25x25(extension);
+//            menuBar.add(extension);
+//        }
+//
+//        if (!graphEditorToolBarButtonExtensions.isEmpty())
+//            menuBar.add(new JSeparator(JSeparator.VERTICAL));
+//
+//        if (getHistoryJournal() != null) {
+//            JButton undoButton = new JButton(UIUtils.getIconFromResources("actions/undo.png"));
+//            undoButton.setToolTipText("<html>Undo<br><i>Ctrl-Z</i></html>");
+//            UIUtils.makeButtonFlat25x25(undoButton);
+//            undoButton.addActionListener(e -> undo());
+//            menuBar.add(undoButton);
+//
+//            JButton redoButton = new JButton(UIUtils.getIconFromResources("actions/edit-redo.png"));
+//            redoButton.setToolTipText("<html>Redo<br><i>Ctrl-Shift-Z</i></html>");
+//            UIUtils.makeButtonFlat25x25(redoButton);
+//            redoButton.addActionListener(e -> redo());
+//            menuBar.add(redoButton);
+//        }
+//
+//        initializeCenterViewCommand(graphMenu);
+//        initializeToggleHideEdgesCommand(graphMenu);
+//        initializeExportMenu(graphMenu);
+//        initializeLayoutMenu(graphMenu);
+//        initializeSearchMenu(graphMenu);
+//
+//        menuBar.add(UIUtils.createVerticalSeparator());
+//
+//        initializeZoomMenu();
+//
+//        menuBar.add(UIUtils.createVerticalSeparator());
+//
+//        graphMenu.setIcon(UIUtils.getIconFromResources("actions/bars.png"));
+//        menuBar.add(graphMenu);
+//    }
 
-    /**
-     * Initializes the tool bar
-     */
-    protected void initializeCommonActions() {
-        menuBar.add(Box.createHorizontalGlue());
-        menuBar.add(Box.createHorizontalStrut(8));
-
-        menuBar.add(nodeDatabaseSearchBox);
-        nodeDatabaseSearchBox.setVisible(graphUISettings.getSearchSettings().isEnableSearch());
-        menuBar.add(Box.createHorizontalStrut(8));
-        menuBar.add(Box.createVerticalStrut(42));
-
-        List<JIPipeDesktopGraphEditorToolBarButtonExtension> graphEditorToolBarButtonExtensions = JIPipe.getCustomMenus().graphEditorToolBarButtonExtensionsFor(this);
-        for (JIPipeDesktopGraphEditorToolBarButtonExtension extension : graphEditorToolBarButtonExtensions) {
-            UIUtils.makeButtonFlat25x25(extension);
-            menuBar.add(extension);
-        }
-
-        if (!graphEditorToolBarButtonExtensions.isEmpty())
-            menuBar.add(new JSeparator(JSeparator.VERTICAL));
-
-        if (getHistoryJournal() != null) {
-            JButton undoButton = new JButton(UIUtils.getIconFromResources("actions/undo.png"));
-            undoButton.setToolTipText("<html>Undo<br><i>Ctrl-Z</i></html>");
-            UIUtils.makeButtonFlat25x25(undoButton);
-            undoButton.addActionListener(e -> undo());
-            menuBar.add(undoButton);
-
-            JButton redoButton = new JButton(UIUtils.getIconFromResources("actions/edit-redo.png"));
-            redoButton.setToolTipText("<html>Redo<br><i>Ctrl-Shift-Z</i></html>");
-            UIUtils.makeButtonFlat25x25(redoButton);
-            redoButton.addActionListener(e -> redo());
-            menuBar.add(redoButton);
-        }
-
-        initializeCenterViewCommand(graphMenu);
-        initializeToggleHideEdgesCommand(graphMenu);
-        initializeExportMenu(graphMenu);
-        initializeLayoutMenu(graphMenu);
-        initializeSearchMenu(graphMenu);
-
-        menuBar.add(UIUtils.createVerticalSeparator());
-
-        initializeZoomMenu();
-
-        menuBar.add(UIUtils.createVerticalSeparator());
-
-        graphMenu.setIcon(UIUtils.getIconFromResources("actions/bars.png"));
-        menuBar.add(graphMenu);
-    }
-
-    private void initializeToggleHideEdgesCommand(JMenu graphMenu) {
-        JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Auto-mute edges", canvasUI.isAutoMuteEdges());
-        toggle.addActionListener(e -> {
-            canvasUI.setAutoMuteEdges(toggle.getState());
-            canvasUI.repaint(50);
-        });
-        graphMenu.add(toggle);
-    }
-
-    private void initializeZoomMenu() {
-        JButton zoomOutButton = new JButton(UIUtils.getIconFromResources("actions/square-minus.png"));
-        UIUtils.makeButtonFlat25x25(zoomOutButton);
-        zoomOutButton.setToolTipText("<html>Zoom out<br><i>Ctrl-NumPad -</i></html>");
-        zoomOutButton.addActionListener(e -> canvasUI.zoomOut());
-        menuBar.add(zoomOutButton);
-
-        JButton zoomButton = new JButton((int) (canvasUI.getZoom() * 100) + "%");
-        zoomButton.setToolTipText("<html>Change zoom<br>Reset zoom: <i>Ctrl-NumPad 0</i></html>");
-        canvasUI.getZoomChangedEventEmitter().subscribeLambda((emitter, event) -> {
-            zoomButton.setText((int) (canvasUI.getZoom() * 100) + "%");
-        });
-        zoomButton.setBorder(null);
-        JPopupMenu zoomMenu = UIUtils.addPopupMenuToButton(zoomButton);
-        for (double zoom = 0.1; zoom <= 3; zoom += 0.25) {
-            JMenuItem changeZoomItem = new JMenuItem((int) (zoom * 100) + "%", UIUtils.getIconFromResources("actions/zoom.png"));
-            double finalZoom = zoom;
-            changeZoomItem.addActionListener(e -> canvasUI.setZoom(finalZoom));
-            zoomMenu.add(changeZoomItem);
-        }
-        zoomMenu.addSeparator();
-        zoomMenu.add(UIUtils.createMenuItem("Reset zoom", "Resets the zoom to 100%",
-                UIUtils.getIconFromResources("actions/edit-reset.png"), () -> canvasUI.setZoom(1)));
-        JMenuItem changeZoomToItem = new JMenuItem("Set zoom value ...");
-        changeZoomToItem.addActionListener(e -> {
-            String zoomInput = JOptionPane.showInputDialog(this, "Please enter a new zoom value (in %)", (int) (canvasUI.getZoom() * 100) + "%");
-            if (!StringUtils.isNullOrEmpty(zoomInput)) {
-                zoomInput = zoomInput.replace("%", "");
-                try {
-                    int percentage = Integer.parseInt(zoomInput);
-                    canvasUI.setZoom(percentage / 100.0);
-                } catch (NumberFormatException ex) {
-                    ex.printStackTrace();
-                }
-            }
-        });
-        zoomMenu.add(changeZoomToItem);
-        menuBar.add(zoomButton);
-
-        JButton zoomInButton = new JButton(UIUtils.getIconFromResources("actions/square-plus.png"));
-        UIUtils.makeButtonFlat25x25(zoomInButton);
-        zoomInButton.setToolTipText("<html>Zoom in<br><i>Ctrl-NumPad +</i></html>");
-        zoomInButton.addActionListener(e -> canvasUI.zoomIn());
-        menuBar.add(zoomInButton);
-    }
-
-    private void initializeSearchMenu(JMenu graphMenu) {
-        JMenu searchMenu = new JMenu("Search");
-        searchMenu.setIcon(UIUtils.getIconFromResources("actions/search.png"));
-        graphMenu.add(searchMenu);
-
-        JMenuItem searchEnabledItem = new JCheckBoxMenuItem("Enable search");
-        searchEnabledItem.setSelected(graphUISettings.getSearchSettings().isEnableSearch());
-        searchEnabledItem.addActionListener(e -> {
-            graphUISettings.getSearchSettings().setEnableSearch(searchEnabledItem.isSelected());
-            if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                JIPipe.getInstance().getApplicationSettingsRegistry().save();
-            }
-            nodeDatabaseSearchBox.setVisible(graphUISettings.getSearchSettings().isEnableSearch());
-            menuBar.revalidate();
-        });
-        searchMenu.add(searchEnabledItem);
-
-        JMenuItem searchFindNewNodes = new JCheckBoxMenuItem("Search can create new nodes");
-        searchFindNewNodes.setSelected(graphUISettings.getSearchSettings().isSearchFindNewNodes());
-        searchFindNewNodes.addActionListener(e -> {
-            graphUISettings.getSearchSettings().setSearchFindNewNodes(searchFindNewNodes.isSelected());
-            if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                JIPipe.getInstance().getApplicationSettingsRegistry().save();
-            }
-            nodeDatabaseSearchBox.setAllowNew(searchFindNewNodes.isSelected());
-        });
-        searchMenu.add(searchFindNewNodes);
-
-        JMenuItem searchFindExistingNodes = new JCheckBoxMenuItem("Search can find existing nodes");
-        searchFindExistingNodes.setSelected(graphUISettings.getSearchSettings().isSearchFindExistingNodes());
-        searchFindExistingNodes.addActionListener(e -> {
-            graphUISettings.getSearchSettings().setSearchFindExistingNodes(searchFindExistingNodes.isSelected());
-            if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                JIPipe.getInstance().getApplicationSettingsRegistry().save();
-            }
-            nodeDatabaseSearchBox.setAllowExisting(searchFindExistingNodes.isSelected());
-        });
-        searchMenu.add(searchFindExistingNodes);
-    }
-
-    private void initializeExportMenu(JMenu graphMenu) {
-        JMenu exportAsImageMenu = new JMenu("Export as image");
-        exportAsImageMenu.setIcon(UIUtils.getIconFromResources("actions/document-export.png"));
-        graphMenu.add(exportAsImageMenu);
-
-        JMenuItem exportToClipboardItem = new JMenuItem("Copy snapshot to clipboard", UIUtils.getIconFromResources("actions/edit-copy.png"));
-        exportToClipboardItem.addActionListener(e -> createScreenshotClipboard());
-        exportAsImageMenu.add(exportToClipboardItem);
-        JMenuItem exportAsPngItem = new JMenuItem("Export as *.png", UIUtils.getIconFromResources("actions/viewimage.png"));
-        exportAsPngItem.addActionListener(e -> createScreenshotPNG());
-        exportAsImageMenu.add(exportAsPngItem);
-        JMenuItem exportAsSvgItem = new JMenuItem("Export as *.svg", UIUtils.getIconFromResources("actions/viewimage.png"));
-        exportAsSvgItem.addActionListener(e -> createScreenshotSVG());
-        exportAsImageMenu.add(exportAsSvgItem);
-    }
-
-    private void initializeCenterViewCommand(JMenu graphMenu) {
-        JMenuItem centerViewButton = new JMenuItem("Center view to nodes");
-        centerViewButton.setIcon(UIUtils.getIconFromResources("actions/view-restore.png"));
-        centerViewButton.addActionListener(e -> {
-            if (getHistoryJournal() != null) {
-                getHistoryJournal().snapshot("Center view to nodes",
-                        "Apply center view to nodes",
-                        getCompartment(),
-                        UIUtils.getIconFromResources("actions/view-restore.png"));
-            }
-            canvasUI.crop(true);
-        });
-        graphMenu.add(centerViewButton);
-    }
-
-    private void initializeLayoutMenu(JMenu graphMenu) {
-
-        JMenu layoutMenu = new JMenu("Layout");
-        layoutMenu.setIcon(UIUtils.getIconFromResources("actions/distribute-randomize.png"));
-        graphMenu.add(layoutMenu);
-
-        JMenuItem autoLayoutItem = new JMenuItem("Auto-layout all nodes", UIUtils.getIconFromResources("actions/distribute-unclump.png"));
-        autoLayoutItem.addActionListener(e -> {
-            if (getHistoryJournal() != null) {
-                getHistoryJournal().snapshot("Auto-layout", "Apply auto-layout", getCompartment(), UIUtils.getIconFromResources("actions/distribute-unclump.png"));
-            }
-            canvasUI.autoLayoutAll();
-        });
-        autoLayoutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK));
-        layoutMenu.add(autoLayoutItem);
-
-        JCheckBoxMenuItem layoutOnConnectItem = new JCheckBoxMenuItem("Layout nodes on connect",
-                UIUtils.getIconFromResources("actions/connector-avoid.png"),
-                JIPipeGraphEditorUIApplicationSettings.getInstance().isLayoutAfterConnect());
-        layoutOnConnectItem.setToolTipText("Auto-layout layout on making data slot connections");
-        layoutOnConnectItem.addActionListener(e -> {
-            JIPipeGraphEditorUIApplicationSettings.getInstance().setLayoutAfterConnect(layoutOnConnectItem.isSelected());
-        });
-
-        layoutMenu.add(layoutOnConnectItem);
-
-        JCheckBoxMenuItem layoutOnAlgorithmFinderItem = new JCheckBoxMenuItem("Layout nodes on 'Find matching node'",
-                UIUtils.getIconFromResources("actions/connector-avoid.png"),
-                JIPipeGraphEditorUIApplicationSettings.getInstance().isLayoutAfterAlgorithmFinder());
-        layoutOnAlgorithmFinderItem.setToolTipText("Auto-layout layout on utilizing the 'Find matching node' feature");
-        layoutOnAlgorithmFinderItem.addActionListener(e -> {
-            JIPipeGraphEditorUIApplicationSettings.getInstance().setLayoutAfterAlgorithmFinder(layoutOnAlgorithmFinderItem.isSelected());
-        });
-        layoutMenu.add(layoutOnAlgorithmFinderItem);
-    }
+//    private void initializeToggleHideEdgesCommand(JMenu graphMenu) {
+//        JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Auto-mute edges", canvasUI.isAutoMuteEdges());
+//        toggle.addActionListener(e -> {
+//            canvasUI.setAutoMuteEdges(toggle.getState());
+//            canvasUI.repaint(50);
+//        });
+//        graphMenu.add(toggle);
+//    }
+//
+//    private void initializeZoomMenu() {
+//        JButton zoomOutButton = new JButton(UIUtils.getIconFromResources("actions/square-minus.png"));
+//        UIUtils.makeButtonFlat25x25(zoomOutButton);
+//        zoomOutButton.setToolTipText("<html>Zoom out<br><i>Ctrl-NumPad -</i></html>");
+//        zoomOutButton.addActionListener(e -> canvasUI.zoomOut());
+//        menuBar.add(zoomOutButton);
+//
+//        JButton zoomButton = new JButton((int) (canvasUI.getZoom() * 100) + "%");
+//        zoomButton.setToolTipText("<html>Change zoom<br>Reset zoom: <i>Ctrl-NumPad 0</i></html>");
+//        canvasUI.getZoomChangedEventEmitter().subscribeLambda((emitter, event) -> {
+//            zoomButton.setText((int) (canvasUI.getZoom() * 100) + "%");
+//        });
+//        zoomButton.setBorder(null);
+//        JPopupMenu zoomMenu = UIUtils.addPopupMenuToButton(zoomButton);
+//        for (double zoom = 0.1; zoom <= 3; zoom += 0.25) {
+//            JMenuItem changeZoomItem = new JMenuItem((int) (zoom * 100) + "%", UIUtils.getIconFromResources("actions/zoom.png"));
+//            double finalZoom = zoom;
+//            changeZoomItem.addActionListener(e -> canvasUI.setZoom(finalZoom));
+//            zoomMenu.add(changeZoomItem);
+//        }
+//        zoomMenu.addSeparator();
+//        zoomMenu.add(UIUtils.createMenuItem("Reset zoom", "Resets the zoom to 100%",
+//                UIUtils.getIconFromResources("actions/edit-reset.png"), () -> canvasUI.setZoom(1)));
+//        JMenuItem changeZoomToItem = new JMenuItem("Set zoom value ...");
+//        changeZoomToItem.addActionListener(e -> {
+//            String zoomInput = JOptionPane.showInputDialog(this, "Please enter a new zoom value (in %)", (int) (canvasUI.getZoom() * 100) + "%");
+//            if (!StringUtils.isNullOrEmpty(zoomInput)) {
+//                zoomInput = zoomInput.replace("%", "");
+//                try {
+//                    int percentage = Integer.parseInt(zoomInput);
+//                    canvasUI.setZoom(percentage / 100.0);
+//                } catch (NumberFormatException ex) {
+//                    ex.printStackTrace();
+//                }
+//            }
+//        });
+//        zoomMenu.add(changeZoomToItem);
+//        menuBar.add(zoomButton);
+//
+//        JButton zoomInButton = new JButton(UIUtils.getIconFromResources("actions/square-plus.png"));
+//        UIUtils.makeButtonFlat25x25(zoomInButton);
+//        zoomInButton.setToolTipText("<html>Zoom in<br><i>Ctrl-NumPad +</i></html>");
+//        zoomInButton.addActionListener(e -> canvasUI.zoomIn());
+//        menuBar.add(zoomInButton);
+//    }
+//
+//    private void initializeSearchMenu(JMenu graphMenu) {
+//        JMenu searchMenu = new JMenu("Search");
+//        searchMenu.setIcon(UIUtils.getIconFromResources("actions/search.png"));
+//        graphMenu.add(searchMenu);
+//
+//        JMenuItem searchEnabledItem = new JCheckBoxMenuItem("Enable search");
+//        searchEnabledItem.setSelected(graphUISettings.getSearchSettings().isEnableSearch());
+//        searchEnabledItem.addActionListener(e -> {
+//            graphUISettings.getSearchSettings().setEnableSearch(searchEnabledItem.isSelected());
+//            if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
+//                JIPipe.getInstance().getApplicationSettingsRegistry().save();
+//            }
+//            nodeDatabaseSearchBox.setVisible(graphUISettings.getSearchSettings().isEnableSearch());
+//            menuBar.revalidate();
+//        });
+//        searchMenu.add(searchEnabledItem);
+//
+//        JMenuItem searchFindNewNodes = new JCheckBoxMenuItem("Search can create new nodes");
+//        searchFindNewNodes.setSelected(graphUISettings.getSearchSettings().isSearchFindNewNodes());
+//        searchFindNewNodes.addActionListener(e -> {
+//            graphUISettings.getSearchSettings().setSearchFindNewNodes(searchFindNewNodes.isSelected());
+//            if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
+//                JIPipe.getInstance().getApplicationSettingsRegistry().save();
+//            }
+//            nodeDatabaseSearchBox.setAllowNew(searchFindNewNodes.isSelected());
+//        });
+//        searchMenu.add(searchFindNewNodes);
+//
+//        JMenuItem searchFindExistingNodes = new JCheckBoxMenuItem("Search can find existing nodes");
+//        searchFindExistingNodes.setSelected(graphUISettings.getSearchSettings().isSearchFindExistingNodes());
+//        searchFindExistingNodes.addActionListener(e -> {
+//            graphUISettings.getSearchSettings().setSearchFindExistingNodes(searchFindExistingNodes.isSelected());
+//            if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
+//                JIPipe.getInstance().getApplicationSettingsRegistry().save();
+//            }
+//            nodeDatabaseSearchBox.setAllowExisting(searchFindExistingNodes.isSelected());
+//        });
+//        searchMenu.add(searchFindExistingNodes);
+//    }
+//
+//    private void initializeExportMenu(JMenu graphMenu) {
+//        JMenu exportAsImageMenu = new JMenu("Export as image");
+//        exportAsImageMenu.setIcon(UIUtils.getIconFromResources("actions/document-export.png"));
+//        graphMenu.add(exportAsImageMenu);
+//
+//        JMenuItem exportToClipboardItem = new JMenuItem("Copy snapshot to clipboard", UIUtils.getIconFromResources("actions/edit-copy.png"));
+//        exportToClipboardItem.addActionListener(e -> createScreenshotClipboard());
+//        exportAsImageMenu.add(exportToClipboardItem);
+//        JMenuItem exportAsPngItem = new JMenuItem("Export as *.png", UIUtils.getIconFromResources("actions/viewimage.png"));
+//        exportAsPngItem.addActionListener(e -> createScreenshotPNG());
+//        exportAsImageMenu.add(exportAsPngItem);
+//        JMenuItem exportAsSvgItem = new JMenuItem("Export as *.svg", UIUtils.getIconFromResources("actions/viewimage.png"));
+//        exportAsSvgItem.addActionListener(e -> createScreenshotSVG());
+//        exportAsImageMenu.add(exportAsSvgItem);
+//    }
+//
+//    private void initializeCenterViewCommand(JMenu graphMenu) {
+//        JMenuItem centerViewButton = new JMenuItem("Center view to nodes");
+//        centerViewButton.setIcon(UIUtils.getIconFromResources("actions/view-restore.png"));
+//        centerViewButton.addActionListener(e -> {
+//            if (getHistoryJournal() != null) {
+//                getHistoryJournal().snapshot("Center view to nodes",
+//                        "Apply center view to nodes",
+//                        getCompartment(),
+//                        UIUtils.getIconFromResources("actions/view-restore.png"));
+//            }
+//            canvasUI.crop(true);
+//        });
+//        graphMenu.add(centerViewButton);
+//    }
+//
+//    private void initializeLayoutMenu(JMenu graphMenu) {
+//
+//        JMenu layoutMenu = new JMenu("Layout");
+//        layoutMenu.setIcon(UIUtils.getIconFromResources("actions/distribute-randomize.png"));
+//        graphMenu.add(layoutMenu);
+//
+//        JMenuItem autoLayoutItem = new JMenuItem("Auto-layout all nodes", UIUtils.getIconFromResources("actions/distribute-unclump.png"));
+//        autoLayoutItem.addActionListener(e -> {
+//            if (getHistoryJournal() != null) {
+//                getHistoryJournal().snapshot("Auto-layout", "Apply auto-layout", getCompartment(), UIUtils.getIconFromResources("actions/distribute-unclump.png"));
+//            }
+//            canvasUI.autoLayoutAll();
+//        });
+//        autoLayoutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK));
+//        layoutMenu.add(autoLayoutItem);
+//
+//        JCheckBoxMenuItem layoutOnConnectItem = new JCheckBoxMenuItem("Layout nodes on connect",
+//                UIUtils.getIconFromResources("actions/connector-avoid.png"),
+//                JIPipeGraphEditorUIApplicationSettings.getInstance().isLayoutAfterConnect());
+//        layoutOnConnectItem.setToolTipText("Auto-layout layout on making data slot connections");
+//        layoutOnConnectItem.addActionListener(e -> {
+//            JIPipeGraphEditorUIApplicationSettings.getInstance().setLayoutAfterConnect(layoutOnConnectItem.isSelected());
+//        });
+//
+//        layoutMenu.add(layoutOnConnectItem);
+//
+//        JCheckBoxMenuItem layoutOnAlgorithmFinderItem = new JCheckBoxMenuItem("Layout nodes on 'Find matching node'",
+//                UIUtils.getIconFromResources("actions/connector-avoid.png"),
+//                JIPipeGraphEditorUIApplicationSettings.getInstance().isLayoutAfterAlgorithmFinder());
+//        layoutOnAlgorithmFinderItem.setToolTipText("Auto-layout layout on utilizing the 'Find matching node' feature");
+//        layoutOnAlgorithmFinderItem.addActionListener(e -> {
+//            JIPipeGraphEditorUIApplicationSettings.getInstance().setLayoutAfterAlgorithmFinder(layoutOnAlgorithmFinderItem.isSelected());
+//        });
+//        layoutMenu.add(layoutOnAlgorithmFinderItem);
+//    }
 
     public void createScreenshotClipboard() {
         BufferedImage screenshot = canvasUI.createScreenshotPNG();
@@ -706,32 +654,6 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         canvasUI.removeFromSelection(ui);
     }
 
-    protected Component getPropertyPanel() {
-        return splitPane.getRightComponent();
-    }
-
-    /**
-     * Sets the component displayed in the right property panel
-     *
-     * @param content         the component
-     * @param disposeExisting if the old component should be disposed
-     */
-    protected void setPropertyPanel(Component content, boolean disposeExisting) {
-        int dividerLocation = splitPane.getDividerLocation();
-        if (isFlagSet(FLAGS_SPLIT_PANE_SWITCH_CONTENT)) {
-            if (disposeExisting && splitPane.getLeftComponent() instanceof Disposable) {
-                ((Disposable) splitPane.getLeftComponent()).dispose();
-            }
-            splitPane.setLeftComponent(content);
-        } else {
-            if (disposeExisting && splitPane.getRightComponent() instanceof Disposable) {
-                ((Disposable) splitPane.getRightComponent()).dispose();
-            }
-            splitPane.setRightComponent(content);
-        }
-        splitPane.setDividerLocation(dividerLocation);
-    }
-
     /**
      * Adds an algorithm to the selection
      *
@@ -843,10 +765,6 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         return canvasUI.getCompartmentUUID();
     }
 
-    protected JMenuBar getMenuBar() {
-        return menuBar;
-    }
-
     public Set<JIPipeNodeInfo> getAddableAlgorithms() {
         return addableAlgorithms;
     }
@@ -863,12 +781,6 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
     @Override
     public void onGraphChanged(JIPipeGraph.GraphChangedEvent event) {
 //        updateNavigation();
-    }
-
-    @Override
-    public void onJIPipeNodeInfoRegistered(JIPipeService.NodeInfoRegisteredEvent event) {
-        reloadMenuBar();
-        getDesktopWorkbench().sendStatusBarText("Plugins were updated");
     }
 
     @Override
@@ -905,49 +817,49 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
 
     public abstract JIPipeNodeDatabaseRole getNodeDatabaseRole();
 
-    @Override
-    public void onSearchBoxSelectedEvent(JIPipeDesktopNodeDatabaseSearchBox.SelectedEvent event) {
-        JIPipeNodeDatabaseEntry entry = event.getValue();
-
-        if (entry instanceof CreateNewNodeByInfoDatabaseEntry) {
-
-            if (!JIPipeDesktopProjectWorkbench.canAddOrDeleteNodes(getDesktopWorkbench()))
-                return;
-            JIPipeNodeInfo info = ((CreateNewNodeByInfoDatabaseEntry) entry).getNodeInfo();
-            JIPipeGraphNode node = info.newInstance();
-            if (getHistoryJournal() != null) {
-                getHistoryJournal().snapshotBeforeAddNode(node, getCompartment());
-            }
-            canvasUI.getScheduledSelection().clear();
-            canvasUI.getScheduledSelection().add(node);
-            graph.insertNode(node, getCompartment());
-            nodeDatabaseSearchBox.setSelectedItem(null);
-        } else if (entry instanceof CreateNewNodeByExampleDatabaseEntry) {
-            if (!JIPipeDesktopProjectWorkbench.canAddOrDeleteNodes(getDesktopWorkbench()))
-                return;
-            JIPipeNodeExample example = ((CreateNewNodeByExampleDatabaseEntry) entry).getExample();
-            JIPipeNodeInfo info = example.getNodeInfo();
-            JIPipeGraphNode node = info.newInstance();
-            if (node instanceof JIPipeAlgorithm) {
-                ((JIPipeAlgorithm) node).loadExample(example);
-            }
-            if (getHistoryJournal() != null) {
-                getHistoryJournal().snapshotBeforeAddNode(node, getCompartment());
-            }
-            canvasUI.getScheduledSelection().clear();
-            canvasUI.getScheduledSelection().add(node);
-            graph.insertNode(node, getCompartment());
-            nodeDatabaseSearchBox.setSelectedItem(null);
-        } else if (entry instanceof ExistingPipelineNodeDatabaseEntry) {
-            JIPipeGraphNode graphNode = ((ExistingPipelineNodeDatabaseEntry) entry).getGraphNode();
-            selectOnly(canvasUI.getNodeUIs().get(graphNode));
-            nodeDatabaseSearchBox.setSelectedItem(null);
-        } else if (entry instanceof ExistingCompartmentDatabaseEntry) {
-            JIPipeGraphNode graphNode = ((ExistingCompartmentDatabaseEntry) entry).getCompartment();
-            selectOnly(canvasUI.getNodeUIs().get(graphNode));
-            nodeDatabaseSearchBox.setSelectedItem(null);
-        }
-    }
+//    @Override
+//    public void onSearchBoxSelectedEvent(JIPipeDesktopNodeDatabaseSearchBox.SelectedEvent event) {
+//        JIPipeNodeDatabaseEntry entry = event.getValue();
+//
+//        if (entry instanceof CreateNewNodeByInfoDatabaseEntry) {
+//
+//            if (!JIPipeDesktopProjectWorkbench.canAddOrDeleteNodes(getDesktopWorkbench()))
+//                return;
+//            JIPipeNodeInfo info = ((CreateNewNodeByInfoDatabaseEntry) entry).getNodeInfo();
+//            JIPipeGraphNode node = info.newInstance();
+//            if (getHistoryJournal() != null) {
+//                getHistoryJournal().snapshotBeforeAddNode(node, getCompartment());
+//            }
+//            canvasUI.getScheduledSelection().clear();
+//            canvasUI.getScheduledSelection().add(node);
+//            graph.insertNode(node, getCompartment());
+//            nodeDatabaseSearchBox.setSelectedItem(null);
+//        } else if (entry instanceof CreateNewNodeByExampleDatabaseEntry) {
+//            if (!JIPipeDesktopProjectWorkbench.canAddOrDeleteNodes(getDesktopWorkbench()))
+//                return;
+//            JIPipeNodeExample example = ((CreateNewNodeByExampleDatabaseEntry) entry).getExample();
+//            JIPipeNodeInfo info = example.getNodeInfo();
+//            JIPipeGraphNode node = info.newInstance();
+//            if (node instanceof JIPipeAlgorithm) {
+//                ((JIPipeAlgorithm) node).loadExample(example);
+//            }
+//            if (getHistoryJournal() != null) {
+//                getHistoryJournal().snapshotBeforeAddNode(node, getCompartment());
+//            }
+//            canvasUI.getScheduledSelection().clear();
+//            canvasUI.getScheduledSelection().add(node);
+//            graph.insertNode(node, getCompartment());
+//            nodeDatabaseSearchBox.setSelectedItem(null);
+//        } else if (entry instanceof ExistingPipelineNodeDatabaseEntry) {
+//            JIPipeGraphNode graphNode = ((ExistingPipelineNodeDatabaseEntry) entry).getGraphNode();
+//            selectOnly(canvasUI.getNodeUIs().get(graphNode));
+//            nodeDatabaseSearchBox.setSelectedItem(null);
+//        } else if (entry instanceof ExistingCompartmentDatabaseEntry) {
+//            JIPipeGraphNode graphNode = ((ExistingCompartmentDatabaseEntry) entry).getCompartment();
+//            selectOnly(canvasUI.getNodeUIs().get(graphNode));
+//            nodeDatabaseSearchBox.setSelectedItem(null);
+//        }
+//    }
 
     /**
      * Renders items in the navigator

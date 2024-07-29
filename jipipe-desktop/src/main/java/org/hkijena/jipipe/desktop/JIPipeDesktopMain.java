@@ -21,7 +21,6 @@ import org.hkijena.jipipe.desktop.commons.events.WindowClosedEvent;
 import org.hkijena.jipipe.desktop.commons.events.WindowClosedEventListener;
 import org.hkijena.jipipe.desktop.commons.events.WindowOpenedEvent;
 import org.hkijena.jipipe.desktop.commons.events.WindowOpenedEventListener;
-import org.hkijena.jipipe.desktop.jsonextensionbuilder.JIPipeDesktopJsonExtensionWindow;
 
 import javax.swing.*;
 
@@ -39,15 +38,12 @@ public class JIPipeDesktopMain {
         public WindowWatcher() {
             JIPipeDesktopProjectWindow.WINDOW_OPENED_EVENT_EMITTER.subscribe(this);
             JIPipeDesktopProjectWindow.WINDOW_CLOSED_EVENT_EMITTER.subscribe(this);
-            JIPipeDesktopJsonExtensionWindow.WINDOW_OPENED_EVENT_EMITTER.subscribe(this);
-            JIPipeDesktopJsonExtensionWindow.WINDOW_CLOSED_EVENT_EMITTER.subscribe(this);
         }
 
         @Override
         public void onWindowClosed(WindowClosedEvent event) {
             int windowsOpen = 0;
             windowsOpen += JIPipeDesktopProjectWindow.getOpenWindows().size();
-            windowsOpen += JIPipeDesktopJsonExtensionWindow.getOpenWindows().size();
 
             if (windowsOpen == 0 && !JIPipe.isRestarting()) {
                 JIPipe.exitLater(0);

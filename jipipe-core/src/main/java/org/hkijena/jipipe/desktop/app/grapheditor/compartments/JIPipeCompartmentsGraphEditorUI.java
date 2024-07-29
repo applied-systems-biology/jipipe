@@ -42,6 +42,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ui.FloatingDockPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -56,7 +57,6 @@ import java.util.stream.Collectors;
  * Graph editor UI for a project compartment graph
  */
 public class JIPipeCompartmentsGraphEditorUI extends JIPipeDesktopGraphEditorUI {
-    private JPanel defaultPanel;
 
     private boolean disableUpdateOnSelection = false;
 
@@ -65,8 +65,7 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeDesktopGraphEditorUI 
      */
     public JIPipeCompartmentsGraphEditorUI(JIPipeDesktopProjectWorkbench workbenchUI) {
         super(workbenchUI, workbenchUI.getProject().getCompartmentGraph(), null, workbenchUI.getProject().getHistoryJournal());
-        initializeDefaultPanel();
-        setPropertyPanel(defaultPanel, true);
+        initializeDefaultPanels();
 
         getCanvasUI().setDragAndDropBehavior(new JIPipeCompartmentGraphDragAndDropBehavior());
         List<NodeUIContextAction> actions = Arrays.asList(
@@ -90,7 +89,6 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeDesktopGraphEditorUI 
                 new ClearCacheNodeUIContextAction(),
                 NodeUIContextAction.SEPARATOR,
                 new ExportCompartmentAsJsonNodeUIContextAction(),
-                new ExportCompartmentToNodeUIContextAction(),
                 NodeUIContextAction.SEPARATOR,
                 new DeleteCompartmentUIContextAction(),
                 NodeUIContextAction.SEPARATOR,
@@ -115,38 +113,41 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeDesktopGraphEditorUI 
         getCanvasUI().setContextActions(actions);
     }
 
-    private void initializeDefaultPanel() {
-        defaultPanel = new JPanel(new BorderLayout());
+    private void initializeDefaultPanels() {
 
-        JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.VERTICAL_SPLIT, AutoResizeSplitPane.RATIO_1_TO_3);
-        defaultPanel.add(splitPane, BorderLayout.CENTER);
+        getDockPanel().addDockPanel("MINIMAP",
+                "Minimap",
+                UIUtils.getIcon32FromResources("actions/document-preview.png"),
+                FloatingDockPanel.PanelLocation.TopLeft,
+                true,
+                new JIPipeDesktopGraphEditorMinimap(this));
+        getDockPanel().addDockPanel("QUICK_GUIDE",
+                "Quick guide",
+                UIUtils.getIcon32FromResources("actions/help.png"),
+                FloatingDockPanel.PanelLocation.BottomLeft,
+                true,
+                new JIPipeDesktopMarkdownReader(false, MarkdownText.fromPluginResource("documentation/compartment-graph.md", new HashMap<>())));
 
-        JIPipeDesktopGraphEditorMinimap minimap = new JIPipeDesktopGraphEditorMinimap(this);
-        splitPane.setTopComponent(minimap);
-
-        JIPipeDesktopTabPane bottomPanel = new JIPipeDesktopTabPane(false, JIPipeDesktopTabPane.TabPlacement.Right);
-
-        JIPipeDesktopMarkdownReader markdownReader = new JIPipeDesktopMarkdownReader(false);
-        markdownReader.setDocument(MarkdownText.fromPluginResource("documentation/compartment-graph.md", new HashMap<>()));
-        bottomPanel.addTab("Quick guide", UIUtils.getIcon32FromResources("actions/help.png"), markdownReader, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
-
-        bottomPanel.addTab("Bookmarks", UIUtils.getIcon32FromResources("actions/bookmarks.png"),
-                new JIPipeDesktopBookmarkListPanel(getDesktopWorkbench(), getProject().getGraph(), this, null), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
-
-        bottomPanel.addTab("Journal",
-                UIUtils.getIcon32FromResources("actions/edit-undo-history.png"),
-                new JIPipeDesktopHistoryJournalUI(getHistoryJournal()),
-                JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
-
-        splitPane.setBottomComponent(bottomPanel);
+//        JIPipeDesktopGraphEditorMinimap minimap = new JIPipeDesktopGraphEditorMinimap(this);
+//        splitPane.setTopComponent(minimap);
+//
+//        JIPipeDesktopTabPane bottomPanel = new JIPipeDesktopTabPane(false, JIPipeDesktopTabPane.TabPlacement.Right);
+//
+//        JIPipeDesktopMarkdownReader markdownReader = new JIPipeDesktopMarkdownReader(false);
+//        markdownReader.setDocument(MarkdownText.fromPluginResource("documentation/compartment-graph.md", new HashMap<>()));
+//        bottomPanel.addTab("Quick guide", UIUtils.getIcon32FromResources("actions/help.png"), markdownReader, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+//
+//        bottomPanel.addTab("Bookmarks", UIUtils.getIcon32FromResources("actions/bookmarks.png"),
+//                new JIPipeDesktopBookmarkListPanel(getDesktopWorkbench(), getProject().getGraph(), this, null), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+//
+//        bottomPanel.addTab("Journal",
+//                UIUtils.getIcon32FromResources("actions/edit-undo-history.png"),
+//                new JIPipeDesktopHistoryJournalUI(getHistoryJournal()),
+//                JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+//
+//        splitPane.setBottomComponent(bottomPanel);
     }
 
-    @Override
-    public void reloadMenuBar() {
-        getMenuBar().removeAll();
-        initializeAddNodesMenus();
-        initializeCommonActions();
-    }
 
 //    @Override
 //    public void installNodeUIFeatures(JIPipeAlgorithmUI ui) {
@@ -161,39 +162,27 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeDesktopGraphEditorUI 
     @Override
     protected void updateSelection() {
         super.updateSelection();
-        if (disableUpdateOnSelection)
-            return;
-        if (getSelection().isEmpty()) {
-            setPropertyPanel(defaultPanel, true);
-        } else if (getSelection().size() == 1) {
-            JIPipeGraphNode node = getSelection().iterator().next().getNode();
-            if (node instanceof JIPipeProjectCompartment) {
-                setPropertyPanel(new JIPipeDesktopSingleCompartmentSelectionPanelUI(this,
-                        (JIPipeProjectCompartment) node), true);
-            } else {
-                setPropertyPanel(new JIPipeDesktopPipelineSingleAlgorithmSelectionPanelUI(this, node), true);
-            }
-        } else {
-            if (getSelection().stream().allMatch(ui -> ui.getNode() instanceof JIPipeProjectCompartment)) {
-                setPropertyPanel(new JIPipeDesktopMultiCompartmentSelectionPanelUI((JIPipeDesktopProjectWorkbench) getDesktopWorkbench(),
-                        getSelection().stream().map(ui -> (JIPipeProjectCompartment) ui.getNode()).collect(Collectors.toSet()), getCanvasUI()), true);
-            } else {
-                setPropertyPanel(new JIPipeDesktopPipelineMultiAlgorithmSelectionPanelUI((JIPipeDesktopProjectWorkbench) getDesktopWorkbench(), getCanvasUI(),
-                        getSelection().stream().map(JIPipeDesktopGraphNodeUI::getNode).collect(Collectors.toSet())), true);
-            }
-        }
-    }
-
-    /**
-     * Initializes the "Add nodes" area
-     */
-    protected void initializeAddNodesMenus() {
-        JIPipeNodeInfo info = JIPipe.getNodes().getInfoById("jipipe:project-compartment");
-
-        JButton addItem = new JButton("Add new compartment", UIUtils.getIconFromResources("actions/list-add.png"));
-        addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(info));
-        addItem.addActionListener(e -> addCompartment());
-        menuBar.add(addItem);
+//        if (disableUpdateOnSelection)
+//            return;
+//        if (getSelection().isEmpty()) {
+//            setPropertyPanel(defaultPanel, true);
+//        } else if (getSelection().size() == 1) {
+//            JIPipeGraphNode node = getSelection().iterator().next().getNode();
+//            if (node instanceof JIPipeProjectCompartment) {
+//                setPropertyPanel(new JIPipeDesktopSingleCompartmentSelectionPanelUI(this,
+//                        (JIPipeProjectCompartment) node), true);
+//            } else {
+//                setPropertyPanel(new JIPipeDesktopPipelineSingleAlgorithmSelectionPanelUI(this, node), true);
+//            }
+//        } else {
+//            if (getSelection().stream().allMatch(ui -> ui.getNode() instanceof JIPipeProjectCompartment)) {
+//                setPropertyPanel(new JIPipeDesktopMultiCompartmentSelectionPanelUI((JIPipeDesktopProjectWorkbench) getDesktopWorkbench(),
+//                        getSelection().stream().map(ui -> (JIPipeProjectCompartment) ui.getNode()).collect(Collectors.toSet()), getCanvasUI()), true);
+//            } else {
+//                setPropertyPanel(new JIPipeDesktopPipelineMultiAlgorithmSelectionPanelUI((JIPipeDesktopProjectWorkbench) getDesktopWorkbench(), getCanvasUI(),
+//                        getSelection().stream().map(JIPipeDesktopGraphNodeUI::getNode).collect(Collectors.toSet())), true);
+//            }
+//        }
     }
 
     private JIPipeProject getProject() {
@@ -235,31 +224,31 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeDesktopGraphEditorUI 
      */
     @Override
     public void onNodeUIActionRequested(JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEvent event) {
-        if (event.getAction() instanceof JIPipeDesktopRunAndShowResultsAction) {
-            disableUpdateOnSelection = true;
-            selectOnly(event.getUi());
-            JIPipeDesktopSingleCompartmentSelectionPanelUI panel = new JIPipeDesktopSingleCompartmentSelectionPanelUI(this,
-                    (JIPipeProjectCompartment) event.getUi().getNode());
-            setPropertyPanel(panel, true);
-            panel.executeQuickRun(true,
-                    false,
-                    true,
-                    ((JIPipeDesktopRunAndShowResultsAction) event.getAction()).isStoreIntermediateResults(),
-                    false);
-            SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
-        } else if (event.getAction() instanceof JIPipeDesktopUpdateCacheAction) {
-            disableUpdateOnSelection = true;
-            selectOnly(event.getUi());
-            JIPipeDesktopSingleCompartmentSelectionPanelUI panel = new JIPipeDesktopSingleCompartmentSelectionPanelUI(this,
-                    (JIPipeProjectCompartment) event.getUi().getNode());
-            setPropertyPanel(panel, true);
-            panel.executeQuickRun(false,
-                    true,
-                    false,
-                    ((JIPipeDesktopUpdateCacheAction) event.getAction()).isStoreIntermediateResults(),
-                    ((JIPipeDesktopUpdateCacheAction) event.getAction()).isOnlyPredecessors());
-            SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
-        }
+//        if (event.getAction() instanceof JIPipeDesktopRunAndShowResultsAction) {
+//            disableUpdateOnSelection = true;
+//            selectOnly(event.getUi());
+//            JIPipeDesktopSingleCompartmentSelectionPanelUI panel = new JIPipeDesktopSingleCompartmentSelectionPanelUI(this,
+//                    (JIPipeProjectCompartment) event.getUi().getNode());
+//            setPropertyPanel(panel, true);
+//            panel.executeQuickRun(true,
+//                    false,
+//                    true,
+//                    ((JIPipeDesktopRunAndShowResultsAction) event.getAction()).isStoreIntermediateResults(),
+//                    false);
+//            SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
+//        } else if (event.getAction() instanceof JIPipeDesktopUpdateCacheAction) {
+//            disableUpdateOnSelection = true;
+//            selectOnly(event.getUi());
+//            JIPipeDesktopSingleCompartmentSelectionPanelUI panel = new JIPipeDesktopSingleCompartmentSelectionPanelUI(this,
+//                    (JIPipeProjectCompartment) event.getUi().getNode());
+//            setPropertyPanel(panel, true);
+//            panel.executeQuickRun(false,
+//                    true,
+//                    false,
+//                    ((JIPipeDesktopUpdateCacheAction) event.getAction()).isStoreIntermediateResults(),
+//                    ((JIPipeDesktopUpdateCacheAction) event.getAction()).isOnlyPredecessors());
+//            SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
+//        }
     }
 
     @Override

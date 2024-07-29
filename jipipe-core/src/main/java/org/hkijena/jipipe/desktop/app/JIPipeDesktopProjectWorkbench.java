@@ -57,7 +57,6 @@ import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdow
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopNotificationButton;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopWorkbenchNotificationInboxUI;
-import org.hkijena.jipipe.desktop.jsonextensionbuilder.extensionbuilder.JIPipeDesktopJsonExporter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
@@ -526,12 +525,6 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         });
         projectMenu.add(archiveProjectButton);
 
-        // "Export as algorithm" entry
-        JMenuItem exportProjectAsAlgorithmButton = new JMenuItem("Export as custom algorithm", UIUtils.getIconFromResources("actions/document-export.png"));
-        exportProjectAsAlgorithmButton.setToolTipText("Exports the whole pipeline (all compartments) as custom algorithm");
-        exportProjectAsAlgorithmButton.addActionListener(e -> exportProjectAsAlgorithm());
-        projectMenu.add(exportProjectAsAlgorithmButton);
-
         projectMenu.addSeparator();
 
         JMenuItem editCompartmentsButton = new JMenuItem("Edit compartments", UIUtils.getIconFromResources("actions/graph-compartments.png"));
@@ -856,32 +849,6 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
                 cacheTable,
                 JIPipeDesktopTabPane.CloseMode.withSilentCloseButton,
                 true);
-        getDocumentTabPane().switchToLastTab();
-    }
-
-    /**
-     * Exports the whole graph as pipeline
-     */
-    private void exportProjectAsAlgorithm() {
-        JIPipeValidationReport report = new JIPipeValidationReport();
-        report.report(new UnspecifiedValidationReportContext(), getProject().getGraph());
-        if (!report.isValid()) {
-            UIUtils.openValidityReportDialog(this,
-                    this,
-                    report,
-                    "Error while exporting",
-                    "There seem to be various issues with the project. Please resolve these and try to export the project again.",
-                    false);
-            return;
-        }
-        JIPipeNodeGroup nodeGroup = new JIPipeNodeGroup(new JIPipeGraph(getProject().getGraph()), true, false, true);
-        JIPipeDesktopJsonExporter exporter = new JIPipeDesktopJsonExporter(this, nodeGroup);
-        exporter.getNodeInfo().setName("Custom algorithm");
-        exporter.getNodeInfo().setDescription(new HTMLText("A custom algorithm"));
-        getDocumentTabPane().addTab("Export custom algorithm",
-                UIUtils.getIconFromResources("actions/document-export.png"),
-                exporter,
-                JIPipeDesktopTabPane.CloseMode.withAskOnCloseButton);
         getDocumentTabPane().switchToLastTab();
     }
 

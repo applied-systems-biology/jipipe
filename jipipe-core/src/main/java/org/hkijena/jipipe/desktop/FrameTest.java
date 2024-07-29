@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.desktop;
 
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.FloatingDockPanel;
@@ -27,11 +26,11 @@ public class FrameTest {
         frame.setContentPane(dockPanel);
         dockPanel.setBackgroundComponent(textPane);
 
-        dockPanel.addDockPanel("P1", "Panel 1", UIUtils.getIcon32FromResources("actions/1.png"), FloatingDockPanel.PanelLocation.TopLeft, new JTextArea("Panel 1"));
-        dockPanel.addDockPanel("P2", "Panel 2", UIUtils.getIcon32FromResources("actions/2.png"), FloatingDockPanel.PanelLocation.TopLeft, new JTextArea("Panel 2"));
-        dockPanel.addDockPanel("P3", "Panel 3", UIUtils.getIcon32FromResources("actions/3.png"), FloatingDockPanel.PanelLocation.BottomLeft, new JTextArea("Panel 3"));
-        dockPanel.addDockPanel("P4", "Panel 4", UIUtils.getIcon32FromResources("actions/4.png"), FloatingDockPanel.PanelLocation.TopRight, new JTextArea("Panel 4"));
-        dockPanel.addDockPanel("P5", "Panel 5", UIUtils.getIcon32FromResources("actions/5.png"), FloatingDockPanel.PanelLocation.BottomRight, new JTextArea("Panel 5"));
+        dockPanel.addDockPanel("P1", "Panel 1", UIUtils.getIcon32FromResources("actions/1.png"), FloatingDockPanel.PanelLocation.TopLeft, false, new JTextArea("Panel 1"));
+        dockPanel.addDockPanel("P2", "Panel 2", UIUtils.getIcon32FromResources("actions/2.png"), FloatingDockPanel.PanelLocation.TopLeft, false, new JTextArea("Panel 2"));
+        dockPanel.addDockPanel("P3", "Panel 3", UIUtils.getIcon32FromResources("actions/3.png"), FloatingDockPanel.PanelLocation.BottomLeft, false, new JTextArea("Panel 3"));
+        dockPanel.addDockPanel("P4", "Panel 4", UIUtils.getIcon32FromResources("actions/4.png"), FloatingDockPanel.PanelLocation.TopRight, false, new JTextArea("Panel 4"));
+        dockPanel.addDockPanel("P5", "Panel 5", UIUtils.getIcon32FromResources("actions/5.png"), FloatingDockPanel.PanelLocation.BottomRight, false, new JTextArea("Panel 5"));
 
         frame.setVisible(true);
     }

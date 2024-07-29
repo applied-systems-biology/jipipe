@@ -320,7 +320,7 @@ public class FloatingDockPanel extends JPanel {
         }
     }
 
-    public void addDockPanel(String id, String name, Icon icon, PanelLocation location, JComponent component) {
+    public void addDockPanel(String id, String name, Icon icon, PanelLocation location, boolean visible, JComponent component) {
         removeDockPanel(id);
 
         Panel panel = new Panel(id);
@@ -328,6 +328,14 @@ public class FloatingDockPanel extends JPanel {
         panel.setComponent(component);
         panel.setIcon(icon);
         panel.setName(name);
+
+        if(visible) {
+            String visiblePanelId = getCurrentlyVisiblePanelId(location, true);
+            if(visiblePanelId != null && !id.equals(visiblePanelId)) {
+                floatingPanels.get(visiblePanelId).setVisible(false);
+            }
+            panel.setVisible(true);
+        }
 
         floatingPanels.put(id, panel);
         updateToolbars();
