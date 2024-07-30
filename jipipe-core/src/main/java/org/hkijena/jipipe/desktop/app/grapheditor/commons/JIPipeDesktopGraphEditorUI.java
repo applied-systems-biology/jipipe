@@ -206,15 +206,20 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
-        dockPanel.setBackgroundComponent(scrollPane);
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        mainPanel.add(toolBar, BorderLayout.NORTH);
+
+        dockPanel.setFloatingMarginTop(40);
+        dockPanel.setBackgroundComponent(mainPanel);
 
         add(dockPanel, BorderLayout.CENTER);
-        add(toolBar, BorderLayout.NORTH);
 
         initializeEditingToolbar();
     }
 
     private void initializeEditingToolbar() {
+        toolBar.add(Box.createHorizontalStrut(8));
         for (Class<? extends JIPipeGraphEditorTool> klass : JIPipe.getInstance().getGraphEditorToolRegistry().getRegisteredTools()) {
             JIPipeGraphEditorTool tool = (JIPipeGraphEditorTool) ReflectionUtils.newInstance(klass);
             if (tool.supports(this)) {
@@ -241,20 +246,20 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
             if (tool instanceof JIPipeToggleableGraphEditorTool) {
                 JIPipeToggleableGraphEditorTool toggleableGraphEditorTool = (JIPipeToggleableGraphEditorTool) tool;
 
-                JToggleButton toggleButton = new JToggleButton(tool.getIcon());
-                toggleButton.setToolTipText("<html><strong>" + tool.getName() + "</strong><br/><br/>" + tool.getTooltip() +
+                JToggleButton button = new JToggleButton(tool.getIcon());
+                button.setToolTipText("<html><strong>" + tool.getName() + "</strong><br/><br/>" + tool.getTooltip() +
                         (keyBinding != null ? "<br><br>Shortcut: <i><strong>" + UIUtils.keyStrokeToString(keyBinding) + "</strong></i>" : "") + "</html>");
-                toggleButton.addActionListener(e -> selectTool(tool));
-                UIUtils.makeButtonFlat25x25(toggleButton);
-                toolBar.add(toggleButton);
-                toolToggles.put(toggleableGraphEditorTool, toggleButton);
+                button.addActionListener(e -> selectTool(tool));
+                UIUtils.makeButtonFlatWithSize(button, 32, 3);
+                toolBar.add(button);
+                toolToggles.put(toggleableGraphEditorTool, button);
 
             } else {
                 JButton button = new JButton(tool.getIcon());
                 button.setToolTipText("<html><strong>" + tool.getName() + "</strong><br/><br/>" + tool.getTooltip() +
                         (keyBinding != null ? "<br><br>Shortcut: <i><strong>" + UIUtils.keyStrokeToString(keyBinding) + "</strong></i>" : "") + "</html>");
                 button.addActionListener(e -> selectTool(tool));
-                UIUtils.makeButtonFlat25x25(button);
+                UIUtils.makeButtonFlatWithSize(button, 32, 3);
                 toolBar.add(button);
             }
 

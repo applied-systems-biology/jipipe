@@ -931,6 +931,23 @@ public class UIUtils {
         component.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
     }
 
+    /**
+     * Makes a button flat and 25x25 size
+     *
+     * @param component the button
+     */
+    public static void makeButtonFlatWithSize(AbstractButton component, int size, int borderSize) {
+        component.setBackground(Color.WHITE);
+        component.setOpaque(false);
+        component.setPreferredSize(new Dimension(size, size));
+        component.setMinimumSize(new Dimension(size, size));
+        component.setMaximumSize(new Dimension(size, size));
+//        Border margin = new EmptyBorder(2, 2, 2, 2);
+//        Border compound = new CompoundBorder(new RoundedLineBorder(ModernMetalTheme.GRAY2, 1, 2), margin);
+//        component.setBorder(compound);
+        component.setBorder(BorderFactory.createEmptyBorder(borderSize, borderSize, borderSize, borderSize));
+    }
+
     public static String getAWTWindowTitle(Window window) {
         String windowTitle;
         if (window instanceof JFrame) {

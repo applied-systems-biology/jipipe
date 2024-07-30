@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 public class FloatingDockPanel extends JPanel {
 
+    private static final int RESIZE_HANDLE_SIZE = 4;
     private final JIPipeDesktopVerticalToolBar leftToolBar = new JIPipeDesktopVerticalToolBar();
     private final JIPipeDesktopVerticalToolBar rightToolBar = new JIPipeDesktopVerticalToolBar();
     private final JLayeredPane layeredPane = new JLayeredPane();
@@ -24,7 +25,9 @@ public class FloatingDockPanel extends JPanel {
     private final JPanel rightFloatingPanel = new JPanel(new BorderLayout());
     private final JPanel leftResizerPanel = new JPanel();
     private final JPanel rightResizerPanel = new JPanel();
-    private int floatingMargin = 8;
+    private int floatingMarginLeftRight = 8;
+    private int floatingMarginTop = 8;
+    private int floatingMarginBottom = 8;
     private int leftFloatingSize = 350;
     private int rightFloatingSize = 350;
     private int minimumFloatingSize = 50;
@@ -66,8 +69,8 @@ public class FloatingDockPanel extends JPanel {
         rightFloatingPanel.setBorder(UIUtils.createPanelBorder());
         rightFloatingPanel.add(rightResizerPanel, BorderLayout.WEST);
         rightResizerPanel.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-        rightResizerPanel.setPreferredSize(new Dimension(8, 64));
-        rightResizerPanel.setMinimumSize(new Dimension(8, 32));
+        rightResizerPanel.setPreferredSize(new Dimension(RESIZE_HANDLE_SIZE, 64));
+        rightResizerPanel.setMinimumSize(new Dimension(RESIZE_HANDLE_SIZE, 32));
 //        rightResizerPanel.setBackground(Color.RED);
         rightResizerPanel.setOpaque(false);
 
@@ -88,8 +91,8 @@ public class FloatingDockPanel extends JPanel {
         leftFloatingPanel.setBorder(UIUtils.createPanelBorder());
         leftFloatingPanel.add(leftResizerPanel, BorderLayout.EAST);
         leftResizerPanel.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-        leftResizerPanel.setPreferredSize(new Dimension(8, 64));
-        leftResizerPanel.setMinimumSize(new Dimension(8, 32));
+        leftResizerPanel.setPreferredSize(new Dimension(RESIZE_HANDLE_SIZE, 64));
+        leftResizerPanel.setMinimumSize(new Dimension(RESIZE_HANDLE_SIZE, 32));
 //        leftResizerPanel.setBackground(Color.RED);
         leftResizerPanel.setOpaque(false);
 
@@ -116,8 +119,8 @@ public class FloatingDockPanel extends JPanel {
         layeredPaneBackground.setBounds(0, 0, layeredPane.getWidth(), getHeight());
 
         int availableWidth = layeredPaneBackground.getWidth();
-        Dimension leftSize = new Dimension(leftFloatingSize, getHeight() - 2 * floatingMargin);
-        Dimension rightSize = new Dimension(rightFloatingSize, getHeight() - 2 * floatingMargin);
+        Dimension leftSize = new Dimension(leftFloatingSize, getHeight() - floatingMarginTop - floatingMarginBottom);
+        Dimension rightSize = new Dimension(rightFloatingSize, getHeight() - floatingMarginTop - floatingMarginBottom);
 
 
         leftFloatingPanel.setPreferredSize(leftSize);
@@ -129,8 +132,8 @@ public class FloatingDockPanel extends JPanel {
 //        leftFloatingPanel.revalidate();
 //        rightFloatingPanel.revalidate();
 
-        leftFloatingPanel.setBounds(floatingMargin, floatingMargin, leftSize.width, leftSize.height);
-        rightFloatingPanel.setBounds(availableWidth - floatingMargin - rightFloatingSize - 2, floatingMargin, rightSize.width, rightSize.height);
+        leftFloatingPanel.setBounds(floatingMarginLeftRight, floatingMarginTop, leftSize.width, leftSize.height);
+        rightFloatingPanel.setBounds(availableWidth - floatingMarginLeftRight - rightFloatingSize - 2, floatingMarginTop, rightSize.width, rightSize.height);
 
         revalidate();
         repaint();
@@ -209,8 +212,8 @@ public class FloatingDockPanel extends JPanel {
         }
 
         // Revalidate and repaint
-        layeredPane.revalidate();
-        layeredPane.repaint(50);
+        revalidate();
+        repaint(50);
     }
 
     private void updateToolbars() {
@@ -285,6 +288,7 @@ public class FloatingDockPanel extends JPanel {
                 if(getCurrentlyVisiblePanelId(newLocation, false) == null) {
                     for (Panel otherPanel : getPanelsAtLocation(newLocation)) {
                         otherPanel.setVisible(false);
+                        floatingPanelButtons.get(otherPanel.getId()).setSelected(false);
                     }
                     panel.setVisible(true);
                 }
@@ -376,13 +380,28 @@ public class FloatingDockPanel extends JPanel {
         updateSizes();
     }
 
-    public int getFloatingMargin() {
-        return floatingMargin;
+    public int getFloatingMarginTop() {
+        return floatingMarginTop;
     }
 
-    public void setFloatingMargin(int floatingMargin) {
-        this.floatingMargin = floatingMargin;
-        updateSizes();
+    public void setFloatingMarginTop(int floatingMarginTop) {
+        this.floatingMarginTop = floatingMarginTop;
+    }
+
+    public int getFloatingMarginBottom() {
+        return floatingMarginBottom;
+    }
+
+    public void setFloatingMarginBottom(int floatingMarginBottom) {
+        this.floatingMarginBottom = floatingMarginBottom;
+    }
+
+    public int getFloatingMarginLeftRight() {
+        return floatingMarginLeftRight;
+    }
+
+    public void setFloatingMarginLeftRight(int floatingMarginLeftRight) {
+        this.floatingMarginLeftRight = floatingMarginLeftRight;
     }
 
     public static class Panel {
