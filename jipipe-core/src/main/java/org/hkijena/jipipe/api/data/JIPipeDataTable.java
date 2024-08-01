@@ -1612,7 +1612,16 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         }
         long stamp = stampedLock.writeLock();
         try {
-            dataArray.add(virtualData);
+            if(getAcceptedDataType().isAssignableFrom(virtualData.getDataClass())) {
+                // Trivial conversion (do nothing)
+                dataArray.add(virtualData);
+            }
+            else {
+                // Have to convert the data
+                JIPipeData data = virtualData.get();
+                JIPipeData converted = JIPipe.getDataTypes().convert(data, getAcceptedDataType(), progressInfo);
+                dataArray.add(new JIPipeDataItemStore(converted));
+            }
             dataContextsArray.add(context != null ? context : new JIPipeMutableDataContext());
             virtualData.addUser(this);
             for (JIPipeTextAnnotation annotation : annotations) {
