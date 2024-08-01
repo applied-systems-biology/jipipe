@@ -17,31 +17,25 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableSet;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeService;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeDefaultGraphEditorTool;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeGraphEditorTool;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorTool;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.database.*;
-import org.hkijena.jipipe.desktop.api.JIPipeDesktopGraphEditorToolBarButtonExtension;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.search.JIPipeDesktopNodeDatabaseSearchBox;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopVerticalToolBar;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopColorIcon;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
-import org.hkijena.jipipe.utils.ui.FloatingDockPanel;
+import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.jfree.graphics2d.svg.SVGUtils;
 import org.scijava.Disposable;
@@ -89,7 +83,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
     private boolean isPanning = false;
     private Set<JIPipeNodeInfo> addableAlgorithms = new HashSet<>();
     private JIPipeToggleableGraphEditorTool currentTool;
-    private final FloatingDockPanel dockPanel = new FloatingDockPanel();
+    private final JIPipeDesktopDockPanel dockPanel = new JIPipeDesktopDockPanel();
 
     /**
      * @param workbenchUI    the workbench
@@ -266,7 +260,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         }
     }
 
-    public FloatingDockPanel getDockPanel() {
+    public JIPipeDesktopDockPanel getDockPanel() {
         return dockPanel;
     }
 

@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.utils.ui;
 
+import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopVerticalToolBar;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -12,9 +13,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class FloatingDockPanel extends JPanel {
+public class JIPipeDesktopDockPanel extends JPanel {
 
     private static final int RESIZE_HANDLE_SIZE = 4;
     private final JIPipeDesktopVerticalToolBar leftToolBar = new JIPipeDesktopVerticalToolBar();
@@ -34,11 +36,11 @@ public class FloatingDockPanel extends JPanel {
     private JComponent leftFloatingPanelContent;
     private JComponent rightFloatingPanelContent;
     private final Map<String, Panel> floatingPanels = new HashMap<>();
-    private final Map<String, JToggleButton> floatingPanelButtons = new HashMap<>();
+    private final Map<String, JToggleButton> floatingPanelToggles = new HashMap<>();
     private boolean floatingLeft = false;
     private boolean floatingRight = false;
 
-    public FloatingDockPanel() {
+    public JIPipeDesktopDockPanel() {
         super(new BorderLayout());
         initialize();
         updateToolbars();
@@ -271,7 +273,7 @@ public class FloatingDockPanel extends JPanel {
                 for (Panel otherPanel : getPanelsAtLocation(panel.getLocation())) {
                     if(otherPanel != panel) {
                         otherPanel.setVisible(false);
-                        floatingPanelButtons.get(otherPanel.getId()).setSelected(false);
+                        floatingPanelToggles.get(otherPanel.getId()).setSelected(false);
                     }
                 }
 
@@ -297,7 +299,7 @@ public class FloatingDockPanel extends JPanel {
             movePanelToLocation(panel, PanelLocation.BottomRight);
         }));
 
-        floatingPanelButtons.put(panel.getId(), button);
+        floatingPanelToggles.put(panel.getId(), button);
         return button;
     }
 
@@ -331,7 +333,7 @@ public class FloatingDockPanel extends JPanel {
                 if(getCurrentlyVisiblePanelId(newLocation, false) == null) {
                     for (Panel otherPanel : getPanelsAtLocation(newLocation)) {
                         otherPanel.setVisible(false);
-                        floatingPanelButtons.get(otherPanel.getId()).setSelected(false);
+                        floatingPanelToggles.get(otherPanel.getId()).setSelected(false);
                     }
                     panel.setVisible(true);
                 }
@@ -445,6 +447,21 @@ public class FloatingDockPanel extends JPanel {
 
     public void setFloatingMarginLeftRight(int floatingMarginLeftRight) {
         this.floatingMarginLeftRight = floatingMarginLeftRight;
+    }
+
+    public void removeDockPanelsIf(Predicate<Panel> predicate) {
+        boolean found = false;
+        for (Panel panel : ImmutableList.copyOf(floatingPanels.values())) {
+            if (predicate.test(panel)) {
+                floatingPanelToggles.remove(panel.getId());
+                floatingPanels.remove(panel.getId());
+                found = true;
+            }
+        }
+        if(found) {
+            updateToolbars();
+            updateContent();
+        }
     }
 
     public static class Panel {

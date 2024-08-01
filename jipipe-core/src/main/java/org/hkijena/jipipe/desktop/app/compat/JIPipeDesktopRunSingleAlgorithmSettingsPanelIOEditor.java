@@ -24,7 +24,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.ui.FloatingDockPanel;
+import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import java.util.Map;
 
@@ -72,13 +72,13 @@ public class JIPipeDesktopRunSingleAlgorithmSettingsPanelIOEditor extends JIPipe
         getDockPanel().addDockPanel("Inputs",
                 "Inputs",
                 UIUtils.getIconFromResources("data-types/slot.png"),
-                FloatingDockPanel.PanelLocation.TopRight,
+                JIPipeDesktopDockPanel.PanelLocation.TopRight,
                 false,
                 inputsPanel);
         getDockPanel().addDockPanel("Outputs",
                 "Outputs",
                 UIUtils.getIconFromResources("data-types/slot.png"),
-                FloatingDockPanel.PanelLocation.TopRight,
+                JIPipeDesktopDockPanel.PanelLocation.TopRight,
                 false,
                 outputsPanel);
     }

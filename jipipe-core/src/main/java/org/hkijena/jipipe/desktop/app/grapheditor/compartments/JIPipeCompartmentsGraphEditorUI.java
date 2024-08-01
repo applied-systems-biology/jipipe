@@ -15,8 +15,6 @@ package org.hkijena.jipipe.desktop.app.grapheditor.compartments;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseRole;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
@@ -29,23 +27,14 @@ import org.hkijena.jipipe.desktop.app.grapheditor.compartments.contextmenu.clipb
 import org.hkijena.jipipe.desktop.app.grapheditor.compartments.contextmenu.clipboard.GraphCompartmentCutNodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.compartments.contextmenu.clipboard.GraphCompartmentPasteNodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.compartments.dragdrop.JIPipeCompartmentGraphDragAndDropBehavior;
-import org.hkijena.jipipe.desktop.app.grapheditor.compartments.properties.JIPipeDesktopMultiCompartmentSelectionPanelUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.compartments.properties.JIPipeDesktopSingleCompartmentSelectionPanelUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.actions.JIPipeDesktopRunAndShowResultsAction;
-import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.actions.JIPipeDesktopUpdateCacheAction;
-import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.properties.JIPipeDesktopPipelineMultiAlgorithmSelectionPanelUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.properties.JIPipeDesktopPipelineSingleAlgorithmSelectionPanelUI;
 import org.hkijena.jipipe.desktop.app.history.JIPipeDesktopHistoryJournalUI;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueuePanelUI;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
-import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
-import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.ui.FloatingDockPanel;
+import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -118,34 +107,33 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeDesktopGraphEditorUI 
         getDockPanel().addDockPanel("MINIMAP",
                 "Minimap",
                 UIUtils.getIcon32FromResources("actions/document-preview.png"),
-                FloatingDockPanel.PanelLocation.TopLeft,
+                JIPipeDesktopDockPanel.PanelLocation.TopLeft,
                 true,
                 new JIPipeDesktopGraphEditorMinimap(this));
         getDockPanel().addDockPanel("QUICK_GUIDE",
                 "Quick guide",
-                UIUtils.getIcon32FromResources("actions/help.png"),
-                FloatingDockPanel.PanelLocation.BottomLeft,
+                UIUtils.getIcon32FromResources("actions/help-about.png"),
+                JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 true,
                 new JIPipeDesktopMarkdownReader(false, MarkdownText.fromPluginResource("documentation/compartment-graph.md", new HashMap<>())));
-
-//        JIPipeDesktopGraphEditorMinimap minimap = new JIPipeDesktopGraphEditorMinimap(this);
-//        splitPane.setTopComponent(minimap);
-//
-//        JIPipeDesktopTabPane bottomPanel = new JIPipeDesktopTabPane(false, JIPipeDesktopTabPane.TabPlacement.Right);
-//
-//        JIPipeDesktopMarkdownReader markdownReader = new JIPipeDesktopMarkdownReader(false);
-//        markdownReader.setDocument(MarkdownText.fromPluginResource("documentation/compartment-graph.md", new HashMap<>()));
-//        bottomPanel.addTab("Quick guide", UIUtils.getIcon32FromResources("actions/help.png"), markdownReader, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
-//
-//        bottomPanel.addTab("Bookmarks", UIUtils.getIcon32FromResources("actions/bookmarks.png"),
-//                new JIPipeDesktopBookmarkListPanel(getDesktopWorkbench(), getProject().getGraph(), this, null), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
-//
-//        bottomPanel.addTab("Journal",
-//                UIUtils.getIcon32FromResources("actions/edit-undo-history.png"),
-//                new JIPipeDesktopHistoryJournalUI(getHistoryJournal()),
-//                JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
-//
-//        splitPane.setBottomComponent(bottomPanel);
+        getDockPanel().addDockPanel("BOOKMARKS",
+                "Bookmarks",
+                UIUtils.getIcon32FromResources("actions/bookmarks.png"),
+                JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
+                false,
+                new JIPipeDesktopBookmarkListPanel(getDesktopWorkbench(), getGraph(), this, null));
+        getDockPanel().addDockPanel("HISTORY",
+                "History",
+                UIUtils.getIcon32FromResources("actions/edit-undo-history.png"),
+                JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
+                false,
+                new JIPipeDesktopHistoryJournalUI(getHistoryJournal()));
+        getDockPanel().addDockPanel("CURRENT_PROGRESS",
+                "Current progress",
+                UIUtils.getIcon32FromResources("actions/rabbitvcs-show_log.png"),
+                JIPipeDesktopDockPanel.PanelLocation.BottomRight,
+                false,
+                new JIPipeDesktopRunnableQueuePanelUI());
     }
 
 
@@ -162,6 +150,9 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeDesktopGraphEditorUI 
     @Override
     protected void updateSelection() {
         super.updateSelection();
+
+        getDockPanel().removeDockPanelsIf(panel -> panel.getId().startsWith("_"));
+
 //        if (disableUpdateOnSelection)
 //            return;
 //        if (getSelection().isEmpty()) {
