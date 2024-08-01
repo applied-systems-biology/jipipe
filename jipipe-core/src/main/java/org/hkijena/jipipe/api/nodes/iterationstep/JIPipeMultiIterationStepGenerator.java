@@ -466,12 +466,15 @@ public class JIPipeMultiIterationStepGenerator {
             return null;
         progressInfo.log("Connecting orphaned nodes");
         for (int i = 0; i < slotList.size(); i++) {
-
+            if (progressInfo.isCancelled())
+                return null;
             // Check source orphans
             if (i != 0) {
                 ShortestPathAlgorithm<RowNode, DefaultEdge> shortestPathAlgorithm = new DijkstraShortestPath<>(graph);
                 Set<RowNode> orphans = new HashSet<>();
                 for (RowNode rowNode : rowNodesBySlot.get(slotList.get(i))) {
+                    if (progressInfo.isCancelled())
+                        return null;
                     if (shortestPathAlgorithm.getPath(source, rowNode) == null) {
                         orphans.add(rowNode);
                     }
@@ -486,6 +489,8 @@ public class JIPipeMultiIterationStepGenerator {
                 ShortestPathAlgorithm<RowNode, DefaultEdge> shortestPathAlgorithm = new DijkstraShortestPath<>(graph);
                 Set<RowNode> orphans = new HashSet<>();
                 for (RowNode rowNode : rowNodesBySlot.get(slotList.get(i))) {
+                    if (progressInfo.isCancelled())
+                        return null;
                     if (shortestPathAlgorithm.getPath(rowNode, sink) == null) {
                         orphans.add(rowNode);
                     }
