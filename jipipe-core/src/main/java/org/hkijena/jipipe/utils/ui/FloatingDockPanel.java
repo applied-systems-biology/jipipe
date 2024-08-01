@@ -35,6 +35,8 @@ public class FloatingDockPanel extends JPanel {
     private JComponent rightFloatingPanelContent;
     private final Map<String, Panel> floatingPanels = new HashMap<>();
     private final Map<String, JToggleButton> floatingPanelButtons = new HashMap<>();
+    private boolean floatingLeft = false;
+    private boolean floatingRight = false;
 
     public FloatingDockPanel() {
         super(new BorderLayout());
@@ -116,24 +118,46 @@ public class FloatingDockPanel extends JPanel {
 
     private void updateSizes() {
 
-        layeredPaneBackground.setBounds(0, 0, layeredPane.getWidth(), getHeight());
+        int availableWidth = layeredPane.getWidth();
 
-        int availableWidth = layeredPaneBackground.getWidth();
-        Dimension leftSize = new Dimension(leftFloatingSize, getHeight() - floatingMarginTop - floatingMarginBottom);
-        Dimension rightSize = new Dimension(rightFloatingSize, getHeight() - floatingMarginTop - floatingMarginBottom);
+        int leftMarginLeft = floatingLeft ? floatingMarginLeftRight : 0;
+        int leftMarginTop = floatingLeft ? floatingMarginTop : 0;
+        int leftMarginBottom = floatingLeft ? floatingMarginBottom : 0;
+        int rightMarginRight = floatingRight ? floatingMarginLeftRight : 0;
+        int rightMarginTop = floatingRight ? floatingMarginTop : 0;
+        int rightMarginBottom = floatingRight ? floatingMarginBottom : 0;
 
+
+        Dimension leftSize = new Dimension(leftFloatingSize, getHeight() - leftMarginTop - leftMarginBottom);
+        Dimension rightSize = new Dimension(rightFloatingSize, getHeight() - rightMarginTop - rightMarginBottom);
 
         leftFloatingPanel.setPreferredSize(leftSize);
         rightFloatingPanel.setPreferredSize(rightSize);
         leftFloatingPanel.setMaximumSize(leftSize);
         rightFloatingPanel.setMaximumSize(rightSize);
 
+        leftFloatingPanel.setBounds(leftMarginLeft, leftMarginTop, leftSize.width, leftSize.height);
+        rightFloatingPanel.setBounds(availableWidth - rightMarginRight - rightFloatingSize - 2, rightMarginTop, rightSize.width, rightSize.height);
 
-//        leftFloatingPanel.revalidate();
-//        rightFloatingPanel.revalidate();
+        int backgroundLeft;
+        int backgroundWidth;
 
-        leftFloatingPanel.setBounds(floatingMarginLeftRight, floatingMarginTop, leftSize.width, leftSize.height);
-        rightFloatingPanel.setBounds(availableWidth - floatingMarginLeftRight - rightFloatingSize - 2, floatingMarginTop, rightSize.width, rightSize.height);
+        if(leftFloatingPanel.isVisible() && rightFloatingPanel.isVisible()) {
+            backgroundLeft = floatingLeft ? 0 : leftSize.width;
+            backgroundWidth = layeredPane.getWidth() - (floatingRight ? 0 : rightSize.width) - backgroundLeft;
+        }
+        else if(leftFloatingPanel.isVisible()) {
+            backgroundLeft = floatingLeft ? 0 : leftSize.width;
+            backgroundWidth = layeredPane.getWidth() - backgroundLeft;
+        }
+        else {
+            backgroundLeft = 0;
+            backgroundWidth = layeredPane.getWidth();
+        }
+
+        layeredPaneBackground.setBounds(backgroundLeft, 0, backgroundWidth, getHeight());
+//        layeredPaneBackground.setBounds(100,100,100,100);
+//        layeredPaneBackground.setBounds(0,0,layeredPane.getWidth(),getHeight());
 
         revalidate();
         repaint();
@@ -257,6 +281,7 @@ public class FloatingDockPanel extends JPanel {
                 panel.setVisible(false);
             }
             updateContent();
+            updateSizes();
         });
         JPopupMenu popupMenu = UIUtils.addRightClickPopupMenuToButton(button);
         popupMenu.add(UIUtils.createMenuItem("Top left", "Move the panel to the top left anchor", UIUtils.getIconFromResources("actions/dock-top-left.png"), () -> {
@@ -274,6 +299,24 @@ public class FloatingDockPanel extends JPanel {
 
         floatingPanelButtons.put(panel.getId(), button);
         return button;
+    }
+
+    public boolean isFloatingLeft() {
+        return floatingLeft;
+    }
+
+    public void setFloatingLeft(boolean floatingLeft) {
+        this.floatingLeft = floatingLeft;
+        updateSizes();
+    }
+
+    public boolean isFloatingRight() {
+        return floatingRight;
+    }
+
+    public void setFloatingRight(boolean floatingRight) {
+        this.floatingRight = floatingRight;
+        updateSizes();
     }
 
     public List<Panel> getPanelsAtLocation(PanelLocation location) {
