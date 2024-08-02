@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseRole;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.bookmarks.JIPipeDesktopBookmarkListPanel;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorLogPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorMinimap;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.*;
@@ -128,12 +129,12 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeDesktopGraphEditorUI 
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 false,
                 new JIPipeDesktopHistoryJournalUI(getHistoryJournal()));
-        getDockPanel().addDockPanel("CURRENT_PROGRESS",
+        getDockPanel().addDockPanel("PROGRESS",
                 "Current progress",
                 UIUtils.getIcon32FromResources("actions/rabbitvcs-show_log.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomRight,
                 false,
-                new JIPipeDesktopRunnableQueuePanelUI());
+                new JIPipeDesktopGraphEditorLogPanel(getDesktopWorkbench()));
     }
 
 

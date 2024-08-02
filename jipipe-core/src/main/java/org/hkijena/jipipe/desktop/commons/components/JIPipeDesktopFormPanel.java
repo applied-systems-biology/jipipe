@@ -72,6 +72,11 @@ public class JIPipeDesktopFormPanel extends JPanel {
     public static final int WITH_LIMIT_WIDTH = 64;
 
     /**
+     * Flag that makes the documentation panel not appear in the split pane
+     */
+    public static final int DOCUMENTATION_EXTERNAL = 128;
+
+    /**
      * Flag that makes the content be wrapped in a {@link JScrollPane}
      */
     public static final int WITH_SCROLLING = 2;
@@ -160,14 +165,21 @@ public class JIPipeDesktopFormPanel extends JPanel {
 
         if ((flags & WITH_DOCUMENTATION) == WITH_DOCUMENTATION) {
             this.withDocumentation = true;
-            if ((flags & DOCUMENTATION_NO_UI) != DOCUMENTATION_NO_UI) {
+            if((flags & DOCUMENTATION_EXTERNAL) == DOCUMENTATION_EXTERNAL) {
+                // External documentation panel
                 this.documentationHasUI = true;
-                boolean documentationBelow = (flags & DOCUMENTATION_BELOW) == DOCUMENTATION_BELOW;
-                JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(documentationBelow ? JSplitPane.VERTICAL_SPLIT : JSplitPane.HORIZONTAL_SPLIT, content, helpComponent, JIPipeDesktopSplitPane.RATIO_3_TO_1);
-                add(splitPane, BorderLayout.CENTER);
-            } else {
-                this.documentationHasUI = false;
                 add(content, BorderLayout.CENTER);
+            }
+            else {
+                if ((flags & DOCUMENTATION_NO_UI) != DOCUMENTATION_NO_UI) {
+                    this.documentationHasUI = true;
+                    boolean documentationBelow = (flags & DOCUMENTATION_BELOW) == DOCUMENTATION_BELOW;
+                    JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(documentationBelow ? JSplitPane.VERTICAL_SPLIT : JSplitPane.HORIZONTAL_SPLIT, content, helpComponent, JIPipeDesktopSplitPane.RATIO_3_TO_1);
+                    add(splitPane, BorderLayout.CENTER);
+                } else {
+                    this.documentationHasUI = false;
+                    add(content, BorderLayout.CENTER);
+                }
             }
         } else {
             this.withDocumentation = false;

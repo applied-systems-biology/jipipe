@@ -14,6 +14,7 @@ import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class JIPipeDesktopDockPanel extends JPanel {
@@ -35,7 +36,7 @@ public class JIPipeDesktopDockPanel extends JPanel {
     private int minimumFloatingSize = 50;
     private JComponent leftFloatingPanelContent;
     private JComponent rightFloatingPanelContent;
-    private final Map<String, Panel> floatingPanels = new HashMap<>();
+    private final Map<String, Panel> floatingPanels = new LinkedHashMap<>();
     private final Map<String, JToggleButton> floatingPanelToggles = new HashMap<>();
     private boolean floatingLeft = false;
     private boolean floatingRight = false;
@@ -62,6 +63,9 @@ public class JIPipeDesktopDockPanel extends JPanel {
 
         initializeLeftFloatingPanel();
         initializeRightFloatingPanel();
+
+        leftSplitPane.setDividerSize(12);
+        rightSplitPane.setDividerSize(12);
 
         addComponentListener(new ComponentAdapter() {
             @Override
@@ -290,21 +294,11 @@ public class JIPipeDesktopDockPanel extends JPanel {
         button.setToolTipText(panel.getName());
         button.addActionListener(e -> {
             if(button.isSelected()) {
-                // Deactivate all other buttons
-                for (Panel otherPanel : getPanelsAtLocation(panel.getLocation())) {
-                    if(otherPanel != panel) {
-                        otherPanel.setVisible(false);
-                        floatingPanelToggles.get(otherPanel.getId()).setSelected(false);
-                    }
-                }
-
-                panel.setVisible(true);
+                activatePanel(panel);
             }
             else {
-                panel.setVisible(false);
+                deactivatePanel(panel);
             }
-            updateContent();
-            updateSizes();
         });
         JPopupMenu popupMenu = UIUtils.addRightClickPopupMenuToButton(button);
         popupMenu.add(UIUtils.createMenuItem("Top left", "Move the panel to the top left anchor", UIUtils.getIconFromResources("actions/dock-top-left.png"), () -> {
@@ -322,6 +316,33 @@ public class JIPipeDesktopDockPanel extends JPanel {
 
         floatingPanelToggles.put(panel.getId(), button);
         return button;
+    }
+
+    public void deactivatePanel(Panel panel) {
+        panel.setVisible(false);
+        updateContent();
+        updateSizes();
+        updateToolbars();
+    }
+
+    private void activatePanel(Panel panel) {
+        if(panel.getComponent() == null && panel.getComponentSupplier() != null) {
+            panel.setComponent(panel.getComponentSupplier().get());
+            panel.setComponentSupplier(null);
+        }
+
+        // Deactivate all other buttons
+        for (Panel otherPanel : getPanelsAtLocation(panel.getLocation())) {
+            if(otherPanel != panel) {
+                otherPanel.setVisible(false);
+                floatingPanelToggles.get(otherPanel.getId()).setSelected(false);
+            }
+        }
+
+        panel.setVisible(true);
+        updateContent();
+        updateSizes();
+        updateToolbars();
     }
 
     public boolean isFloatingLeft() {
@@ -414,6 +435,36 @@ public class JIPipeDesktopDockPanel extends JPanel {
         updateSizes();
     }
 
+    public void addDockPanel(String id, String name, Icon icon, PanelLocation location, boolean visible, Supplier<JComponent> component) {
+        removeDockPanel(id);
+
+        Panel panel = new Panel(id);
+        panel.setLocation(location);
+        panel.setComponentSupplier(component);
+        panel.setIcon(icon);
+        panel.setName(name);
+
+        if(visible) {
+            String visiblePanelId = getCurrentlyVisiblePanelId(location, true);
+            if(visiblePanelId != null && !id.equals(visiblePanelId)) {
+                floatingPanels.get(visiblePanelId).setVisible(false);
+            }
+            panel.setVisible(true);
+        }
+
+        floatingPanels.put(id, panel);
+        updateToolbars();
+        updateContent();
+        updateSizes();
+    }
+
+    public void activatePanel(String id) {
+        Panel panel = floatingPanels.get(id);
+        if(panel != null) {
+            activatePanel(panel);
+        }
+    }
+
     public enum PanelLocation {
         TopLeft,
         BottomLeft,
@@ -492,6 +543,7 @@ public class JIPipeDesktopDockPanel extends JPanel {
         private final String id;
         private Icon icon;
         private JComponent component;
+        private Supplier<JComponent> componentSupplier;
         private String name;
         private PanelLocation location;
         private boolean visible;
@@ -546,6 +598,14 @@ public class JIPipeDesktopDockPanel extends JPanel {
 
         public boolean isDisplayed() {
             return visible && component != null;
+        }
+
+        public Supplier<JComponent> getComponentSupplier() {
+            return componentSupplier;
+        }
+
+        public void setComponentSupplier(Supplier<JComponent> componentSupplier) {
+            this.componentSupplier = componentSupplier;
         }
     }
 }

@@ -97,14 +97,14 @@ public class JIPipeDesktopPipelineSingleAlgorithmSelectionPanelUI extends JIPipe
                         () -> batchAssistantTabContent,
                         JIPipeDesktopTabPane.CloseMode.withoutCloseButton, JIPipeDesktopTabPane.SingletonTabMode.Present);
             }
-            if (node instanceof JIPipeAlgorithm && !getDesktopProjectWorkbench().getProject().getNodeExamples(node.getInfo().getId()).isEmpty()) {
-                tabbedPane.registerSingletonTab("EXAMPLES",
-                        "Examples",
-                        UIUtils.getIcon32FromResources("actions/graduation-cap.png"),
-                        () -> new JIPipeDesktopNodeExamplesUI(getDesktopProjectWorkbench(), (JIPipeAlgorithm) node, tabbedPane),
-                        JIPipeDesktopTabPane.CloseMode.withoutCloseButton,
-                        JIPipeDesktopTabPane.SingletonTabMode.Present);
-            }
+//            if (node instanceof JIPipeAlgorithm && !getDesktopProjectWorkbench().getProject().getNodeExamples(node.getInfo().getId()).isEmpty()) {
+//                tabbedPane.registerSingletonTab("EXAMPLES",
+//                        "Examples",
+//                        UIUtils.getIcon32FromResources("actions/graduation-cap.png"),
+//                        () -> new JIPipeDesktopNodeExamplesUI(getDesktopProjectWorkbench(), (JIPipeAlgorithm) node, tabbedPane),
+//                        JIPipeDesktopTabPane.CloseMode.withoutCloseButton,
+//                        JIPipeDesktopTabPane.SingletonTabMode.Present);
+//            }
 
             testBenchTabContent = new JPanel(new BorderLayout());
             if (node.getInfo().isRunnable()) {
@@ -122,7 +122,7 @@ public class JIPipeDesktopPipelineSingleAlgorithmSelectionPanelUI extends JIPipe
 
             if (JIPipeRunnableQueue.getInstance().getCurrentRun() != null) {
                 currentRunTabContent = new JPanel(new BorderLayout());
-                tabbedPane.registerSingletonTab("CURRENT_RUN", "Progress", UIUtils.getIcon32FromResources("actions/rabbitvcs-show_log.png"),
+                tabbedPane.registerSingletonTab("CURRENT_RUN", "Progress", UIUtils.getIcon32FromResources("actions/new-command-alarm.png"),
                         () -> currentRunTabContent, JIPipeDesktopTabPane.CloseMode.withoutCloseButton, JIPipeDesktopTabPane.SingletonTabMode.Present);
             }
         } else {
@@ -130,14 +130,14 @@ public class JIPipeDesktopPipelineSingleAlgorithmSelectionPanelUI extends JIPipe
             tabbedPane.registerSingletonTab("SLOTS", "Slots", UIUtils.getIcon32FromResources("actions/plug.png"),
                     () -> slotEditorUI,
                     JIPipeDesktopTabPane.CloseMode.withoutCloseButton, JIPipeDesktopTabPane.SingletonTabMode.Present);
-            if (node instanceof JIPipeAlgorithm && !getDesktopProjectWorkbench().getProject().getNodeExamples(node.getInfo().getId()).isEmpty()) {
-                tabbedPane.registerSingletonTab("EXAMPLES",
-                        "Examples",
-                        UIUtils.getIcon32FromResources("actions/graduation-cap.png"),
-                        () -> new JIPipeDesktopNodeExamplesUI(getDesktopProjectWorkbench(), (JIPipeAlgorithm) node, tabbedPane),
-                        JIPipeDesktopTabPane.CloseMode.withoutCloseButton,
-                        JIPipeDesktopTabPane.SingletonTabMode.Present);
-            }
+//            if (node instanceof JIPipeAlgorithm && !getDesktopProjectWorkbench().getProject().getNodeExamples(node.getInfo().getId()).isEmpty()) {
+//                tabbedPane.registerSingletonTab("EXAMPLES",
+//                        "Examples",
+//                        UIUtils.getIcon32FromResources("actions/graduation-cap.png"),
+//                        () -> new JIPipeDesktopNodeExamplesUI(getDesktopProjectWorkbench(), (JIPipeAlgorithm) node, tabbedPane),
+//                        JIPipeDesktopTabPane.CloseMode.withoutCloseButton,
+//                        JIPipeDesktopTabPane.SingletonTabMode.Present);
+//            }
             if (node instanceof JIPipeIterationStepAlgorithm) {
                 tabbedPane.addTab("Inputs",
                         UIUtils.getIcon32FromResources("actions/package.png"),

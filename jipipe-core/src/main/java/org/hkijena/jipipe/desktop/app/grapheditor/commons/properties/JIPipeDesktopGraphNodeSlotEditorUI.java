@@ -62,11 +62,8 @@ public class JIPipeDesktopGraphNodeSlotEditorUI extends JPanel implements JIPipe
         slotTree = new JTree();
         slotTree.setCellRenderer(new JIPipeDesktopDataSlotTreeCellRenderer());
 
-        JIPipeDesktopMarkdownReader helpPanel = new JIPipeDesktopMarkdownReader(false);
-        helpPanel.setDocument(MarkdownText.fromPluginResource("documentation/algorithm-slots.md", new HashMap<>()));
         JScrollPane scrollPane = new JScrollPane(slotTree);
-        JSplitPane splitPane = new JIPipeDesktopSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPane, helpPanel, JIPipeDesktopSplitPane.RATIO_3_TO_1);
-        add(splitPane, BorderLayout.CENTER);
+        add(scrollPane, BorderLayout.CENTER);
 
         initializeToolbar();
     }

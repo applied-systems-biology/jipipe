@@ -23,6 +23,7 @@ import org.hkijena.jipipe.plugins.nodeexamples.JIPipeNodeExampleListCellRenderer
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatesRefreshedEvent;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatesRefreshedEventListener;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,13 +33,13 @@ import java.awt.event.MouseEvent;
 public class JIPipeDesktopNodeExamplesUI extends JIPipeDesktopProjectWorkbenchPanel implements NodeTemplatesRefreshedEventListener {
 
     private final JIPipeAlgorithm algorithm;
-    private final JIPipeDesktopTabPane tabbedPane;
+    private final JIPipeDesktopDockPanel dockPanel;
     private final JList<JIPipeNodeExample> exampleJList = new JList<>();
 
-    public JIPipeDesktopNodeExamplesUI(JIPipeDesktopProjectWorkbench workbench, JIPipeAlgorithm algorithm, JIPipeDesktopTabPane tabbedPane) {
+    public JIPipeDesktopNodeExamplesUI(JIPipeDesktopProjectWorkbench workbench, JIPipeAlgorithm algorithm, JIPipeDesktopDockPanel dockPanel) {
         super(workbench);
         this.algorithm = algorithm;
-        this.tabbedPane = tabbedPane;
+        this.dockPanel = dockPanel;
         initialize();
         reloadList();
         JIPipe.getNodeTemplates().getNodeTemplatesRefreshedEventEmitter().subscribeWeak(this);
@@ -80,8 +81,8 @@ public class JIPipeDesktopNodeExamplesUI extends JIPipeDesktopProjectWorkbenchPa
         }
         algorithm.loadExample(example);
         getDesktopWorkbench().sendStatusBarText("Loaded example '" + example.getNodeTemplate().getName() + "' into " + algorithm.getDisplayName());
-        if (tabbedPane != null) {
-            tabbedPane.selectSingletonTab("PARAMETERS");
+        if (dockPanel != null) {
+            dockPanel.activatePanel("PARAMETERS");
         }
     }
 

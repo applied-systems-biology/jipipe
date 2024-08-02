@@ -25,21 +25,30 @@ import org.hkijena.jipipe.api.history.JIPipeDedicatedGraphHistoryJournal;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseRole;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.batchassistant.JIPipeDesktopDataBatchAssistantUI;
 import org.hkijena.jipipe.desktop.app.bookmarks.JIPipeDesktopBookmarkListPanel;
+import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopAlgorithmCacheBrowserUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorLogPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorMinimap;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDesktopGraphNodeSlotEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.compartments.contextmenu.clipboard.clipboard.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.groups.JIPipeDesktopNodeGroupUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.actions.JIPipeDesktopUpdateCacheAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.dragdrop.JIPipeCreateNodesFromDraggedDataDragAndDropBehavior;
+import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.properties.JIPipeDesktopNodeExamplesUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.properties.JIPipeDesktopPipelineParametersPanel;
 import org.hkijena.jipipe.desktop.app.history.JIPipeDesktopHistoryJournalUI;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueuePanelUI;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
+import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplateMenu;
 import org.hkijena.jipipe.plugins.nodetoolboxtool.NodeToolBox;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
@@ -387,12 +396,12 @@ public class JIPipePipelineGraphEditorUI extends JIPipeDesktopGraphEditorUI {
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 false,
                 new JIPipeDesktopHistoryJournalUI(getHistoryJournal()));
-        getDockPanel().addDockPanel("CURRENT_PROGRESS",
+        getDockPanel().addDockPanel("PROGRESS",
                 "Current progress",
                 UIUtils.getIcon32FromResources("actions/rabbitvcs-show_log.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomRight,
                 false,
-                new JIPipeDesktopRunnableQueuePanelUI());
+                new JIPipeDesktopGraphEditorLogPanel(getDesktopWorkbench()));
 //
 //        bottomPanel.addTab("Templates", UIUtils.getIcon32FromResources("actions/star.png"),
 //                new NodeTemplateBox(getDesktopWorkbench(), true, getCanvasUI(), null), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
@@ -408,9 +417,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeDesktopGraphEditorUI {
 
         if(getSelection().size() == 1) {
             JIPipeDesktopGraphNodeUI nodeUI = getSelection().iterator().next();
-            getDockPanel().addDockPanel("_PARAMETERS", "Parameters", UIUtils.getIcon32FromResources("actions/configure.png"), JIPipeDesktopDockPanel.PanelLocation.TopRight, true, new JIPipeDesktopPipelineParametersPanel(getDesktopWorkbench(),
-                    getCanvasUI(),
-                    nodeUI.getNode()));
+            showSelectedNodeDocks(nodeUI);
         }
 
 //        if (getSelection().isEmpty()) {
@@ -421,6 +428,77 @@ public class JIPipePipelineGraphEditorUI extends JIPipeDesktopGraphEditorUI {
 //        } else {
 //            setPropertyPanel(new JIPipeDesktopPipelineMultiAlgorithmSelectionPanelUI((JIPipeDesktopProjectWorkbench) getDesktopWorkbench(), getCanvasUI(),
 //                    getSelection().stream().map(JIPipeDesktopGraphNodeUI::getNode).collect(Collectors.toSet())), true);
+//        }
+    }
+
+    private void showSelectedNodeDocks(JIPipeDesktopGraphNodeUI nodeUI) {
+        JIPipeGraphNode node = nodeUI.getNode();
+        JIPipeDesktopPipelineParametersPanel parametersPanel = new JIPipeDesktopPipelineParametersPanel(getDesktopWorkbench(),
+                getCanvasUI(),
+                node);
+        parametersPanel.getParametersUI().getContextHelpEventEmitter().subscribeLambda((source, event) -> {
+            getDockPanel().activatePanel("_HELP");
+        });
+        getDockPanel().addDockPanel("_PARAMETERS",
+                "Parameters",
+                UIUtils.getIcon32FromResources("actions/configure3.png"),
+                JIPipeDesktopDockPanel.PanelLocation.TopRight,
+                true,
+                parametersPanel);
+        getDockPanel().addDockPanel("_HELP",
+                "Documentation",
+                UIUtils.getIcon32FromResources("actions/help-question.png"),
+                JIPipeDesktopDockPanel.PanelLocation.BottomRight,
+                true,
+                parametersPanel.getParametersUI().getHelpPanel());
+        getDockPanel().addDockPanel("_SLOTS",
+                "Slots overview",
+                UIUtils.getIcon32FromResources("actions/labplot-editbreaklayout.png"),
+                JIPipeDesktopDockPanel.PanelLocation.TopRight,
+                false,
+                () -> new JIPipeDesktopGraphNodeSlotEditorUI(this, node));
+        if (node instanceof JIPipeIterationStepAlgorithm && getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
+            if(getDesktopWorkbench().getProject() != null) {
+                getDockPanel().addDockPanel(
+                        "_INPUTS",
+                        "Inputs",
+                        UIUtils.getIcon32FromResources("actions/input-management-2.png"),
+                        JIPipeDesktopDockPanel.PanelLocation.TopRight,
+                        false,
+                        () ->  new JIPipeDesktopDataBatchAssistantUI((JIPipeDesktopProjectWorkbench) getDesktopWorkbench(), node, () -> {
+                            nodeUI.getNodeUIActionRequestedEventEmitter().emit(new JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEvent(nodeUI,
+                                    new JIPipeDesktopUpdateCacheAction(false, true)));
+                        }));
+            }
+            else {
+                getDockPanel().addDockPanel(
+                        "_INPUTS",
+                        "Inputs",
+                        UIUtils.getIcon32FromResources("actions/input-management-2.png"),
+                        JIPipeDesktopDockPanel.PanelLocation.TopRight,
+                        false,
+                        new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), ((JIPipeIterationStepAlgorithm) node).getGenerationSettingsInterface(),
+                                null, JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.WITH_SCROLLING));
+            }
+            if(getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
+                getDockPanel().addDockPanel("CACHE_BROWSER",
+                        "Results",
+                        UIUtils.getIcon32FromResources("actions/network-server-database.png"),
+                        JIPipeDesktopDockPanel.PanelLocation.TopRight,
+                        false,
+                        () -> new JIPipeDesktopAlgorithmCacheBrowserUI((JIPipeDesktopProjectWorkbench) getDesktopWorkbench(),
+                                node,
+                                getCanvasUI()));
+            }
+        }
+//        if (getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench && node instanceof JIPipeAlgorithm &&
+//                !getDesktopWorkbench().getProject().getNodeExamples(node.getInfo().getId()).isEmpty()) {
+//            getDockPanel().addDockPanel("_EXAMPLES",
+//                    "Examples",
+//                    UIUtils.getIcon32FromResources("actions/graduation-cap.png"),
+//                    JIPipeDesktopDockPanel.PanelLocation.TopRight,
+//                    false,
+//                    () -> new JIPipeDesktopNodeExamplesUI((JIPipeDesktopProjectWorkbench) getDesktopWorkbench(), (JIPipeAlgorithm) node, getDockPanel()));
 //        }
     }
 

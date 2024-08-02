@@ -21,6 +21,7 @@ import org.hkijena.jipipe.desktop.api.nodes.JIPipeDesktopNodeQuickAction;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
@@ -36,6 +37,7 @@ public class JIPipeDesktopPipelineParametersPanel extends JIPipeDesktopWorkbench
 
     private final JIPipeDesktopGraphCanvasUI canvas;
     private final JIPipeGraphNode node;
+    private JIPipeDesktopParameterFormPanel parametersUI;
 
     public JIPipeDesktopPipelineParametersPanel(JIPipeDesktopWorkbench desktopWorkbench, JIPipeDesktopGraphCanvasUI canvas, JIPipeGraphNode node) {
         super(desktopWorkbench);
@@ -47,10 +49,12 @@ public class JIPipeDesktopPipelineParametersPanel extends JIPipeDesktopWorkbench
     private void initialize() {
         setLayout(new BorderLayout());
         // Parameters
-        JIPipeDesktopParameterFormPanel parametersUI = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(),
+        parametersUI = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(),
                 node,
                 TooltipUtils.getAlgorithmDocumentation(node),
-                JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.DOCUMENTATION_BELOW | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR);
+                JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION |
+                        JIPipeDesktopParameterFormPanel.DOCUMENTATION_BELOW | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR |
+                        JIPipeDesktopFormPanel.DOCUMENTATION_EXTERNAL);
         add(parametersUI, BorderLayout.CENTER);
 
 //        JToolBar toolBar = new JToolBar();
@@ -153,5 +157,9 @@ public class JIPipeDesktopPipelineParametersPanel extends JIPipeDesktopWorkbench
 
             parametersUI.getToolBar().add(button);
         }
+    }
+
+    public JIPipeDesktopParameterFormPanel getParametersUI() {
+        return parametersUI;
     }
 }
